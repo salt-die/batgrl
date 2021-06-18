@@ -1,4 +1,2 @@
 numpy
-windows-curses; sys_platform=='win32'
-numpy
 prompt-toolkit
