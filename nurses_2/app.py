@@ -8,6 +8,9 @@ from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
 
+from .widgets import Widget
+
+FLUSH_INTERVAL = .05
 POLL_INTERVAL = .5
 REFRESH_INTERVAL = 0
 
@@ -37,6 +40,8 @@ class App(ABC):
         for task in self._tasks:
             task.cancel()
 
+        self._flush_task.cancel()
+
     def _on_resize(self):
         """Adjust widget geometry and redraw the screen.
         """
@@ -55,6 +60,7 @@ class App(ABC):
             self.kb = kb = KeyBindings()
             self.key_processor = key_processor = KeyProcessor(kb)
             self._tasks = tasks = [ ]
+            self._flush_task = asyncio.create_task(_dummy_coroutine())
             self.root = self.build()
             # assert isinstance(self.root, Widget), f"expected Widget, got {type(self.root).__name__}"  # TODO: Uncomment once widgets are implemented.
 
@@ -65,6 +71,21 @@ class App(ABC):
 
                 key_processor.feed_multiple(keys)
                 key_processor.process_keys()
+
+                self._flush_task.cancel()
+                self._flush_task = asyncio.create_task(flush_soon())
+
+            def flush_input():
+                """Flush input.
+                """
+                keys = env_in.flush_keys()
+
+                key_processor.feed_multiple(keys)
+                key_processor.process_keys()
+
+            async def flush_soon():
+                await asyncio.sleep(FLUSH_INTERVAL)
+                flush_input()
 
             async def poll_size():
                 """Poll terminal dimensions every `POLL_INTERVAL` seconds and resize if dimensions have changed.
@@ -123,3 +144,8 @@ def create_environment():
 
         env_in.flush_keys()
         env_in.close()
+
+async def _dummy_coroutine():
+    """Used to initialize some dummy tasks.
+    """
+    pass
