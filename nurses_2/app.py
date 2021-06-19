@@ -56,7 +56,7 @@ class App(ABC):
             self.key_processor = key_processor = KeyProcessor(kb)
             self._tasks = tasks = [ ]
             self.root = self.build()
-            # assert isinstance(self.root, Widget), f"expected Widget, got {type(self.root).__name__}"  # TODO: Uncomment once widgets are implemnted.
+            # assert isinstance(self.root, Widget), f"expected Widget, got {type(self.root).__name__}"  # TODO: Uncomment once widgets are implemented.
 
             def read_from_input():
                 """Read and process input.
