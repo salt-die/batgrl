@@ -59,8 +59,10 @@ class App(ABC):
 
             self.kb = kb = KeyBindings()
             self.key_processor = key_processor = KeyProcessor(kb)
+
             self._tasks = tasks = [ ]
             self._flush_task = asyncio.create_task(_dummy_coroutine())
+
             self.root = self.build()
             # assert isinstance(self.root, Widget), f"expected Widget, got {type(self.root).__name__}"  # TODO: Uncomment once widgets are implemented.
 
@@ -140,12 +142,11 @@ def create_environment():
     finally:
         env_out.flush()
         env_out.quit_alternate_screen()
-        env_out.show_cursor()
 
         env_in.flush_keys()
         env_in.close()
 
 async def _dummy_coroutine():
-    """Used to initialize some dummy tasks.
+    """Used to initialize dummy tasks.
     """
     pass
