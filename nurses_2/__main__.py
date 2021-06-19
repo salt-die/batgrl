@@ -1,4 +1,8 @@
-"""For temporary testing.  This file will be removed.
+"""
+For temporary testing.  This file will be removed.
+
+`esc` to exit.
+
 """
 import asyncio
 from itertools import cycle, product
