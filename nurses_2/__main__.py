@@ -5,7 +5,7 @@ For temporary testing.  This file will be removed.
 
 """
 import asyncio
-from itertools import cycle, product
+from itertools import cycle
 
 from .app import App
 
@@ -18,13 +18,17 @@ class MyApp(App):
 
     async def on_start(self):
         env_out = self.env_out
-        rows, columns = env_out.get_size()
         some_text = cycle('NURSES!')
 
         while True:
-            for y, x in product(range(rows), range(columns)):
-                env_out.cursor_goto(y, x)
-                env_out.write(next(some_text))
+            rows, columns = env_out.get_size()
+            # This loop will be the basis for our screen's `addstr` method.
+            for y in range(rows):
+                env_out.cursor_goto(y, 0)
+
+                for x in range(columns):
+                    # env_out.write_raw("escape sequence")
+                    env_out.write(next(some_text))
 
             next(some_text)
 
