@@ -1,3 +1,6 @@
-class Widget:
-    """A nurses panel with children and input dispatching.
+from ..panel import Panel
+
+
+class Widget(Panel):
+    """A generic TUI element.
     """
