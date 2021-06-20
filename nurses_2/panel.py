@@ -5,19 +5,35 @@ from prompt_toolkit.styles import DEFAULT_ATTRS
 class Panel:
     """Stackable windows.
     """
-    def __init__(self, dim, pos=(0, 0), *, z=0, background=" ", attrs=DEFAULT_ATTRS, is_transparent=False, is_visible=True):
-        assert len(background) == 1, f'expected single character, got {background!r}'
+    __slots__ = (
+        "content",
+        "attrs",
+        "top",
+        "left",
+        "z",
+        "default_char",
+        "default_attr",
+        "is_transparent",
+        "is_visible",
+    )
 
-        self.content = np.full(dim, background, dtype=object)
+    def __init__(self, dim, pos=(0, 0), *, z=0, default_char=" ", default_attr=DEFAULT_ATTRS, is_transparent=False, is_visible=True):
+        assert len(default_char) == 1, f'expected single character, got {default_char!r}'
+
+        self.content = np.full(dim, default_char, dtype=object)
         self.attrs = np.full(dim, color, dtype=object)
 
         self.top, self.left = pos
 
         self.z = z
-        self.background = background
-        self.color = color
-        self.is_transparent = transparent
-        self.is_visible = hidden
+        self.default_char = default_char
+        self.default_attr = default_attr
+        self.is_transparent = is_transparent
+        self.is_visible = is_visible
+
+    @property
+    def dim(self):
+        return self.content.shape
 
     @property
     def height(self):
