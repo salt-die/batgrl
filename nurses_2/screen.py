@@ -101,7 +101,7 @@ class Screen:
             else:
                 sl = 0
                 dl = pl
-``
+
                 if pr >= w:        # panel-left is on-screen and panel-right is off-screen
                     sr = w - dl
                     dr = w
