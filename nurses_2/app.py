@@ -128,6 +128,8 @@ Binding.call = call                             # G ###
 
 @contextmanager
 def create_environment():
+    """Platform specific output/input. Restores output and closes/flushes input on exit.
+    """
     env_out = create_output()
     env_out.enter_alternate_screen()
     env_out.hide_cursor()
