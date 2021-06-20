@@ -147,5 +147,6 @@ def create_environment():
         env_out.scroll_buffer_to_prompt()
         env_out.quit_alternate_screen()
         env_out.disable_mouse_support()
+        env_out.reset_attributes()
         env_out.show_cursor()
         env_out.flush()
