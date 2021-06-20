@@ -5,7 +5,7 @@ from prompt_toolkit.styles import DEFAULT_ATTRS
 class Screen:
     """Contents of the screen.  Stores and renders all panels.
     """
-    __slots__ = 'env_out', 'content', 'attrs', 'panels',
+    __slots__ = 'env_out', 'panels', 'content', 'attrs',
 
     def __init__(self, env_out, panels=None):
         self.env_out = env_out
