@@ -1,14 +1,15 @@
 import numpy as np
+from prompt_toolkit.styles import DEFAULT_ATTRS
 
 
 class Panel:
     """Stackable windows.
     """
-    def __init__(self, dim, pos=(0, 0), *, z=0, background=" ", color="", is_transparent=False, is_visible=True):
+    def __init__(self, dim, pos=(0, 0), *, z=0, background=" ", attrs=DEFAULT_ATTRS, is_transparent=False, is_visible=True):
         assert len(background) == 1, f'expected single character, got {background!r}'
 
         self.content = np.full(dim, background, dtype=object)
-        self.colors = np.full(dim, color, dtype=object)
+        self.attrs = np.full(dim, color, dtype=object)
 
         self.top, self.left = pos
 
