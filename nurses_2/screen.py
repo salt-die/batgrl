@@ -7,9 +7,9 @@ class Screen:
     """
     __slots__ = 'env_out', 'panels', 'content', 'attrs',
 
-    def __init__(self, env_out, panels=None):
+    def __init__(self, env_out):
         self.env_out = env_out
-        self.panels = panels or [ ]
+        self.panels = [ ]
 
         self.reset(env_out.get_size())
 
@@ -35,8 +35,12 @@ class Screen:
         return self.height // 2, self.width // 2
 
     def render(self):
-        """Paint screen to output.
+        """Paint each panel to screen and screen to output.
         """
+        ####################
+        # Panels to screen #
+        ####################
+
         content = self.content
         attrs = self.attrs
         content[:] = " "
@@ -47,11 +51,9 @@ class Screen:
         panels = self.panels
         panels.sort()  # Sorted according to z-index.
 
-        # Very short names will be used as this is a performance-critical loop.
-        # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
-        # destination_bottom, source_left, destination_left, source_right, destination_right.
+        # ! Very short names will be used as this is a performance-critical loop.
         for p in panels:
-            # not visible or offscreen
+            # Panel is not visible or completely offscreen.
             if (
                 not p.is_visible
                 or p.top >= h
@@ -66,6 +68,36 @@ class Screen:
             pl = p.left
             pr = p.right
 
+            # Four cases for top / bottom of panel:
+            #     1) Panel top is off-screen and panel bottom is off-screen.
+            #               +-------+
+            #            +--| panel |------------+
+            #            |  |       |   screen   |
+            #            +--|       |------------+
+            #               +-------+
+            #     2) Panel top is off-screen and panel bottom is on-screen.
+            #               +-------+
+            #            +--| panel |------------+
+            #            |  +-------+   screen   |
+            #            +-----------------------+
+            #
+            #     3) Panel top is on-screen and panel bottom is off-screen.
+            #            +-----------------------+
+            #            |  +-------+   screen   |
+            #            +--| panel |------------+
+            #               +-------+
+            #
+            #     4) Panel top is on-screen and panel bottom is on-screen.
+            #            +-----------------------+
+            #            |  +-------+            |
+            #            |  | panel |   screen   |
+            #            |  +-------+            |
+            #            +-----------------------+
+            #
+            # Similarly, by symmetry, four cases for left / right of panel.
+
+            # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
+            # destination_bottom, source_left, destination_left, source_right, destination_right.
             if pt < 0:
                 st = -pt
                 dt = 0
@@ -110,6 +142,10 @@ class Screen:
 
             content[dt: db, dl: dr] = p.content[st: sb, sl: sr]
             attrs[dt: db, dl: dr] = p.attrs[st: sb, sl: sr]
+
+        ####################
+        # Screen to output #
+        ####################
 
         env_out = self.env_out
 
