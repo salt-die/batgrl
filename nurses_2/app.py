@@ -7,6 +7,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
+from prompt_toolkit.output.color_depth import ColorDepth
 
 from .widgets import Root
 
@@ -14,55 +15,54 @@ ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
 REFRESH_INTERVAL = 0  # Seconds between screen redraws.
 
-APP = None
+_APP = None
 def get_running_app():
-    return APP
+    """Get currently running app.
+    """
+    return _APP
 
 
 class App(ABC):
     """Base for creating terminal applications.
     """
-    @abstractmethod
-    def build(self):
-        """Build and add widgets to root.
-        """
+    def __init__(self, *, key_bindings=None, color_depth=None):
+        self.key_bindings = key_bindings or KeyBindings()
+        self.color_depth = color_depth or ColorDepth.TRUE_COLOR
 
     @abstractmethod
     async def on_start(self):
-        """Main coroutine. Event loop starts here.
+        """Add widgets to root and kick-off event loop.
         """
 
     def run(self):
         """Run the app.
         """
-        global APP
-        if APP is not None:
-            raise RuntimeError("An App is already running.")
-        APP = self
+        global _APP
+        if _APP is not None:
+            raise RuntimeError(f"{type(_APP).__name__} is already running.")
+        _APP = self
 
         try:
             asyncio.run(self._run_async())
         except asyncio.CancelledError:
             pass
 
-    def exit(self):
+    def exit(self, *args):
         for task in asyncio.all_tasks():
             task.cancel()
 
-        global APP
-        APP = None
+        global _APP
+        _APP = None
 
     async def _run_async(self):
         """Create root widget and schedule input reading, size polling, auto-rendering, and finally, `on_start`.
         """
-        with create_environment() as (env_out, env_in):
+        with create_environment(self.color_depth) as (env_out, env_in):
             self.env_out = env_out
             self.env_in = env_in
 
-            self.kb = kb = KeyBindings()
-            self.key_processor = key_processor = KeyProcessor(kb)
+            key_processor = KeyProcessor(self.key_bindings)
             self.root = root = Root(env_out)
-            self.build()
 
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
@@ -132,10 +132,19 @@ Binding.call = call                             # G ###
 ################################################# ! ###
 
 @contextmanager
-def create_environment():
+def create_environment(color_depth):
     """Platform specific output/input. Restores output and closes/flushes input on exit.
     """
     env_out = create_output()
+
+    if hasattr(env_out, 'vt100_output'):
+        env_out.vt100_output.default_color_depth = color_depth
+        env_out.win32_output.default_color_depth = color_depth
+    else:
+        env_out.default_color_depth = color_depth
+
+    assert env_out.get_default_color_depth() is color_depth
+
     env_out.enter_alternate_screen()
     env_out.erase_screen()
     env_out.hide_cursor()
