@@ -7,9 +7,11 @@ For temporary testing.  This file will be removed.
 import asyncio
 from itertools import cycle
 
+import numpy as np
 from prompt_toolkit.styles import Attrs
 
 from .app import App
+from .panel import Panel
 
 RED = Attrs(color='ff0000', bgcolor='', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
 BLUE = Attrs(color='0000ff', bgcolor='', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
@@ -19,29 +21,38 @@ class MyApp(App):
     def build(self):
         self.kb.add('escape')(lambda event: self.exit())
 
-        # No widgets yet :(
+        colors = cycle((RED, BLUE))
+        some_text = cycle('NURSES!')
+
+        panel_one = Panel((20, 20))
+
+        for i in range(20):
+            for j in range(20):
+                panel_one.content[i, j] = next(some_text)
+                panel_one.attrs[i, j] = next(colors)
+
+        panel_two = Panel((10, 30))
+
+        for i in range(10):
+            for j in range(30):
+                panel_two.content[i, j] = next(some_text)
+                panel_two.attrs[i, j] = next(colors)
+
+        self.screen.panels.extend((panel_one, panel_two))
 
     async def on_start(self):
-        env_out = self.env_out
-        depth = env_out.get_default_color_depth()
-
-        some_text = cycle('NURSES!')
-        colors = cycle((RED, BLUE))
+        panel_one, panel_two = self.screen.panels
+        h, w = self.screen.dim
 
         while True:
-            rows, columns = env_out.get_size()
-            # This loop will be the basis for our screen's `addstr` method.
-            for y in range(rows):
-                env_out.cursor_goto(y, 0)
+            panel_one.content = np.roll(panel_one.content, 1, (0, ))
+            panel_one.attrs = np.roll(panel_one.attrs, 1, (0, ))
+            panel_one.top = (panel_one.top + 1) % h
 
-                for x in range(columns):
-                    env_out.set_attributes(next(colors), depth)
-                    env_out.write(next(some_text))
+            panel_two.content = np.roll(panel_two.content, 1, (1, ))
+            panel_two.attrs = np.roll(panel_two.attrs, 1, (1, ))
+            panel_two.left = (panel_two.left + 1) % w
 
-            next(some_text)
-
-            env_out.flush()
-
-            await asyncio.sleep(0)
+            await asyncio.sleep(.05)
 
 MyApp().run()
