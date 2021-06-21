@@ -8,7 +8,7 @@ from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
 
-from .widgets import Widget
+from .screen import Screen
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
@@ -20,7 +20,7 @@ class App(ABC):
     """
     @abstractmethod
     def build(self):
-        """Build and return the root widget for the app.
+        """Create and add panels to `self.screen`.
         """
 
     @abstractmethod
@@ -40,31 +40,21 @@ class App(ABC):
         for task in asyncio.all_tasks():
             task.cancel()
 
-    def _on_resize(self):
-        """Adjust widget geometry and redraw the screen.
-        """
-        # self.root.update_geometry()  # TODO: Uncomment once widgets are implemented.
-        self._refresh()
-
-    def _refresh(self):
-        """Redraw the screen.
-        """
-
     async def _run_async(self):
-        """Create root widget and schedule input reading, size polling, auto-refreshing, and finally, `on_start`.
+        """Create root widget and schedule input reading, size polling, auto-rendering, and finally, `on_start`.
         """
         with create_environment() as (env_out, env_in):
             self.env_out = env_out
             self.env_in = env_in
 
+            self.screen = screen = Screen(env_out)
             self.kb = kb = KeyBindings()
             self.key_processor = key_processor = KeyProcessor(kb)
 
-            loop = asyncio.get_event_loop()
-            flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle; this so we can avoid a conditional in `read_from_input`
+            self.build()
 
-            self.root = self.build()
-            # assert isinstance(self.root, Widget), f"expected Widget, got {type(self.root).__name__}"  # TODO: Uncomment once widgets are implemented.
+            loop = asyncio.get_event_loop()
+            flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
 
             def read_from_input():
                 """Read and process input.
@@ -87,32 +77,32 @@ class App(ABC):
                 key_processor.process_keys()
 
             async def poll_size():
-                """Poll terminal dimensions every `POLL_INTERVAL` seconds and resize if dimensions have changed.
+                """Poll terminal dimensions every `POLL_INTERVAL` seconds and resize screen if dimensions have changed.
                 """
                 size = env_out.get_size()
-                on_resize = self._on_resize
+                reset = screen.reset
 
                 while True:
                     await asyncio.sleep(POLL_INTERVAL)
 
                     new_size = env_out.get_size()
                     if size != new_size:
-                        on_resize()
+                        reset(new_size)
                         size = new_size
 
-            async def auto_refresh():
+            async def auto_render():
                 """Redraw the screen every `REFRESH_INTERVAL` seconds.
                 """
-                refresh = self._refresh
+                render = screen.render
 
                 while True:
                     await asyncio.sleep(REFRESH_INTERVAL)
-                    refresh()
+                    render()
 
             with env_in.raw_mode(), env_in.attach(read_from_input):
                 await asyncio.gather(
                     poll_size(),
-                    auto_refresh(),
+                    auto_render(),
                     self.on_start(),
                 )
 
