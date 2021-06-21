@@ -87,6 +87,10 @@ class App(ABC):
 
                     new_size = env_out.get_size()
                     if size != new_size:
+                        env_out.erase_screen()
+                        env_out.hide_cursor()
+                        env_out.flush()
+
                         reset(new_size)
                         size = new_size
 
@@ -122,6 +126,7 @@ def create_environment():
     """
     env_out = create_output()
     env_out.enter_alternate_screen()
+    env_out.erase_screen()
     env_out.hide_cursor()
     env_out.flush()
 
