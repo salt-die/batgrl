@@ -13,8 +13,8 @@ from prompt_toolkit.styles import Attrs
 from .app import App
 from .widgets import Widget
 
-RED = Attrs(color='ff0000', bgcolor='', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
-BLUE = Attrs(color='0000ff', bgcolor='', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
+RED = Attrs(color='FF8C42', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
+BLUE = Attrs(color='FFF275', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
 
 
 class MovingWidget(Widget):

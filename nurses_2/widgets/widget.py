@@ -1,5 +1,6 @@
 import numpy as np
 from prompt_toolkit.styles import DEFAULT_ATTRS
+from prompt_toolkit.output.color_depth import ColorDepth
 
 NO_ATTRS = ((DEFAULT_ATTRS, ), )
 
@@ -249,7 +250,7 @@ class Root(Widget):
         set_attr = env_out.set_attributes
         write = env_out.write
 
-        depth = env_out.get_default_color_depth()
+        depth = ColorDepth.DEPTH_24_BIT  # FIXME: Temporarily forcing for testing.
 
         for i, (line, attr_row) in enumerate(zip(self.content, self.attrs)):
             goto(i, 0)
