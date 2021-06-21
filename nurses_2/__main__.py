@@ -13,84 +13,82 @@ from prompt_toolkit.styles import Attrs
 from .app import App
 from .widgets import Widget
 
-RED = Attrs(color='FF8C42', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
-BLUE = Attrs(color='FFF275', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
+ORANGE = Attrs(color='FF8C42', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
+YELLOW = Attrs(color='FFF275', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
 
 
-class MovingWidget(Widget):
+class BouncingWidget(Widget):
     def __init__(self, dim, velocity):
         super().__init__(dim)
-        self.velocity = velocity / abs(velocity)
-        self.pos = self.top + self.left * 1j
+        self.velocity = velocity
 
-    def update(self):
-        self.pos += self.velocity
+    def start(self, roll_axis):
+        asyncio.create_task(self.bounce())
+        asyncio.create_task(self.roll(roll_axis))
 
-        self.top = int(self.pos.real)
-        self.left = int(self.pos.imag)
+    async def bounce(self):
+        velocity = self.velocity
+        velocity /= abs(velocity)
+
+        pos = self.top + self.left * 1j
+        root = self.root
+
+        while True:
+            pos += velocity
+
+            self.top = top = int(pos.real)
+            self.left = left = int(pos.imag)
+
+            if (
+                top <= 0 and velocity.real < 0
+                or self.bottom > root.height and velocity.real > 0
+            ):
+                velocity = -velocity.conjugate()
+
+            if (
+                left <= 0 and velocity.imag < 0
+                or self.right > root.width and velocity.imag > 0
+            ):
+                velocity = velocity.conjugate()
+
+            await asyncio.sleep(.05)
+
+    async def roll(self, axis):
+        while True:
+            self.content = np.roll(self.content, 1, (axis, ))
+            self.attrs = np.roll(self.attrs, 1, (axis, ))
+
+            await asyncio.sleep(.11)
 
 
 class MyApp(App):
-    def build(self):
-        self.kb.add('escape')(lambda event: self.exit())
+    async def on_start(self):
+        self.key_bindings.add('escape')(self.exit)
 
-        colors = cycle((RED, BLUE))
+        root = self.root
+
+        colors = cycle((ORANGE, YELLOW))
         some_text = cycle('NURSES!')
 
-        widget_1 = MovingWidget(dim=(20, 20), velocity=1 + 1j)
+        widget_1 = BouncingWidget(dim=(20, 20), velocity=1 + 1j)
+        widget_2 = BouncingWidget(dim=(10, 30), velocity=-1 - 1j)
 
+        # Fill widget content.
         for i in range(20):
             for j in range(20):
                 widget_1.content[i, j] = next(some_text)
                 widget_1.attrs[i, j] = next(colors)
-
-        widget_2 = MovingWidget(dim=(10, 30), velocity=-1 - 1j)
 
         for i in range(10):
             for j in range(30):
                 widget_2.content[i, j] = next(some_text)
                 widget_2.attrs[i, j] = next(colors)
 
-        self.root.add_widget(widget_1)
-        self.root.add_widget(widget_2)
+        root.add_widget(widget_1)
+        root.add_widget(widget_2)
 
-    async def on_start(self):
-        root = self.root
-        widgets = root.children
-        widget_1, widget_2 = widgets
-
-        async def bounce():
-            while True:
-                for widget in widgets:
-                    widget.update()
-                    if (
-                        widget.top <= 0 and widget.velocity.real < 0
-                        or widget.bottom > root.height and widget.velocity.real > 0
-                    ):
-                        widget.velocity = -widget.velocity.conjugate()
-
-                    if (
-                        widget.left <= 0 and widget.velocity.imag < 0
-                        or widget.right > root.width and widget.velocity.imag > 0
-                    ):
-                        widget.velocity = widget.velocity.conjugate()
-
-                await asyncio.sleep(.05)
-
-        async def roll():
-            while True:
-                widget_1.content = np.roll(widget_1.content, 1, (0, ))
-                widget_1.attrs = np.roll(widget_1.attrs, 1, (0, ))
-
-                widget_2.content = np.roll(widget_2.content, 1, (1, ))
-                widget_2.attrs = np.roll(widget_2.attrs, 1, (1, ))
-
-                await asyncio.sleep(.11)
-
-        await asyncio.gather(
-            bounce(),
-            roll(),
-        )
+        widget_1.start(roll_axis=0)
+        widget_2.start(roll_axis=1)
 
 
 MyApp().run()
