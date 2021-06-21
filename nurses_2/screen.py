@@ -112,13 +112,19 @@ class Screen:
             attrs[dt: db, dl: dr] = p.attrs[st: sb, sl: sr]
 
         env_out = self.env_out
+
+        # Avoiding attribute lookups.
+        goto = env_out.cursor_goto
+        set_attr = env_out.set_attributes
+        write = env_out.write
+
         depth = env_out.get_default_color_depth()
 
         for i, (line, attr_row) in enumerate(zip(content, attrs)):
-            env_out.cursor_goto(i, 0)
+            goto(i, 0)
 
             for char, attr in zip(line, attr_row):
-                env_out.set_attributes(attr, depth)
-                env_out.write(char)
+                set_attr(attr, depth)
+                write(char)
 
         env_out.flush()
