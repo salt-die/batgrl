@@ -1,3 +1,5 @@
+from collections.abc import Iterable
+
 import numpy as np
 from prompt_toolkit.styles import DEFAULT_ATTRS
 from prompt_toolkit.output.color_depth import ColorDepth
@@ -16,25 +18,25 @@ class Widget:
         self.parent = parent
         self.children = [ ]
 
-        self.content = np.full(dim, " ", dtype=object)
+        self.canvas = np.full(dim, " ", dtype=object)
         self.attrs = np.full(dim, None, dtype=object)
         self.attrs[:] = NO_ATTRS
 
     def resize(self, dim):
-        old_content = self.content
+        old_canvas = self.canvas
         old_attrs = self.attrs
 
-        old_h, old_w = old_content.shape
+        old_h, old_w = old_canvas.shape
         h, w = dim
 
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.content = np.full(dim, " ", dtype=object)
+        self.canvas = np.full(dim, " ", dtype=object)
         self.attrs = np.full(dim, None, dtype=object)
         self.attrs[:] = NO_ATTRS
 
-        self.content[:copy_h, :copy_w] = old_content[:copy_h, :copy_w]
+        self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
         self.attrs[:copy_h, :copy_w] = old_attrs[:copy_h, :copy_w]
 
         for child in self.children:
@@ -46,15 +48,15 @@ class Widget:
 
     @property
     def dim(self):
-        return self.content.shape
+        return self.canvas.shape
 
     @property
     def height(self):
-        return self.content.shape[0]
+        return self.canvas.shape[0]
 
     @property
     def width(self):
-        return self.content.shape[1]
+        return self.canvas.shape[1]
 
     @property
     def bottom(self):
@@ -75,11 +77,20 @@ class Widget:
         return self.parent.root
 
     def add_widget(self, widget):
-        """Add widget.
+        """Add a child widget.
         """
         self.children.append(widget)
         widget.parent = self
         widget.update_geometry(self.dim)
+
+    def add_widgets(self, *widgets):
+        """Add multiple child widgets. (If `widgets` is an iterable it must be only argument.)
+        """
+        if len(widgets) == 1 and isinstance(widgets[0], Iterable):
+            widgets = widgets[0]
+
+        for widget in widgets:
+            self.add_widget(widget)
 
     def remove_widget(self, widget):
         """Remove widget.
@@ -106,16 +117,16 @@ class Widget:
             yield from child.walk()
 
     def erase(self):
-        """Clear the current contents.
+        """Clear canvas.
         """
-        self.content[:] = " "
+        self.canvas[:] = " "
         self.attrs[:] = NO_ATTRS
 
     def _render_child(self, child):
-        """Render child and paint child's contents into our own.
+        """Render child and paint child's canvas into our own.
         """
-        content = self.content
-        h, w = content.shape
+        canvas = self.canvas
+        h, w = canvas.shape
 
         ct = child.top
         cb = child.bottom
@@ -208,7 +219,7 @@ class Widget:
                 sr = child.width
                 dr = cr
 
-        content[dt: db, dl: dr] = child.content[st: sb, sl: sr]
+        canvas[dt: db, dl: dr] = child.canvas[st: sb, sl: sr]
         self.attrs[dt: db, dl: dr] = child.attrs[st: sb, sl: sr]
 
     def render(self):
@@ -227,7 +238,7 @@ class Root(Widget):
         self.resize(env_out.get_size())
 
     def resize(self, dim):
-        self.content = np.full(dim, " ", dtype=object)
+        self.canvas = np.full(dim, " ", dtype=object)
         self.attrs = np.full(dim, None, dtype=object)
         self.attrs[:] = NO_ATTRS
 
@@ -252,7 +263,7 @@ class Root(Widget):
 
         depth = env_out.get_default_color_depth()
 
-        for i, (line, attr_row) in enumerate(zip(self.content, self.attrs)):
+        for i, (line, attr_row) in enumerate(zip(self.canvas, self.attrs)):
             goto(i, 0)
 
             for char, attr in zip(line, attr_row):
