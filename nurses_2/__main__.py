@@ -15,20 +15,22 @@ from .widgets import Widget
 
 ORANGE = Attrs(color='FF8C42', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
 YELLOW = Attrs(color='FFF275', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
-
+COLORS = cycle((ORANGE, YELLOW))
+TEXT = cycle('NURSES!')
 
 class BouncingWidget(Widget):
-    def __init__(self, dim, velocity):
-        super().__init__(dim)
-        self.velocity = velocity
+    def start(self, velocity, roll_axis):
+        h, w = self.dim
+        for i in range(h):
+            for j in range(w):
+                self.canvas[i, j] = next(TEXT)
+                self.attrs[i, j] = next(COLORS)
 
-    def start(self, roll_axis):
-        asyncio.create_task(self.bounce())
+        asyncio.create_task(self.bounce(velocity))
         asyncio.create_task(self.roll(roll_axis))
 
-    async def bounce(self):
-        velocity = self.velocity
-        velocity /= abs(velocity)
+    async def bounce(self, velocity):
+        velocity /= abs(velocity)  # normalize
 
         pos = self.top + self.left * 1j
         root = self.root
@@ -55,7 +57,7 @@ class BouncingWidget(Widget):
 
     async def roll(self, axis):
         while True:
-            self.content = np.roll(self.content, 1, (axis, ))
+            self.canvas = np.roll(self.canvas, 1, (axis, ))
             self.attrs = np.roll(self.attrs, 1, (axis, ))
 
             await asyncio.sleep(.11)
@@ -65,30 +67,13 @@ class MyApp(App):
     async def on_start(self):
         self.key_bindings.add('escape')(self.exit)
 
-        root = self.root
+        widget_1 = BouncingWidget(dim=(20, 20))
+        widget_2 = BouncingWidget(dim=(10, 30))
 
-        colors = cycle((ORANGE, YELLOW))
-        some_text = cycle('NURSES!')
+        self.root.add_widgets(widget_1, widget_2)
 
-        widget_1 = BouncingWidget(dim=(20, 20), velocity=1 + 1j)
-        widget_2 = BouncingWidget(dim=(10, 30), velocity=-1 - 1j)
-
-        # Fill widget content.
-        for i in range(20):
-            for j in range(20):
-                widget_1.content[i, j] = next(some_text)
-                widget_1.attrs[i, j] = next(colors)
-
-        for i in range(10):
-            for j in range(30):
-                widget_2.content[i, j] = next(some_text)
-                widget_2.attrs[i, j] = next(colors)
-
-        root.add_widget(widget_1)
-        root.add_widget(widget_2)
-
-        widget_1.start(roll_axis=0)
-        widget_2.start(roll_axis=1)
+        widget_1.start(velocity=1 + 1j, roll_axis=0)
+        widget_2.start(velocity=-1 -1j, roll_axis=1)
 
 
 MyApp().run()
