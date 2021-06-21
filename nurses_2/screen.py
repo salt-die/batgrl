@@ -11,13 +11,12 @@ class Screen:
         self.env_out = env_out
         self.panels = panels or [ ]
 
-        self.reset()
+        self.reset(env_out.get_size())
 
-    def reset(self):
-        dim = self.env_out.get_size()
-
+    def reset(self, dim):
         self.content = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, DEFAULT_ATTRS, dtype=object)
+        self.attrs = np.full(dim, None, dtype=object)
+        self.attrs[:] = ((DEFAULT_ATTRS, ), )
 
     @property
     def dim(self):
@@ -41,7 +40,7 @@ class Screen:
         content = self.content
         attrs = self.attrs
         content[:] = " "
-        attrs[:] = DEFAULT_ATTRS
+        attrs[:] = ((DEFAULT_ATTRS, ), )
 
         h, w = content.shape
 
@@ -113,8 +112,6 @@ class Screen:
             attrs[dt: db, dl: dr] = p.attrs[st: sb, sl: sr]
 
         env_out = self.env_out
-        env_out.reset_attributes()
-
         depth = env_out.get_default_color_depth()
 
         for i, (line, attr_row) in enumerate(zip(content, attrs)):

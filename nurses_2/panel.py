@@ -21,7 +21,8 @@ class Panel:
         assert len(default_char) == 1, f'expected single character, got {default_char!r}'
 
         self.content = np.full(dim, default_char, dtype=object)
-        self.attrs = np.full(dim, color, dtype=object)
+        self.attrs = np.full(dim, None, dtype=object)
+        self.attrs[:] = ((DEFAULT_ATTRS, ), )
 
         self.top, self.left = pos
 
