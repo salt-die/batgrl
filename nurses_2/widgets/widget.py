@@ -250,7 +250,7 @@ class Root(Widget):
         set_attr = env_out.set_attributes
         write = env_out.write
 
-        depth = ColorDepth.DEPTH_24_BIT  # FIXME: Temporarily forcing for testing.
+        depth = env_out.get_default_color_depth()
 
         for i, (line, attr_row) in enumerate(zip(self.content, self.attrs)):
             goto(i, 0)
