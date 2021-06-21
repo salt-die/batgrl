@@ -44,7 +44,7 @@ class MyApp(App):
                 panel_one.content[i, j] = next(some_text)
                 panel_one.attrs[i, j] = next(colors)
 
-        panel_two = VelocityPanel((10, 30), 1 - 1j)
+        panel_two = VelocityPanel((10, 30), -1 - 1j)
 
         for i in range(10):
             for j in range(30):
@@ -62,14 +62,14 @@ class MyApp(App):
                 for panel in screen.panels:
                     panel.update()
                     if (
-                        panel.top < 0 and panel.velocity.real < 0
-                        or panel.bottom > screen.height and panel.velocity.real > 0
+                        panel.top <= 1 and panel.velocity.real < 0
+                        or panel.bottom >= screen.height and panel.velocity.real > 0
                     ):
                         panel.velocity = -panel.velocity.conjugate()
 
                     if (
-                        panel.left < 0 and panel.velocity.imag < 0
-                        or panel.right > screen.width and panel.velocity.imag > 0
+                        panel.left <= 1 and panel.velocity.imag < 0
+                        or panel.right >= screen.width and panel.velocity.imag > 0
                     ):
                         panel.velocity = panel.velocity.conjugate()
 
