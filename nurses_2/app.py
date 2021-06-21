@@ -8,11 +8,15 @@ from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
 
-from .screen import Screen
+from .widgets import Root
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
 REFRESH_INTERVAL = 0  # Seconds between screen redraws.
+
+APP = None
+def get_running_app():
+    return APP
 
 
 class App(ABC):
@@ -20,7 +24,7 @@ class App(ABC):
     """
     @abstractmethod
     def build(self):
-        """Create and add panels to `self.screen`.
+        """Build and add widgets to root.
         """
 
     @abstractmethod
@@ -31,6 +35,11 @@ class App(ABC):
     def run(self):
         """Run the app.
         """
+        global APP
+        if APP is not None:
+            raise RuntimeError("An App is already running.")
+        APP = self
+
         try:
             asyncio.run(self._run_async())
         except asyncio.CancelledError:
@@ -40,6 +49,9 @@ class App(ABC):
         for task in asyncio.all_tasks():
             task.cancel()
 
+        global APP
+        APP = None
+
     async def _run_async(self):
         """Create root widget and schedule input reading, size polling, auto-rendering, and finally, `on_start`.
         """
@@ -47,10 +59,9 @@ class App(ABC):
             self.env_out = env_out
             self.env_in = env_in
 
-            self.screen = screen = Screen(env_out)
             self.kb = kb = KeyBindings()
             self.key_processor = key_processor = KeyProcessor(kb)
-
+            self.root = root = Root(env_out)
             self.build()
 
             loop = asyncio.get_event_loop()
@@ -77,10 +88,10 @@ class App(ABC):
                 key_processor.process_keys()
 
             async def poll_size():
-                """Poll terminal dimensions every `POLL_INTERVAL` seconds and resize screen if dimensions have changed.
+                """Poll terminal dimensions every `POLL_INTERVAL` seconds and resize root if dimensions have changed.
                 """
                 size = env_out.get_size()
-                reset = screen.reset
+                resize = root.resize
 
                 while True:
                     await asyncio.sleep(POLL_INTERVAL)
@@ -91,13 +102,13 @@ class App(ABC):
                         env_out.hide_cursor()
                         env_out.flush()
 
-                        reset(new_size)
+                        resize(new_size)
                         size = new_size
 
             async def auto_render():
-                """Redraw the screen every `REFRESH_INTERVAL` seconds.
+                """Render screen every `REFRESH_INTERVAL` seconds.
                 """
-                render = screen.render
+                render = root.render
 
                 while True:
                     await asyncio.sleep(REFRESH_INTERVAL)

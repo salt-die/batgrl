@@ -1,1 +1,1 @@
-from .widget import Widget
+from .widget import Root, Widget

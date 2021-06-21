@@ -11,13 +11,13 @@ import numpy as np
 from prompt_toolkit.styles import Attrs
 
 from .app import App
-from .panel import Panel
+from .widgets import Widget
 
 RED = Attrs(color='ff0000', bgcolor='', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
 BLUE = Attrs(color='0000ff', bgcolor='', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
 
 
-class VelocityPanel(Panel):
+class MovingWidget(Widget):
     def __init__(self, dim, velocity):
         super().__init__(dim)
         self.velocity = velocity / abs(velocity)
@@ -37,51 +37,53 @@ class MyApp(App):
         colors = cycle((RED, BLUE))
         some_text = cycle('NURSES!')
 
-        panel_one = VelocityPanel((20, 20), 1 + 1j)
+        widget_1 = MovingWidget(dim=(20, 20), velocity=1 + 1j)
 
         for i in range(20):
             for j in range(20):
-                panel_one.content[i, j] = next(some_text)
-                panel_one.attrs[i, j] = next(colors)
+                widget_1.content[i, j] = next(some_text)
+                widget_1.attrs[i, j] = next(colors)
 
-        panel_two = VelocityPanel((10, 30), -1 - 1j)
+        widget_2 = MovingWidget(dim=(10, 30), velocity=-1 - 1j)
 
         for i in range(10):
             for j in range(30):
-                panel_two.content[i, j] = next(some_text)
-                panel_two.attrs[i, j] = next(colors)
+                widget_2.content[i, j] = next(some_text)
+                widget_2.attrs[i, j] = next(colors)
 
-        self.screen.panels.extend((panel_one, panel_two))
+        self.root.add_widget(widget_1)
+        self.root.add_widget(widget_2)
 
     async def on_start(self):
-        screen = self.screen
-        panel_one, panel_two = screen.panels
+        root = self.root
+        widgets = root.children
+        widget_1, widget_2 = widgets
 
         async def bounce():
             while True:
-                for panel in screen.panels:
-                    panel.update()
+                for widget in widgets:
+                    widget.update()
                     if (
-                        panel.top <= 1 and panel.velocity.real < 0
-                        or panel.bottom >= screen.height and panel.velocity.real > 0
+                        widget.top <= 0 and widget.velocity.real < 0
+                        or widget.bottom > root.height and widget.velocity.real > 0
                     ):
-                        panel.velocity = -panel.velocity.conjugate()
+                        widget.velocity = -widget.velocity.conjugate()
 
                     if (
-                        panel.left <= 1 and panel.velocity.imag < 0
-                        or panel.right >= screen.width and panel.velocity.imag > 0
+                        widget.left <= 0 and widget.velocity.imag < 0
+                        or widget.right > root.width and widget.velocity.imag > 0
                     ):
-                        panel.velocity = panel.velocity.conjugate()
+                        widget.velocity = widget.velocity.conjugate()
 
                 await asyncio.sleep(.05)
 
         async def roll():
             while True:
-                panel_one.content = np.roll(panel_one.content, 1, (0, ))
-                panel_one.attrs = np.roll(panel_one.attrs, 1, (0, ))
+                widget_1.content = np.roll(widget_1.content, 1, (0, ))
+                widget_1.attrs = np.roll(widget_1.attrs, 1, (0, ))
 
-                panel_two.content = np.roll(panel_two.content, 1, (1, ))
-                panel_two.attrs = np.roll(panel_two.attrs, 1, (1, ))
+                widget_2.content = np.roll(widget_2.content, 1, (1, ))
+                widget_2.attrs = np.roll(widget_2.attrs, 1, (1, ))
 
                 await asyncio.sleep(.11)
 
