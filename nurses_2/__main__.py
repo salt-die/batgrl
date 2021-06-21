@@ -18,6 +18,7 @@ YELLOW = Attrs(color='FFF275', bgcolor='6C8EAD', bold=False, underline=False, it
 COLORS = cycle((ORANGE, YELLOW))
 TEXT = cycle('NURSES!')
 
+
 class BouncingWidget(Widget):
     def start(self, velocity, roll_axis):
         h, w = self.dim
