@@ -61,10 +61,16 @@ class MyApp(App):
             while True:
                 for panel in screen.panels:
                     panel.update()
-                    if panel.top < 0 or panel.bottom > screen.height:
+                    if (
+                        panel.top < 0 and panel.velocity.real < 0
+                        or panel.bottom > screen.height and panel.velocity.real > 0
+                    ):
                         panel.velocity = -panel.velocity.conjugate()
 
-                    if panel.left < 0 or panel.right > screen.width:
+                    if (
+                        panel.left < 0 and panel.velocity.imag < 0
+                        or panel.right > screen.width and panel.velocity.imag > 0
+                    ):
                         panel.velocity = panel.velocity.conjugate()
 
                 await asyncio.sleep(.05)
