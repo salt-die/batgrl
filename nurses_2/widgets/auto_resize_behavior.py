@@ -8,19 +8,19 @@ class AutoResizeBehavior:
     """A widget behavior that auto-resizes to some percentage of its parent.
     """
     def __init__(self, *args, size_hint=(1.0, 1.0), **kwargs):
-        self.y_hint, self.x_hint = size_hint
-        assert _is_valid_hint(self.y_hint) and _is_valid_hint(self.x_hint), f'{size_hint!r} is not a valid size hint'
+        self.h_hint, self.w_hint = size_hint
+        assert _is_valid_hint(self.h_hint) and _is_valid_hint(self.w_hint), f'{size_hint!r} is not a valid size hint'
 
         super().__init__(*args, **kwargs)
 
     def update_geometry(self, dim):
-        y_hint = self.y_hint
-        x_hint = self.x_hint
+        h_hint = self.h_hint
+        w_hint = self.w_hint
 
-        y, x = widget.dim
+        h, w = dim
 
-        height = self.height if y_hint is None else int(y_hint * y)
-        width = self.width if x_hint is None else int(x_hint * x)
+        height = self.height if h_hint is None else int(h_hint * h)
+        width = self.width if w_hint is None else int(w_hint * w)
 
         self.resize((height, width))
 
