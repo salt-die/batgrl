@@ -102,7 +102,7 @@ class MyApp(App):
         self.root.add_widgets(widget_1, widget_2)
 
         widget_1.start(velocity=1 + 1j, roll_axis=0)
-        widget_2.start(velocity=-1 -1j, roll_axis=1)
+        widget_2.start(velocity=-1 - 1j, roll_axis=1)
 
 
 MyApp().run()
