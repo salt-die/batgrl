@@ -2,12 +2,10 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import contextmanager
 
-from prompt_toolkit.key_binding.key_bindings import Binding
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
-from prompt_toolkit.output.color_depth import ColorDepth
 
 from .widgets import Root
 
@@ -15,19 +13,12 @@ ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
 REFRESH_INTERVAL = 0  # Seconds between screen redraws.
 
-_APP = None
-def get_running_app():
-    """Get currently running app.
-    """
-    return _APP
-
 
 class App(ABC):
     """Base for creating terminal applications.
     """
-    def __init__(self, *, key_bindings=None, color_depth=None):
+    def __init__(self, *, key_bindings=None):
         self.key_bindings = key_bindings or KeyBindings()
-        self.color_depth = color_depth or ColorDepth.TRUE_COLOR
 
     @abstractmethod
     async def on_start(self):
@@ -57,7 +48,7 @@ class App(ABC):
     async def _run_async(self):
         """Create root widget and schedule input reading, size polling, auto-rendering, and finally, `on_start`.
         """
-        with create_environment(self.color_depth) as (env_out, env_in):
+        with create_environment() as (env_out, env_in):
             self.env_out = env_out
             self.env_in = env_in
 
@@ -122,29 +113,11 @@ class App(ABC):
                 )
 
 
-################################################# W ###
-# A hack to avoid prompt-toolkit's `App` class. # A ###
-def call(self, event):                          # R ###
-    if result := self.handler(event):           # N ###
-        asyncio.create_task(result)             # I ###
-                                                # N ###
-Binding.call = call                             # G ###
-################################################# ! ###
-
 @contextmanager
-def create_environment(color_depth):
+def create_environment():
     """Platform specific output/input. Restores output and closes/flushes input on exit.
     """
     env_out = create_output()
-
-    if hasattr(env_out, 'vt100_output'):
-        env_out.vt100_output.default_color_depth = color_depth
-        env_out.win32_output.default_color_depth = color_depth
-    else:
-        env_out.default_color_depth = color_depth
-
-    assert env_out.get_default_color_depth() is color_depth
-
     env_out.enter_alternate_screen()
     env_out.erase_screen()
     env_out.hide_cursor()
