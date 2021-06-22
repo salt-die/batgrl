@@ -2,9 +2,10 @@ from collections.abc import Iterable
 
 import numpy as np
 from prompt_toolkit.styles import DEFAULT_ATTRS
-from prompt_toolkit.output.color_depth import ColorDepth
 
-NO_ATTRS = ((DEFAULT_ATTRS, ), )
+from ..colors import get_color_cache
+
+DEFAULT_ATTR = get_color_cache()[DEFAULT_ATTRS]
 
 
 class Widget:
@@ -19,8 +20,7 @@ class Widget:
         self.children = [ ]
 
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, None, dtype=object)
-        self.attrs[:] = NO_ATTRS
+        self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
 
     def resize(self, dim):
         old_canvas = self.canvas
@@ -33,8 +33,7 @@ class Widget:
         copy_w = min(old_w, w)
 
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, None, dtype=object)
-        self.attrs[:] = NO_ATTRS
+        self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
         self.attrs[:copy_h, :copy_w] = old_attrs[:copy_h, :copy_w]
@@ -120,7 +119,7 @@ class Widget:
         """Clear canvas.
         """
         self.canvas[:] = " "
-        self.attrs[:] = NO_ATTRS
+        self.attrs[:] = DEFAULT_ATTR
 
     def _render_child(self, child):
         """Render child and paint child's canvas into our own.
@@ -239,8 +238,7 @@ class Root(Widget):
 
     def resize(self, dim):
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, None, dtype=object)
-        self.attrs[:] = NO_ATTRS
+        self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
 
         for child in self.children:
             child.update_geometry(dim)
@@ -258,16 +256,14 @@ class Root(Widget):
 
         # Avoiding attribute lookups.
         goto = env_out.cursor_goto
-        set_attr = env_out.set_attributes
+        raw = env_out.write_raw
         write = env_out.write
-
-        depth = env_out.get_default_color_depth()
 
         for i, (line, attr_row) in enumerate(zip(self.canvas, self.attrs)):
             goto(i, 0)
 
             for char, attr in zip(line, attr_row):
-                set_attr(attr, depth)  # TODO: write escape sequences directly or call windows api with windowsattrs directly
+                raw(attr)
                 write(char)
 
         env_out.flush()
