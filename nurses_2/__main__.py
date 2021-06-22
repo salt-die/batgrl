@@ -13,8 +13,36 @@ from prompt_toolkit.styles import Attrs
 from .app import App
 from .widgets import Widget
 
-ORANGE = Attrs(color='FF8C42', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
-YELLOW = Attrs(color='FFF275', bgcolor='6C8EAD', bold=False, underline=False, italic=False, blink=False, reverse=False, hidden=False)
+from .colors import get_color_cache
+
+colors = get_color_cache()
+
+ORANGE = colors[
+    Attrs(
+        color='FF8C42',
+        bgcolor='6C8EAD',
+        bold=False,
+        underline=False,
+        italic=False,
+        blink=False,
+        reverse=False,
+        hidden=False,
+    )
+]
+
+YELLOW = colors[
+    Attrs(
+        color='FFF275',
+        bgcolor='6C8EAD',
+        bold=False,
+        underline=False,
+        italic=False,
+        blink=False,
+        reverse=False,
+        hidden=False
+    )
+]
+
 COLORS = cycle((ORANGE, YELLOW))
 TEXT = cycle('NURSES!')
 
