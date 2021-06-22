@@ -28,11 +28,6 @@ class App(ABC):
     def run(self):
         """Run the app.
         """
-        global _APP
-        if _APP is not None:
-            raise RuntimeError(f"{type(_APP).__name__} is already running.")
-        _APP = self
-
         try:
             asyncio.run(self._run_async())
         except asyncio.CancelledError:
@@ -41,9 +36,6 @@ class App(ABC):
     def exit(self, *args):
         for task in asyncio.all_tasks():
             task.cancel()
-
-        global _APP
-        _APP = None
 
     async def _run_async(self):
         """Create root widget and schedule input reading, size polling, auto-rendering, and finally, `on_start`.
