@@ -1,11 +1,10 @@
 from collections.abc import Iterable
 
 import numpy as np
-from prompt_toolkit.styles import DEFAULT_ATTRS
 
 from ..colors import get_color_cache
 
-DEFAULT_ATTR = get_color_cache()[DEFAULT_ATTRS]
+DEFAULT_ATTR = get_color_cache().color('')
 
 
 class Widget:
@@ -275,15 +274,15 @@ class Root(Widget):
 
         # Avoiding attribute lookups.
         goto = env_out.cursor_goto
+        set_attr = env_out.set_attr_raw
         raw = env_out.write_raw
-        write = env_out.write
         reset = env_out.reset_attributes
 
         # Only write the difs.
         for y, x in np.argwhere((last_canvas != canvas) | (last_attrs != attrs)):
             goto(y, x)
-            raw(attrs[y, x])
-            write(canvas[y, x])
+            set_attr(attrs[y, x])
+            raw(canvas[y, x])
             reset()
 
         env_out.flush()
