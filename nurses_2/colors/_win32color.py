@@ -6,6 +6,12 @@ from prompt_toolkit.win32_types import CONSOLE_SCREEN_BUFFER_INFO
 
 
 class _Win32ColorCache:
+    __slots__ = (
+        'color_depth',
+        '_color_lookup',
+        '_attrs_cache',
+    )
+
     def __init__(self, color_depth):
         self.color_depth = color_depth
         self._color_lookup = ColorLookupTable()
