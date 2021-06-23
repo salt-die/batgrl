@@ -23,6 +23,8 @@ class Widget:
         self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
 
     def resize(self, dim):
+        """Resize canvas. Content is preserved as much as possible.
+        """
         old_canvas = self.canvas
         old_attrs = self.attrs
 
@@ -114,12 +116,6 @@ class Widget:
         yield self
         for child in widget.children:
             yield from child.walk()
-
-    def erase(self):
-        """Clear canvas.
-        """
-        self.canvas[:] = " "
-        self.attrs[:] = DEFAULT_ATTR
 
     def _render_child(self, child):
         """Render child and paint child's canvas into our own.
@@ -222,6 +218,8 @@ class Widget:
         self.attrs[dt: db, dl: dr] = child.attrs[st: sb, sl: sr]
 
     def render(self):
+        """Paint canvas.
+        """
         render_child = self._render_child
 
         for child in self.children:
@@ -237,8 +235,14 @@ class Root(Widget):
         self.resize(env_out.get_size())
 
     def resize(self, dim):
+        """Resize canvas. Last render is erased.
+        """
         self.canvas = np.full(dim, " ", dtype=object)
         self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
+        self._last_canvas = self.canvas.copy()
+        self._last_attrs = self.attrs.copy()
+
+        self.erase_screen()
 
         for child in self.children:
             child.update_geometry(dim)
@@ -248,8 +252,23 @@ class Root(Widget):
         return self
 
     def render(self):
-        self.erase()
+        """Paint canvas.  Render to terminal.
+        """
+        # Swap canvas with last render.
+        self.canvas, self._last_canvas = self._last_canvas, self.canvas
+        self.attrs, self._last_attrs = self._last_attrs, self.attrs
 
+        canvas = self.canvas
+        attrs = self.attrs
+
+        last_canvas = self._last_canvas
+        last_attrs = self._last_attrs
+
+        # Erase canvas.
+        canvas[:] = " "
+        attrs[:] = DEFAULT_ATTR
+
+        # Paint canvas.
         super().render()
 
         env_out = self.env_out
@@ -258,12 +277,22 @@ class Root(Widget):
         goto = env_out.cursor_goto
         raw = env_out.write_raw
         write = env_out.write
+        reset = env_out.reset_attributes
 
-        for i, (line, attr_row) in enumerate(zip(self.canvas, self.attrs)):
-            goto(i, 0)
+        # Only write the difs.
+        for y, x in np.argwhere((last_canvas != canvas) | (last_attrs != attrs)):
+            goto(y, x)
+            raw(attrs[y, x])
+            write(canvas[y, x])
+            reset()
 
-            for char, attr in zip(line, attr_row):
-                raw(attr)
-                write(char)
+        env_out.flush()
 
+    def erase_screen(self):
+        """Erase screen.
+        """
+        env_out = self.env_out
+        env_out.reset_attributes()
+        env_out.erase_screen()
+        env_out.hide_cursor()
         env_out.flush()
