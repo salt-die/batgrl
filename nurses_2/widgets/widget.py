@@ -231,6 +231,7 @@ class Root(Widget):
     def __init__(self, env_out):
         self.env_out = env_out
         self.children = [ ]
+
         self.resize(env_out.get_size())
 
     def resize(self, dim):
