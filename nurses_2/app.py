@@ -81,10 +81,6 @@ class App(ABC):
 
                     new_size = env_out.get_size()
                     if size != new_size:
-                        env_out.erase_screen()
-                        env_out.hide_cursor()
-                        env_out.flush()
-
                         resize(new_size)
                         size = new_size
 
