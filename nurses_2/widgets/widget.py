@@ -292,14 +292,14 @@ class Root(Widget):
         # Avoiding attribute lookups.
         goto = env_out.cursor_goto
         set_attr = env_out.set_attr_raw
-        raw = env_out.write_raw
+        write_raw = env_out.write_raw
         reset = env_out.reset_attributes
 
         # Only write the difs.
         for y, x in np.argwhere((last_canvas != canvas) | (last_attrs != attrs)):
             goto(y, x)
             set_attr(attrs[y, x])
-            raw(canvas[y, x])
+            write_raw(canvas[y, x])
             reset()
 
         env_out.flush()
