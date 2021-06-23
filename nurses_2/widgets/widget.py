@@ -8,7 +8,8 @@ DEFAULT_ATTR = get_color_cache().color('')
 
 
 class Widget:
-    """A generic TUI element.
+    """
+    A generic TUI element.
     """
     def __init__(self, dim, pos=(0, 0), *, is_transparent=False, is_visible=True, parent=None):
         self.top, self.left = pos
@@ -22,7 +23,8 @@ class Widget:
         self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
 
     def resize(self, dim):
-        """Resize canvas. Content is preserved as much as possible.
+        """
+        Resize canvas. Content is preserved as much as possible.
         """
         old_canvas = self.canvas
         old_attrs = self.attrs
@@ -43,7 +45,8 @@ class Widget:
             child.update_geometry(dim)
 
     def update_geometry(self, parent_dim):
-        """Called when first added to parent or parent has resized.
+        """
+        Update geometry due to a change in parent's size.
         """
 
     @property
@@ -72,19 +75,22 @@ class Widget:
 
     @property
     def root(self):
-        """The root widget.
+        """
+        The root widget.
         """
         return self.parent.root
 
     def add_widget(self, widget):
-        """Add a child widget.
+        """
+        Add a child widget.
         """
         self.children.append(widget)
         widget.parent = self
         widget.update_geometry(self.dim)
 
     def add_widgets(self, *widgets):
-        """Add multiple child widgets. (If `widgets` is an iterable it must be only argument.)
+        """
+        Add multiple child widgets. (If `widgets` is an iterable it must be only argument.)
         """
         if len(widgets) == 1 and isinstance(widgets[0], Iterable):
             widgets = widgets[0]
@@ -93,31 +99,37 @@ class Widget:
             self.add_widget(widget)
 
     def remove_widget(self, widget):
-        """Remove widget.
+        """
+        Remove widget.
         """
         self.children.remove(widget)
         widget.parent = None
 
     def pull_to_front(self, widget):
-        """Move widget to end of widget stack so that it is drawn last.
+        """
+        Move widget to end of widget stack so that it is drawn last.
         """
         self.children.remove(widget)
         self.children.append(widget)
 
     def walk_from_root(self):
-        """Yield all descendents of the root widget.
+        """
+        Yield all descendents of the root widget.
         """
         yield from self.root.walk()
 
     def walk(self):
-        """Yield self and all descendents.
+        """
+        Yield self and all descendents.
         """
         yield self
+
         for child in widget.children:
             yield from child.walk()
 
     def _render_child(self, child):
-        """Render child and paint child's canvas into our own.
+        """
+        Render child and paint child's canvas into our own.
         """
         canvas = self.canvas
         h, w = canvas.shape
@@ -217,7 +229,8 @@ class Widget:
         self.attrs[dt: db, dl: dr] = child.attrs[st: sb, sl: sr]
 
     def render(self):
-        """Paint canvas.
+        """
+        Paint canvas.
         """
         render_child = self._render_child
 
@@ -226,7 +239,8 @@ class Widget:
 
 
 class Root(Widget):
-    """A widget that renders to terminal.
+    """
+    A widget that renders to terminal.
     """
     def __init__(self, env_out):
         self.env_out = env_out
@@ -235,7 +249,8 @@ class Root(Widget):
         self.resize(env_out.get_size())
 
     def resize(self, dim):
-        """Resize canvas. Last render is erased.
+        """
+        Resize canvas. Last render is erased.
         """
         self.canvas = np.full(dim, " ", dtype=object)
         self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
@@ -252,7 +267,8 @@ class Root(Widget):
         return self
 
     def render(self):
-        """Paint canvas.  Render to terminal.
+        """
+        Paint canvas.  Render to terminal.
         """
         # Swap canvas with last render.
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
@@ -289,7 +305,8 @@ class Root(Widget):
         env_out.flush()
 
     def erase_screen(self):
-        """Erase screen.
+        """
+        Erase screen.
         """
         env_out = self.env_out
 

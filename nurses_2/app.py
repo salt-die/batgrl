@@ -15,18 +15,21 @@ REFRESH_INTERVAL = 0  # Seconds between screen redraws.
 
 
 class App(ABC):
-    """Base for creating terminal applications.
+    """
+    Base for creating terminal applications.
     """
     def __init__(self, *, key_bindings=None):
         self.key_bindings = key_bindings or KeyBindings()
 
     @abstractmethod
     async def on_start(self):
-        """Add widgets to root and kick-off event loop.
+        """
+        Coroutine scheduled when app is run.
         """
 
     def run(self):
-        """Run the app.
+        """
+        Run the app.
         """
         try:
             asyncio.run(self._run_async())
@@ -38,7 +41,8 @@ class App(ABC):
             task.cancel()
 
     async def _run_async(self):
-        """Create root widget and schedule input reading, size polling, auto-rendering, and finally, `on_start`.
+        """
+        Build environment, create root, and schedule app-specific tasks.
         """
         with create_environment() as (env_out, env_in):
             self.env_out = env_out
@@ -51,7 +55,8 @@ class App(ABC):
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
 
             def read_from_input():
-                """Read and process input.
+                """
+                Read and process input.
                 """
                 keys = env_in.read_keys()
 
@@ -63,7 +68,8 @@ class App(ABC):
                 flush_timer = loop.call_later(ESCAPE_TIMEOUT, flush_input)
 
             def flush_input():
-                """Flush input.
+                """
+                Flush input.
                 """
                 keys = env_in.flush_keys()
 
@@ -71,7 +77,8 @@ class App(ABC):
                 key_processor.process_keys()
 
             async def poll_size():
-                """Poll terminal dimensions every `POLL_INTERVAL` seconds and resize root if dimensions have changed.
+                """
+                Poll terminal dimensions every `POLL_INTERVAL` seconds. Resize if dimensions have changed.
                 """
                 size = env_out.get_size()
                 resize = root.resize
@@ -85,7 +92,8 @@ class App(ABC):
                         size = new_size
 
             async def auto_render():
-                """Render screen every `REFRESH_INTERVAL` seconds.
+                """
+                Render screen every `REFRESH_INTERVAL` seconds.
                 """
                 render = root.render
 
@@ -103,7 +111,8 @@ class App(ABC):
 
 @contextmanager
 def create_environment():
-    """Platform specific output/input. Restores output and closes/flushes input on exit.
+    """
+    Create platform specific output/input. Restore output and close input on exit.
     """
     env_out = create_output()
     env_out.enter_alternate_screen()

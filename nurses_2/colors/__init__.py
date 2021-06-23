@@ -19,7 +19,8 @@ __all__ = (
 _CACHE = None
 
 def get_color_cache(color_depth=None):
-    """Return a platform specific color cache.
+    """
+    Return a platform specific color cache.
     """
     global _CACHE
     if _CACHE is not None:
