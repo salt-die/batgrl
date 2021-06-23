@@ -10,7 +10,7 @@ when painting a widget's `attrs` array.
 from prompt_toolkit.output.color_depth import ColorDepth
 from prompt_toolkit.utils import is_conemu_ansi, is_windows
 
-from .cache import ColorCache
+from ._cache import _ColorCache
 
 __all__ = (
     "get_color_cache",
@@ -35,7 +35,7 @@ def get_color_cache(color_depth=None):
 
             from prompt_toolkit.output.win32 import Win32Output
 
-            from .win32color import _Win32ColorCache
+            from ._win32color import _Win32ColorCache
 
             # Patching output to accept raw windows attrs.
             def set_attr_raw(self, win_attrs):
@@ -43,7 +43,7 @@ def get_color_cache(color_depth=None):
 
             Win32Output.set_attr_raw = set_attr_raw
 
-            _CACHE = ColorCache( _Win32ColorCache(color_depth) )
+            _CACHE = _ColorCache( _Win32ColorCache(color_depth) )
             return _CACHE
 
     from prompt_toolkit.output.vt100 import _EscapeCodeCache, Vt100_Output
@@ -51,5 +51,5 @@ def get_color_cache(color_depth=None):
     # Patching output to accept raw escape codes (same as `write_raw` in this case).
     Vt100_Output.set_attr_raw = Vt100_Output.write_raw
 
-    _CACHE = ColorCache( _EscapeCodeCache(color_depth) )
+    _CACHE = _ColorCache( _EscapeCodeCache(color_depth) )
     return _CACHE

@@ -1,7 +1,7 @@
 from prompt_toolkit.styles import Attrs
 
 
-class ColorCache:
+class _ColorCache:
     """Cache of platform specific color escape codes or windows colors.
     """
     def __init__(self, attr_cache):
