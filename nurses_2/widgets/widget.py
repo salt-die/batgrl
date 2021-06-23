@@ -292,6 +292,7 @@ class Root(Widget):
         """Erase screen.
         """
         env_out = self.env_out
+
         env_out.reset_attributes()
         env_out.erase_screen()
         env_out.hide_cursor()
