@@ -17,9 +17,8 @@ colors = get_color_cache()
 
 ORANGE = colors.color(fg_color='FF8C42', bg_color='6C8EAD')
 YELLOW = colors.color(fg_color='FFF275', bg_color='6C8EAD')
-
 COLORS = cycle((ORANGE, YELLOW))
-TEXT = cycle('NURSES!')
+TEXT = cycle('NUR    SES!')
 
 
 class BouncingWidget(Widget):
@@ -71,8 +70,8 @@ class MyApp(App):
     async def on_start(self):
         self.key_bindings.add('escape')(self.exit)
 
-        widget_1 = BouncingWidget(dim=(20, 20))
-        widget_2 = BouncingWidget(dim=(10, 30))
+        widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
+        widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
 
         self.root.add_widgets(widget_1, widget_2)
 
