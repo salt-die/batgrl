@@ -7,7 +7,7 @@ from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
 
-from .widgets import Root
+from .widgets._root import _Root
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
@@ -72,7 +72,7 @@ class App(ABC):
             self.env_in = env_in
 
             key_processor = KeyProcessor(self.key_bindings)
-            self.root = root = Root(env_out)
+            self.root = root = _Root(env_out)
 
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
