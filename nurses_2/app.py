@@ -17,6 +17,28 @@ REFRESH_INTERVAL = 0  # Seconds between screen redraws.
 class App(ABC):
     """
     Base for creating terminal applications.
+
+    Notes
+    -----
+    To create an app, inherit this class and implement the async method `on_start`. Typical
+    use would be to add widgets to `self.root` and schedule those widgets' coroutines.
+
+    Example
+    -------
+    ```py
+    class MyApp(App):
+        async def on_start(self):
+            self.key_bindings.add('escape')(self.exit)
+
+            widget_1 = BouncingWidget(dim=(20, 20))
+            widget_2 = BouncingWidget(dim=(10, 30))
+
+            self.root.add_widgets(widget_1, widget_2)
+
+            widget_1.start(velocity=1 + 1j, roll_axis=0)
+            widget_2.start(velocity=-1 - 1j, roll_axis=1)
+
+    MyApp().run()
     """
     def __init__(self, *, key_bindings=None):
         self.key_bindings = key_bindings or KeyBindings()
