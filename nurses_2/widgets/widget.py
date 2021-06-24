@@ -10,6 +10,17 @@ DEFAULT_ATTR = get_color_cache().color('')
 class Widget:
     """
     A generic TUI element.
+
+    Parameters
+    ----------
+        dim : tuple[int, int]
+            Dimensions of widget.
+        pos : tuple[int, int], default: (0, 0)
+            Position of upper-left corner in parent.
+        is_transparent : bool, default: False
+            If true, white-space is "see-through".
+        is_visible : bool, default: True
+            If false, widget won't be painted.
     """
     def __init__(self, dim, pos=(0, 0), *, is_transparent=False, is_visible=True, parent=None):
         self.top, self.left = pos
@@ -225,8 +236,17 @@ class Widget:
                 sr = child.width
                 dr = cr
 
-        canvas[dt: db, dl: dr] = child.canvas[st: sb, sl: sr]
-        self.attrs[dt: db, dl: dr] = child.attrs[st: sb, sl: sr]
+        dest_rect = slice(dt, db), slice(dl, dr)
+        source_rect = slice(st, sb), slice(sl, sr)
+
+        if child.is_transparent:  # " " isn't painted if child is transparent.
+            source = child.canvas[source_rect]
+            visible = source != " "
+            canvas[dest_rect][visible] = source[visible]
+            self.attrs[dest_rect][visible] = child.attrs[source_rect][visible]
+        else:
+            canvas[dest_rect] = child.canvas[source_rect]
+            self.attrs[dest_rect] = child.attrs[source_rect]
 
     def render(self):
         """
@@ -243,9 +263,9 @@ class Root(Widget):
     A widget that renders to terminal.
     """
     def __init__(self, env_out):
-        self.env_out = env_out
         self.children = [ ]
 
+        self.env_out = env_out
         self.resize(env_out.get_size())
 
     def resize(self, dim):
@@ -261,6 +281,26 @@ class Root(Widget):
 
         for child in self.children:
             child.update_geometry(dim)
+
+    @property
+    def top(self):
+        return 0
+
+    @property
+    def left(self):
+        return 0
+
+    @property
+    def is_transparent(self):
+        return False
+
+    @property
+    def is_visible(self):
+        return True
+
+    @property
+    def parent(self):
+        return None
 
     @property
     def root(self):
