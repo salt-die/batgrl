@@ -39,6 +39,7 @@ class App(ABC):
             widget_2.start(velocity=-1 - 1j, roll_axis=1)
 
     MyApp().run()
+    ```
     """
     def __init__(self, *, key_bindings=None):
         self.key_bindings = key_bindings or KeyBindings()
