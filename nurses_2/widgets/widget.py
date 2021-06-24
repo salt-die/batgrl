@@ -13,14 +13,14 @@ class Widget:
 
     Parameters
     ----------
-        dim : tuple[int, int]
-            Dimensions of widget.
-        pos : tuple[int, int], default: (0, 0)
-            Position of upper-left corner in parent.
-        is_transparent : bool, default: False
-            If true, white-space is "see-through".
-        is_visible : bool, default: True
-            If false, widget won't be painted.
+    dim : tuple[int, int]
+        Dimensions of widget.
+    pos : tuple[int, int], default: (0, 0)
+        Position of upper-left corner in parent.
+    is_transparent : bool, default: False
+        If true, white-space is "see-through".
+    is_visible : bool, default: True
+        If false, widget won't be painted.
     """
     def __init__(self, dim, pos=(0, 0), *, is_transparent=False, is_visible=True, parent=None):
         self.top, self.left = pos
