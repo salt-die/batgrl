@@ -11,8 +11,6 @@ class _Root(Widget):
         self.children = [ ]
 
         self.env_out = env_out
-        print(env_out.get_size())
-        raise SystemExit
         self.resize(env_out.get_size())
 
     def resize(self, dim):
@@ -104,7 +102,7 @@ class _Root(Widget):
         last_y, last_x = 0, 0
         # Only write the difs.
         for y, x in np.argwhere((last_canvas != canvas) | (last_attrs != attrs)):
-            goto(y, x)
+            move_cursor(y, x)
             set_attr(attrs[y, x])
             write_raw(canvas[y, x])
             reset()
