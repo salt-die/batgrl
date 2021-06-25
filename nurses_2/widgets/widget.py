@@ -2,9 +2,9 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from ..colors import get_color_cache
+from ..attrs import get_escape_code_cache
 
-DEFAULT_ATTR = get_color_cache().color('')
+DEFAULT_ATTR = get_escape_code_cache().escape_code()
 
 
 class Widget:

@@ -10,14 +10,14 @@ import numpy as np
 
 from .app import App
 from .widgets import Widget
-from .colors import get_color_cache
+from .attrs import get_escape_code_cache
 
-colors = get_color_cache()
+codes = get_escape_code_cache()
 
-ORANGE = colors.color(fg_color='ff8c42', bg_color='6c8ead')
-YELLOW = colors.color(fg_color='fff275', bg_color='6c8ead')
-TEAL = colors.color(fg_color='0aafaa', bg_color='570aaf')
-GREEN = colors.color(fg_color='0aaf3e', bg_color='570aaf', bold=True)
+ORANGE = codes.escape_code(fg_color='ff8c42', bg_color='6c8ead')
+YELLOW = codes.escape_code(fg_color='fff275', bg_color='6c8ead')
+TEAL = codes.escape_code(fg_color='0aafaa', bg_color='570aaf')
+GREEN = codes.escape_code(fg_color='0aaf3e', bg_color='570aaf', bold=True)
 
 
 class BouncingWidget(Widget):

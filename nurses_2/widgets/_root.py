@@ -73,43 +73,18 @@ class _Root(Widget):
         super().render()
 
         env_out = self.env_out
-        _, width = env_out.get_size()
 
         # Avoiding attribute lookups.
         goto = env_out.cursor_goto
-        set_attr = env_out.set_attr_raw
         write_raw = env_out.write_raw
         reset = env_out.reset_attributes
 
-        forward = env_out.cursor_forward
-        up = env_out.cursor_up
-        backward = env_out.cursor_backward
-        write = env_out.write
-
-        def move_cursor(new_y, new_x):
-            if new_y > last_y:
-                write("\r\n" * (new_y - last_y))
-                forward(new_x)
-                return
-            elif new_y < last_y:
-                up(last_y - new_y)
-
-            if last_x >= width - 1:
-                write("\r")
-                forward(new_x)
-            elif new_x < last_x:
-                backward(last_x - new_x)
-            elif new_x > last_x:
-                forward(new_x - last_x)
-
-        last_y, last_x = 0, 0
         # Only write the difs.
         for y, x in np.argwhere((last_canvas != canvas) | (last_attrs != attrs)):
-            move_cursor(y, x)
-            set_attr(attrs[y, x])
+            goto(y, x)
+            write_raw(attrs[y, x])
             write_raw(canvas[y, x])
             reset()
-            last_y, last_x = y, x
 
         env_out.flush()
 
@@ -123,5 +98,3 @@ class _Root(Widget):
         env_out.erase_screen()
         env_out.hide_cursor()
         env_out.flush()
-
-

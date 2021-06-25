@@ -1,3 +1,4 @@
 *.pyc
 TODO.md
 _testing/
+_win32_support/
