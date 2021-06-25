@@ -25,7 +25,7 @@ class BouncingWidget(Widget):
         h, w = self.dim
         for i in range(h):
             for j in range(w):
-                self.canvas[i, j] = 'NUR   SES!'[(i + j) % 10]
+                self.canvas[i, j] = 'NURSES!   '[(i + j) % 10]
                 self.attrs[i, j] = palette[(i + j) % 2]
 
         asyncio.create_task(self.bounce(velocity))
