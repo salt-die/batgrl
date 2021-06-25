@@ -11,6 +11,8 @@ class _Root(Widget):
         self.children = [ ]
 
         self.env_out = env_out
+        print(env_out.get_size())
+        raise SystemExit
         self.resize(env_out.get_size())
 
     def resize(self, dim):
