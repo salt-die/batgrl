@@ -90,6 +90,7 @@ class _Root(Widget):
             if new_y > last_y:
                 write("\r\n" * (new_y - last_y))
                 forward(new_x)
+                return
             elif new_y < last_y:
                 up(last_y - new_y)
 
