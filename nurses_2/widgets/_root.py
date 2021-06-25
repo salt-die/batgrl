@@ -98,8 +98,6 @@ class _Root(Widget):
         env_out.reset_attributes()
         env_out.erase_screen()
         env_out.hide_cursor()
-
-        h, _ = env_out.get_size()
-        env_out.write("\r\n" * h)
-
+        h, w = env_out.get_size()
+        env_out.write((" " * w + "\r\n") * h)
         env_out.flush()
