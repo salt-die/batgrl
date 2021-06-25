@@ -1,8 +1,9 @@
 from ctypes import byref, windll
+from ctypes.wintypes import HANDLE
 
 from prompt_toolkit.output.color_depth import ColorDepth
 from prompt_toolkit.output.win32 import ColorLookupTable, NoConsoleScreenBufferError
-from prompt_toolkit.win32_types import CONSOLE_SCREEN_BUFFER_INFO
+from prompt_toolkit.win32_types import CONSOLE_SCREEN_BUFFER_INFO, STD_OUTPUT_HANDLE
 
 
 class _Win32ColorCache:
@@ -10,6 +11,7 @@ class _Win32ColorCache:
         'color_depth',
         '_color_lookup',
         '_attrs_cache',
+        'default_attrs',
     )
 
     def __init__(self, color_depth):
@@ -17,17 +19,18 @@ class _Win32ColorCache:
         self._color_lookup = ColorLookupTable()
         self._attrs_cache = { }
 
-        ### Default colors ########################################
-        sbinfo = CONSOLE_SCREEN_BUFFER_INFO()                     #
-        success = windll.kernel32.GetConsoleScreenBufferInfo(     #
-            self.hconsole, byref(sbinfo)                          #
-        )                                                         #
-                                                                  #
-        if not success:                                           #
-            raise NoConsoleScreenBufferError                      #
-                                                                  #
-        self.default_attrs = sbinfo.wAttributes if sbinfo else 15 #
-        ###########################################################
+        ### Default colors #################################################
+        hconsole = HANDLE(windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)) #
+        sbinfo = CONSOLE_SCREEN_BUFFER_INFO()                              #
+        success = windll.kernel32.GetConsoleScreenBufferInfo(              #
+            hconsole, byref(sbinfo)                                        #
+        )                                                                  #
+                                                                           #
+        if not success:                                                    #
+            raise NoConsoleScreenBufferError                               #
+                                                                           #
+        self.default_attrs = sbinfo.wAttributes if sbinfo else 15          #
+        ####################################################################
 
     def __getitem__(self, attrs):
         fgcolor, bgcolor, _, _, _, _, reverse, _ = attrs
@@ -38,7 +41,7 @@ class _Win32ColorCache:
             win_attrs = self.default_attrs
             color_lookup = self._color_lookup
 
-            if color_depth != ColorDepth.DEPTH_1_BIT:
+            if self.color_depth != ColorDepth.DEPTH_1_BIT:
                 if fgcolor:
                     win_attrs &= ~0xF
                     win_attrs |= color_lookup.lookup_fg_color(fgcolor)
