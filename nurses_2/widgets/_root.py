@@ -80,9 +80,9 @@ class _Root(Widget):
         write_raw = env_out.write_raw
         reset = env_out.reset_attributes
 
-        forward = output.cursor_forward
-        up = output.cursor_up
-        backward = output.cursor_backward
+        forward = env_out.cursor_forward
+        up = env_out.cursor_up
+        backward = env_out.cursor_backward
 
         def move_cursor(new_y, new_x):
             if new_y > last_y:
