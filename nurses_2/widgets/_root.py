@@ -73,6 +73,7 @@ class _Root(Widget):
         super().render()
 
         env_out = self.env_out
+        _, width = env_out.get_size()
 
         # Avoiding attribute lookups.
         goto = env_out.cursor_goto
