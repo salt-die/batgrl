@@ -8,7 +8,7 @@ when painting a widget's `attrs` array.
 from prompt_toolkit.output.color_depth import ColorDepth
 from prompt_toolkit.utils import is_conemu_ansi, is_windows
 
-from ._cache import _EscapeCodeCache
+from ._escape_code_cache import _EscapeCodeCache
 
 __all__ = (
     "get_color_cache",

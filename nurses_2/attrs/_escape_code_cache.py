@@ -1,5 +1,5 @@
-from prompt_toolkit.styles import Attrs
 from prompt_toolkit.output.vt100 import _EscapeCodeCache as _PTEscapeCodeCache
+
 
 class _EscapeCodeCache:
     """
@@ -40,7 +40,7 @@ class _EscapeCodeCache:
             return aliases[fg_color]
 
         escape_code = self._escape_code_cache[
-            Attrs(fg_color, bg_color, bold, underline, italic, blink, reverse, hidden=False)
+            (fg_color, bg_color, bold, underline, italic, blink, reverse, False)
         ]
 
         if alias is not None:
