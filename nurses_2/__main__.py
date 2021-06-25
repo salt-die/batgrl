@@ -5,7 +5,6 @@ For temporary testing.  This file will be removed.
 
 """
 import asyncio
-from itertools import cycle
 
 import numpy as np
 
@@ -15,19 +14,19 @@ from .colors import get_color_cache
 
 colors = get_color_cache()
 
-ORANGE = colors.color(fg_color='FF8C42', bg_color='6C8EAD')
-YELLOW = colors.color(fg_color='FFF275', bg_color='6C8EAD')
-COLORS = cycle((ORANGE, YELLOW))
-TEXT = cycle('NUR    SES!')
+ORANGE = colors.color(fg_color='ff8c42', bg_color='6c8ead')
+YELLOW = colors.color(fg_color='fff275', bg_color='6c8ead')
+TEAL = colors.color(fg_color='0aafaa', bg_color='570aaf')
+GREEN = colors.color(fg_color='0aaf3e', bg_color='570aaf', bold=True)
 
 
 class BouncingWidget(Widget):
-    def start(self, velocity, roll_axis):
+    def start(self, velocity, roll_axis, palette):
         h, w = self.dim
         for i in range(h):
             for j in range(w):
-                self.canvas[i, j] = next(TEXT)
-                self.attrs[i, j] = next(COLORS)
+                self.canvas[i, j] = 'NUR   SES!'[(i + j) % 10]
+                self.attrs[i, j] = palette[(i + j) % 2]
 
         asyncio.create_task(self.bounce(velocity))
         asyncio.create_task(self.roll(roll_axis))
@@ -75,8 +74,8 @@ class MyApp(App):
 
         self.root.add_widgets(widget_1, widget_2)
 
-        widget_1.start(velocity=1 + 1j, roll_axis=0)
-        widget_2.start(velocity=-1 - 1j, roll_axis=1)
+        widget_1.start(velocity=1 + 1j, roll_axis=0, palette=(ORANGE, YELLOW))
+        widget_2.start(velocity=-1 - 1j, roll_axis=1, palette=(TEAL, GREEN))
 
 
 MyApp().run()
