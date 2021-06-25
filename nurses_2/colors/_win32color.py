@@ -29,7 +29,7 @@ class _Win32ColorCache:
         self.default_attrs = sbinfo.wAttributes if sbinfo else 15 #
         ###########################################################
 
-    def __getitem__(self, attrs: Attrs):
+    def __getitem__(self, attrs):
         fgcolor, bgcolor, _, _, _, _, reverse, _ = attrs
         attrs = fgcolor, bgcolor, reverse
         attrs_cache = self._attrs_cache
