@@ -1,4 +1,4 @@
-from ctypes import byref
+from ctypes import byref, windll
 
 from prompt_toolkit.output.color_depth import ColorDepth
 from prompt_toolkit.output.win32 import ColorLookupTable, NoConsoleScreenBufferError
