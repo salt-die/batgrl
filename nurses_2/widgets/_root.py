@@ -84,6 +84,7 @@ class _Root(Widget):
         forward = env_out.cursor_forward
         up = env_out.cursor_up
         backward = env_out.cursor_backward
+        write = env_out.write
 
         def move_cursor(new_y, new_x):
             if new_y > last_y:
