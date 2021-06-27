@@ -6,6 +6,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
+from prompt_toolkit.utils import is_windows, is_conemu_ansi
 
 from .widgets._root import _Root
 
@@ -54,6 +55,12 @@ class App(ABC):
         """
         Run the app.
         """
+        if is_windows():
+            from prompt_toolkit.output.windows10 import is_win_vt100_enabled
+
+            if not is_win_vt100_enabled() and not is_conemu_ansi():
+                raise RuntimeError('nurses not supported on non-vt100 enabled terminals')
+
         try:
             asyncio.run(self._run_async())
         except asyncio.CancelledError:
@@ -135,12 +142,11 @@ class App(ABC):
 @contextmanager
 def create_environment():
     """
-    Create platform specific output/input. Restore output and close input on exit.
+    Enter alternate screen and create platform specific input. Restore screen and close input on exit.
     """
     env_out = create_output()
+
     env_out.enter_alternate_screen()
-    env_out.erase_screen()
-    env_out.hide_cursor()
     env_out.flush()
 
     env_in = create_input()
@@ -153,5 +159,6 @@ def create_environment():
         env_in.close()
 
         env_out.scroll_buffer_to_prompt()
+        env_out.reset_attributes()
         env_out.quit_alternate_screen()
         env_out.flush()
