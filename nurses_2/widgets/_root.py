@@ -1,28 +1,31 @@
 import numpy as np
 
-from .widget import DEFAULT_ATTR, Widget
+from .widget import Widget
 
 
 class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, env_out):
+    def __init__(self, env_out, *, default_color=(255, 255, 255, 0, 0, 0)):
+        self.env_out = env_out
+        self.default_color = default_color
         self.children = [ ]
 
-        self.env_out = env_out
         self.resize(env_out.get_size())
 
     def resize(self, dim):
         """
         Resize canvas. Last render is erased.
         """
-        self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
-        self._last_canvas = self.canvas.copy()
-        self._last_attrs = self.attrs.copy()
+        self.env_out.erase_screen()
 
-        self.erase_screen()
+        self._last_canvas = np.full(dim, " ", dtype=object)
+        self._last_attrs = np.zeros((*dim, 6), dtype=np.uint8)
+        self._last_attrs[:, :] = self.default_color
+
+        self.canvas = np.full_like(self._last_canvas, "><")
+        self.attrs = np.full_like(self._last_attrs, 1)
 
         for child in self.children:
             child.update_geometry(dim)
@@ -67,7 +70,7 @@ class _Root(Widget):
 
         # Erase canvas.
         canvas[:] = " "
-        attrs[:] = DEFAULT_ATTR
+        attrs[:, :] = self.default_color
 
         # Paint canvas.
         super().render()
@@ -75,26 +78,11 @@ class _Root(Widget):
         env_out = self.env_out
 
         # Avoiding attribute lookups.
-        goto = env_out.cursor_goto
-        write_raw = env_out.write_raw
-        reset = env_out.reset_attributes
+        write = env_out._buffer.append
 
         # Only write the difs.
-        for y, x in np.argwhere((last_canvas != canvas) | (last_attrs != attrs)):
-            goto(y, x)
-            write_raw(attrs[y, x])
-            write_raw(canvas[y, x])
-            reset()
+        for y, x in np.argwhere((last_canvas != canvas) | np.all(last_attrs != attrs, axis=-1)):
+            write("\x1b[?25l\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y, x, *attrs[y, x], canvas[y, x]))
 
-        env_out.flush()
-
-    def erase_screen(self):
-        """
-        Erase screen.
-        """
-        env_out = self.env_out
-
-        env_out.reset_attributes()
-        env_out.erase_screen()
-        env_out.hide_cursor()
+        write("\x1b[0m")
         env_out.flush()

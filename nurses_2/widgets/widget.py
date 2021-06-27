@@ -2,10 +2,6 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from ..attrs import get_escape_code_cache
-
-DEFAULT_ATTR = get_escape_code_cache().escape_code()
-
 
 class Widget:
     """
@@ -22,7 +18,7 @@ class Widget:
     is_visible : bool, default: True
         If false, widget won't be painted.
     """
-    def __init__(self, dim, pos=(0, 0), *, is_transparent=False, is_visible=True, parent=None):
+    def __init__(self, dim, pos=(0, 0), *, is_transparent=False, is_visible=True, parent=None, default_color=(255, 255, 255, 0, 0, 0)):
         self.top, self.left = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
@@ -31,7 +27,10 @@ class Widget:
         self.children = [ ]
 
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
+        self.attrs = np.zeros((*dim, 6), dtype=np.uint8)
+        self.attrs[:, :] = default_color
+
+        self.default_color = default_color
 
     def resize(self, dim):
         """
@@ -47,7 +46,8 @@ class Widget:
         copy_w = min(old_w, w)
 
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.full(dim, DEFAULT_ATTR, dtype=object)
+        self.attrs = np.zeros((h, w, 6), dtype=np.uint8)
+        self.attrs[:, :] = default_color
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
         self.attrs[:copy_h, :copy_w] = old_attrs[:copy_h, :copy_w]
