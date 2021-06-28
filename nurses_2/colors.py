@@ -18,7 +18,7 @@ TAU = 2 * np.pi
 
 class RGB(NamedTuple):
     """
-    A tuple representing an 24-bit color.
+    A tuple representing a 24-bit color.
     """
     r: int
     g: int
