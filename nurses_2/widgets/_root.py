@@ -73,17 +73,19 @@ class _Root(Widget):
         canvas[:] = " "
         attrs[:, :] = self.default_color
 
-        # Paint canvas.
-        super().render()
+        super().render()  # Paint canvas.
 
         env_out = self.env_out
-
-        # Avoiding attribute lookups.
         write = env_out._buffer.append
+
+        write("\x1b[?25l")  # Hide cursor
 
         # Only write the difs.
         for y, x in np.argwhere((last_canvas != canvas) | np.all(last_attrs != attrs, axis=-1)):
-            write("\x1b[?25l\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y, x, *attrs[y, x], canvas[y, x]))
+            # Concatenated escape codes:
+            #     * Goto
+            #     * Set attributes
+            write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y, x, *attrs[y, x], canvas[y, x]))
 
-        write("\x1b[0m")
+        write("\x1b[0m")  # Reset attributes
         env_out.flush()
