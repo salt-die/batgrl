@@ -18,11 +18,11 @@ def _rainbow_gradient(n):
     """
     TAU = 2 * np.pi
     OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
+    THETA = TAU / n
 
     for i in range(n):
-        THETA = TAU / n * i
         yield RGB(
-            *(np.sin(THETA + OFFSETS) * 127 + 128).astype(int)
+            *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
         )
 
 def fg_rainbow(n=20, bg_color=BLACK):
