@@ -9,15 +9,14 @@ import numpy as np
 
 from .app import App
 from .widgets import Widget
-from .colors import gradient
-from .colors import bg_rainbow
+from .colors import gradient, bg_rainbow
 
 ORANGE = 255, 140, 66, 108, 142, 173
-GREEN = 10, 175, 62, 87, 10, 175
+TEAL = 10, 175, 170, 87, 10, 175
+# GREEN = 10, 175, 62, 87, 10, 175
 # YELLOW = 255, 242, 117, 108, 142, 173
-# TEAL = 10, 175, 170, 87, 10, 175
 
-ORANGE_TO_GREEN = tuple(gradient(20, ORANGE, GREEN))
+ORANGE_TO_TEAL = tuple(gradient(20, ORANGE, TEAL))
 WHITE_ON_RAINBOW = tuple(bg_rainbow())
 
 
@@ -75,7 +74,7 @@ class MyApp(App):
 
         self.root.add_widgets(widget_1, widget_2)
 
-        widget_1.start(velocity=1 + 1j, roll_axis=0, palette=ORANGE_TO_GREEN)
+        widget_1.start(velocity=1 + 1j, roll_axis=0, palette=ORANGE_TO_TEAL)
         widget_2.start(velocity=-1 - 1j, roll_axis=1, palette=WHITE_ON_RAINBOW)
 
 

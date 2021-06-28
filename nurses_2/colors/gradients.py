@@ -1,54 +1,22 @@
 """
-RGB and ColorPair types and some utility functions for colors live here.
+Functions for creating color gradients.
 """
-from typing import NamedTuple
-
 import numpy as np
 
+from .color_types import RGB, ColorPair
+from .colors import BLACK, WHITE
+
 __all__ = (
-    "RGB",
-    "ColorPair",
     "fg_rainbow",
     "bg_rainbow",
     "gradient",
 )
 
-TAU = 2 * np.pi
-
-
-class RGB(NamedTuple):
-    """
-    A tuple representing a 24-bit color.
-    """
-    r: int
-    g: int
-    b: int
-
-
-WHITE = RGB(255, 255, 255)
-BLACK = RGB(0, 0, 0)
-
-
-class ColorPair(NamedTuple):
-    """
-    A tuple representing a foreground and background color.
-    """
-    fg_r: int
-    fg_g: int
-    fg_b: int
-    bg_r: int
-    bg_g: int
-    bg_b: int
-
-
-WHITE_ON_BLACK = ColorPair(*WHITE, *BLACK)
-
-
 def _rainbow_gradient(n):
     """
     Return a rainbow gradient of `n` (r, g, b)-tuples.
     """
-
+    TAU = 2 * np.pi
     OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
 
     for i in range(n):
