@@ -158,7 +158,6 @@ def create_environment():
         env_in.flush_keys()
         env_in.close()
 
-        env_out.scroll_buffer_to_prompt()
-        env_out.reset_attributes()
         env_out.quit_alternate_screen()
+        env_out.reset_attributes()
         env_out.flush()
