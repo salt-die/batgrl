@@ -9,15 +9,13 @@ import numpy as np
 
 from .app import App
 from .widgets import Widget
-from .colors import gradient, bg_rainbow
+from .colors import gradient, bg_rainbow, WHITE
 
 ORANGE = 255, 140, 66, 108, 142, 173
 TEAL = 10, 175, 170, 87, 10, 175
-# GREEN = 10, 175, 62, 87, 10, 175
-# YELLOW = 255, 242, 117, 108, 142, 173
 
-ORANGE_TO_TEAL = tuple(gradient(20, ORANGE, TEAL))
-WHITE_ON_RAINBOW = tuple(bg_rainbow())
+ORANGE_TO_TEAL = tuple(gradient(n=20, start_pair=ORANGE, end_pair=TEAL))
+WHITE_ON_RAINBOW = tuple(bg_rainbow(n=20, fg_color=WHITE))
 
 
 class BouncingWidget(Widget):
