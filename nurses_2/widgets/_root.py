@@ -1,13 +1,14 @@
 import numpy as np
 
 from .widget import Widget
+from ..colors import WHITE_ON_BLACK
 
 
 class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, env_out, *, default_color=(255, 255, 255, 0, 0, 0)):
+    def __init__(self, env_out, *, default_color=WHITE_ON_BLACK):
         self.env_out = env_out
         self.default_color = default_color
         self.children = [ ]
@@ -24,8 +25,8 @@ class _Root(Widget):
         self._last_attrs = np.zeros((*dim, 6), dtype=np.uint8)
         self._last_attrs[:, :] = self.default_color
 
-        self.canvas = np.full_like(self._last_canvas, "><")
-        self.attrs = np.full_like(self._last_attrs, 1)
+        self.canvas = np.full_like(self._last_canvas, "><")  # `><` will guarantee an entire screen redraw.
+        self.attrs = self._last_attrs.copy()
 
         for child in self.children:
             child.update_geometry(dim)

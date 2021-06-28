@@ -2,6 +2,8 @@ from collections.abc import Iterable
 
 import numpy as np
 
+from ..colors import WHITE_ON_BLACK
+
 
 class Widget:
     """
@@ -18,7 +20,16 @@ class Widget:
     is_visible : bool, default: True
         If false, widget won't be painted.
     """
-    def __init__(self, dim, pos=(0, 0), *, is_transparent=False, is_visible=True, parent=None, default_color=(255, 255, 255, 0, 0, 0)):
+    def __init__(
+        self,
+        dim,
+        pos=(0, 0),
+        *,
+        is_transparent=False,
+        is_visible=True,
+        parent=None,
+        default_color=WHITE_ON_BLACK
+    ):
         self.top, self.left = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
