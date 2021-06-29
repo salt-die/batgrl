@@ -76,6 +76,10 @@ class Widget:
         return self.canvas.shape
 
     @property
+    def pos(self):
+        return self.top, self.left
+
+    @property
     def height(self):
         return self.canvas.shape[0]
 
@@ -93,7 +97,7 @@ class Widget:
 
     @property
     def middle(self):
-        return self.height // 2, self.width // 2
+        return self.top + self.height // 2, self.left + self.width // 2
 
     @property
     def root(self):
