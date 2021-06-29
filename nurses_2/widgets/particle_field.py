@@ -71,7 +71,7 @@ class ParticleField(Widget):
 
 class Particle:
     """
-    A 1x1 TUI element that implements much of the `Widget` api, except it has no canvas.
+    A 1x1 TUI element that's Widget-like, except it has no canvas and no children.
     `Particle`s require a `ParticleField` parent to render them.
     """
     def __init__(
