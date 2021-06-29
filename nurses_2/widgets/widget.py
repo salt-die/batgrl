@@ -1,5 +1,3 @@
-from collections.abc import Iterable
-
 import numpy as np
 
 from ..colors import WHITE_ON_BLACK
@@ -116,9 +114,10 @@ class Widget:
 
     def add_widgets(self, *widgets):
         """
-        Add multiple child widgets. (If `widgets` is an iterable it must be only argument.)
+        Add multiple child widgets.
         """
-        if len(widgets) == 1 and isinstance(widgets[0], Iterable):
+        if len(widgets) == 1 and not isinstance(widgets[0], Widget):
+            # Assume item is an iterable of widgets.
             widgets = widgets[0]
 
         for widget in widgets:
