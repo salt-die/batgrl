@@ -56,16 +56,17 @@ class ParticleField(Widget):
 
         canvas[:] = " "
         attrs[:, :] = self.default_color
+        pos = top, left = child.top, chld.left
 
         for child in self.children:
             if (
                 child.is_visible
-                and (not child.is_transparent or child.char != " ")
-                and 0 <= child.top < h
-                and 0 <= child.left < w
+                and not (child.is_transparent and child.char == " ")
+                and 0 <= top < h
+                and 0 <= left < w
             ):
-                canvas[ct, cl] = child.char
-                attrs[ct, cl] = child.attr
+                canvas[pos] = child.char
+                attrs[pos] = child.attr
 
 
 class Particle:
