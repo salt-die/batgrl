@@ -17,6 +17,8 @@ class Widget:
         If true, white-space is "see-through".
     is_visible : bool, default: True
         If false, widget won't be painted.
+    default_color : ColorPair, default: WHITE_ON_BLACK
+        Default color of widget.
     """
     def __init__(
         self,
@@ -25,8 +27,8 @@ class Widget:
         *,
         is_transparent=False,
         is_visible=True,
+        default_color=WHITE_ON_BLACK,
         parent=None,
-        default_color=WHITE_ON_BLACK
     ):
         self.top, self.left = pos
         self.is_transparent = is_transparent
@@ -36,8 +38,8 @@ class Widget:
         self.children = [ ]
 
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.zeros((*dim, 6), dtype=np.uint8)
-        self.attrs[:, :] = default_color
+        self.colors = np.zeros((*dim, 6), dtype=np.uint8)
+        self.colors[:, :] = default_color
 
         self.default_color = default_color
 
@@ -46,7 +48,7 @@ class Widget:
         Resize canvas. Content is preserved as much as possible.
         """
         old_canvas = self.canvas
-        old_attrs = self.attrs
+        old_colors = self.colors
 
         old_h, old_w = old_canvas.shape
         h, w = dim
@@ -55,11 +57,11 @@ class Widget:
         copy_w = min(old_w, w)
 
         self.canvas = np.full(dim, " ", dtype=object)
-        self.attrs = np.zeros((h, w, 6), dtype=np.uint8)
-        self.attrs[:, :] = default_color
+        self.colors = np.zeros((h, w, 6), dtype=np.uint8)
+        self.colors[:, :] = default_color
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
-        self.attrs[:copy_h, :copy_w] = old_attrs[:copy_h, :copy_w]
+        self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]
 
         for child in self.children:
             child.update_geometry(dim)
@@ -257,10 +259,10 @@ class Widget:
             source = child.canvas[source_rect]
             visible = source != " "
             canvas[dest_rect][visible] = source[visible]
-            self.attrs[dest_rect][visible] = child.attrs[source_rect][visible]
+            self.colors[dest_rect][visible] = child.colors[source_rect][visible]
         else:
             canvas[dest_rect] = child.canvas[source_rect]
-            self.attrs[dest_rect] = child.attrs[source_rect]
+            self.colors[dest_rect] = child.colors[source_rect]
 
     def render(self):
         """

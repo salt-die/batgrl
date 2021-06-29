@@ -22,11 +22,11 @@ class _Root(Widget):
         self.env_out.erase_screen()
 
         self._last_canvas = np.full(dim, " ", dtype=object)
-        self._last_attrs = np.zeros((*dim, 6), dtype=np.uint8)
-        self._last_attrs[:, :] = self.default_color
+        self._last_colors = np.zeros((*dim, 6), dtype=np.uint8)
+        self._last_colors[:, :] = self.default_color
 
         self.canvas = np.full_like(self._last_canvas, "><")  # `><` will guarantee an entire screen redraw.
-        self.attrs = self._last_attrs.copy()
+        self.colors = self._last_colors.copy()
 
         for child in self.children:
             child.update_geometry(dim)
@@ -61,17 +61,17 @@ class _Root(Widget):
         """
         # Swap canvas with last render.
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
-        self.attrs, self._last_attrs = self._last_attrs, self.attrs
+        self.colors, self._last_colors = self._last_colors, self.colors
 
         canvas = self.canvas
-        attrs = self.attrs
+        colors = self.colors
 
         last_canvas = self._last_canvas
-        last_attrs = self._last_attrs
+        last_colors = self._last_colors
 
         # Erase canvas.
         canvas[:] = " "
-        attrs[:, :] = self.default_color
+        colors[:, :] = self.default_color
 
         super().render()  # Paint canvas.
 
@@ -81,11 +81,11 @@ class _Root(Widget):
         write("\x1b[?25l")  # Hide cursor
 
         # Only write the difs.
-        for y, x in np.argwhere((last_canvas != canvas) | np.all(last_attrs != attrs, axis=-1)):
+        for y, x in np.argwhere((last_canvas != canvas) | np.all(last_colors != colors, axis=-1)):
             # Concatenated escape codes:
             #     * Goto
             #     * Set attributes
-            write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y, x, *attrs[y, x], canvas[y, x]))
+            write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y, x, *colors[y, x], canvas[y, x]))
 
         write("\x1b[0m")  # Reset attributes
         env_out.flush()

@@ -24,7 +24,7 @@ class BouncingWidget(Widget):
         for i in range(h):
             for j in range(w):
                 self.canvas[i, j] = 'NURSES!   '[(i + j) % 10]
-                self.attrs[i, j] = palette[(i + j) % 20]
+                self.colors[i, j] = palette[(i + j) % 20]
 
         asyncio.create_task(self.bounce(velocity))
         asyncio.create_task(self.roll(roll_axis))
@@ -58,7 +58,7 @@ class BouncingWidget(Widget):
     async def roll(self, axis):
         while True:
             self.canvas = np.roll(self.canvas, 1, (axis, ))
-            self.attrs = np.roll(self.attrs, 1, (axis, ))
+            self.colors = np.roll(self.colors, 1, (axis, ))
 
             await asyncio.sleep(.11)
 

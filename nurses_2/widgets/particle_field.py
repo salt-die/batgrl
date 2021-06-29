@@ -50,12 +50,12 @@ class ParticleField(Widget):
         Paint canvas.
         """
         canvas = self.canvas
-        attrs = self.attrs
+        colors = self.colors
 
         h, w = canvas.shape
 
         canvas[:] = " "
-        attrs[:, :] = self.default_color
+        colors[:, :] = self.default_color
         pos = top, left = child.top, chld.left
 
         for child in self.children:
@@ -66,7 +66,7 @@ class ParticleField(Widget):
                 and 0 <= left < w
             ):
                 canvas[pos] = child.char
-                attrs[pos] = child.attr
+                colors[pos] = child.color
 
 
 class Particle:
@@ -79,12 +79,12 @@ class Particle:
         pos=(0, 0),
         *,
         char=" ",
-        attr=WHITE_ON_BLACK,
+        color=WHITE_ON_BLACK,
         is_transparent=False,
         is_visible=True,
     ):
         self.char = char
-        self.attr = attr
+        self.color = color
 
         self.top, self.left = pos
         self.is_transparent = is_transparent
