@@ -27,8 +27,6 @@ class App(ABC):
     ```py
     class MyApp(App):
         async def on_start(self):
-            self.key_bindings.add('escape')(self.exit)
-
             widget_1 = BouncingWidget(dim=(20, 20))
             widget_2 = BouncingWidget(dim=(10, 30))
 
