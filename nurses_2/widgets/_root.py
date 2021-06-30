@@ -88,7 +88,7 @@ class _Root(Widget):
             # Concatenated escape codes:
             #     * Goto
             #     * Set attributes
-            write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y, x, *colors[y, x], canvas[y, x]))
+            write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y + 1, x + 1, *colors[y, x], canvas[y, x]))
 
         write("\x1b[0m")  # Reset attributes
         env_out.flush()
