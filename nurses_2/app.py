@@ -148,6 +148,7 @@ def create_environment():
     """
     env_out = create_output()
 
+    env_out.enable_mouse_support()
     env_out.enter_alternate_screen()
     env_out.flush()
 
@@ -162,4 +163,5 @@ def create_environment():
 
         env_out.quit_alternate_screen()
         env_out.reset_attributes()
+        env_out.disable_mouse_support()
         env_out.flush()
