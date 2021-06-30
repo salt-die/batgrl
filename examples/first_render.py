@@ -1,15 +1,13 @@
 """
-For temporary testing.  This file will be removed.
-
 `esc` to exit.
 """
 import asyncio
 
 import numpy as np
 
-from .app import App
-from .widgets import Widget
-from .colors import gradient, bg_rainbow, WHITE
+from nurses_2.app import App
+from nurses_2.widgets import Widget
+from nurses_2.colors import gradient, bg_rainbow, WHITE
 
 ORANGE = 255, 140, 66, 108, 142, 173
 TEAL = 10, 175, 170, 87, 10, 175
@@ -65,8 +63,6 @@ class BouncingWidget(Widget):
 
 class MyApp(App):
     async def on_start(self):
-        self.key_bindings.add('escape')(self.exit)
-
         widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
         widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
 
