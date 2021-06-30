@@ -7,6 +7,7 @@ from prompt_toolkit.output import create_output
 from prompt_toolkit.utils import is_windows, is_conemu_ansi
 
 from .widgets._root import _Root
+from .mouse import handle_mouse
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
@@ -90,7 +91,7 @@ class App(ABC):
                     if key.key == exit_key:
                         return self.exit()
 
-                    dispatch(key)
+                    dispatch(handle_mouse(key))
 
                 nonlocal flush_timer
                 flush_timer.cancel()
@@ -104,7 +105,7 @@ class App(ABC):
                     if key.key == exit_key:
                         return self.exit()
 
-                    dispatch(key)
+                    dispatch(handle_mouse(key))  # TODO: Dispatch mouse events to separate function
 
             async def poll_size():
                 """
