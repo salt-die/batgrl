@@ -68,6 +68,15 @@ class ParticleField(Widget):
                 canvas[pos] = child.char
                 colors[pos] = child.color
 
+    def dispatch(self, key_press):
+        """
+        Try to handle key press; if not handled, dispatch event to ancestors until handled.
+        """
+        return (
+            self.on_press(key_press)
+            or any(particle.on_press(key_press) for particle in reversed(self.children))
+        )
+
 
 class Particle:
     """
@@ -102,3 +111,8 @@ class Particle:
     @property
     def dim(self):
         return 1, 1
+
+    def on_press(self, key_press):
+        """
+        Handle key press.
+        """
