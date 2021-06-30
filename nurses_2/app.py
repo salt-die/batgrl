@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import contextmanager
 
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.key_binding.key_processor import KeyProcessor
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
 from prompt_toolkit.utils import is_windows, is_conemu_ansi
@@ -42,8 +40,8 @@ class App(ABC):
     MyApp().run()
     ```
     """
-    def __init__(self, *, key_bindings=None):
-        self.key_bindings = key_bindings or KeyBindings()
+    def __init__(self, *, exit_key="escape"):
+        self.exit_key = exit_key
 
     @abstractmethod
     async def on_start(self):
@@ -59,14 +57,14 @@ class App(ABC):
             from prompt_toolkit.output.windows10 import is_win_vt100_enabled
 
             if not is_win_vt100_enabled() and not is_conemu_ansi():
-                raise RuntimeError('nurses not supported on non-vt100 enabled terminals')
+                raise RuntimeError("nurses not supported on non-vt100 enabled terminals")
 
         try:
             asyncio.run(self._run_async())
         except asyncio.CancelledError:
             pass
 
-    def exit(self, *args):
+    def exit(self):
         for task in asyncio.all_tasks():
             task.cancel()
 
@@ -78,8 +76,10 @@ class App(ABC):
             self.env_out = env_out
             self.env_in = env_in
 
-            key_processor = KeyProcessor(self.key_bindings)
+            exit_key = self.exit_key
+
             self.root = root = _Root(env_out)
+            dispatch = root.dispatch
 
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
@@ -88,10 +88,11 @@ class App(ABC):
                 """
                 Read and process input.
                 """
-                keys = env_in.read_keys()
+                for key in env_in.read_keys():
+                    if key.key == exit_key:
+                        return self.exit()
 
-                key_processor.feed_multiple(keys)
-                key_processor.process_keys()
+                    dispatch(key)
 
                 nonlocal flush_timer
                 flush_timer.cancel()
@@ -101,10 +102,11 @@ class App(ABC):
                 """
                 Flush input.
                 """
-                keys = env_in.flush_keys()
+                for key in env_in.flush_keys():
+                    if key.key == exit_key:
+                        return self.exit()
 
-                key_processor.feed_multiple(keys)
-                key_processor.process_keys()
+                    dispatch(key)
 
             async def poll_size():
                 """
