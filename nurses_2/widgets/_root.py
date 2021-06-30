@@ -25,7 +25,7 @@ class _Root(Widget):
         self._last_colors = np.zeros((*dim, 6), dtype=np.uint8)
         self._last_colors[:, :] = self.default_color
 
-        self.canvas = np.full_like(self._last_canvas, "><")  # `><` will guarantee an entire screen redraw.
+        self.canvas = np.full_like(self._last_canvas, "><")  # "><" will guarantee an entire screen redraw.
         self.colors = self._last_colors.copy()
 
         for child in self.children:
