@@ -106,6 +106,10 @@ class Widget:
         """
         return self.parent.root
 
+    def absolute_to_relative_coords(self, coord):
+        y, x = self.parent.absolute_to_relative_coords(coord)
+        return y - self.top, x - self.left
+
     def add_widget(self, widget):
         """
         Add a child widget.

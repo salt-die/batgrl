@@ -55,6 +55,9 @@ class _Root(Widget):
     def root(self):
         return self
 
+    def absolute_to_relative_coords(self, coord):
+        return coord
+
     def render(self):
         """
         Paint canvas. Render to terminal.
