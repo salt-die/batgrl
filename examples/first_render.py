@@ -4,10 +4,12 @@
 import asyncio
 
 import numpy as np
+from prompt_toolkit.mouse_events import MouseEvent
 
 from nurses_2.app import App
 from nurses_2.widgets import Widget
 from nurses_2.colors import gradient, bg_rainbow, WHITE
+from nurses_2.mouse import MouseEvent, MouseEventType
 
 ORANGE = 255, 140, 66, 108, 142, 173
 TEAL = 10, 175, 170, 87, 10, 175
@@ -17,7 +19,9 @@ WHITE_ON_RAINBOW = tuple(bg_rainbow(n=20, fg_color=WHITE))
 
 
 class BouncingWidget(Widget):
-    def start(self, velocity, roll_axis, palette):
+    def start(self, velocity, roll_axis, palette, coord_view):
+        self.coord_view = coord_view
+
         h, w = self.dim
         for i in range(h):
             for j in range(w):
@@ -60,16 +64,36 @@ class BouncingWidget(Widget):
 
             await asyncio.sleep(.11)
 
+    def on_press(self, key_press):
+        if isinstance(key_press, MouseEvent) and key_press.event_type == MouseEventType.MOUSE_UP:
+            relative_coords = self.absolute_to_relative_coords(key_press.position)
+            self.coord_view[:] = tuple("{:<4}, {:<4}".format(*relative_coords))
+
 
 class MyApp(App):
     async def on_start(self):
+        coord_display = Widget(dim=(2, 38))
+        coord_display.canvas[0, :28] = tuple("click relative to widget_1: ")
+        coord_display.canvas[1, :28] = tuple("click relative to widget_2: ")
+
         widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
         widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
 
-        self.root.add_widgets(widget_1, widget_2)
+        self.root.add_widgets(widget_1, widget_2, coord_display)
 
-        widget_1.start(velocity=1 + 1j, roll_axis=0, palette=ORANGE_TO_TEAL)
-        widget_2.start(velocity=-1 - 1j, roll_axis=1, palette=WHITE_ON_RAINBOW)
+        widget_1.start(
+            velocity=1 + 1j,
+            roll_axis=0,
+            palette=ORANGE_TO_TEAL,
+            coord_view=coord_display.canvas[0, 28:],
+        )
+
+        widget_2.start(
+            velocity=-1 - 1j,
+            roll_axis=1,
+            palette=WHITE_ON_RAINBOW,
+            coord_view=coord_display.canvas[1, 28:],
+        )
 
 
 MyApp().run()
