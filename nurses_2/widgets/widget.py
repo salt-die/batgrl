@@ -106,9 +106,19 @@ class Widget:
         """
         return self.parent.root
 
-    def absolute_to_relative_coords(self, coord):
-        y, x = self.parent.absolute_to_relative_coords(coord)
+    def absolute_to_relative_coords(self, coords):
+        """
+        Convert absolute coordinates to relative coordinates.
+        """
+        y, x = self.parent.absolute_to_relative_coords(coords)
         return y - self.top, x - self.left
+
+    def collide_coords(self, coords):
+        """
+        Return True if screen-coordinates are within this widget's bounding box.
+        """
+        y, x = self.absolute_to_relative_coords(coords)
+        return 0 <= y < self.height and 0 <= x < self.width
 
     def add_widget(self, widget):
         """
