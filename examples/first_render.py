@@ -13,22 +13,23 @@ from nurses_2.mouse import MouseEvent, MouseEventType
 ORANGE = 255, 140, 66, 108, 142, 173
 TEAL = 10, 175, 170, 87, 10, 175
 
-ORANGE_TO_TEAL = tuple(gradient(n=20, start_pair=ORANGE, end_pair=TEAL))
-WHITE_ON_RAINBOW = tuple(bg_rainbow(n=20, fg_color=WHITE))
+ORANGE_TO_TEAL = tuple(gradient(n=10, start_pair=ORANGE, end_pair=TEAL))
+WHITE_ON_RAINBOW = tuple(bg_rainbow(n=10, fg_color=WHITE))
 
 
 class BouncingWidget(Widget):
-    def start(self, velocity, roll_axis, palette, coord_view):
+    def start(self, velocity, roll_step, palette, coord_view, collides_view):
         self.coord_view = coord_view
+        self.collides_view = collides_view
 
         h, w = self.dim
         for i in range(h):
             for j in range(w):
                 self.canvas[i, j] = 'NURSES!   '[(i + j) % 10]
-                self.colors[i, j] = palette[(i + j) % 20]
+                self.colors[i, j] = palette[(i + j) % 10]
 
         asyncio.create_task(self.bounce(velocity))
-        asyncio.create_task(self.roll(roll_axis))
+        asyncio.create_task(self.roll(roll_step))
 
     async def bounce(self, velocity):
         velocity /= abs(velocity)  # normalize
@@ -56,44 +57,46 @@ class BouncingWidget(Widget):
 
             await asyncio.sleep(.05)
 
-    async def roll(self, axis):
+    async def roll(self, step):
         while True:
-            self.canvas = np.roll(self.canvas, 1, (axis, ))
-            self.colors = np.roll(self.colors, 1, (axis, ))
+            self.canvas = np.roll(self.canvas, step, (0, ))
+            self.colors = np.roll(self.colors, -step, (0, ))
 
             await asyncio.sleep(.11)
 
     def on_click(self, mouse_event):
         if mouse_event.event_type == MouseEventType.MOUSE_UP:
             relative_coords = self.absolute_to_relative_coords(mouse_event.position)
-            self.coord_view[:12] = tuple("({:<4}, {:<4})".format(*relative_coords))
-            self.coord_view[-3:] = tuple("yes" if self.collide_coords(mouse_event.position) else "no ")
+            self.coord_view.add_text("({:<4}, {:<4})".format(*relative_coords))
+            self.collides_view.add_text("yes" if self.collide_coords(mouse_event.position) else "no ")
 
 
 class MyApp(App):
     async def on_start(self):
-        coord_display = Widget(dim=(2, 54))
-        coord_display.canvas[0, :28] = tuple("Click relative to widget_1: ")
-        coord_display.canvas[1, :28] = tuple("Click relative to widget_2: ")
-        coord_display.canvas[(0, 1), 41: 51] = tuple("Collides: ")
+        info_display = Widget(dim=(2, 54))
+        info_display.add_text("Click relative to widget_1: ", row=0)
+        info_display.add_text("Click relative to widget_2: ", row=1)
+        info_display.add_text("Collides: ", row=(0, 1), column=41)
 
         widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
         widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
 
-        self.root.add_widgets(widget_1, widget_2, coord_display)
+        self.root.add_widgets(widget_1, widget_2, info_display)
 
         widget_1.start(
             velocity=1 + 1j,
-            roll_axis=0,
+            roll_step=1,
             palette=ORANGE_TO_TEAL,
-            coord_view=coord_display.canvas[0, 28:],
+            coord_view=info_display.get_view[0, 28:40],  # A view wide enough to fit coordinate display
+            collides_view=info_display.get_view[0, -3:],  # A view wide enough for "yes" or "no "
         )
 
         widget_2.start(
             velocity=-1 - 1j,
-            roll_axis=1,
+            roll_step=-1,
             palette=WHITE_ON_RAINBOW,
-            coord_view=coord_display.canvas[1, 28:],
+            coord_view=info_display.get_view[1, 28:40],
+            collides_view=info_display.get_view[1, -3:],
         )
 
 
