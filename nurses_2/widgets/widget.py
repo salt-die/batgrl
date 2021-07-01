@@ -190,7 +190,8 @@ class Widget:
         """
         Yield all descendents of the root widget.
         """
-        yield from self.root.walk()
+        for child in self.root.children:
+            yield from child.walk()
 
     def walk(self):
         """
