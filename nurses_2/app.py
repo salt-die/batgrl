@@ -74,9 +74,6 @@ class App(ABC):
         Build environment, create root, and schedule app-specific tasks.
         """
         with create_environment() as (env_out, env_in):
-            self.env_out = env_out
-            self.env_in = env_in
-
             exit_key = self.exit_key
 
             self.root = root = _Root(env_out)
