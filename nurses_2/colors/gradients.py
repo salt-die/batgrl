@@ -7,8 +7,8 @@ from .color_types import RGB, ColorPair
 from .colors import BLACK, WHITE
 
 __all__ = (
-    "fg_rainbow",
-    "bg_rainbow",
+    "foreground_rainbow",
+    "background_rainbow",
     "gradient",
 )
 
@@ -25,34 +25,45 @@ def _rainbow_gradient(n):
             *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
         )
 
-def fg_rainbow(n=20, bg_color=BLACK):
+def foreground_rainbow(ncolors=20, background_color=BLACK):
     """
-    Return a rainbow gradient of `n` ColorPairs with a given background color.
+    A rainbow gradient of `ncolors` ColorPairs with a given background color.
     """
-    for fg_color in _rainbow_gradient(n):
-        yield ColorPair(*fg_color, *bg_color)
+    return [
+        ColorPair(*foreground_color, *background_color)
+        for foreground_color in _rainbow_gradient(ncolors)
+    ]
 
-def bg_rainbow(n=20, fg_color=WHITE):
+def background_rainbow(ncolors=20, foreground_color=WHITE):
     """
-    Return a rainbow gradient of `n` ColorPairs with a given foreground color.
+    Return a rainbow gradient of `ncolors` ColorPairs with a given foreground color.
     """
-    for bg_color in _rainbow_gradient(n):
-        yield ColorPair(*fg_color, *bg_color)
+    return [
+        ColorPair(*foreground_color, *background_color)
+        for background_color in _rainbow_gradient(ncolors)
+    ]
 
-def lerp(start, end, percent):
+def lerp(start_pair: ColorPair, end_pair: ColorPair, percent):
     """
-    Linear interpolation between `start` and `end`.
+    Linear interpolation between `start_pair` and `end_pair`.
     """
-    return round(percent * end + (1 - percent) * start)
+    for a, b in zip(start_pair, end_pair):
+        yield round((1 - percent) * a + percent * b)
 
-def gradient(n, start_pair: ColorPair, end_pair: ColorPair):
+def gradient(ncolors, start_pair: ColorPair, end_pair: ColorPair):
     """
-    Return a gradient from `start_pair` to `end_pair` with `n` (n > 1) colors.
+    Return a gradient from `start_pair` to `end_pair` with `ncolors` (> 1) colors.
     """
-    yield start_pair
+    assert ncolors > 1, f"not enough colors ({ncolors=})"
 
-    for i in range(n - 2):
-        percent = (i + 1) / (n - 1)
-        yield ColorPair(*map(lerp, start_pair, end_pair, (percent,) * 6))
+    grad = [ start_pair ]
 
-    yield end_pair
+    for i in range(ncolors - 2):
+        percent = (i + 1) / (ncolors - 1)
+        grad.append(
+            ColorPair(*lerp(start_pair, end_pair, percent))
+        )
+
+    grad.append(end_pair)
+
+    return grad

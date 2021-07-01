@@ -6,15 +6,15 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets import Widget
-from nurses_2.colors import gradient, bg_rainbow, WHITE
+from nurses_2.colors import gradient, background_rainbow
 from nurses_2.mouse import MouseEvent, MouseEventType
+from nurses_2.widgets import Widget
 
-ORANGE = 255, 140, 66, 108, 142, 173
-TEAL = 10, 175, 170, 87, 10, 175
+ORANGE_ON_GREY = 255, 140, 66, 108, 142, 173
+TEAL_ON_PURPLE = 10, 175, 170, 87, 10, 175
 
-ORANGE_TO_TEAL = tuple(gradient(n=10, start_pair=ORANGE, end_pair=TEAL))
-WHITE_ON_RAINBOW = tuple(bg_rainbow(n=10, fg_color=WHITE))
+ORANGE_TO_TEAL = gradient(ncolors=10, start_pair=ORANGE_ON_GREY, end_pair=TEAL_ON_PURPLE)
+WHITE_ON_RAINBOW = background_rainbow(ncolors=10)
 
 
 class BouncingWidget(Widget):
