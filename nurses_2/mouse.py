@@ -2,7 +2,6 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.mouse_events import MouseEvent, MouseEventType
 
 __all__ = (
-    "MouseEvent",
     "MouseEventType",
     "handle_mouse",
 )
