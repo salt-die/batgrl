@@ -44,7 +44,6 @@ class ParticleField(Widget):
 
     def walk(self):
         yield self
-
         yield from self.children
 
     def _render_child(self, child):
