@@ -362,6 +362,11 @@ class Widget:
 class CanvasView:
     """
     A wrapper around an `numpy` `ndarray` that has `Widget`'s `add_text` method.
+
+    Warning
+    -------
+    1-dimensional slices will return 2-d views with a new axis inserted before the original axis.
+    (This is to ensure that the `add_text` method doesn't raise an IndexError.)
     """
     def __init__(self, canvas):
         if len(canvas.shape) == 1:
