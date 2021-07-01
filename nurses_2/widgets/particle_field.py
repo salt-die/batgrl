@@ -42,6 +42,11 @@ class ParticleField(Widget):
         """
         self.children.remove(particle)
 
+    def walk(self):
+        yield self
+
+        yield from self.children
+
     def _render_child(self, child):
         raise NotImplementedError
 
@@ -70,7 +75,7 @@ class ParticleField(Widget):
 
     def dispatch_press(self, key_press):
         """
-        Try to handle key press; if not handled, dispatch event to ancestors until handled.
+        Try to handle key press; if not handled, dispatch event to particles until handled.
         """
         return (
             self.on_press(key_press)

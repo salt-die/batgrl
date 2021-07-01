@@ -322,7 +322,7 @@ class Widget:
 
     def dispatch_press(self, key_press):
         """
-        Try to handle key press; if not handled, dispatch to ancestors until handled.
+        Try to handle key press; if not handled, dispatch to descendents until handled.
         (A key press is handled if a handler returns True.)
         """
         return (
@@ -332,7 +332,7 @@ class Widget:
 
     def dispatch_click(self, mouse_event):
         """
-        Try to handle mouse event; if not handled, dispatch to ancestors until handled.
+        Try to handle mouse event; if not handled, dispatch to descendents until handled.
         (A mouse event is handled if a handler returns True.)
         """
         return (
