@@ -92,9 +92,8 @@ class _Root(Widget):
         super().render()  # Paint canvas
 
         # Find differences between current render and last render:
-        #     This is optimized version of
-        #     `(last_canvas != canvas) | np.all(last_colors != colors, axis=-1)`
-        #     that re-uses buffers instead of creating new arrays.
+        # (This is optimized version of `(last_canvas != canvas) | np.all(last_colors != colors, axis=-1)`
+        # that re-uses buffers instead of creating new arrays.)
         np.not_equal(last_canvas, canvas, out=char_diffs)
         np.not_equal(last_colors, colors, out=color_diffs)
         np.all(color_diffs, axis=-1, out=reduced_color_diffs)
@@ -103,9 +102,7 @@ class _Root(Widget):
         write("\x1b[?25l")  # Hide cursor
 
         for y, x in np.argwhere(char_diffs):
-            # Concatenated escape codes:
-            #     * Goto
-            #     * Set attributes
+            # The escape codes for moving the cursor and setting the color concatenated:
             write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y + 1, x + 1, *colors[y, x], canvas[y, x]))
 
         write("\x1b[0m")  # Reset attributes
