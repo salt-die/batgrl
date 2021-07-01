@@ -28,6 +28,11 @@ class _Root(Widget):
         self.canvas = np.full_like(self._last_canvas, "><")  # "><" will guarantee an entire screen redraw.
         self.colors = self._last_colors.copy()
 
+        # Buffer arrays to re-use in the `render` method:
+        self._char_diffs = np.zeros_like(self.canvas, dtype=np.bool8)
+        self._color_diffs = np.zeros_like(self.colors, dtype=np.bool8)
+        self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=np.bool8)
+
         for child in self.children:
             child.update_geometry(dim)
 
@@ -62,29 +67,42 @@ class _Root(Widget):
         """
         Paint canvas. Render to terminal.
         """
-        # Swap canvas with last render.
+        # Swap canvas with last render:
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
         self.colors, self._last_colors = self._last_colors, self.colors
 
+        # Bring arrays into locals:
         canvas = self.canvas
         colors = self.colors
 
         last_canvas = self._last_canvas
         last_colors = self._last_colors
 
-        # Erase canvas.
-        canvas[:] = " "
-        colors[:, :] = self.default_color
-
-        super().render()  # Paint canvas.
+        char_diffs = self._char_diffs
+        color_diffs = self._color_diffs
+        reduced_color_diffs = self._reduced_color_diffs
 
         env_out = self.env_out
         write = env_out._buffer.append
 
+        # Erase canvas:
+        canvas[:] = " "
+        colors[:, :] = self.default_color
+
+        super().render()  # Paint canvas
+
+        # Find differences between current render and last render:
+        #     This is optimized version of
+        #     `(last_canvas != canvas) | np.all(last_colors != colors, axis=-1)`
+        #     that re-uses buffers instead of creating new arrays.
+        np.not_equal(last_canvas, canvas, out=char_diffs)
+        np.not_equal(last_colors, colors, out=color_diffs)
+        np.all(color_diffs, axis=-1, out=reduced_color_diffs)
+        np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
+
         write("\x1b[?25l")  # Hide cursor
 
-        # Only write the difs.
-        for y, x in np.argwhere((last_canvas != canvas) | np.all(last_colors != colors, axis=-1)):
+        for y, x in np.argwhere(char_diffs):
             # Concatenated escape codes:
             #     * Goto
             #     * Set attributes
