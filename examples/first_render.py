@@ -67,7 +67,7 @@ class BouncingWidget(Widget):
         if mouse_event.event_type == MouseEventType.MOUSE_UP:
             relative_coords = self.absolute_to_relative_coords(mouse_event.position)
             self.coord_view[:12] = tuple("({:<4}, {:<4})".format(*relative_coords))
-            self.coord_view[-3:] = tuple("yes") if self.collide_coords(mouse_event.position) else tuple("no ")
+            self.coord_view[-3:] = tuple("yes" if self.collide_coords(mouse_event.position) else "no ")
 
 
 class MyApp(App):
