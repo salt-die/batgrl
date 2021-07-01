@@ -67,14 +67,16 @@ class BouncingWidget(Widget):
     def on_click(self, mouse_event):
         if mouse_event.event_type == MouseEventType.MOUSE_UP:
             relative_coords = self.absolute_to_relative_coords(mouse_event.position)
-            self.coord_view[:] = tuple("{:<4}, {:<4}".format(*relative_coords))
+            self.coord_view[:12] = tuple("({:<4}, {:<4})".format(*relative_coords))
+            self.coord_view[-3:] = tuple("yes") if self.collide_coords(mouse_event.position) else tuple("no ")
 
 
 class MyApp(App):
     async def on_start(self):
-        coord_display = Widget(dim=(2, 38))
-        coord_display.canvas[0, :28] = tuple("click relative to widget_1: ")
-        coord_display.canvas[1, :28] = tuple("click relative to widget_2: ")
+        coord_display = Widget(dim=(2, 54))
+        coord_display.canvas[0, :28] = tuple("Click relative to widget_1: ")
+        coord_display.canvas[1, :28] = tuple("Click relative to widget_2: ")
+        coord_display.canvas[(0, 1), 41: 51] = tuple("Collides: ")
 
         widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
         widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
