@@ -120,10 +120,18 @@ class Particle:
 
     def on_press(self, key_press):
         """
-        Handle key press.
+        Handle key press. (Handled key presses should return True else False or None).
+
+        Notes
+        -----
+        `key_press` is a `prompt_toolkit` `KeyPress`.
         """
 
     def on_click(self, mouse_event):
         """
-        Handle mouse event.
+        Handle mouse event. (Handled mouse events should return True else False or None).
+
+        Notes
+        -----
+        `mouse_event` is a `prompt_toolkit` MouseEvent`.
         """

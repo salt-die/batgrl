@@ -290,6 +290,7 @@ class Widget:
     def dispatch_press(self, key_press):
         """
         Try to handle key press; if not handled, dispatch to ancestors until handled.
+        (A key press is handled if a handler returns True.)
         """
         return (
             self.on_press(key_press)
@@ -299,6 +300,7 @@ class Widget:
     def dispatch_click(self, mouse_event):
         """
         Try to handle mouse event; if not handled, dispatch to ancestors until handled.
+        (A mouse event is handled if a handler returns True.)
         """
         return (
             self.on_click(mouse_event)
@@ -308,9 +310,17 @@ class Widget:
     def on_press(self, key_press):
         """
         Handle key press. (Handled key presses should return True else False or None).
+
+        Notes
+        -----
+        `key_press` is a `prompt_toolkit` `KeyPress`.
         """
 
     def on_click(self, mouse_event):
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
+
+        Notes
+        -----
+        `mouse_event` is a `prompt_toolkit` MouseEvent`.
         """
