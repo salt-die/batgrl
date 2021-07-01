@@ -4,7 +4,6 @@
 import asyncio
 
 import numpy as np
-from prompt_toolkit.mouse_events import MouseEvent
 
 from nurses_2.app import App
 from nurses_2.widgets import Widget
