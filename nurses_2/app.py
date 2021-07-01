@@ -5,13 +5,15 @@ from contextlib import contextmanager
 from prompt_toolkit.input import create_input
 from prompt_toolkit.output import create_output
 from prompt_toolkit.utils import is_windows, is_conemu_ansi
+from prompt_toolkit.keys import Keys
 
 from .widgets._root import _Root
-from .mouse import handle_mouse
+from .mouse import create_mouse_event
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
 REFRESH_INTERVAL = 0  # Seconds between screen redraws.
+MOUSE_EVENTS = Keys.Vt100MouseEvent, Keys.WindowsMouseEvent
 
 
 class App(ABC):
@@ -78,7 +80,8 @@ class App(ABC):
             exit_key = self.exit_key
 
             self.root = root = _Root(env_out)
-            dispatch = root.dispatch
+            dispatch_press = root.dispatch_press
+            dispatch_click = root.dispatch_click
 
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
@@ -91,7 +94,10 @@ class App(ABC):
                     if key.key == exit_key:
                         return self.exit()
 
-                    dispatch(handle_mouse(key))
+                    if key.key in MOUSE_EVENTS:
+                        dispatch_click(create_mouse_event(key))
+                    else:
+                        dispatch_press(key)
 
                 nonlocal flush_timer
                 flush_timer.cancel()
@@ -105,7 +111,10 @@ class App(ABC):
                     if key.key == exit_key:
                         return self.exit()
 
-                    dispatch(handle_mouse(key))  # TODO: Dispatch mouse events to separate function
+                    if key.key in MOUSE_EVENTS:
+                        dispatch_click(create_mouse_event(key))
+                    else:
+                        dispatch_press(key)
 
             async def poll_size():
                 """

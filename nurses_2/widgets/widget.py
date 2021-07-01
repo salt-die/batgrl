@@ -277,16 +277,30 @@ class Widget:
         for child in self.children:
             render_child(child)
 
-    def dispatch(self, key_press):
+    def dispatch_press(self, key_press):
         """
-        Try to handle key press; if not handled, dispatch event to ancestors until handled.
+        Try to handle key press; if not handled, dispatch to ancestors until handled.
         """
         return (
             self.on_press(key_press)
-            or any(widget.dispatch(key_press) for widget in reversed(self.children))
+            or any(widget.dispatch_press(key_press) for widget in reversed(self.children))
+        )
+
+    def dispatch_click(self, mouse_event):
+        """
+        Try to handle mouse event; if not handled, dispatch to ancestors until handled.
+        """
+        return (
+            self.on_click(mouse_event)
+            or any(widget.dispatch_click(mouse_event) for widget in reversed(self.children))
         )
 
     def on_press(self, key_press):
         """
         Handle key press. (Handled key presses should return True else False or None).
+        """
+
+    def on_click(self, mouse_event):
+        """
+        Handle mouse event. (Handled mouse events should return True else False or None).
         """

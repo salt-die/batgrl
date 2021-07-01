@@ -64,9 +64,9 @@ class BouncingWidget(Widget):
 
             await asyncio.sleep(.11)
 
-    def on_press(self, key_press):
-        if isinstance(key_press, MouseEvent) and key_press.event_type == MouseEventType.MOUSE_UP:
-            relative_coords = self.absolute_to_relative_coords(key_press.position)
+    def on_click(self, mouse_event):
+        if mouse_event.event_type == MouseEventType.MOUSE_UP:
+            relative_coords = self.absolute_to_relative_coords(mouse_event.position)
             self.coord_view[:] = tuple("{:<4}, {:<4}".format(*relative_coords))
 
 
