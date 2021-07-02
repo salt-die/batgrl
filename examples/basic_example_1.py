@@ -45,13 +45,13 @@ class BouncingWidget(Widget):
 
             if (
                 top <= 0 and velocity.real < 0
-                or self.bottom > root.height and velocity.real > 0
+                or self.bottom >= root.height and velocity.real > 0
             ):
                 velocity = -velocity.conjugate()
 
             if (
                 left <= 0 and velocity.imag < 0
-                or self.right > root.width and velocity.imag > 0
+                or self.right >= root.width and velocity.imag > 0
             ):
                 velocity = velocity.conjugate()
 
