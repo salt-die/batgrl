@@ -45,21 +45,25 @@ j888888888888888888888888888888888888888'  8888888888888
                   `'"^^V888888888V^^'
 """
 HEIGHT, WIDTH = 28, 56
+
 POWER = 2
 MAX_PARTICLE_SPEED = 10
 FRICTION = .97
+
 NCOLORS = 100
-BLUE, YELLOW = round(.65 * NCOLORS), round(.1 * NCOLORS)
+RAINBOW = foreground_rainbow(NCOLORS)
+BLUE_INDEX = round(.65 * NCOLORS)
+YELLOW_INDEX = round(.1 * NCOLORS)
+
 COLOR_CHANGE_SPEED = 5
 PERCENTS = tuple(np.linspace(0, 1, 50))
 
 
 class PokeParticle(Particle):
-    def __init__(self, *args, color_index, palette, **kwargs):
+    def __init__(self, *args, color_index, **kwargs):
         self.color_index = color_index
-        self.palette = palette
 
-        super().__init__(*args, color=palette[color_index], **kwargs)
+        super().__init__(*args, color=RAINBOW[color_index], **kwargs)
 
         self.original_position = self.pos
         self.velocity = 0j
@@ -90,7 +94,6 @@ class PokeParticle(Particle):
         """
         position = complex(*self.pos)
         color_index = self.color_index
-        palette = self.palette
 
         while True:
             velocity = self.velocity
@@ -121,7 +124,7 @@ class PokeParticle(Particle):
                 velocity = velocity.conjugate()
 
             color_index = round(color_index + min(speed, MAX_PARTICLE_SPEED) * COLOR_CHANGE_SPEED) % NCOLORS
-            self.color = palette[color_index]
+            self.color = RAINBOW[color_index]
 
             velocity *= FRICTION
             self.velocity = velocity
@@ -141,9 +144,7 @@ class PokeParticle(Particle):
         start_y, start_x = self.pos
         end_y, end_x = self.original_position
 
-        palette = self.palette
-
-        start_color_index = palette.index(self.color)
+        start_color_index = RAINBOW.index(self.color)
         end_color_index = self.color_index
 
         for percent in PERCENTS:
@@ -153,7 +154,7 @@ class PokeParticle(Particle):
             self.left = round(percent_left * start_x + percent * end_x)
 
             color_index = round(percent_left * start_color_index + percent * end_color_index)
-            self.color = palette[color_index]
+            self.color = RAINBOW[color_index]
 
             try:
                 await asyncio.sleep(0)
@@ -163,22 +164,22 @@ class PokeParticle(Particle):
 
 class MyApp(App):
     async def on_start(self):
-        RAINBOW = foreground_rainbow(NCOLORS)
-
-        # Starting colors of LOGO:
-        colors = np.full((HEIGHT, WIDTH), BLUE)
-        colors[-7:] = colors[-13: -7, -41:] = colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW
-
+        # Create array of starting colors of particles
+        colors = np.full((HEIGHT, WIDTH), BLUE_INDEX)
+        colors[-7:] = colors[-13: -7, -41:] = YELLOW_INDEX
+        colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW_INDEX
 
         field = ParticleField(dim=(HEIGHT, WIDTH))
+
         # Create a Particle for each non-space character in the logo
         field.add_widgets(
-            PokeParticle((y, x), char=char, color_index=colors[y, x], palette=RAINBOW)
+            PokeParticle((y, x), char=char, color_index=colors[y, x])
             for y, row in enumerate(LOGO.splitlines())
             for x, char in enumerate(row)
             if char != " "
         )
 
         self.root.add_widget(field)
+
 
 MyApp().run()
