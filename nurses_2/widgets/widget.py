@@ -97,7 +97,7 @@ class Widget:
 
     @property
     def middle(self):
-        return self.top + self.height // 2, self.left + self.width // 2
+        return self.height // 2, self.width // 2
 
     @property
     def root(self):
