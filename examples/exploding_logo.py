@@ -175,8 +175,7 @@ class PokeParticle(Particle):
         """
         Coroutine that returns a particle to its starting position with original color.
         """
-        if self._update_task:
-            self._update_task.cancel()
+        self._update_task.cancel()
 
         self.position = complex(*self.original_position)
         self.velocity = 0j
