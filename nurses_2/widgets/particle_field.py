@@ -6,6 +6,8 @@ class ParticleField(Widget):
     """
     A Widget that only has `Particle` children.
 
+    ParticleField's `render` and `dispatch_*` methods are specifically for `Particle` children.
+
     Raises
     ------
     ValueError if `add_widget` is called with non-`Particle`.
