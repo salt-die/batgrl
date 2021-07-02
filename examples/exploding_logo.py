@@ -57,7 +57,7 @@ BLUE_INDEX = round(.65 * NCOLORS)
 YELLOW_INDEX = round(.1 * NCOLORS)
 
 COLOR_CHANGE_SPEED = 5
-PERCENTS = tuple(np.linspace(0, 1, 50))
+PERCENTS = tuple(np.linspace(0, 1, 30))
 
 
 class PokeParticle(Particle):
