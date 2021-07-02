@@ -83,10 +83,8 @@ class PokeParticle(Particle):
 
     def on_press(self, key_press):
         if key_press.key == "r":
-            if self._reset_task:
-                self._reset_task.cancel()
-
-            self._reset_task = asyncio.create_task(self.reset())
+            if not self._reset_task or self._reset_task.done():
+                self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
         """
