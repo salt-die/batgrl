@@ -124,8 +124,7 @@ class PokeParticle(Particle):
             color_index = round(color_index + min(speed, MAX_PARTICLE_SPEED) * COLOR_CHANGE_SPEED) % NCOLORS
             self.color = RAINBOW[color_index]
 
-            velocity *= FRICTION
-            self.velocity = velocity
+            self.velocity = velocity * FRICTION
 
             try:
                 await asyncio.sleep(0)
@@ -160,6 +159,21 @@ class PokeParticle(Particle):
                 return
 
 
+class CenteringField(ParticleField):
+    """
+    A `ParticleField` that stays centered in its parent's canvas.
+
+    This is an example of how we get a widget to re-position itself
+    when its parent's geometry has changed.
+    """
+    def update_geometry(self):
+        parent_middle_row, parent_middle_column = self.parent.middle
+        middle_row, middle_column = self.middle
+
+        self.top = parent_middle_row - middle_row
+        self.left = parent_middle_column - middle_column
+
+
 class MyApp(App):
     async def on_start(self):
         # Create array of starting colors of particles
@@ -167,7 +181,7 @@ class MyApp(App):
         colors[-7:] = colors[-13: -7, -41:] = YELLOW_INDEX
         colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW_INDEX
 
-        field = ParticleField(dim=(HEIGHT, WIDTH))
+        field = CenteringField(dim=(HEIGHT, WIDTH))
 
         # Create a Particle for each non-space character in the logo
         field.add_widgets(
