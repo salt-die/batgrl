@@ -34,7 +34,7 @@ class _Root(Widget):
         self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=np.bool8)
 
         for child in self.children:
-            child.update_geometry(dim)
+            child.update_geometry()
 
     @property
     def top(self):

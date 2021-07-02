@@ -28,13 +28,12 @@ class Widget:
         is_transparent=False,
         is_visible=True,
         default_color=WHITE_ON_BLACK,
-        parent=None,
     ):
         self.top, self.left = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
 
-        self.parent = parent
+        self.parent = None
         self.children = [ ]
 
         self.canvas = np.full(dim, " ", dtype=object)
@@ -64,9 +63,9 @@ class Widget:
         self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]
 
         for child in self.children:
-            child.update_geometry(dim)
+            child.update_geometry()
 
-    def update_geometry(self, parent_dim):
+    def update_geometry(self):
         """
         Update geometry due to a change in parent's size.
         """
@@ -159,7 +158,7 @@ class Widget:
         """
         self.children.append(widget)
         widget.parent = self
-        widget.update_geometry(self.dim)
+        widget.update_geometry()
 
     def add_widgets(self, *widgets):
         """

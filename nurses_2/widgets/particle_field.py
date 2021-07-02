@@ -76,7 +76,6 @@ class Particle:
         color=WHITE_ON_BLACK,
         is_transparent=False,
         is_visible=True,
-        parent=None,
     ):
         self.char = char
         self.color = color
@@ -84,8 +83,9 @@ class Particle:
         self.top, self.left = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
+        self.parent = None
 
-    def update_geometry(self, parent_dim):
+    def update_geometry(self):
         """
         Update geometry due to a change in parent's size.
         """

@@ -15,18 +15,16 @@ class AutoResizeBehavior:
 
         super().__init__((10, 10), pos, **kwargs)
 
-        if self.parent:
-            update_geometry(self.parent.dim)
 
-    def update_geometry(self, dim):
+    def update_geometry(self):
         h_hint = self.h_hint
         w_hint = self.w_hint
 
-        h, w = dim
+        h, w = self.parent.dim
 
         height = self.height if h_hint is None else int(h_hint * h)
         width = self.width if w_hint is None else int(w_hint * w)
 
         self.resize((height, width))
 
-        super().update_geometry(dim)
+        super().update_geometry()
