@@ -3,14 +3,14 @@ from prompt_toolkit.mouse_events import MouseEvent, MouseEventType
 
 __all__ = (
     "MouseEventType",
-    "handle_mouse",
+    "create_mouse_event",
 )
 
 def create_mouse_event(key_press):
     """Create MouseEvent from a KeyPress.
     """
-    # This is the mostly the same as /prompt_toolkit/key_binding/bindings/mouse.py
-    # Reimplented for `nurses` to avoid `prompt_toolkit`'s KeyBinding class.
+    # Nearly identical to /prompt_toolkit/key_binding/bindings/mouse.py, but
+    # reimplented for `nurses` to avoid `prompt_toolkit`'s `KeyBinding` class.
     # (`nurses` dispatches input differently.)
 
     EVENTS = {
