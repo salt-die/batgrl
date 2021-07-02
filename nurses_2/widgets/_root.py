@@ -92,11 +92,11 @@ class _Root(Widget):
         super().render()  # Paint canvas
 
         # Find differences between current render and last render:
-        # (This is optimized version of `(last_canvas != canvas) | np.all(last_colors != colors, axis=-1)`
+        # (This is optimized version of `(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)`
         # that re-uses buffers instead of creating new arrays.)
         np.not_equal(last_canvas, canvas, out=char_diffs)
         np.not_equal(last_colors, colors, out=color_diffs)
-        np.all(color_diffs, axis=-1, out=reduced_color_diffs)
+        np.any(color_diffs, axis=-1, out=reduced_color_diffs)
         np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
 
         write("\x1b[?25l")  # Hide cursor
