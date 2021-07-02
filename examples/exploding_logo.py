@@ -13,6 +13,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import foreground_rainbow
 from nurses_2.mouse import MouseEventType
+from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
 from nurses_2.widgets.particle_field import Particle, ParticleField
 
 LOGO = """
@@ -65,35 +66,59 @@ class PokeParticle(Particle):
 
         super().__init__(*args, color=RAINBOW[color_index], **kwargs)
 
+        self.middle_row = self.middle_column = 0
         self.original_position = self.pos
+
+        self.position = complex(self.top, self.left)
         self.velocity = 0j
 
-        self._update_task = self._reset_task = None
+        self._update_task = self._reset_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+    def update_geometry(self):
+        """
+        Re-position towards center of parent's canvas on parent resize.
+        """
+        old_middle_row = self.middle_row
+        old_middle_column = self.middle_column
+
+        parent_middle_row, parent_middle_column = self.parent.middle
+        self.middle_row = parent_middle_row - HEIGHT // 2
+        self.middle_column = parent_middle_column - WIDTH // 2
+
+        move_vertical = self.middle_row - old_middle_row
+        move_horizontal = self.middle_column - old_middle_column
+
+        o_top, o_left = self.original_position
+        o_top += move_vertical
+        o_left += move_horizontal
+
+        self.original_position = o_top, o_left
+        self.position += complex(move_vertical, move_horizontal)
+        self.top += move_vertical
+        self.left += move_horizontal
 
     def on_click(self, mouse_event):
-        if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
+        if mouse_event.event_type != MouseEventType.MOUSE_DOWN:
             if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
 
-                if not self._update_task or self._update_task.done():
-                    if self._reset_task:
-                        self._reset_task.cancel()
-
+                if self._update_task.done():
+                    self._reset_task.cancel()
                     self._update_task = asyncio.create_task(self.update())
 
     def on_press(self, key_press):
-        if key_press.key == "r":
-            if not self._reset_task or self._reset_task.done():
-                self._reset_task = asyncio.create_task(self.reset())
+        if key_press.key == "r" and self._reset_task.done():
+            self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
         """
         Particle's position is updated by its velocity.
         """
-        position = complex(*self.pos)
+        parent = self.parent
         color_index = self.color_index
 
         while True:
+            position = self.position
             velocity = self.velocity
 
             speed = abs(velocity)
@@ -108,16 +133,19 @@ class PokeParticle(Particle):
 
             self.top = top = round(position.real)
             self.left = left = round(position.imag)
+            self.position = position
 
+            # Following two conditionals reverse particle's velocity when
+            # it collides with edge of parent's canvas.
             if (
                 top <= 0 and velocity.real < 0
-                or top + 1 >= HEIGHT and velocity.real > 0
+                or top + 1 >= parent.height and velocity.real > 0
             ):
                 velocity = -velocity.conjugate()
 
             if (
                 left <= 0 and velocity.imag < 0
-                or left + 1 >= WIDTH and velocity.imag > 0
+                or left + 1 >= parent.width and velocity.imag > 0
             ):
                 velocity = velocity.conjugate()
 
@@ -137,6 +165,9 @@ class PokeParticle(Particle):
         """
         if self._update_task:
             self._update_task.cancel()
+
+        self.position = complex(*self.original_position)
+        self.velocity = 0j
 
         start_y, start_x = self.pos
         end_y, end_x = self.original_position
@@ -159,19 +190,8 @@ class PokeParticle(Particle):
                 return
 
 
-class CenteringField(ParticleField):
-    """
-    A `ParticleField` that stays centered in its parent's canvas.
-
-    This is an example of how we get a widget to re-position itself
-    when its parent's geometry has changed.
-    """
-    def update_geometry(self):
-        parent_middle_row, parent_middle_column = self.parent.middle
-        middle_row, middle_column = self.middle
-
-        self.top = parent_middle_row - middle_row
-        self.left = parent_middle_column - middle_column
+class AutoResizeParticleField(AutoResizeBehavior, ParticleField):
+    pass
 
 
 class MyApp(App):
@@ -181,7 +201,7 @@ class MyApp(App):
         colors[-7:] = colors[-13: -7, -41:] = YELLOW_INDEX
         colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW_INDEX
 
-        field = CenteringField(dim=(HEIGHT, WIDTH))
+        field = AutoResizeParticleField()
 
         # Create a Particle for each non-space character in the logo
         field.add_widgets(
