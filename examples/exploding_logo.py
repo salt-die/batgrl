@@ -178,7 +178,6 @@ class PokeParticle(Particle):
         """
         self._update_task.cancel()
 
-        self.position = complex(*self.original_position)
         self.velocity = 0j
 
         start_y, start_x = self.pos
@@ -192,6 +191,7 @@ class PokeParticle(Particle):
 
             self.top = round(percent_left * start_y + percent * end_y)
             self.left = round(percent_left * start_x + percent * end_x)
+            self.position = complex(self.top, self.left)
 
             color_index = round(percent_left * start_color_index + percent * end_color_index)
             self.color = RAINBOW[color_index]
