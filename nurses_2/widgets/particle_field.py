@@ -5,42 +5,16 @@ from ..colors import WHITE_ON_BLACK
 class ParticleField(Widget):
     """
     A Widget that only has `Particle` children.
+
+    Raises
+    ------
+    ValueError if `add_widget` is called with non-`Particle`.
     """
     def add_widget(self, widget):
-        raise NotImplementedError("use `add_particle` instead")
+        if not isinstance(widget, Particle):
+            raise ValueError(f"expected Particle, got {type(widget).__name__}")
 
-    def add_widgets(self, widget):
-        raise NotImplementedError("use `add_particles` instead")
-
-    def remove_widget(self, widget):
-        raise NotImplementedError("use `remove_particle` instead")
-
-    def add_particle(self, particle):
-        """
-        Add a particle.
-        """
-        if not isinstance(particle, Particle):
-            raise ValueError(f"expected Particle, got {type(particle).__name__}")
-
-        self.children.append(particle)
-        particle.update_geometry(self.dim)
-
-    def add_particles(self, *particles):
-        """
-        Add particles.
-        """
-        if len(particles) == 1 and not isinstance(particles[0], Particle):
-            # Assume item is an iterable of particles.
-            particles = particles[0]
-
-        for particle in particles:
-            self.add_particle(particle)
-
-    def remove_particle(self, particle):
-        """
-        Remove a particle.
-        """
-        self.children.remove(particle)
+        super().add_widget(widget)
 
     def walk(self):
         yield self
@@ -60,9 +34,10 @@ class ParticleField(Widget):
 
         canvas[:] = " "
         colors[:, :] = self.default_color
-        pos = top, left = child.top, chld.left
 
         for child in self.children:
+            pos = top, left = child.top, child.left
+
             if (
                 child.is_visible
                 and not (child.is_transparent and child.char == " ")
@@ -84,7 +59,7 @@ class ParticleField(Widget):
     def dispatch_click(self, mouse_event):
         return (
             self.on_click(mouse_event)
-            or any(particle.on_click(key_press) for particle in reversed(self.children))
+            or any(particle.on_click(mouse_event) for particle in reversed(self.children))
         )
 
 
@@ -101,6 +76,7 @@ class Particle:
         color=WHITE_ON_BLACK,
         is_transparent=False,
         is_visible=True,
+        parent=None,
     ):
         self.char = char
         self.color = color
@@ -121,6 +97,13 @@ class Particle:
     @property
     def dim(self):
         return 1, 1
+
+    def absolute_to_relative_coords(self, coords):
+        """
+        Convert absolute coordinates to relative coordinates.
+        """
+        y, x = self.parent.absolute_to_relative_coords(coords)
+        return y - self.top, x - self.left
 
     def on_press(self, key_press):
         """
