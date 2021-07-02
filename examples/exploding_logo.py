@@ -108,7 +108,8 @@ class PokeParticle(Particle):
         """
         Handle a mouse event.
         """
-        if mouse_event.event_type != MouseEventType.MOUSE_DOWN:
+        # Note Linux does not report move events.
+        if mouse_event.event_type in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_DOWN_MOVE):
             if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
 
