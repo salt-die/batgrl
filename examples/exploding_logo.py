@@ -115,7 +115,7 @@ class PokeParticle(Particle):
         Particle's position is updated by its velocity.
         """
         parent = self.parent
-        color_index = self.color_index
+        color_index = RAINBOW.index(self.color)
 
         while True:
             position = self.position
