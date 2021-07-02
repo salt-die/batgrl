@@ -51,7 +51,7 @@ FRICTION = .97
 NCOLORS = 100
 BLUE, YELLOW = round(.65 * NCOLORS), round(.1 * NCOLORS)
 COLOR_CHANGE_SPEED = 5
-PERCENTS = tuple(np.linspace(0, 1, 101))
+PERCENTS = tuple(np.linspace(0, 1, 50))
 
 
 class PokeParticle(Particle):
