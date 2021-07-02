@@ -91,12 +91,32 @@ class Particle:
         """
 
     @property
+    def dim(self):
+        return 1, 1
+
+    @property
     def pos(self):
         return self.top, self.left
 
     @property
-    def dim(self):
-        return 1, 1
+    def height(self):
+        return 1
+
+    @property
+    def width(self):
+        return 1
+
+    @property
+    def bottom(self):
+        return self.top + 1
+
+    @property
+    def right(self):
+        return self.left + 1
+
+    @property
+    def middle(self):
+        return 0, 0
 
     def absolute_to_relative_coords(self, coords):
         """
