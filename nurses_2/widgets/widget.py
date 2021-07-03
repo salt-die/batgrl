@@ -17,6 +17,8 @@ class Widget:
         If true, white-space is "see-through".
     is_visible : bool, default: True
         If false, widget won't be painted.
+    default_char : str, default: " "
+        Default background character.
     default_color : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     """
@@ -27,6 +29,7 @@ class Widget:
         *,
         is_transparent=False,
         is_visible=True,
+        default_char=" ",
         default_color=WHITE_ON_BLACK,
     ):
         self.top, self.left = pos
@@ -36,10 +39,11 @@ class Widget:
         self.parent = None
         self.children = [ ]
 
-        self.canvas = np.full(dim, " ", dtype=object)
+        self.canvas = np.full(dim, default_char, dtype=object)
         self.colors = np.zeros((*dim, 6), dtype=np.uint8)
         self.colors[:, :] = default_color
 
+        self.default_char = default_char
         self.default_color = default_color
 
     def resize(self, dim):
@@ -55,7 +59,7 @@ class Widget:
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full(dim, " ", dtype=object)
+        self.canvas = np.full(dim, self.default_char, dtype=object)
         self.colors = np.zeros((h, w, 6), dtype=np.uint8)
         self.colors[:, :] = self.default_color
 

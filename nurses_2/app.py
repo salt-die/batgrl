@@ -42,8 +42,9 @@ class App(ABC):
     MyApp().run()
     ```
     """
-    def __init__(self, *, exit_key="escape", default_color=WHITE_ON_BLACK):
+    def __init__(self, *, exit_key="escape", default_char=" ", default_color=WHITE_ON_BLACK):
         self.exit_key = exit_key
+        self.default_char = default_char
         self.default_color = default_color
 
     @abstractmethod
@@ -78,7 +79,12 @@ class App(ABC):
         with create_environment() as (env_out, env_in):
             exit_key = self.exit_key
 
-            self.root = root = _Root(app=self, env_out=env_out, default_color=self.default_color)
+            self.root = root = _Root(
+                app=self,
+                env_out=env_out,
+                default_char=self.default_char,
+                default_color=self.default_color,
+            )
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click
 

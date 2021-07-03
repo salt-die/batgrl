@@ -7,9 +7,10 @@ class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, app, env_out, default_color):
+    def __init__(self, app, env_out, default_char, default_color):
         self._app = app
         self.env_out = env_out
+        self.default_char = default_char
         self.default_color = default_color
         self.children = [ ]
 
