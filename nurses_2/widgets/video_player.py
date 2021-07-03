@@ -4,8 +4,12 @@ from pathlib import Path
 import time
 
 import cv2
+import numpy as np
 
-from nurses_2.widgets import Widget
+from .widget import Widget
+from ..colors import ColorPair
+
+BLACK_ON_BLACK = ColorPair(0, 0, 0, 0, 0, 0)
 
 @contextmanager
 def open_video(path):
@@ -24,7 +28,11 @@ class VideoPlayer(Widget):
     A video player.
     """
     def __init__(self, *args, path: Path, **kwargs):
-        super().__init__(*args, **kwargs)
+        kwargs.pop('default_char', None)
+        kwargs.pop('default_color', None)
+
+        super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
+
         self.path = path
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
@@ -41,11 +49,12 @@ class VideoPlayer(Widget):
                     if not read_flag:
                         return
 
-                    dim = self.width, self.height
+                    dim = self.width, 2 * self.height
                     resized_frame = cv2.resize(frame, dim)
                     BGR_to_RGB = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
 
-                    self.colors[:, :, 3:] = BGR_to_RGB
+                    self.colors[:, :, :3] = BGR_to_RGB[::2]
+                    self.colors[:, :, 3:] = BGR_to_RGB[1::2]
 
                 try:
                     await asyncio.sleep(0)
