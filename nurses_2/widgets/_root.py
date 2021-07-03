@@ -1,16 +1,16 @@
 import numpy as np
 
 from .widget import Widget
-from ..colors import WHITE_ON_BLACK
 
 
 class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, env_out):
+    def __init__(self, app, env_out, default_color):
+        self.app = app
         self.env_out = env_out
-        self.default_color = WHITE_ON_BLACK
+        self.default_color = default_color
         self.children = [ ]
 
         self.resize(env_out.get_size())
