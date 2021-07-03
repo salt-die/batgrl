@@ -7,8 +7,9 @@ from prompt_toolkit.output import create_output
 from prompt_toolkit.utils import is_windows, is_conemu_ansi
 from prompt_toolkit.keys import Keys
 
-from .widgets._root import _Root
+from .colors import WHITE_ON_BLACK
 from .mouse import create_mouse_event
+from .widgets._root import _Root
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
@@ -41,8 +42,9 @@ class App(ABC):
     MyApp().run()
     ```
     """
-    def __init__(self, *, exit_key="escape"):
+    def __init__(self, *, exit_key="escape", default_color=WHITE_ON_BLACK):
         self.exit_key = exit_key
+        self.default_color = default_color
 
     @abstractmethod
     async def on_start(self):
@@ -76,7 +78,7 @@ class App(ABC):
         with create_environment() as (env_out, env_in):
             exit_key = self.exit_key
 
-            self.root = root = _Root(env_out)
+            self.root = root = _Root(app=self, env_out=env_out, default_color=self.default_color)
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click
 
