@@ -17,11 +17,16 @@ def open_video(path):
         video.release()
 
 
-# This is a very remedial video player with no controls.  It may be expanded in the future.
+# This is a very remedial video player.  Currently it only starts and stops.
+# Seeking and other controls from `cv2` may get added in the future.
 class VideoPlayer(Widget):
+    """
+    A video player.
+    """
     def __init__(self, *args, path: Path, **kwargs):
         super().__init__(*args, **kwargs)
         self.path = path
+        self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
     async def _play_video(self):
         with open_video(self.path) as video:
@@ -48,4 +53,7 @@ class VideoPlayer(Widget):
                     return
 
     def start(self):
-        asyncio.create_task(self._play_video())
+        self._video = asyncio.create_task(self._play_video())
+
+    def stop(self):
+        self._video.cancel()
