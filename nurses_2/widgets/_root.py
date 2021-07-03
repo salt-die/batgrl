@@ -8,7 +8,7 @@ class _Root(Widget):
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
     def __init__(self, app, env_out, default_color):
-        self.app = app
+        self._app = app
         self.env_out = env_out
         self.default_color = default_color
         self.children = [ ]
@@ -59,6 +59,10 @@ class _Root(Widget):
     @property
     def root(self):
         return self
+
+    @property
+    def app(self):
+        return self._app
 
     def absolute_to_relative_coords(self, coord):
         return coord
