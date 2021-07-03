@@ -105,6 +105,13 @@ class Widget:
         """
         return self.parent.root
 
+    @property
+    def app(self):
+        """
+        The running app.
+        """
+        return self.root.app
+
     def add_text(self, text, row=0, column=0):
         """
         Add text to the canvas.
