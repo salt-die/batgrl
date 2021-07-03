@@ -34,7 +34,7 @@ class ParticleField(Widget):
 
         h, w = canvas.shape
 
-        canvas[:] = " "
+        canvas[:] = self.default_char
         colors[:, :] = self.default_color
 
         for child in self.children:
