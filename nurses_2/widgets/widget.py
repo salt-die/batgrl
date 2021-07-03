@@ -122,7 +122,7 @@ class Widget:
         if column < 0:
             column += self.canvas.shape[1]
 
-        self.canvas[row, column:column + len(text)] = *text,
+        self.canvas[row, column:column + len(text)] = tuple(text)
 
     @property
     def get_view(self):
