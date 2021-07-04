@@ -1,12 +1,12 @@
 from typing import NamedTuple
 
 __all__ = (
-    "RGB",
+    "Color",
     "ColorPair",
 )
 
 
-class RGB(NamedTuple):
+class Color(NamedTuple):
     """
     A tuple representing a 24-bit color.
     """

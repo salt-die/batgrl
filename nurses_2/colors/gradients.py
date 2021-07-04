@@ -3,7 +3,7 @@ Functions for creating color gradients.
 """
 import numpy as np
 
-from .color_types import RGB, ColorPair
+from .color_types import Color, ColorPair
 from .colors import BLACK, WHITE
 
 __all__ = (
@@ -21,7 +21,7 @@ def _rainbow_gradient(n):
     THETA = TAU / n
 
     for i in range(n):
-        yield RGB(
+        yield Color(
             *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
         )
 
