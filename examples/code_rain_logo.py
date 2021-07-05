@@ -7,7 +7,16 @@ import numpy as np
 from numpy.random import default_rng
 
 from nurses_2.app import App
-from nurses_2.colors import Color, ColorPair, gradient, BLACK, GREEN, WHITE, WHITE_ON_BLACK
+from nurses_2.colors import (
+    Color,
+    ColorPair,
+    gradient,
+    BLACK,
+    GREEN,
+    WHITE,
+    WHITE_ON_BLACK,
+    BLACK_ON_BLACK,
+)
 from nurses_2.widgets import Widget
 
 LOGO = """
@@ -47,7 +56,6 @@ RANDOM_CHARACTERS = list('=^74xt2ZI508')
 
 # Colors
 GREEN_ON_BLACK = ColorPair(*GREEN, *BLACK)
-BLACK_ON_BLACK = ColorPair(*BLACK, *BLACK)
 
 BLUE = Color(48, 105, 152)
 BLUE_ON_BLACK = ColorPair(*BLUE, *BLACK)

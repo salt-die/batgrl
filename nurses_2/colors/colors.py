@@ -13,3 +13,4 @@ CYAN = Color(0, 255, 255)
 MAGENTA = Color(255, 0, 255)
 
 WHITE_ON_BLACK = ColorPair(*WHITE, *BLACK)
+BLACK_ON_BLACK = ColorPair(0, 0, 0, 0, 0, 0)

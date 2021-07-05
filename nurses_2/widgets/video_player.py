@@ -7,9 +7,7 @@ import cv2
 import numpy as np
 
 from .widget import Widget
-from ..colors import ColorPair
-
-BLACK_ON_BLACK = ColorPair(0, 0, 0, 0, 0, 0)
+from ..colors import BLACK_ON_BLACK
 
 @contextmanager
 def open_video(path):
