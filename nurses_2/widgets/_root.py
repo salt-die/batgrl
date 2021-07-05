@@ -22,7 +22,7 @@ class _Root(Widget):
         """
         self.env_out.erase_screen()
 
-        self._last_canvas = np.full(dim, " ", dtype=object)
+        self._last_canvas = np.full(dim, self.default_char, dtype=object)
         self._last_colors = np.zeros((*dim, 6), dtype=np.uint8)
         self._last_colors[:, :] = self.default_color
 
@@ -91,7 +91,7 @@ class _Root(Widget):
         write = env_out._buffer.append
 
         # Erase canvas:
-        canvas[:] = " "
+        canvas[:] = self.default_char
         colors[:, :] = self.default_color
 
         super().render()  # Paint canvas
