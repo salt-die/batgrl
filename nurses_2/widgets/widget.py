@@ -156,7 +156,7 @@ class Widget:
         y, x = self.parent.absolute_to_relative_coords(coords)
         return y - self.top, x - self.left
 
-    def collide_coords(self, coords):
+    def collides_coords(self, coords):
         """
         Return True if screen-coordinates are within this widget's bounding box.
         """
