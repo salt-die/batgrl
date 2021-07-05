@@ -1,1 +1,1 @@
-opencv-python  # Required for VideoPlayer widget
+opencv-python  # Required for `Image` and `VideoPlayer` widget
