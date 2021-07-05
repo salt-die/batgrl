@@ -4,7 +4,6 @@ from pathlib import Path
 import time
 
 import cv2
-import numpy as np
 
 from .widget import Widget
 from ..colors import BLACK_ON_BLACK
@@ -39,10 +38,9 @@ class VideoPlayer(Widget):
             start_time = time.monotonic()
 
             while True:
-                delta = video.get(cv2.CAP_PROP_POS_MSEC) / 1000 + start_time - time.monotonic()
+                seconds_ahead = video.get(cv2.CAP_PROP_POS_MSEC) / 1000 + start_time - time.monotonic()
 
-                # This check prevents video from rendering too fast.
-                if delta <= 0:
+                if seconds_ahead <= 0:  # Prevents video from rendering too fast.
                     read_flag, frame = video.read()
                     if not read_flag:
                         return
@@ -54,8 +52,10 @@ class VideoPlayer(Widget):
                     self.colors[:, :, :3] = BGR_to_RGB[::2]
                     self.colors[:, :, 3:] = BGR_to_RGB[1::2]
 
+                    seconds_ahead = 0
+
                 try:
-                    await asyncio.sleep(0)
+                    await asyncio.sleep(seconds_ahead)
                 except asyncio.CancelledError:
                     return
 
