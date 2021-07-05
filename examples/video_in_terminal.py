@@ -1,5 +1,5 @@
 """
-Example for how to play videos with nurses.
+How to play videos with nurses.
 
 Requires opencv-python.
 """
@@ -11,7 +11,10 @@ PATH_TO_VIDEO = ""  # "path/to/video.mp4"
 
 
 class AutoResizeVideoPlayer(AutoResizeBehavior, VideoPlayer):
-    pass
+    """
+    AutoResizeBehavior default arguments will resize VideoPlayer to screen size
+    whenever the screen size changes.
+    """
 
 
 class MyApp(App):
