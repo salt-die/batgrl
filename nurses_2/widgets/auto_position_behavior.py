@@ -2,18 +2,18 @@ from enum import Enum
 
 
 class Anchor(str, Enum):
-    center = "center"
-    top_left = "top_left"
-    top_right = "top_right"
-    bottom_left = "bottom_left"
-    bottom_right = "bottom_right"
+    CENTER = "CENTER"
+    TOP_LEFT = "TOP_LEFT"
+    TOP_RIGHT = "TOP_RIGHT"
+    BOTTOM_LEFT = "BOTTOM_LEFT"
+    BOTTOM_RIGHT = "BOTTOM_RIGHT"
 
 
 class AutoPositionBehavior:
     """
     Re-position anchor to some percentage of parent's height / width (given by `pos_hint`) when parent is resized.
     """
-    def __init__(self, *args, anchor=Anchor.top_left, pos_hint=(.5, .5), **kwargs):
+    def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint=(.5, .5), **kwargs):
         self.anchor = anchor
         self.top_hint, self.left_hint = pos_hint
 
@@ -22,15 +22,15 @@ class AutoPositionBehavior:
     def update_geometry(self):
         anchor = self.anchor
 
-        if anchor == Anchor.top_left:
+        if anchor == Anchor.TOP_LEFT:
             offset_top, offset_left = 0, 0
-        elif anchor == Anchor.top_right:
+        elif anchor == Anchor.TOP_RIGHT:
             offset_top, offset_left = 0, self.right
-        elif anchor == Anchor.bottom_left:
+        elif anchor == Anchor.BOTTOM_LEFT:
             offset_top, offset_left = self.bottom, 0
-        elif anchor == Anchor.bottom_right:
+        elif anchor == Anchor.BOTTOM_RIGHT:
             offset_top, offset_left = self.bottom, self.right
-        elif anchor == Anchor.center:
+        elif anchor == Anchor.CENTER:
             offset_top, offset_left = self.middle
 
         h, w = self.parent.dim
