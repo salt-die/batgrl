@@ -1,27 +1,46 @@
 import asyncio
 
+import numpy as np
+
 from nurses_2.app import App
-from nurses_2.colors import ColorPair, gradient, BLACK, BLUE, WHITE, YELLOW
+from nurses_2.colors import ColorPair, gradient, BLUE, WHITE, YELLOW
 from nurses_2.widgets import Widget
 from nurses_2.widgets.button_behavior import ButtonBehavior
 
 WHITE_ON_BLUE = ColorPair(*WHITE, *BLUE)
-BLACK_ON_YELLOW = ColorPair(*BLACK, *YELLOW)
-
+WHITE_ON_YELLOW = ColorPair(*WHITE, *YELLOW)
 
 class MyButton(ButtonBehavior, Widget):
+    GRADIENT = (
+        gradient(10, WHITE_ON_YELLOW, WHITE_ON_BLUE)
+        + gradient(10, WHITE_ON_BLUE, WHITE_ON_YELLOW)
+    )
+
     def __init__(self, output_view, event_view, pos=(0, 0), **kwargs):
         self.output_view = output_view
         self.event_view = event_view
+        self._down_roll_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
         super().__init__(dim=(5, 20), pos=pos, **kwargs)
 
         self.add_text(f"{'Press Me':^20}", row=2)
 
     def update_down(self):
-        self.colors[:, :] = BLACK_ON_YELLOW
+        self.colors[:, :] = self.GRADIENT
+
+        self._down_roll_task = asyncio.create_task(self._down_roll())
+
+    async def _down_roll(self):
+        while True:
+            self.colors = np.roll(self.colors, 1, axis=(1, ))
+
+            try:
+                await asyncio.sleep(.1)
+            except asyncio.CancelledError:
+                return
 
     def update_normal(self):
+        self._down_roll_task.cancel()
         self.colors[:, :] = WHITE_ON_BLUE
 
     def on_release(self):
