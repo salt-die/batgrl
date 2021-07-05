@@ -26,7 +26,7 @@ class VideoPlayer(Widget):
 
     Parameters
     ----------
-    path: pathlib.Path
+    path : pathlib.Path
         Path to video.
     """
     def __init__(self, *args, path: Path, **kwargs):
