@@ -23,6 +23,11 @@ def open_video(path):
 class VideoPlayer(Widget):
     """
     A video player.
+
+    Parameters
+    ----------
+    path: pathlib.Path
+        Path to video.
     """
     def __init__(self, *args, path: Path, **kwargs):
         kwargs.pop('default_char', None)
