@@ -11,9 +11,18 @@ class Anchor(str, Enum):
 
 class AutoPositionBehavior:
     """
-    Re-position anchor to some percentage of parent's height / width (given by `pos_hint`) when parent is resized.
+    Re-position anchor to some percentage of parent's height / width
+    (given by `pos_hint`) when parent is resized.
+
+    Parameters
+    ----------
+    anchor : Anchor, default: Anchor.TOP_LEFT
+        The part of this widget anchored to the pos_hint.
+    pos_hint : tuple[float | None, float | None], default: (0.0, 0.0)
+        The location of the anchor as a percentage parent's dimensions.
+        None indicates top or left attribute will be used normally.
     """
-    def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint=(.5, .5), **kwargs):
+    def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint=(0.0, 0.0), **kwargs):
         self.anchor = anchor
         self.top_hint, self.left_hint = pos_hint
 
@@ -37,7 +46,10 @@ class AutoPositionBehavior:
         top_hint = self.top_hint
         left_hint = self.left_hint
 
-        self.top = round(h * top_hint) - offset_top
-        self.left = round(w * left_hint) - offset_left
+        if top_hint is not None:
+            self.top = round(h * top_hint) - offset_top
+
+        if left_hint is not None:
+            self.left = round(w * left_hint) - offset_left
 
         super().update_geometry()
