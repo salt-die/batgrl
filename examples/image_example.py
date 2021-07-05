@@ -22,7 +22,7 @@ class MyApp(App):
             size_hint=(.5, .5),
             path=PATH_TO_STAR,
             alpha_threshold=157,
-            is_transparent=True
+            is_transparent=True,
         )
 
         logo = AutoGeometryImage(
