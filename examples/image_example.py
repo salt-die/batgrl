@@ -2,12 +2,12 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
+from nurses_2.widgets.auto_position_behavior import AutoPositionBehavior
 from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
 
-
-PATH_TO_STAR = Path('star.png')
-PATH_TO_LOGO = Path('python_discord_logo.png')
+PATH_TO_LOGO_FLAT = Path('logo_solo_flat_256.png')
+PATH_TO_LOGO_FULL = Path('python_discord_logo.png')
+PATH_TO_BACKGROUND = Path('background.png')
 
 
 class AutoGeometryImage(AutoPositionBehavior, AutoResizeBehavior, Image):
@@ -16,25 +16,22 @@ class AutoGeometryImage(AutoPositionBehavior, AutoResizeBehavior, Image):
 
 class MyApp(App):
     async def on_start(self):
+        background = AutoGeometryImage(path=PATH_TO_BACKGROUND)
+
         star = AutoGeometryImage(
-            anchor=Anchor.TOP_LEFT,
-            pos_hint=(0, 0),
             size_hint=(.5, .5),
-            path=PATH_TO_STAR,
+            path=PATH_TO_LOGO_FLAT,
             alpha_threshold=157,
             is_transparent=True,
         )
 
         logo = AutoGeometryImage(
-            anchor=Anchor.TOP_LEFT,
             pos_hint=(.5, .5),
             size_hint=(.5, .5),
-            path=PATH_TO_LOGO,
-            alpha_threshold=0,
-            is_transparent=True,
+            path=PATH_TO_LOGO_FULL,
         )
 
-        self.root.add_widgets(star, logo)
+        self.root.add_widgets(background, star, logo)
 
 
-MyApp(default_char="M").run()
+MyApp().run()
