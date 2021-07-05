@@ -10,3 +10,7 @@ A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) d
 # /examples/exploding_logo.py
 
 ![Exploding logo example](exploding_logo.gif)
+
+# /examples/button_example.py
+
+![Button example](button_example.gif)
