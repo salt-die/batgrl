@@ -7,9 +7,29 @@ from .widget import Widget
 from ..colors import BLACK_ON_BLACK
 
 
+class ReloadTextureProperty:
+    def __set_name__(self, owner, name):
+        self.name = '_' + name
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+
+        return getattr(instance, self.name)
+
+    def __set__(self, instance, value):
+        instance.__dict__[self.name] = value
+        instance._load_texture()
+
+
 class Image(Widget):
     """
     An Image widget.
+
+    Notes
+    -----
+    Changing the path to an Image (or updating `is_grayscale` or `alpha_threshold`)
+    will immediately reload the image.
 
     Parameters
     ----------
@@ -22,26 +42,41 @@ class Image(Widget):
         values less than or equal to alpha_threshold will be considered
         fully transparent. (0 <= alpha_threshold <= 255)
     """
+    is_grayscale = ReloadTextureProperty()
+    alpha_threshold = ReloadTextureProperty()
+    path = ReloadTextureProperty()
+
     def __init__(self, *args, path: Path, is_grayscale=False, alpha_threshold=0, **kwargs):
         kwargs.pop('default_char', None)
         kwargs.pop('default_color', None)
 
         super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
 
-        self.path = path
-        self.is_grayscale = is_grayscale
-        self.alpha_threshold = alpha_threshold
+        self._is_grayscale = is_grayscale
+        self._alpha_threshold = alpha_threshold
+        self._path = path
 
-        # Determine if there's an alpha channel
-        unchanged_texture = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
+        self._load_texture()
+
+    def _load_texture(self):
+        path = str(self.path)
+
+        # Load unchanged to determine if there is an alpha channel.
+        unchanged_texture = cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
         if unchanged_texture.shape[-1] == 4:
+            # `copy` because we want `unchanged_texture` to be garbage collected.
             self.alpha = unchanged_texture[:, :, -1].copy()
         else:
             self.alpha = None
 
-        # Reload, but ensure format.
-        self.texture = cv2.cvtColor(cv2.imread(str(path), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+        # Reload in BGR format.
+        bgr_texture = cv2.imread(path, cv2.IMREAD_COLOR)
+        if self.is_grayscale:
+            grayscale = cv2.cvtColor(bgr_texture, cv2.COLOR_BGR2GRAY)
+            self.texture = cv2.cvtColor(grayscale, cv2.COLOR_GRAY2RGB)
+        else:
+            self.texture = cv2.cvtColor(bgr_texture, cv2.COLOR_BGR2RGB)
 
         self.resize(self.dim)
 
