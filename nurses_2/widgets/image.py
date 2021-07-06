@@ -86,15 +86,13 @@ class Image(Widget):
         """
         h, w = dim
         TEXTURE_DIM = w, 2 * h
-
         self.canvas = np.full(dim, self.default_char, dtype=object)
         self.colors = np.zeros((h, w, 6), dtype=np.uint8)
 
         if self.alpha is not None and self.is_transparent:
-            alpha = cv2.resize(self.alpha, TEXTURE_DIM)
-            transparent = alpha <= self.alpha_threshold
-
-            self.canvas[transparent[::2] & transparent[1::2]] = " "
+            self.where_visible = cv2.resize(self.alpha, TEXTURE_DIM) > self.alpha_threshold
+        else:
+            self.where_visible = None
 
         texture =  cv2.resize(self.texture, TEXTURE_DIM)
         self.colors[:, :, :3] = texture[::2]
