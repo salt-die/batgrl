@@ -324,37 +324,54 @@ class Widget:
         dest_rect = slice(dt, db), slice(dl, dr)
         source_rect = slice(st, sb), slice(sl, sr)
 
-        if child.is_transparent:
-            if isinstance(child, Image) and child.where_visible is not None:
-                visible = child.where_visible
-
-                fg = visible[::2][source_rect]
-                bg = visible[1::2][source_rect]
-                no_fg = ~fg & bg
-                seen = fg | bg
-
-                canvas[dest_rect][seen] = child.canvas[source_rect][seen]
-
-                color_dest = self.colors[dest_rect]
-                color_source = child.colors[source_rect]
-
-                # Where the upper half-block character of an Image
-                # corresponds to a transparent pixel the child's
-                # foreground is replaced by the parent's background.
-                color_dest[:, :, :3][no_fg] = color_dest[:, :, 3:][no_fg]
-
-                color_dest[:, :, :3][fg] = color_source[:, :, :3][fg]
-                color_dest[:, :, 3:][bg] = color_source[:, :, 3:][bg]
-
-            else:  # " " isn't painted if child is transparent.
-                source = child.canvas[source_rect]
-                visible = source != " "
-
-                canvas[dest_rect][visible] = source[visible]
-                self.colors[dest_rect][visible] = child.colors[source_rect][visible]
-        else:
+        if not child.is_transparent:
+            # Default case.
             canvas[dest_rect] = child.canvas[source_rect]
             self.colors[dest_rect] = child.colors[source_rect]
+            return
+
+        if not isinstance(child, Image):
+            source = child.canvas[source_rect]
+            visible = source != " "  # " " isn't painted if child is transparent.
+
+            canvas[dest_rect][visible] = source[visible]
+            self.colors[dest_rect][visible] = child.colors[source_rect][visible]
+
+        # If we're here, child must be an Image.
+
+        if child.where_visible is None:
+            # Default case again.  This happens when an Image is transparent,
+            # but its texture had no alpha channels.
+            canvas[dest_rect] = child.canvas[source_rect]
+            self.colors[dest_rect] = child.colors[source_rect]
+            return
+
+        # Child is an Image, it's transparent, and its texture has an alpha channel.
+
+        # Images (and VideoPlayers too) use upper half-blocks to double their effective
+        # resolution. Sometimes the foreground color of an upper half-block corresponds
+        # to a transparent pixel in the texture.  In this case, the child's parent's
+        # background color needs to be copied to the foreground. This will require a bit
+        # of numpy abuse. Prepare to kick ass:
+
+        visible = child.where_visible    # This array is double the height of child.canvas.
+
+        fg = visible[::2][source_rect]   # upper-half of character is visible
+        bg = visible[1::2][source_rect]  # lower-half of character is visible
+
+        # If either fg or bg is visible, we use the half-block characters of Image.
+        either = fg | bg
+        canvas[dest_rect][either] = child.canvas[source_rect][either]
+
+        color_dest = self.colors[dest_rect]
+        color_source = child.colors[source_rect]
+
+        # Parent's background color is moved to the foreground.
+        no_fg = ~fg & bg
+        color_dest[:, :, :3][no_fg] = color_dest[:, :, 3:][no_fg]
+
+        color_dest[:, :, :3][fg] = color_source[:, :, :3][fg]
+        color_dest[:, :, 3:][bg] = color_source[:, :, 3:][bg]
 
     def render(self):
         """
