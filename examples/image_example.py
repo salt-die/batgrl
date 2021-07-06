@@ -18,14 +18,14 @@ class MyApp(App):
     async def on_start(self):
         background = AutoGeometryImage(path=PATH_TO_BACKGROUND)
 
-        star = AutoGeometryImage(
+        logo_flat = AutoGeometryImage(
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FLAT,
             alpha_threshold=157,
             is_transparent=True,
         )
 
-        logo = AutoGeometryImage(
+        logo_full = AutoGeometryImage(
             pos_hint=(.5, .5),
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FULL,
@@ -33,7 +33,7 @@ class MyApp(App):
             is_transparent=True,
         )
 
-        self.root.add_widgets(background, star, logo)
+        self.root.add_widgets(background, logo_flat, logo_full)
 
 
 MyApp().run()
