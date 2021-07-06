@@ -32,6 +32,7 @@ class VideoPlayer(Widget):
     def __init__(self, *args, path: Path, **kwargs):
         kwargs.pop('default_char', None)
         kwargs.pop('default_color', None)
+        kwargs.pop('is_transparent', None)
 
         super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
 
