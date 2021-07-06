@@ -29,6 +29,8 @@ class MyApp(App):
             pos_hint=(.5, .5),
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FULL,
+            is_transparent=True,
+            alpha_threshold=157,
         )
 
         self.root.add_widgets(background, star, logo)
