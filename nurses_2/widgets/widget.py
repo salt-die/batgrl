@@ -2,6 +2,8 @@ import numpy as np
 
 from ..colors import WHITE_ON_BLACK
 
+Image = type(None)  # This will be set to `Image` as soon as any `Image` is imported.
+
 
 class Widget:
     """
@@ -22,6 +24,15 @@ class Widget:
     default_color : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     """
+    registry = { }
+
+    def __init_subclass__(cls):
+        Widget.registry[cls.__name__] = cls
+
+        if cls.__name__ == "Image":
+            global Image
+            Image = cls  # Deferred "import".  This will be needed for `render` method.
+
     def __init__(
         self,
         dim,
@@ -313,11 +324,34 @@ class Widget:
         dest_rect = slice(dt, db), slice(dl, dr)
         source_rect = slice(st, sb), slice(sl, sr)
 
-        if child.is_transparent:  # " " isn't painted if child is transparent.
-            source = child.canvas[source_rect]
-            visible = source != " "
-            canvas[dest_rect][visible] = source[visible]
-            self.colors[dest_rect][visible] = child.colors[source_rect][visible]
+        if child.is_transparent:
+            if isinstance(child, Image) and child.where_visible is not None:
+                visible = child.where_visible
+
+                fg = visible[::2][source_rect]
+                bg = visible[1::2][source_rect]
+                no_fg = ~fg & bg
+                seen = fg | bg
+
+                canvas[dest_rect][seen] = child.canvas[source_rect][seen]
+
+                color_dest = self.colors[dest_rect]
+                color_source = child.colors[source_rect]
+
+                # Where the upper half-block character of an Image
+                # corresponds to a transparent pixel the child's
+                # foreground is replaced by the parent's background.
+                color_dest[:, :, :3][no_fg] = color_dest[:, :, 3:][no_fg]
+
+                color_dest[:, :, :3][fg] = color_source[:, :, :3][fg]
+                color_dest[:, :, 3:][bg] = color_source[:, :, 3:][bg]
+
+            else:  # " " isn't painted if child is transparent.
+                source = child.canvas[source_rect]
+                visible = source != " "
+
+                canvas[dest_rect][visible] = source[visible]
+                self.colors[dest_rect][visible] = child.colors[source_rect][visible]
         else:
             canvas[dest_rect] = child.canvas[source_rect]
             self.colors[dest_rect] = child.colors[source_rect]
