@@ -3,7 +3,7 @@ Functions for creating color gradients.
 """
 import numpy as np
 
-from .color_types import Color, ColorPair
+from .color_data_structures import *
 from .colors import BLACK, WHITE
 
 __all__ = (

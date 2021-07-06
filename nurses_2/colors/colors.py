@@ -1,7 +1,7 @@
 """
 Commonly used colors.
 """
-from .color_types import *
+from .color_data_structures import *
 
 WHITE = Color(255, 255, 255)
 BLACK = Color(0, 0, 0)
