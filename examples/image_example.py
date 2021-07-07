@@ -21,14 +21,13 @@ class MyApp(App):
         logo_flat = AutoGeometryImage(
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FLAT,
-            is_transparent=True,
         )
 
         logo_full = AutoGeometryImage(
             pos_hint=(.5, .5),
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FULL,
-            is_transparent=True,
+            alpha=.8,
         )
 
         self.root.add_widgets(background, logo_flat, logo_full)
