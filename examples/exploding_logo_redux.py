@@ -1,6 +1,4 @@
 """
-Credit for ascii art logo to Matthew Barber (https://ascii.matthewbarber.io/art/python/)
-
 Directions:
     'esc' to quit
     'r' to reset
