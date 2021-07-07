@@ -142,10 +142,6 @@ class Particle:
     def right(self):
         return self.left + 1
 
-    @property
-    def middle(self):
-        return 0, 0
-
     def absolute_to_relative_coords(self, coords):
         """
         Convert absolute coordinates to relative coordinates.
