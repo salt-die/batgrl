@@ -37,23 +37,36 @@ class Image(Widget):
         Path to image.
     is_grayscale : bool, default: False
         If true, convert image to grayscale.
+    alpha : float, default: 1.0
+        If image has an alpha channel, it will be multiplied by `alpha`.
+        Otherwise, `alpha` is default value for this will be the default alpha.
     """
     is_grayscale = ReloadTextureProperty()
     path = ReloadTextureProperty()
+    alpha = ReloadTextureProperty()
 
     def __init__(self,
         *args,
         path: Path,
         is_grayscale=False,
+        alpha=1.0,
         default_char="▀",
+        is_transparent=True,
         **kwargs
     ):
         kwargs.pop('default_color', None)
 
-        super().__init__(*args, default_char=default_char, default_color=BLACK_ON_BLACK, **kwargs)
+        super().__init__(
+            *args,
+            default_char=default_char,
+            default_color=BLACK_ON_BLACK,
+            is_transparent=is_transparent,
+            **kwargs,
+        )
 
-        self._is_grayscale = is_grayscale
         self._path = path
+        self._is_grayscale = is_grayscale
+        self._alpha = alpha
 
         self._load_texture()
 
@@ -85,16 +98,17 @@ class Image(Widget):
         """
         h, w = dim
         TEXTURE_DIM = w, 2 * h
+
         self.canvas = np.full(dim, self.default_char, dtype=object)
         self.colors = np.zeros((h, w, 6), dtype=np.uint8)
+        self.alpha_channels = alpha_channels = np.ones((h, w, 2), dtype=np.float16)
 
-        if self.texture_alpha is not None and self.is_transparent:
-            alpha = cv2.resize(self.texture_alpha, TEXTURE_DIM) / 255
-            self.alpha = np.zeros((h, w, 2), dtype=np.float16)
-            self.alpha[..., 0] = alpha[::2]
-            self.alpha[..., 1] = alpha[1::2]
-        else:
-            self.alpha = None
+        if self.texture_alpha is not None:
+            texture_alpha = cv2.resize(self.texture_alpha, TEXTURE_DIM) / 255
+            alpha_channels[..., 0] = texture_alpha[::2]
+            alpha_channels[..., 1] = texture_alpha[1::2]
+
+        alpha_channels *= self.alpha
 
         texture =  cv2.resize(self.texture, TEXTURE_DIM)
         self.colors[..., :3] = texture[::2]
@@ -112,10 +126,11 @@ class Image(Widget):
         index_rect = slice(t, b), slice(l, r)
         canvas_view[:] = self.canvas[index_rect]
 
-        alpha = self.alpha
-        if alpha is None:
+        if not self.is_transparent:
             colors_view[:] = self.colors[index_rect]
         else:
+            alpha = self.alpha_channels
+
             # RGBA on rgb == rgb + (RGB - rgb) * A1
             colors = self.colors[index_rect]
             buffer = np.zeros((h, w, 3), dtype=np.float16)
