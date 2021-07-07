@@ -61,13 +61,6 @@ PERCENTS = tuple(np.linspace(0, 1, 30))
 
 
 class PokeParticle(Particle):
-    """
-    `Particle`s are optimized 1x1 TUI elements. (We don't need numpy arrays to store their state.)
-    `Particle`s aren't widgets, but they are widget-like; they implement much of the `Widget` API.
-    Since they aren't widgets, adding them as children to other widgets will cause errors.
-    `Particle`s can only be children to `ParticleField` widgets which have an optimized `render`
-    method specifically for `Particle`s.
-    """
     def __init__(self, *args, color_index, **kwargs):
         self.color_index = color_index
 
@@ -81,7 +74,7 @@ class PokeParticle(Particle):
 
         self._update_task = self._reset_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-    def update_geometry(self):  # update_geometry is called whenever parent is resized
+    def update_geometry(self):
         """
         Re-position towards center of parent's canvas.
         """
@@ -105,10 +98,6 @@ class PokeParticle(Particle):
         self.left += move_horizontal
 
     def on_click(self, mouse_event):
-        """
-        Handle a mouse event.
-        """
-        # Note Linux does not report move events.
         if mouse_event.event_type in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_DOWN_MOVE):
             if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
@@ -118,9 +107,6 @@ class PokeParticle(Particle):
                     self._update_task = asyncio.create_task(self.update())
 
     def on_press(self, key_press):
-        """
-        Handle a key press.
-        """
         if key_press.key == "r" and self._reset_task.done():
             self._reset_task = asyncio.create_task(self.reset())
 
@@ -151,8 +137,6 @@ class PokeParticle(Particle):
             self.top = top = round(position.real)
             self.left = left = round(position.imag)
 
-            # Following two conditionals reverse particle's velocity when
-            # it collides with edge of parent's canvas.
             if (
                 top < 0 and velocity.real < 0
                 or top >= parent.height and velocity.real > 0
@@ -203,14 +187,7 @@ class PokeParticle(Particle):
 
 
 class AutoResizeParticleField(AutoResizeBehavior, ParticleField):
-    """
-    AutoResizeBehavior provides an `update_geometry` method that will automatically
-    resize to some percentage of parent's dimensions. See AutoResizeBehavior doc string
-    for more information.
-
-    ParticleFields can only have Particles as children. The `render` and `dispatch` methods
-    of ParticleField are optimized for Particles.
-    """
+    pass
 
 
 class MyApp(App):
