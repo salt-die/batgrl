@@ -21,7 +21,6 @@ class MyApp(App):
         logo_flat = AutoGeometryImage(
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FLAT,
-            alpha_threshold=157,
             is_transparent=True,
         )
 
@@ -29,7 +28,6 @@ class MyApp(App):
             pos_hint=(.5, .5),
             size_hint=(.5, .5),
             path=PATH_TO_LOGO_FULL,
-            alpha_threshold=157,
             is_transparent=True,
         )
 
