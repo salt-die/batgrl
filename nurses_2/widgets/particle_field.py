@@ -4,17 +4,52 @@ from ..colors import WHITE_ON_BLACK
 
 class ParticleField(Widget):
     """
-    A Widget that only has `Particle` children.
+    A widget that only has `Particle` children.
 
-    ParticleField's `render` and `dispatch` methods are specifically for `Particle` children.
+    Notes
+    -----
+    ParticleFields are an optimized way to render many 1x1 TUI elements.
 
     Raises
     ------
-    ValueError if `add_widget` is called with non-`Particle`.
+    TypeError if `add_widget` argument is not an instance of `Particle`.
     """
+    def __init__(self, dim=(10, 10), pos=(0, 0), *, is_visible=True, **kwargs):
+        self._height, self._width = dim
+        self.top, self.left = pos
+        self.is_visible = is_visible
+
+        self.parent = None
+        self.children = [ ]
+
+    def resize(self, dim):
+        self._height, self._width = dim
+
+        for child in self.children:
+            child.update_geometry()
+
+    @property
+    def dim(self):
+        return self.height, self.width
+
+    @property
+    def height(self):
+        return self._height
+
+    @property
+    def width(self):
+        return self._width
+
+    def add_text(self, text, row=0, column=0):
+        raise NotImplemented
+
+    @property
+    def get_view(self):
+        raise NotImplemented
+
     def add_widget(self, widget):
         if not isinstance(widget, Particle):
-            raise ValueError(f"expected Particle, got {type(widget).__name__}")
+            raise TypeError(f"expected Particle, got {type(widget).__name__}")
 
         super().add_widget(widget)
 
@@ -26,18 +61,7 @@ class ParticleField(Widget):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
-        t, l, b, r, h, w = rect
-
-        index_rect = slice(t, b), slice(l, r)
-        if self.is_transparent:
-            source = self.canvas[index_rect]
-            visible = source != " "  # " " isn't painted if transparent.
-
-            canvas_view[visible] = source[visible]
-            colors_view[visible] = self.colors[index_rect][visible]
-        else:
-            canvas_view[:] = self.canvas[index_rect]
-            colors_view[:] = self.colors[index_rect]
+        t, l, _, _, h, w = rect
 
         for child in self.children:
             pos = top, left = child.top - t, child.left - l
