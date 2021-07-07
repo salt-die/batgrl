@@ -18,3 +18,7 @@ A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) d
 # /examples/image_example.py
 
 ![Image example](image_example.gif)
+
+# /examples/exploding_logo_redux.py
+
+![Exploding logo example 2](exploding_logo_redux.gif)
