@@ -8,7 +8,6 @@ import asyncio
 from pathlib import Path
 
 import numpy as np
-import cv2
 
 from nurses_2.app import App
 from nurses_2.mouse import MouseEventType
@@ -150,20 +149,24 @@ class MyApp(App):
     async def on_start(self):
         background = AutoResizeImage(path=PATH_TO_BACKGROUND)
 
-        path = str(PATH_TO_LOGO_FULL)
-        bgr_texture = cv2.imread(path, cv2.IMREAD_COLOR)
-        rgb_texture = cv2.cvtColor(bgr_texture, cv2.COLOR_BGR2RGB)
-        texture =  cv2.resize(rgb_texture, (WIDTH, HEIGHT * 2))
-
-        h, w, _ = texture.shape
+        logo = Image(dim=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True)
 
         field = AutoResizeHalfBlockField()
 
-        field.add_widgets(
-            PokeParticle(pos=(y / 2 + .25, x), color=texture[y, x], alpha=.75)
-            for y in range(h)
-            for x in range(w)
-        )
+        for y in range(logo.height):
+            for x in range(logo.width):
+                field.add_widgets(
+                    PokeParticle(
+                        pos=(y + .25, x),
+                        color=tuple(logo.colors[y, x, :3]),
+                        alpha=logo.alpha[y, x, 0] * .8,
+                    ),
+                    PokeParticle(
+                        pos=(y + .75, x),
+                        color=logo.colors[y, x, 3:],
+                        alpha=logo.alpha[y, x, 1] * .8,
+                    ),
+                )
 
         self.root.add_widgets(background, field)
 
