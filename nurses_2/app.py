@@ -7,7 +7,7 @@ from prompt_toolkit.output import create_output
 from prompt_toolkit.utils import is_windows, is_conemu_ansi
 from prompt_toolkit.keys import Keys
 
-from .colors import WHITE_ON_BLACK
+from .colors import BLACK_ON_BLACK
 from .mouse import create_mouse_event
 from .widgets._root import _Root
 
@@ -42,7 +42,7 @@ class App(ABC):
     MyApp().run()
     ```
     """
-    def __init__(self, *, exit_key="escape", default_char=" ", default_color=WHITE_ON_BLACK):
+    def __init__(self, *, exit_key="escape", default_char=" ", default_color=BLACK_ON_BLACK):
         self.exit_key = exit_key
         self.default_char = default_char
         self.default_color = default_color
