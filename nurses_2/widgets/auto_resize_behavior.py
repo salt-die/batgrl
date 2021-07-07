@@ -17,10 +17,7 @@ class AutoResizeBehavior:
 
         assert _is_valid_hint(self.h_hint) and _is_valid_hint(self.w_hint), f'{size_hint!r} is not a valid size hint'
 
-        if not args:
-            super().__init__(dim=(10, 10), **kwargs)
-        else:
-            super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def update_geometry(self):
         h_hint = self.h_hint

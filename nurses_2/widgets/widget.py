@@ -12,7 +12,7 @@ class Widget:
 
     Parameters
     ----------
-    dim : tuple[int, int]
+    dim : tuple[int, int], default: (10, 10)
         Dimensions of widget.
     pos : tuple[int, int], default: (0, 0)
         Position of upper-left corner in parent.
@@ -36,7 +36,7 @@ class Widget:
 
     def __init__(
         self,
-        dim,
+        dim=(10, 10),
         pos=(0, 0),
         *,
         is_transparent=False,
