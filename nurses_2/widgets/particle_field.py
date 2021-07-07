@@ -6,7 +6,7 @@ class ParticleField(Widget):
     """
     A Widget that only has `Particle` children.
 
-    ParticleField's `render` and `dispatch_*` methods are specifically for `Particle` children.
+    ParticleField's `render` and `dispatch` methods are specifically for `Particle` children.
 
     Raises
     ------
@@ -21,9 +21,6 @@ class ParticleField(Widget):
     def walk(self):
         yield self
         yield from self.children
-
-    def _render_child(self, child):
-        raise NotImplementedError
 
     def render(self, canvas_view, colors_view, rect):
         """
