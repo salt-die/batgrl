@@ -1,5 +1,6 @@
 import numpy as np
 
+from ._widget_data_structures import CanvasView, Rect
 from ..colors import WHITE_ON_BLACK
 
 Image = type(None)  # This will be set to `Image` as soon as any `Image` is imported.
@@ -110,6 +111,17 @@ class Widget:
         return self.left + self.width
 
     @property
+    def rect(self):
+        return Rect(
+            self.top,
+            self.left,
+            self.bottom,
+            self.right,
+            self.height,
+            self.width
+        )
+
+    @property
     def middle(self):
         return self.height // 2, self.width // 2
 
@@ -147,7 +159,7 @@ class Widget:
         self.canvas[row, column:column + len(text)] = tuple(text)
 
     @property
-    def get_view(self):
+    def get_view(self) -> CanvasView:
         """
         A wrapper around the canvas with an `add_text` method. This is to
         simplify adding text to views of the underlying canvas.
@@ -223,19 +235,18 @@ class Widget:
         for child in widget.children:
             yield from child.walk()
 
-    def _render_child(self, child):
+    def _overlapping_region(self, rect, child):
         """
-        Render child and paint child's canvas into our own.
+        Find the overlapping region of a piece of screen and a child widget's canvas.
         """
-        canvas = self.canvas
-        h, w = canvas.shape
+        # Warning! This is a "tight" part of rendering, short variable names ahead.
+        t, l, _, _, h, w = rect  # top, left, height, width
 
-        ct = child.top
-        cb = child.bottom
-        cl = child.left
-        cr = child.right
+        ct = child.top - t
+        cb = child.bottom - t
+        cl = child.left - l
+        cr = child.right - l
 
-        # Child is not visible or off-screen.
         if (
             not child.is_visible
             or ct >= h
@@ -243,34 +254,33 @@ class Widget:
             or cl >= w
             or cr < 0
         ):
-            return
-
-        child.render()
+            # Child is not visible or doesn't overlap.
+            return False
 
         ##################################################################
         # Four cases for top / bottom of child:                          #
         #     1) child top is off-screen and child bottom is off-screen. #
         #               +-------+                                        #
         #            +--| child |------------+                           #
-        #            |  |       |   parent   |                           #
+        #            |  |       |   dest     |                           #
         #            +--|       |------------+                           #
         #               +-------+                                        #
         #     2) child top is off-screen and child bottom is on-screen.  #
         #               +-------+                                        #
         #            +--| child |------------+                           #
-        #            |  +-------+   parent   |                           #
+        #            |  +-------+   dest     |                           #
         #            +-----------------------+                           #
         #                                                                #
         #     3) child top is on-screen and child bottom is off-screen.  #
         #            +-----------------------+                           #
-        #            |  +-------+   parent   |                           #
+        #            |  +-------+   dest     |                           #
         #            +--| child |------------+                           #
         #               +-------+                                        #
         #                                                                #
         #     4) child top is on-screen and child bottom is on-screen.   #
         #            +-----------------------+                           #
         #            |  +-------+            |                           #
-        #            |  | child |   parent   |                           #
+        #            |  | child |   dest     |                           #
         #            |  +-------+            |                           #
         #            +-----------------------+                           #
         #                                                                #
@@ -321,66 +331,34 @@ class Widget:
                 sr = child.width
                 dr = cr
 
-        dest_rect = slice(dt, db), slice(dl, dr)
-        source_rect = slice(st, sb), slice(sl, sr)
+        return (
+            (slice(dt, db), slice(dl, dr)),
+            Rect(st, sl, sb, sr, sb - st, sr - sl),
+        )
 
-        if not child.is_transparent:
-            # Default case.
-            canvas[dest_rect] = child.canvas[source_rect]
-            self.colors[dest_rect] = child.colors[source_rect]
-            return
-
-        if not isinstance(child, Image):
-            source = child.canvas[source_rect]
-            visible = source != " "  # " " isn't painted if child is transparent.
-
-            canvas[dest_rect][visible] = source[visible]
-            self.colors[dest_rect][visible] = child.colors[source_rect][visible]
-
-        # If we're here, child must be an Image.
-
-        if child.where_visible is None:
-            # Default case again.  This happens when an Image is transparent,
-            # but its texture had no alpha channels.
-            canvas[dest_rect] = child.canvas[source_rect]
-            self.colors[dest_rect] = child.colors[source_rect]
-            return
-
-        # Child is an Image, it's transparent, and its texture has an alpha channel.
-
-        # Images (and VideoPlayers too) use upper half-blocks to double their effective
-        # resolution. Sometimes the foreground color of an upper half-block corresponds
-        # to a transparent pixel in the texture.  In this case, the child's parent's
-        # background color needs to be copied to the foreground. This will require a bit
-        # of numpy abuse. Prepare to kick ass:
-
-        visible = child.where_visible    # This array is double the height of child.canvas.
-
-        fg = visible[::2][source_rect]   # upper-half of character is visible
-        bg = visible[1::2][source_rect]  # lower-half of character is visible
-
-        # If either fg or bg is visible, we use the half-block characters of Image.
-        either = fg | bg
-        canvas[dest_rect][either] = child.canvas[source_rect][either]
-
-        color_dest = self.colors[dest_rect]
-        color_source = child.colors[source_rect]
-
-        # Parent's background color is moved to the foreground.
-        no_fg = ~fg & bg
-        color_dest[:, :, :3][no_fg] = color_dest[:, :, 3:][no_fg]
-
-        color_dest[:, :, :3][fg] = color_source[:, :, :3][fg]
-        color_dest[:, :, 3:][bg] = color_source[:, :, 3:][bg]
-
-    def render(self):
+    def render(self, canvas_view, colors_view, rect):
         """
-        Paint canvas.
+        Paint region given by rect into canvas_view and colors_view.
         """
-        render_child = self._render_child
+        t, l, b, r, _, _ = rect
+
+        index_rect = slice(t, b), slice(l, r)
+        if self.is_transparent:
+            source = self.canvas[index_rect]
+            visible = source != " "  # " " isn't painted if transparent.
+
+            canvas_view[visible] = source[visible]
+            colors_view[visible] = self.colors[index_rect][visible]
+        else:
+            canvas_view[:] = self.canvas[index_rect]
+            colors_view[:] = self.colors[index_rect]
+
+        overlap = self._overlapping_region
 
         for child in self.children:
-            render_child(child)
+            if region := overlap(rect, child):
+                dest_slice, child_rect = region
+                child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
 
     def dispatch_press(self, key_press):
         """
@@ -419,30 +397,3 @@ class Widget:
         -----
         `mouse_event` is a `prompt_toolkit` MouseEvent`.
         """
-
-
-class CanvasView:
-    """
-    A wrapper around an `numpy` `ndarray` that has `Widget`'s `add_text` method.
-
-    Warning
-    -------
-    1-dimensional slices will return 2-d views with a new axis inserted before the original axis.
-    (This is to ensure that the `add_text` method doesn't raise an IndexError.)
-    """
-    def __init__(self, canvas):
-        if len(canvas.shape) == 1:
-            canvas = canvas[None]  # Ensure array is 2-dimensional
-
-        self.canvas = canvas
-
-    def __getattr__(self, attr):
-        return getattr(self.canvas, attr)
-
-    def __getitem__(self, key):
-        return type(self)(self.canvas[key])
-
-    def __setitem__(self, key, value):
-        self.canvas[key] = value
-
-    add_text = Widget.add_text

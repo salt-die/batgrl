@@ -25,20 +25,25 @@ class ParticleField(Widget):
     def _render_child(self, child):
         raise NotImplementedError
 
-    def render(self):
+    def render(self, canvas_view, colors_view, rect):
         """
-        Paint canvas.
+        Paint region given by rect into canvas_view and colors_view.
         """
-        canvas = self.canvas
-        colors = self.colors
+        t, l, b, r, h, w = rect
 
-        h, w = canvas.shape
+        index_rect = slice(t, b), slice(l, r)
+        if self.is_transparent:
+            source = self.canvas[index_rect]
+            visible = source != " "  # " " isn't painted if transparent.
 
-        canvas[:] = self.default_char
-        colors[:, :] = self.default_color
+            canvas_view[visible] = source[visible]
+            colors_view[visible] = self.colors[index_rect][visible]
+        else:
+            canvas_view[:] = self.canvas[index_rect]
+            colors_view[:] = self.colors[index_rect]
 
         for child in self.children:
-            pos = top, left = child.top, child.left
+            pos = top, left = child.top - t, child.left - l
 
             if (
                 child.is_visible
@@ -46,8 +51,8 @@ class ParticleField(Widget):
                 and 0 <= top < h
                 and 0 <= left < w
             ):
-                canvas[pos] = child.char
-                colors[pos] = child.color
+                canvas_view[pos] = child.char
+                colors_view[pos] = child.color
 
     def dispatch_press(self, key_press):
         """
@@ -67,8 +72,8 @@ class ParticleField(Widget):
 
 class Particle:
     """
-    A 1x1 TUI element that's Widget-like, except it has no canvas and no children.
-    `Particle`s require a `ParticleField` parent to render them.
+    A 1x1 TUI element that's Widget-like, except it has no render method.
+    Particles require a `ParticleField` parent to be rendered.
     """
     def __init__(
         self,

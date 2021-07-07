@@ -80,9 +80,6 @@ class _Root(Widget):
         canvas = self.canvas
         colors = self.colors
 
-        last_canvas = self._last_canvas
-        last_colors = self._last_colors
-
         char_diffs = self._char_diffs
         color_diffs = self._color_diffs
         reduced_color_diffs = self._reduced_color_diffs
@@ -94,13 +91,19 @@ class _Root(Widget):
         canvas[:] = self.default_char
         colors[:, :] = self.default_color
 
-        super().render()  # Paint canvas
+        overlap = self._overlapping_region
+        rect = self.rect
+
+        for child in self.children:
+            if region := overlap(rect, child):
+                dest_slice, child_rect = region
+                child.render(canvas[dest_slice], colors[dest_slice], child_rect)
 
         # Find differences between current render and last render:
         # (This is optimized version of `(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)`
         # that re-uses buffers instead of creating new arrays.)
-        np.not_equal(last_canvas, canvas, out=char_diffs)
-        np.not_equal(last_colors, colors, out=color_diffs)
+        np.not_equal(self._last_canvas, canvas, out=char_diffs)
+        np.not_equal(self._last_colors, colors, out=color_diffs)
         np.any(color_diffs, axis=-1, out=reduced_color_diffs)
         np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
 
