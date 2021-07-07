@@ -41,11 +41,16 @@ class Image(Widget):
     is_grayscale = ReloadTextureProperty()
     path = ReloadTextureProperty()
 
-    def __init__(self, *args, path: Path, is_grayscale=False, **kwargs):
-        kwargs.pop('default_char', None)
+    def __init__(self,
+        *args,
+        path: Path,
+        is_grayscale=False,
+        default_char="▀",
+        **kwargs
+    ):
         kwargs.pop('default_color', None)
 
-        super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
+        super().__init__(*args, default_char=default_char, default_color=BLACK_ON_BLACK, **kwargs)
 
         self._is_grayscale = is_grayscale
         self._path = path
