@@ -4,18 +4,10 @@ from pathlib import Path
 import time
 
 import cv2
+import numpy as np
 
 from .widget import Widget
 from ..colors import BLACK_ON_BLACK
-
-@contextmanager
-def open_video(path):
-    video = cv2.VideoCapture(str(path))
-
-    try:
-        yield video
-    finally:
-        video.release()
 
 
 # This is a very remedial video player.  Currently it only starts and stops.
@@ -41,22 +33,32 @@ class VideoPlayer(Widget):
 
     async def _play_video(self):
         with open_video(self.path) as video:
-            start_time = time.monotonic()
+            # Bring in to locals:
+            concat = np.concatenate
+            resize = cv2.resize
+            recolor = cv2.cvtColor
+            MSEC = cv2.CAP_PROP_POS_MSEC
+            BGR2RGB = cv2.COLOR_BGR2RGB
+            monotonic = time.monotonic
+
+            video_get = video.get
+            video_read = video.read
+
+            start_time = monotonic()
 
             while True:
-                seconds_ahead = video.get(cv2.CAP_PROP_POS_MSEC) / 1000 + start_time - time.monotonic()
+                seconds_ahead = video_get(MSEC) / 1000 + start_time - monotonic()
 
                 if seconds_ahead <= 0:  # Prevents video from rendering too fast.
-                    read_flag, frame = video.read()
+                    read_flag, frame = video_read()
                     if not read_flag:
                         return
 
                     dim = self.width, 2 * self.height
-                    resized_frame = cv2.resize(frame, dim)
-                    BGR_to_RGB = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+                    resized_frame = resize(frame, dim)
+                    BGR_to_RGB = recolor(resized_frame, BGR2RGB)
 
-                    self.colors[:, :, :3] = BGR_to_RGB[::2]
-                    self.colors[:, :, 3:] = BGR_to_RGB[1::2]
+                    concat((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
 
                     seconds_ahead = 0
 
@@ -70,3 +72,13 @@ class VideoPlayer(Widget):
 
     def stop(self):
         self._video.cancel()
+
+
+@contextmanager
+def open_video(path):
+    video = cv2.VideoCapture(str(path))
+
+    try:
+        yield video
+    finally:
+        video.release()
