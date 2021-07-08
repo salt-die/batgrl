@@ -100,7 +100,6 @@ class Image(Widget):
         TEXTURE_DIM = w, 2 * h
 
         self.canvas = np.full(dim, self.default_char, dtype=object)
-        self.colors = np.zeros((h, w, 6), dtype=np.uint8)
         self.alpha_channels = alpha_channels = np.ones((h, w, 2), dtype=np.float16)
 
         if self.texture_alpha is not None:
@@ -111,8 +110,7 @@ class Image(Widget):
         alpha_channels *= self.alpha
 
         texture =  cv2.resize(self.texture, TEXTURE_DIM)
-        self.colors[..., :3] = texture[::2]
-        self.colors[..., 3:] = texture[1::2]
+        self.colors = np.concatenate((texture[::2], texture[1::2]), axis=-1)
 
         for child in self.children:
             child.update_geometry()
