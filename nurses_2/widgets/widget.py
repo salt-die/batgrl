@@ -46,8 +46,7 @@ class Widget:
         self.children = [ ]
 
         self.canvas = np.full(dim, default_char, dtype=object)
-        self.colors = np.zeros((*dim, 6), dtype=np.uint8)
-        self.colors[:, :] = default_color
+        self.colors = np.full((*dim, 6), default_color, dtype=np.uint8)
 
         self.default_char = default_char
         self.default_color = default_color
@@ -66,8 +65,7 @@ class Widget:
         copy_w = min(old_w, w)
 
         self.canvas = np.full(dim, self.default_char, dtype=object)
-        self.colors = np.zeros((h, w, 6), dtype=np.uint8)
-        self.colors[:, :] = self.default_color
+        self.colors = np.full((h, w, 6), self.default_color, dtype=np.uint8)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
         self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]
