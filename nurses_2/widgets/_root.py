@@ -21,10 +21,10 @@ class _Root(Widget):
         Resize canvas. Last render is erased.
         """
         self.env_out.erase_screen()
+        self.env_out.flush()
 
         self._last_canvas = np.full(dim, self.default_char, dtype=object)
-        self._last_colors = np.zeros((*dim, 6), dtype=np.uint8)
-        self._last_colors[:, :] = self.default_color
+        self._last_colors = np.full((*dim, 6), self.default_color, dtype=np.uint8)
 
         self.canvas = np.full_like(self._last_canvas, "><")  # "><" will guarantee an entire screen redraw.
         self.colors = self._last_colors.copy()
