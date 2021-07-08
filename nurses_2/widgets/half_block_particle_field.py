@@ -63,8 +63,3 @@ class HalfBlockParticle(Particle):
         self.color = color
         self.alpha = alpha
         self.parent = None
-
-    def update_geometry(self):
-        """
-        Update geometry due to a change in parent's size.
-        """
