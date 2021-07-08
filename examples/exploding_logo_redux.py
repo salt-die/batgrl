@@ -158,7 +158,7 @@ class MyApp(App):
                 field.add_widgets(
                     PokeParticle(
                         pos=(y + .25, x),
-                        color=tuple(logo.colors[y, x, :3]),
+                        color=logo.colors[y, x, :3],
                         alpha=logo.alpha_channels[y, x, 0],
                     ),
                     PokeParticle(
