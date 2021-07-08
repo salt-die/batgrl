@@ -3,8 +3,6 @@ import numpy as np
 from ._widget_data_structures import CanvasView, Rect
 from ..colors import WHITE_ON_BLACK
 
-Image = type(None)  # This will be set to `Image` as soon as any `Image` is imported.
-
 
 class Widget:
     """
@@ -29,10 +27,6 @@ class Widget:
 
     def __init_subclass__(cls):
         Widget.registry[cls.__name__] = cls
-
-        if cls.__name__ == "Image":
-            global Image
-            Image = cls  # Deferred "import".  This will be needed for `render` method.
 
     def __init__(
         self,
