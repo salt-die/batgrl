@@ -110,9 +110,7 @@ class _Root(Widget):
         write("\x1b[?25l")  # Hide cursor
 
         ys, xs = np.nonzero(char_diffs)
-        colors = colors[ys, xs]
-        chars = canvas[ys, xs]
-        for y, x, color, char in zip(ys, xs, colors, chars):
+        for y, x, color, char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
             # The escape codes for moving the cursor and setting the color concatenated:
             write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y + 1, x + 1, *color, char))
 
