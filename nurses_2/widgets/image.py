@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .widget import Widget
+from .widget import Widget, overlapping_region
 from ..colors import BLACK_ON_BLACK
 
 
@@ -143,7 +143,7 @@ class Image(Widget):
             np.multiply(buffer, alpha[..., 1, None], out=buffer)
             np.add(buffer, bg, out=bg, casting="unsafe")
 
-        overlap = self._overlapping_region
+        overlap = overlapping_region
 
         for child in self.children:
             if region := overlap(rect, child):

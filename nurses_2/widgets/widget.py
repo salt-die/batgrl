@@ -227,107 +227,6 @@ class Widget:
         for child in widget.children:
             yield from child.walk()
 
-    def _overlapping_region(self, rect, child):
-        """
-        Find the overlapping region of a piece of screen and a child widget's canvas.
-        """
-        # Warning! This is a "tight" part of rendering, short variable names ahead.
-        t, l, _, _, h, w = rect  # top, left, height, width
-
-        ct = child.top - t
-        cb = child.bottom - t
-        cl = child.left - l
-        cr = child.right - l
-
-        if (
-            not child.is_visible
-            or ct >= h
-            or cb < 0
-            or cl >= w
-            or cr < 0
-        ):
-            # Child is not visible or doesn't overlap.
-            return False
-
-        ##################################################################
-        # Four cases for top / bottom of child:                          #
-        #     1) child top is off-screen and child bottom is off-screen. #
-        #               +-------+                                        #
-        #            +--| child |------------+                           #
-        #            |  |       |   dest     |                           #
-        #            +--|       |------------+                           #
-        #               +-------+                                        #
-        #     2) child top is off-screen and child bottom is on-screen.  #
-        #               +-------+                                        #
-        #            +--| child |------------+                           #
-        #            |  +-------+   dest     |                           #
-        #            +-----------------------+                           #
-        #                                                                #
-        #     3) child top is on-screen and child bottom is off-screen.  #
-        #            +-----------------------+                           #
-        #            |  +-------+   dest     |                           #
-        #            +--| child |------------+                           #
-        #               +-------+                                        #
-        #                                                                #
-        #     4) child top is on-screen and child bottom is on-screen.   #
-        #            +-----------------------+                           #
-        #            |  +-------+            |                           #
-        #            |  | child |   dest     |                           #
-        #            |  +-------+            |                           #
-        #            +-----------------------+                           #
-        #                                                                #
-        # Similarly, by symmetry, four cases for left / right of child.  #
-        ##################################################################
-
-        # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
-        # destination_bottom, source_left, destination_left, source_right, destination_right.
-        if ct < 0:
-            st = -ct
-            dt = 0
-
-            if cb >= h:
-                sb = h + st
-                db = h
-            else:
-                sb = child.height
-                db = cb
-        else:
-            st =  0
-            dt = ct
-
-            if cb >= h:
-                sb = h - dt
-                db = h
-            else:
-                sb = child.height
-                db = cb
-
-        if cl < 0:
-            sl = -cl
-            dl = 0
-
-            if cr >= w:
-                sr = w + sl
-                dr = w
-            else:
-                sr = child.width
-                dr = cr
-        else:
-            sl = 0
-            dl = cl
-
-            if cr >= w:
-                sr = w - dl
-                dr = w
-            else:
-                sr = child.width
-                dr = cr
-
-        return (
-            (slice(dt, db), slice(dl, dr)),
-            Rect(st, sl, sb, sr, sb - st, sr - sl),
-        )
-
     def render(self, canvas_view, colors_view, rect):
         """
         Paint region given by rect into canvas_view and colors_view.
@@ -345,7 +244,7 @@ class Widget:
             canvas_view[:] = self.canvas[index_rect]
             colors_view[:] = self.colors[index_rect]
 
-        overlap = self._overlapping_region
+        overlap = overlapping_region
 
         for child in self.children:
             if region := overlap(rect, child):
@@ -389,3 +288,105 @@ class Widget:
         -----
         `mouse_event` is a `prompt_toolkit` MouseEvent`.
         """
+
+
+def overlapping_region(rect, child):
+    """
+    Find the overlapping region of a piece of screen and a child widget's canvas.
+    """
+    # Warning! This is a "tight" part of rendering, short variable names ahead.
+    t, l, _, _, h, w = rect  # top, left, height, width
+
+    ct = child.top - t
+    cb = child.bottom - t
+    cl = child.left - l
+    cr = child.right - l
+
+    if (
+        not child.is_visible
+        or ct >= h
+        or cb < 0
+        or cl >= w
+        or cr < 0
+    ):
+        # Child is not visible or doesn't overlap.
+        return False
+
+    ##################################################################
+    # Four cases for top / bottom of child:                          #
+    #     1) child top is off-screen and child bottom is off-screen. #
+    #               +-------+                                        #
+    #            +--| child |------------+                           #
+    #            |  |       |   dest     |                           #
+    #            +--|       |------------+                           #
+    #               +-------+                                        #
+    #     2) child top is off-screen and child bottom is on-screen.  #
+    #               +-------+                                        #
+    #            +--| child |------------+                           #
+    #            |  +-------+   dest     |                           #
+    #            +-----------------------+                           #
+    #                                                                #
+    #     3) child top is on-screen and child bottom is off-screen.  #
+    #            +-----------------------+                           #
+    #            |  +-------+   dest     |                           #
+    #            +--| child |------------+                           #
+    #               +-------+                                        #
+    #                                                                #
+    #     4) child top is on-screen and child bottom is on-screen.   #
+    #            +-----------------------+                           #
+    #            |  +-------+            |                           #
+    #            |  | child |   dest     |                           #
+    #            |  +-------+            |                           #
+    #            +-----------------------+                           #
+    #                                                                #
+    # Similarly, by symmetry, four cases for left / right of child.  #
+    ##################################################################
+
+    # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
+    # destination_bottom, source_left, destination_left, source_right, destination_right.
+    if ct < 0:
+        st = -ct
+        dt = 0
+
+        if cb >= h:
+            sb = h + st
+            db = h
+        else:
+            sb = child.height
+            db = cb
+    else:
+        st =  0
+        dt = ct
+
+        if cb >= h:
+            sb = h - dt
+            db = h
+        else:
+            sb = child.height
+            db = cb
+
+    if cl < 0:
+        sl = -cl
+        dl = 0
+
+        if cr >= w:
+            sr = w + sl
+            dr = w
+        else:
+            sr = child.width
+            dr = cr
+    else:
+        sl = 0
+        dl = cl
+
+        if cr >= w:
+            sr = w - dl
+            dr = w
+        else:
+            sr = child.width
+            dr = cr
+
+    return (
+        (slice(dt, db), slice(dl, dr)),
+        Rect(st, sl, sb, sr, sb - st, sr - sl),
+    )

@@ -1,6 +1,6 @@
 import numpy as np
 
-from .widget import Widget
+from .widget import Widget, overlapping_region
 
 
 class _Root(Widget):
@@ -91,7 +91,7 @@ class _Root(Widget):
         canvas[:] = self.default_char
         colors[:, :] = self.default_color
 
-        overlap = self._overlapping_region
+        overlap = overlapping_region
         rect = self.rect
 
         for child in self.children:
