@@ -149,7 +149,7 @@ class MyApp(App):
     async def on_start(self):
         background = AutoResizeImage(path=PATH_TO_BACKGROUND)
 
-        logo = Image(dim=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True)
+        logo = Image(dim=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True, alpha=.8)
 
         field = AutoResizeHalfBlockField()
 
@@ -159,12 +159,12 @@ class MyApp(App):
                     PokeParticle(
                         pos=(y + .25, x),
                         color=tuple(logo.colors[y, x, :3]),
-                        alpha=logo.alpha[y, x, 0] * .8,
+                        alpha=logo.alpha_channels[y, x, 0],
                     ),
                     PokeParticle(
                         pos=(y + .75, x),
                         color=logo.colors[y, x, 3:],
-                        alpha=logo.alpha[y, x, 1] * .8,
+                        alpha=logo.alpha_channels[y, x, 1],
                     ),
                 )
 
