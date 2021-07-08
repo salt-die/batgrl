@@ -103,9 +103,9 @@ class Image(Widget):
 
         if self.texture_alpha is not None:
             texture_alpha = cv2.resize(self.texture_alpha, TEXTURE_DIM) / 255 * self.alpha
-            self.alpha_channels = np.dstack((texture_alpha[::2], texture_alpha[1::2]))
+            self.alpha_channels = np.dstack((texture_alpha[::2], texture_alpha[1::2]))[..., None]
         else:
-            self.alpha_channels = np.full((h, w, 2), self.alpha, dtype=np.float16)
+            self.alpha_channels = np.full((h, w, 2, 1), self.alpha, dtype=np.float16)
 
         texture =  cv2.resize(self.texture, TEXTURE_DIM)
         self.colors = np.dstack((texture[::2], texture[1::2]))
@@ -125,21 +125,13 @@ class Image(Widget):
         if not self.is_transparent:
             colors_view[:] = self.colors[index_rect]
         else:
-            alpha = self.alpha_channels
+            buffer = np.zeros((h, w, 6), dtype=np.float16)
+            alpha_buffer = buffer.reshape((h, w, 2, 3))
 
             # RGBA on rgb == rgb + (RGB - rgb) * A1
-            colors = self.colors[index_rect]
-            buffer = np.zeros((h, w, 3), dtype=np.float16)
-
-            fg = colors_view[..., :3]
-            np.subtract(colors[..., :3], fg, out=buffer, dtype=np.float16)
-            np.multiply(buffer, alpha[..., 0, None], out=buffer)
-            np.add(buffer, fg, out=fg, casting="unsafe")
-
-            bg = colors_view[..., 3:]
-            np.subtract(colors[..., 3:], bg, out=buffer, dtype=np.float16)
-            np.multiply(buffer, alpha[..., 1, None], out=buffer)
-            np.add(buffer, bg, out=bg, casting="unsafe")
+            np.subtract(self.colors[index_rect], colors_view, out=buffer, dtype=np.float16)
+            np.multiply(alpha_buffer, self.alpha_channels, out=alpha_buffer)
+            np.add(buffer, colors_view, out=colors_view, casting="unsafe")
 
         overlap = overlapping_region
 
