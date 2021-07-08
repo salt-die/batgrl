@@ -14,7 +14,7 @@ class ParticleField(Widget):
     ------
     TypeError if `add_widget` argument is not an instance of `Particle`.
     """
-    def __init__(self, dim=(10, 10), pos=(0, 0), *, is_visible=True, **kwargs):
+    def __init__(self, dim=(10, 10), pos=(0, 0), *, is_visible=True):
         self._height, self._width = dim
         self.top, self.left = pos
         self.is_visible = is_visible
