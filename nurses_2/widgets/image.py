@@ -77,8 +77,15 @@ class Image(Widget):
         unchanged_texture = cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
         if unchanged_texture.shape[-1] == 4:
-            # `copy` because we want `unchanged_texture` to be garbage collected.
-            self.texture_alpha = unchanged_texture[:, :, -1].copy()
+            alpha = unchanged_texture[:, :, -1].copy()
+
+            if alpha.dtype == np.dtype(np.uint16):
+                alpha = (alpha // 257).astype(np.uint8)  #  Note 65535 // 255 == 257
+            elif alpha.dtype == np.dtype(np.float32):
+                alpha = (alpha * 255).astype(np.uint8)
+
+            self.texture_alpha = alpha
+
         else:
             self.texture_alpha = None
 
