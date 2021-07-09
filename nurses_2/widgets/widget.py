@@ -38,6 +38,7 @@ class Widget:
         default_char=" ",
         default_color=WHITE_ON_BLACK,
     ):
+        self._dim = dim
         self.top, self.left = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
@@ -55,6 +56,8 @@ class Widget:
         """
         Resize canvas. Content is preserved as much as possible.
         """
+        self._dim = dim
+
         old_canvas = self.canvas
         old_colors = self.colors
 
@@ -80,7 +83,7 @@ class Widget:
 
     @property
     def dim(self):
-        return self.canvas.shape
+        return self._dim
 
     @property
     def pos(self):
@@ -88,11 +91,11 @@ class Widget:
 
     @property
     def height(self):
-        return self.canvas.shape[0]
+        return self._dim[0]
 
     @property
     def width(self):
-        return self.canvas.shape[1]
+        return self._dim[1]
 
     @property
     def bottom(self):

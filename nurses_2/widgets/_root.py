@@ -23,6 +23,8 @@ class _Root(Widget):
         self.env_out.erase_screen()
         self.env_out.flush()
 
+        self._dim = dim
+
         self._last_canvas = np.full(dim, self.default_char, dtype=object)
         self._last_colors = np.full((*dim, 6), self.default_color, dtype=np.uint8)
 

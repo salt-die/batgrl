@@ -103,7 +103,7 @@ class Image(Widget):
         """
         Resize image.
         """
-        h, w = dim
+        self._dim = h, w = dim
         TEXTURE_DIM = w, 2 * h
 
         self.canvas = np.full(dim, self.default_char, dtype=object)
@@ -137,7 +137,7 @@ class Image(Widget):
 
             # RGBA on rgb == rgb + (RGB - rgb) * A1
             np.subtract(self.colors[index_rect], colors_view, out=buffer, dtype=np.float16)
-            np.multiply(alpha_buffer, self.alpha_channels, out=alpha_buffer)
+            np.multiply(alpha_buffer, self.alpha_channels[index_rect], out=alpha_buffer)
             np.add(buffer, colors_view, out=colors_view, casting="unsafe")
 
         overlap = overlapping_region
