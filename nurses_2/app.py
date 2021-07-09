@@ -8,13 +8,12 @@ from prompt_toolkit.utils import is_windows, is_conemu_ansi
 from prompt_toolkit.keys import Keys
 
 from .colors import BLACK_ON_BLACK
-from .mouse import create_mouse_event
+from .mouse.handler import create_vt100_mouse_event
 from .widgets._root import _Root
 
 ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
 POLL_INTERVAL = .5  # Seconds between polling for resize events.
 REFRESH_INTERVAL = 0  # Seconds between screen redraws.
-MOUSE_EVENTS = Keys.Vt100MouseEvent, Keys.WindowsMouseEvent
 
 
 class App(ABC):
@@ -99,8 +98,10 @@ class App(ABC):
                     if key.key == exit_key:
                         return self.exit()
 
-                    if key.key in MOUSE_EVENTS:
-                        dispatch_click(create_mouse_event(key))
+                    if key.key == Keys.WindowsMouseEvent:
+                        dispatch_click(key.data)
+                    elif key.key == Keys.Vt100MouseEvent:
+                        dispatch_click(create_vt100_mouse_event(key.data))
                     else:
                         dispatch_press(key)
 
@@ -166,6 +167,9 @@ def create_environment():
     env_out.flush()
 
     env_in = create_input()
+    if is_windows():
+        from .mouse.patch_win32_input import patch_win32_input
+        patch_win32_input(env_in)  # Better mouse handling patched in.
     env_in.flush_keys()  # Ignoring type-ahead
 
     try:
