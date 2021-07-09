@@ -22,8 +22,9 @@ FRICTION = .97
 
 PERCENTS = tuple(np.linspace(0, 1, 30))
 
-PATH_TO_BACKGROUND = Path('background.png')
-PATH_TO_LOGO_FULL = Path('python_discord_logo.png')
+IMAGE_DIR = Path('images')
+PATH_TO_BACKGROUND = IMAGE_DIR / 'background.png'
+PATH_TO_LOGO_FULL = IMAGE_DIR / 'python_discord_logo.png'
 
 
 class PokeParticle(HalfBlockParticle):
@@ -155,18 +156,23 @@ class MyApp(App):
 
         for y in range(logo.height):
             for x in range(logo.width):
-                field.add_widgets(
-                    PokeParticle(
-                        pos=(y + .25, x),
-                        color=logo.colors[y, x, :3],
-                        alpha=logo.alpha_channels[y, x, 0],
-                    ),
-                    PokeParticle(
-                        pos=(y + .75, x),
-                        color=logo.colors[y, x, 3:],
-                        alpha=logo.alpha_channels[y, x, 1],
-                    ),
-                )
+                if logo.alpha_channels[y, x, 0]:
+                    field.add_widget(
+                        PokeParticle(
+                            pos=(y + .25, x),
+                            color=logo.colors[y, x, :3],
+                            alpha=logo.alpha_channels[y, x, 0],
+                        )
+                    )
+
+                if logo.alpha_channels[y, x, 1]:
+                    field.add_widget(
+                        PokeParticle(
+                            pos=(y + .75, x),
+                            color=logo.colors[y, x, 3:],
+                            alpha=logo.alpha_channels[y, x, 1],
+                        )
+                    )
 
         self.root.add_widgets(background, field)
 

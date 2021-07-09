@@ -5,20 +5,20 @@ A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) d
 
 # /examples/basic_example_1.py
 
-![Basic example 1](basic_example_1.gif)
+![Basic example 1](preview_images/basic_example_1.gif)
 
 # /examples/exploding_logo.py
 
-![Exploding logo example](exploding_logo.gif)
+![Exploding logo example](preview_images/exploding_logo.gif)
 
 # /examples/button_example.py
 
-![Button example](button_example.gif)
+![Button example](preview_images/button_example.gif)
 
 # /examples/image_example.py
 
-![Image example](image_example.gif)
+![Image example](preview_images/image_example.gif)
 
 # /examples/exploding_logo_redux.py
 
-![Exploding logo example 2](exploding_logo_redux.gif)
+![Exploding logo example 2](preview_images/exploding_logo_redux.gif)
