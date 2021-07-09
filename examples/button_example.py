@@ -56,7 +56,7 @@ class MyButton(ButtonBehavior, Widget):
 
     async def _reset_view(self):
         await asyncio.sleep(2)
-        self.output_view[17:] = " "
+        self.output_view[0, 18:] = " "
 
 
 class MyApp(App):
