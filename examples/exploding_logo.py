@@ -12,7 +12,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import foreground_rainbow
-from nurses_2.mouse import MouseEventType
+from nurses_2.mouse import MouseButton
 from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
 from nurses_2.widgets.particle_field import Particle, ParticleField
 
@@ -98,7 +98,7 @@ class PokeParticle(Particle):
         self.left += move_horizontal
 
     def on_click(self, mouse_event):
-        if mouse_event.event_type in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_DOWN_MOVE):
+        if mouse_event.button == MouseButton.LEFT:
             if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
 

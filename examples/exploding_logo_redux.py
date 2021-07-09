@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.mouse import MouseEventType
+from nurses_2.mouse import MouseButton
 from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
 from nurses_2.widgets.half_block_particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.image import Image
@@ -63,7 +63,7 @@ class PokeParticle(HalfBlockParticle):
         self.left += move_horizontal
 
     def on_click(self, mouse_event):
-        if mouse_event.event_type in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_DOWN_MOVE):
+        if mouse_event.button == MouseButton.LEFT:
             if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
 
