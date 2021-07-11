@@ -1,10 +1,7 @@
 from nurses_2.colors import Color
 
-from .particle import LiquidParticle
+from .base import Liquid
 
 
-class Water(LiquidParticle):
+class Water(Liquid):
     COLOR = Color(20, 100, 170)
-
-    def collides(self, other):
-        ...
