@@ -93,7 +93,7 @@ class Movable(ABC):
     def __init__(self, world, position):
         self.world = world
         self.coords = complex(*position)
-        self._velocity = 4 * random() + 4 * random() * 1j
+        self._velocity = 10 * random() + 10 * random() * 1j
         self._update_task = asyncio.create_task(self.update())
 
     @property
@@ -145,7 +145,11 @@ class Movable(ABC):
             self.coords = new_coords
 
     def inelastic_collision(self, other):
-        ...
+        """
+        Notes
+        -----
+        Coordinates of the two colliding particles are swapped before their velocities are averaged.
+        """
 
     def elastic_collision(self, other):
         self_mass = self.MASS
@@ -170,8 +174,15 @@ class Movable(ABC):
             self.fall()
         elif move(pos, y + 1, x):
             self.velocity += self.GRAVITY
-        elif not move(pos, y + 1, x + 2 * round(random()) - 1):
-            self.sleep()
+        else:
+            move(pos, y + 1, x + 2 * round(random()) - 1)
+
+    @abstractmethod
+    def move(self, old_yx, new_y, new_x):
+        """
+        Particle specific non-kinematic movement.
+        """
+        # Highly likely this method will be removed entirely.
 
     @abstractmethod
     def collide(self, other):
