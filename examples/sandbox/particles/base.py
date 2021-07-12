@@ -38,7 +38,10 @@ class Element(ABC):
 
     def wake(self):
         if self._update_task.done():
-            self._update_task = asynco.create_task(self.update())
+            self._update_task = asyncio.create_task(self.update())
+
+    def sleep(self):
+        self._update_task.cancel()
 
 
 class Solid(Element):
@@ -51,7 +54,13 @@ class Solid(Element):
         return self._pos
 
     def step(self):
-        self._update_task.cancel()
+        pass
+
+    def wake(self):
+        pass
+
+    def sleep(self):
+        pass
 
 
 class Movable(ABC):
@@ -71,6 +80,26 @@ class Movable(ABC):
         pos = self.coords
         return round(pos.real), round(pos.imag)
 
+    def wake_neighbors(self):
+        world = self.world
+        h, w = world.shape
+        y, x = self.pos
+        coords = (
+            (y - 1, x - 1),
+            (y - 1, x),
+            (y - 1, x + 1),
+            (y, x - 1),
+            (y, x + 1),
+            (y + 1, x - 1),
+            (y + 1, x),
+            (y + 1, x + 1),
+        )
+
+        for y, x in coords:
+            if 0 <= y < h and 0 <= x < w:
+                if target := world[y, x]:
+                    target.wake()
+
 
 class MovableSolid(Movable, Solid):
     def move(self, old_yx, new_y, new_x):
@@ -87,6 +116,7 @@ class MovableSolid(Movable, Solid):
             else:
                 return False
 
+            self.wake_neighbors()
             world[old_yx], world[new_y, new_x] = world[new_y, new_x], world[old_yx]
             self.coords = complex(new_y, new_x)
             return True
@@ -100,7 +130,9 @@ class MovableSolid(Movable, Solid):
         move = self.move
         pos = y, x = self.pos
         xs = x, x - 1, x + 1
-        any(move(pos, y + 1, x) for x in xs)
+
+        if not any(move(pos, y + 1, x) for x in xs):
+            self.sleep()
 
 
 class Liquid(Movable, Element):
@@ -109,11 +141,12 @@ class Liquid(Movable, Element):
         h, w = world.shape
 
         if new_y < h and 0 <= new_x < w:
-            if world[new_y, new_x] is None:
+            target = world[new_y, new_x]
+            if target is None:
+                self.wake_neighbors()
                 world[old_yx] = None
                 world[new_y, new_x] = self
                 self.coords = complex(new_y, new_x)
-
                 return True
 
             return False
@@ -131,6 +164,9 @@ class Liquid(Movable, Element):
         if not any(move(pos, y + 1, x) for x in xs):
             # Randomly go left or right
             if round(random.random()):
-                move(pos, y, x - 1) or move(pos, y, x + 1)
+                moved = move(pos, y, x - 1) or move(pos, y, x + 1)
             else:
-                move(pos, y, x + 1) or move(pos, y, x - 1)
+                moved = move(pos, y, x + 1) or move(pos, y, x - 1)
+
+            if not moved:
+                self.sleep()
