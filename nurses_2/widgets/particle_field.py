@@ -65,14 +65,19 @@ class ParticleField(Widget):
 
     def dispatch_press(self, key_press):
         """
-        Try to handle key press; if not handled, dispatch event to particles until handled.
+        Dispatch key press to children.
         """
+        # Note this dispatching is in reverse order from widget base.
         return (
             self.on_press(key_press)
             or any(particle.on_press(key_press) for particle in reversed(self.children))
         )
 
     def dispatch_click(self, mouse_event):
+        """
+        Dispatch mouse event to children.
+        """
+        # Note this dispatching is in reverse order from widget base.
         return (
             self.on_click(mouse_event)
             or any(particle.on_click(mouse_event) for particle in reversed(self.children))
