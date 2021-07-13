@@ -63,6 +63,8 @@ class ButtonBehavior:
 
             self._release()
 
+        return self.state == ButtonStates.DOWN
+
     def update_down(self):
         """
         Paint the DOWN state.
