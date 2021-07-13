@@ -1,5 +1,5 @@
 from .base import Element, MovableSolid, Liquid
 
-from .sand import Sand
 from .stone import Stone
+from .sand import Sand
 from .water import Water
