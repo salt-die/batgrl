@@ -1,5 +1,3 @@
-import numpy as np
-
 from nurses_2.colors import ColorPair
 from nurses_2.widgets import Widget
 from nurses_2.widgets.button_behavior import ButtonBehavior
