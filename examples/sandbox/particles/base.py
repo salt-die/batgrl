@@ -1,29 +1,32 @@
 from abc import ABC, abstractmethod
 import asyncio
+from random import random
 
-from .._random import random_sign
 from .line import line
 
 
 class Element(ABC):
     COLOR = None
 
-    @abstractmethod
+    registry = { }
+
+    def __init_subclass__(cls):
+        if cls.COLOR:
+            cls.registry[cls.__name__] = cls
+
     def __init__(self, world, position):
-        pass
+        self.world = world
+        self.pos = position
+        self._update_task = asyncio.create_task(self.update())
 
     @property
-    @abstractmethod
     def pos(self):
-        """
-        Position of particle.
-        """
+        return self._pos
 
-    @abstractmethod
-    def step(self):
-        """
-        A single update of the element.
-        """
+    @pos.setter
+    def pos(self, new_pos):
+        self._pos = new_pos
+        self.world[new_pos] = self
 
     async def update(self):
         step = self.step
@@ -39,9 +42,6 @@ class Element(ABC):
     def wake(self):
         if self._update_task.done():
             self._update_task = asyncio.create_task(self.update())
-
-    def sleep(self):
-        self._update_task.cancel()
 
     def wake_neighbors(self):
         world = self.world
@@ -63,21 +63,20 @@ class Element(ABC):
                 if target := world[y, x]:
                     target.wake()
 
+    def sleep(self):
+        self._update_task.cancel()
+
+    @abstractmethod
+    def step(self):
+        """
+        A single update of the element.
+        """
+
 
 class Solid(Element):
-    def __init__(self, world, position):
-        self.world = world
-        self.pos = position
-
-    @property
-    def pos(self):
-        return self._pos
-
-    @pos.setter
-    def pos(self, new_pos):
-        self._pos = new_pos
-        self.world[new_pos] = self
-
+    """
+    A solid element.
+    """
     def wake(self):
         pass
 
@@ -85,31 +84,19 @@ class Solid(Element):
         pass
 
     def step(self):
-        pass
+        self._update_task.cancel()
 
 
-class Movable(ABC):
-    def __init__(self, world, position):
-        self.world = world
-        self.coords = complex(*position)
-        self._update_task = asyncio.create_task(self.update())
-
-    @property
-    def coords(self):
-        return self._coords
-
-    @coords.setter
-    def coords(self, new_coords):
-        self._coords = new_coords
-        self.world[self.pos] = self
-
-    @property
-    def pos(self):
-        coords = self.coords
-        return round(coords.real), round(coords.imag)
+class Movable:
+    """
+    Base for a movable element.
+    """
 
 
 class MovableSolid(Movable, Solid):
+    """
+    Movable solid base.
+    """
     INERTIAL_RESISTANCE = .5
 
     def _move(self, old_yx, new_y, new_x):
@@ -120,15 +107,14 @@ class MovableSolid(Movable, Solid):
             target = world[new_y, new_x]
 
             if isinstance(target, Liquid):
-                target.coords = complex(*old_yx)
+                target.pos = old_yx
             elif target is None:
-                pass
+                world[old_yx] = None
             else:
                 return False
 
             self.wake_neighbors()
-            world[old_yx], world[new_y, new_x] = world[new_y, new_x], world[old_yx]
-            self.coords = complex(new_y, new_x)
+            self.pos = new_y, new_x
             return True
 
         # Fall off the world
@@ -139,7 +125,7 @@ class MovableSolid(Movable, Solid):
     def step(self):
         move = self._move
         pos = y, x = self.pos
-        dx = random_sign()
+        dx = 2 * round(random()) - 1
 
         if not (
             move(pos, y + 1, x)
@@ -150,18 +136,19 @@ class MovableSolid(Movable, Solid):
 
 
 class Liquid(Movable, Element):
+    """
+    Liquid base.
+    """
     def _move(self, old_yx, new_y, new_x):
         world = self.world
         h, w = world.shape
 
         if new_y < h and 0 <= new_x < w:
-            target = world[new_y, new_x]
-
-            if target is None:
-                self.wake_neighbors()
+            if world[new_y, new_x] is None:
                 world[old_yx] = None
-                world[new_y, new_x] = self
-                self.coords = complex(new_y, new_x)
+
+                self.wake_neighbors()
+                self.pos = new_y, new_x
                 return True
 
             return False
@@ -174,7 +161,7 @@ class Liquid(Movable, Element):
     def step(self):
         move = self._move
         pos = y, x = self.pos
-        dx = random_sign()
+        dx = 2 * round(random()) - 1
 
         if not (
             move(pos, y + 1, x)
