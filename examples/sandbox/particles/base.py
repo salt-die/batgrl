@@ -6,13 +6,13 @@ from .line import line
 
 
 class Element(ABC):
-    COLOR = None
+    COLOR = None  # COLOR is also a flag that a child class is abstract or implemented.
 
-    registry = { }
+    all_elements = { }
 
     def __init_subclass__(cls):
         if cls.COLOR:
-            cls.registry[cls.__name__] = cls
+            cls.all_elements[cls.__name__] = cls
 
     def __init__(self, world, position):
         self.world = world
@@ -104,8 +104,6 @@ class MovableSolid(Movable, Solid):
     """
     Movable solid base.
     """
-
-    INERTIAL_RESISTANCE = .5
 
     def _move(self, old_yx, new_y, new_x):
         world = self.world

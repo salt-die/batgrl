@@ -32,14 +32,14 @@ class ElementButton(ButtonBehavior, Widget):
 
 class ButtonContainer(Widget):
     def __init__(self):
-        nelements = len(Element.registry)
+        nelements = len(Element.all_elements)
 
         super().__init__(
             dim=(3 * nelements + 1, 8),
             default_color=ColorPair(0, 0, 0, *MENU_BACKGROUND_COLOR),
         )
 
-        for i, element in enumerate(Element.registry.values()):
+        for i, element in enumerate(Element.all_elements.values()):
             self.add_widget(ElementButton(pos=(3 * i + 1, 2), element=element))
 
     def on_click(self, mouse_event):
