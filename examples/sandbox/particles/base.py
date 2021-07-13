@@ -103,13 +103,10 @@ class Movable(ABC):
         self._coords = new_coords
         self.world[self.pos] = self
 
-    @staticmethod
-    def int_coords(coords):
-        return round(coords.real), round(coords.imag)
-
     @property
     def pos(self):
-        return self.int_coords(self.coords)
+        coords = self.coords
+        return round(coords.real), round(coords.imag)
 
 
 class MovableSolid(Movable, Solid):
