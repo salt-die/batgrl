@@ -18,7 +18,7 @@ class ElementButton(ButtonBehavior, Widget):
             default_color=ColorPair(0, 0, 0, *element.COLOR),
             always_release=True,
         )
-        self.down_color = ColorPair(*(max(255, 1.2 * c) for c in self.default_color))
+        self.down_color = ColorPair(*(min(255, int(1.3 * c)) for c in self.default_color))
 
     def update_down(self):
         self.colors[:, :] = self.down_color
