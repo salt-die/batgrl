@@ -2,13 +2,10 @@ import numpy as np
 
 from nurses_2.colors import Color
 from nurses_2.mouse import MouseButton
-from nurses_2.widgets import Widget
+from nurses_2.widgets.widget import Widget, overlapping_region
 from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
 
-from .constants import *
-from .particles.sand import Sand
-from .particles.stone import Stone
-from .particles.water import Water
+from .tool_menu import ButtonContainer
 
 
 BACKGROUND_COLOR = Color(25, 25, 25)
@@ -30,6 +27,9 @@ class Sandbox(AutoPositionBehavior, Widget):
 
         self.world = np.full((self.height * 2, self.width), None, dtype=object)
 
+        self.add_widget(ButtonContainer())
+        self.children[0].children[0].on_release()  # Set the particle type
+
     def render(self, canvas_view, colors_view, rect):
         colors = np.dstack(particles_to_colors(self.world))
         colors = np.concatenate((colors[::2], colors[1::2]), axis=-1)
@@ -38,6 +38,11 @@ class Sandbox(AutoPositionBehavior, Widget):
 
         canvas_view[:] = "▀"
         colors_view[:] = colors[t:b, l:r]
+
+        for child in self.children:
+            if region := overlapping_region(rect, child):
+                dest_slice, child_rect = region
+                child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
 
     def on_click(self, mouse_event):
         if (
@@ -52,14 +57,8 @@ class Sandbox(AutoPositionBehavior, Widget):
         lower = 2 * y + 1, x
 
         if mouse_event.button == MouseButton.LEFT:
-            new_particle = Sand
-        elif mouse_event.button == MouseButton.RIGHT:
-            new_particle = Stone
-        else:  # Middle button
-            new_particle = Water
+            if world[upper] is None:
+                self.particle_type(world, upper)
 
-        if world[upper] is None:
-            new_particle(world, upper)
-
-        if world[lower] is None:
-            new_particle(world, lower)
+            if world[lower] is None:
+                self.particle_type(world, lower)
