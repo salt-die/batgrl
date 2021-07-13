@@ -87,16 +87,24 @@ class Solid(Element):
         self._update_task.cancel()
 
 
-class Movable:
+class Movable(ABC):
     """
     Base for a movable element.
     """
+
+    @abstractmethod
+    def _move(self, old_yx, new_y, new_x):
+        """
+        Try to move from old_yx to (new_y, new_x).
+        Return True if successful else False.
+        """
 
 
 class MovableSolid(Movable, Solid):
     """
     Movable solid base.
     """
+
     INERTIAL_RESISTANCE = .5
 
     def _move(self, old_yx, new_y, new_x):
