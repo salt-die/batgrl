@@ -6,14 +6,12 @@ from nurses_2.widgets.widget import Widget, overlapping_region
 from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
 
 from .tool_menu import ButtonContainer
-
-
-BACKGROUND_COLOR = Color(25, 25, 25)
+from .constants import *
 
 @np.vectorize
 def particles_to_colors(particle):
     if particle is None:
-        return BACKGROUND_COLOR
+        return SANDBOX_BACKGROUND_COLOR
     return particle.COLOR
 
 
