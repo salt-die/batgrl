@@ -59,7 +59,7 @@ class Sandbox(AutoPositionBehavior, Widget):
             new_particle = Water
 
         if world[upper] is None:
-            world[upper] = new_particle(world, upper)
+            new_particle(world, upper)
 
         if world[lower] is None:
-            world[lower] = new_particle(world, lower)
+            new_particle(world, lower)
