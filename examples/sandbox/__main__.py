@@ -4,7 +4,7 @@ from .sandbox import Sandbox
 
 class SandboxApp(App):
     async def on_start(self):
-        self.root.add_widget(Sandbox(dim=(30, 100)))
+        self.root.add_widget(Sandbox(dim=(31, 100)))
 
 
 SandboxApp().run()
