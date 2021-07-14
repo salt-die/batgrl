@@ -1,12 +1,14 @@
-from abc import ABC, abstractmethod
 import asyncio
 from random import random
+
+from nurses_2.colors import Color
 
 from .line import line
 
 
-class Element(ABC):
-    COLOR = None  # COLOR is also a flag that a child class is abstract or implemented.
+class Element:
+    COLOR = None
+    DENSITY = 0.0
 
     all_elements = { }
 
@@ -14,19 +16,17 @@ class Element(ABC):
         if cls.COLOR:
             cls.all_elements[cls.__name__] = cls
 
+
+class StationaryElement(Element):
+    """
+    Base for stationary elements.
+    """
     def __init__(self, world, position):
         self.world = world
         self.pos = position
+
+        self.world[position] = self
         self._update_task = asyncio.create_task(self.update())
-
-    @property
-    def pos(self):
-        return self._pos
-
-    @pos.setter
-    def pos(self, new_pos):
-        self._pos = new_pos
-        self.world[new_pos] = self
 
     async def update(self):
         step = self.step
@@ -60,120 +60,97 @@ class Element(ABC):
 
         for y, x in coords:
             if 0 <= y < h and 0 <= x < w:
-                if target := world[y, x]:
-                    target.wake()
+                world[y, x].wake()
 
     def sleep(self):
         self._update_task.cancel()
 
-    @abstractmethod
-    def step(self):
-        """
-        A single update of the element.
-        """
-
-
-class Solid(Element):
-    """
-    A solid element.
-    """
-    def wake(self):
-        pass
-
-    def sleep(self):
-        pass
-
     def step(self):
         self._update_task.cancel()
 
 
-class Movable(ABC):
+class MovingElement(StationaryElement):
     """
-    Base for a movable element.
+    Base for moving elements.
     """
-
-    @abstractmethod
-    def _move(self, old_yx, new_y, new_x):
-        """
-        Try to move from old_yx to (new_y, new_x).
-        Return True if successful else False.
-        """
-
-
-class MovableSolid(Movable, Solid):
-    """
-    Movable solid base.
-    """
-
-    def _move(self, old_yx, new_y, new_x):
+    def _move(self, dy, dx):
         world = self.world
         h, w = world.shape
+        y, x = self.pos
+        new_y = y + dy
+        new_x = x + dx
 
-        if new_y < h and 0 <= new_x < w:
-            target = world[new_y, new_x]
+        if 0 <= new_y < h and 0 <= new_x < w:
+            neighbor = world[new_y, new_x]
 
-            if isinstance(target, Liquid):
-                target.pos = old_yx
-            elif target is None:
-                world[old_yx] = None
-            else:
-                return False
-
-            self.wake_neighbors()
-            self.pos = new_y, new_x
-            return True
-
-        # Fall off the world
-        world[old_yx] = None
-        self._update_task.cancel()
-        return True
-
-    def step(self):
-        move = self._move
-        pos = y, x = self.pos
-        dx = 2 * round(random()) - 1
-
-        if not (
-            move(pos, y + 1, x)
-            or move(pos, y + 1, x + dx)
-            or move(pos, y + 1, x - dx)
-        ):
-            self.sleep()
-
-
-class Liquid(Movable, Element):
-    """
-    Liquid base.
-    """
-    def _move(self, old_yx, new_y, new_x):
-        world = self.world
-        h, w = world.shape
-
-        if new_y < h and 0 <= new_x < w:
-            if world[new_y, new_x] is None:
-                world[old_yx] = None
-
+            if (
+                neighbor.DENSITY < 10.0
+                and (
+                    dy > 0
+                    and (
+                        self.DENSITY > neighbor.DENSITY  # Sink
+                        or 0 <= y - 1 and world[y - 1, x].DENSITY >= self.DENSITY  # Pushed down
+                    )
+                    or dy < 0 and self.DENSITY < neighbor.DENSITY  # Float
+                    or dy == 0 and self.DENSITY < 10.0
+                )
+            ):
                 self.wake_neighbors()
+
+                neighbor.pos = y, x
+                world[y, x] = neighbor
+
                 self.pos = new_y, new_x
+                world[new_y, new_x] = self
                 return True
 
             return False
 
         # Fall off the world
-        world[old_yx] = None
+        world[y, x] = Air(world, (y, x))
         self._update_task.cancel()
         return True
 
     def step(self):
         move = self._move
-        pos = y, x = self.pos
         dx = 2 * round(random()) - 1
+        dy = 1 if self.DENSITY > 0 else -1
 
         if not (
-            move(pos, y + 1, x)
-            or move(pos, y + 1, x + dx)
-            or move(pos, y + 1, x - dx)
-            or move(pos, y, x + dx)
-            or move(pos, y, x - dx)
+            move(dy, 0)
+            or move(dy, dx)
+            or move(dy, -dx)
+            or move(0, dx)
+            or move(0, -dx)
         ):
             self.sleep()
+
+
+class Air(StationaryElement):
+    DENSITY = 0.0
+    COLOR = Color(25, 25, 25)
+
+
+class Stone(StationaryElement):
+    DENSITY = 100.0
+    COLOR = Color(120, 110, 120)
+
+
+class Sand(MovingElement):
+    DENSITY = 50.0
+    COLOR = Color(150, 100, 50)
+
+
+class Water(MovingElement):
+    DENSITY = 1.0
+    COLOR = Color(20, 100, 170)
+
+
+class Snow(MovingElement):
+    DENSITY = .8
+    COLOR = Color(200, 200, 250)
+
+
+class Steam(MovingElement):
+    DENSITY = -1.0
+    COLOR = Color(50, 50, 50)

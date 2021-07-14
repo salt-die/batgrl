@@ -1,9 +1,10 @@
-from nurses_2.colors import ColorPair
+from nurses_2.colors import ColorPair, Color
 from nurses_2.widgets import Widget
 from nurses_2.widgets.button_behavior import ButtonBehavior
 
-from .constants import *
-from .particles import Element
+from .particles.base import Element
+
+MENU_BACKGROUND_COLOR = Color(222, 224, 127)
 
 
 class ElementButton(ButtonBehavior, Widget):

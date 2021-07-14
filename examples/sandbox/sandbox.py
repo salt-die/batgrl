@@ -5,13 +5,11 @@ from nurses_2.mouse import MouseButton
 from nurses_2.widgets.widget import Widget, overlapping_region
 from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
 
+from .particles.base import Air
 from .tool_menu import ButtonContainer
-from .constants import *
 
 @np.vectorize
 def particles_to_colors(particle):
-    if particle is None:
-        return SANDBOX_BACKGROUND_COLOR
     return particle.COLOR
 
 
@@ -23,10 +21,14 @@ class Sandbox(AutoPositionBehavior, Widget):
         del self.canvas
         del self.colors
 
-        self.world = np.full((self.height * 2, self.width), None, dtype=object)
+        self.world = world = np.full((2 * self.height, self.width), None, dtype=object)
+        for y in range(2 * self.height):
+            for x in range(self.width):
+                world[y, x] = Air(world, (y, x))
 
         self.add_widget(ButtonContainer())
-        self.children[0].children[0].on_release()  # Set the particle type
+        # Grab the initial particle type from the tool menu.
+        self.particle_type = self.children[0].children[1].element
 
     def render(self, canvas_view, colors_view, rect):
         colors = np.dstack(particles_to_colors(self.world))
@@ -55,8 +57,10 @@ class Sandbox(AutoPositionBehavior, Widget):
         lower = 2 * y + 1, x
 
         if mouse_event.button == MouseButton.LEFT:
-            if world[upper] is None:
-                self.particle_type(world, upper)
+            world[upper].sleep()
+            self.particle_type(world, upper)
+            world[upper].wake_neighbors()
 
-            if world[lower] is None:
-                self.particle_type(world, lower)
+            world[lower].sleep()
+            self.particle_type(world, lower)
+            world[lower].wake_neighbors()
