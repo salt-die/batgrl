@@ -4,8 +4,6 @@ from random import random
 
 from nurses_2.colors import Color
 
-from .line import line
-
 
 class State(Enum):
     GAS = "GAS"
@@ -48,8 +46,8 @@ class StationaryElement(Element):
                 return
 
     def wake(self):
-        if self._update_task.done():
-            self._update_task = asyncio.create_task(self.update())
+        self._update_task.cancel()
+        self._update_task = asyncio.create_task(self.update())
 
     def wake_neighbors(self):
         world = self.world
@@ -84,7 +82,9 @@ class MovingElement(StationaryElement):
     def _move(self, dy, dx):
         world = self.world
         h, w = world.shape
+
         y, x = self.pos
+
         new_y = y + dy
         new_x = x + dx
 
@@ -96,24 +96,23 @@ class MovingElement(StationaryElement):
             density = self.DENSITY
             state = self.STATE
 
-            if neighbor_state != State.SOLID and (
-                dy > 0 and density > neighbor_density
-                or dy < 0 and density < neighbor_density  # Float
-                or dy == 0 and (
-                    state != State.SOLID
-                    or state == State.SOLID and neighbor_state == State.LIQUID and density < neighbor_density
-                    )
-            ):
-                self.wake_neighbors()
+            if neighbor_state == State.SOLID and state != State.LIQUID:
+                return False
 
-                neighbor.pos = y, x
-                world[y, x] = neighbor
+            if density < 0 and neighbor_density <= density:
+                return False
 
-                self.pos = new_y, new_x
-                world[new_y, new_x] = self
-                return True
+            if density > 0 and neighbor_density >= density:
+                return False
 
-            return False
+            self.wake_neighbors()
+
+            neighbor.pos = y, x
+            world[y, x] = neighbor
+
+            self.pos = new_y, new_x
+            world[new_y, new_x] = self
+            return True
 
         # Fall off the world
         world[y, x] = Air(world, (y, x))
@@ -129,11 +128,10 @@ class MovingElement(StationaryElement):
             move(dy, 0)
             or move(dy, dx)
             or move(dy, -dx)
-            or move(-dy, 0)
-            or move(-dy, dx)
-            or move(-dy, -dx)
-            or move(0, dx)
-            or move(0, -dx)
+            or self.STATE != State.SOLID and (
+                move(0, dx)
+                or move(0, -dx)
+            )
         ):
             self.sleep()
 
@@ -171,7 +169,7 @@ class Snow(MovingElement):
         if random() > .99:
             self.STATE = State.SOLID if self.STATE == State.LIQUID else State.LIQUID
 
-        if random() > .99 and self.STATE == State.LIQUID:
+        if self.STATE == State.LIQUID and random() > .99:
             self.sleep()
             water = Water(self.world, self.pos)
             water.wake_neighbors()

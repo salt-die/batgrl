@@ -5,7 +5,7 @@ from nurses_2.mouse import MouseButton
 from nurses_2.widgets.widget import Widget, overlapping_region
 from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
 
-from .particles.base import Air
+from .particles import Air
 from .tool_menu import ButtonContainer
 
 @np.vectorize

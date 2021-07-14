@@ -2,7 +2,7 @@ from nurses_2.colors import ColorPair, Color
 from nurses_2.widgets import Widget
 from nurses_2.widgets.button_behavior import ButtonBehavior
 
-from .particles.base import Element
+from .particles import Element
 
 MENU_BACKGROUND_COLOR = Color(222, 224, 127)  # Mustard
 
