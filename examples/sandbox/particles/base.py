@@ -1,4 +1,5 @@
 import asyncio
+from enum import Enum
 from random import random
 
 from nurses_2.colors import Color
@@ -6,14 +7,21 @@ from nurses_2.colors import Color
 from .line import line
 
 
+class State(Enum):
+    GAS = "GAS"
+    LIQUID = "LIQUID"
+    SOLID = "SOLID"
+
+
 class Element:
     COLOR = None
-    DENSITY = 0.0
+    DENSITY = None
+    STATE = None
 
     all_elements = { }
 
     def __init_subclass__(cls):
-        if cls.COLOR:
+        if all(getattr(cls, attr) is not None for attr in ("COLOR", "DENSITY", "STATE")):
             cls.all_elements[cls.__name__] = cls
 
 
@@ -82,18 +90,19 @@ class MovingElement(StationaryElement):
 
         if 0 <= new_y < h and 0 <= new_x < w:
             neighbor = world[new_y, new_x]
+            neighbor_density = neighbor.DENSITY
+            neighbor_state = neighbor.STATE
 
-            if (
-                neighbor.DENSITY < 10.0
-                and (
-                    dy > 0
-                    and (
-                        self.DENSITY > neighbor.DENSITY  # Sink
-                        or 0 <= y - 1 and world[y - 1, x].DENSITY >= self.DENSITY  # Pushed down
+            density = self.DENSITY
+            state = self.STATE
+
+            if neighbor_state != State.SOLID and (
+                dy > 0 and density > neighbor_density
+                or dy < 0 and density < neighbor_density  # Float
+                or dy == 0 and (
+                    state != State.SOLID
+                    or state == State.SOLID and neighbor_state == State.LIQUID and density < neighbor_density
                     )
-                    or dy < 0 and self.DENSITY < neighbor.DENSITY  # Float
-                    or dy == 0 and self.DENSITY < 10.0
-                )
             ):
                 self.wake_neighbors()
 
@@ -113,13 +122,16 @@ class MovingElement(StationaryElement):
 
     def step(self):
         move = self._move
-        dx = 2 * round(random()) - 1
         dy = 1 if self.DENSITY > 0 else -1
+        dx = 2 * round(random()) - 1
 
         if not (
             move(dy, 0)
             or move(dy, dx)
             or move(dy, -dx)
+            or move(-dy, 0)
+            or move(-dy, dx)
+            or move(-dy, -dx)
             or move(0, dx)
             or move(0, -dx)
         ):
@@ -127,30 +139,47 @@ class MovingElement(StationaryElement):
 
 
 class Air(StationaryElement):
-    DENSITY = 0.0
     COLOR = Color(25, 25, 25)
+    DENSITY = 0.0
+    STATE = State.GAS
 
 
 class Stone(StationaryElement):
-    DENSITY = 100.0
     COLOR = Color(120, 110, 120)
+    DENSITY = 100.0
+    STATE = State.SOLID
 
 
 class Sand(MovingElement):
-    DENSITY = 50.0
     COLOR = Color(150, 100, 50)
+    DENSITY = 50.0
+    STATE = State.SOLID
 
 
 class Water(MovingElement):
-    DENSITY = 1.0
     COLOR = Color(20, 100, 170)
+    DENSITY = 1.0
+    STATE = State.LIQUID
 
 
 class Snow(MovingElement):
-    DENSITY = .8
     COLOR = Color(200, 200, 250)
+    DENSITY = .8
+    STATE = State.SOLID
+
+    def step(self):
+        if random() > .99:
+            self.STATE = State.SOLID if self.STATE == State.LIQUID else State.LIQUID
+
+        if random() > .99 and self.STATE == State.LIQUID:
+            self.sleep()
+            water = Water(self.world, self.pos)
+            water.wake_neighbors()
+        else:
+            super().step()
 
 
 class Steam(MovingElement):
-    DENSITY = -1.0
     COLOR = Color(50, 50, 50)
+    DENSITY = -1.0
+    STATE = State.GAS
