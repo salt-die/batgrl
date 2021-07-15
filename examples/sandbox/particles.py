@@ -21,6 +21,9 @@ class Element:
     all_elements = { }
 
     def __init_subclass__(cls):
+        if hasattr(cls, 'COLORS'):
+            cls.COLOR = next(cls.COLORS)
+
         if all(getattr(cls, attr) is not None for attr in ("COLOR", "DENSITY", "STATE")):
             cls.all_elements[cls.__name__] = cls
 
@@ -261,7 +264,6 @@ class Fire(AnimatedBehavior, MovingElement):
         Color(244, 146, 53),
         Color(229, 179, 52),
     ))
-    COLOR = next(COLORS)
     DENSITY = .1
     STATE = State.SOLID
 
@@ -289,7 +291,7 @@ class Fire(AnimatedBehavior, MovingElement):
                 return True
 
         elif isinstance(neighbor, Snow):
-            if random() > .85:
+            if random() > .945:
                 neighbor.sleep()
                 Water(world, neighbor.pos)
 
@@ -300,6 +302,7 @@ class Fire(AnimatedBehavior, MovingElement):
                 return True
 
         elif isinstance(neighbor, Oil):
-            if random() > .25:
+            if random() > .92:
                 neighbor.sleep()
-                Fire(world, neighbor.pos)
+                fire = Fire(world, neighbor.pos)
+                fire.LIFETIME = 25
