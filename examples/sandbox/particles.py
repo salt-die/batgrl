@@ -36,6 +36,7 @@ class Element(ABC):
     DENSITY = None
     STATE = None
     LIFETIME = float('inf')
+    INACTIVE = 100
     SLEEP = 0
 
     all_elements = { }
@@ -224,7 +225,13 @@ class MovingElement(Element):
                 move(0, dx) or move(0, -dx)
             )
         ) and self.LIFETIME == float('inf'):  # Elements with finite lifetime don't sleep.
-            self.sleep()
+            if self.INACTIVE <= 0:
+                self.INACTIVE = type(self).INACTIVE
+                self.sleep()
+            else:
+                self.INACTIVE -= 1
+        else:
+            self.INACTIVE = type(self).INACTIVE
 
 
 ################
@@ -267,8 +274,6 @@ class Snow(MovingElement):
     DENSITY = .9
     STATE = State.SOLID
     SLEEP = .1
-
-    LIFETIME = 1_000_000  # Prevents element from sleeping.
     MELT_TIME = float('inf')
 
     def _move(self, dy, dx):
@@ -281,7 +286,7 @@ class Snow(MovingElement):
     def update_neighbor(self, neighbor):
         if self.MELT_TIME == float('inf') and isinstance(neighbor, Water):
             self.MELT_TIME = 30 * random()  # Give the snow some time to settle before it descends into the water.
-            self.SLEEP = .2
+            self.SLEEP *= 2
             return True
 
     def step(self):
