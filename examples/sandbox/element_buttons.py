@@ -26,7 +26,7 @@ class ElementButton(ButtonBehavior, Widget):
         self.colors[:, :] = self.default_color
 
     def on_release(self):
-        self.parent.parent.particle_type = self.element
+        self.parent.parent.particle_type = self.element  # parent.parent is Sandbox widget.
 
 
 class ButtonContainer(Widget):
