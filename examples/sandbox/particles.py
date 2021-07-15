@@ -54,11 +54,24 @@ class Element(ABC):
         self._update_task = asyncio.create_task(self.update())
 
     def sleep(self):
+        """
+        Stop updating.
+        """
         self._update_task.cancel()
 
     def wake(self):
+        """
+        Resume updating.
+        """
         self._update_task.cancel()
         self._update_task = asyncio.create_task(self.update())
+
+    def kill(self):
+        """
+        Stop updating and replace with Air.
+        """
+        self.sleep()
+        Air(self.world, self.pos)
 
     async def update(self):
         step = self.step
@@ -69,8 +82,7 @@ class Element(ABC):
             self.LIFETIME -= 1.0
 
             if self.LIFETIME <= 0.0:
-                Air(self.world, self.pos)
-                return
+                self.kill()
 
             try:
                 await asyncio.sleep(0)
@@ -187,8 +199,7 @@ class MovingElement(Element):
             return True
 
         # Fall off the world
-        world[y, x] = Air(world, (y, x))
-        self._update_task.cancel()
+        self.kill()
         return True
 
     def update_neighbor(self, neighbor):
@@ -273,8 +284,8 @@ class Steam(MovingElement):
     DENSITY = -2.0
     STATE = State.GAS
 
-    def sleep(self):
-        super().sleep()
+    def kill(self):
+        self.sleep()
         Water(self.world, self.pos)
 
 
@@ -318,10 +329,7 @@ class Fire(CycleColorBehavior, MovingElement):
                 neighbor.sleep()
                 Steam(world, neighbor.pos)
 
-                self.LIFETIME = 0
-                self.sleep()
-                Air(world, self.pos)
-
+                self.kill()
                 return True
 
         elif isinstance(neighbor, Snow):
@@ -329,10 +337,7 @@ class Fire(CycleColorBehavior, MovingElement):
                 neighbor.sleep()
                 Water(world, neighbor.pos)
 
-                self.LIFETIME = 0
-                self.sleep()
-                Air(world, self.pos)
-
+                self.kill()
                 return True
 
         elif isinstance(neighbor, Oil):
