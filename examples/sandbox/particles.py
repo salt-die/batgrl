@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import asyncio
 from enum import Enum
 from itertools import cycle
@@ -7,12 +8,30 @@ from nurses_2.colors import Color
 
 
 class State(Enum):
+    """
+    Element states.
+    """
     GAS = "GAS"
     LIQUID = "LIQUID"
     SOLID = "SOLID"
 
 
-class Element:
+class CycleColorBehavior:
+    """
+    Cycles through several colors for an element.
+
+    Notes
+    -----
+    `COLORS` should be an infinite iterator.
+    """
+    COLORS = None  # itertools.cycle
+
+    def step(self):
+        self.COLOR = next(self.COLORS)
+        super().step()
+
+
+class Element(ABC):
     COLOR = None
     DENSITY = None
     STATE = None
@@ -60,45 +79,53 @@ class Element:
 
     def neighbors(self):
         """
-        Yield all neighbors and their relative positions.
+        Yield all neighbors.
         """
         world = self.world
         h, w = world.shape
         y, x = self.pos
-        coords = (
+        deltas = (
             (-1, -1),
-            (-1, 0),
-            (-1, 1),
-            (0, -1),
-            (0, 1),
-            (1, -1),
-            (1, 0),
-            (1, 1),
+            (-1,  0),
+            (-1,  1),
+            ( 0, -1),
+            ( 0,  1),
+            ( 1, -1),
+            ( 1,  0),
+            ( 1,  1),
         )
 
-        for dy, dx in coords:
+        for dy, dx in deltas:
             if 0 <= y + dy < h and 0 <= x + dx < w:
-                yield world[y + dy, x + dx], (dy, dx)
+                yield world[y + dy, x + dx]
 
     def wake_neighbors(self):
-        for neighbor, _, in self.neighbors():
+        """
+        Wake all neighbors.
+        """
+        for neighbor in self.neighbors():
             neighbor.wake()
 
-    def update_neighbors(self, coords=None):
-        for neighbor_info in self.neighbors():
-            if self.update_neighbor(*neighbor_info):
+    def update_neighbors(self):
+        """
+        Update all neighbors or until `update_neighbor` returns True.
+        """
+        for neighbor in self.neighbors():
+            if self.update_neighbor(neighbor):
                 return True
 
         return False
 
-    def update_neighbor(self, element, dyx):
+    @abstractmethod
+    def update_neighbor(self, neighbor):
         """
-        Update neighbor with relative position dyx.
+        Update neighbor.
 
         Return True to stop updating.
         """
         pass
 
+    @abstractmethod
     def step(self):
         """
         Single step of an element's update.
@@ -110,7 +137,15 @@ class InertElement(Element):
     """
     Base for inert elements.
     """
+    def update_neighbor(self, neighbor):
+        """
+        Do nothing.
+        """
+
     def step(self):
+        """
+        Cancel updating.
+        """
         self._update_task.cancel()
 
 
@@ -156,12 +191,18 @@ class MovingElement(Element):
         self._update_task.cancel()
         return True
 
+    def update_neighbor(self, neighbor):
+        """
+        Default implementation.  Return False.
+        """
+        return False
+
     def step(self):
         if self.update_neighbors():
             return True
 
         move = self._move
-        dy = 1 if self.DENSITY > 0 else -1
+        dy = 1 if self.DENSITY > 0 else -1  # Air has a density of 0, so less than this and element will "fall" up.
         dx = 2 * round(random()) - 1
 
         if not (
@@ -170,17 +211,9 @@ class MovingElement(Element):
             or move(dy, -dx)
             or self.STATE != State.SOLID and (
                 move(0, dx) or move(0, -dx)
-            )
+            )  # Only fluids "slide".
         ) and self.LIFETIME == float('inf'):  # Elements with finite lifetime don't sleep.
             self.sleep()
-
-
-class AnimatedBehavior:
-    COLORS = None  # itertools.cycle
-
-    def step(self):
-        self.COLOR = next(self.COLORS)
-        super().step()
 
 
 ################
@@ -257,7 +290,7 @@ class Smoke(MovingElement):
     STATE = State.GAS
 
 
-class Fire(AnimatedBehavior, MovingElement):
+class Fire(CycleColorBehavior, MovingElement):
     LIFETIME = 1000
     COLORS = cycle((
         Color(186, 105, 29),
@@ -267,7 +300,7 @@ class Fire(AnimatedBehavior, MovingElement):
     DENSITY = .1
     STATE = State.SOLID
 
-    def update_neighbor(self, neighbor, dyx):
+    def update_neighbor(self, neighbor):
         world = self.world
 
         if isinstance(neighbor, Wood):
