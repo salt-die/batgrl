@@ -135,7 +135,7 @@ class Image(Widget):
             buffer = np.zeros((h, w, 6), dtype=np.float16)
             alpha_buffer = buffer.reshape((h, w, 2, 3))
 
-            # RGBA on rgb == rgb + (RGB - rgb) * A1
+            # RGBA on rgb == rgb + (RGB - rgb) * A
             np.subtract(self.colors[index_rect], colors_view, out=buffer, dtype=np.float16)
             np.multiply(alpha_buffer, self.alpha_channels[index_rect], out=alpha_buffer)
             np.add(buffer, colors_view, out=colors_view, casting="unsafe")
