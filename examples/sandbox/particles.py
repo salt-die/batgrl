@@ -297,6 +297,7 @@ class Snow(MovingElement):
         else:
             super().step()
 
+
 class Steam(MovingElement):
     LIFETIME = 1000
     COLOR = Color(148, 174, 204)
