@@ -268,6 +268,7 @@ class Snow(MovingElement):
 
 
 class Steam(MovingElement):
+    LIFETIME = 1000
     COLOR = Color(148, 174, 204)
     DENSITY = -2.0
     STATE = State.GAS
