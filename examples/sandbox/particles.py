@@ -36,6 +36,7 @@ class Element(ABC):
     DENSITY = None
     STATE = None
     LIFETIME = float('inf')
+    SLEEP = 0
 
     all_elements = { }
 
@@ -63,15 +64,16 @@ class Element(ABC):
         """
         Resume updating.
         """
-        self._update_task.cancel()
-        self._update_task = asyncio.create_task(self.update())
+        if self._update_task.done():
+            self._update_task = asyncio.create_task(self.update())
 
-    def kill(self, death_state=None):
+    def replace(self, element=None):
         """
-        Stop updating and replace with death_state or Air.
+        Stop updating and replace with element or Air.
         """
         self.sleep()
-        (death_state or Air)(self.world, self.pos)
+        self.wake_neighbors()
+        (element or Air)(self.world, self.pos)
 
     async def update(self):
         step = self.step
@@ -82,10 +84,10 @@ class Element(ABC):
             self.LIFETIME -= 1.0
 
             if self.LIFETIME <= 0.0:
-                self.kill()
+                self.replace()
 
             try:
-                await asyncio.sleep(0)
+                await asyncio.sleep(self.SLEEP)
             except asyncio.CancelledError:
                 return
 
@@ -151,8 +153,9 @@ class InertElement(Element):
     """
     def update_neighbor(self, neighbor):
         """
-        Do nothing.
+        Default implementation.  Return False.
         """
+        return False
 
     def step(self):
         """
@@ -182,8 +185,8 @@ class MovingElement(Element):
 
             if (
                 neighbor.STATE == State.SOLID and self.STATE != State.LIQUID
-                or density < 0 and neighbor_density <= density
-                or density > 0 and neighbor_density >= density
+                or density > 0 and density <= neighbor_density
+                or density < 0 and density >= neighbor_density
             ):
                 return False
 
@@ -197,7 +200,7 @@ class MovingElement(Element):
             return True
 
         # Fall off the world
-        self.kill(death_state=Air)
+        self.replace(Air)
         return True
 
     def update_neighbor(self, neighbor):
@@ -215,12 +218,10 @@ class MovingElement(Element):
         dx = 2 * round(random()) - 1
 
         if not (
-            move(dy, 0)
-            or move(dy, dx)
-            or move(dy, -dx)
+            move(dy, 0) or move(dy, dx) or move(dy, -dx)
             or self.STATE != State.SOLID and (
                 move(0, dx) or move(0, -dx)
-            )  # Only fluids "slide".
+            )
         ) and self.LIFETIME == float('inf'):  # Elements with finite lifetime don't sleep.
             self.sleep()
 
@@ -261,20 +262,40 @@ class Water(MovingElement):
 
 class Snow(MovingElement):
     COLOR = Color(200, 200, 250)
-    DENSITY = .8
+    DENSITY = .9
     STATE = State.SOLID
+    SLEEP = .1
+    LIFETIME = 1000000
+    MELT_TIME = float('inf')
+
+    def _move(self, dy, dx):
+        if dx == 0:
+            return
+
+        return super()._move(dy, dx)
+
+    def replace(self, element=Water):
+        super().replace(element)
+
+    def update_neighbor(self, neighbor):
+        if self.MELT_TIME == float('inf') and isinstance(neighbor, Water):
+            self.MELT_TIME = 15  # Give the snow some time to settle before it descends into the water.
+            self.SLEEP = .2
 
     def step(self):
+        self.MELT_TIME -= 1
+
+        if self.MELT_TIME <= 0 and self.DENSITY == .9:
+            self.DENSITY = 1.1
+            self.LIFETIME = 10
+
         if random() > .99:
             self.STATE = State.SOLID if self.STATE == State.LIQUID else State.LIQUID
 
         if self.STATE == State.LIQUID and random() > .99:
-            self.sleep()
-            water = Water(self.world, self.pos)
-            water.wake_neighbors()
+            self.replace(Water)
         else:
             super().step()
-
 
 class Steam(MovingElement):
     LIFETIME = 1000
@@ -282,8 +303,8 @@ class Steam(MovingElement):
     DENSITY = -2.0
     STATE = State.GAS
 
-    def kill(self, death_state=Water):
-        super().kill(death_state)
+    def replace(self, element=Water):
+        super().replace(element)
 
 
 class Oil(MovingElement):
@@ -314,28 +335,28 @@ class Fire(CycleColorBehavior, MovingElement):
 
         if isinstance(neighbor, Wood):
             if random() > .99:
-                Fire(world, neighbor.pos)
+                neighbor.replace(Fire)
+
             return True
 
         elif isinstance(neighbor, Air):
             if random() > .989:
-                Smoke(world, neighbor.pos)
+                neighbor.replace(Smoke)
 
         elif isinstance(neighbor, Water):
             if random() > .95:
-                neighbor.sleep()
-                Steam(world, neighbor.pos)
+                neighbor.replace(Steam)
 
-                self.kill()
+                self.replace()
+                return True
+
+            elif random() > .95:
+                self.replace(Smoke)
                 return True
 
         elif isinstance(neighbor, Snow):
             if random() > .945:
-                neighbor.sleep()
-                Water(world, neighbor.pos)
-
-                self.kill()
-                return True
+                neighbor.replace(Water)
 
         elif isinstance(neighbor, Oil):
             if random() > .92:
