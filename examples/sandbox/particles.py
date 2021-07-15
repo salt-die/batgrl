@@ -191,6 +191,7 @@ class MovingElement(Element):
                 return False
 
             self.wake_neighbors()
+            neighbor.wake_neighbors()
 
             neighbor.pos = y, x
             world[y, x] = neighbor
@@ -230,6 +231,7 @@ class MovingElement(Element):
 # Particle Zoo #
 ################
 
+
 class Air(InertElement):
     COLOR = Color(25, 25, 25)
     DENSITY = 0.0
@@ -265,14 +267,12 @@ class Snow(MovingElement):
     DENSITY = .9
     STATE = State.SOLID
     SLEEP = .1
-    LIFETIME = 1000000
+    LIFETIME = 1000000  # Prevents element from sleeping.
     MELT_TIME = float('inf')
 
     def _move(self, dy, dx):
-        if dx == 0:
-            return
-
-        return super()._move(dy, dx)
+        if dx != 0:  # Not allowing snow to move directly down so it meanders more.
+            return super()._move(dy, dx)
 
     def replace(self, element=Water):
         super().replace(element)
@@ -281,6 +281,7 @@ class Snow(MovingElement):
         if self.MELT_TIME == float('inf') and isinstance(neighbor, Water):
             self.MELT_TIME = 15  # Give the snow some time to settle before it descends into the water.
             self.SLEEP = .2
+            return True
 
     def step(self):
         self.MELT_TIME -= 1
