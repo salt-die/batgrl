@@ -35,9 +35,10 @@ class Element(ABC):
     COLOR = None
     DENSITY = None
     STATE = None
-    LIFETIME = float('inf')
-    INACTIVE = 100
-    SLEEP = 0
+
+    LIFETIME = float('inf')  # Replace this element after LIFETIME updates.
+    INACTIVE = 100  # Sleep if inactive INACTIVE times in a row.
+    SLEEP = 0  # Seconds between updates.
 
     all_elements = { }
 
@@ -54,12 +55,29 @@ class Element(ABC):
 
         self.world[pos] = self
         self._update_task = asyncio.create_task(self.update())
+        self.reset_inactivity()
+
+    def reset_inactivity(self):
+        """
+        Set inactivity to 0.
+        """
+        self.inactivity = 0
 
     def sleep(self):
         """
         Stop updating.
         """
+        self.reset_inactivity()
         self._update_task.cancel()
+
+    def sleep_if_inactive(self):
+        """
+        Sleep if inactivity is greater than or equal to INACTIVE else increment inactivity.
+        """
+        if self.inactivity >= self.INACTIVE:
+            self.sleep()
+        else:
+            self.inactivity += 1
 
     def wake(self):
         """
@@ -145,8 +163,7 @@ class Element(ABC):
         """
         Single step of an element's update.
         """
-        self.update_neighbors()
-
+        pass
 
 class InertElement(Element):
     """
@@ -154,9 +171,8 @@ class InertElement(Element):
     """
     def update_neighbor(self, neighbor):
         """
-        Default implementation.  Return False.
+        Do nothing.
         """
-        return False
 
     def step(self):
         """
@@ -225,13 +241,9 @@ class MovingElement(Element):
                 move(0, dx) or move(0, -dx)
             )
         ) and self.LIFETIME == float('inf'):  # Elements with finite lifetime don't sleep.
-            if self.INACTIVE <= 0:
-                self.INACTIVE = type(self).INACTIVE
-                self.sleep()
-            else:
-                self.INACTIVE -= 1
+            self.sleep_if_inactive()
         else:
-            self.INACTIVE = type(self).INACTIVE
+            self.reset_inactivity()
 
 
 ################
