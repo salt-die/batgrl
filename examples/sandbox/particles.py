@@ -267,6 +267,7 @@ class Snow(MovingElement):
     DENSITY = .9
     STATE = State.SOLID
     SLEEP = .1
+
     LIFETIME = 1_000_000  # Prevents element from sleeping.
     MELT_TIME = float('inf')
 
