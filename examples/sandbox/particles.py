@@ -31,6 +31,13 @@ class Element:
         self.world[pos] = self
         self._update_task = asyncio.create_task(self.update())
 
+    def sleep(self):
+        self._update_task.cancel()
+
+    def wake(self):
+        self._update_task.cancel()
+        self._update_task = asyncio.create_task(self.update())
+
     async def update(self):
         step = self.step
 
@@ -40,52 +47,65 @@ class Element:
             self.LIFETIME -= 1.0
 
             if self.LIFETIME <= 0.0:
-                self.sleep()
+                Air(self.world, self.pos)
+                return
 
             try:
                 await asyncio.sleep(0)
             except asyncio.CancelledError:
                 return
 
-    def wake(self):
-        self._update_task.cancel()
-        self._update_task = asyncio.create_task(self.update())
-
-    def wake_neighbors(self):
+    def neighbors(self):
+        """
+        Yield all neighbors and their relative positions.
+        """
         world = self.world
         h, w = world.shape
         y, x = self.pos
         coords = (
-            (y - 1, x - 1),
-            (y - 1, x),
-            (y - 1, x + 1),
-            (y, x - 1),
-            (y, x + 1),
-            (y + 1, x - 1),
-            (y + 1, x),
-            (y + 1, x + 1),
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
         )
 
-        for y, x in coords:
-            if 0 <= y < h and 0 <= x < w:
-                world[y, x].wake()
+        for dy, dx in coords:
+            if 0 <= y + dy < h and 0 <= x + dx < w:
+                yield world[y + dy, x + dx], (dy, dx)
 
-    def sleep(self):
-        if self.LIFETIME != float('inf'):
-            self.LIFETIME -= 1.0
+    def wake_neighbors(self):
+        for neighbor, _, in self.neighbors():
+            neighbor.wake()
 
-            if self.LIFETIME > 0.0:
-                return
+    def update_neighbors(self, coords=None):
+        for neighbor_info in self.neighbors():
+            if self.update_neighbor(*neighbor_info):
+                return True
 
-            Air(self.world, self.pos)
+        return False
+
+    def update_neighbor(self, element, dyx):
+        """
+        Update neighbor with relative position dyx.
+
+        Return True to stop updating.
+        """
+        pass
+
+    def step(self):
+        """
+        Single step of an element's update.
+        """
+        self.update_neighbors()
 
 
-        self._update_task.cancel()
-
-
-class StationaryElement(Element):
+class InertElement(Element):
     """
-    Base for stationary elements.
+    Base for inert elements.
     """
     def step(self):
         self._update_task.cancel()
@@ -112,13 +132,11 @@ class MovingElement(Element):
             density = self.DENSITY
             state = self.STATE
 
-            if neighbor_state == State.SOLID and state != State.LIQUID:
-                return False
-
-            if density < 0 and neighbor_density <= density:
-                return False
-
-            if density > 0 and neighbor_density >= density:
+            if (
+                neighbor_state == State.SOLID and state != State.LIQUID
+                or density < 0 and neighbor_density <= density
+                or density > 0 and neighbor_density >= density
+            ):
                 return False
 
             self.wake_neighbors()
@@ -136,6 +154,9 @@ class MovingElement(Element):
         return True
 
     def step(self):
+        if self.update_neighbors():
+            return True
+
         move = self._move
         dy = 1 if self.DENSITY > 0 else -1
         dx = 2 * round(random()) - 1
@@ -145,10 +166,9 @@ class MovingElement(Element):
             or move(dy, dx)
             or move(dy, -dx)
             or self.STATE != State.SOLID and (
-                move(0, dx)
-                or move(0, -dx)
+                move(0, dx) or move(0, -dx)
             )
-        ):
+        ) and self.LIFETIME == float('inf'):  # Elements with finite lifetime don't sleep.
             self.sleep()
 
 
@@ -164,19 +184,19 @@ class AnimatedBehavior:
 # Particle Zoo #
 ################
 
-class Air(StationaryElement):
+class Air(InertElement):
     COLOR = Color(25, 25, 25)
     DENSITY = 0.0
     STATE = State.GAS
 
 
-class Stone(StationaryElement):
+class Stone(InertElement):
     COLOR = Color(120, 110, 120)
     DENSITY = 100.0
     STATE = State.SOLID
 
 
-class Wood(StationaryElement):
+class Wood(InertElement):
     COLOR = Color(81, 42, 6)
     DENSITY = 80.0
     STATE = State.SOLID
@@ -245,72 +265,41 @@ class Fire(AnimatedBehavior, MovingElement):
     DENSITY = .1
     STATE = State.SOLID
 
-    def _move(self, dy, dx):
+    def update_neighbor(self, neighbor, dyx):
         world = self.world
-        h, w = world.shape
 
-        y, x = self.pos
+        if isinstance(neighbor, Wood):
+            if random() > .99:
+                Fire(world, neighbor.pos)
+            return True
 
-        new_y = y + dy
-        new_x = x + dx
+        elif isinstance(neighbor, Air):
+            if random() > .989:
+                Smoke(world, neighbor.pos)
 
-        if 0 <= new_y < h and 0 <= new_x < w:
-            neighbor = world[new_y, new_x]
+        elif isinstance(neighbor, Water):
+            if random() > .95:
+                neighbor.sleep()
+                Steam(world, neighbor.pos)
 
-            if isinstance(neighbor, Oil):
-                if random() > .75:
-                    neighbor.sleep()
-                    Fire(world, (new_y, new_x))
+                self.LIFETIME = 0
+                self.sleep()
+                Air(world, self.pos)
 
                 return True
 
-            elif isinstance(neighbor, Water):
-                if random() > .95:
-                    neighbor.sleep()
-                    Steam(world, (new_y, new_x))
+        elif isinstance(neighbor, Snow):
+            if random() > .85:
+                neighbor.sleep()
+                Water(world, neighbor.pos)
 
-                    self.LIFETIME = 0
-                    self.sleep()
-                    Air(world, (y, x))
+                self.LIFETIME = 0
+                self.sleep()
+                Air(world, self.pos)
 
-                    return True
+                return True
 
-            elif isinstance(neighbor, Snow):
-                if random() > .75:
-                    neighbor.sleep()
-                    Water(world, (new_y, new_x))
-
-                    self.LIFETIME = 0
-                    self.sleep()
-                    Air(world, (y, x))
-
-                    return True
-
-            elif isinstance(neighbor, Wood):
-                if random() > .98:
-                    Fire(world, (new_y, new_x))
-
-                    return True
-
-            elif isinstance(neighbor, Air):
-                if random() > .9:
-                    Smoke(world, (new_y, new_x))
-
-            density = self.DENSITY
-
-            if neighbor.STATE == State.SOLID or density > 0 and neighbor.DENSITY >= density:
-                return False
-
-            self.wake_neighbors()
-
-            neighbor.pos = y, x
-            world[y, x] = neighbor
-
-            self.pos = new_y, new_x
-            world[new_y, new_x] = self
-            return True
-
-        # Fall off the world
-        world[y, x] = Air(world, (y, x))
-        self._update_task.cancel()
-        return True
+        elif isinstance(neighbor, Oil):
+            if random() > .25:
+                neighbor.sleep()
+                Fire(world, neighbor.pos)
