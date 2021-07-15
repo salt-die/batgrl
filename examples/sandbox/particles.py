@@ -267,7 +267,7 @@ class Snow(MovingElement):
     DENSITY = .9
     STATE = State.SOLID
     SLEEP = .1
-    LIFETIME = 1000000  # Prevents element from sleeping.
+    LIFETIME = 1_000_000  # Prevents element from sleeping.
     MELT_TIME = float('inf')
 
     def _move(self, dy, dx):
@@ -279,7 +279,7 @@ class Snow(MovingElement):
 
     def update_neighbor(self, neighbor):
         if self.MELT_TIME == float('inf') and isinstance(neighbor, Water):
-            self.MELT_TIME = 15  # Give the snow some time to settle before it descends into the water.
+            self.MELT_TIME = 30 * random()  # Give the snow some time to settle before it descends into the water.
             self.SLEEP = .2
             return True
 
@@ -288,15 +288,9 @@ class Snow(MovingElement):
 
         if self.MELT_TIME <= 0 and self.DENSITY == .9:
             self.DENSITY = 1.1
-            self.LIFETIME = 10
+            self.LIFETIME = 20 * random()
 
-        if random() > .99:
-            self.STATE = State.SOLID if self.STATE == State.LIQUID else State.LIQUID
-
-        if self.STATE == State.LIQUID and random() > .99:
-            self.replace(Water)
-        else:
-            super().step()
+        super().step()
 
 
 class Steam(MovingElement):
