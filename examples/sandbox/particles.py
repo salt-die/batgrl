@@ -66,12 +66,12 @@ class Element(ABC):
         self._update_task.cancel()
         self._update_task = asyncio.create_task(self.update())
 
-    def kill(self):
+    def kill(self, death_state=None):
         """
-        Stop updating and replace with Air.
+        Stop updating and replace with death_state or Air.
         """
         self.sleep()
-        Air(self.world, self.pos)
+        (death_state or Air)(self.world, self.pos)
 
     async def update(self):
         step = self.step
@@ -177,13 +177,11 @@ class MovingElement(Element):
         if 0 <= new_y < h and 0 <= new_x < w:
             neighbor = world[new_y, new_x]
             neighbor_density = neighbor.DENSITY
-            neighbor_state = neighbor.STATE
 
             density = self.DENSITY
-            state = self.STATE
 
             if (
-                neighbor_state == State.SOLID and state != State.LIQUID
+                neighbor.STATE == State.SOLID and self.STATE != State.LIQUID
                 or density < 0 and neighbor_density <= density
                 or density > 0 and neighbor_density >= density
             ):
@@ -199,7 +197,7 @@ class MovingElement(Element):
             return True
 
         # Fall off the world
-        self.kill()
+        self.kill(death_state=Air)
         return True
 
     def update_neighbor(self, neighbor):
@@ -284,9 +282,8 @@ class Steam(MovingElement):
     DENSITY = -2.0
     STATE = State.GAS
 
-    def kill(self):
-        self.sleep()
-        Water(self.world, self.pos)
+    def kill(self, death_state=Water):
+        super().kill(death_state)
 
 
 class Oil(MovingElement):
