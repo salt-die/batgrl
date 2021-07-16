@@ -55,19 +55,13 @@ class Element(ABC):
 
         self.world[pos] = self
         self._update_task = asyncio.create_task(self.update())
-        self.reset_inactivity()
-
-    def reset_inactivity(self):
-        """
-        Set inactivity to 0.
-        """
         self.inactivity = 0
 
     def sleep(self):
         """
         Stop updating.
         """
-        self.reset_inactivity()
+        self.inactivity = 0
         self._update_task.cancel()
 
     def sleep_if_inactive(self):
@@ -233,17 +227,15 @@ class MovingElement(Element):
 
         move = self._move
         dy = 1 if self.DENSITY > 0 else -1  # Air has a density of 0, so less than this and element will "fall" up.
-        dx = 2 * round(random()) - 1
+        dx = 2 * round(random()) - 1  # -1 or 1 randomly
 
-        if not (
+        if (
             move(dy, 0) or move(dy, dx) or move(dy, -dx)
-            or self.STATE != State.SOLID and (
-                move(0, dx) or move(0, -dx)
-            )
-        ) and self.LIFETIME == float('inf'):  # Elements with finite lifetime don't sleep.
-            self.sleep_if_inactive()
+            or self.STATE != State.SOLID and (move(0, dx) or move(0, -dx))
+        ) or self.LIFETIME != float('inf'):  # Elements with finite lifetime don't sleep.
+            self.inactivity = 0
         else:
-            self.reset_inactivity()
+            self.sleep_if_inactive()
 
 
 ################
