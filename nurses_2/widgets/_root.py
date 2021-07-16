@@ -2,7 +2,7 @@ import numpy as np
 
 from ..colors import Color
 from .widget import Widget, overlapping_region
-from .widget_data_structures import Size
+from .widget_data_structures import Point, Size, Rect
 
 
 class _Root(Widget):
@@ -48,6 +48,14 @@ class _Root(Widget):
     @property
     def left(self):
         return 0
+
+    @property
+    def pos(self):
+        return Point(0, 0)
+
+    @property
+    def absolute_pos(self):
+        return Point(0, 0)
 
     @property
     def is_transparent(self):
@@ -96,7 +104,15 @@ class _Root(Widget):
         colors[:, :] = self.default_color
 
         overlap = overlapping_region
-        rect = self.rect
+        height, width = canvas.shape
+        rect = Rect(
+            0,
+            0,
+            height,
+            width,
+            height,
+            width,
+        )
 
         for child in self.children:
             if region := overlap(rect, child):
