@@ -1,3 +1,5 @@
+from .widget_data_structures import SizeHint
+
 def _is_valid_hint(hint):
     return hint is None or 0 < hint
 
@@ -12,7 +14,7 @@ class AutoResizeBehavior:
         Dimension as a percentage of parent's dimension. None indicates
         height or width attribute will be used normally.
     """
-    def __init__(self, *args, size_hint=(1.0, 1.0), **kwargs):
+    def __init__(self, *args, size_hint: SizeHint=SizeHint(1.0, 1.0), **kwargs):
         self.h_hint, self.w_hint = size_hint
 
         assert _is_valid_hint(self.h_hint) and _is_valid_hint(self.w_hint), f'{size_hint!r} is not a valid size hint'

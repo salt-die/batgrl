@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 
 class CanvasView:
@@ -43,6 +43,26 @@ class CanvasView:
             column += self.canvas.shape[1]
 
         self.canvas[row, column:column + len(text)] = tuple(text)
+
+
+class Point(NamedTuple):
+    y: int
+    x: int
+
+
+class PosHint(NamedTuple):
+    x: float
+    y: float
+
+
+class Size(NamedTuple):
+    height: Optional[float]
+    width: Optional[float]
+
+
+class SizeHint(NamedTuple):
+    height: Optional[float]
+    width: Optional[float]
 
 
 class Rect(NamedTuple):

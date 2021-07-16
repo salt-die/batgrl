@@ -1,6 +1,6 @@
 import numpy as np
 
-from ._widget_data_structures import CanvasView, Rect
+from .widget_data_structures import CanvasView, Point, Size, Rect
 from ..colors import WHITE_ON_BLACK
 
 
@@ -30,8 +30,8 @@ class Widget:
 
     def __init__(
         self,
-        dim=(10, 10),
-        pos=(0, 0),
+        dim: Size=Size(10, 10),
+        pos: Point=Point(0, 0),
         *,
         is_transparent=False,
         is_visible=True,
@@ -52,7 +52,7 @@ class Widget:
         self.default_char = default_char
         self.default_color = default_color
 
-    def resize(self, dim):
+    def resize(self, dim: Size):
         """
         Resize canvas. Content is preserved as much as possible.
         """
@@ -87,7 +87,7 @@ class Widget:
 
     @property
     def pos(self):
-        return self.top, self.left
+        return Point(self.top, self.left)
 
     @property
     def height(self):
@@ -118,7 +118,7 @@ class Widget:
 
     @property
     def middle(self):
-        return self.height // 2, self.width // 2
+        return Point(self.height // 2, self.width // 2)
 
     @property
     def root(self):
@@ -167,14 +167,14 @@ class Widget:
         """
         return CanvasView(self.canvas)
 
-    def absolute_to_relative_coords(self, coords):
+    def absolute_to_relative_coords(self, coords: Point):
         """
         Convert absolute coordinates to relative coordinates.
         """
         y, x = self.parent.absolute_to_relative_coords(coords)
-        return y - self.top, x - self.left
+        return Point(y - self.top, x - self.left)
 
-    def collides_coords(self, coords):
+    def collides_coords(self, coords: Point):
         """
         Return True if screen-coordinates are within this widget's bounding box.
         """
@@ -230,7 +230,7 @@ class Widget:
         for child in widget.children:
             yield from child.walk()
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, rect: Rect):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
@@ -287,7 +287,7 @@ class Widget:
         """
 
 
-def overlapping_region(rect, child):
+def overlapping_region(rect: Rect, child: Widget):
     """
     Find the overlapping region of a piece of screen and a child widget's canvas.
     """

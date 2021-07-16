@@ -1,13 +1,15 @@
 import numpy as np
 
+from ..colors import Color
 from .widget import Widget, overlapping_region
+from .widget_data_structures import Size
 
 
 class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, app, env_out, default_char, default_color):
+    def __init__(self, app, env_out, default_char, default_color: Color):
         self._app = app
         self.env_out = env_out
         self.default_char = default_char
@@ -16,7 +18,7 @@ class _Root(Widget):
 
         self.resize(env_out.get_size())
 
-    def resize(self, dim):
+    def resize(self, dim: Size):
         """
         Resize canvas. Last render is erased.
         """

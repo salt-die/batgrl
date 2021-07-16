@@ -1,5 +1,7 @@
 from enum import Enum
 
+from .widget_data_structures import PosHint
+
 
 class Anchor(str, Enum):
     CENTER = "CENTER"
@@ -22,7 +24,7 @@ class AutoPositionBehavior:
         The location of the anchor as a percentage parent's dimensions.
         None indicates top or left attribute will be used normally.
     """
-    def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint=(0.0, 0.0), **kwargs):
+    def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint: PosHint=PosHint(0.0, 0.0), **kwargs):
         self.anchor = anchor
         self.top_hint, self.left_hint = pos_hint
 

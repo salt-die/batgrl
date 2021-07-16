@@ -1,4 +1,5 @@
 from .widget import Widget
+from .widget_data_structures import Point, Size, Rect
 from ..colors import WHITE_ON_BLACK
 
 
@@ -14,7 +15,7 @@ class ParticleField(Widget):
     ------
     TypeError if `add_widget` argument is not an instance of `Particle`.
     """
-    def __init__(self, dim=(10, 10), pos=(0, 0), *, is_visible=True):
+    def __init__(self, dim=Size(10, 10), pos=Point(0, 0), *, is_visible=True):
         self._dim = dim
         self.top, self.left = pos
         self.is_visible = is_visible
@@ -22,7 +23,7 @@ class ParticleField(Widget):
         self.parent = None
         self.children = [ ]
 
-    def resize(self, dim):
+    def resize(self, dim: Size):
         self._dim = dim
 
         for child in self.children:
@@ -45,7 +46,7 @@ class ParticleField(Widget):
         yield self
         yield from self.children
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, rect: Rect):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
@@ -91,7 +92,7 @@ class Particle:
     """
     def __init__(
         self,
-        pos=(0, 0),
+        pos=Point(0, 0),
         *,
         char=" ",
         color=WHITE_ON_BLACK,

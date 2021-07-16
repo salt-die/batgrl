@@ -1,6 +1,8 @@
 from enum import Enum, IntFlag
 from typing import NamedTuple, Tuple
 
+from ..widgets.widget_data_structures import Point
+
 __all__ = (
     "MouseEventType",
     "MouseButton",
@@ -45,7 +47,7 @@ class MouseModifier(Enum):
 
 
 class MouseEvent(NamedTuple):
-        position: Tuple[int, int]
+        position: Point
         event_type: MouseEventType
         button: MouseButton
         modifier: MouseModifier

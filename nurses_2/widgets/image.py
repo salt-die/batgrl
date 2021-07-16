@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 
 from .widget import Widget, overlapping_region
+from .widget_data_structures import Size, Rect
 from ..colors import BLACK_ON_BLACK
 
 
@@ -99,7 +100,7 @@ class Image(Widget):
 
         self.resize(self.dim)
 
-    def resize(self, dim):
+    def resize(self, dim: Size):
         """
         Resize image.
         """
@@ -120,7 +121,7 @@ class Image(Widget):
         for child in self.children:
             child.update_geometry()
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, rect: Rect):
         """
         Paint region given by rect into canvas_view and colors_view.
         """

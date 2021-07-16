@@ -4,6 +4,8 @@ Patch more mouse support for windows. Extra *nix mouse support found in `handler
 from prompt_toolkit.key_binding import KeyPress
 from prompt_toolkit.keys import Keys
 
+from ..widgets.widget_data_structures import Point
+
 from .mouse_event import (
     MouseButton,
     MouseEventType,
@@ -27,7 +29,7 @@ def patch_win32_input(win32_input):
         MOUSE_MOVED = 0x0001
         MOUSE_WHEELED = 0x0004
 
-        position = ev.MousePosition.Y, ev.MousePosition.X
+        position = Point(ev.MousePosition.Y, ev.MousePosition.X)
 
         # Event type
         if ev.EventFlags & MOUSE_MOVED:

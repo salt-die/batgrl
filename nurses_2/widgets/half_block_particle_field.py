@@ -1,5 +1,6 @@
 import numpy as np
 
+from .widget_data_structures import Point, Rect
 from .particle_field import ParticleField, Particle
 from ..colors import BLACK
 
@@ -26,7 +27,7 @@ class HalfBlockField(ParticleField):
 
         super().add_widget(widget)
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, rect: Rect):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
@@ -58,7 +59,7 @@ class HalfBlockParticle(Particle):
     The y-component of `pos` can be a float. The fractional part determines
     whether the half block is upper or lower.
     """
-    def __init__(self, pos=(0, 0), *, color=BLACK, alpha=1.0):
+    def __init__(self, pos=Point(0, 0), *, color=BLACK, alpha=1.0):
         self.top, self.left = pos
         self.color = color
         self.alpha = alpha

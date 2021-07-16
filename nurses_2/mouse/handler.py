@@ -1,5 +1,7 @@
 from prompt_toolkit.keys import Keys
 
+from ..widgets.widget_data_structures import Point
+
 from .mouse_event import *
 from .bindings import TERM_SGR, TYPICAL, URXVT
 
@@ -31,4 +33,4 @@ def create_vt100_mouse_event(data):
         x -= 1
         y -= 1
 
-    return MouseEvent((y, x), *mouse_info)  # y, x swapped for nurses compatibility
+    return MouseEvent(Point(y, x), *mouse_info)  # y, x swapped for nurses compatibility
