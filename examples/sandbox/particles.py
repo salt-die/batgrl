@@ -2,10 +2,12 @@ from abc import ABC, abstractmethod
 import asyncio
 from enum import Enum
 from itertools import cycle
-from random import random
+
+import numpy as np
 
 from nurses_2.colors import Color
 
+random = np.random.default_rng().random
 
 class State(Enum):
     """
@@ -29,6 +31,14 @@ class CycleColorBehavior:
     def step(self):
         self.COLOR = next(self.COLORS)
         super().step()
+
+
+class ColorVariationBehavior:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        random_delta = 10 * random(3) - 5
+        random_color = np.clip(random_delta + self.COLOR, 0, 255, dtype=np.uint8, casting="unsafe")
+        self.COLOR = Color(*random_color)
 
 
 class Element(ABC):
@@ -249,31 +259,31 @@ class Air(InertElement):
     STATE = State.GAS
 
 
-class Stone(InertElement):
+class Stone(ColorVariationBehavior, InertElement):
     COLOR = Color(120, 110, 120)
     DENSITY = 100.0
     STATE = State.SOLID
 
 
-class Wood(InertElement):
+class Wood(ColorVariationBehavior, InertElement):
     COLOR = Color(81, 42, 6)
     DENSITY = 80.0
     STATE = State.SOLID
 
 
-class Sand(MovingElement):
+class Sand(ColorVariationBehavior, MovingElement):
     COLOR = Color(150, 100, 50)
     DENSITY = 50.0
     STATE = State.SOLID
 
 
-class Water(MovingElement):
+class Water(ColorVariationBehavior, MovingElement):
     COLOR = Color(20, 100, 170)
     DENSITY = 1.0
     STATE = State.LIQUID
 
 
-class Snow(MovingElement):
+class Snow(ColorVariationBehavior, MovingElement):
     COLOR = Color(200, 200, 250)
     DENSITY = .9
     STATE = State.SOLID
@@ -303,9 +313,13 @@ class Snow(MovingElement):
         super().step()
 
 
-class Steam(MovingElement):
+class Steam(CycleColorBehavior, MovingElement):
     LIFETIME = 1000
-    COLOR = Color(148, 174, 204)
+    COLORS = cycle((
+        Color(148, 174, 204),
+        Color(199, 204, 234),
+        Color(219, 224, 255),
+    ))
     DENSITY = -2.0
     STATE = State.GAS
 
@@ -313,15 +327,19 @@ class Steam(MovingElement):
         super().replace(element)
 
 
-class Oil(MovingElement):
+class Oil(ColorVariationBehavior, MovingElement):
     COLOR = Color(56, 54, 33)
     DENSITY = .5
     STATE = State.LIQUID
 
 
-class Smoke(MovingElement):
+class Smoke(CycleColorBehavior, MovingElement):
     LIFETIME = 850
-    COLOR = Color(140, 140, 140)
+    COLORS = cycle((
+        Color(140, 140, 140),
+        Color(120, 120, 120),
+        Color(155, 155, 155),
+    ))
     DENSITY = -1.0
     STATE = State.GAS
 
