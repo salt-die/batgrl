@@ -22,3 +22,7 @@ A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) d
 # /examples/exploding_logo_redux.py
 
 ![Exploding logo example 2](preview_images/exploding_logo_redux.gif)
+
+# /examples/sandbox
+
+![Sandbox demonstration](preview_images/sandbox_demonstration.gif)
