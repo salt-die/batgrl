@@ -34,6 +34,9 @@ class CycleColorBehavior:
 
 
 class ColorVariationBehavior:
+    """
+    Adds a small variation to the element color.
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         random_delta = 10 * random(3) - 5
@@ -42,9 +45,13 @@ class ColorVariationBehavior:
 
 
 class Element(ABC):
+    """
+    Base for elements.
+    """
     COLOR = None
     DENSITY = None
     STATE = None
+    DEFAULT_REPLACEMENT = None
 
     LIFETIME = float('inf')  # Replace this element after LIFETIME updates.
     INACTIVE = 100  # Sleep if inactive INACTIVE times in a row.
@@ -92,13 +99,16 @@ class Element(ABC):
 
     def replace(self, element=None):
         """
-        Stop updating and replace with element or Air.
+        Stop updating and replace with element or DEFAULT_REPLACEMENT or Air.
         """
         self.sleep()
         self.wake_neighbors()
-        (element or Air)(self.world, self.pos)
+        (element or self.DEFAULT_REPLACEMENT or Air)(self.world, self.pos)
 
     async def update(self):
+        """
+        Coroutine that steps the element.
+        """
         step = self.step
 
         while True:
@@ -160,14 +170,12 @@ class Element(ABC):
 
         Return True to stop updating.
         """
-        pass
 
     @abstractmethod
     def step(self):
         """
         Single step of an element's update.
         """
-        pass
 
 class InertElement(Element):
     """
@@ -190,6 +198,9 @@ class MovingElement(Element):
     Base for moving elements.
     """
     def _move(self, dy, dx):
+        """
+        Try to move vertically by dy and horizontally by dx.  Return True if successful.
+        """
         world = self.world
         h, w = world.shape
 
@@ -233,7 +244,7 @@ class MovingElement(Element):
 
     def step(self):
         if self.update_neighbors():
-            return True
+            return
 
         move = self._move
         dy = 1 if self.DENSITY > 0 else -1  # Air has a density of 0, so less than this and element will "fall" up.
@@ -287,15 +298,13 @@ class Snow(ColorVariationBehavior, MovingElement):
     COLOR = Color(200, 200, 250)
     DENSITY = .9
     STATE = State.SOLID
+    DEFAULT_REPLACEMENT = Water
     SLEEP = .1
     MELT_TIME = float('inf')
 
     def _move(self, dy, dx):
         if dx != 0:  # Not allowing snow to move directly down so it meanders more.
             return super()._move(dy, dx)
-
-    def replace(self, element=Water):
-        super().replace(element)
 
     def update_neighbor(self, neighbor):
         if self.MELT_TIME == float('inf') and isinstance(neighbor, Water):
@@ -322,9 +331,7 @@ class Steam(CycleColorBehavior, MovingElement):
     ))
     DENSITY = -2.0
     STATE = State.GAS
-
-    def replace(self, element=Water):
-        super().replace(element)
+    DEFAULT_REPLACEMENT = Water
 
 
 class Oil(ColorVariationBehavior, MovingElement):
