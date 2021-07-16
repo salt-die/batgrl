@@ -14,10 +14,15 @@ def particles_to_colors(particle):
 
 
 class ElementDisplay(AutoPositionBehavior, Widget):
-    pass
+    """
+    Currently selected element display.
+    """
 
 
 class Sandbox(AutoPositionBehavior, Widget):
+    """
+    Sandbox widget.
+    """
     def __init__(self, *args, **kwargs):
         kwargs.pop('anchor', None)
         kwargs.pop('pos_hint', None)
