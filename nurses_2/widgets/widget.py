@@ -10,9 +10,9 @@ class Widget:
 
     Parameters
     ----------
-    dim : tuple[int, int], default: (10, 10)
+    dim : Size, default: Size(10, 10)
         Dimensions of widget.
-    pos : tuple[int, int], default: (0, 0)
+    pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
     is_transparent : bool, default: False
         If true, white-space is "see-through".

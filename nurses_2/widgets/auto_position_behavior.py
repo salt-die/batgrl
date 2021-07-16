@@ -20,7 +20,7 @@ class AutoPositionBehavior:
     ----------
     anchor : Anchor, default: Anchor.TOP_LEFT
         The part of this widget anchored to the pos_hint.
-    pos_hint : tuple[float | None, float | None], default: (0.0, 0.0)
+    pos_hint : PosHint, default: (0.0, 0.0)
         The location of the anchor as a percentage parent's dimensions.
         None indicates top or left attribute will be used normally.
     """

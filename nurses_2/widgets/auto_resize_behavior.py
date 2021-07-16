@@ -10,7 +10,7 @@ class AutoResizeBehavior:
 
     Parameters
     ----------
-    size_hint : tuple[float | None, float | None], default: (1.0, 1.0)
+    size_hint : SizeHint, default: (1.0, 1.0)
         Dimension as a percentage of parent's dimension. None indicates
         height or width attribute will be used normally.
     """
