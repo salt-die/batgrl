@@ -18,7 +18,14 @@ WHITE_ON_RAINBOW = background_rainbow(ncolors=10)
 
 
 class BouncingWidget(Widget):
-    def start(self, velocity, roll_step, palette, coord_view, collides_view):
+    def start(
+        self,
+        velocity,
+        roll_step,
+        palette,
+        coord_view,
+        collides_view,
+        ):
         self.coord_view = coord_view
         self.collides_view = collides_view
 
@@ -73,10 +80,11 @@ class BouncingWidget(Widget):
 
 class MyApp(App):
     async def on_start(self):
-        info_display = Widget(dim=(2, 54))
+        info_display = Widget(dim=(3, 54))
         info_display.add_text("Click relative to widget_1: ", row=0)
         info_display.add_text("Click relative to widget_2: ", row=1)
         info_display.add_text("Collides: ", row=(0, 1), column=41)
+        info_display.add_text("Widgets overlap: ", row=2)
 
         widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
         widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
@@ -98,6 +106,12 @@ class MyApp(App):
             coord_view=info_display.get_view[None, 1, 28:40],
             collides_view=info_display.get_view[None, 1, -3:],
         )
+
+        widget_overlap = info_display.get_view[None, 2, 17:]
+
+        while True:
+            widget_overlap.add_text("True " if widget_1.collides_widget(widget_2) else "False")
+            await asyncio.sleep(.5)
 
 
 MyApp().run()
