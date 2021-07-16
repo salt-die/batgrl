@@ -26,7 +26,11 @@ class ElementButton(ButtonBehavior, Widget):
         self.colors[:, :] = self.default_color
 
     def on_release(self):
-        self.parent.parent.particle_type = self.element  # parent.parent is Sandbox widget.
+        element = self.element
+        sandbox = self.parent.parent
+
+        sandbox.particle_type = element
+        sandbox.display.add_text(f"{element.__name__:^9}", 0, 0)
 
 
 class ButtonContainer(Widget):
