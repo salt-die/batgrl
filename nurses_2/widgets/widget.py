@@ -87,7 +87,18 @@ class Widget:
 
     @property
     def pos(self):
+        """
+        Relative position to parent.
+        """
         return Point(self.top, self.left)
+
+    @property
+    def absolute_pos(self):
+        """
+        Absolute position on screen.
+        """
+        y, x = self.parent.absolute_pos
+        return Point(self.top + y, self.left + x)
 
     @property
     def height(self):
@@ -107,6 +118,13 @@ class Widget:
 
     @property
     def rect(self):
+        """
+        `Rect` of bounding box relative to parent.
+
+        Notes
+        -----
+        `rect` of root widget is same as `absolute_rect`.
+        """
         return Rect(
             self.top,
             self.left,
@@ -114,6 +132,22 @@ class Widget:
             self.right,
             self.height,
             self.width
+        )
+
+    @property
+    def absolute_rect(self):
+        """
+        `Rect` of bounding box on screen.
+        """
+        top, left = self.absolute_pos
+        height, width = self.dim
+        return Rect(
+            top,
+            left,
+            top + height,
+            left + width,
+            height,
+            width,
         )
 
     @property
@@ -176,10 +210,25 @@ class Widget:
 
     def collides_coords(self, coords: Point):
         """
-        Return True if screen-coordinates are within this widget's bounding box.
+        Return True if screen-coordinates are within bounding box.
         """
         y, x = self.absolute_to_relative_coords(coords)
         return 0 <= y < self.height and 0 <= x < self.width
+
+    def collides_widget(self, widget):
+        """
+        Return True if some part of widget is within bounding box.
+        """
+        self_top, self_left, self_bottom, self_right, _, _ = self.absolute_rect
+        other_top, other_left, other_bottom, other_right, _ , _ = widget.absolute_rect
+
+        if self_top >= other_bottom or other_top >= self_bottom:
+            return False
+
+        if self_left >= other_right or other_left >= self_right:
+            return False
+
+        return True
 
     def add_widget(self, widget):
         """
