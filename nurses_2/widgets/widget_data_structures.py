@@ -7,13 +7,12 @@ class CanvasView:
 
     Warning
     -------
-    1-dimensional slices will return 2-d views with a new axis inserted before the original axis.
-    (This is to ensure that the `add_text` method doesn't raise an IndexError.)
+    The canvas or canvas view passed to `CanvasView` should be 2-dimensional.
+    If a single row or column is needed, add `None` to the `__getitem__` key,
+    `my_canvas_view[None, 0, :-1]` or `my_canvas_view[:-1, 0, None]`.
     """
     def __init__(self, canvas):
-        if len(canvas.shape) == 1:
-            canvas = canvas[None]  # Ensure array is 2-dimensional
-
+        assert len(canvas.shape) == 2, f"view has bad shape, {canvas.shape}"
         self.canvas = canvas
 
     def __getattr__(self, attr):
@@ -51,8 +50,8 @@ class Point(NamedTuple):
 
 
 class PosHint(NamedTuple):
-    x: float
     y: float
+    x: float
 
 
 class Size(NamedTuple):

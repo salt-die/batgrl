@@ -159,11 +159,11 @@ class Widget:
         A wrapper around the canvas with an `add_text` method. This is to
         simplify adding text to views of the underlying canvas.
 
-        Example
+        Warning
         -------
-        ```py
-        >>> my_widget.get_view[:5].add_text("some text", row=3, column=1)
-        ```
+        The `__getitem__` key for the `CanvasView` should be 2-dimensional.
+        If a single row or column is needed, add `None` to the key, e.g.,
+        `my_canvas_view[None, 0, :-1]` or `my_canvas_view[:-1, 0, None]`.
         """
         return CanvasView(self.canvas)
 
