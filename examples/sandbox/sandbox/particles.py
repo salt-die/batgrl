@@ -39,7 +39,7 @@ class ColorVariationBehavior:
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        random_delta = 10 * random(3) - 5
+        random_delta = 10 * random(3) - 5  # Three random values between -5 and 5
         random_color = np.clip(random_delta + self.COLOR, 0, 255, dtype=np.uint8, casting="unsafe")
         self.COLOR = Color(*random_color)
 
@@ -202,38 +202,37 @@ class MovingElement(Element):
         Try to move vertically by dy and horizontally by dx.  Return True if successful.
         """
         world = self.world
-        h, w = world.shape
-
+        h, w = world.shape  # height, width
         y, x = self.pos
-
         new_y = y + dy
         new_x = x + dx
 
-        if 0 <= new_y < h and 0 <= new_x < w:
-            neighbor = world[new_y, new_x]
-            neighbor_density = neighbor.DENSITY
-
-            density = self.DENSITY
-
-            if (
-                neighbor.STATE == State.SOLID and self.STATE != State.LIQUID
-                or density > 0 and density <= neighbor_density
-                or density < 0 and density >= neighbor_density
-            ):
-                return False
-
-            self.wake_neighbors()
-            neighbor.wake_neighbors()
-
-            neighbor.pos = y, x
-            world[y, x] = neighbor
-
-            self.pos = new_y, new_x
-            world[new_y, new_x] = self
+        if not (0 <= new_y < h and 0 <= new_x < w):
+            # Fall off the world
+            self.replace(Air)
             return True
 
-        # Fall off the world
-        self.replace(Air)
+        neighbor = world[new_y, new_x]
+        neighbor_density = neighbor.DENSITY
+        density = self.DENSITY
+
+        if (
+            neighbor.STATE == State.SOLID and self.STATE != State.LIQUID
+            or density > 0 and density <= neighbor_density
+            or density < 0 and density >= neighbor_density
+        ):
+            # Neighbor is too dense to move.
+            return False
+
+        # Swap position with neighbor
+        self.wake_neighbors()
+        neighbor.wake_neighbors()
+
+        neighbor.pos = y, x
+        world[y, x] = neighbor
+
+        self.pos = new_y, new_x
+        world[new_y, new_x] = self
         return True
 
     def update_neighbor(self, neighbor):
@@ -251,12 +250,12 @@ class MovingElement(Element):
         dx = 2 * round(random()) - 1  # -1 or 1 randomly
 
         if (
-            move(dy, 0) or move(dy, dx) or move(dy, -dx)
-            or self.STATE != State.SOLID and (move(0, dx) or move(0, -dx))
+            move(dy, 0) or move(dy, dx) or move(dy, -dx)  # Try to move vertically...
+            or self.STATE != State.SOLID and (move(0, dx) or move(0, -dx))  # Try to move horizontally...
         ) or self.LIFETIME != float('inf'):  # Elements with finite lifetime don't sleep.
-            self.inactivity = 0
+            self.inactivity = 0  # Move was successful so inactivity is reset to 0.
         else:
-            self.sleep_if_inactive()
+            self.sleep_if_inactive()  # Move was not successful so increment inactivity or go to sleep.
 
 
 ################
@@ -362,13 +361,11 @@ class Fire(CycleColorBehavior, MovingElement):
     STATE = State.SOLID
 
     def update_neighbor(self, neighbor):
-        world = self.world
-
         if isinstance(neighbor, Wood):
             if random() > .99:
                 neighbor.replace(Fire)
 
-            return True
+            return True  # Return True to stop Fire from moving if it is next to wood, i.e., it sticks to wood.
 
         elif isinstance(neighbor, Air):
             if random() > .989:
@@ -391,6 +388,5 @@ class Fire(CycleColorBehavior, MovingElement):
 
         elif isinstance(neighbor, Oil):
             if random() > .92:
-                neighbor.sleep()
-                fire = Fire(world, neighbor.pos)
-                fire.LIFETIME = 25
+                neighbor.replace(Fire)
+                self.world[neighbor.pos].LIFETIME = 25  # Fire from oil will have a short lifetime.

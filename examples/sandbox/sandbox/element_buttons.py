@@ -1,13 +1,23 @@
 from nurses_2.colors import ColorPair, Color
 from nurses_2.widgets import Widget
 from nurses_2.widgets.button_behavior import ButtonBehavior
+from nurses_2.widgets.auto_position_behavior import AutoPositionBehavior
 
 from .particles import Element
 
 MENU_BACKGROUND_COLOR = Color(222, 224, 127)  # Mustard
 
 
+class ElementDisplay(AutoPositionBehavior, Widget):
+    """
+    Display of currently selected element.
+    """
+
+
 class ElementButton(ButtonBehavior, Widget):
+    """
+    Button which selects an element when pressed and updates the element display.
+    """
     def __init__(self, pos, element):
         self.element = element
 
@@ -30,10 +40,13 @@ class ElementButton(ButtonBehavior, Widget):
         sandbox = self.parent.parent
 
         sandbox.particle_type = element
-        sandbox.display.add_text(f"{element.__name__:^9}")
+        sandbox.display.add_text(f"{element.__name__:^{sandbox.display.width}}")
 
 
 class ButtonContainer(Widget):
+    """
+    Container widget of `ElementButton`s.
+    """
     def __init__(self):
         nelements = len(Element.all_elements)
 
