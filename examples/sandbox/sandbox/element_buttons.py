@@ -17,7 +17,7 @@ class ElementButton(ButtonBehavior, Widget):
             default_color=ColorPair(0, 0, 0, *element.COLOR),
             always_release=True,
         )
-        self.down_color = ColorPair(*(int(127 + .5 * c) for c in self.default_color))
+        self.down_color = ColorPair(*((255 + c) // 2 for c in self.default_color))
 
     def update_down(self):
         self.colors[:, :] = self.down_color
@@ -30,7 +30,7 @@ class ElementButton(ButtonBehavior, Widget):
         sandbox = self.parent.parent
 
         sandbox.particle_type = element
-        sandbox.display.add_text(f"{element.__name__:^9}", 0, 0)
+        sandbox.display.add_text(f"{element.__name__:^9}")
 
 
 class ButtonContainer(Widget):
@@ -46,5 +46,4 @@ class ButtonContainer(Widget):
             self.add_widget(ElementButton(pos=(3 * i + 1, 2), element=element))
 
     def on_click(self, mouse_event):
-        if self.collides_coords(mouse_event.position):
-            return True
+        return self.collides_coords(mouse_event.position)
