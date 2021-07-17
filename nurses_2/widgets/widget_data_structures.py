@@ -5,8 +5,8 @@ class CanvasView:
     """
     A wrapper around an `numpy` `ndarray` that has `Widget`'s `add_text` method.
 
-    Warning
-    -------
+    Notes
+    -----
     The canvas or canvas view passed to `CanvasView` should be 2-dimensional.
     If a single row or column is needed, add `None` to the `__getitem__` key,
     `my_canvas_view[None, 0, :-1]` or `my_canvas_view[:-1, 0, None]`.
