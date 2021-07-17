@@ -3,9 +3,9 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from ..colors import BLACK_ON_BLACK
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Size, Rect
-from ..colors import BLACK_ON_BLACK
 
 
 class ReloadTextureProperty:
@@ -40,10 +40,10 @@ class Image(Widget):
         If true, convert image to grayscale.
     alpha : float, default: 1.0
         If image has an alpha channel, it will be multiplied by `alpha`.
-        Otherwise, `alpha` is default value for this will be the default alpha.
+        Otherwise, `alpha` is default value for image's alpha channel.
     """
-    is_grayscale = ReloadTextureProperty()
     path = ReloadTextureProperty()
+    is_grayscale = ReloadTextureProperty()
     alpha = ReloadTextureProperty()
 
     def __init__(self,
@@ -130,7 +130,7 @@ class Image(Widget):
         index_rect = slice(t, b), slice(l, r)
         canvas_view[:] = self.canvas[index_rect]
 
-        if not self.is_transparent:
+        if not self.is_transparent:  # Ignores alpha channels
             colors_view[:] = self.colors[index_rect]
         else:
             buffer = np.zeros((h, w, 6), dtype=np.float16)

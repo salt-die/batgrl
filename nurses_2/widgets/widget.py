@@ -1,7 +1,7 @@
 import numpy as np
 
-from .widget_data_structures import CanvasView, Point, Size, Rect
 from ..colors import WHITE_ON_BLACK
+from .widget_data_structures import CanvasView, Point, Size, Rect
 
 
 class Widget:

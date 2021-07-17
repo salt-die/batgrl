@@ -1,8 +1,8 @@
 import numpy as np
 
+from ..colors import BLACK
 from .widget_data_structures import Point, Rect
 from .particle_field import ParticleField, Particle
-from ..colors import BLACK
 
 
 class HalfBlockField(ParticleField):

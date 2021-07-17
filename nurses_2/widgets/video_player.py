@@ -6,8 +6,8 @@ import time
 import cv2
 import numpy as np
 
-from .widget import Widget
 from ..colors import BLACK_ON_BLACK
+from .widget import Widget
 
 
 # This is a very remedial video player.  Currently it only starts and stops.
