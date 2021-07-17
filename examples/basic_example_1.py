@@ -95,19 +95,19 @@ class MyApp(App):
             velocity=1 + 1j,
             roll_step=1,
             palette=ORANGE_TO_TEAL,
-            coord_view=info_display.get_view[None, 0, 28:40],  # A view wide enough to fit coordinate display
-            collides_view=info_display.get_view[None, 0, -3:],  # A view wide enough for "yes" or "no "
+            coord_view=info_display.get_view[0, 28:40],  # A view wide enough to fit coordinate display
+            collides_view=info_display.get_view[0, -3:],  # A view wide enough for "yes" or "no "
         )
 
         widget_2.start(
             velocity=-1 - 1j,
             roll_step=-1,
             palette=WHITE_ON_RAINBOW,
-            coord_view=info_display.get_view[None, 1, 28:40],
-            collides_view=info_display.get_view[None, 1, -3:],
+            coord_view=info_display.get_view[1, 28:40],
+            collides_view=info_display.get_view[1, -3:],
         )
 
-        widget_overlap = info_display.get_view[None, 2, 17:]
+        widget_overlap = info_display.get_view[2, 17:]
 
         while True:
             widget_overlap.add_text("True " if widget_1.collides_widget(widget_2) else "False")

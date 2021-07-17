@@ -195,9 +195,9 @@ class Widget:
 
         Notes
         -----
-        The `__getitem__` key for the `CanvasView` should return a 2-dimensional
-        view. If a single row or column is needed, add `None` to the key, e.g.,
-        `my_canvas_view[None, 0, :-1]` or `my_canvas_view[:-1, 0, None]`.
+        One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
+        E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
+        the `add_text` `row` and `column` parameters make sense.
         """
         return CanvasView(self.canvas)
 

@@ -3,16 +3,18 @@ from typing import NamedTuple, Optional
 
 class CanvasView:
     """
-    A wrapper around an `numpy` `ndarray` that has `Widget`'s `add_text` method.
+    A wrapper around a `numpy` `ndarray` view with `Widget`'s `add_text` method.
 
     Notes
     -----
-    The canvas or canvas view passed to `CanvasView` should be 2-dimensional.
-    If a single row or column is needed, add `None` to the `__getitem__` key,
-    `my_canvas_view[None, 0, :-1]` or `my_canvas_view[:-1, 0, None]`.
+    One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
+    E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
+    the `add_text` `row` and `column` parameters make sense.
     """
     def __init__(self, canvas):
-        assert len(canvas.shape) == 2, f"view has bad shape, {canvas.shape}"
+        if len(canvas.shape) == 1:
+            canvas = canvas[None]
+
         self.canvas = canvas
 
     def __getattr__(self, attr):
