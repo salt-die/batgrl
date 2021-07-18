@@ -67,7 +67,7 @@ class VideoPlayer(Widget):
                 except asyncio.CancelledError:
                     return
 
-    def start(self):
+    def play(self):
         self._video = asyncio.create_task(self._play_video())
 
     def stop(self):

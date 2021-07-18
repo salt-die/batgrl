@@ -22,7 +22,7 @@ class MyApp(App):
         player = AutoResizeVideoPlayer(path=PATH_TO_VIDEO)
 
         self.root.add_widget(player)
-        player.start()
+        player.play()
 
 
 MyApp().run()
