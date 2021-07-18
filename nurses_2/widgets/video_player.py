@@ -68,9 +68,15 @@ class VideoPlayer(Widget):
                     return
 
     def play(self):
+        """
+        Play video.
+        """
         self._video = asyncio.create_task(self._play_video())
 
     def stop(self):
+        """
+        Stop video.
+        """
         self._video.cancel()
 
 
