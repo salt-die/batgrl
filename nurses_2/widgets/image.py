@@ -1,3 +1,4 @@
+from enum import IntEnum
 from pathlib import Path
 
 import cv2
@@ -6,6 +7,14 @@ import numpy as np
 from ..colors import BLACK_ON_BLACK
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Size, Rect
+
+
+class Interpolation(IntEnum):
+    NEAREST = cv2.INTER_NEAREST
+    LINEAR = cv2.INTER_LINEAR
+    CUBIC = cv2.INTER_CUBIC
+    AREA = cv2.INTER_AREA
+    LANCZOS = cv2.INTER_LANCZOS4
 
 
 class ReloadTextureProperty:
@@ -29,8 +38,11 @@ class Image(Widget):
 
     Notes
     -----
-    Changing the path to an Image (or updating `is_grayscale` or `alpha_threshold`)
-    will immediately reload the image.
+    Updating the following properties immediately reloads the image:
+        * path
+        * is_grayscale
+        * alpha
+        * interpolation
 
     Parameters
     ----------
@@ -41,16 +53,20 @@ class Image(Widget):
     alpha : float, default: 1.0
         If image has an alpha channel, it will be multiplied by `alpha`.
         Otherwise, `alpha` is default value for image's alpha channel.
+    interpolation : Interpolation, default: Interpolation.LINEAR
+        The interpolation used when resizing the image.
     """
     path = ReloadTextureProperty()
     is_grayscale = ReloadTextureProperty()
     alpha = ReloadTextureProperty()
+    interpolation = ReloadTextureProperty()
 
     def __init__(self,
         *args,
         path: Path,
         is_grayscale=False,
         alpha=1.0,
+        interpolation=Interpolation.LINEAR,
         default_char="▀",
         is_transparent=True,
         **kwargs
@@ -68,6 +84,7 @@ class Image(Widget):
         self._path = path
         self._is_grayscale = is_grayscale
         self._alpha = alpha
+        self._interpolation = interpolation
 
         self._load_texture()
 
@@ -110,12 +127,17 @@ class Image(Widget):
         self.canvas = np.full(dim, self.default_char, dtype=object)
 
         if self.texture_alpha is not None:
-            texture_alpha = cv2.resize(self.texture_alpha, TEXTURE_DIM) / 255 * self.alpha
-            self.alpha_channels = np.dstack((texture_alpha[::2], texture_alpha[1::2]))[..., None]
+            resized_texture_alpha = cv2.resize(
+                self.texture_alpha,
+                TEXTURE_DIM,
+                interpolation=self.interpolation
+            )
+            alpha_as_float = resized_texture_alpha / 255 * self.alpha
+            self.alpha_channels = np.dstack((alpha_as_float[::2], alpha_as_float[1::2]))[..., None]
         else:
             self.alpha_channels = np.full((h, w, 2, 1), self.alpha, dtype=np.float16)
 
-        texture =  cv2.resize(self.texture, TEXTURE_DIM)
+        texture =  cv2.resize(self.texture, TEXTURE_DIM, interpolation=self.interpolation)
         self.colors = np.dstack((texture[::2], texture[1::2]))
 
         for child in self.children:
