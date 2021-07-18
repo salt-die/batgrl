@@ -1,5 +1,5 @@
 import asyncio
-from contextlib import contextmanager
+import atexit
 from pathlib import Path
 import time
 
@@ -10,8 +10,7 @@ from ..colors import BLACK_ON_BLACK
 from .widget import Widget
 
 
-# This is a very remedial video player.  Currently it only starts and stops.
-# Seeking and other controls from `cv2` may get added in the future.
+# Seeking is not implemented yet, but may get added soon™
 class VideoPlayer(Widget):
     """
     A video player.
@@ -26,65 +25,110 @@ class VideoPlayer(Widget):
         kwargs.pop('default_color', None)
         kwargs.pop('is_transparent', None)
 
+        atexit.register(self.close)
+
         super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
 
-        self.path = path
+        self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
+        self.path = path
+
+    @property
+    def is_stopped(self):
+        return self._is_stopped
+
+    @property
+    def video(self):
+        return self._video
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, new_path):
+        self.stop()
+        self._path = new_path
+
+    def _load_video(self):
+        self._resource = cv2.VideoCapture(str(self.path))
+
+    def close(self):
+        if self._resource is not None:
+            self._resource.release()
+
+    def resize(self, dim):
+        super().resize(dim)
+
+        # If video is paused, resize current frame.
+        if self._video.done() and self._current_frame is not None:
+            dim = self.width, 2 * self.height
+            resized_frame = cv2.resize(self._current_frame, dim)
+            BGR_to_RGB = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+
+            np.concatenate((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
+
     async def _play_video(self):
-        with open_video(self.path) as video:
-            # Bring in to locals:
-            concat = np.concatenate
-            resize = cv2.resize
-            recolor = cv2.cvtColor
-            MSEC = cv2.CAP_PROP_POS_MSEC
-            BGR2RGB = cv2.COLOR_BGR2RGB
-            monotonic = time.monotonic
+        # Bring in to locals:
+        concat = np.concatenate
+        resize = cv2.resize
+        recolor = cv2.cvtColor
+        MSEC = cv2.CAP_PROP_POS_MSEC
+        BGR2RGB = cv2.COLOR_BGR2RGB
+        monotonic = time.monotonic
 
-            video_get = video.get
-            video_read = video.read
+        video_get = self._resource.get
+        video_grab = self._resource.grab
+        video_retrieve = self._resource.retrieve
 
-            start_time = monotonic()
+        start_time = monotonic() - video_get(MSEC) / 1000
 
-            while True:
-                seconds_ahead = video_get(MSEC) / 1000 + start_time - monotonic()
+        while True:
+            if not video_grab():
+                break
 
-                if seconds_ahead <= 0:  # Prevents video from rendering too fast.
-                    read_flag, frame = video_read()
-                    if not read_flag:
-                        return
+            seconds_ahead = video_get(MSEC) / 1000 + start_time - monotonic()
+            if seconds_ahead < 0:
+                continue
 
-                    dim = self.width, 2 * self.height
-                    resized_frame = resize(frame, dim)
-                    BGR_to_RGB = recolor(resized_frame, BGR2RGB)
+            ret_flag, self._current_frame = video_retrieve()
+            if not ret_flag:
+                break
 
-                    concat((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
+            dim = self.width, 2 * self.height
+            resized_frame = resize(self._current_frame, dim)
+            BGR_to_RGB = recolor(resized_frame, BGR2RGB)
 
-                    seconds_ahead = 0
+            concat((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
 
-                try:
-                    await asyncio.sleep(seconds_ahead)
-                except asyncio.CancelledError:
-                    return
+            try:
+                await asyncio.sleep(seconds_ahead)
+            except asyncio.CancelledError:
+                return
+
+        self.close()
 
     def play(self):
         """
         Play video.
         """
+        if self._is_stopped:
+            self._load_video()
+            self._is_stopped = False
+
+        self._video.cancel()
         self._video = asyncio.create_task(self._play_video())
+
+    def pause(self):
+        self._video.cancel()
 
     def stop(self):
         """
         Stop video.
         """
-        self._video.cancel()
-
-
-@contextmanager
-def open_video(path):
-    video = cv2.VideoCapture(str(path))
-
-    try:
-        yield video
-    finally:
-        video.release()
+        self.pause()
+        self.close()
+        self._is_stopped = True
+        self._current_frame = None
+        self.colors[:, :] = self.default_color
