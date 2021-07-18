@@ -2,6 +2,7 @@ import asyncio
 import atexit
 from pathlib import Path
 import time
+from typing import Union
 
 import cv2
 import numpy as np
@@ -17,46 +18,55 @@ class VideoPlayer(Widget):
 
     Parameters
     ----------
-    path : pathlib.Path
-        Path to video.
+    source : pathlib.Path | str | int
+        A path to video, URL to video stream, or capturing device (by index).
     """
-    def __init__(self, *args, path: Path, **kwargs):
+    def __init__(self, *args, source: Union[Path, str, int], **kwargs):
         kwargs.pop('default_char', None)
         kwargs.pop('default_color', None)
         kwargs.pop('is_transparent', None)
-
-        atexit.register(self.close)
 
         super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
 
         self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-        self.path = path
-
-    @property
-    def is_stopped(self):
-        return self._is_stopped
+        self.source = source
 
     @property
     def video(self):
         return self._video
 
     @property
-    def path(self):
-        return self._path
+    def source(self):
+        return self._source
 
-    @path.setter
-    def path(self, new_path):
+    @source.setter
+    def source(self, new_source):
         self.stop()
-        self._path = new_path
+        self._source = new_source
 
     def _load_video(self):
-        self._resource = cv2.VideoCapture(str(self.path))
+        source = self.source
+        if isinstance(source, Path):
+            source = str(source)
+
+        self._resource = cv2.VideoCapture(source)
+        atexit.register(self._resource.release)
 
     def close(self):
         if self._resource is not None:
             self._resource.release()
+
+            # `cv2` may write warnings to stdout on Windows when releasing cameras.
+            # We force a screen regeneration by calling resize on the root widget.
+            self.root.resize(self.root.dim)
+
+            atexit.unregister(self._resource.release)
+            self._resource = None
+            self._current_frame = None
+            self.canvas[:] = self.default_char
+            self.colors[:, :] = self.default_color
 
     def resize(self, dim):
         super().resize(dim)
@@ -82,6 +92,7 @@ class VideoPlayer(Widget):
         video_grab = self._resource.grab
         video_retrieve = self._resource.retrieve
 
+        video_grab()
         start_time = monotonic() - video_get(MSEC) / 1000
 
         while True:
@@ -113,14 +124,16 @@ class VideoPlayer(Widget):
         """
         Play video.
         """
-        if self._is_stopped:
+        if self._resource is None:
             self._load_video()
-            self._is_stopped = False
 
         self._video.cancel()
         self._video = asyncio.create_task(self._play_video())
 
     def pause(self):
+        """
+        Pause video.
+        """
         self._video.cancel()
 
     def stop(self):
@@ -129,6 +142,3 @@ class VideoPlayer(Widget):
         """
         self.pause()
         self.close()
-        self._is_stopped = True
-        self._current_frame = None
-        self.colors[:, :] = self.default_color
