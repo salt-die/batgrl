@@ -1,7 +1,8 @@
-# nurses 2
+# nurses_2 - terminal graphics
 
-A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) depending on [prompt-toolkit](https://github.com/prompt-toolkit) instead of curses.
-`nurses_2` is meant for vt100 enabled, true color terminals.  (No support otherwise.)
+>>> A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) depending on [prompt-toolkit](https://github.com/prompt-toolkit) instead of curses.`nurses_2` is meant for vt100 enabled, true color terminals.  (No support otherwise.)
+
+This is a widget and async-centric library for creating graphical applications in the terminal. Why would you want to create graphical applications in a terminal? Because you like to!
 
 # /examples/basic_example_1.py
 
