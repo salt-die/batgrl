@@ -99,7 +99,7 @@ class RayCaster(Widget):
         else:  # No walls in range.
             return
 
-        # Perpendicular distance from wall to ray.
+        # Perpendicular distance from wall to camera plane.
         # Note that euclidean distance of wall to camera is not used
         # as it would result in a "fish-eye" effect.
         distance = (
