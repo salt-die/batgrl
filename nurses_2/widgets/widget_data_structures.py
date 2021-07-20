@@ -12,7 +12,7 @@ class CanvasView:
     the `add_text` `row` and `column` parameters make sense.
     """
     def __init__(self, canvas):
-        if len(canvas.shape) == 1:
+        if canvas.ndim == 1:
             canvas = canvas[None]
 
         self.canvas = canvas
