@@ -4,49 +4,68 @@ import numpy as np
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.image import Image
-from nurses_2.colors import BLACK_ON_BLACK
+from nurses_2.colors import BLACK
 
-from .camera import Camera, rotation_matrix
-
-ROTATE_LEFT = rotation_matrix(-2 * np.pi / 30)
-ROTATE_RIGHT = rotation_matrix(2 * np.pi / 30)
+from .protocols import Camera, Texture
 
 
+# TODO: It may be more efficient to store textures in F-order,
+# so that columns are closer together in memory. Consider updating
+# Texture protocol to allow memory-order to be swapped.
 class RayCaster(Widget):
-    max_hops = 20  # How far rays are cast.
+    """
+    A raycaster for nurses_2.
+
+    Parameters
+    ----------
+    map : np.ndarray[np.uint8]
+        Map for raycaster. Maps are expected to be two-dimensional.
+        Non-zero integers `p` in map correspond to walls with texture
+        `textures[p - 1]`.
+    camara : Camera
+        View in map.
+    textures : list[Texture]
+        Textures for walls in `map`.
+    background_color : Color
+        Color for sky and floor.
+    """
+    HOPS = 20  # How far rays are cast.
 
     def __init__(
         self,
         *args,
-        map: np.ndarray,  # len(map.shape) == 2, dtype=int
+        map: np.ndarray,
         camera: Camera,
-        textures: List[np.ndarray],
-        default_color=BLACK_ON_BLACK,
+        textures: List[Texture],
+        background_color=BLACK,
         default_char="▀",
         **kwargs,
         ):
         kwargs.pop('transparent', None)
-        super().__init__(*args, **kwargs)
+
+        super().__init__(*args, default_char=default_char, **kwargs)
 
         self.map = map
         self.camera = camera
-        self.dark_textures = textures
-        self.bright_textures = [(texture * .5 + 127).astype(np.uint8) for texture in self.dark_textures]
+        self.textures = textures
+        self.background_color = background_color
 
         self.resize(self.dim)
 
     def resize(self, dim):
         super().resize(dim)
-
         width = self.width
+
+        self._colors = np.full((2 * self.height, width, 3), self.background_color, dtype=np.uint8)
+
         # Pre-calculate angle of rays cast.
         self._ray_angles = angles = np.ones((width, 2), dtype=np.float16)
-        angles[:, 1] = np.linspace(-1, 1, width, endpoint=False)
+        angles[:, 1] = np.linspace(-1, 1, width)
 
-        # Create buffers
+        # Buffers
         self._rotated_angles = np.zeros_like(angles)
         self._deltas = np.zeros_like(angles)
-        self._steps = np.zeros_like(angles)
+        self._steps = np.zeros_like(angles, dtype=np.int16)
         self._sides = np.zeros_like(angles)
         self._pos_int = np.zeros((2,), dtype=np.int16)
         self._pos_frac = np.zeros((2,), dtype=np.float16)
@@ -67,8 +86,11 @@ class RayCaster(Widget):
         step = self._steps[column]
         sides = self._sides[column]
 
-        # Cast a ray until we hit a wall or hit max_hops
-        for _ in range(self.max_hops):
+        ###########
+        # Casting #
+        ###########
+
+        for _ in range(self.HOPS):
             side = 0 if sides[0] < sides[1] else 1
             sides[side] += delta[side]
             ray_pos[side] += step[side]
@@ -78,116 +100,114 @@ class RayCaster(Widget):
         else:  # No walls in range.
             return
 
-        # Not euclidean distance to avoid fish-eye effect.
+        # Perpendicular distance from wall to ray.
+        # Note that euclidean distance of wall to camera is not used
+        # as it would result in a "fish-eye" effect.
         distance = (
             ray_pos[side]
             - camera_pos[side]
             + (0 if step[side] == 1 else 1)
         ) / ray_angle[side]
 
-        height = 2 * self.height
-        line_height = int(height / distance) if distance else 1_000  # "infinity"
-        if line_height == 0:
+        #############
+        # Rendering #
+        #############
+
+        colors = self._colors
+        height = colors.shape[0]
+
+        column_height = int(height / distance) if distance else 1000  # 1000 == infinity, roughly
+        if column_height == 0:
             return  # Draw nothing
 
-        if line_height >= height:
-            line_start = 0
-            line_end = height - 1
-        else:
-            half_height = height // 2
-            half_line = line_height // 2
+        # Start and end y-coordinates of column.
+        ########################################
+        half_height = height // 2              #
+        half_column = column_height // 2       #
+                                               #
+        start = half_height - half_column      #
+        if start < 0:                          #
+            start = 0                          #
+                                               #
+        end = half_height + half_column        #
+        if end >= height:                      #
+            end = height - 1                   #
+        ########################################
 
-            line_start = half_height - half_line
-            line_end = half_height + half_line
-
-        texture = (self.dark_textures if side else self.bright_textures)[texture_index - 1]
+        texture = self.textures[texture_index - 1]
         tex_h, tex_w, _ = texture.shape
 
+        # Exactly where wall was hit by ray as a percentage of its width.
         wall_x = (camera_pos[1 - side] + distance * ray_angle[1 - side]) % 1
 
+        # Use above percentage to grab the column of the texture we need.
         tex_x = int(wall_x * tex_w)
-        if (-1 if side == 1 else 1) * ray_angle[side] < 0:
+        if (-1 if side == 1 else 1) * ray_angle[side] < 0:  # Sign correction.
             tex_x = tex_w - tex_x - 1
 
-        drawn_height = line_end - line_start
-        offset = (line_height - drawn_height) / 2
-        ys = np.arange(drawn_height) + offset
-        tex_ys = (ys * tex_h / line_height).astype(int)
+        # Interpolate texture onto column
+        #######################################################
+        drawn_height = end - start                            #
+        offset = (column_height - drawn_height) / 2           #
+        ratio = tex_h / column_height                         #
+        texture_start = offset * ratio                        #
+        texture_end = (offset + drawn_height) * ratio         #
+        tex_ys = np.linspace(                                 #
+            texture_start,                                    #
+            texture_end,                                      #
+            num=drawn_height,                                 #
+            endpoint=False,                                   #
+            dtype=int                                         #
+        )                                                     #
+        texture_column = texture[tex_ys, tex_x].astype(float) #
+        #######################################################
 
-        color_buffer = texture[tex_ys, tex_x].astype(np.float16)
-        color_buffer *= np.e ** (-distance * .001)
-        np.clip(color_buffer, 0, 255, out=color_buffer)
+        # Darken colors further away.
+        texture_column *= np.e ** (-distance * .05)
+        np.clip(texture_column, 0, 255, out=texture_column, casting="unsafe")
 
-        start, start_offset = divmod(line_start, 2)
-        if start_offset:
-            upper, lower = slice(3, None), slice(3)
-        else:
-            upper, lower = slice(3), slice(3, None)
-
-        end, end_offset = divmod(line_end, 2)
-
-        colors = self.colors
-        colors[start: end, column, upper] = color_buffer[:drawn_height - end_offset:2]
-        colors[start: end, column, lower] = color_buffer[1::2]
+        # Copy texture in color buffer.
+        colors[start: end, column] = texture_column
 
     def render(self, canvas_view, colors_view, rect):
-        self.colors[:, :] = self.default_color
+        colors = self._colors
+        colors[:, :] = self.background_color
+
 
         # Bring in to locals
-        camera = self.camera
-        pos_frac = self._pos_frac
-        rotated_angles = self._rotated_angles
-        deltas = self._deltas
-        steps = self._steps
-        sides = self._sides
-
-        multiply = np.multiply
-        divide = np.true_divide
-        errstate = np.errstate
-
-        width = self.width
-        cast_ray = self.cast_ray
+        #######################################
+        camera = self.camera                  #
+        pos_frac = self._pos_frac             #
+        rotated_angles = self._rotated_angles #
+        deltas = self._deltas                 #
+        steps = self._steps                   #
+        sides = self._sides                   #
+        multiply = np.multiply                #
+        divide = np.true_divide               #
+        errstate = np.errstate                #
+        cast_ray = self.cast_ray              #
+        #######################################
 
         # Early calculations on rays can be vectorized; fill buffers with these calculations.
-        np.dot(self._ray_angles, camera.plane, out=rotated_angles)
+        #####################################################################################
+        np.dot(self._ray_angles, camera.plane, out=rotated_angles)                          #
+                                                                                            #
+        with errstate(divide="ignore"):                                                     #
+            divide(1.0, rotated_angles, out=deltas)                                         #
+        np.absolute(deltas, out=deltas)                                                     #
+                                                                                            #
+        np.sign(rotated_angles, out=steps, casting="unsafe")                                #
+                                                                                            #
+        np.heaviside(steps, 1.0, out=sides)                                                 #
+        np.mod(camera.pos, 1.0, out=pos_frac)                                               #
+        np.subtract(sides, pos_frac, out=sides)                                             #
+        multiply(sides, steps, out=sides)                                                   #
+        multiply(sides, deltas, out=sides)                                                  #
+        #####################################################################################
 
-        with errstate(divide="ignore"):
-            divide(1.0, rotated_angles, out=deltas)
-        np.absolute(deltas, out=deltas)
-
-        np.sign(rotated_angles, out=steps)
-
-        np.mod(camera.pos, 1.0, out=pos_frac)
-
-        np.heaviside(steps, 1.0, out=sides)
-        np.subtract(steps, pos_frac, out=sides)
-        multiply(sides, steps, out=sides)
-        multiply(sides, deltas, out=sides)
-
-        for column in range(width):
+        for column in range(self.width):
             cast_ray(column)
 
+        np.concatenate((colors[::2], colors[1::2]), axis=-1, out=self.colors)
+
         super().render(canvas_view, colors_view, rect)
-
-    def on_press(self, key_press):
-        camera = self.camera
-        pos = camera.pos
-        plane = camera.plane
-
-        if key_press.key == 'w' or key_press.key == 's':
-            direction = 1 if key_press.key == 'w' else -1
-            y, x = pos + .1 * plane[0] * direction
-
-            map = self.map
-
-            if map[int(y), int(pos[1])] == 0:
-                pos[0] = y
-
-            if map[int(pos[0]), int(x)] == 0:
-                pos[1] = x
-
-        elif key_press.key == 'a':
-            np.dot(plane, ROTATE_LEFT, out=plane)
-
-        elif key_press.key == 'd':
-            np.dot(plane, ROTATE_RIGHT, out=plane)
