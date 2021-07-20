@@ -23,7 +23,7 @@ class Texture(Protocol):
     This protocol is provided to allow for, say, animated textures. The raycaster
     will function as long as `shape` and `__getitem__` work as expected.
     """
-    shape: Tuple[int, int]  # (height, width)
+    shape: Tuple[int, int, int]  # (height, width, channels)
 
     def __getitem__(self, key):
         """

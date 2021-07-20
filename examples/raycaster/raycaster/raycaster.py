@@ -172,7 +172,6 @@ class RayCaster(Widget):
         colors = self._colors
         colors[:, :] = self.background_color
 
-
         # Bring in to locals
         #######################################
         camera = self.camera                  #
