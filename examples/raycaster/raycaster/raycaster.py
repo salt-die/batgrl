@@ -166,7 +166,7 @@ class RayCaster(Widget):
         texture_column *= np.e ** (-distance * .05)
         np.clip(texture_column, 0, 255, out=texture_column, casting="unsafe")
 
-        # Copy texture in color buffer.
+        # Paint column.
         colors[start: end, column] = texture_column
 
     def render(self, canvas_view, colors_view, rect):
