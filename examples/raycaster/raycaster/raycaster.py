@@ -18,11 +18,10 @@ class RayCaster(Widget):
 
     Parameters
     ----------
-    map : np.ndarray[np.uint8]
-        Map for raycaster. Maps are expected to be two-dimensional.
-        Non-zero integers `p` in map correspond to walls with texture
-        `textures[p - 1]`.
-    camara : Camera
+    map : np.ndarray
+        Map for raycaster (map.ndim: 2, map.dtype: int)
+        Non-zero `p` in map correspond to walls with texture `textures[p - 1]`.
+    camera : Camera
         View in map.
     textures : list[Texture]
         Textures for walls in `map`.
