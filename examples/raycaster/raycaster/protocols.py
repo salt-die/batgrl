@@ -3,6 +3,22 @@ from typing import Protocol, Tuple, Literal
 import numpy as np
 
 
+class Map(Protocol):
+    """
+    Map with non-zero entries indicating walls.
+
+    Notes
+    -----
+    Wall value `n` will have texture `textures[n - 1]` in raycaster.
+    """
+    ndim: Literal[2]
+
+    def __getitem__(self, y, x):
+        """
+        Supports numpy indexing. Return a non-negative integer.
+        """
+
+
 class Camera(Protocol):
     """
     A camera view.
@@ -27,5 +43,5 @@ class Texture(Protocol):
 
     def __getitem__(self, key):
         """
-        Supports numpy indexing.
+        Supports numpy indexing. Return arrays or views with dtype=np.uint8.
         """

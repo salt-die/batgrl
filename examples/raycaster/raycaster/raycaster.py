@@ -6,7 +6,7 @@ from nurses_2.widgets import Widget
 from nurses_2.widgets.image import Image
 from nurses_2.colors import BLACK
 
-from .protocols import Camera, Texture
+from .protocols import Map, Camera, Texture
 
 
 # TODO: It may be more efficient to store textures in F-order,
@@ -18,8 +18,8 @@ class RayCaster(Widget):
 
     Parameters
     ----------
-    map : np.ndarray
-        Map for raycaster (map.ndim: 2, map.dtype: int)
+    map : Map
+        Map for raycaster
         Non-zero `p` in map correspond to walls with texture `textures[p - 1]`.
     camera : Camera
         View in map.
