@@ -7,7 +7,7 @@ from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
 from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
 
 
-PATH_TO_FRAMES_DIR = Path('frames')
+PATH_TO_FRAMES_DIR = Path('frames') / 'caveman'
 
 
 class AutoGeometryAnimation(AutoResizeBehavior, AutoPositionBehavior, Animation):
