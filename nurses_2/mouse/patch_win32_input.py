@@ -61,7 +61,7 @@ def patch_win32_input(win32_input):
         mods = 0
         if ev.ControlKeyState & LEFT_ALT_PRESSED or ev.ControlKeyState & RIGHT_ALT_PRESSED:
             mods |= MouseModifierKey.ALT
-        if ev.ControlKeyState & RIGHT_CTRL_PRESSED or ev.ControlKeyState & LEFT_ALT_PRESSED:
+        if ev.ControlKeyState & RIGHT_CTRL_PRESSED or ev.ControlKeyState & LEFT_CTRL_PRESSED:
             mods |= MouseModifierKey.CONTROL
         if ev.ControlKeyState & SHIFT_PRESSED:
             mods |= MouseModifierKey.SHIFT
