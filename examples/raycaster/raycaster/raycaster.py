@@ -49,6 +49,10 @@ class RayCaster(Widget):
         self.textures = textures
         self.background_color = background_color
 
+        # Buffers for camera and ray position
+        self._pos_int = np.zeros((2,), dtype=np.int16)
+        self._pos_frac = np.zeros((2,), dtype=np.float16)
+
         self.resize(self.dim)
 
     def resize(self, dim):
@@ -64,10 +68,8 @@ class RayCaster(Widget):
         # Buffers
         self._rotated_angles = np.zeros_like(angles)
         self._deltas = np.zeros_like(angles)
-        self._steps = np.zeros_like(angles, dtype=np.int16)
         self._sides = np.zeros_like(angles)
-        self._pos_int = np.zeros((2,), dtype=np.int16)
-        self._pos_frac = np.zeros((2,), dtype=np.float16)
+        self._steps = np.zeros_like(angles, dtype=np.int16)
 
     def cast_ray(self, column):
         """
