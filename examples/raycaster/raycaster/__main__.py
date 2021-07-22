@@ -41,7 +41,7 @@ class MyCamera:
     pos = np.array([4.5, 4.5], dtype=np.float16)
     plane = np.array(
         [
-            [1, 0],
+            [1, .001],
             [0, FIELD_OF_VIEW],
         ],
         dtype=np.float16,
@@ -119,10 +119,14 @@ class TestCaster(AutoResizeBehavior, RayCaster):
 
 class MyApp(App):
     async def on_start(self):
+        light_anim = AnimatedTexture(path=FRAMES_DIR)
+        light_anim.textures = [(63 + .72 * texture).astype(np.uint8) for texture in light_anim.textures]
+
         raycaster = TestCaster(
             map=MAP,
             camera=MyCamera(),
-            textures=[AnimatedTexture(path=FRAMES_DIR)],
+            textures=[ AnimatedTexture(path=FRAMES_DIR) ],
+            light_textures=[ light_anim ],
         )
 
         self.root.add_widget(raycaster)

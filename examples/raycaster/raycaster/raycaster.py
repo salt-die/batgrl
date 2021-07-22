@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -25,8 +25,15 @@ class RayCaster(Widget):
         View in map.
     textures : list[Texture]
         Textures for walls in `map`.
+    light_textures : list[Texture] | None
+        If provided, walls oriented in one direction will have a lighter color texture
+        than walls oriented in another. This gives an illusion of depth.
+    ceiling: Texture | None
+        Ceiling texture.
+    floor: Texture | None
+        Floor texture.
     background_color : Color
-        Color for sky and floor.
+        Color for ceiling and floor if textures aren't provided.
     """
     HOPS = 20  # How far rays are cast.
 
@@ -36,6 +43,9 @@ class RayCaster(Widget):
         map: np.ndarray,
         camera: Camera,
         textures: List[Texture],
+        light_textures: Optional[List[Texture]]=None,
+        ceiling: Optional[Texture]=None,
+        floor: Optional[Texture]=None,
         background_color=BLACK,
         default_char="▀",
         **kwargs,
@@ -47,6 +57,9 @@ class RayCaster(Widget):
         self.map = map
         self.camera = camera
         self.textures = textures
+        self.light_textures = light_textures or textures
+        self.ceiling = ceiling
+        self.floor = floor
         self.background_color = background_color
 
         # Buffers for camera and ray position
@@ -70,6 +83,11 @@ class RayCaster(Widget):
         self._deltas = np.zeros_like(angles)
         self._sides = np.zeros_like(angles)
         self._steps = np.zeros_like(angles, dtype=np.int16)
+
+    def render_backgroun(self):
+        """
+        Render floor and/or ceiling.
+        """
 
     def cast_ray(self, column):
         """
@@ -123,8 +141,8 @@ class RayCaster(Widget):
 
         # Start and end y-coordinates of column.
         ########################################
-        half_height = height // 2              #
-        half_column = column_height // 2       #
+        half_height = height >> 1              #
+        half_column = column_height >> 1       #
                                                #
         start = half_height - half_column      #
         if start < 0:                          #
@@ -135,7 +153,7 @@ class RayCaster(Widget):
             end = height - 1                   #
         ########################################
 
-        texture = self.textures[texture_index - 1]
+        texture = (self.textures if side else self.light_textures)[texture_index - 1]
         tex_h, tex_w, _ = texture.shape
 
         # Exactly where wall was hit by ray as a percentage of its width.
@@ -172,7 +190,16 @@ class RayCaster(Widget):
 
     def render(self, canvas_view, colors_view, rect):
         colors = self._colors
-        colors[:, :] = self.background_color
+
+        if self.ceiling is None and self.floor is None:
+            colors[:, :] = self.background_color
+        else:
+            if self.ceiling is None:
+                colors[:self.height >> 1, :] = self.background_color
+            elif self.floor is None:
+                colors[self.height >> 1:, :] = self.background_color
+
+            self.render_background()
 
         # Bring in to locals
         #######################################
