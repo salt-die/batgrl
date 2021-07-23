@@ -92,6 +92,19 @@ class RayCaster(Widget):
         """
         Render floor and/or ceiling.
         """
+        # camera = self.camera
+        # height = self.height
+
+        # ray_initial = camera.plane[0] - camera.plane[1]
+        # ray_final = camera.plane.sum(axis=0)
+
+        # ys = np.arange(-height, height)
+        # mid = height * .5
+        # row_distance = mid / ys
+
+        # steps = row_distance * (ray_final - ray_initial) / self.width
+
+        # floor_pos = camera.pos + row_distance * ray_initial
 
     def cast_ray(self, column):
         """
