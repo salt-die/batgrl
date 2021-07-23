@@ -10,6 +10,7 @@ import cv2
 import numpy as np
 
 from nurses_2.app import App
+from nurses_2.colors import BLUE
 from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
 
 from .raycaster import RayCaster
@@ -127,6 +128,7 @@ class MyApp(App):
             camera=MyCamera(),
             textures=[ AnimatedTexture(path=FRAMES_DIR) ],
             light_textures=[ light_anim ],
+            ceiling_color=BLUE,
         )
 
         self.root.add_widget(raycaster)

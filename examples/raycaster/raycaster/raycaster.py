@@ -4,7 +4,7 @@ import numpy as np
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.image import Image
-from nurses_2.colors import BLACK
+from nurses_2.colors import BLACK, Color
 
 from .protocols import Map, Camera, Texture
 
@@ -28,12 +28,14 @@ class RayCaster(Widget):
     light_textures : list[Texture] | None
         If provided, walls oriented in one direction will have a lighter color texture
         than walls oriented in another. This gives an illusion of depth.
-    ceiling: Texture | None
+    ceiling : Texture | None
         Ceiling texture.
-    floor: Texture | None
+    ceiling_color : Color, default: BLACK
+        Color of ceiling if no ceiling texture.
+    floor : Texture | None
         Floor texture.
-    background_color : Color
-        Color for ceiling and floor if textures aren't provided.
+    floor_color : Color, default: BLACK
+        Color of floor if no floor texture.
     """
     HOPS = 20  # How far rays are cast.
 
@@ -45,8 +47,9 @@ class RayCaster(Widget):
         textures: List[Texture],
         light_textures: Optional[List[Texture]]=None,
         ceiling: Optional[Texture]=None,
+        ceiling_color: Color=BLACK,
         floor: Optional[Texture]=None,
-        background_color=BLACK,
+        floor_color: Color=BLACK,
         default_char="▀",
         **kwargs,
         ):
@@ -59,8 +62,9 @@ class RayCaster(Widget):
         self.textures = textures
         self.light_textures = light_textures or textures
         self.ceiling = ceiling
+        self.ceiling_color = ceiling_color
         self.floor = floor
-        self.background_color = background_color
+        self.floor_color = floor_color
 
         # Buffers for camera and ray position
         self._pos_int = np.zeros((2,), dtype=np.int16)
@@ -72,7 +76,7 @@ class RayCaster(Widget):
         super().resize(dim)
         width = self.width
 
-        self._colors = np.full((2 * self.height, width, 3), self.background_color, dtype=np.uint8)
+        self._colors = np.full((2 * self.height, width, 3), 0, dtype=np.uint8)
 
         # Pre-calculate angle of rays cast.
         self._ray_angles = angles = np.ones((width, 2), dtype=np.float16)
@@ -190,14 +194,16 @@ class RayCaster(Widget):
 
     def render(self, canvas_view, colors_view, rect):
         colors = self._colors
+        height = self.height
 
         if self.ceiling is None and self.floor is None:
-            colors[:, :] = self.background_color
+            colors[:height, :] = self.ceiling_color
+            colors[height:, :] = self.floor_color
         else:
             if self.ceiling is None:
-                colors[:self.height >> 1, :] = self.background_color
+                colors[:height, :] = self.ceiling_color
             elif self.floor is None:
-                colors[self.height >> 1:, :] = self.background_color
+                colors[height:, :] = self.floor_color
 
             self.render_background()
 
