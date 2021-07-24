@@ -1,1 +1,2 @@
 opencv-python  # Required for `Image`, `Animation`, and `VideoPlayer` widgets
+scipy  # Required for affine transformations of ceiling and floor textures in raycaster.

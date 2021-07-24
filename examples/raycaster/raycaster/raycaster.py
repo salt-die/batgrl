@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import numpy as np
+from scipy.ndimage import geometric_transform
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.image import Image
@@ -88,23 +89,41 @@ class RayCaster(Widget):
         self._sides = np.zeros_like(angles)
         self._steps = np.zeros_like(angles, dtype=np.int16)
 
-    def render_backgroun(self):
+    def render_background(self):
         """
         Render floor and/or ceiling.
         """
-        # camera = self.camera
-        # height = self.height
+        camera = self.camera
+        height = self.height
+        width = self.width
+        floor = self.floor
+        ceiling = self.ceiling
+        colors = self._colors
 
-        # ray_initial = camera.plane[0] - camera.plane[1]
-        # ray_final = camera.plane.sum(axis=0)
+        #################################
+        # TODO: Buffer all these arrays #
+        #################################
 
-        # ys = np.arange(-height, height)
-        # mid = height * .5
-        # row_distance = mid / ys
+        ray_initial = camera.plane[0] - camera.plane[1]
+        ray_final = camera.plane.sum(axis=0)
 
-        # steps = row_distance * (ray_final - ray_initial) / self.width
+        ys = np.arange(-height, height) + .001
+        row_distance = height / ys
 
-        # floor_pos = camera.pos + row_distance * ray_initial
+        steps = np.einsum('i,j->ij', row_distance, (ray_final - ray_initial) / width)
+        floor_pos = camera.pos + row_distance * ray_initial
+
+        def affine_transformation(output_coords):
+            y, x = output_coords
+            fy, fx = floor_pos[y]
+            sy, sx = steps[y]
+            return fy + x * sy, fx + x * sx
+
+        if floor is not None:
+            geometric_transform(floor, affine_transformation, output=colors[height:], mode="grid-wrap")
+
+        if ceiling is not None:
+            geometric_transform(ceiling, affine_transformation, output=colors[:height], mode="grid-wrap")
 
     def cast_ray(self, column):
         """
@@ -210,13 +229,13 @@ class RayCaster(Widget):
         height = self.height
 
         if self.ceiling is None and self.floor is None:
-            colors[:height, :] = self.ceiling_color
-            colors[height:, :] = self.floor_color
+            colors[:height] = self.ceiling_color
+            colors[height:] = self.floor_color
         else:
             if self.ceiling is None:
-                colors[:height, :] = self.ceiling_color
+                colors[:height] = self.ceiling_color
             elif self.floor is None:
-                colors[height:, :] = self.floor_color
+                colors[height:] = self.floor_color
 
             self.render_background()
 
