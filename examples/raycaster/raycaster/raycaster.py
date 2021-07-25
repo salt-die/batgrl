@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 import numpy as np
-from scipy.ndimage import geometric_transform
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.image import Image
@@ -75,9 +74,11 @@ class RayCaster(Widget):
 
     def resize(self, dim):
         super().resize(dim)
+        height = self.height
         width = self.width
 
-        self._colors = np.full((2 * self.height, width, 3), 0, dtype=np.uint8)
+        # Note double resolution due to half-block characters.
+        self._colors = np.full((height << 1, width, 3), 0, dtype=np.uint8)
 
         # Pre-calculate angle of rays cast.
         self._ray_angles = angles = np.ones((width, 2), dtype=np.float16)
@@ -89,41 +90,8 @@ class RayCaster(Widget):
         self._sides = np.zeros_like(angles)
         self._steps = np.zeros_like(angles, dtype=np.int16)
 
-    def render_background(self):
-        """
-        Render floor and/or ceiling.
-        """
-        camera = self.camera
-        height = self.height
-        width = self.width
-        floor = self.floor
-        ceiling = self.ceiling
-        colors = self._colors
-
-        #################################
-        # TODO: Buffer all these arrays #
-        #################################
-
-        ray_initial = camera.plane[0] - camera.plane[1]
-        ray_final = camera.plane.sum(axis=0)
-
-        ys = np.arange(-height, height) + .001
-        row_distance = height / ys
-
-        steps = np.einsum('i,j->ij', row_distance, (ray_final - ray_initial) / width)
-        floor_pos = camera.pos + row_distance * ray_initial
-
-        def affine_transformation(output_coords):
-            y, x = output_coords
-            fy, fx = floor_pos[y]
-            sy, sx = steps[y]
-            return fy + x * sy, fx + x * sx
-
-        if floor is not None:
-            geometric_transform(floor, affine_transformation, output=colors[height:], mode="grid-wrap")
-
-        if ceiling is not None:
-            geometric_transform(ceiling, affine_transformation, output=colors[:height], mode="grid-wrap")
+        # Precalculate distances for ceiling and floor textures
+        self._distances = height / np.linspace(.001, height, num=height, endpoint=False)
 
     def cast_ray(self, column):
         """
@@ -172,21 +140,16 @@ class RayCaster(Widget):
         height = colors.shape[0]
 
         column_height = int(height / distance) if distance else 1000  # 1000 == infinity, roughly
-        if column_height == 0:
-            return  # Draw nothing
 
         # Start and end y-coordinates of column.
         ########################################
         half_height = height >> 1              #
         half_column = column_height >> 1       #
+        if half_column > half_height:          #
+            half_column = half_height          #
                                                #
         start = half_height - half_column      #
-        if start < 0:                          #
-            start = 0                          #
-                                               #
         end = half_height + half_column        #
-        if end >= height:                      #
-            end = height - 1                   #
         ########################################
 
         texture = (self.textures if side else self.light_textures)[texture_index - 1]
@@ -224,6 +187,46 @@ class RayCaster(Widget):
         # Paint column.
         colors[start: end, column] = texture_column
 
+        # Paint floor and ceiling.
+        ceiling = self.ceiling
+        floor = self.floor
+
+        if ceiling is None and floor is None:
+            colors[:start, column] = self.ceiling_color
+            colors[end:, column] = self.floor_color
+            return
+
+        if side == 0:
+            floor_y = ray_pos[0] + (1.0 if ray_angle[0] < 0 else 0.0)
+            floor_x = ray_pos[1] + wall_x
+        else:
+            floor_y = ray_pos[0] + wall_x
+            floor_x = ray_pos[1] + (1.0 if ray_angle[1] < 0 else 0.0)
+
+        # TODO: Buffer `tex_ys`, `tex_xs`, `ys`, `xs`, `distances`
+
+        # Horizontal distances of floor / ceiling
+        distances = self._distances[half_column:] / distance
+
+        tex_ys = (distances * floor_y + (1.0 - distances) * camera_pos[0]) % 1
+        tex_xs = (distances * floor_x + (1.0 - distances) * camera_pos[1]) % 1
+
+        if ceiling is not None:
+            ceiling_h, ceiling_w, _ = ceiling.shape
+            ys = (tex_ys * ceiling_w).astype(int)
+            xs = (tex_xs * ceiling_h).astype(int)
+            colors[:start, column] = ceiling[ys[::-1], xs[::-1]]  # Note reversed order from floor
+        else:
+            colors[:start, column] = self.ceiling_color
+
+        if floor is not None:
+            floor_h, floor_w, _ = floor.shape
+            ys = (tex_ys * floor_w).astype(int)
+            xs = (tex_xs * floor_h).astype(int)
+            colors[end:, column] = floor[ys, xs]
+        else:
+            colors[end:, column] = self.floor_color
+
     def render(self, canvas_view, colors_view, rect):
         colors = self._colors
         height = self.height
@@ -236,8 +239,6 @@ class RayCaster(Widget):
                 colors[:height] = self.ceiling_color
             elif self.floor is None:
                 colors[height:] = self.floor_color
-
-            self.render_background()
 
         # Bring in to locals
         #######################################
