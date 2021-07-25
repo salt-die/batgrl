@@ -17,6 +17,9 @@ from .raycaster import RayCaster
 from .rotation_matrix import rotation_matrix
 
 FRAMES_DIR = Path("..") / "frames" / "spinner"
+IMAGES_DIR = Path("..") / "images"
+FLOOR_PATH = IMAGES_DIR / "colorstone.png"
+CEILING_PATH = IMAGES_DIR / "bluestone.png"
 MAP = np.array(
     [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -34,6 +37,9 @@ MAP = np.array(
 )
 ROTATE_LEFT = rotation_matrix(-2 * np.pi / 30)
 ROTATE_RIGHT = rotation_matrix(2 * np.pi / 30)
+
+def load_image(path):
+    return cv2.cvtColor(cv2.imread(str(path), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
 
 
 class MyCamera:
@@ -60,10 +66,7 @@ class AnimatedTexture:
     """
     def __init__(self, path, animation_speed=1/12):
         sources = sorted(path.iterdir(), key=lambda file: file.name)
-        self.textures = [
-            cv2.cvtColor(cv2.imread(str(source), cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
-            for source in sources
-        ]
+        self.textures = list(map(load_image, sources))
         self.animation_speed = animation_speed
         self.current_frame = 0
         self._animation_task = asyncio.create_task(self.start_animation())
@@ -128,7 +131,8 @@ class MyApp(App):
             camera=MyCamera(),
             textures=[ AnimatedTexture(path=FRAMES_DIR) ],
             light_textures=[ light_anim ],
-            ceiling_color=BLUE,
+            ceiling=load_image(CEILING_PATH),
+            floor=load_image(FLOOR_PATH),
         )
 
         self.root.add_widget(raycaster)
