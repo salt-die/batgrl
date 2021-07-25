@@ -9,9 +9,6 @@ from nurses_2.colors import BLACK, Color
 from .protocols import Map, Camera, Texture
 
 
-# TODO: It may be more efficient to store textures in F-order,
-# so that columns are closer together in memory. Consider updating
-# Texture protocol to allow memory-order to be swapped.
 class RayCaster(Widget):
     """
     A raycaster for nurses_2.
