@@ -122,18 +122,19 @@ class RayCaster(Widget):
             ray_pos[side] += step[side]
 
             if texture_index := map[tuple(ray_pos)]:
-                break
-        else:  # No walls in range.
-            return
+                # Distance from wall to camera plane.
+                # Note that distance of wall to camera is not used
+                # as it would result in a "fish-eye" effect.
+                distance = (
+                    ray_pos[side]
+                    - camera_pos[side]
+                    + (0 if step[side] == 1 else 1)
+                ) / ray_angle[side]
 
-        # Distance from wall to camera plane.
-        # Note that distance of wall to camera is not used
-        # as it would result in a "fish-eye" effect.
-        distance = (
-            ray_pos[side]
-            - camera_pos[side]
-            + (0 if step[side] == 1 else 1)
-        ) / ray_angle[side]
+                break
+
+        else:  # No walls in range.
+            distance = 1000  # 1000 == infinity, roughly
 
         #############
         # Rendering #
