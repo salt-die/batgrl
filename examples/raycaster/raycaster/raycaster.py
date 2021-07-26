@@ -78,7 +78,7 @@ class RayCaster(Widget):
         # Note double resolution due to half-block characters.
         self._colors = np.full((height << 1, width, 3), 0, dtype=np.uint8)
 
-        # Pre-calculate angle of rays cast.
+        # Precalculate angle of rays cast.
         self._ray_angles = angles = np.ones((width, 2), dtype=np.float16)
         angles[:, 1] = np.linspace(-1, 1, width)
 
