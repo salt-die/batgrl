@@ -141,10 +141,10 @@ class _Root(Widget):
         """
         Dispatch key press to descendants until handled.
         """
-        return any(widget.dispatch_press(key_press) for widget in reversed(self.children))
+        any(widget.dispatch_press(key_press) for widget in reversed(self.children))
 
     def dispatch_click(self, mouse_event):
         """
         Dispatch mouse event to descendents until handled.
         """
-        return any(widget.dispatch_click(mouse_event) for widget in reversed(self.children))
+        any(widget.dispatch_click(mouse_event) for widget in reversed(self.children))
