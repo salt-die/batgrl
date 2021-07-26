@@ -261,22 +261,22 @@ class RayCaster(Widget):
         cast_ray = self.cast_ray              #
         #######################################
 
-        # Early calculations on rays can be vectorized; fill buffers with these calculations.
-        #####################################################################################
-        np.dot(self._ray_angles, camera.plane, out=rotated_angles)                          #
-                                                                                            #
-        with errstate(divide="ignore"):                                                     #
-            divide(1.0, rotated_angles, out=deltas)                                         #
-        np.absolute(deltas, out=deltas)                                                     #
-                                                                                            #
-        np.sign(rotated_angles, out=steps, casting="unsafe")                                #
-                                                                                            #
-        np.heaviside(steps, 1.0, out=sides)                                                 #
-        np.mod(camera.pos, 1.0, out=pos_frac)                                               #
-        np.subtract(sides, pos_frac, out=sides)                                             #
-        multiply(sides, steps, out=sides)                                                   #
-        multiply(sides, deltas, out=sides)                                                  #
-        #####################################################################################
+        # Early calculations on rays can be vectorized:
+        ############################################################
+        np.dot(self._ray_angles, camera.plane, out=rotated_angles) #
+                                                                   #
+        with errstate(divide="ignore"):                            #
+            divide(1.0, rotated_angles, out=deltas)                #
+        np.absolute(deltas, out=deltas)                            #
+                                                                   #
+        np.sign(rotated_angles, out=steps, casting="unsafe")       #
+                                                                   #
+        np.heaviside(steps, 1.0, out=sides)                        #
+        np.mod(camera.pos, 1.0, out=pos_frac)                      #
+        np.subtract(sides, pos_frac, out=sides)                    #
+        multiply(sides, steps, out=sides)                          #
+        multiply(sides, deltas, out=sides)                         #
+        ############################################################
 
         for column in range(self.width):
             cast_ray(column)
