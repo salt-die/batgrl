@@ -1,7 +1,5 @@
 """
 This file is for testing purposes. It will be removed at some point.
-
-"wasd" to move the camera.
 """
 from pathlib import Path
 
