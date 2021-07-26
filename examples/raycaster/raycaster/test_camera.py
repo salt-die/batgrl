@@ -9,20 +9,22 @@ class MyCamera:
     FIELD_OF_VIEW = .6
     FRAMES = 20
 
+    INITIAL_PLANE = np.array(
+        [
+            [1.001, 0.001],
+            [0.0, FIELD_OF_VIEW],
+        ],
+        dtype=np.float16,
+    )
+
     pos = np.array([2.5, 2.5], dtype=np.float16)
 
     def __init__(self):
-        self.turn(0)
+        self.plane = self.INITIAL_PLANE.copy()
         self._camera_task = asyncio.create_task(self.run())
 
     def turn(self, angle):
-        self.plane = np.array(
-            [
-                [1.001, 0.001],
-                [0.0, self.FIELD_OF_VIEW],
-            ],
-            dtype=np.float16,
-        ) @ rotation_matrix(angle)
+        np.dot(self.INITIAL_PLANE, rotation_matrix(angle), out=self.plane)
 
     async def rotate(self, start, end):
         if end > start:
