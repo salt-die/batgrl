@@ -16,7 +16,7 @@ class MyCamera:
         self._camera_task = asyncio.create_task(self.run())
 
     def turn(self, angle):
-        self.plane = plane = np.array(
+        self.plane = np.array(
             [
                 [1.001, 0.001],
                 [0.0, self.FIELD_OF_VIEW],
