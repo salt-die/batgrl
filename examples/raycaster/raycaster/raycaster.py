@@ -82,17 +82,8 @@ class RayCaster(Widget):
         angles[:, 1] = np.linspace(-1, 1, width)
 
         # Precalculate distances for ceiling and floor textures
-        self._distances = distances = np.divide(
-            height,
-            np.linspace(
-                .001,
-                height,
-                num=height,
-                endpoint=False,
-                dtype=np.float16,
-            ),
-            dtype=np.float16,
-        )
+        self._distances = distances = np.linspace(.001, height, num=height, endpoint=False, dtype=np.float16)
+        np.divide(height, distances, out=distances, dtype=np.float16)
 
         # Buffers
         self._rotated_angles = np.zeros_like(angles)
