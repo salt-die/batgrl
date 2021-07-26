@@ -41,7 +41,7 @@ class AutoResizeCaster(AutoResizeBehavior, RayCaster):
 class MyApp(App):
     async def on_start(self):
         light_anim = AnimatedTexture(path=FRAMES_DIR)
-        light_anim.textures = [(63 + .72 * texture).astype(np.uint8) for texture in light_anim.textures]
+        light_anim.textures = [(63 + .75 * texture).astype(np.uint8) for texture in light_anim.textures]
 
         raycaster = AutoResizeCaster(
             map=MAP,
