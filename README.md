@@ -27,3 +27,7 @@ This is a widget and async-centric library for creating graphical applications i
 # /examples/sandbox
 
 ![Sandbox demonstration](preview_images/sandbox_demonstration.gif)
+
+# /examples/raycaster
+
+![Raycaster demonstration](preview_images/raycaster_demonstration.gif)
