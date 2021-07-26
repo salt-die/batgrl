@@ -22,14 +22,14 @@ class RayCaster(Widget):
         View in map.
     textures : list[Texture]
         Textures for walls in `map`.
-    light_textures : list[Texture] | None, default: None
+    light_textures : Optional[list[Texture]], default: None
         If provided, walls north/south face will use textures in `light_textures`
         instead of `textures`.
-    ceiling : Texture | None, default: None
+    ceiling : Optional[Texture], default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
         Color of ceiling if no ceiling texture.
-    floor : Texture | None, default: None
+    floor : Optional[Texture], default: None
         Floor texture.
     floor_color : Color, default: BLACK
         Color of floor if no floor texture.
