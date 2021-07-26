@@ -22,14 +22,14 @@ class RayCaster(Widget):
         View in map.
     textures : list[Texture]
         Textures for walls in `map`.
-    light_textures : list[Texture] | None
-        If provided, walls oriented in one direction will have a lighter color texture
-        than walls oriented in another. This gives an illusion of depth.
-    ceiling : Texture | None
+    light_textures : list[Texture] | None, default: None
+        If provided, walls north/south face will use textures in `light_textures`
+        instead of `textures`.
+    ceiling : Texture | None, default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
         Color of ceiling if no ceiling texture.
-    floor : Texture | None
+    floor : Texture | None, default: None
         Floor texture.
     floor_color : Color, default: BLACK
         Color of floor if no floor texture.
