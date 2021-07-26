@@ -17,8 +17,8 @@ from .test_camera import MyCamera
 
 FRAMES_DIR = Path("..") / "frames" / "spinner"
 IMAGES_DIR = Path("..") / "images"
-FLOOR_PATH = IMAGES_DIR / "greystone.png"
 CEILING_PATH = IMAGES_DIR / "bluestone.png"
+FLOOR_PATH = IMAGES_DIR / "greystone.png"
 MAP = np.array(
     [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
