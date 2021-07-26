@@ -243,17 +243,8 @@ class RayCaster(Widget):
         ###################################################################################
 
     def render(self, canvas_view, colors_view, rect):
-        colors = self._colors[:, ::-1]
+        colors = self._colors[:, ::-1]  # `::-1` -- Not sure why rendering is flipped, but this is an easy fix.
         height = self.height
-
-        if self.ceiling is None and self.floor is None:
-            colors[:height] = self.ceiling_color
-            colors[height:] = self.floor_color
-        else:
-            if self.ceiling is None:
-                colors[:height] = self.ceiling_color
-            elif self.floor is None:
-                colors[height:] = self.floor_color
 
         # Bring in to locals
         #######################################
@@ -289,7 +280,6 @@ class RayCaster(Widget):
         for column in range(self.width):
             cast_ray(column)
 
-        # Note final image is flipped left-to-right.
         np.concatenate((colors[::2], colors[1::2]), axis=-1, out=self.colors)
 
         super().render(canvas_view, colors_view, rect)
