@@ -20,6 +20,17 @@ class App(ABC):
     """
     Base for creating terminal applications.
 
+    Parameters
+    ----------
+    exit_key : Optional[str], default: "escape"
+        Quit the app when this key is pressed. Use None to disable exit_key (not recommended).
+        If the exit key is modified while the app is running, the app will still use the old key
+        until it exits.
+    default_char : str, default: " "
+        Default background character for root widget.
+    default_color : ColorPair, default: BLACK_ON_BLACK
+        Default background color pair for root widget.
+
     Notes
     -----
     To create an app, inherit this class and implement the async method `on_start`. Typical
