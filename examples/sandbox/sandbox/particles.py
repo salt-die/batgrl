@@ -9,6 +9,7 @@ from nurses_2.colors import Color
 
 random = np.random.default_rng().random
 
+
 class State(Enum):
     """
     Element states.
