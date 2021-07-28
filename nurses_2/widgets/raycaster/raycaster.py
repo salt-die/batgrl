@@ -37,7 +37,7 @@ class RayCaster(Widget):
     def __init__(
         self,
         *args,
-        map: np.ndarray,
+        map: Map,
         camera: Camera,
         wall_textures: List[Texture],
         light_wall_textures: Optional[List[Texture]]=None,
