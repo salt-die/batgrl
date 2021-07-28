@@ -4,7 +4,6 @@ import numpy as np
 
 from ...widgets import Widget
 from ...colors import BLACK, Color
-
 from .protocols import Map, Camera, Texture
 
 
