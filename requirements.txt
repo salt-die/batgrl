@@ -1,2 +1,2 @@
-numpy
-prompt-toolkit
+numpy == 1.20.2
+prompt-toolkit == 3.0.18
