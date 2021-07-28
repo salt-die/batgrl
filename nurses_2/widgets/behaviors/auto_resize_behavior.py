@@ -27,7 +27,7 @@ class AutoSizeBehavior:
     def __init__(self, *args, size_hint: SizeHint=SizeHint(1.0, 1.0), **kwargs):
         self.h_hint, self.w_hint = size_hint
 
-        assert _is_valid_hint(self.h_hint) and _is_valid_hint(self.w_hint), f'{size_hint!r} is not a valid size hint'
+        assert _is_valid_hint(self.h_hint) and _is_valid_hint(self.w_hint), f"{size_hint!r} is not a valid size hint."
 
         super().__init__(*args, **kwargs)
 
