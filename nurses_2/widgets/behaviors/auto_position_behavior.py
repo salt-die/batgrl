@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import NamedTuple, Optional
+from warnings import warn
 
+from .auto_resize_behavior import AutoSizeBehavior
 
 class Anchor(str, Enum):
     CENTER = "CENTER"
@@ -32,6 +34,21 @@ class AutoPositionBehavior:
         The location of the anchor as a percentage parent's dimensions.
         None indicates top or left attribute will be used normally.
     """
+    def __init_subclass__(cls):
+        autoposition_before_autosize = False
+
+        for parent in cls.__mro__:
+            if parent is AutoSizeBehavior:
+                if autoposition_before_autosize:
+                    warn(
+                        f"AutoPositionBehavior before AutoSizeBehavior in {cls.__name__}.__mro__."
+                        " AutoSizeBehavior should be inherited before AutoPositionBehavior."
+                    )
+                break
+
+            if parent is AutoPositionBehavior:
+                autoposition_before_autosize = True
+
     def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint: PosHint=PosHint(0.0, 0.0), **kwargs):
         self.anchor = anchor
         self.top_hint, self.left_hint = pos_hint
