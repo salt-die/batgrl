@@ -2,8 +2,8 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.auto_position_behavior import AutoPositionBehavior
-from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
+from nurses_2.widgets.behaviors import AutoPositionBehavior
+from nurses_2.widgets.behaviors import AutoSizeBehavior
 
 IMAGE_DIR = Path('images')
 PATH_TO_LOGO_FLAT = IMAGE_DIR / 'logo_solo_flat_256.png'
@@ -11,7 +11,7 @@ PATH_TO_LOGO_FULL = IMAGE_DIR / 'python_discord_logo.png'
 PATH_TO_BACKGROUND = IMAGE_DIR / 'background.png'
 
 
-class AutoGeometryImage(AutoPositionBehavior, AutoResizeBehavior, Image):
+class AutoGeometryImage(AutoSizeBehavior, AutoPositionBehavior, Image):
     pass
 
 

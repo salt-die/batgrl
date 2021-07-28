@@ -11,7 +11,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.mouse import MouseButton
-from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
+from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.image import Image
 
@@ -138,21 +138,21 @@ class PokeParticle(HalfBlockParticle):
                 return
 
 
-class AutoResizeHalfBlockField(AutoResizeBehavior, HalfBlockField):
+class AutoSizeHalfBlockField(AutoSizeBehavior, HalfBlockField):
     pass
 
 
-class AutoResizeImage(AutoResizeBehavior, Image):
+class AutoSizeImage(AutoSizeBehavior, Image):
     pass
 
 
 class MyApp(App):
     async def on_start(self):
-        background = AutoResizeImage(path=PATH_TO_BACKGROUND)
+        background = AutoSizeImage(path=PATH_TO_BACKGROUND)
 
         logo = Image(dim=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True, alpha=.8)
 
-        field = AutoResizeHalfBlockField()
+        field = AutoSizeHalfBlockField()
 
         for y in range(logo.height):
             for x in range(logo.width):

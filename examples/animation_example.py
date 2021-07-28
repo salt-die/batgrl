@@ -3,14 +3,13 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.animation import Animation, Interpolation
-from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
-from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
+from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior, AutoSizeBehavior
 
 
 PATH_TO_FRAMES_DIR = Path('frames') / 'caveman'
 
 
-class AutoGeometryAnimation(AutoResizeBehavior, AutoPositionBehavior, Animation):
+class AutoGeometryAnimation(AutoSizeBehavior, AutoPositionBehavior, Animation):
     pass
 
 

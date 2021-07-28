@@ -1,7 +1,6 @@
 from nurses_2.colors import ColorPair, Color
 from nurses_2.widgets import Widget
-from nurses_2.widgets.button_behavior import ButtonBehavior
-from nurses_2.widgets.auto_position_behavior import AutoPositionBehavior
+from nurses_2.widgets.behaviors import ButtonBehavior, AutoPositionBehavior
 
 from .particles import Element
 

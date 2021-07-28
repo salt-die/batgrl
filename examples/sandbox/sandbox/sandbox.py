@@ -6,7 +6,7 @@ from nurses_2.colors import Color, ColorPair
 from nurses_2.mouse import MouseButton
 from nurses_2.widgets.widget_data_structures import Size
 from nurses_2.widgets.widget import Widget, overlapping_region
-from nurses_2.widgets.auto_position_behavior import Anchor, AutoPositionBehavior
+from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ElementDisplay, ButtonContainer
 from .particles import Air

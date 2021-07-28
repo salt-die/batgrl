@@ -1,17 +1,27 @@
-from .widget_data_structures import SizeHint
+from typing import NamedTuple, Optional
 
 def _is_valid_hint(hint):
     return hint is None or 0 < hint
 
 
-class AutoResizeBehavior:
+class SizeHint(NamedTuple):
+    height: Optional[float]
+    width: Optional[float]
+
+
+class AutoSizeBehavior:
     """
-    Resize to some percentage of parent (given by `size_hint`) when parent is resized.
+    Dimensions of widget are set to some proportion of its parent's dimensions (given by `size_hint`).
+
+    Notes
+    -----
+    If a user widget is inheriting both AutoSizeBehavior and AutoPositionBehavior, AutoSizeBehavior should be
+    before AutoPositionBehavior as positioning will require the correct dimensions of the widget.
 
     Parameters
     ----------
     size_hint : SizeHint, default: (1.0, 1.0)
-        Dimension as a percentage of parent's dimension. None indicates
+        Dimension as a proportion of parent's dimension. None indicates
         height or width attribute will be used normally.
     """
     def __init__(self, *args, size_hint: SizeHint=SizeHint(1.0, 1.0), **kwargs):

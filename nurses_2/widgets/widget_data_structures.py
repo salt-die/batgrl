@@ -51,17 +51,7 @@ class Point(NamedTuple):
     x: int
 
 
-class PosHint(NamedTuple):
-    y: float
-    x: float
-
-
 class Size(NamedTuple):
-    height: Optional[float]
-    width: Optional[float]
-
-
-class SizeHint(NamedTuple):
     height: Optional[float]
     width: Optional[float]
 

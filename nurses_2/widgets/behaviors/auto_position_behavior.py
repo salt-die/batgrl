@@ -1,6 +1,5 @@
 from enum import Enum
-
-from .widget_data_structures import PosHint
+from typing import NamedTuple, Optional
 
 
 class Anchor(str, Enum):
@@ -11,10 +10,19 @@ class Anchor(str, Enum):
     BOTTOM_RIGHT = "BOTTOM_RIGHT"
 
 
+class PosHint(NamedTuple):
+    y: Optional[float]
+    x: Optional[float]
+
+
 class AutoPositionBehavior:
     """
-    Re-position anchor to some percentage of parent's height / width
-    (given by `pos_hint`) when parent is resized.
+    Position of widget is set to some proportion of parent's dimensions (given by `pos_hint`).
+
+    Notes
+    -----
+    If a user widget is inheriting both AutoSizeBehavior and AutoPositionBehavior, AutoSizeBehavior should be
+    before AutoPositionBehavior as positioning will require the correct dimensions of the widget.
 
     Parameters
     ----------

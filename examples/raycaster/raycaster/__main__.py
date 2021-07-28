@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
+from nurses_2.widgets.behaviors import AutoSizeBehavior
 
 from .animated_texture import AnimatedTexture
 from .load_image import load_image
@@ -34,7 +34,7 @@ MAP = np.array(
 )
 
 
-class AutoResizeCaster(AutoResizeBehavior, RayCaster):
+class AutoSizeCaster(AutoSizeBehavior, RayCaster):
     pass
 
 
@@ -43,7 +43,7 @@ class MyApp(App):
         light_anim = AnimatedTexture(path=FRAMES_DIR)
         light_anim.textures = [(63 + .75 * texture).astype(np.uint8) for texture in light_anim.textures]
 
-        raycaster = AutoResizeCaster(
+        raycaster = AutoSizeCaster(
             map=MAP,
             camera=MyCamera(),
             textures=[ AnimatedTexture(path=FRAMES_DIR) ],
