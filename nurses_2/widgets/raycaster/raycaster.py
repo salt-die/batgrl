@@ -46,7 +46,7 @@ class RayCaster(Widget):
         floor_color: Color=BLACK,
         default_char="▀",
         **kwargs,
-        ):
+    ):
         kwargs.pop('transparent', None)
 
         super().__init__(*args, default_char=default_char, **kwargs)
