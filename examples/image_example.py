@@ -25,8 +25,8 @@ class MyApp(App):
         )
 
         logo_full = AutoGeometryImage(
-            pos_hint=(.5, .5),
             size_hint=(.5, .5),
+            pos_hint=(.5, .5),
             path=PATH_TO_LOGO_FULL,
             alpha=.8,
         )

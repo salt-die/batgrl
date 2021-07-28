@@ -30,9 +30,9 @@ class AutoPositionBehavior:
     ----------
     anchor : Anchor, default: Anchor.TOP_LEFT
         The part of this widget anchored to the pos_hint.
-    pos_hint : PosHint, default: (0.0, 0.0)
-        The location of the anchor as a percentage parent's dimensions.
-        None indicates top or left attribute will be used normally.
+    pos_hint : PosHint, default: PosHint(0.0, 0.0)
+        The location of the anchor as a proportion parent's dimensions. A None in the pos_hint indicates
+        top or left attribute will be used to position widget normally.
     """
     def __init_subclass__(cls):
         autoposition_before_autosize = False
@@ -50,10 +50,20 @@ class AutoPositionBehavior:
                 autoposition_before_autosize = True
 
     def __init__(self, *args, anchor=Anchor.TOP_LEFT, pos_hint: PosHint=PosHint(0.0, 0.0), **kwargs):
-        self.anchor = anchor
-        self.top_hint, self.left_hint = pos_hint
-
         super().__init__(*args, **kwargs)
+
+        self.anchor = anchor
+        self.pos_hint = pos_hint
+
+    @property
+    def pos_hint(self):
+        return self._pos_hint
+
+    @pos_hint.setter
+    def pos_hint(self, value):
+        self._pos_hint = value
+        if self.parent:
+            self.update_geometry()
 
     def update_geometry(self):
         anchor = self.anchor
@@ -70,8 +80,7 @@ class AutoPositionBehavior:
             offset_top, offset_left = self.middle
 
         h, w = self.parent.dim
-        top_hint = self.top_hint
-        left_hint = self.left_hint
+        top_hint, left_hint = self.pos_hint
 
         if top_hint is not None:
             self.top = round(h * top_hint) - offset_top
