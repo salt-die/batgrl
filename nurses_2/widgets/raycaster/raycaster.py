@@ -14,15 +14,14 @@ class RayCaster(Widget):
     Parameters
     ----------
     map : Map
-        Map for raycaster
-        Non-zero `p` in map correspond to walls with texture `wall_textures[p - 1]`.
+        An array-like with non-zero entries n indicating walls with texture `wall_textures[n - 1]`.
     camera : Camera
-        View in map.
+        A view in the map.
     wall_textures : List[Texture]
-        Textures for walls in `map`.
+        Textures for walls.
     light_wall_textures : Optional[list[Texture]], default: None
-        If provided, walls north/south face will use textures in `light_wall_textures`
-        instead of `wall_textures`.
+        If provided, walls north/south face will use textures in `light_wall_textures` instead
+        of `wall_textures`.
     ceiling : Optional[Texture], default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
