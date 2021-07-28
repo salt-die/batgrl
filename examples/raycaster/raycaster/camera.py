@@ -5,7 +5,7 @@ import numpy as np
 from .rotation_matrix import rotation_matrix
 
 
-class MyCamera:
+class Camera:
     FIELD_OF_VIEW = .6
     FRAMES = 20
 
