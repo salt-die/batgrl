@@ -2,11 +2,29 @@ import asyncio
 
 import numpy as np
 
-from .rotation_matrix import rotation_matrix
+def rotation_matrix(theta):
+    """
+    Returns a 2-dimensional rotation array of a given angle.
+
+    Notes
+    -----
+    Matrix multiplication of a rotation matrix with a camera's plane will
+    rotate the plane.
+    """
+    x = np.cos(theta)
+    y = np.sin(theta)
+
+    return np.array(
+        [
+            [ x, y],
+            [-y, x],
+        ],
+        dtype=np.float16,
+    )
 
 
 class Camera:
-    FIELD_OF_VIEW = .6
+    FIELD_OF_VIEW = .66
     FRAMES = 20
 
     INITIAL_PLANE = np.array(

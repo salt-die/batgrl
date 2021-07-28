@@ -2,9 +2,8 @@ from typing import List, Optional
 
 import numpy as np
 
-from nurses_2.widgets import Widget
-from nurses_2.widgets.image import Image
-from nurses_2.colors import BLACK, Color
+from ...widgets import Widget
+from ...colors import BLACK, Color
 
 from .protocols import Map, Camera, Texture
 
@@ -20,7 +19,7 @@ class RayCaster(Widget):
         Non-zero `p` in map correspond to walls with texture `wall_textures[p - 1]`.
     camera : Camera
         View in map.
-    wall_textures : list[Texture]
+    wall_textures : List[Texture]
         Textures for walls in `map`.
     light_wall_textures : Optional[list[Texture]], default: None
         If provided, walls north/south face will use textures in `light_wall_textures`

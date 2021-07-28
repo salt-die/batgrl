@@ -2,24 +2,16 @@ import asyncio
 
 import numpy as np
 
-from .load_image import load_image
-
 
 class AnimatedTexture:
     """
     An animated texture.
-
-    Notes
-    -----
-    This is an example of how to use Texture protocol to provide
-    animated textures to the raycaster.
     """
-    def __init__(self, path, animation_speed=1/12, lighten=False):
-        sources = sorted(path.iterdir(), key=lambda file: file.name)
-        self.textures = list(map(load_image, sources))
-
+    def __init__(self, textures, animation_speed=1/12, lighten=False):
         if lighten:
-            self.textures = [(63 + .75 * texture).astype(np.uint8) for texture in self.textures]
+            self.textures = [(63 + .75 * texture).astype(np.uint8) for texture in textures]
+        else:
+            self.textures = textures
 
         self.animation_speed = animation_speed
         self.current_frame = 0

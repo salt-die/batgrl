@@ -1,1 +1,4 @@
-# Raycaster for nurses_2
+# Raycaster example for nurses_2
+
+This raycaster example includes an animated texture implementation, and a moving camera implementation to illustrate
+some basic usage of the RayCaster widget.

@@ -1,16 +1,13 @@
-"""
-This file is for testing purposes. It will be removed at some point.
-"""
 from pathlib import Path
 
+import cv2
 import numpy as np
 
 from nurses_2.app import App
 from nurses_2.widgets.behaviors import AutoSizeBehavior
+from nurses_2.widgets.raycaster import RayCaster
 
 from .animated_texture import AnimatedTexture
-from .load_image import load_image
-from .raycaster import RayCaster
 from .camera import Camera
 
 FRAMES_DIR = Path("..") / "frames" / "spinner"
@@ -33,6 +30,15 @@ MAP = np.array(
     dtype=np.uint8,
 )
 
+def load_image(path):
+    """
+    Load an image as numpy array from a pathlib.Path.
+    """
+    path_str = str(path)
+    bgr_image = cv2.imread(path_str, cv2.IMREAD_COLOR)
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+    return rgb_image
+
 
 class AutoSizeCaster(AutoSizeBehavior, RayCaster):
     pass
@@ -40,11 +46,14 @@ class AutoSizeCaster(AutoSizeBehavior, RayCaster):
 
 class MyApp(App):
     async def on_start(self):
+        sources = sorted(FRAMES_DIR.iterdir(), key=lambda file: file.name)
+        textures = list(map(load_image, sources))
+
         raycaster = AutoSizeCaster(
             map=MAP,
             camera=Camera(),
-            wall_textures=[ AnimatedTexture(path=FRAMES_DIR) ],
-            light_wall_textures=[ AnimatedTexture(path=FRAMES_DIR, lighten=True) ],
+            wall_textures=[ AnimatedTexture(textures) ],
+            light_wall_textures=[ AnimatedTexture(textures, lighten=True) ],
             ceiling=load_image(CEILING_PATH),
             floor=load_image(FLOOR_PATH),
         )

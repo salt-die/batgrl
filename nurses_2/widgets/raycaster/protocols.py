@@ -9,7 +9,7 @@ class Map(Protocol):
 
     Notes
     -----
-    Wall value `n` will have texture `textures[n - 1]` in raycaster.
+    Wall value `n` will have nth texture in raycaster's texture array, e.g., `wall_textures[n - 1]`.
     """
     ndim: Literal[2]
 
