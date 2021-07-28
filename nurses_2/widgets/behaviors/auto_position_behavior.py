@@ -24,7 +24,7 @@ class AutoPositionBehavior:
     Notes
     -----
     If a user widget is inheriting both AutoSizeBehavior and AutoPositionBehavior, AutoSizeBehavior should be
-    before AutoPositionBehavior as positioning will require the correct dimensions of the widget.
+    before AutoPositionBehavior as anchor position will require the correct dimensions of the widget.
 
     Parameters
     ----------
