@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..colors import BLACK
-from .widget_data_structures import Point, Rect
+from ...colors import BLACK
+from ..widget_data_structures import Point, Rect
 from .particle_field import ParticleField, Particle
 
 
@@ -12,6 +12,9 @@ class HalfBlockField(ParticleField):
     Notes
     -----
     HalfBlockFields are an optimized way to render many .5x1 TUI elements.
+
+    `HalfBlockParticle`s can be partially transparent; they work well when rendered on half-block backgrounds,
+    such as from Image or VideoPlayer widgets.
 
     Raises
     ------

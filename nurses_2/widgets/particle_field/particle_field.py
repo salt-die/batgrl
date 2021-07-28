@@ -1,6 +1,6 @@
-from ..colors import WHITE_ON_BLACK
-from .widget import Widget
-from .widget_data_structures import Point, Size, Rect
+from ...colors import WHITE_ON_BLACK
+from ..widget import Widget
+from ..widget_data_structures import Point, Size, Rect
 
 
 class ParticleField(Widget):

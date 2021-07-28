@@ -12,7 +12,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.mouse import MouseButton
 from nurses_2.widgets.auto_resize_behavior import AutoResizeBehavior
-from nurses_2.widgets.half_block_particle_field import HalfBlockField, HalfBlockParticle
+from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.image import Image
 
 HEIGHT, WIDTH = 18, 36
