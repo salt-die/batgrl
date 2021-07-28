@@ -17,14 +17,14 @@ class RayCaster(Widget):
     ----------
     map : Map
         Map for raycaster
-        Non-zero `p` in map correspond to walls with texture `textures[p - 1]`.
+        Non-zero `p` in map correspond to walls with texture `wall_textures[p - 1]`.
     camera : Camera
         View in map.
-    textures : list[Texture]
+    wall_textures : list[Texture]
         Textures for walls in `map`.
-    light_textures : Optional[list[Texture]], default: None
-        If provided, walls north/south face will use textures in `light_textures`
-        instead of `textures`.
+    light_wall_textures : Optional[list[Texture]], default: None
+        If provided, walls north/south face will use textures in `light_wall_textures`
+        instead of `wall_textures`.
     ceiling : Optional[Texture], default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
@@ -41,8 +41,8 @@ class RayCaster(Widget):
         *args,
         map: np.ndarray,
         camera: Camera,
-        textures: List[Texture],
-        light_textures: Optional[List[Texture]]=None,
+        wall_textures: List[Texture],
+        light_wall_textures: Optional[List[Texture]]=None,
         ceiling: Optional[Texture]=None,
         ceiling_color: Color=BLACK,
         floor: Optional[Texture]=None,
@@ -56,8 +56,8 @@ class RayCaster(Widget):
 
         self.map = map
         self.camera = camera
-        self.textures = textures
-        self.light_textures = light_textures or textures
+        self.wall_textures = wall_textures
+        self.light_wall_textures = light_wall_textures or wall_textures
         self.ceiling = ceiling
         self.ceiling_color = ceiling_color
         self.floor = floor
@@ -156,7 +156,7 @@ class RayCaster(Widget):
         end = half_height + half_column        #
         ########################################
 
-        texture = (self.textures if side else self.light_textures)[texture_index - 1]
+        texture = (self.wall_textures if side else self.light_wall_textures)[texture_index - 1]
         tex_h, tex_w, _ = texture.shape
 
         # Exactly where wall was hit by ray as a percentage of its width.

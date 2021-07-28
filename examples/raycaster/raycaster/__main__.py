@@ -11,7 +11,7 @@ from nurses_2.widgets.behaviors import AutoSizeBehavior
 from .animated_texture import AnimatedTexture
 from .load_image import load_image
 from .raycaster import RayCaster
-from .test_camera import MyCamera
+from .camera import Camera
 
 FRAMES_DIR = Path("..") / "frames" / "spinner"
 IMAGES_DIR = Path("..") / "images"
@@ -40,14 +40,11 @@ class AutoSizeCaster(AutoSizeBehavior, RayCaster):
 
 class MyApp(App):
     async def on_start(self):
-        light_anim = AnimatedTexture(path=FRAMES_DIR)
-        light_anim.textures = [(63 + .75 * texture).astype(np.uint8) for texture in light_anim.textures]
-
         raycaster = AutoSizeCaster(
             map=MAP,
-            camera=MyCamera(),
-            textures=[ AnimatedTexture(path=FRAMES_DIR) ],
-            light_textures=[ light_anim ],
+            camera=Camera(),
+            wall_textures=[ AnimatedTexture(path=FRAMES_DIR) ],
+            light_wall_textures=[ AnimatedTexture(path=FRAMES_DIR, lighten=True) ],
             ceiling=load_image(CEILING_PATH),
             floor=load_image(FLOOR_PATH),
         )
