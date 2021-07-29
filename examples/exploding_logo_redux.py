@@ -46,7 +46,7 @@ class PokeParticle(HalfBlockParticle):
         old_middle_row = self.middle_row
         old_middle_column = self.middle_column
 
-        parent_middle_row, parent_middle_column = self.parent.middle
+        parent_middle_row, parent_middle_column = self.parent.center
         self.middle_row = parent_middle_row - HEIGHT // 2
         self.middle_column = parent_middle_column - WIDTH // 2
 
