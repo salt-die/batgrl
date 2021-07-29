@@ -19,15 +19,10 @@ class Widget:
     is_visible : bool, default: True
         If false, widget won't be painted.
     default_char : str, default: " "
-        Default background character.
+        Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     """
-    registry = { }
-
-    def __init_subclass__(cls):
-        Widget.registry[cls.__name__] = cls
-
     def __init__(
         self,
         dim: Size=Size(10, 10),
