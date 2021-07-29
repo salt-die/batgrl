@@ -5,7 +5,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import ColorPair, gradient, BLUE, WHITE, YELLOW
 from nurses_2.widgets import Widget
-from nurses_2.widgets.button_behavior import ButtonBehavior
+from nurses_2.widgets.behaviors import ButtonBehavior
 
 WHITE_ON_BLUE = ColorPair(*WHITE, *BLUE)
 WHITE_ON_YELLOW = ColorPair(*WHITE, *YELLOW)
