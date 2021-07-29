@@ -57,8 +57,8 @@ class Animation(Widget):
             )
 
         kwargs.pop('default_char', None)
-        kwargs.pop('default_color', None)
-        super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
+        kwargs.pop('default_color_pair', None)
+        super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
 
         self.frames = tuple(
             (Image(dim=self.dim, path=path, alpha=alpha, interpolation=interpolation), time)

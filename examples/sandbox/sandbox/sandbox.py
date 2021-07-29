@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from nurses_2.colors import Color, ColorPair
+from nurses_2.colors import Color, color_pair
 from nurses_2.mouse import MouseButton
 from nurses_2.widgets.widget_data_structures import Size
 from nurses_2.widgets.widget import Widget, overlapping_region
@@ -38,7 +38,7 @@ class Sandbox(AutoPositionBehavior, Widget):
             pos=(1, 0),
             anchor=Anchor.CENTER,
             pos_hint=(None, 0.5),
-            default_color=ColorPair(*Air.COLOR, *MENU_BACKGROUND_COLOR),
+            default_color_pair=color_pair(Air.COLOR, MENU_BACKGROUND_COLOR),
         )
         self.add_widgets(self.display, ButtonContainer())
 

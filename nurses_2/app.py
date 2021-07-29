@@ -28,7 +28,7 @@ class App(ABC):
         until it exits.
     default_char : str, default: " "
         Default background character for root widget.
-    default_color : ColorPair, default: BLACK_ON_BLACK
+    default_color_pair : ColorPair, default: BLACK_ON_BLACK
         Default background color pair for root widget.
 
     Notes
@@ -52,10 +52,10 @@ class App(ABC):
     MyApp().run()
     ```
     """
-    def __init__(self, *, exit_key="escape", default_char=" ", default_color=BLACK_ON_BLACK):
+    def __init__(self, *, exit_key="escape", default_char=" ", default_color_pair=BLACK_ON_BLACK):
         self.exit_key = exit_key
         self.default_char = default_char
-        self.default_color = default_color
+        self.default_color_pair = default_color_pair
 
     @abstractmethod
     async def on_start(self):
@@ -93,7 +93,7 @@ class App(ABC):
                 app=self,
                 env_out=env_out,
                 default_char=self.default_char,
-                default_color=self.default_color,
+                default_color_pair=self.default_color_pair,
             )
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click

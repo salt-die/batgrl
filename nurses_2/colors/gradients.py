@@ -4,7 +4,7 @@ Functions for creating color gradients.
 import numpy as np
 
 from .color_data_structures import *
-from .colors import BLACK, WHITE
+from .colors import BLACK, WHITE, color_pair
 
 __all__ = (
     "foreground_rainbow",
@@ -14,7 +14,7 @@ __all__ = (
 
 def _rainbow_gradient(n):
     """
-    Return a rainbow gradient of `n` (r, g, b)-tuples.
+    Return a rainbow gradient of `n` `Color`s.
     """
     TAU = 2 * np.pi
     OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
@@ -25,30 +25,30 @@ def _rainbow_gradient(n):
             *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
         )
 
-def foreground_rainbow(ncolors=20, background_color=BLACK):
+def foreground_rainbow(ncolors=20, background: Color=BLACK):
     """
-    A rainbow gradient of `ncolors` ColorPairs with a given background color.
-    """
-    return [
-        ColorPair(*foreground_color, *background_color)
-        for foreground_color in _rainbow_gradient(ncolors)
-    ]
-
-def background_rainbow(ncolors=20, foreground_color=WHITE):
-    """
-    Return a rainbow gradient of `ncolors` ColorPairs with a given foreground color.
+    A rainbow gradient of `ncolors` `color_pair`s with a given background color.
     """
     return [
-        ColorPair(*foreground_color, *background_color)
-        for background_color in _rainbow_gradient(ncolors)
+        color_pair(foreground, background)
+        for foreground in _rainbow_gradient(ncolors)
     ]
 
-def lerp(start_pair: ColorPair, end_pair: ColorPair, percent):
+def background_rainbow(ncolors=20, foreground: Color=WHITE):
+    """
+    Return a rainbow gradient of `ncolors` `color_pair`s with a given foreground color.
+    """
+    return [
+        color_pair(foreground, background)
+        for background in _rainbow_gradient(ncolors)
+    ]
+
+def lerp(start_pair: ColorPair, end_pair: ColorPair, proportion):
     """
     Linear interpolation between `start_pair` and `end_pair`.
     """
     for a, b in zip(start_pair, end_pair):
-        yield round((1 - percent) * a + percent * b)
+        yield round((1 - proportion) * a + proportion * b)
 
 def gradient(ncolors, start_pair: ColorPair, end_pair: ColorPair):
     """
@@ -59,9 +59,9 @@ def gradient(ncolors, start_pair: ColorPair, end_pair: ColorPair):
     grad = [ start_pair ]
 
     for i in range(ncolors - 2):
-        percent = (i + 1) / (ncolors - 1)
+        proportion = (i + 1) / (ncolors - 1)
         grad.append(
-            ColorPair(*lerp(start_pair, end_pair, percent))
+            ColorPair(*lerp(start_pair, end_pair, proportion))
         )
 
     grad.append(end_pair)

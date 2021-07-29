@@ -20,7 +20,7 @@ class Widget:
         If false, widget won't be painted.
     default_char : str, default: " "
         Default background character.
-    default_color : ColorPair, default: WHITE_ON_BLACK
+    default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     """
     registry = { }
@@ -36,7 +36,7 @@ class Widget:
         is_transparent=False,
         is_visible=True,
         default_char=" ",
-        default_color=WHITE_ON_BLACK,
+        default_color_pair=WHITE_ON_BLACK,
     ):
         self._dim = dim
         self.top, self.left = pos
@@ -47,10 +47,10 @@ class Widget:
         self.children = [ ]
 
         self.canvas = np.full(dim, default_char, dtype=object)
-        self.colors = np.full((*dim, 6), default_color, dtype=np.uint8)
+        self.colors = np.full((*dim, 6), default_color_pair, dtype=np.uint8)
 
         self.default_char = default_char
-        self.default_color = default_color
+        self.default_color_pair = default_color_pair
 
     def resize(self, dim: Size):
         """
@@ -68,7 +68,7 @@ class Widget:
         copy_w = min(old_w, w)
 
         self.canvas = np.full(dim, self.default_char, dtype=object)
-        self.colors = np.full((h, w, 6), self.default_color, dtype=np.uint8)
+        self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
         self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]

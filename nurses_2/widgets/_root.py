@@ -9,11 +9,11 @@ class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, app, env_out, default_char, default_color: Color):
+    def __init__(self, app, env_out, default_char, default_color_pair: Color):
         self._app = app
         self.env_out = env_out
         self.default_char = default_char
-        self.default_color = default_color
+        self.default_color_pair = default_color_pair
         self.children = [ ]
 
         self.resize(env_out.get_size())
@@ -28,7 +28,7 @@ class _Root(Widget):
         self._dim = dim
 
         self._last_canvas = np.full(dim, self.default_char, dtype=object)
-        self._last_colors = np.full((*dim, 6), self.default_color, dtype=np.uint8)
+        self._last_colors = np.full((*dim, 6), self.default_color_pair, dtype=np.uint8)
 
         self.canvas = np.full_like(self._last_canvas, "><")  # "><" will guarantee an entire screen redraw.
         self.colors = self._last_colors.copy()
@@ -101,7 +101,7 @@ class _Root(Widget):
 
         # Erase canvas:
         canvas[:] = self.default_char
-        colors[:, :] = self.default_color
+        colors[:, :] = self.default_color_pair
 
         overlap = overlapping_region
         height, width = canvas.shape

@@ -1,4 +1,4 @@
-from nurses_2.colors import ColorPair, Color
+from nurses_2.colors import color_pair, Color, BLACK
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors import ButtonBehavior, AutoPositionBehavior
 
@@ -23,16 +23,16 @@ class ElementButton(ButtonBehavior, Widget):
         super().__init__(
             dim=(2, 4),
             pos=pos,
-            default_color=ColorPair(0, 0, 0, *element.COLOR),
+            default_color_pair=color_pair(BLACK, element.COLOR),
             always_release=True,
         )
-        self.down_color = ColorPair(*((255 + c) // 2 for c in self.default_color))
+        self.down_color = color_pair(BLACK, (127 + c // 2 for c in element.COLOR))
 
     def update_down(self):
         self.colors[:, :] = self.down_color
 
     def update_normal(self):
-        self.colors[:, :] = self.default_color
+        self.colors[:, :] = self.default_color_pair
 
     def on_release(self):
         element = self.element
@@ -51,7 +51,7 @@ class ButtonContainer(Widget):
 
         super().__init__(
             dim=(3 * nelements + 1, 8),
-            default_color=ColorPair(0, 0, 0, *MENU_BACKGROUND_COLOR),
+            default_color_pair=color_pair(BLACK, MENU_BACKGROUND_COLOR),
         )
 
         for i, element in enumerate(Element.all_elements.values()):

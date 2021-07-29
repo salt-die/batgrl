@@ -23,10 +23,10 @@ class VideoPlayer(Widget):
     """
     def __init__(self, *args, source: Union[Path, str, int], **kwargs):
         kwargs.pop('default_char', None)
-        kwargs.pop('default_color', None)
+        kwargs.pop('default_color_pair', None)
         kwargs.pop('is_transparent', None)
 
-        super().__init__(*args, default_char="▀", default_color=BLACK_ON_BLACK, **kwargs)
+        super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
 
         self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
@@ -66,7 +66,7 @@ class VideoPlayer(Widget):
             self._resource = None
             self._current_frame = None
             self.canvas[:] = self.default_char
-            self.colors[:, :] = self.default_color
+            self.colors[:, :] = self.default_color_pair
 
     def resize(self, dim):
         super().resize(dim)

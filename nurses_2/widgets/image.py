@@ -71,12 +71,12 @@ class Image(Widget):
         is_transparent=True,
         **kwargs
     ):
-        kwargs.pop('default_color', None)
+        kwargs.pop('default_color_pair', None)
 
         super().__init__(
             *args,
             default_char=default_char,
-            default_color=BLACK_ON_BLACK,
+            default_color_pair=BLACK_ON_BLACK,
             is_transparent=is_transparent,
             **kwargs,
         )

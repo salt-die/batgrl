@@ -3,12 +3,12 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import ColorPair, gradient, BLUE, WHITE, YELLOW
+from nurses_2.colors import color_pair, gradient, BLUE, WHITE, YELLOW
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors import ButtonBehavior
 
-WHITE_ON_BLUE = ColorPair(*WHITE, *BLUE)
-WHITE_ON_YELLOW = ColorPair(*WHITE, *YELLOW)
+WHITE_ON_BLUE = color_pair(WHITE, BLUE)
+WHITE_ON_YELLOW = color_pair(WHITE, YELLOW)
 
 class MyButton(ButtonBehavior, Widget):
     GRADIENT = (

@@ -12,5 +12,11 @@ YELLOW = Color(255, 255, 0)
 CYAN = Color(0, 255, 255)
 MAGENTA = Color(255, 0, 255)
 
-WHITE_ON_BLACK = ColorPair(*WHITE, *BLACK)
-BLACK_ON_BLACK = ColorPair(0, 0, 0, 0, 0, 0)
+def color_pair(foreground: Color, background: Color) -> ColorPair:
+    """
+    Return a `ColorPair` from two `Color`s.
+    """
+    return ColorPair(*foreground, *background)
+
+WHITE_ON_BLACK = color_pair(WHITE, BLACK)
+BLACK_ON_BLACK = color_pair(BLACK, BLACK)
