@@ -151,7 +151,7 @@ class Widget:
         )
 
     @property
-    def middle(self):
+    def center(self):
         return Point(self.height // 2, self.width // 2)
 
     @property

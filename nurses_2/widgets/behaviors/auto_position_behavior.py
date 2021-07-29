@@ -77,7 +77,7 @@ class AutoPositionBehavior:
         elif anchor == Anchor.BOTTOM_RIGHT:
             offset_top, offset_left = self.bottom, self.right
         elif anchor == Anchor.CENTER:
-            offset_top, offset_left = self.middle
+            offset_top, offset_left = self.center
 
         h, w = self.parent.dim
         top_hint, left_hint = self.pos_hint
