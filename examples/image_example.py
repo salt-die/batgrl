@@ -2,8 +2,7 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.behaviors import AutoPositionBehavior
-from nurses_2.widgets.behaviors import AutoSizeBehavior
+from nurses_2.widgets.behaviors import AutoPositionBehavior, AutoSizeBehavior
 
 IMAGE_DIR = Path('images')
 PATH_TO_LOGO_FLAT = IMAGE_DIR / 'logo_solo_flat_256.png'
