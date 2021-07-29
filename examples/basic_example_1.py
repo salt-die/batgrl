@@ -25,7 +25,7 @@ class BouncingWidget(Widget):
         palette,
         coord_view,
         collides_view,
-        ):
+    ):
         self.coord_view = coord_view
         self.collides_view = collides_view
 
