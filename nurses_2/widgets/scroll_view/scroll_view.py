@@ -1,5 +1,9 @@
-from .widget import Widget, overlapping_region
-from ..mouse.mouse_event import MouseEventType
+from typing import Optional
+
+from ...colors import Color
+from ...mouse.mouse_event import MouseEventType
+from ..widget import Widget, overlapping_region
+from .scrollbar import HorizontalBar, VerticalBar, ScrollBarSettings
 
 def clamp(value, min=0.0, max=1.0):
     if value < min:
@@ -24,18 +28,25 @@ class ScrollView(Widget):
     ValueError
         If `add_widget` is called while already containing a child.
     """
+    DEFAULT_SCROLLBAR_SETTINGS = ScrollBarSettings(
+        bar_color=Color(66, 50, 168),
+        indicator_color=Color(234, 234, 105),
+        indicator_width=4,
+    )
 
     def __init__(
         self,
         *args,
         allow_vertical_scroll=True,
         allow_horizontal_scroll=True,
-        is_draggable=True,
         show_vertical_bar=True,
         show_horizontal_bar=True,
+        is_draggable=True,
         scrollwheel_enabled=True,
         vertical_proportion=0.0,
         horizontal_proportion=0.0,
+        vertical_scrollbar: Optional[ScrollBarSettings]=None,
+        horizontal_scrollbar: Optional[ScrollBarSettings]=None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -49,6 +60,20 @@ class ScrollView(Widget):
         self.horizontal_proportion = horizontal_proportion
         self._view = None
         self._grabbed = False
+
+        # Setup scrollbars:
+        self.children = [
+            VerticalBar(
+                scrollbar_settings=vertical_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
+            ),
+            HorizontalBar(
+                scrollbar_settings=horizontal_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
+            ),
+        ]
+
+        for child in self.children:
+            child.parent = self
+            child.update_geometry()
 
     @property
     def vertical_proportion(self):
@@ -72,9 +97,9 @@ class ScrollView(Widget):
         Return difference between child height and scrollview height.
         """
         if self._view is None:
-            return None
+            return 0
 
-        return self._view.height - self.height
+        return self._view.height - self.height + self.show_horizontal_bar
 
     @property
     def total_horizontal_distance(self):
@@ -82,9 +107,9 @@ class ScrollView(Widget):
         Return difference between child width and scrollview width.
         """
         if self._view is None:
-            return None
+            return 0
 
-        return self._view.width - self.width
+        return self._view.width - self.width + self.show_vertical_bar * 2
 
     @property
     def view_top(self):
@@ -109,15 +134,14 @@ class ScrollView(Widget):
         return -round(self.horizontal_proportion * total_horizontal_distance)
 
     def add_widget(self, widget):
-        if self.children:
+        if self._view is not None:
             raise ValueError("ScrollView already has child.")
 
         self._view = widget
 
-        super().add_widget(widget)
-
     def remove_widget(self, widget):
-        super().remove_widget(widget)
+        if widget is not self._view:
+            raise ValueError(f"{widget} not in ScrollView")
 
         self._view = None
 
@@ -138,13 +162,25 @@ class ScrollView(Widget):
             canvas_view[:] = self.canvas[index_rect]
             colors_view[:] = self.colors[index_rect]
 
+        overlap = overlapping_region
+
         if view := self._view:
             view.top = self.view_top
             view.left = self.view_left
 
-            if region := overlapping_region(rect, view):  # Can this condition can fail?
+            if region := overlap(rect, view):  # Can this condition can fail?
                 dest_slice, view_rect = region
                 view.render(canvas_view[dest_slice], colors_view[dest_slice], view_rect)
+
+        vertical_bar, horizontal_bar = self.children
+        if self.show_vertical_bar and (region := overlap(rect, vertical_bar)):
+            dest_slice, vertical_bar_rect = region
+            vertical_bar.render(canvas_view[dest_slice], colors_view[dest_slice], vertical_bar_rect)
+
+        if self.show_horizontal_bar and (region := overlap(rect, horizontal_bar)):
+            dest_slice, horizontal_bar_rect = region
+            horizontal_bar.render(canvas_view[dest_slice], colors_view[dest_slice], horizontal_bar_rect)
+
 
     def on_press(self, key_press):
         if key_press.key == 'up':
