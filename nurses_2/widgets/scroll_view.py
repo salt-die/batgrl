@@ -46,6 +46,27 @@ class ScrollView(Widget):
         self.scrollwheel_enabled = scrollwheel_enabled
         self.vertical_proportion = clamp(vertical_proportion)
         self.horizontal_proportion = clamp(horizontal_proportion)
+        self._view = None
+
+    @property
+    def total_vertical_distance(self):
+        """
+        Return difference between child height and scrollview height.
+        """
+        if self._view is None:
+            return None
+
+        return self._view.height - self.height
+
+    @property
+    def total_horizontal_distance(self):
+        """
+        Return difference between child width and scrollview width.
+        """
+        if self._view is None:
+            return None
+
+        return self._view.width - self.width
 
     def add_widget(self, widget):
         if self.children:
@@ -80,40 +101,62 @@ class ScrollView(Widget):
         overlap = overlapping_region
 
         if view := self._view:
-            view.top = -round(self.vertical_proportion * (view.height - self.height))
-            view.left = -round(self.horizontal_proportion * (view.width - self.width))
+            total_vertical_distance = self.total_vertical_distance
+            if total_vertical_distance <= 0:
+                view.top = 0
+            else:
+                view.top = -round(self.vertical_proportion * total_vertical_distance)
+
+            total_horizontal_distance = self.total_horizontal_distance
+            if total_horizontal_distance <= 0:
+                view.left = 0
+            else:
+                view.left = -round(self.horizontal_proportion * total_horizontal_distance)
 
             if region := overlap(rect, view):
-                dest_slice, child_rect = region
-                view.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
+                dest_slice, view_rect = region
+                view.render(canvas_view[dest_slice], colors_view[dest_slice], view_rect)
 
     def on_press(self, key_press):
+        if key_press.key == 'up':
+            self._move_up()
+        elif key_press.key == 'down':
+            self._move_down()
+        elif key_press.key == 'left':
+            self._move_left()
+        elif key_press.key == 'right':
+            self._move_right()
+        else:
+            return
+
+        return True
+
+    def _move_left(self, n=1):
         if not (view := self._view):
             return
 
-        total_scroll_distance = view.height - self.height
+        if self.scroll_horizontal:
+            total_horizontal_distance = self.total_horizontal_distance
 
-        if key_press.key == 'up':
-            if self.scroll_vertical:
-                self.vertical_proportion = clamp(
-                    (round(self.vertical_proportion * total_scroll_distance) - 1)
-                    / total_scroll_distance
-                )
-        elif key_press.key == 'down':
-            if self.scroll_vertical:
-                self.vertical_proportion = clamp(
-                    (round(self.vertical_proportion * total_scroll_distance) + 1)
-                    / total_scroll_distance
-                )
-        elif key_press.key == 'left':
-            if self.scroll_horizontal:
-                self.horizontal_proportion = clamp(
-                    (round(self.horizontal_proportion * total_scroll_distance) - 1)
-                    / total_scroll_distance
-                )
-        elif key_press.key == 'right':
-            if self.scroll_horizontal:
-                self.horizontal_proportion = clamp(
-                    (round(self.horizontal_proportion * total_scroll_distance) + 1)
-                    / total_scroll_distance
-                )
+            self.horizontal_proportion = clamp(
+                (round(self.horizontal_proportion * total_horizontal_distance) - n)
+                / total_horizontal_distance
+            )
+
+    def _move_right(self, n=1):
+        self._move_left(-n)
+
+    def _move_up(self, n=1):
+        if not (view := self._view):
+            return
+
+        if self.scroll_vertical:
+            total_vertical_distance = self.total_vertical_distance
+
+            self.vertical_proportion = clamp(
+                (round(self.vertical_proportion * total_vertical_distance) - n)
+                / total_vertical_distance
+            )
+
+    def _move_down(self, n=1):
+        self._move_up(-n)
