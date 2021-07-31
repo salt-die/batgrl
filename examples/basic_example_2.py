@@ -20,6 +20,7 @@ RIGHT_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_RED, BLACK_ON_RED)
 class AutoPositionScrollView(AutoPositionBehavior, ScrollView):
     pass
 
+
 class MyApp(App):
     async def on_start(self):
         big_widget = Widget(dim=BIG_WIDGET_SIZE)
