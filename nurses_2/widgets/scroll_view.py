@@ -28,22 +28,22 @@ class ScrollView(Widget):
     def __init__(
         self,
         *args,
-        scroll_vertical=True,
-        scroll_horizontal=True,
-        draggable=True,
-        vertical_scrollbar=True,
-        horizontal_scrollbar=True,
+        allow_vertical_scroll=True,
+        allow_horizontal_scroll=True,
+        is_draggable=True,
+        show_vertical_bar=True,
+        show_horizontal_bar=True,
         scrollwheel_enabled=True,
         vertical_proportion=0.0,
         horizontal_proportion=0.0,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.scroll_vertical = scroll_vertical
-        self.scroll_horizontal = scroll_horizontal
-        self.draggable = draggable
-        self.vertical_scrollbar = vertical_scrollbar
-        self.horizontal_scrollbar = horizontal_scrollbar
+        self.allow_vertical_scroll = allow_vertical_scroll
+        self.allow_horizontal_scroll = allow_horizontal_scroll
+        self.is_draggable = is_draggable
+        self.show_vertical_bar = show_vertical_bar
+        self.show_horizontal_bar = show_horizontal_bar
         self.scrollwheel_enabled = scrollwheel_enabled
         self.vertical_proportion = vertical_proportion
         self.horizontal_proportion = horizontal_proportion
@@ -175,7 +175,7 @@ class ScrollView(Widget):
                 self._scroll_left(x - last_x)
 
         else:
-            if self.draggable and mouse_event.event_type == MouseEventType.MOUSE_DOWN:
+            if self.is_draggable and mouse_event.event_type == MouseEventType.MOUSE_DOWN:
                 self._grabbed =  True
                 self._last_touch = mouse_event.position
                 # TODO: Dispatch this touch and ungrab after a timeout if no movement.
@@ -189,14 +189,14 @@ class ScrollView(Widget):
         return True
 
     def _scroll_left(self, n=1):
-        if self._view is not None and self.scroll_horizontal:
+        if self._view is not None and self.allow_horizontal_scroll:
             self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance)
 
     def _scroll_right(self, n=1):
         self._scroll_left(-n)
 
     def _scroll_up(self, n=1):
-        if self._view is not None and self.scroll_vertical:
+        if self._view is not None and self.allow_vertical_scroll:
             self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance)
 
     def _scroll_down(self, n=1):
