@@ -1,4 +1,5 @@
 from .widget import Widget, overlapping_region
+from ..mouse.mouse_event import MouseEventType
 
 def clamp(value, min=0.0, max=1.0):
     if value < min:
@@ -47,6 +48,7 @@ class ScrollView(Widget):
         self.vertical_proportion = vertical_proportion
         self.horizontal_proportion = horizontal_proportion
         self._view = None
+        self._grabbed = False
 
     @property
     def vertical_proportion(self):
@@ -154,7 +156,35 @@ class ScrollView(Widget):
         elif key_press.key == 'right':
             self._scroll_right()
         else:
-            return
+            return super().on_press(key_press)
+
+        return True
+
+    def on_click(self, mouse_event):
+        if not (self.collides_coords(mouse_event.position) or self._grabbed):
+            return super().on_click(mouse_event)
+
+        if self._grabbed:
+            if mouse_event.event_type == MouseEventType.MOUSE_UP:
+                self._grabbed = False
+            else:
+                last_y, last_x = self._last_touch
+                y, x = self._last_touch = mouse_event.position
+
+                self._scroll_up(y - last_y)
+                self._scroll_left(x - last_x)
+
+        else:
+            if self.draggable and mouse_event.event_type == MouseEventType.MOUSE_DOWN:
+                self._grabbed =  True
+                self._last_touch = mouse_event.position
+                # TODO: Dispatch this touch and ungrab after a timeout if no movement.
+            elif mouse_event.event_type == MouseEventType.SCROLL_UP:
+                self._scroll_up()
+            elif mouse_event.event_type == MouseEventType.SCROLL_DOWN:
+                self._scroll_down()
+            else:
+                return super().on_click(mouse_event)
 
         return True
 

@@ -1,7 +1,8 @@
 from nurses_2.app import App
 from nurses_2.colors import BLUE, BLACK, RED, WHITE, gradient, color_pair
-from nurses_2.widgets.scroll_view import ScrollView
 from nurses_2.widgets import Widget
+from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor
+from nurses_2.widgets.scroll_view import ScrollView
 from nurses_2.widgets.widget_data_structures import Size
 
 N = 20
@@ -16,6 +17,9 @@ LEFT_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_BLUE, BLACK_ON_BLUE)
 RIGHT_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_RED, BLACK_ON_RED)
 
 
+class AutoPositionScrollView(AutoPositionBehavior, ScrollView):
+    pass
+
 class MyApp(App):
     async def on_start(self):
         big_widget = Widget(dim=BIG_WIDGET_SIZE)
@@ -24,7 +28,7 @@ class MyApp(App):
             big_widget.add_text(" ".join(f'({i:<2}, {x:<2})' for x in range(N)), row=i)
             big_widget.colors[i] = gradient(BIG_WIDGET_SIZE.width, LEFT_GRADIENT[i], RIGHT_GRADIENT[i])
 
-        scroll_view = ScrollView(dim=(10, 30))
+        scroll_view = AutoPositionScrollView(dim=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
         scroll_view.add_widget(big_widget)
 
         self.root.add_widget(scroll_view)
