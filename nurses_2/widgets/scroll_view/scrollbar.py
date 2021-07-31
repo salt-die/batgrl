@@ -9,8 +9,10 @@ class ScrollBarSettings(NamedTuple):
     bar_color: Color
     indicator_color: Color
     indicator_width: int  # Should be even.
+    # TODO: indicator_active_color, bar_active_color
 
 
+# TODO: Widget-fy the indicator. (And then we can remove render methods.)
 class VerticalBar(Widget):
     def __init__(self, *args, scrollbar_settings: ScrollBarSettings, **kwargs):
         self.bar_color, self.indicator_color, indicator_width = scrollbar_settings
