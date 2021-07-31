@@ -44,9 +44,25 @@ class ScrollView(Widget):
         self.vertical_scrollbar = vertical_scrollbar
         self.horizontal_scrollbar = horizontal_scrollbar
         self.scrollwheel_enabled = scrollwheel_enabled
-        self.vertical_proportion = clamp(vertical_proportion)
-        self.horizontal_proportion = clamp(horizontal_proportion)
+        self.vertical_proportion = vertical_proportion
+        self.horizontal_proportion = horizontal_proportion
         self._view = None
+
+    @property
+    def vertical_proportion(self):
+        return self._vertical_proportion
+
+    @vertical_proportion.setter
+    def vertical_proportion(self, value):
+        self._vertical_proportion = clamp(value)
+
+    @property
+    def horizontal_proportion(self):
+        return self._horizontal_proportion
+
+    @horizontal_proportion.setter
+    def horizontal_proportion(self, value):
+        self._horizontal_proportion = clamp(value)
 
     @property
     def total_vertical_distance(self):
@@ -67,6 +83,28 @@ class ScrollView(Widget):
             return None
 
         return self._view.width - self.width
+
+    @property
+    def view_top(self):
+        """
+        The current top-coordinate of child due to `vertical_proportion`.
+        """
+        total_vertical_distance = self.total_vertical_distance
+        if total_vertical_distance <= 0:
+            return 0
+
+        return -round(self.vertical_proportion * total_vertical_distance)
+
+    @property
+    def view_left(self):
+        """
+        The current left-coordinate of child due to `horizontal_proportion`.
+        """
+        total_horizontal_distance = self.total_horizontal_distance
+        if total_horizontal_distance <= 0:
+            return 0
+
+        return -round(self.horizontal_proportion * total_horizontal_distance)
 
     def add_widget(self, widget):
         if self.children:
@@ -98,22 +136,11 @@ class ScrollView(Widget):
             canvas_view[:] = self.canvas[index_rect]
             colors_view[:] = self.colors[index_rect]
 
-        overlap = overlapping_region
-
         if view := self._view:
-            total_vertical_distance = self.total_vertical_distance
-            if total_vertical_distance <= 0:
-                view.top = 0
-            else:
-                view.top = -round(self.vertical_proportion * total_vertical_distance)
+            view.top = self.view_top
+            view.left = self.view_left
 
-            total_horizontal_distance = self.total_horizontal_distance
-            if total_horizontal_distance <= 0:
-                view.left = 0
-            else:
-                view.left = -round(self.horizontal_proportion * total_horizontal_distance)
-
-            if region := overlap(rect, view):
+            if region := overlapping_region(rect, view):  # Can this condition can fail?
                 dest_slice, view_rect = region
                 view.render(canvas_view[dest_slice], colors_view[dest_slice], view_rect)
 
@@ -132,31 +159,15 @@ class ScrollView(Widget):
         return True
 
     def _move_left(self, n=1):
-        if not (view := self._view):
-            return
-
-        if self.scroll_horizontal:
-            total_horizontal_distance = self.total_horizontal_distance
-
-            self.horizontal_proportion = clamp(
-                (round(self.horizontal_proportion * total_horizontal_distance) - n)
-                / total_horizontal_distance
-            )
+        if self._view is not None and self.scroll_horizontal:
+            self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance)
 
     def _move_right(self, n=1):
         self._move_left(-n)
 
     def _move_up(self, n=1):
-        if not (view := self._view):
-            return
-
-        if self.scroll_vertical:
-            total_vertical_distance = self.total_vertical_distance
-
-            self.vertical_proportion = clamp(
-                (round(self.vertical_proportion * total_vertical_distance) - n)
-                / total_vertical_distance
-            )
+        if self._view is not None and self.scroll_vertical:
+            self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance)
 
     def _move_down(self, n=1):
         self._move_up(-n)
