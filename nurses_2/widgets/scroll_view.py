@@ -146,28 +146,28 @@ class ScrollView(Widget):
 
     def on_press(self, key_press):
         if key_press.key == 'up':
-            self._move_up()
+            self._scroll_up()
         elif key_press.key == 'down':
-            self._move_down()
+            self._scroll_down()
         elif key_press.key == 'left':
-            self._move_left()
+            self._scroll_left()
         elif key_press.key == 'right':
-            self._move_right()
+            self._scroll_right()
         else:
             return
 
         return True
 
-    def _move_left(self, n=1):
+    def _scroll_left(self, n=1):
         if self._view is not None and self.scroll_horizontal:
             self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance)
 
-    def _move_right(self, n=1):
-        self._move_left(-n)
+    def _scroll_right(self, n=1):
+        self._scroll_left(-n)
 
-    def _move_up(self, n=1):
+    def _scroll_up(self, n=1):
         if self._view is not None and self.scroll_vertical:
             self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance)
 
-    def _move_down(self, n=1):
-        self._move_up(-n)
+    def _scroll_down(self, n=1):
+        self._scroll_up(-n)
