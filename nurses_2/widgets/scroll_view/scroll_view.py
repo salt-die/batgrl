@@ -2,6 +2,7 @@ from typing import Optional
 
 from ...colors import Color
 from ...mouse.mouse_event import MouseEventType
+from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
 from .scrollbar import HorizontalBar, VerticalBar, ScrollBarSettings
 
@@ -13,7 +14,7 @@ def clamp(value, min=0.0, max=1.0):
     return value
 
 
-class ScrollView(Widget):
+class ScrollView(GrabbableBehavior, Widget):
     """
     A scrollable view widget.
 
@@ -41,7 +42,7 @@ class ScrollView(Widget):
         allow_horizontal_scroll=True,
         show_vertical_bar=True,
         show_horizontal_bar=True,
-        is_draggable=True,
+        is_grabbable=True,
         scrollwheel_enabled=True,
         vertical_proportion=0.0,
         horizontal_proportion=0.0,
@@ -52,7 +53,7 @@ class ScrollView(Widget):
         super().__init__(*args, **kwargs)
         self.allow_vertical_scroll = allow_vertical_scroll
         self.allow_horizontal_scroll = allow_horizontal_scroll
-        self.is_draggable = is_draggable
+        self.is_grabbable = is_grabbable
         self.show_vertical_bar = show_vertical_bar
         self.show_horizontal_bar = show_horizontal_bar
         self.scrollwheel_enabled = scrollwheel_enabled
@@ -64,10 +65,10 @@ class ScrollView(Widget):
         # Setup scrollbars:
         self.children = [
             VerticalBar(
-                scrollbar_settings=vertical_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
+                settings=vertical_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
             ),
             HorizontalBar(
-                scrollbar_settings=horizontal_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
+                settings=horizontal_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
             ),
         ]
 
@@ -181,7 +182,6 @@ class ScrollView(Widget):
             dest_slice, horizontal_bar_rect = region
             horizontal_bar.render(canvas_view[dest_slice], colors_view[dest_slice], horizontal_bar_rect)
 
-
     def on_press(self, key_press):
         if key_press.key == 'up':
             self._scroll_up()
@@ -196,31 +196,24 @@ class ScrollView(Widget):
 
         return True
 
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+        self._last_touch = mouse_event.position
+
+    def grab_update(self, mouse_event):
+        last_y, last_x = self._last_touch
+        y, x = self._last_touch = mouse_event.position
+
+        self._scroll_up(y - last_y)
+        self._scroll_left(x - last_x)
+
     def on_click(self, mouse_event):
-        if not (self.collides_coords(mouse_event.position) or self._grabbed):
-            return super().on_click(mouse_event)
-
-        if self._grabbed:
-            if mouse_event.event_type == MouseEventType.MOUSE_UP:
-                self._grabbed = False
-            else:
-                last_y, last_x = self._last_touch
-                y, x = self._last_touch = mouse_event.position
-
-                self._scroll_up(y - last_y)
-                self._scroll_left(x - last_x)
-
+        if mouse_event.event_type == MouseEventType.SCROLL_UP:
+            self._scroll_up()
+        elif mouse_event.event_type == MouseEventType.SCROLL_DOWN:
+            self._scroll_down()
         else:
-            if self.is_draggable and mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-                self._grabbed =  True
-                self._last_touch = mouse_event.position
-                # TODO: Dispatch this touch and ungrab after a timeout if no movement.
-            elif mouse_event.event_type == MouseEventType.SCROLL_UP:
-                self._scroll_up()
-            elif mouse_event.event_type == MouseEventType.SCROLL_DOWN:
-                self._scroll_down()
-            else:
-                return super().on_click(mouse_event)
+            return super().on_click(mouse_event)
 
         return True
 

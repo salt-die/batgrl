@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 from ...colors import Color
 from ...mouse.mouse_event import MouseEventType
+from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget
 
 
@@ -13,103 +14,74 @@ class ScrollBarSettings(NamedTuple):
 
 
 # TODO: Widget-fy the indicator. (And then we can remove render methods.)
-class VerticalBar(Widget):
-    def __init__(self, *args, scrollbar_settings: ScrollBarSettings, **kwargs):
-        self.bar_color, self.indicator_color, indicator_width = scrollbar_settings
-        self.indicator_width = indicator_width >> 1
-        self._grabbed = False
-
+class VerticalBar(GrabbableBehavior, Widget):
+    def __init__(self, *args, settings: ScrollBarSettings, **kwargs):
+        self.settings = settings
         super().__init__(*args, **kwargs)
 
     def update_geometry(self):
-        parent = self.parent
-        h, w = parent.dim
+        h, w = self.parent.dim
 
-        self.top = 0
         self.left = w - 2
-
         self.resize((h, 2))
 
         super().update_geometry()
 
-    def render(self, canvas_view, colors_view, rect):
-        indicator_width = self.indicator_width
-        parent = self.parent
-        fill_width = self.height - indicator_width - parent.show_horizontal_bar
-        start_fill = round(parent.vertical_proportion * fill_width)
+    @property
+    def fill_width(self):
+        return self.height - self.settings.indicator_width // 2 - self.parent.show_horizontal_bar
 
-        self.colors[:, :, 3:] = self.bar_color
-        self.colors[start_fill: start_fill + indicator_width, :, 3:] = self.indicator_color
+    def render(self, canvas_view, colors_view, rect):
+        start_fill = round(self.parent.vertical_proportion * self.fill_width)
+        bar_color, indicator_color, indicator_width = self.settings
+
+        self.colors[:, :, 3:] = bar_color
+        self.colors[start_fill: start_fill + indicator_width // 2, :, 3:] = indicator_color
 
         super().render(canvas_view, colors_view, rect)
 
-    def on_click(self, mouse_event):
-        if not (self.collides_coords(mouse_event.position) or self._grabbed):
-            return super().on_click(mouse_event)
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+        self._last_y = mouse_event.position[0]
 
-        if self._grabbed:
-            if mouse_event.event_type == MouseEventType.MOUSE_UP:
-                self._grabbed = False
-            else:
-                dy = mouse_event.position[0] - self._last_y
-                self._last_y = mouse_event.position[0]
-
-                self.parent.vertical_proportion += dy / (self.height - self.indicator_width - self.parent.show_horizontal_bar)
-        else:
-            if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-                self._grabbed =  True
-                self._last_y = mouse_event.position[0]
-            else:
-                return super().on_click(mouse_event)
-
-        return True
+    def grab_update(self, mouse_event):
+        dy = mouse_event.position[0] - self._last_y
+        self._last_y = mouse_event.position[0]
+        self.parent.vertical_proportion += dy / self.fill_width
 
 
-class HorizontalBar(Widget):
-    def __init__(self, *args, scrollbar_settings: ScrollBarSettings, **kwargs):
-        self.bar_color, self.indicator_color, self.indicator_width = scrollbar_settings
-        self._grabbed = False
-
-        super().__init__(*args, **kwargs)
+class HorizontalBar(GrabbableBehavior, Widget):
+    def __init__(self, settings: ScrollBarSettings, **kwargs):
+        self.settings = settings
+        super().__init__(**kwargs)
 
     def update_geometry(self):
-        parent = self.parent
-        h, w = parent.dim
+        h, w = self.parent.dim
 
         self.top = h - 1
-        self.left = 0
-
-        self.resize((1, w - parent.show_vertical_bar * 2))
+        self.resize((1, w))
 
         super().update_geometry()
 
-    def render(self, canvas_view, colors_view, rect):
-        indicator_width = self.indicator_width
-        fill_width = self.width - indicator_width
-        start_fill = round(self.parent.horizontal_proportion * fill_width)
+    @property
+    def fill_width(self):
+        return self.width - self.settings.indicator_width - self.parent.show_vertical_bar * 2
 
-        self.colors[0, :, 3:] = self.bar_color
-        self.colors[0, start_fill: start_fill + indicator_width, 3:] = self.indicator_color
+    def render(self, canvas_view, colors_view, rect):
+        start_fill = round(self.parent.horizontal_proportion * self.fill_width)
+        bar_color, indicator_color, indicator_width = self.settings
+
+        self.colors[0, :, 3:] = bar_color
+        self.colors[0, start_fill: start_fill + indicator_width, 3:] = indicator_color
 
         super().render(canvas_view, colors_view, rect)
 
-    def on_click(self, mouse_event):
-        if not (self.collides_coords(mouse_event.position) or self._grabbed):
-            return super().on_click(mouse_event)
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+        self._last_x = mouse_event.position[1]
 
-        if self._grabbed:
-            if mouse_event.event_type == MouseEventType.MOUSE_UP:
-                self._grabbed = False
-            else:
-                dx = mouse_event.position[1] - self._last_x
-                self._last_x = mouse_event.position[1]
+    def grab_update(self, mouse_event):
+        dx = mouse_event.position[1] - self._last_x
+        self._last_x = mouse_event.position[1]
 
-                self.parent.horizontal_proportion += dx / (self.width - self.indicator_width)
-        else:
-            if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-                self._grabbed =  True
-                self._last_x = mouse_event.position[1]
-            else:
-                return super().on_click(mouse_event)
-
-        return True
+        self.parent.horizontal_proportion += dx / self.fill_width
