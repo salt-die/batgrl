@@ -1,7 +1,6 @@
 from typing import NamedTuple
 
 from ...colors import BLACK, Color, color_pair
-from ...mouse.mouse_event import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget
 
