@@ -32,7 +32,7 @@ class ScrollView(GrabbableBehavior, Widget):
     DEFAULT_SCROLLBAR_SETTINGS = ScrollBarSettings(
         bar_color=Color(66, 50, 168),
         indicator_color=Color(234, 234, 105),
-        indicator_width=4,
+        indicator_width=2,
     )
 
     def __init__(

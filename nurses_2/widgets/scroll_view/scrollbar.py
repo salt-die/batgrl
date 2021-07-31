@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from ...colors import Color
+from ...colors import BLACK, Color, color_pair
 from ...mouse.mouse_event import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget
@@ -9,15 +9,24 @@ from ..widget import Widget
 class ScrollBarSettings(NamedTuple):
     bar_color: Color
     indicator_color: Color
-    indicator_width: int  # Should be even.
+    indicator_width: int  # This value doubled for horizontal scrollbars.
     # TODO: indicator_active_color, bar_active_color
 
 
-# TODO: Widget-fy the indicator. (And then we can remove render methods.)
+# TODO: ButtonBehaviors instead of GrabbableBehavior -- To change color of bar and indicator when active.
 class VerticalBar(GrabbableBehavior, Widget):
     def __init__(self, *args, settings: ScrollBarSettings, **kwargs):
-        self.settings = settings
-        super().__init__(*args, **kwargs)
+        kwargs.pop('default_color_pair', None)
+        bar_color, indicator_color, indicator_width = settings
+
+        super().__init__(*args, default_color_pair=color_pair(BLACK, bar_color), **kwargs)
+
+        self.indicator = Widget(
+            dim=(indicator_width, 2),
+            default_color_pair=color_pair(BLACK, indicator_color),
+        )
+
+        self.add_widget(self.indicator)
 
     def update_geometry(self):
         h, w = self.parent.dim
@@ -29,15 +38,10 @@ class VerticalBar(GrabbableBehavior, Widget):
 
     @property
     def fill_width(self):
-        return self.height - self.settings.indicator_width // 2 - self.parent.show_horizontal_bar
+        return self.height - self.indicator.width - self.parent.show_horizontal_bar
 
     def render(self, canvas_view, colors_view, rect):
-        start_fill = round(self.parent.vertical_proportion * self.fill_width)
-        bar_color, indicator_color, indicator_width = self.settings
-
-        self.colors[:, :, 3:] = bar_color
-        self.colors[start_fill: start_fill + indicator_width // 2, :, 3:] = indicator_color
-
+        self.indicator.top = round(self.parent.vertical_proportion * self.fill_width)
         super().render(canvas_view, colors_view, rect)
 
     def grab(self, mouse_event):
@@ -51,9 +55,18 @@ class VerticalBar(GrabbableBehavior, Widget):
 
 
 class HorizontalBar(GrabbableBehavior, Widget):
-    def __init__(self, settings: ScrollBarSettings, **kwargs):
-        self.settings = settings
-        super().__init__(**kwargs)
+    def __init__(self, *args, settings: ScrollBarSettings, **kwargs):
+        kwargs.pop('default_color_pair', None)
+        bar_color, indicator_color, indicator_width = settings
+
+        super().__init__(*args, default_color_pair=color_pair(BLACK, bar_color), **kwargs)
+
+        self.indicator = Widget(
+            dim=(1, indicator_width << 1),
+            default_color_pair=color_pair(BLACK, indicator_color),
+        )
+
+        self.add_widget(self.indicator)
 
     def update_geometry(self):
         h, w = self.parent.dim
@@ -65,15 +78,10 @@ class HorizontalBar(GrabbableBehavior, Widget):
 
     @property
     def fill_width(self):
-        return self.width - self.settings.indicator_width - self.parent.show_vertical_bar * 2
+        return self.width - self.indicator.width - self.parent.show_vertical_bar * 2
 
     def render(self, canvas_view, colors_view, rect):
-        start_fill = round(self.parent.horizontal_proportion * self.fill_width)
-        bar_color, indicator_color, indicator_width = self.settings
-
-        self.colors[0, :, 3:] = bar_color
-        self.colors[0, start_fill: start_fill + indicator_width, 3:] = indicator_color
-
+        self.indicator.left = round(self.parent.horizontal_proportion * self.fill_width)
         super().render(canvas_view, colors_view, rect)
 
     def grab(self, mouse_event):
