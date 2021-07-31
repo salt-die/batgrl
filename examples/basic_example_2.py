@@ -4,7 +4,8 @@ from nurses_2.widgets.scroll_view import ScrollView
 from nurses_2.widgets import Widget
 from nurses_2.widgets.widget_data_structures import Size
 
-BIG_WIDGET_SIZE = Size(50, 200)
+N = 20
+BIG_WIDGET_SIZE = Size(50, 8 * N + N - 1)
 
 WHITE_ON_BLUE = color_pair(WHITE, BLUE)
 WHITE_ON_RED = color_pair(WHITE, RED)
@@ -20,7 +21,7 @@ class MyApp(App):
         big_widget = Widget(dim=BIG_WIDGET_SIZE)
 
         for i in range(BIG_WIDGET_SIZE.height):
-            big_widget.add_text("".join(f'{x:<5}' for x in range(40)), row=i)
+            big_widget.add_text(" ".join(f'({i:<2}, {x:<2})' for x in range(N)), row=i)
             big_widget.colors[i] = gradient(BIG_WIDGET_SIZE.width, LEFT_GRADIENT[i], RIGHT_GRADIENT[i])
 
         scroll_view = ScrollView(dim=(10, 30))
