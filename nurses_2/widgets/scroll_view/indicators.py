@@ -1,21 +1,7 @@
-from typing import NamedTuple
-
-from ...colors import BLACK, Color, color_pair
+from ...colors import BLACK, color_pair
 from ...mouse import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget
-
-
-class ScrollBarSettings(NamedTuple):
-    """
-    Settings for ScrollView scrollbars. `indicator_length`
-    is doubled for horizontal scrollbars.
-    """
-    bar_color: Color
-    indicator_inactive_color: Color
-    indicator_hover_color: Color
-    indicator_active_color: Color
-    indicator_length: int  # This value doubled for horizontal scrollbars.
 
 
 class _IndicatorBehavior:
@@ -73,44 +59,6 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         self.update_geometry()
 
 
-class _VerticalBar(Widget):
-    def __init__(self, settings: ScrollBarSettings):
-        bar_color, *indicator_settings = settings
-
-        super().__init__(default_color_pair=color_pair(BLACK, bar_color))
-
-        self.indicator = _VerticalIndicator(*indicator_settings)
-        self.add_widget(self.indicator)
-
-    def update_geometry(self):
-        h, w = self.parent.dim
-
-        self.left = w - 2
-        self.resize((h, 2))
-
-        super().update_geometry()
-
-    @property
-    def fill_width(self):
-        return self.height - self.indicator.height - self.parent.show_horizontal_bar
-
-    def on_click(self, mouse_event):
-        if (
-            mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.collides_coords(mouse_event.position)
-        ):
-            y, _ = self.absolute_to_relative_coords(mouse_event.position)
-            sv = self.parent
-
-            if y == self.height - 1 and sv.show_horizontal_bar:
-                return True
-
-            sv.vertical_proportion = y / self.fill_width
-            self.indicator.update_geometry()
-            self.indicator.grab(mouse_event)
-            return True
-
-
 class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
     def __init__(self, inactive_color, hover_color, active_color, length):
         super().__init__(dim=(1, length << 1), default_color_pair=color_pair(BLACK, inactive_color))
@@ -142,40 +90,3 @@ class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         scroll_view.horizontal_proportion += dx / horizontal_bar.fill_width
 
         self.update_geometry()
-
-
-class _HorizontalBar(Widget):
-    def __init__(self, settings: ScrollBarSettings):
-        bar_color, *indicator_settings = settings
-
-        super().__init__(default_color_pair=color_pair(BLACK, bar_color))
-        self.indicator = _HorizontalIndicator(*indicator_settings)
-        self.add_widget(self.indicator)
-
-    def update_geometry(self):
-        h, w = self.parent.dim
-
-        self.top = h - 1
-        self.resize((1, w))
-
-        super().update_geometry()
-
-    @property
-    def fill_width(self):
-        return self.width - self.indicator.width - self.parent.show_vertical_bar * 2
-
-    def on_click(self, mouse_event):
-        if (
-            mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.collides_coords(mouse_event.position)
-        ):
-            _, x = self.absolute_to_relative_coords(mouse_event.position)
-            sv = self.parent
-
-            if x >= self.width - 2 and sv.show_vertical_bar:
-                return True
-
-            sv.horizontal_proportion = x / self.fill_width
-            self.indicator.update_geometry()
-            self.indicator.grab(mouse_event)
-            return True

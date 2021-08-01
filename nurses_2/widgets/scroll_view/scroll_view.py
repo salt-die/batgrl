@@ -2,7 +2,8 @@ from ...colors import Color
 from ...mouse.mouse_event import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
-from .scrollbar import _HorizontalBar, _VerticalBar, ScrollBarSettings
+from .scrollbars import _HorizontalBar, _VerticalBar
+from .scrollbar_data_structures import ScrollBarSettings
 
 def clamp(value, min=0.0, max=1.0):
     if value < min:
