@@ -22,21 +22,22 @@ class AutoSizeScatter(AutoSizeBehavior, Scatter):
 class PrettyWidget(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        grad = gradient(self.width >> 1, WHITE_ON_GREEN, WHITE_ON_BLUE)
-        self.colors[:] = grad + grad[::-1]
+        self.colors[:] = 50
+        grad = gradient((self.width >> 1) - 1, WHITE_ON_GREEN, WHITE_ON_BLUE)
+        self.colors[1:-1, 1:-1] = grad + grad[::-1]
         asyncio.create_task(self.roll())
 
     async def roll(self):
         while True:
-            self.colors = np.roll(self.colors, -1, (1, ))
+            self.colors[1:-1, 1:-1] = np.roll(self.colors[1:-1, 1:-1], -1, (1, ))
 
             await asyncio.sleep(.11)
 
 
 class MyApp(App):
     async def on_start(self):
-        widget_1 = PrettyWidget(dim=(20, 20))
-        widget_2 = PrettyWidget(dim=(10, 30))
+        widget_1 = PrettyWidget(dim=(20, 40))
+        widget_2 = PrettyWidget(dim=(10, 50))
 
         autosize_scatter = AutoSizeScatter()
         autosize_scatter.add_widgets(widget_1, widget_2)
