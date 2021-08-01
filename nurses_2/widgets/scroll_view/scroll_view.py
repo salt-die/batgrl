@@ -1,10 +1,8 @@
-from typing import Optional
-
 from ...colors import Color
 from ...mouse.mouse_event import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
-from .scrollbar import HorizontalBar, VerticalBar, ScrollBarSettings
+from .scrollbar import _HorizontalBar, _VerticalBar, ScrollBarSettings
 
 def clamp(value, min=0.0, max=1.0):
     if value < min:
@@ -18,6 +16,27 @@ class ScrollView(GrabbableBehavior, Widget):
     """
     A scrollable view widget.
 
+    Parameters
+    ----------
+    allow_vertical_scroll : bool, default: True
+        Allow vertical scrolling.
+    allow_horizontal_scroll : bool, default: True
+        Allow horizontal scrolling.
+    show_vertical_bar : bool, default: True
+        Show the vertical scrollbar.
+    show_horizontal_bar : bool, default: True
+        Show the horizontal scrollbar.
+    is_grabbable : bool, default: True
+        Allow moving scroll view by dragging mouse.
+    scrollwheel_enabled : bool, default: True
+        Allow vertical scrolling with scrollwheel.
+    vertical_proportion : float, default: 0.0
+        Vertical scroll position as a proportion of total.
+    horizontal_proportion : float, default: 0.0
+        Horizontal scroll position as a proportion of total.
+    vertical_scrollbar, horizontal_scrollbar : ScrollBarSettings, default: DEFAULT_SCROLLBAR_SETTINGS
+        Settings for scrollbars.
+
     Notes
     -----
     ScrollView accepts only one child and applies a scrollable viewport to it.
@@ -30,9 +49,11 @@ class ScrollView(GrabbableBehavior, Widget):
         If `add_widget` is called while already containing a child.
     """
     DEFAULT_SCROLLBAR_SETTINGS = ScrollBarSettings(
-        bar_color=Color(66, 50, 168),
-        indicator_color=Color(234, 234, 105),
-        indicator_width=2,
+        bar_color=Color.from_hex("#340744"),
+        indicator_inactive_color=Color.from_hex("#debad6"),
+        indicator_hover_color=Color.from_hex("#741aac"),
+        indicator_active_color=Color.from_hex("#005437"),
+        indicator_length=2,
     )
 
     def __init__(
@@ -46,8 +67,8 @@ class ScrollView(GrabbableBehavior, Widget):
         scrollwheel_enabled=True,
         vertical_proportion=0.0,
         horizontal_proportion=0.0,
-        vertical_scrollbar: Optional[ScrollBarSettings]=None,
-        horizontal_scrollbar: Optional[ScrollBarSettings]=None,
+        vertical_scrollbar: ScrollBarSettings=DEFAULT_SCROLLBAR_SETTINGS,
+        horizontal_scrollbar: ScrollBarSettings=DEFAULT_SCROLLBAR_SETTINGS,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -64,12 +85,8 @@ class ScrollView(GrabbableBehavior, Widget):
 
         # Setup scrollbars:
         self.children = [
-            VerticalBar(
-                settings=vertical_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
-            ),
-            HorizontalBar(
-                settings=horizontal_scrollbar or self.DEFAULT_SCROLLBAR_SETTINGS
-            ),
+            _VerticalBar(settings=vertical_scrollbar),
+            _HorizontalBar(settings=horizontal_scrollbar),
         ]
 
         for child in self.children:
@@ -207,6 +224,42 @@ class ScrollView(GrabbableBehavior, Widget):
         self._scroll_up(y - last_y)
         self._scroll_left(x - last_x)
 
+    def _scroll_left(self, n=1):
+        if self._view is not None and self.allow_horizontal_scroll:
+            self.horizontal_proportion = hp = clamp((-self.view_left - n) / self.total_horizontal_distance)
+            self.children[1].indicator.update_geometry()
+
+    def _scroll_right(self, n=1):
+        self._scroll_left(-n)
+
+    def _scroll_up(self, n=1):
+        if self._view is not None and self.allow_vertical_scroll:
+            self.vertical_proportion = vp = clamp((-self.view_top - n) / self.total_vertical_distance)
+            self.children[0].indicator.update_geometry()
+
+    def _scroll_down(self, n=1):
+        self._scroll_up(-n)
+
+    def dispatch_press(self, key_press):
+        if self._view and self._view.dispatch_press(key_press):
+            return True
+
+        return self.on_press(key_press)
+
+    def dispatch_click(self, mouse_event):
+        v_bar, h_bar = self.children
+
+        if self.show_horizontal_bar and h_bar.dispatch_click(mouse_event):
+            return True
+
+        if self.show_vertical_bar and v_bar.dispatch_click(mouse_event):
+            return True
+
+        if self._view and self._view.dispatch_click(mouse_event):
+            return True
+
+        return self.on_click(mouse_event)
+
     def on_click(self, mouse_event):
         if mouse_event.event_type == MouseEventType.SCROLL_UP:
             self._scroll_up()
@@ -216,17 +269,3 @@ class ScrollView(GrabbableBehavior, Widget):
             return super().on_click(mouse_event)
 
         return True
-
-    def _scroll_left(self, n=1):
-        if self._view is not None and self.allow_horizontal_scroll:
-            self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance)
-
-    def _scroll_right(self, n=1):
-        self._scroll_left(-n)
-
-    def _scroll_up(self, n=1):
-        if self._view is not None and self.allow_vertical_scroll:
-            self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance)
-
-    def _scroll_down(self, n=1):
-        self._scroll_up(-n)
