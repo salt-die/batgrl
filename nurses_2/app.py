@@ -172,15 +172,21 @@ def create_environment():
     Enter alternate screen and create platform specific input. Restore screen and close input on exit.
     """
     env_out = create_output()
+    # Patch better mouse handling:
+    if not is_windows():
+        from .mouse.patch_nix_output import patch_nix_output
+        patch_nix_output(env_out)
 
     env_out.enable_mouse_support()
     env_out.enter_alternate_screen()
     env_out.flush()
 
     env_in = create_input()
+    # Patch better mouse handling:
     if is_windows():
         from .mouse.patch_win32_input import patch_win32_input
-        patch_win32_input(env_in)  # Better mouse handling patched in.
+        patch_win32_input(env_in)
+
     env_in.flush_keys()  # Ignoring type-ahead
 
     try:
