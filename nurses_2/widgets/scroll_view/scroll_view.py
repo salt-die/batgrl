@@ -1,5 +1,5 @@
 from ...colors import Color
-from ...mouse.mouse_event import MouseEventType
+from ...mouse import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
 from .scrollbars import _HorizontalBar, _VerticalBar

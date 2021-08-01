@@ -2,7 +2,7 @@ from prompt_toolkit.keys import Keys
 
 from ..widgets.widget_data_structures import Point
 
-from .mouse_event import *
+from .mouse_data_structures import *
 from .bindings import TERM_SGR, TYPICAL, URXVT
 
 def create_vt100_mouse_event(data):
