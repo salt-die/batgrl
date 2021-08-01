@@ -30,6 +30,8 @@ class App(ABC):
         Default background character for root widget.
     default_color_pair : ColorPair, default: BLACK_ON_BLACK
         Default background color pair for root widget.
+    title : Optional[str], default: None
+        Set terminal title if supported.
 
     Notes
     -----
@@ -52,10 +54,11 @@ class App(ABC):
     MyApp().run()
     ```
     """
-    def __init__(self, *, exit_key="escape", default_char=" ", default_color_pair=BLACK_ON_BLACK):
+    def __init__(self, *, exit_key="escape", default_char=" ", default_color_pair=BLACK_ON_BLACK, title=None):
         self.exit_key = exit_key
         self.default_char = default_char
         self.default_color_pair = default_color_pair
+        self.title = title
 
     @abstractmethod
     async def on_start(self):
@@ -86,7 +89,7 @@ class App(ABC):
         """
         Build environment, create root, and schedule app-specific tasks.
         """
-        with create_environment() as (env_out, env_in):
+        with create_environment(self.title) as (env_out, env_in):
             exit_key = self.exit_key
 
             self.root = root = _Root(
@@ -167,7 +170,7 @@ class App(ABC):
 
 
 @contextmanager
-def create_environment():
+def create_environment(title):
     """
     Enter alternate screen and create platform specific input. Restore screen and close input on exit.
     """
@@ -179,6 +182,8 @@ def create_environment():
 
     env_out.enable_mouse_support()
     env_out.enter_alternate_screen()
+    if title is not None:
+        env_out.set_title(title)
     env_out.flush()
 
     env_in = create_input()
