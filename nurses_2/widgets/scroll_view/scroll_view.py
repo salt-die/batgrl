@@ -53,7 +53,7 @@ class ScrollView(GrabbableBehavior, Widget):
         bar_color=Color.from_hex("#340744"),
         indicator_inactive_color=Color.from_hex("#debad6"),
         indicator_hover_color=Color.from_hex("#741aac"),
-        indicator_active_color=Color.from_hex("#005437"),
+        indicator_active_color=Color.from_hex("#e2d114"),
         indicator_length=2,
     )
 
