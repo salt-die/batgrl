@@ -216,11 +216,11 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
-        self._last_touch = mouse_event.position
+        self._last_mouse_pos = mouse_event.position
 
     def grab_update(self, mouse_event):
-        last_y, last_x = self._last_touch
-        y, x = self._last_touch = mouse_event.position
+        last_y, last_x = self._last_mouse_pos
+        y, x = self._last_mouse_pos = mouse_event.position
 
         self._scroll_up(y - last_y)
         self._scroll_left(x - last_x)
