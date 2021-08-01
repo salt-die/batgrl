@@ -19,10 +19,10 @@ class _IndicatorBehavior:
         self.update_color(mouse_event)
 
     def on_click(self, mouse_event):
-        if (
-            not super().on_click(mouse_event)
-            and mouse_event.event_type == MouseEventType.MOUSE_MOVE
-        ):
+        if super().on_click(mouse_event):
+            return True
+
+        if mouse_event.event_type == MouseEventType.MOUSE_MOVE:
             self.update_color(mouse_event)
 
 
