@@ -16,7 +16,8 @@ class Color(NamedTuple):
 
     @classmethod
     def from_hex(cls, hexcode):
-        hexcode = hexcode.removeprefix("#")
+        if hexcode.startswith("#"):
+            hexcode = hexcode[1:]
 
         return cls(
             int(hexcode[:2], 16),
