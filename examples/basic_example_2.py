@@ -1,3 +1,6 @@
+"""
+ScrollView example.
+"""
 from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, RED, WHITE, gradient, color_pair
 from nurses_2.widgets import Widget
@@ -12,8 +15,8 @@ WHITE_ON_RED = color_pair(WHITE, RED)
 WHITE_ON_GREEN = color_pair(WHITE, GREEN)
 WHITE_ON_BLUE = color_pair(WHITE, BLUE)
 
-TOP_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_RED, WHITE_ON_GREEN)
-BOTTOM_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_GREEN, WHITE_ON_BLUE)
+LEFT_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_RED, WHITE_ON_GREEN)
+RIGHT_GRADIENT = gradient(BIG_WIDGET_SIZE.height, WHITE_ON_GREEN, WHITE_ON_BLUE)
 
 
 class AutoPositionScrollView(AutoPositionBehavior, ScrollView):
@@ -26,7 +29,7 @@ class MyApp(App):
 
         for y in range(BIG_WIDGET_SIZE.height):
             big_widget.add_text(" ".join(f'({y:<2}, {x:<2})' for x in range(N)), row=y)
-            big_widget.colors[y] = gradient(BIG_WIDGET_SIZE.width, TOP_GRADIENT[y], BOTTOM_GRADIENT[y])
+            big_widget.colors[y] = gradient(BIG_WIDGET_SIZE.width, LEFT_GRADIENT[y], RIGHT_GRADIENT[y])
 
         scroll_view = AutoPositionScrollView(dim=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
         scroll_view.add_widget(big_widget)
