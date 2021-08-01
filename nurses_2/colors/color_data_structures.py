@@ -14,6 +14,16 @@ class Color(NamedTuple):
     green: int
     blue:  int
 
+    @classmethod
+    def from_hex(cls, hexcode):
+        hexcode = hexcode.removeprefix("#")
+
+        return cls(
+            int(hexcode[:2], 16),
+            int(hexcode[2:4], 16),
+            int(hexcode[4:], 16)
+        )
+
 
 class ColorPair(NamedTuple):
     """
