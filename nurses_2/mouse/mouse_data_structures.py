@@ -47,7 +47,7 @@ class MouseModifier(Enum):
 
 
 class MouseEvent(NamedTuple):
-        position: Point
-        event_type: MouseEventType
-        button: MouseButton
-        modifier: MouseModifier
+    position: Point
+    event_type: MouseEventType
+    button: MouseButton
+    modifier: MouseModifier
