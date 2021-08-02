@@ -2,15 +2,9 @@ from ...colors import Color
 from ...mouse import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
+from ..widget_utilities import clamp
 from .scrollbars import _HorizontalBar, _VerticalBar
 from .scrollbar_data_structures import ScrollBarSettings
-
-def clamp(value, min=0.0, max=1.0):
-    if value < min:
-        return min
-    if value > max:
-        return max
-    return value
 
 
 class ScrollView(GrabbableBehavior, Widget):

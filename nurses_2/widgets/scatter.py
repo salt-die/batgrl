@@ -1,6 +1,6 @@
 from ..mouse import MouseEventType
-from .scroll_view.scroll_view import clamp
 from .widget import Widget
+from .widget_utilities import clamp
 
 
 class Scatter(Widget):
@@ -55,6 +55,5 @@ class Scatter(Widget):
                 if self.disable_oob:
                     grabbed.top = clamp(grabbed.top, 0, self.height - grabbed.height)
                     grabbed.left = clamp(grabbed.left, 0, self.width - grabbed.width)
-
 
         return True
