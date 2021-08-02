@@ -22,12 +22,12 @@ class BorderWidget(AutoSizeBehavior, DraggableBehavior, Widget):
 
 class AutoGeometryScatter(Scatter):
     def __init__(self, **kwargs):
-        super().__init__(pos=(1, 1), **kwargs)
+        super().__init__(pos=(1, 2), **kwargs)
 
     def update_geometry(self):
         h, w = self.parent.dim
 
-        self.resize((h - 2, w - 2))
+        self.resize((h - 2, w - 4))
 
         super().update_geometry()
 
@@ -36,13 +36,13 @@ class PrettyWidget(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.colors[:] = 50
-        grad = gradient((self.width >> 1) - 1, WHITE_ON_GREEN, WHITE_ON_BLUE)
-        self.colors[1:-1, 1:-1] = grad + grad[::-1]
+        grad = gradient((self.width >> 1) - 2, WHITE_ON_GREEN, WHITE_ON_BLUE)
+        self.colors[1:-1, 2:-2] = grad + grad[::-1]
         asyncio.create_task(self.roll())
 
     async def roll(self):
         while True:
-            self.colors[1:-1, 1:-1] = np.roll(self.colors[1:-1, 1:-1], -1, (1, ))
+            self.colors[1:-1, 2:-2] = np.roll(self.colors[1:-1, 2:-2], -1, (1, ))
 
             await asyncio.sleep(.11)
 
