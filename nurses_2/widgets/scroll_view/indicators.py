@@ -37,26 +37,21 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         vertical_bar = self.parent
         scroll_view = vertical_bar.parent
 
-        if scroll_view is None:
-            return
-
         self.top = round(scroll_view.vertical_proportion * vertical_bar.fill_width)
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
         self.colors[..., 3:] = self.active_color
-        self._last_y = mouse_event.position[0]
+        self._last_y = mouse_event.position.y
 
     def grab_update(self, mouse_event):
         vertical_bar = self.parent
         scroll_view = vertical_bar.parent
 
-        dy = mouse_event.position[0] - self._last_y
-        self._last_y = mouse_event.position[0]
+        dy = mouse_event.position.y - self._last_y
+        self._last_y = mouse_event.position.y
 
         scroll_view.vertical_proportion += dy / vertical_bar.fill_width
-
-        self.update_geometry()
 
 
 class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
@@ -70,23 +65,18 @@ class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         horizontal_bar = self.parent
         scroll_view = horizontal_bar.parent
 
-        if scroll_view is None:
-            return
-
         self.left = round(scroll_view.horizontal_proportion * horizontal_bar.fill_width)
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
         self.colors[..., 3:] = self.active_color
-        self._last_x = mouse_event.position[1]
+        self._last_x = mouse_event.position.x
 
     def grab_update(self, mouse_event):
         horizontal_bar = self.parent
         scroll_view = horizontal_bar.parent
 
-        dx = mouse_event.position[1] - self._last_x
-        self._last_x = mouse_event.position[1]
+        dx = mouse_event.position.x - self._last_x
+        self._last_x = mouse_event.position.x
 
         scroll_view.horizontal_proportion += dx / horizontal_bar.fill_width
-
-        self.update_geometry()
