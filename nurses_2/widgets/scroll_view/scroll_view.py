@@ -227,7 +227,7 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def _scroll_left(self, n=1):
         if self._view is not None and self.allow_horizontal_scroll:
-            self.horizontal_proportion = hp = clamp((-self.view_left - n) / self.total_horizontal_distance)
+            self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance)
             self.children[1].indicator.update_geometry()
 
     def _scroll_right(self, n=1):
@@ -235,7 +235,7 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def _scroll_up(self, n=1):
         if self._view is not None and self.allow_vertical_scroll:
-            self.vertical_proportion = vp = clamp((-self.view_top - n) / self.total_vertical_distance)
+            self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance)
             self.children[0].indicator.update_geometry()
 
     def _scroll_down(self, n=1):
