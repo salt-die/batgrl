@@ -44,12 +44,10 @@ class _VerticalBar(Widget):
             y = self.absolute_to_relative_coords(mouse_event.position).y
             sv = self.parent
 
-            if y == self.height - HBAR_HEIGHT and sv.show_horizontal_bar:
-                # Special case for the corner between the two scrollbars.
-                return True
+            if not (y >= self.height - HBAR_HEIGHT and sv.show_horizontal_bar):
+                sv.vertical_proportion = y / self.fill_width
+                self.indicator.grab(mouse_event)
 
-            sv.vertical_proportion = y / self.fill_width
-            self.indicator.grab(mouse_event)
             return True
 
 
@@ -89,10 +87,8 @@ class _HorizontalBar(Widget):
             x = self.absolute_to_relative_coords(mouse_event.position).x
             sv = self.parent
 
-            if x >= self.width - VBAR_WIDTH and sv.show_vertical_bar:
-                # Special case for the corner between the two scrollbars.
-                return True
+            if not (x >= self.width - VBAR_WIDTH and sv.show_vertical_bar):
+                sv.horizontal_proportion = x / self.fill_width
+                self.indicator.grab(mouse_event)
 
-            sv.horizontal_proportion = x / self.fill_width
-            self.indicator.grab(mouse_event)
             return True

@@ -255,14 +255,13 @@ class ScrollView(GrabbableBehavior, Widget):
         return self.on_click(mouse_event)
 
     def on_click(self, mouse_event):
-        if not self.collides_coords(mouse_event.position):
-            return super().on_click(mouse_event)
+        if self.collides_coords(mouse_event.position):
+            if mouse_event.event_type == MouseEventType.SCROLL_UP:
+                self._scroll_up()
+                return True
 
-        if mouse_event.event_type == MouseEventType.SCROLL_UP:
-            self._scroll_up()
-        elif mouse_event.event_type == MouseEventType.SCROLL_DOWN:
-            self._scroll_down()
-        else:
-            return super().on_click(mouse_event)
+            if mouse_event.event_type == MouseEventType.SCROLL_DOWN:
+                self._scroll_down()
+                return True
 
-        return True
+        return super().on_click(mouse_event)

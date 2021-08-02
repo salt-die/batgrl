@@ -24,23 +24,7 @@ class Scatter(Widget):
         self.disable_ptf = disable_ptf
 
     def on_click(self, mouse_event):
-        if not (self.collides_coords(mouse_event.position) or self._grabbed):
-            return super().on_click(mouse_event)
-
-        if self._grabbed is None:
-            if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-                for child in reversed(self.children):
-                    if child.collides_coords(mouse_event.position):
-                        self._grabbed = child
-                        self._last_mouse_pos = mouse_event.position
-
-                        if not self.disable_ptf:
-                            self.pull_to_front(child)
-
-                        break
-            else:
-                return super().on_click(mouse_event)
-        else:
+        if self._grabbed is not None:
             if mouse_event.event_type == MouseEventType.MOUSE_UP:
                 self._grabbed = self._last_mouse_pos = None
             else:
@@ -56,4 +40,18 @@ class Scatter(Widget):
                     grabbed.top = clamp(grabbed.top, 0, self.height - grabbed.height)
                     grabbed.left = clamp(grabbed.left, 0, self.width - grabbed.width)
 
-        return True
+            return True
+
+        if (
+            self.collides_coords(mouse_event.position)
+            and mouse_event.event_type == MouseEventType.MOUSE_DOWN
+        ):
+            for child in reversed(self.children):
+                if child.collides_coords(mouse_event.position):
+                    self._grabbed = child
+                    self._last_mouse_pos = mouse_event.position
+
+                    if not self.disable_ptf:
+                        self.pull_to_front(child)
+
+                    return True

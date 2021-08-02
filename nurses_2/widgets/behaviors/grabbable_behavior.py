@@ -12,21 +12,25 @@ class GrabbableBehavior:
     is_grabbed = False
 
     def on_click(self, mouse_event):
-        if not (self.collides_coords(mouse_event.position) or self.is_grabbed):
-            return super().on_click(mouse_event)
+        if super().on_click(mouse_event):
+            return True
 
         if self.is_grabbed:
             if mouse_event.event_type == MouseEventType.MOUSE_UP:
                 self.ungrab(mouse_event)
             else:
                 self.grab_update(mouse_event)
-        else:
-            if self.is_grabbable and mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-                self.grab(mouse_event)
-            else:
-                return super().on_click(mouse_event)
 
-        return True
+            return True
+
+        if (
+            self.collides_coords(mouse_event.position)
+            and self.is_grabbable
+            and mouse_event.event_type == MouseEventType.MOUSE_DOWN
+        ):
+            self.grab(mouse_event)
+
+            return True
 
     def grab(self, mouse_event):
         """
