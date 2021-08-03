@@ -16,7 +16,7 @@ class Widget:
         Position of upper-left corner in parent.
     is_transparent : bool, default: False
         If true, white-space is "see-through".
-    is_visible : bool, default: True
+    is_enabled : bool, default: True
         If false, widget won't be painted.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
@@ -29,14 +29,14 @@ class Widget:
         pos: Point=Point(0, 0),
         *,
         is_transparent=False,
-        is_visible=True,
+        is_enabled=True,
         default_char=" ",
         default_color_pair=WHITE_ON_BLACK,
     ):
         self._dim = dim
         self.top, self.left = pos
         self.is_transparent = is_transparent
-        self.is_visible = is_visible
+        self.is_enabled = is_enabled
 
         self.parent = None
         self.children = [ ]
@@ -303,7 +303,7 @@ class Widget:
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
         """
         return (
-            any(widget.dispatch_press(key_press) for widget in reversed(self.children))
+            any(widget.dispatch_press(key_press) for widget in reversed(self.children) if widget.is_enabled)
             or self.on_press(key_press)
         )
 
@@ -312,7 +312,7 @@ class Widget:
         Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)
         """
         return (
-            any(widget.dispatch_click(mouse_event) for widget in reversed(self.children))
+            any(widget.dispatch_click(mouse_event) for widget in reversed(self.children) if widget.is_enabled)
             or self.on_click(mouse_event)
         )
 
@@ -344,7 +344,7 @@ def overlapping_region(rect: Rect, child: Widget):
     cr = child.right - l
 
     if (
-        not child.is_visible
+        not child.is_enabled
         or ct >= h
         or cb < 0
         or cl >= w

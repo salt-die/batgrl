@@ -178,7 +178,8 @@ class ScrollView(GrabbableBehavior, Widget):
 
         overlap = overlapping_region
 
-        if view := self._view:
+        view = self._view
+        if view is not None and view.is_enabled:
             view.top = self.view_top
             view.left = self.view_left
 
@@ -235,7 +236,11 @@ class ScrollView(GrabbableBehavior, Widget):
         self._scroll_up(-n)
 
     def dispatch_press(self, key_press):
-        if self._view and self._view.dispatch_press(key_press):
+        if (
+            self._view is not None
+            and self._view.is_enabled
+            and self._view.dispatch_press(key_press)
+        ):
             return True
 
         return self.on_press(key_press)
@@ -249,7 +254,11 @@ class ScrollView(GrabbableBehavior, Widget):
         if self.show_vertical_bar and v_bar.dispatch_click(mouse_event):
             return True
 
-        if self._view and self._view.dispatch_click(mouse_event):
+        if (
+            self._view is not None
+            and self._view.is_enabled
+            and self._view.dispatch_click(mouse_event)
+        ):
             return True
 
         return self.on_click(mouse_event)
