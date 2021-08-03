@@ -5,8 +5,30 @@ from ....colors import rainbow_gradient
 from .effect import Effect
 
 
-class BackgroundRainbowCycleEffect(Effect):
-    def __init__(self, *args, ncolors=20, cycle_speed=1/12, **kwargs):
+class RainbowCycleEffect(Effect):
+    """
+    An effect that adds colors from a rainbow gradient.
+
+    Parameters
+    ----------
+    ncolors : int, default: 20
+        Number of colors in the rainbow gradient.
+    cycle_speed : float, default: 1/12
+        Seconds between updates.
+    enable_foreground_rainbow : bool, default: False
+        Add colors to foreground.
+    enable_background_rainbow : bool, default: True
+        Add colors to background.
+    """
+    def __init__(
+        self,
+        *args,
+        ncolors=20,
+        cycle_speed=1/12,
+        enable_foreground_rainbow=False,
+        enable_background_rainbow=True,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
         self._rainbow = cycle(rainbow_gradient(ncolors))
@@ -14,10 +36,17 @@ class BackgroundRainbowCycleEffect(Effect):
 
         self.cycle_speed = cycle_speed
 
+        self.enable_foreground_rainbow = enable_foreground_rainbow
+        self.enable_background_rainbow = enable_background_rainbow
+
         self.cycle_task = asyncio.create_task(self.cycle_colors())
 
     def apply_effect(self, canvas_view, colors_view, rect):
-        colors_view[..., 3:] = (colors_view[..., 3:] + self._current_color) % 255
+        if self.enable_foreground_rainbow:
+            colors_view[..., :3] = (colors_view[..., :3].astype(int) + self._current_color) % 255
+
+        if self.enable_background_rainbow:
+            colors_view[..., 3:] = (colors_view[..., 3:].astype(int) + self._current_color) % 255
 
     async def cycle_colors(self):
         rainbow = self._rainbow
@@ -26,8 +55,3 @@ class BackgroundRainbowCycleEffect(Effect):
         while True:
             self._current_color = next(rainbow)
             await asyncio.sleep(cycle_speed)
-
-
-class ForegroundRainbowCycleEffect(BackgroundRainbowCycleEffect):
-    def apply_colors_effect(self, colors, rect):
-        colors_view[..., :3] = (colors_view[..., :3] + self._current_color) % 255
