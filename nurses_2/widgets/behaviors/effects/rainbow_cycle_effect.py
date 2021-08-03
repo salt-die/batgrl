@@ -1,7 +1,7 @@
 import asyncio
 from itertools import cycle
 
-from ...colors import rainbow_gradient
+from ....colors import rainbow_gradient
 from .effect import Effect
 
 

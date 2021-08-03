@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
-from ..widget_data_structures import Rect
+from ...widget_data_structures import Rect
 
 
 class Effect(ABC):
     """
     Effects are behaviors that modify how a widget and its children are rendered.
-    Inherit effects in the reverse order they should be applied, e.g.,
+    Effects should be inherited in the reverse order that they are applied, e.g.,
         ```
         class MyEffectWidget(Effect1, Effect2, Widget):
             ...
