@@ -26,3 +26,8 @@ class BackgroundRainbowCycleEffect(Effect):
         while True:
             self._current_color = next(rainbow)
             await asyncio.sleep(cycle_speed)
+
+
+class ForegroundRainbowCycleEffect(BackgroundRainbowCycleEffect):
+    def apply_colors_effect(self, colors, rect):
+        colors_view[..., :3] = (colors_view[..., :3] + self._current_color) % 255
