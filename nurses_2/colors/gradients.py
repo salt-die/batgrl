@@ -7,12 +7,13 @@ from .color_data_structures import *
 from .colors import BLACK, WHITE, color_pair
 
 __all__ = (
+    "rainbow_gradient",
     "foreground_rainbow",
     "background_rainbow",
     "gradient",
 )
 
-def _rainbow_gradient(n):
+def rainbow_gradient(n):
     """
     Return a rainbow gradient of `n` `Color`s.
     """
@@ -31,7 +32,7 @@ def foreground_rainbow(ncolors=20, background: Color=BLACK):
     """
     return [
         color_pair(foreground, background)
-        for foreground in _rainbow_gradient(ncolors)
+        for foreground in rainbow_gradient(ncolors)
     ]
 
 def background_rainbow(ncolors=20, foreground: Color=WHITE):
@@ -40,7 +41,7 @@ def background_rainbow(ncolors=20, foreground: Color=WHITE):
     """
     return [
         color_pair(foreground, background)
-        for background in _rainbow_gradient(ncolors)
+        for background in rainbow_gradient(ncolors)
     ]
 
 def lerp(start_pair: ColorPair, end_pair: ColorPair, proportion):
