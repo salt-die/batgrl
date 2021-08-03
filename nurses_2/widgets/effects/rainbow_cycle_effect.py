@@ -16,7 +16,7 @@ class BackgroundRainbowCycleEffect(Effect):
 
         self.cycle_task = asyncio.create_task(self.cycle_colors())
 
-    def apply_colors_effect(self, colors_view, rect):
+    def apply_effect(self, canvas_view, colors_view, rect):
         colors_view[..., 3:] = (colors_view[..., 3:] + self._current_color) % 255
 
     async def cycle_colors(self):
