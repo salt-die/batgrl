@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from ..widget_data_structures import Rect
 
 
