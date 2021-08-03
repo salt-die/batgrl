@@ -26,22 +26,22 @@ def rainbow_gradient(n):
             *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
         )
 
-def foreground_rainbow(ncolors=20, background: Color=BLACK):
+def foreground_rainbow(ncolors=20, background_color: Color=BLACK):
     """
-    A rainbow gradient of `ncolors` `color_pair`s with a given background color.
+    A rainbow gradient of `ncolors` `ColorPair`s with a given background color.
     """
     return [
-        color_pair(foreground, background)
-        for foreground in rainbow_gradient(ncolors)
+        color_pair(foreground_color, background_color)
+        for foreground_color in rainbow_gradient(ncolors)
     ]
 
-def background_rainbow(ncolors=20, foreground: Color=WHITE):
+def background_rainbow(ncolors=20, foreground_color: Color=WHITE):
     """
-    Return a rainbow gradient of `ncolors` `color_pair`s with a given foreground color.
+    Return a rainbow gradient of `ncolors` `ColorPair`s with a given foreground color.
     """
     return [
-        color_pair(foreground, background)
-        for background in rainbow_gradient(ncolors)
+        color_pair(foreground_color, background_color)
+        for background_color in rainbow_gradient(ncolors)
     ]
 
 def lerp(start_pair: ColorPair, end_pair: ColorPair, proportion):
@@ -53,7 +53,8 @@ def lerp(start_pair: ColorPair, end_pair: ColorPair, proportion):
 
 def gradient(ncolors, start_pair: ColorPair, end_pair: ColorPair):
     """
-    Return a gradient from `start_pair` to `end_pair` with `ncolors` (> 1) colors.
+    Return a gradient of `ColorPair`s from `start_pair` to `end_pair`
+    with `ncolors` (> 1) colors.
     """
     assert ncolors > 1, f"not enough colors ({ncolors=})"
 
