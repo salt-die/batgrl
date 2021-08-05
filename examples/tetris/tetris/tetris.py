@@ -251,8 +251,9 @@ class Tetris(Widget):
         for y, x in mino_positions:
             if 0 <= y < h and 0 <= x < w:
                 self.matrix[y, x] = 1
-                self.matrix_widget.colors[y, 2 * x, 3:] = current_piece.tetromino.COLOR
-                self.matrix_widget.colors[y, 2 * x + 1, 3:] = current_piece.tetromino.COLOR
+
+                x *= 2
+                self.matrix_widget.colors[y, x: x + 2, 3:] = current_piece.tetromino.COLOR
 
         asyncio.create_task(self.clear_lines())
 
@@ -263,13 +264,12 @@ class Tetris(Widget):
         Clear completed lines.
         """
         matrix = self.matrix
-        matrix_colors = self.matrix_widget.colors
-
         completed_lines = np.all(matrix, axis=1)
 
         if not completed_lines.any():
             return
 
+        matrix_colors = self.matrix_widget.colors
         old_colors = matrix_colors[completed_lines].copy()
 
         delay = FLASH_DELAY
@@ -290,6 +290,9 @@ class Tetris(Widget):
 
         matrix_colors[empty:] = matrix_colors[not_completed_lines]
         matrix_colors[:empty] = MATRIX_BACKGROUND_COLOR
+
+        self.update_ghost_position()
+        self._lock_down_task.cancel()
 
     def drop_current_piece(self):
         """
