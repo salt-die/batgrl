@@ -34,7 +34,7 @@ class Widget:
         default_color_pair=WHITE_ON_BLACK,
     ):
         self._dim = dim
-        self.top, self.left = pos
+        self.pos = pos
         self.is_transparent = is_transparent
         self.is_enabled = is_enabled
 
@@ -86,6 +86,10 @@ class Widget:
         Relative position to parent.
         """
         return Point(self.top, self.left)
+
+    @pos.setter
+    def pos(self, point: Point):
+        self.top, self.left = point
 
     @property
     def absolute_pos(self):
