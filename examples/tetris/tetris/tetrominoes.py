@@ -33,8 +33,8 @@ def create_colors(shape, color):
     """
     Return a nurses_2 widget colors array from a tetromino shape and color.
     """
-    colors = np.zeros((*shape.shape, 3), dtype=np.uint8)
-    colors[np.nonzero(shape)] = color
+    colors = np.zeros((*shape.shape, 6), dtype=np.uint8)
+    colors[shape == 1, :3] = color
     return np.repeat(colors, 2, axis=1)
 
 
@@ -44,9 +44,9 @@ class Tetromino:
 
         cls.shapes = {
             Orientation.UP:    base,
-            Orientation.LEFT:  np.rot90(base, 1),
-            Orientation.DOWN:  np.rot90(base, 2),
             Orientation.RIGHT: np.rot90(base, 3),
+            Orientation.DOWN:  np.rot90(base, 2),
+            Orientation.LEFT:  np.rot90(base, 1),
         }
 
         cls.mino_positions = {
@@ -58,11 +58,12 @@ class Tetromino:
         }
 
         cls.colors = {
-            orientation: create_colors(shape) for orientation, shape in cls.shapes.colors()
+            orientation: create_colors(shape, cls.COLOR) for orientation, shape in cls.shapes.items()
         }
 
 
 class J(Tetromino):
+    WALL_KICKS = JLSTZ_WALL_KICKS
     BASE_SHAPE = [
         [1, 0, 0],
         [1, 1, 1],
