@@ -2,12 +2,8 @@ from enum import IntFlag
 
 import numpy as np
 
-from nurses_2.colors import CYAN, YELLOW, GREEN, RED, BLUE, Color
-
 from .wall_kicks import *
-
-PURPLE = Color.from_hex("#800080")
-ORANGE = Color.from_hex("#FF7F00")
+from .color_scheme import *
 
 
 class Orientation(IntFlag):
@@ -73,7 +69,7 @@ class J(Tetromino):
         [1, 1, 1],
         [0, 0, 0],
     ]
-    COLOR = BLUE
+    COLOR = J_COLOR
 
 
 class L(Tetromino):
@@ -83,7 +79,7 @@ class L(Tetromino):
         [1, 1, 1],
         [0, 0, 0],
     ]
-    COLOR = ORANGE
+    COLOR = L_COLOR
 
 
 class S(Tetromino):
@@ -93,7 +89,7 @@ class S(Tetromino):
         [1, 1, 0],
         [0, 0, 0],
     ]
-    COLOR = GREEN
+    COLOR = S_COLOR
 
 
 class T(Tetromino):
@@ -103,7 +99,7 @@ class T(Tetromino):
         [1, 1, 1],
         [0, 0, 0],
     ]
-    COLOR = PURPLE
+    COLOR = T_COLOR
 
 
 class Z(Tetromino):
@@ -113,7 +109,7 @@ class Z(Tetromino):
         [0, 1, 1],
         [0, 0, 0],
     ]
-    COLOR = RED
+    COLOR = Z_COLOR
 
 
 class I(Tetromino):
@@ -124,13 +120,13 @@ class I(Tetromino):
         [0, 0, 0, 0],
         [0, 0, 0, 0],
     ]
-    COLOR = CYAN
+    COLOR = I_COLOR
 
 
 class ArikaI(Tetromino):
     WALL_KICKS = ARIKA_I_WALL_KICKS
     BASE_SHAPE = I.BASE_SHAPE
-    COLOR = I.COLOR
+    COLOR = I_COLOR
 
 
 class O(Tetromino):
@@ -139,7 +135,7 @@ class O(Tetromino):
         [1, 1],
         [1, 1],
     ]
-    COLOR = YELLOW
+    COLOR = O_COLOR
 
 
 TETROMINOS = J, L, S, T, Z, I, O,
