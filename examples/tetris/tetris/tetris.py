@@ -7,7 +7,7 @@ from nurses_2.widgets import Widget
 from nurses_2.widgets.widget_utilities import clamp
 
 from .color_scheme import *
-from .piece import Piece, CenteredPiece
+from .piece import CurrentPiece, GhostPiece, CenteredPiece
 from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
 
 GRAVITY = 1
@@ -76,8 +76,8 @@ class Tetris(Widget):
         self.matrix = np.zeros(matrix_dim, dtype=np.bool8)
         self.matrix_widget = Widget(dim=(h, 2 * w), pos=(0, 16), default_color_pair=MATRIX_BACKGROUND_COLOR)
 
-        self.ghost_piece = Piece(is_ghost=True)
-        self.current_piece = Piece()
+        self.ghost_piece = GhostPiece()
+        self.current_piece = CurrentPiece()
         self.matrix_widget.add_widgets(self.ghost_piece, self.current_piece)
 
         self.tetromino_generator = tetromino_generator(ARIKA_TETROMINOS if arika else TETROMINOS)
@@ -104,9 +104,9 @@ class Tetris(Widget):
         self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self._game_task = asyncio.create_task(self._run_game())
 
+    async def _run_game(self):
         self.new_piece()
 
-    async def _run_game(self):
         while True:
             self.move_current_piece(dy=1, dx=0)
             await asyncio.sleep(self.gravity)
