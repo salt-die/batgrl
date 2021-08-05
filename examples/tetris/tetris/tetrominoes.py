@@ -61,6 +61,10 @@ class Tetromino:
             orientation: create_colors(shape, cls.COLOR) for orientation, shape in cls.shapes.items()
         }
 
+        cls.ghost_colors = {
+            orientation: colors // 4 for orientation, colors in cls.colors.items()
+        }
+
 
 class J(Tetromino):
     WALL_KICKS = JLSTZ_WALL_KICKS

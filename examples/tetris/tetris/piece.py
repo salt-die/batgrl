@@ -7,8 +7,9 @@ class Piece(Widget):
     """
     A widget that renders a tetromino.
     """
-    def __init__(self, *args, is_transparent=True, is_enabled=False, **kwargs):
+    def __init__(self, *args, is_transparent=True, is_enabled=False, is_ghost=False, **kwargs):
         super().__init__(*args, is_transparent=is_transparent, is_enabled=is_enabled, **kwargs)
+        self.is_ghost = is_ghost
 
     @property
     def tetromino(self):
@@ -26,7 +27,7 @@ class Piece(Widget):
         orientation = self.orientation
 
         self.canvas = tetromino.canvases[orientation]
-        self.colors = tetromino.colors[orientation]
+        self.colors = tetromino.ghost_colors[orientation] if self.is_ghost else tetromino.colors[orientation]
 
         super().render(canvas_view, colors_view, rect)
 
