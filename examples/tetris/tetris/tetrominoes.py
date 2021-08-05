@@ -19,11 +19,23 @@ class Orientation(IntFlag):
     DOWN = 2
     LEFT = 3
 
-    def clockwise(self):
-        return Orientation((self + 1) % 4)
+    def rotate(self, clockwise=True):
+        return Orientation((self + (1 if clockwise else -1)) % 4)
 
-    def counter_clockwise(self):
-        return Orientation((self - 1) % 4)
+
+def create_canvas(shape):
+    """
+    Return a nurses_2 widget canvas from a tetromino shape.
+    """
+    return np.repeat(np.where(shape, "█", " "), 2, axis=1,)
+
+def create_colors(shape, color):
+    """
+    Return a nurses_2 widget colors array from a tetromino shape and color.
+    """
+    colors = np.zeros((*shape.shape, 3), dtype=np.uint8)
+    colors[np.nonzero(shape)] = color
+    return np.repeat(colors, 2, axis=1)
 
 
 class Tetromino:
@@ -42,28 +54,12 @@ class Tetromino:
         }
 
         cls.canvases = {
-            orientation: self._to_nurses_canvas(shape) for orientation, shape in cls.shapes.items()
+            orientation: create_canvas(shape) for orientation, shape in cls.shapes.items()
         }
 
         cls.colors = {
-            orientation: self._to_nurses_colors(shape) for orientation, shape in cls.shapes.colors()
+            orientation: create_colors(shape) for orientation, shape in cls.shapes.colors()
         }
-
-    @staticmethod
-    def _to_nurses_canvas(shape):
-        """
-        Return a nurses canvas from a shape array.
-        """
-        return np.repeat(np.where(shape, "█", " "), 2, axis=1,)
-
-    @classmethod
-    def _to_nurses_colors(cls, shape):
-        """
-        Return a nurses color array from a shape array.
-        """
-        colors = np.zeros((*shape.shape, 3), dtype=np.uint8)
-        colors[np.nonzero(shape)] = cls.COLOR
-        return np.repeat(colors, 2, axis=1)
 
 
 class J(Tetromino):

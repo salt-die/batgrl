@@ -50,9 +50,7 @@ class GameState(Widget):
         tetromino = current_piece.tetromino
         orientation = tetromino.orientation
 
-        target_orientation = (
-            orientation.clockwise() if clockwise else orientation.counter_clockwise()
-        )
+        target_orientation = orientation.rotate(clockwise=clockwise)
 
         for dy, dx in tetromino.WALL_KICKS[orientation, target_orientation]:
             if not self.collides((dy, dx), target_orientation):
