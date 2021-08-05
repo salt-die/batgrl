@@ -1,23 +1,32 @@
-from typing import List
+from enum import IntFlag
 
 import numpy as np
 
-from nurses_2.widgets.widget_data_structures import Point
 from nurses_2.colors import CYAN, YELLOW, GREEN, RED, BLUE, Color
 
-from .orientation import Orientation
 from .wall_kicks import *
 
 PURPLE = Color.from_hex("#800080")
 ORANGE = Color.from_hex("#FF7F00")
 
 
-class Tetromino:
-    WALL_KICKS: dict
-    BASE_SHAPE: List[List[int]]
-    COLOR: Color
-    HALF_WIDTH: int
+class Orientation(IntFlag):
+    """
+    Orientation of a tetromino.
+    """
+    UP = 0
+    RIGHT = 1
+    DOWN = 2
+    LEFT = 3
 
+    def clockwise(self):
+        return Orientation((self + 1) % 4)
+
+    def counter_clockwise(self):
+        return Orientation((self - 1) % 4)
+
+
+class Tetromino:
     def __init_subclass__(cls):
         base = np.array(cls.BASE_SHAPE, dtype=np.uint8)
 
@@ -32,51 +41,32 @@ class Tetromino:
             orientation: np.argwhere(shape) for orientation, shape in cls.shapes.items()
         }
 
-        cls.HALF_WIDTH = len(cls.BASE_SHAPE) >> 1
+        cls.canvases = {
+            orientation: self._to_nurses_canvas(shape) for orientation, shape in cls.shapes.items()
+        }
 
-    def __init__(self, pos: Point, grid):
-        self.pos = np.array(pos)
-        self.grid = grid
-        self.orientation = Orientation.UP
+        cls.colors = {
+            orientation: self._to_nurses_colors(shape) for orientation, shape in cls.shapes.colors()
+        }
 
-    @property
-    def shape(self):
-        return self.shapes[self.orientation]
-
-    def rotate(self, clockwise=True):
-        orientation = self.orientation
-
-        target_orientation = (
-            orientation.clockwise() if clockwise else orientation.counter_clockwise()
-        )
-
-        for offset in self.WALL_KICKS[orientation, target_orientation]:
-            if not self.collides(offset, target_orientation):
-                self.orientation = target_orientation
-                self.pos += offset
-                break
-
-    def collides(self, offset: Point, orientation: Orientation):
+    @staticmethod
+    def _to_nurses_canvas(shape):
         """
-        Return True if tetromino collides with stack or boundaries with given
-        offset and orientation.
+        Return a nurses canvas from a shape array.
         """
-        mino_positions = self.mino_positions[orientation] + self.pos + offset
-        grid = self.grid
+        return np.repeat(np.where(shape, "█", " "), 2, axis=1,)
 
-        return (
-            (mino_positions < 0)
-            | (grid.shape <= mino_positions)
-            | grid[mino_positions[:, 0], mino_positions[:, 1]]
-        ).any()
-
-    @property
-    def can_fall(self):
-        return not self.collides((1, 0), self.orientation)
+    @classmethod
+    def _to_nurses_colors(cls, shape):
+        """
+        Return a nurses color array from a shape array.
+        """
+        colors = np.zeros((*shape.shape, 3), dtype=np.uint8)
+        colors[np.nonzero(shape)] = cls.COLOR
+        return np.repeat(colors, 2, axis=1)
 
 
 class J(Tetromino):
-    WALL_KICKS = JLSTZ_WALL_KICKS
     BASE_SHAPE = [
         [1, 0, 0],
         [1, 1, 1],
