@@ -269,6 +269,7 @@ class Tetris(Widget):
         if not completed_lines.any():
             return
 
+        not_completed_lines = np.any(~matrix, axis=1)
         matrix_colors = self.matrix_widget.colors
         old_colors = matrix_colors[completed_lines].copy()
 
@@ -280,8 +281,6 @@ class Tetris(Widget):
             delay *= .8
             matrix_colors[completed_lines] = old_colors
             await asyncio.sleep(delay)
-
-        not_completed_lines = np.any(~matrix, axis=1)
 
         empty = completed_lines.sum()
 
