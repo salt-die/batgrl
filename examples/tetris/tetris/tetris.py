@@ -28,7 +28,7 @@ def tetromino_generator(tetrominos):
 
 
 class Tetris(Widget):
-    def __init__(self, matrix_dim=(23, 10), arika=True):
+    def __init__(self, matrix_dim=(22, 10), arika=True):
         ##################################################################
         # Tetris Layout includes the matrix (where pieces stack) and two #
         # displays for held piece and next piece. Piece displays are 4x8 #
