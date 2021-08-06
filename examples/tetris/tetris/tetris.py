@@ -310,7 +310,7 @@ class Tetris(Widget):
             self.ghost_piece.top += 1
 
     def on_press(self, key_press):
-        if key_press.key == 'c-m':
+        if key_press.key == "c-m":
             self.new_game()
             return
 
@@ -319,20 +319,20 @@ class Tetris(Widget):
 
         current_piece = self.current_piece
 
-        if key_press.key == 'd':
+        if key_press.key == "d":
             self.move_current_piece(dx=1)
-        elif key_press.key == 'a':
+        elif key_press.key == "a":
             self.move_current_piece(dx=-1)
-        elif key_press.key == 's':
+        elif key_press.key == "s":
             if not self.move_current_piece(dy=1):
                 self.affix_piece()
-        elif key_press.key == ' ':
+        elif key_press.key == " ":
             self.drop_current_piece()
-        elif key_press.key == 'q':
+        elif key_press.key == "q":
             self.rotate_current_piece(clockwise=False)
-        elif key_press.key == 'e':
+        elif key_press.key == "e":
             self.rotate_current_piece(clockwise=True)
-        elif key_press.key == 'r':
+        elif key_press.key == "r":
             self.hold()
         else:
             return False
