@@ -138,6 +138,11 @@ class Tetris(Widget):
             self.ghost_piece.top += 1
 
     def new_piece(self, from_held=False):
+        if from_held and not self.can_hold:
+            return
+
+        self.can_hold = not from_held
+
         held_piece = self.held_piece
         next_piece = self.next_piece
         current_piece = self.current_piece
@@ -149,6 +154,7 @@ class Tetris(Widget):
                 held_piece.tetromino = current_piece.tetromino
                 current_piece.tetromino = next_piece.tetromino
                 next_piece.tetromino = next(self.tetromino_generator)
+
         else:
             current_piece.tetromino = next_piece.tetromino
             next_piece.tetromino = next(self.tetromino_generator)
@@ -159,7 +165,6 @@ class Tetris(Widget):
         self.ghost_piece.tetromino = current_piece.tetromino
         self.update_ghost_position()
 
-        self.can_hold = True
         self.move_reset = 0
 
         if self.collides((0, 0), self.current_piece.orientation, self.current_piece):
@@ -309,14 +314,6 @@ class Tetris(Widget):
         while self.move_current_piece(dy=1):
             pass
 
-    def hold_current_piece(self):
-        """
-        Hold current piece if allowed.
-        """
-        if self.can_hold:
-            self.new_piece(from_held=True)
-            self.can_hold = False
-
     def on_press(self, key_press):
         if key_press.key == "c-m":  # c-m is "enter"
             self.new_game()
@@ -341,7 +338,7 @@ class Tetris(Widget):
         elif key_press.key == "e":
             self.rotate_current_piece(clockwise=True)
         elif key_press.key == "r":
-            self.hold_current_piece()
+            self.new_piece(from_held=True)
         else:
             return False
 
