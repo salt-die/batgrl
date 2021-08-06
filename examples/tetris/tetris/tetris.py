@@ -28,7 +28,7 @@ def tetromino_generator(tetrominos):
 
 
 class Tetris(Widget):
-    def __init__(self, matrix_dim=(22, 10), arika=True):
+    def __init__(self, matrix_dim=(22, 10), arika=True, is_transparent=False):
         ##################################################################
         # Tetris Layout includes the matrix (where pieces stack) and two #
         # displays for held piece and next piece. Piece displays are 4x8 #
@@ -46,7 +46,7 @@ class Tetris(Widget):
 
         h, w = matrix_dim
 
-        super().__init__(dim=(h, 2 * w + 32), default_color_pair=TETRIS_APP_BACKGROUND_COLOR)
+        super().__init__(dim=(h, 2 * w + 32), default_color_pair=TETRIS_APP_BACKGROUND_COLOR, is_transparent=is_transparent)
 
         # Setup held display
         #######################################################################################
@@ -74,7 +74,7 @@ class Tetris(Widget):
         # `matrix_widget` is a visual representation of `matrix` that carries color information as well.
         # These need to be kept in sync with each other.  Anytime one is modified so must the other.
         self.matrix = np.zeros(matrix_dim, dtype=np.bool8)
-        self.matrix_widget = Widget(dim=(h, 2 * w), pos=(0, 16), default_color_pair=MATRIX_BACKGROUND_COLOR)
+        self.matrix_widget = Widget(dim=(h, 2 * w), pos=(0, 16), default_color_pair=MATRIX_BACKGROUND_COLOR, is_transparent=is_transparent)
 
         self.ghost_piece = GhostPiece()
         self.current_piece = CurrentPiece()
@@ -253,7 +253,8 @@ class Tetris(Widget):
                 self.matrix[y, x] = 1
 
                 x *= 2
-                self.matrix_widget.colors[y, x: x + 2, 3:] = current_piece.tetromino.COLOR
+                self.matrix_widget.canvas[y, x: x + 2] = "█"
+                self.matrix_widget.colors[y, x: x + 2, :3] = current_piece.tetromino.COLOR
 
         asyncio.create_task(self.clear_lines())
 
@@ -270,6 +271,7 @@ class Tetris(Widget):
             return
 
         not_completed_lines = np.any(~matrix, axis=1)
+        matrix_canvas = self.matrix_widget.canvas
         matrix_colors = self.matrix_widget.colors
         old_colors = matrix_colors[completed_lines].copy()
 
@@ -287,6 +289,8 @@ class Tetris(Widget):
         matrix[empty:] = matrix[not_completed_lines]
         matrix[:empty] = 0
 
+        matrix_canvas[empty:] = matrix_canvas[not_completed_lines]
+        matrix_canvas[:empty] = " "
         matrix_colors[empty:] = matrix_colors[not_completed_lines]
         matrix_colors[:empty] = MATRIX_BACKGROUND_COLOR
 
