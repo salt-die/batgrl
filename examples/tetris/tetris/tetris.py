@@ -70,9 +70,10 @@ class Tetris(Widget):
         next_space.add_widget(self.next_piece)                                                       #
         ##############################################################################################
 
-        # `matrix` is just a boolean array where True values indicate that a mino exists in that location.
-        # `matrix_widget` is a visual representation of `matrix` that carries color information as well.
+        # `matrix` is a boolean array where True values indicate that a mino exists in that location.
+        # `matrix_widget` is a visual representation of `matrix` that carries canvas and color information.
         # These need to be kept in sync with each other.  Anytime one is modified so must the other.
+        # (Updates happen in `affix_piece` and `clear_lines` methods.)
         self.matrix = np.zeros(matrix_dim, dtype=np.bool8)
         self.matrix_widget = Widget(dim=(h, 2 * w), pos=(0, 16), default_color_pair=MATRIX_BACKGROUND_COLOR, is_transparent=is_transparent)
 
@@ -112,6 +113,10 @@ class Tetris(Widget):
             await asyncio.sleep(self.gravity)
 
     def start_lock_down(self):
+        """
+        When a piece lands on the stack a lock down timer is started. If not canceled
+        the piece will be affixed to the stack after LOCK_DOWN_DELAY seconds.
+        """
         self._lock_down_task.cancel()
         self._lock_down_task = asyncio.create_task(self._lock_down_timer())
 
@@ -122,6 +127,15 @@ class Tetris(Widget):
             return
         else:
             self.affix_piece()
+
+    def update_ghost_position(self):
+        ghost = self.ghost_piece
+
+        ghost.pos = self.current_piece.pos
+        ghost.orientation = self.current_piece.orientation
+
+        while not self.collides((1, 0), ghost.orientation, ghost):
+            self.ghost_piece.top += 1
 
     def new_piece(self, from_held=False):
         held_piece = self.held_piece
@@ -152,10 +166,23 @@ class Tetris(Widget):
             self._game_task.cancel()
             # TODO: GAMEOVER SCREEN
 
-    def hold(self):
-        if self.can_hold:
-            self.new_piece(from_held=True)
-            self.can_hold = False
+    def collides(self, offset, orientation, piece):
+        """
+        Return True if piece collides with stack or boundaries of matrix
+        with given offset (from it's current position) and orientation.
+        """
+        mino_positions = (
+            piece.tetromino.mino_positions[orientation]
+            + (piece.top, piece.left // 2)
+            + offset
+        )
+        matrix = self.matrix
+
+        return (
+            (mino_positions < 0).any()
+            or (matrix.shape <= mino_positions).any()
+            or matrix[mino_positions[:, 0], mino_positions[:, 1]].any()
+        )
 
     def rotate_current_piece(self, clockwise=True):
         if not self._lock_down_task.done() and self.move_reset >= MOVE_RESET:
@@ -211,31 +238,9 @@ class Tetris(Widget):
 
         return False
 
-    def collides(self, offset, orientation, piece):
-        """
-        Return True if piece collides with stack or boundaries of matrix
-        with given offset (from it's current position) and orientation.
-        """
-        mino_positions = (
-            piece.tetromino.mino_positions[orientation]
-            + (piece.top, piece.left // 2)
-            + offset
-        )
-        matrix = self.matrix
-
-        return (
-            (mino_positions < 0).any()
-            or (matrix.shape <= mino_positions).any()
-            or matrix[mino_positions[:, 0], mino_positions[:, 1]].any()
-        )
-
-    @property
-    def current_piece_can_fall(self):
-        return not self.collides((1, 0), self.current_piece.orientation, self.current_piece)
-
     def affix_piece(self):
         """
-        Affix current piece to the stack. If holding was not allowed, it will be after an affix.
+        Affix current piece to the stack.
         """
         self._lock_down_task.cancel()
 
@@ -304,17 +309,16 @@ class Tetris(Widget):
         while self.move_current_piece(dy=1):
             pass
 
-    def update_ghost_position(self):
-        ghost = self.ghost_piece
-
-        ghost.pos = self.current_piece.pos
-        ghost.orientation = self.current_piece.orientation
-
-        while not self.collides((1, 0), ghost.orientation, ghost):
-            self.ghost_piece.top += 1
+    def hold_current_piece(self):
+        """
+        Hold current piece if allowed.
+        """
+        if self.can_hold:
+            self.new_piece(from_held=True)
+            self.can_hold = False
 
     def on_press(self, key_press):
-        if key_press.key == "c-m":
+        if key_press.key == "c-m":  # c-m is "enter"
             self.new_game()
             return
 
@@ -337,7 +341,7 @@ class Tetris(Widget):
         elif key_press.key == "e":
             self.rotate_current_piece(clockwise=True)
         elif key_press.key == "r":
-            self.hold()
+            self.hold_current_piece()
         else:
             return False
 
