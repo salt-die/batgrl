@@ -31,3 +31,7 @@ This is a widget and async-centric library for creating graphical applications i
 # /examples/raycaster
 
 ![Raycaster demonstration](preview_images/raycaster_demonstration.gif)
+
+# /examples/tetris
+
+![Tetris demonstration](preview_images/tetris_demonstration.gif)
