@@ -15,9 +15,10 @@ class ParticleField(Widget):
     ------
     TypeError if `add_widget` argument is not an instance of `Particle`.
     """
-    def __init__(self, dim=Size(10, 10), pos=Point(0, 0), *, is_enabled=True):
+    def __init__(self, dim=Size(10, 10), pos=Point(0, 0), *, is_visible=True, is_enabled=True):
         self._dim = dim
         self.top, self.left = pos
+        self.is_visible = is_visible
         self.is_enabled = is_enabled
 
         self.parent = None
@@ -56,7 +57,7 @@ class ParticleField(Widget):
             pos = top, left = child.top - t, child.left - l
 
             if (
-                child.is_enabled
+                child.is_visible
                 and not (child.is_transparent and child.char == " ")
                 and 0 <= top < h
                 and 0 <= left < w
@@ -71,7 +72,7 @@ class ParticleField(Widget):
         # Note this dispatching is in reverse order from widget base.
         return (
             self.on_press(key_press)
-            or any(particle.on_press(key_press) for particle in reversed(self.children) if particle.is_enabled)
+            or any(particle.on_press(key_press) for particle in reversed(self.children) if particle.is_visible)
         )
 
     def dispatch_click(self, mouse_event):
@@ -81,7 +82,7 @@ class ParticleField(Widget):
         # Note this dispatching is in reverse order from widget base.
         return (
             self.on_click(mouse_event)
-            or any(particle.on_click(mouse_event) for particle in reversed(self.children) if particle.is_enabled)
+            or any(particle.on_click(mouse_event) for particle in reversed(self.children) if particle.is_visible)
         )
 
 
@@ -97,14 +98,14 @@ class Particle:
         char=" ",
         color=WHITE_ON_BLACK,
         is_transparent=False,
-        is_enabled=True,
+        is_visible=True,
     ):
         self.char = char
         self.color = color
 
         self.top, self.left = pos
         self.is_transparent = is_transparent
-        self.is_enabled = is_enabled
+        self.is_visible = is_visible
         self.parent = None
 
     def update_geometry(self):

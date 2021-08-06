@@ -62,9 +62,9 @@ class HalfBlockParticle(Particle):
     The y-component of `pos` can be a float. The fractional part determines
     whether the half block is upper or lower.
     """
-    def __init__(self, pos=Point(0, 0), *, color=BLACK, alpha=1.0, is_enabled=True):
+    def __init__(self, pos=Point(0, 0), *, color=BLACK, alpha=1.0, is_visible=True):
         self.top, self.left = pos
         self.color = color
         self.alpha = alpha
-        self.is_enabled = is_enabled
+        self.is_visible = is_visible
         self.parent = None

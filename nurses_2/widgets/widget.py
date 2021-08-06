@@ -16,8 +16,10 @@ class Widget:
         Position of upper-left corner in parent.
     is_transparent : bool, default: False
         If true, white-space is "see-through".
+    is_visible : bool, default: True
+        If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
-        If false, widget won't be painted.
+        If false, widget won't be painted or dispatched.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -29,6 +31,7 @@ class Widget:
         pos: Point=Point(0, 0),
         *,
         is_transparent=False,
+        is_visible=True,
         is_enabled=True,
         default_char=" ",
         default_color_pair=WHITE_ON_BLACK,
@@ -36,6 +39,7 @@ class Widget:
         self._dim = dim
         self.pos = pos
         self.is_transparent = is_transparent
+        self.is_visible = is_visible
         self.is_enabled = is_enabled
 
         self.parent = None
@@ -298,6 +302,9 @@ class Widget:
         overlap = overlapping_region
 
         for child in self.children:
+            if not child.is_visible or not child.is_enabled:
+                continue
+
             if region := overlap(rect, child):
                 dest_slice, child_rect = region
                 child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
@@ -348,13 +355,12 @@ def overlapping_region(rect: Rect, child: Widget):
     cr = child.right - l
 
     if (
-        not child.is_enabled
-        or ct >= h
+        ct >= h
         or cb < 0
         or cl >= w
         or cr < 0
     ):
-        # Child is not visible or doesn't overlap.
+        # Child doesn't overlap.
         return False
 
     ##################################################################
