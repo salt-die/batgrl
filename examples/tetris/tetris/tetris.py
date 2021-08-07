@@ -155,7 +155,7 @@ class Tetris(Image):
         # Darken background behind matrix.
         left = self.matrix_widget.left
         right = self.matrix_widget.right
-        self.colors[:, left:right] //= 2
+        self.colors[:, left:right] //= 3
 
     def new_game(self):
         self._game_task.cancel()
