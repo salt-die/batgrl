@@ -32,7 +32,6 @@ MOVE_RESET = 15
 QUEUE_ID = count()
 
 TETRIS_BACKGROUND_PATH = Path("..") / "images" / "background_2.png"
-MATRIX_BACKGROUND_PATH = Path("..") / "images" / "black.png"
 
 def tetromino_generator(tetrominos):
     """
