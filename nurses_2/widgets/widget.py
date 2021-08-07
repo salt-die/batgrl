@@ -271,15 +271,15 @@ class Widget:
         Yield all descendents of the root widget.
         """
         for child in self.root.children:
+            yield child
             yield from child.walk()
 
     def walk(self):
         """
         Yield self and all descendents.
         """
-        yield self
-
-        for child in widget.children:
+        for child in self.children:
+            yield child
             yield from child.walk()
 
     def render(self, canvas_view, colors_view, rect: Rect):
