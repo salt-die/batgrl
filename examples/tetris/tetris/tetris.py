@@ -44,19 +44,18 @@ class Tetris(Widget):
     def __init__(self, matrix_dim=(22, 10), arika=True, is_transparent=False):
         ##################################################################
         # Tetris Layout includes the matrix (where pieces stack) and two #
-        # displays for held piece and next piece. Piece displays are 4x8 #
-        # with 1x2 borders. Empty space between display components has   #
-        # width 2.                                                       #
+        # displays for held piece and next piece. Piece displays have    #
+        # width 8, spacing has width S, and borders have width B.        #
         #                                                                #
         #                      Total width:                              #
-        #                                                                #
-        #  2 + 2 + 8 + 2 + 2 +    2 * w    + 2 + 2 + 8 + 2 + 2           #
-        #      +-------+       +---------+       +-------+               #
-        #      | held  |       |         |       | next  |               #
-        #      +-------+       | matrix  |       +-------+               #
+        #  S + B + 8 + B + S +    2 * w    + S + B + 8 + B + S           #
+        #                      +---------+                               #
+        #      +-------+       |         |       +-------+               #
+        #      | held  |       | matrix  |       | next  |               #
+        #      +-------+       |         |       +-------+               #
         #                      |         |                               #
         ##################################################################
-        SPACING = 2
+        SPACING = 3
         BORDER_WIDTH = 1
 
         display_geometry = {
