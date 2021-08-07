@@ -11,6 +11,7 @@ from .piece import CurrentPiece, GhostPiece, CenteredPiece
 from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
 
 GRAVITY = 1
+MAX_LEVEL = 20
 FLASH_DELAY = .1
 LOCK_DOWN_DELAY = .5
 MOVE_RESET = 15
@@ -48,7 +49,8 @@ class Tetris(Widget):
 
         super().__init__(dim=(h, 2 * w + 32), default_color_pair=TETRIS_APP_BACKGROUND_COLOR, is_transparent=is_transparent)
 
-        # Setup held display
+        # TODO: REMOVE HARDCODED POSITIONS AND DIMENSIONS OF DISPLAYS
+        # Setup HELD display
         #######################################################################################
         held_border = Widget(dim=(6, 12), pos=(2, 2), default_color_pair=HELD_BORDER_COLOR)   #
         held_border.add_text(f"{'HOLD':^12}")                                                 #
@@ -59,7 +61,7 @@ class Tetris(Widget):
         held_space.add_widget(self.held_piece)                                                #
         #######################################################################################
 
-        # Setup next display
+        # Setup NEXT display
         ##############################################################################################
         next_border = Widget(dim=(6, 12), pos=(2, 18 + 2 * w), default_color_pair=NEXT_BORDER_COLOR) #
         next_border.add_text(f"{'NEXT':^12}")                                                        #
@@ -69,6 +71,22 @@ class Tetris(Widget):
         next_border.add_widget(next_space)                                                           #
         next_space.add_widget(self.next_piece)                                                       #
         ##############################################################################################
+
+        # Setup SCORE display
+        ###########################################################################################
+        score_border = Widget(dim=(6, 12), pos=(h - 8, 2), default_color_pair=SCORE_BORDER_COLOR) #
+        score_border.add_text(f"{'SCORE':^12}")                                                   #
+        self.score_display = Widget(dim=(4, 8), pos=(1, 2), default_color_pair=SCORE_COLOR)       #
+        score_border.add_widget(self.score_display)                                               #
+        ###########################################################################################
+
+        # Setup LEVEL Display
+        ####################################################################################################
+        level_border = Widget(dim=(6, 12), pos=(h - 8, 18 + 2 * w), default_color_pair=LEVEL_BORDER_COLOR) #
+        level_border.add_text(f"{'LEVEL':^12}")                                                            #
+        self.level_display = Widget(dim=(4, 8), pos=(1, 2), default_color_pair=LEVEL_COLOR)                #
+        level_border.add_widget(self.level_display)                                                        #
+        ####################################################################################################
 
         # `matrix` is a boolean array where True values indicate that a mino exists in that location.
         # `matrix_widget` is a visual representation of `matrix` that carries canvas and color information.
@@ -83,9 +101,11 @@ class Tetris(Widget):
 
         self.tetromino_generator = tetromino_generator(ARIKA_TETROMINOS if arika else TETROMINOS)
 
-        self.add_widgets(held_border, next_border, self.matrix_widget)
+        self.add_widgets(held_border, next_border, self.matrix_widget, score_border, level_border)
 
         self._game_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+        self.is_paused = False
 
     def new_game(self):
         self._game_task.cancel()
@@ -99,18 +119,59 @@ class Tetris(Widget):
 
         self.next_piece.tetromino = next(self.tetromino_generator)
 
-        self.gravity = GRAVITY
-        self.lock_down_delay = LOCK_DOWN_DELAY
-
         self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self._game_task = asyncio.create_task(self._run_game())
 
-    async def _run_game(self):
+        self.gravity = GRAVITY
+        self.lock_down_delay = LOCK_DOWN_DELAY
+        self.score = 0
+        self.level = 1
+        self.lines_to_next_level = 5
+
         self.new_piece()
 
+    @property
+    def score(self):
+        return self._score
+
+    @score.setter
+    def score(self, value):
+        self._score = value
+        self.score_display.add_text(f"{value:^8}", row=1)
+
+    @property
+    def level(self):
+        return self._level
+
+    @level.setter
+    def level(self, value):
+        self._level = value
+        self.level_display.add_text(f"{value:^8}", row=0)
+
+    @property
+    def lines_to_next_level(self):
+        return self._lines_to_next_level
+
+    @lines_to_next_level.setter
+    def lines_to_next_level(self, value):
+        self._lines_to_next_level = value
+        self.level_display.add_text(" Lines: ", row=2)
+        self.level_display.add_text(f"{value:^8}", row=3)
+
+    async def _run_game(self):
         while True:
             self.move_current_piece(dy=1, dx=0)
             await asyncio.sleep(self.gravity)
+
+    def pause(self):
+        # TODO: Countdown on un-pause
+        if self.is_paused:
+            self._game_task = asyncio.create_task(self._run_game())
+        else:
+            self._game_task.cancel()
+            self._lock_down_task.cancel()
+
+        self.is_paused = not self.is_paused
 
     def start_lock_down(self):
         """
@@ -294,18 +355,36 @@ class Tetris(Widget):
             matrix_colors[completed_lines] = old_colors
             await asyncio.sleep(delay)
 
-        empty = completed_lines.sum()
+        nlines = completed_lines.sum()
 
-        matrix[empty:] = matrix[not_completed_lines]
-        matrix[:empty] = 0
+        matrix[nlines:] = matrix[not_completed_lines]
+        matrix[:nlines] = 0
 
-        matrix_canvas[empty:] = matrix_canvas[not_completed_lines]
-        matrix_canvas[:empty] = " "
-        matrix_colors[empty:] = matrix_colors[not_completed_lines]
-        matrix_colors[:empty] = MATRIX_BACKGROUND_COLOR
+        matrix_canvas[nlines:] = matrix_canvas[not_completed_lines]
+        matrix_canvas[:nlines] = " "
+        matrix_colors[nlines:] = matrix_colors[not_completed_lines]
+        matrix_colors[:nlines] = MATRIX_BACKGROUND_COLOR
 
         self.update_ghost_position()
+        self.update_score(nlines)
         self._lock_down_task.cancel()
+
+    def update_score(self, nlines):
+        # Original Nintendo Scoring System
+        # See https://tetris.wiki/Scoring
+        self.score += self.level * (40, 100, 300, 1200)[nlines - 1]
+
+        lines = (1, 3, 5, 8)[nlines - 1]
+        if lines >= self.lines_to_next_level:
+            self.level += 1
+            self.lines_to_next_level = 5 * self.level
+
+            # TODO: Find correct gravity increase
+            percent = .95**self.level
+            self.gravity = max(.05, percent * GRAVITY)
+            self.lock_down_delay = max(.05, percent * LOCK_DOWN_DELAY)
+        else:
+            self.lines_to_next_level -= lines
 
     def drop_current_piece(self):
         """
@@ -315,7 +394,16 @@ class Tetris(Widget):
             pass
 
     def on_press(self, key_press):
-        if key_press.key == "c-m":  # c-m is "enter"
+        key = key_press.key
+
+        if self.is_paused:
+            if key == "f1":
+                self.pause()
+                return True
+
+            return False
+
+        if key == "c-m":  # c-m is "enter"
             self.new_game()
             return
 
@@ -324,22 +412,28 @@ class Tetris(Widget):
 
         current_piece = self.current_piece
 
-        if key_press.key == "d":
-            self.move_current_piece(dx=1)
-        elif key_press.key == "a":
-            self.move_current_piece(dx=-1)
-        elif key_press.key == "s":
-            if not self.move_current_piece(dy=1):
-                self.affix_piece()
-        elif key_press.key == " ":
-            self.drop_current_piece()
-        elif key_press.key == "q":
-            self.rotate_current_piece(clockwise=False)
-        elif key_press.key == "e":
-            self.rotate_current_piece(clockwise=True)
-        elif key_press.key == "r":
-            self.new_piece(from_held=True)
-        else:
-            return False
+        if func := {
+            "right": lambda: self.move_current_piece(dx=1),
+            "6": lambda: self.move_current_piece(dx=1),
+            "left": lambda: self.move_current_piece(dx=-1),
+            "4": lambda: self.move_current_piece(dx=-1),
+            "down": lambda: self.affix_piece() if not self.move_current_piece(dy=1) else None,
+            "2": lambda: self.affix_piece() if not self.move_current_piece(dy=1) else None,
+            " ": self.drop_current_piece,
+            "8": self.drop_current_piece,
+            "c": lambda: self.new_piece(from_held=True),
+            "0": lambda: self.new_piece(from_held=True),
+            "z": lambda: self.rotate_current_piece(clockwise=False),
+            "1": lambda: self.rotate_current_piece(clockwise=False),
+            "5": lambda: self.rotate_current_piece(clockwise=False),
+            "9": lambda: self.rotate_current_piece(clockwise=False),
+            "x": self.rotate_current_piece,
+            "up": self.rotate_current_piece,
+            "3": self.rotate_current_piece,
+            "7": self.rotate_current_piece,
+            "f1": self.pause
+        }.get(key, False):
+            func()
+            return True
 
-        return True
+        return False
