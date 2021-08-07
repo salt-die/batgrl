@@ -1,4 +1,6 @@
 import asyncio
+from itertools import count
+from collections import deque
 from random import shuffle
 
 import numpy as np
@@ -10,11 +12,21 @@ from .color_scheme import *
 from .piece import CurrentPiece, GhostPiece, CenteredPiece
 from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
 
-GRAVITY = 1
+def gravity(level):
+    """
+    Tetromino fall speed per level.
+
+    See Also
+    --------
+    https://harddrop.com/wiki/Tetris_Worlds
+    """
+    return (0.8 - ((level - 1) * 0.007))**(level - 1)
+
 MAX_LEVEL = 20
 FLASH_DELAY = .1
 LOCK_DOWN_DELAY = .5
 MOVE_RESET = 15
+QUEUE_ID = count()
 
 def tetromino_generator(tetrominos):
     """
@@ -44,56 +56,73 @@ class Tetris(Widget):
         #      +-------+       | matrix  |       +-------+               #
         #                      |         |                               #
         ##################################################################
+        SPACING = 2
+        BORDER_WIDTH = 1
 
+        display_geometry = {
+            'dim': (4, 8),
+            'pos': (BORDER_WIDTH, 2 * BORDER_WIDTH),
+        }
+
+        bdim = bh, bw = 4 + 2 * BORDER_WIDTH, 8 + 4 * BORDER_WIDTH  # border dimension; border height, border width
         h, w = matrix_dim
 
-        super().__init__(dim=(h, 2 * w + 32), default_color_pair=TETRIS_APP_BACKGROUND_COLOR, is_transparent=is_transparent)
+        t, b, l, r = SPACING, h - (bh + SPACING), SPACING, 3 * SPACING + bw + 2 * w  # offsets for border widgets
 
-        # TODO: REMOVE HARDCODED POSITIONS AND DIMENSIONS OF DISPLAYS
+        super().__init__(
+            dim=(h, 4 * SPACING + 2 * bw + 2 * w),
+            default_color_pair=TETRIS_APP_BACKGROUND_COLOR,
+            is_transparent=is_transparent
+        )
+
         # Setup HELD display
-        #######################################################################################
-        held_border = Widget(dim=(6, 12), pos=(2, 2), default_color_pair=HELD_BORDER_COLOR)   #
-        held_border.add_text(f"{'HOLD':^12}")                                                 #
-        held_space = Widget(dim=(4, 8), pos=(1, 2), default_color_pair=HELD_BACKGROUND_COLOR) #
-        self.held_piece = CenteredPiece()                                                     #
-                                                                                              #
-        held_border.add_widget(held_space)                                                    #
-        held_space.add_widget(self.held_piece)                                                #
-        #######################################################################################
+        ###################################################################################
+        held_border = Widget(dim=bdim, pos=(t, l), default_color_pair=HELD_BORDER_COLOR)  #
+        held_border.add_text(f"{'HOLD':^{bdim[1]}}")                                      #
+        held_space = Widget(**display_geometry, default_color_pair=HELD_BACKGROUND_COLOR) #
+        self.held_piece = CenteredPiece()                                                 #
+                                                                                          #
+        held_border.add_widget(held_space)                                                #
+        held_space.add_widget(self.held_piece)                                            #
+        ###################################################################################
 
         # Setup NEXT display
-        ##############################################################################################
-        next_border = Widget(dim=(6, 12), pos=(2, 18 + 2 * w), default_color_pair=NEXT_BORDER_COLOR) #
-        next_border.add_text(f"{'NEXT':^12}")                                                        #
-        next_space = Widget(dim=(4, 8), pos=(1, 2), default_color_pair=NEXT_BACKGROUND_COLOR)        #
-        self.next_piece = CenteredPiece()                                                            #
-                                                                                                     #
-        next_border.add_widget(next_space)                                                           #
-        next_space.add_widget(self.next_piece)                                                       #
-        ##############################################################################################
+        ###################################################################################
+        next_border = Widget(dim=bdim, pos=(t, r), default_color_pair=NEXT_BORDER_COLOR)  #
+        next_border.add_text(f"{'NEXT':^{bdim[1]}}")                                      #
+        next_space = Widget(**display_geometry, default_color_pair=NEXT_BACKGROUND_COLOR) #
+        self.next_piece = CenteredPiece()                                                 #
+                                                                                          #
+        next_border.add_widget(next_space)                                                #
+        next_space.add_widget(self.next_piece)                                            #
+        ###################################################################################
 
         # Setup SCORE display
-        ###########################################################################################
-        score_border = Widget(dim=(6, 12), pos=(h - 8, 2), default_color_pair=SCORE_BORDER_COLOR) #
-        score_border.add_text(f"{'SCORE':^12}")                                                   #
-        self.score_display = Widget(dim=(4, 8), pos=(1, 2), default_color_pair=SCORE_COLOR)       #
-        score_border.add_widget(self.score_display)                                               #
-        ###########################################################################################
+        ####################################################################################
+        score_border = Widget(dim=bdim, pos=(b, l), default_color_pair=SCORE_BORDER_COLOR) #
+        score_border.add_text(f"{'SCORE':^{bdim[1]}}")                                     #
+        self.score_display = Widget(**display_geometry, default_color_pair=SCORE_COLOR)    #
+        score_border.add_widget(self.score_display)                                        #
+        ####################################################################################
 
         # Setup LEVEL Display
-        ####################################################################################################
-        level_border = Widget(dim=(6, 12), pos=(h - 8, 18 + 2 * w), default_color_pair=LEVEL_BORDER_COLOR) #
-        level_border.add_text(f"{'LEVEL':^12}")                                                            #
-        self.level_display = Widget(dim=(4, 8), pos=(1, 2), default_color_pair=LEVEL_COLOR)                #
-        level_border.add_widget(self.level_display)                                                        #
-        ####################################################################################################
+        ####################################################################################
+        level_border = Widget(dim=bdim, pos=(b, r), default_color_pair=LEVEL_BORDER_COLOR) #
+        level_border.add_text(f"{'LEVEL':^{bdim[1]}}")                                     #
+        self.level_display = Widget(**display_geometry, default_color_pair=LEVEL_COLOR)    #
+        level_border.add_widget(self.level_display)                                        #
+        ####################################################################################
 
         # `matrix` is a boolean array where True values indicate that a mino exists in that location.
         # `matrix_widget` is a visual representation of `matrix` that carries canvas and color information.
         # These need to be kept in sync with each other.  Anytime one is modified so must the other.
         # (Updates happen in `affix_piece` and `clear_lines` methods.)
         self.matrix = np.zeros(matrix_dim, dtype=np.bool8)
-        self.matrix_widget = Widget(dim=(h, 2 * w), pos=(0, 16), default_color_pair=MATRIX_BACKGROUND_COLOR, is_transparent=is_transparent)
+        self.matrix_widget = Widget(
+            dim=(h, 2 * w),
+            pos=(0, 2 * SPACING + bw),
+            default_color_pair=MATRIX_BACKGROUND_COLOR, is_transparent=is_transparent
+        )
 
         self.ghost_piece = GhostPiece()
         self.current_piece = CurrentPiece()
@@ -104,11 +133,16 @@ class Tetris(Widget):
         self.add_widgets(held_border, next_border, self.matrix_widget, score_border, level_border)
 
         self._game_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._clear_lines_queue = deque()
 
         self.is_paused = False
 
     def new_game(self):
         self._game_task.cancel()
+        self._lock_down_task.cancel()
+        while self._clear_lines_queue:
+            self._clear_lines_queue.popleft().cancel()
 
         self.matrix[:] = 0
         self.matrix_widget.colors[:, :] = MATRIX_BACKGROUND_COLOR
@@ -119,13 +153,12 @@ class Tetris(Widget):
 
         self.next_piece.tetromino = next(self.tetromino_generator)
 
-        self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self._game_task = asyncio.create_task(self._run_game())
 
-        self.gravity = GRAVITY
-        self.lock_down_delay = LOCK_DOWN_DELAY
-        self.score = 0
         self.level = 1
+        self.score = 0
+        self.gravity = gravity(self.level)
+        self.lock_down_delay = LOCK_DOWN_DELAY
         self.lines_to_next_level = 5
 
         self.new_piece()
@@ -222,7 +255,7 @@ class Tetris(Widget):
             next_piece.tetromino = next(self.tetromino_generator)
 
         current_piece.top = 0
-        current_piece.left = (self.matrix.shape[1] // 2 - current_piece.width // 2) * 2
+        current_piece.left = (self.matrix.shape[1] // 2 - current_piece.width // 4) * 2
 
         self.ghost_piece.tetromino = current_piece.tetromino
         self.update_ghost_position()
@@ -319,7 +352,6 @@ class Tetris(Widget):
 
         h, w = self.matrix.shape
 
-        # TODO: vectorize
         for y, x in mino_positions:
             if 0 <= y < h and 0 <= x < w:
                 self.matrix[y, x] = 1
@@ -328,14 +360,27 @@ class Tetris(Widget):
                 self.matrix_widget.canvas[y, x: x + 2] = "█"
                 self.matrix_widget.colors[y, x: x + 2, :3] = current_piece.tetromino.COLOR
 
-        asyncio.create_task(self.clear_lines())
+        task_name = str(next(QUEUE_ID))
+        self._clear_lines_queue.append(
+            asyncio.create_task(self.clear_lines(task_name), name=task_name)
+        )
 
         self.new_piece()
 
-    async def clear_lines(self):
+    async def clear_lines(self, task_name):
         """
         Clear completed lines.
         """
+        # To prevent multiple line clears from interfering with each
+        # other they are run sequentially:
+        queue = self._clear_lines_queue
+
+        while queue[0].get_name() != task_name:
+            if queue[0].done():
+                queue.popleft()
+            else:
+                await queue[0]
+
         matrix = self.matrix
         completed_lines = np.all(matrix, axis=1)
 
@@ -347,7 +392,7 @@ class Tetris(Widget):
         matrix_colors = self.matrix_widget.colors
         old_colors = matrix_colors[completed_lines].copy()
 
-        delay = FLASH_DELAY
+        delay = FLASH_DELAY * .95**(self.level - 1)
         for _ in range(10):
             matrix_colors[completed_lines] = CLEAR_LINE_FLASH_COLOR
             await asyncio.sleep(delay)
@@ -379,11 +424,8 @@ class Tetris(Widget):
         if lines >= self.lines_to_next_level:
             self.level += 1
             self.lines_to_next_level = 5 * self.level
-
-            # TODO: Find correct gravity increase
-            percent = .95**self.level
-            self.gravity = max(.05, percent * GRAVITY)
-            self.lock_down_delay = max(.05, percent * LOCK_DOWN_DELAY)
+            self.gravity = max(.05, gravity(self.level))
+            self.lock_down_delay = max(.05, .95**(self.level - 1) * LOCK_DOWN_DELAY)
         else:
             self.lines_to_next_level -= lines
 
@@ -398,6 +440,7 @@ class Tetris(Widget):
         key = key_press.key
 
         if self.is_paused:
+            # TODO: Remove this after pause modal screen is added.
             if key == "f1":
                 self.pause()
                 return True
