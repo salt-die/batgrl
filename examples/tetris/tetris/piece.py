@@ -1,3 +1,5 @@
+import numpy as np
+
 from nurses_2.widgets import Widget
 
 from .tetrominoes import Orientation
@@ -34,14 +36,29 @@ class CurrentPiece(Piece):
 
 
 class GhostPiece(Piece):
+    TRANSPARENCY = .33
+
     def render(self, canvas_view, colors_view, rect):
         tetromino = self.tetromino
         orientation = self.orientation
 
-        self.canvas = tetromino.canvases[orientation]
-        self.colors = tetromino.ghost_colors[orientation]
+        t, l, b, r, h, w = rect
 
-        super().render(canvas_view, colors_view, rect)
+        index_rect = slice(t, b), slice(l, r)
+        canvas = tetromino.canvases[orientation][index_rect]
+        colors = tetromino.colors[orientation][index_rect]
+
+        buffer = np.zeros((h, w, 6), dtype=np.float16)
+
+        # RGBA on rgb == rgb + (RGB - rgb) * A
+        np.subtract(colors, colors_view, out=buffer, dtype=np.float16)
+        np.multiply(buffer, self.TRANSPARENCY, out=buffer)
+        np.add(buffer, colors_view, out=buffer, casting="unsafe")
+
+        visible = canvas != " "
+
+        canvas_view[visible] = canvas[visible]
+        colors_view[visible] = buffer[visible]
 
 
 class CenteredPiece(CurrentPiece):
