@@ -23,14 +23,14 @@ def create_canvas(shape):
     """
     Return a nurses_2 widget canvas from a tetromino shape.
     """
-    return np.repeat(np.where(shape, "█", " "), 2, axis=1,)
+    return np.repeat(np.where(shape, "▀", " "), 2, axis=1,)
 
 def create_colors(shape, color):
     """
     Return a nurses_2 widget colors array from a tetromino shape and color.
     """
     colors = np.zeros((*shape.shape, 6), dtype=np.uint8)
-    colors[shape == 1, :3] = color
+    colors[shape == 1] = color * 2
     return np.repeat(colors, 2, axis=1)
 
 
@@ -55,10 +55,6 @@ class Tetromino:
 
         cls.colors = {
             orientation: create_colors(shape, cls.COLOR) for orientation, shape in cls.shapes.items()
-        }
-
-        cls.ghost_colors = {
-            orientation: colors // 4 for orientation, colors in cls.colors.items()
         }
 
 
