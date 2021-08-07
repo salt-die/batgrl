@@ -166,6 +166,9 @@ class Image(Widget):
         overlap = overlapping_region
 
         for child in self.children:
+            if not child.is_visible or not child.is_enabled:
+                continue
+
             if region := overlap(rect, child):
                 dest_slice, child_rect = region
                 child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
