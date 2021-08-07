@@ -202,6 +202,7 @@ class Tetris(Widget):
         if from_held and not self.can_hold:
             return
 
+        self._lock_down_task.cancel()
         self.can_hold = not from_held
 
         held_piece = self.held_piece
@@ -412,7 +413,7 @@ class Tetris(Widget):
 
         current_piece = self.current_piece
 
-        if func := {
+        if handle := {
             "right": lambda: self.move_current_piece(dx=1),
             "6": lambda: self.move_current_piece(dx=1),
             "left": lambda: self.move_current_piece(dx=-1),
@@ -433,7 +434,7 @@ class Tetris(Widget):
             "7": self.rotate_current_piece,
             "f1": self.pause
         }.get(key, False):
-            func()
+            handle()
             return True
 
         return False
