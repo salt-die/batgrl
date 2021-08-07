@@ -15,6 +15,13 @@ from .matrix import MatrixWidget
 from .piece import CurrentPiece, GhostPiece, CenteredPiece
 from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
 
+MAX_LEVEL = 20
+FLASH_DELAY = .1
+LOCK_DOWN_DELAY = .5
+MOVE_RESET = 15
+QUEUE_ID = count()
+TETRIS_BACKGROUND_PATH = Path("..") / "images" / "background_2.png"
+
 def gravity(level):
     """
     Tetromino fall speed per level.
@@ -24,14 +31,6 @@ def gravity(level):
     https://harddrop.com/wiki/Tetris_Worlds
     """
     return (0.8 - ((level - 1) * 0.007))**(level - 1)
-
-MAX_LEVEL = 20
-FLASH_DELAY = .1
-LOCK_DOWN_DELAY = .5
-MOVE_RESET = 15
-QUEUE_ID = count()
-
-TETRIS_BACKGROUND_PATH = Path("..") / "images" / "background_2.png"
 
 def tetromino_generator(tetrominos):
     """
