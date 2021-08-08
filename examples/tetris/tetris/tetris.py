@@ -245,7 +245,7 @@ class Tetris(Image):
         ghost.pos = self.current_piece.pos
         ghost.orientation = self.current_piece.orientation
 
-        while not self.collides((1, 0), ghost.orientation, ghost):
+        while not self.collides((1, 0), ghost):
             self.ghost_piece.top += 1
 
     def new_piece(self, from_held=False):
@@ -279,15 +279,18 @@ class Tetris(Image):
 
         self.move_reset = 0
 
-        if self.collides((0, 0), self.current_piece.orientation, self.current_piece):
+        if self.collides((0, 0), current_piece):
             self._game_task.cancel()
             # TODO: GAMEOVER SCREEN
 
-    def collides(self, offset, orientation, piece):
+    def collides(self, offset, piece, orientation=None):
         """
         Return True if piece collides with stack or boundaries of matrix
         with given offset (from it's current position) and orientation.
         """
+        if orientation is None:
+            orientation = piece.orientation
+
         mino_positions = (
             piece.tetromino.mino_positions[orientation]
             + (piece.top, piece.left // 2)
@@ -311,14 +314,14 @@ class Tetris(Image):
         target_orientation = orientation.rotate(clockwise=clockwise)
 
         for dy, dx in current_piece.tetromino.WALL_KICKS[orientation, target_orientation]:
-            if not self.collides((dy, dx), target_orientation, current_piece):
+            if not self.collides((dy, dx), current_piece, target_orientation):
                 current_piece.orientation = target_orientation
                 current_piece.top += dy
                 current_piece.left += 2 * dx
 
                 self.update_ghost_position()
 
-                if self.collides((1, 0), current_piece.orientation, current_piece):
+                if self.collides((1, 0), current_piece):
                     if not self._lock_down_task.done():
                         self.move_reset += 1
 
@@ -332,7 +335,7 @@ class Tetris(Image):
     def move_current_piece(self, dy=0, dx=0):
         current_piece =self.current_piece
 
-        if not self.collides((dy, dx), current_piece.orientation, current_piece):
+        if not self.collides((dy, dx), current_piece):
             if dy == 1:
                 current_piece.top += 1
 
@@ -348,7 +351,7 @@ class Tetris(Image):
                 current_piece.left += 2 * dx
                 self.update_ghost_position()
 
-            if self.collides((1, 0), current_piece.orientation, current_piece):
+            if self.collides((1, 0), current_piece):
                 self.start_lock_down()
 
             return True
