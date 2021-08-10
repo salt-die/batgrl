@@ -10,7 +10,7 @@ from .camera import Camera
 from .cube import Cube
 
 FRONT_COLOR  = RED
-BACK_COLOR   = ORANGE = from_hex("f46e07")
+BACK_COLOR   = ORANGE = Color.from_hex("f46e07")
 LEFT_COLOR   = YELLOW
 RIGHT_COLOR  = WHITE
 TOP_COLOR    = GREEN
