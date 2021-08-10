@@ -1,5 +1,7 @@
 import numpy as np
 
+_EMPTY_SLICE = slice(None)
+
 
 class Cube:
     """
@@ -23,13 +25,21 @@ class Cube:
         dtype=np.float16,
     )
 
+    NORMALS = np.array(
+        [
+            [ 0,  0, -1], # Front
+            [ 0,  0,  1], # Back
+            [ 0,  1,  0], # Top
+            [ 0, -1,  0], # Bottom
+            [-1,  0,  0], # Left
+            [ 1,  0 , 0], # Right
+        ]
+    )
+
     def __init__(self, pos):
         self.pos = pos
-
         self.vertices = self.BASE + pos
-
-        i = np.identity(3, dtype=np.float16)
-        self.normals = np.stack((i, -i))
+        self.normals = self.NORMALS.copy()
 
     def __matmul__(self, r):
         np.matmult(self.pos, r, out=self.pos)
@@ -38,24 +48,35 @@ class Cube:
 
     @property
     def front(self):
-        return self.vertices[0]
+        return 0
 
     @property
     def back(self):
-        return self.vertices[1]
+        return 1
 
     @property
     def top(self):
-        return self.vertices[:, 0]
+        return _EMPTY_SLICE, 0
 
     @property
     def bottom(self):
-        return self.vertices[:, 1]
+        return _EMPTY_SLICE, 1
 
     @property
     def left(self):
-        return self.vertices[:, :, 0]
+        return _EMPTY_SLICE, _EMPTY_SLICE, 0
 
     @property
     def right(self):
-        return self.vertices[:, :, 1]
+        return _EMPTY_SLICE, _EMPTY_SLICE, 1
+
+    @property
+    def faces(self):
+        yield from (
+            self.front,
+            self.back,
+            self.top,
+            self.bottom,
+            self.left,
+            self.right,
+        )
