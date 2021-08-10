@@ -17,14 +17,8 @@ class Camera:
     _PROJECTIONS_BUFFER = np.zeros_like(_DIRECTIONS_BUFFER)
     _POINTS_2D = np.zeros((4, 2), dtype=np.float16)
 
-    def __init__(self, widget):
-        self.widget = widget
+    def __init__(self):
         self.plane = rotation.x(self.INITIAL_X_ANGLE).copy() @ rotation.y(self.INITIAL_Y_ANGLE)
-
-    @property
-    def center(self):
-        # Note height is not divided by two -- Camera has double the height of parent's canvas.
-        return self.widget.width / 2, self.widget.height
 
     @property
     def pos(self):
@@ -34,7 +28,7 @@ class Camera:
             out=self._POSITION_BUFFER,
         )
 
-    def project_face(self, points):
+    def project_face(self, points, screen_center):
         """
         Project 4 points in 3d-space to 2d-space.
 
@@ -55,5 +49,5 @@ class Camera:
         # Adjust for screen coordinates
         points2d[:, 0] = 1 + points2d[:, 0]
         points2d[:, 1] = 1 - points2d[:, 1]
-        points2d *= self.center
+        points2d *= screen_center
         return points2d
