@@ -11,11 +11,11 @@ class Camera:
     INITIAL_X_ANGLE = np.pi / 6
     INITIAL_Y_ANGLE = np.pi / 6
 
-    _POSITION_BUFFER = np.zeros(3, dtype=np.float16)
-    _DIRECTIONS_BUFFER = np.zeros((4, 3), dtype=np.float16)
-    _SCALE_BUFFER = np.zeros((1, 4), dtype=np.float16)
+    _POSITION_BUFFER    = np.zeros(3, dtype=np.float16)
+    _DIRECTIONS_BUFFER  = np.zeros((4, 3), dtype=np.float16)
+    _SCALE_BUFFER       = np.zeros((1, 4), dtype=np.float16)
     _PROJECTIONS_BUFFER = np.zeros_like(_DIRECTIONS_BUFFER)
-    _POINTS_2D = np.zeros((4, 2), dtype=np.float16)
+    _POINTS_2D          = np.zeros((4, 2), dtype=np.float16)
 
     def __init__(self):
         self.plane = rotation.x(self.INITIAL_X_ANGLE).copy() @ rotation.y(self.INITIAL_Y_ANGLE)
