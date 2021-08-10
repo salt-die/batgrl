@@ -4,7 +4,7 @@ import rotation
 
 
 class Camera:
-    __slots__ = "widget", "plane",
+    __slots__ = "plane",
 
     Z_POS = -6
 
@@ -30,7 +30,7 @@ class Camera:
 
     def project_face(self, points, screen_center):
         """
-        Project 4 points in 3d-space to 2d-space.
+        Project four points in 3d-space to 2d-space.
 
         `points` should be a (4, 3)-shaped np.array.
         """
