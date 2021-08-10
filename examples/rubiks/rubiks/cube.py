@@ -32,9 +32,9 @@ class Cube:
         self.normals = np.stack((i, -i))
 
     def __matmul__(self, r):
-        self.pos @= r
-        self.vertices @= r
-        self.normals @= r
+        np.matmult(self.pos, r, out=self.pos)
+        np.matmult(self.vertices, r, out=self.vertices)
+        np.matmult(self.normals, r, out=self.normals)
 
     @property
     def front(self):
