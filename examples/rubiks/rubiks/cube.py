@@ -7,19 +7,17 @@ class Cube:
     """
     __slots__ = "pos", "vertices", "normals",
 
+    # This array is 2 x 2 x 2 x 3 with each of the first 3 axis representing
+    # a face of a cube.
     BASE = np.array(
         [
             [
-                [-.5,  .5,  .5],
-                [ .5,  .5,  .5],
-                [ .5, -.5,  .5],
-                [-.5, -.5,  .5],
+                [[-.5,  .5,  .5], [ .5,  .5,  .5]],
+                [[ .5, -.5,  .5], [-.5, -.5,  .5]],
             ],
             [
-                [-.5,  .5, -.5],
-                [ .5,  .5, -.5],
-                [ .5, -.5, -.5],
-                [-.5, -.5, -.5],
+                [[-.5,  .5, -.5], [ .5,  .5, -.5]],
+                [[ .5, -.5, -.5], [-.5, -.5, -.5]],
             ],
         ],
         dtype=np.float16,
@@ -37,3 +35,27 @@ class Cube:
         self.pos @= r
         self.vertices @= r
         self.normals @= r
+
+    @property
+    def front(self):
+        return self.vertices[0]
+
+    @property
+    def back(self):
+        return self.vertices[1]
+
+    @property
+    def top(self):
+        return self.vertices[:, 0]
+
+    @property
+    def bottom(self):
+        return self.vertices[:, 1]
+
+    @property
+    def left(self):
+        return self.vertices[:, :, 0]
+
+    @property
+    def right(self):
+        return self.vertices[:, :, 1]
