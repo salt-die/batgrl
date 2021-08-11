@@ -10,8 +10,8 @@ class Cube:
     BASE = np.full((2, 2, 2, 3), .5, dtype=np.float16)  # Each axis represents two faces of the cube
 
     BASE[..., 0, 0]  *= -1  # Left of cube, x-coordinates are negative
-    BASE[:, 1, :, 1] *= -1   # Bottom of cube, y-coordinates are negative
-    BASE[1, ..., 2]  *= -1   # Back of cube, z-coordinates are negative
+    BASE[:, 1, :, 1] *= -1  # Bottom of cube, y-coordinates are negative
+    BASE[1, ..., 2]  *= -1  # Back of cube, z-coordinates are negative
 
     NORMALS = np.array(
         [
