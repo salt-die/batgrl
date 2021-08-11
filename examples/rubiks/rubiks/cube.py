@@ -1,7 +1,5 @@
 import numpy as np
 
-_EMPTY_SLICE = slice(None)
-
 
 class Cube:
     """
@@ -11,24 +9,15 @@ class Cube:
 
     # This array is 2 x 2 x 2 x 3 with each of the first 3 axis representing
     # a face of a cube.
-    BASE = np.array(
-        [
-            [
-                [[-.5,  .5,  .5], [ .5,  .5,  .5]],
-                [[ .5, -.5,  .5], [-.5, -.5,  .5]],
-            ],
-            [
-                [[-.5,  .5, -.5], [ .5,  .5, -.5]],
-                [[ .5, -.5, -.5], [-.5, -.5, -.5]],
-            ],
-        ],
-        dtype=np.float16,
-    )
+    BASE = np.full((2, 2, 2, 3), .5, dtype=np.float16)
+    BASE[..., 0, 0] *= - 1  # Left of cube, x-coordinates
+    BASE[:, 1, :, 1] *= -1  # Bottom of cube, y-coordinates
+    BASE[1, ..., 2] *= -1   # Back of cube, z-coordinates
 
     NORMALS = np.array(
         [
-            [ 0,  0, -1], # Front
-            [ 0,  0,  1], # Back
+            [ 0,  0,  1], # Front
+            [ 0,  0, -1], # Back
             [ 0,  1,  0], # Top
             [ 0, -1,  0], # Bottom
             [-1,  0,  0], # Left
@@ -56,19 +45,19 @@ class Cube:
 
     @property
     def top(self):
-        return _EMPTY_SLICE, 0
+        return slice(None), 0
 
     @property
     def bottom(self):
-        return _EMPTY_SLICE, 1
+        return slice(None), 1
 
     @property
     def left(self):
-        return _EMPTY_SLICE, _EMPTY_SLICE, 0
+        return ..., 0
 
     @property
     def right(self):
-        return _EMPTY_SLICE, _EMPTY_SLICE, 1
+        return ..., 1
 
     @property
     def faces(self):
