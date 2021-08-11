@@ -78,19 +78,19 @@ class Camera:
         )
 
     @property
-    def fx(self):
+    def focal_x(self):
         return self.camera_matrix[0, 0]
 
-    @fx.setter
-    def fx(self, value):
+    @focal_x.setter
+    def focal_x(self, value):
         self.camera_matrix[0, 0] = value
 
     @property
-    def fy(self):
+    def focal_y(self):
         return self.camera_matrix[1, 1]
 
-    @fy.setter
-    def fy(self, value):
+    @focal_y.setter
+    def focal_y(self, value):
         self.camera_matrix[1, 1] = value
 
     def rotate_x(self, theta):
@@ -113,11 +113,11 @@ class Camera:
 
         if adjust_aspect:
             if w > h:
-                self.fx = h / w
-                self.fy = 1.0
+                self.focal_x = h / w
+                self.focal_y = 1.0
             else:
-                self.fx = 1.0
-                self.fy = w / h
+                self.focal_x = 1.0
+                self.focal_y = w / h
 
         points_2d, _ = cv2.projectPoints(
             cube.vertices.reshape(-1, 3),
