@@ -31,7 +31,6 @@ class Camera:
 
     def __init__(self):
         self.plane = rotation.x(self.INITIAL_X_ANGLE).copy() @ rotation.y(self.INITIAL_Y_ANGLE)
-        self.plane[:, 2] *= -1
 
     @property
     def pos(self):
@@ -48,7 +47,6 @@ class Camera:
         pos = self.pos
         plane = self.plane
         xy, z = plane[:, :2], plane[:, 2]
-
         directions = np.subtract(cube.vertices, pos, out=self._DIRECTIONS_BUFFER)
 
         scale = np.matmul(directions, z, out=self._SCALE_BUFFER)
@@ -57,10 +55,11 @@ class Camera:
         np.add(projections, pos, out=projections)
 
         points2d = np.matmul(projections, xy, out=self._POINTS_2D_BUFFER)
-        points2d[:, 0] += 1
-        points2d[:, 1] = 1 - points2d[:, 1]
+
+        # Translate to center and scale to image:
         h, w, _ = image.shape
-        points2d *= w / 2, h / 2
+        points2d += .5
+        points2d *= w, h
 
         normals = np.matmul(cube.normals, pos, out=self._NORMALS_BUFFER)
 
@@ -71,17 +70,14 @@ class Camera:
 
 
 if TESTING:
+    from itertools import product
     from cube import Cube
 
     image = np.zeros((200, 200, 3), dtype=np.uint8)
 
-    cubes = [
-        Cube(np.array([3, 3, 0])),
-        Cube(np.array([2, 2, 1])),
-        Cube(np.array([1, 3, 0])),
-    ]
-
+    cubes = [Cube(np.array(position)) for position in product((-1, 0, 1), repeat=3)]
     cam = Camera()
+    cubes.sort(key=lambda cube: np.linalg.norm(cam.pos - cube.pos), reverse=True)
 
     for cube in cubes:
         cam.render_cube(cube, image)
