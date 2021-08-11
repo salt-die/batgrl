@@ -48,28 +48,31 @@ class Camera:
         pos = self.pos
         plane = self.plane
         xy, z = plane[:, :2], plane[:, 2]
+
+        # Long form of `(cube.vertices - pos) / ((cube.vertices - pos) @ z)`
+        # to re-use buffers.
         directions = np.subtract(cube.vertices, pos, out=self._DIRECTIONS_BUFFER)
 
         scale = np.matmul(directions, z, out=self._SCALE_BUFFER)
 
         projections = np.divide(directions, scale.T, out=self._PROJECTIONS_BUFFER)
-        np.add(projections, pos, out=projections)
+        projections += pos
 
-        points2d = np.matmul(projections, xy, out=self._POINTS_2D_BUFFER)
+        points_2d = np.matmul(projections, xy, out=self._POINTS_2D_BUFFER)
 
         # Translate to center and scale to image:
         h, w, _ = image.shape
-        points2d += .5
-        points2d *= w, h
+        points_2d += .5
+        points_2d *= w, h
 
-        pts = self._POINTS_2D_INT_BUFFER
-        pts[:] = points2d  # Cast to int
+        vertices_2d = self._POINTS_2D_INT_BUFFER
+        vertices_2d[:] = points_2d  # Cast to int
 
         normals = np.matmul(cube.normals, pos, out=self._NORMALS_BUFFER)
 
         for normal, face, color in zip(normals, cube.faces, FACE_COLORS):
             if normal > 0:
-                cv2.fillConvexPoly(image, pts[face], color[::-1] if TESTING else color)
+                cv2.fillConvexPoly(image, vertices_2d[face], color[::-1] if TESTING else color)
 
 
 if TESTING:
