@@ -32,12 +32,11 @@ class Camera:
 
     def __init__(self):
         self.plane = rotation.x(self.INITIAL_X_ANGLE).copy() @ rotation.y(self.INITIAL_Y_ANGLE)
-
     @property
     def pos(self):
         return np.multiply(
             self.plane[:, 2],
-            -self.Z_DISTANCE,
+            self.Z_DISTANCE,
             out=self._POSITION_BUFFER,
         )
 
@@ -79,7 +78,7 @@ if TESTING:
     from itertools import product
     from cube import Cube
 
-    image = np.zeros((200, 200, 3), dtype=np.uint8)
+    image = np.zeros((300, 300, 3), dtype=np.uint8)
 
     cubes = [Cube(np.array(position)) for position in product((-1, 0, 1), repeat=3)]
     cam = Camera()
