@@ -7,7 +7,7 @@ class Cube:
     """
     __slots__ = "pos", "vertices", "normals",
 
-    BASE = np.full((2, 2, 2, 3), .5, dtype=np.float16)  # Each axis represents two faces of the cube
+    BASE = np.full((2, 2, 2, 3), .45, dtype=np.float16)  # Each axis represents two faces of the cube
 
     BASE[..., 0, 0]  *= -1  # Left of cube, x-coordinates are negative
     BASE[:, 1, :, 1] *= -1  # Bottom of cube, y-coordinates are negative
@@ -19,8 +19,8 @@ class Cube:
             [ 0,  0, -1], # Back
             [ 0,  1,  0], # Top
             [ 0, -1,  0], # Bottom
-            [-1,  0,  0], # Left
             [ 1,  0 , 0], # Right
+            [-1,  0,  0], # Left
         ]
     )
 
@@ -56,6 +56,6 @@ class Cube:
             ((0, 1, 1, 0),            0, (0, 0, 1, 1)),  # Top
             ((0, 1, 1, 0),            1, (0, 0, 1, 1)),  # Bottom
              #  Normal  #  # Swapped  #
-            ((0, 0, 1, 1), (0, 1, 1, 0),            0),  # Left
             ((0, 0, 1, 1), (0, 1, 1, 0),            1),  # Right
+            ((0, 0, 1, 1), (0, 1, 1, 0),            0),  # Left
         )
