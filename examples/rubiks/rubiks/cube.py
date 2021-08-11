@@ -41,7 +41,7 @@ class Cube:
             ```
             self.vertices[faces[0]]
             ```
-        is the top face.
+        is the front face.
 
         Faces are returned in (front, back, top, bottom, left, right) order.
 
