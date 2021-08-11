@@ -27,6 +27,7 @@ class Camera:
     _SCALE_BUFFER         = np.zeros((1, 2, 2, 2), dtype=np.float16)
     _PROJECTIONS_BUFFER   = np.zeros_like(_DIRECTIONS_BUFFER)
     _POINTS_2D_BUFFER     = np.zeros((2, 2, 2, 2), dtype=np.float16)
+    _POINTS_2D_INT_BUFFER = np.zeros((2, 2, 2, 2), dtype=int)
     _NORMALS_BUFFER       = np.zeros(6, dtype=np.float16)
 
     def __init__(self):
@@ -61,12 +62,14 @@ class Camera:
         points2d += .5
         points2d *= w, h
 
+        pts = self._POINTS_2D_INT_BUFFER
+        pts[:] = points2d  # Cast to int
+
         normals = np.matmul(cube.normals, pos, out=self._NORMALS_BUFFER)
 
         for normal, face, color in zip(normals, cube.faces, FACE_COLORS):
             if normal > 0:
-                pts = cv2.convexHull(points2d[face].reshape(-1, 2).astype(int))  # Re-order the points; TODO: optimize slices instead
-                cv2.fillConvexPoly(image, pts, color[::-1] if TESTING else color)
+                cv2.fillConvexPoly(image, pts[face], color[::-1] if TESTING else color)
 
 
 if TESTING:

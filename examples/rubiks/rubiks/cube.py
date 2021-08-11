@@ -1,7 +1,5 @@
 import numpy as np
 
-_EMPTY_SLICE = slice(None)
-
 
 class Cube:
     """
@@ -9,9 +7,8 @@ class Cube:
     """
     __slots__ = "pos", "vertices", "normals",
 
-    # This array is 2 x 2 x 2 x 3 with each of the first 3 axis representing
-    # a face of a cube.
-    BASE = np.full((2, 2, 2, 3), .5, dtype=np.float16)
+    BASE = np.full((2, 2, 2, 3), .5, dtype=np.float16)  # Each axis represents two faces of the cube
+
     BASE[..., 0, 0]  *= - 1  # Left of cube, x-coordinates are negative
     BASE[:, 1, :, 1] *= -1   # Bottom of cube, y-coordinates are negative
     BASE[1, ..., 2]  *= -1   # Back of cube, z-coordinates are negative
@@ -38,36 +35,27 @@ class Cube:
         np.matmult(self.normals, r, out=self.normals)
 
     @property
-    def front(self):
-        return 0
-
-    @property
-    def back(self):
-        return 1
-
-    @property
-    def top(self):
-        return _EMPTY_SLICE, 0
-
-    @property
-    def bottom(self):
-        return _EMPTY_SLICE, 1
-
-    @property
-    def left(self):
-        return _EMPTY_SLICE, _EMPTY_SLICE, 0
-
-    @property
-    def right(self):
-        return _EMPTY_SLICE, _EMPTY_SLICE, 1
-
-    @property
     def faces(self):
-        yield from (
-            self.front,
-            self.back,
-            self.top,
-            self.bottom,
-            self.left,
-            self.right,
+        """
+        Return indices that represent the faces of the cube, i.e.,
+            ```
+            self.vertices[faces[0]]
+            ```
+        is the top face.
+
+        Faces are returned in (front, back, top, bottom, left, right) order.
+
+        Vertices on one axis are swapped so that all vertices are in clockwise-order.
+        This is required for the `fillConvexPoly` function in `cv2`.
+        """
+        return (
+                           #  Normal  #  # Swapped  #
+            (           0, (0, 0, 1, 1), (0, 1, 1, 0)),  # Front
+            (           1, (0, 0, 1, 1), (0, 1, 1, 0)),  # Back
+             # Swapped  #                #  Normal  #
+            ((0, 1, 1, 0),            0, (0, 0, 1, 1)),  # Top
+            ((0, 1, 1, 0),            1, (0, 0, 1, 1)),  # Bottom
+             #  Normal  #  # Swapped  #
+            ((0, 0, 1, 1), (0, 1, 1, 0),            0),  # Left
+            ((0, 0, 1, 1), (0, 1, 1, 0),            1),  # Right
         )
