@@ -1,3 +1,7 @@
+"""
+Currently hunting down a bug that causes distortions when viewed at some angles and
+preventing cubes from exactly lining up.
+"""
 import cv2
 import numpy as np
 
@@ -16,7 +20,7 @@ else:
 class Camera:
     __slots__ = "plane",
 
-    Z_DISTANCE = 6
+    Z_DISTANCE = -6
 
     INITIAL_X_ANGLE = np.pi / 6
     INITIAL_Y_ANGLE = np.pi / 6
@@ -77,6 +81,7 @@ class Camera:
 
 if TESTING:
     from itertools import product
+
     from cube import Cube
 
     image = np.zeros((300, 300, 3), dtype=np.uint8)
