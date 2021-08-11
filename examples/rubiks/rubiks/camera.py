@@ -1,7 +1,3 @@
-"""
-Currently hunting down a bug that causes distortions when viewed at some angles and
-preventing cubes from exactly lining up.
-"""
 import cv2
 import numpy as np
 
