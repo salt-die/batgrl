@@ -27,7 +27,7 @@ class Camera:
     _SCALE_BUFFER         = np.zeros((1, 2, 2, 2), dtype=np.float16)
     _PROJECTIONS_BUFFER   = np.zeros_like(_DIRECTIONS_BUFFER)
     _POINTS_2D_BUFFER     = np.zeros((2, 2, 2, 2), dtype=np.float16)
-    _POINTS_2D_INT_BUFFER = np.zeros((2, 2, 2, 2), dtype=int)
+    _POINTS_2D_INT_BUFFER = np.zeros_like(_POINTS_2D_BUFFER, dtype=int)
     _NORMALS_BUFFER       = np.zeros(6, dtype=np.float16)
 
     def __init__(self):
