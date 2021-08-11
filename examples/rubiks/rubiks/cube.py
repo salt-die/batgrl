@@ -1,5 +1,7 @@
 import numpy as np
 
+_EMPTY_SLICE = slice(None)
+
 
 class Cube:
     """
@@ -10,9 +12,9 @@ class Cube:
     # This array is 2 x 2 x 2 x 3 with each of the first 3 axis representing
     # a face of a cube.
     BASE = np.full((2, 2, 2, 3), .5, dtype=np.float16)
-    BASE[..., 0, 0] *= - 1  # Left of cube, x-coordinates
-    BASE[:, 1, :, 1] *= -1  # Bottom of cube, y-coordinates
-    BASE[1, ..., 2] *= -1   # Back of cube, z-coordinates
+    BASE[..., 0, 0]  *= - 1  # Left of cube, x-coordinates are negative
+    BASE[:, 1, :, 1] *= -1   # Bottom of cube, y-coordinates are negative
+    BASE[1, ..., 2]  *= -1   # Back of cube, z-coordinates are negative
 
     NORMALS = np.array(
         [
@@ -45,19 +47,19 @@ class Cube:
 
     @property
     def top(self):
-        return slice(None), 0
+        return _EMPTY_SLICE, 0
 
     @property
     def bottom(self):
-        return slice(None), 1
+        return _EMPTY_SLICE, 1
 
     @property
     def left(self):
-        return ..., 0
+        return _EMPTY_SLICE, _EMPTY_SLICE, 0
 
     @property
     def right(self):
-        return ..., 1
+        return _EMPTY_SLICE, _EMPTY_SLICE, 1
 
     @property
     def faces(self):
