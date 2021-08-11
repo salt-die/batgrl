@@ -43,7 +43,7 @@ class Cube:
             ```
         is the front face.
 
-        Faces are returned in (front, back, top, bottom, left, right) order.
+        Faces are returned in (front, back, top, bottom, left, right)-order.
 
         Vertices on one axis are swapped so that all vertices are in clockwise-order.
         This is required for the `fillConvexPoly` function in `cv2`.
