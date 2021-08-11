@@ -32,6 +32,7 @@ class Camera:
 
     def __init__(self):
         self.plane = rotation.x(self.INITIAL_X_ANGLE).copy() @ rotation.y(self.INITIAL_Y_ANGLE)
+
     @property
     def pos(self):
         return np.multiply(
