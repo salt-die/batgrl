@@ -1,14 +1,16 @@
 import asyncio
 import numpy as np
 
+CUBE_WIDTH = .9
+
 
 class Cube:
     """
     A 1 x 1 x 1 cube.
     """
-    __slots__ = "pos", "vertices", "normals", "is_selected",
+    __slots__ = "pos", "face_pos", "vertices", "normals", "is_selected",
 
-    BASE = np.full((2, 2, 2, 3), .45)  # Each axis represents two faces of the cube
+    BASE = np.full((2, 2, 2, 3), CUBE_WIDTH / 2)  # Each axis represents two faces of the cube
 
     BASE[..., 0, 0]  *= -1  # Left of cube, x-coordinates are negative
     BASE[:, 1, :, 1] *= -1  # Bottom of cube, y-coordinates are negative
@@ -28,12 +30,14 @@ class Cube:
 
     def __init__(self, pos):
         self.pos = np.array(pos, dtype=float)
+        self.face_pos = self.pos + self.NORMALS * CUBE_WIDTH / 2
         self.vertices = self.BASE + pos
         self.normals = self.NORMALS.copy()
         self.is_selected = False
 
     def __matmul__(self, r):
         np.matmul(self.pos, r, out=self.pos)
+        np.matmul(self.face_pos, r, out=self.face_pos)
         np.matmul(self.vertices, r, out=self.vertices)
         np.matmul(self.normals, r, out=self.normals)
 

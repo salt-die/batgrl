@@ -120,8 +120,14 @@ class Camera:
         vertices_2d = self._POINTS_2D_INT_BUFFER
         vertices_2d[:] = points_2d.reshape(2, 2, 2, 2)  # Cast to int
 
-        normals = np.matmul(cube.normals, self.pos, out=self._NORMALS_BUFFER)
+        pos = self.pos
+        normals = np.matmul(cube.normals, pos, out=self._NORMALS_BUFFER)
 
-        for normal, face, color, select_color in zip(normals, cube.faces, FACE_COLORS, SELECTED_COLORS):
-            if normal > 0:
-                cv2.fillConvexPoly(image, vertices_2d[face], select_color if cube.is_selected else color)
+        it = zip(normals, cube.face_pos, cube.faces, SELECTED_COLORS if cube.is_selected else FACE_COLORS)
+
+        faces = [(face_pos, face, color) for normal, face_pos, face, color in it if normal > 0]
+        # Sort faces by distance to camera.
+        faces.sort(key=lambda tup: np.linalg.norm(tup[0] - pos), reverse=True)
+
+        for _, face, color in faces:
+            cv2.fillConvexPoly(image, vertices_2d[face], color)
