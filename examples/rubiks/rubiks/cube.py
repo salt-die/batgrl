@@ -27,7 +27,7 @@ class Cube:
     )
 
     def __init__(self, pos):
-        self.pos = pos.astype(float)
+        self.pos = np.array(pos, dtype=float)
         self.vertices = self.BASE + pos
         self.normals = self.NORMALS.copy()
         self.is_selected = False
