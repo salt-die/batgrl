@@ -13,6 +13,8 @@ from .cube import Cube
 from . import rotation
 
 ROTATION_FRAMES = 15
+ROTATION_FRAME_DURATION = .08
+QUARTER_TURN = np.pi / 2
 
 
 class RubiksCube(GrabbableBehavior, Widget):
@@ -42,7 +44,7 @@ class RubiksCube(GrabbableBehavior, Widget):
         ).reshape(3, 3, 3)
 
         self._selected_row = self._selected_axis = 0
-        self.selected_axis = 0
+        self._select()
 
         self.resize(self.dim)
 
@@ -91,11 +93,11 @@ class RubiksCube(GrabbableBehavior, Widget):
         super().resize(dim)
 
         self._colors_buffer = np.zeros((2 * self.height, self.width, 3), dtype=np.uint8)
-        self._update_colors()
+        self._needs_update = True
 
-    def _update_colors(self):
+    def _redraw_cube(self):
         """
-        Repaint the cube.
+        Redraw the cube.
         """
         colors_buffer = self._colors_buffer
         colors_buffer[:, :] = self.background_color
@@ -109,17 +111,22 @@ class RubiksCube(GrabbableBehavior, Widget):
 
         np.concatenate((colors_buffer[::2], colors_buffer[1::2]), axis=-1, out=self.colors)
 
+        self._needs_update = False
+
     def on_press(self, key_press):
         if key_press.key.lower() == "r":
             if not self._rotate_task.done():
                 return True
 
-            clockwise = int(key_press.key.isupper())
+            clockwise=int(key_press.key.isupper())
 
-            theta = np.pi / 2 / ROTATION_FRAMES
-            r = getattr(rotation, 'xzy'[self.selected_axis])(theta * (1 if clockwise else -1))
-
-            self._rotate_task = asyncio.create_task(self._rotate(r, list(self.selected_cubes)))
+            self._rotate_task = asyncio.create_task(
+                self._rotate(
+                    cubes=list(self.selected_cubes),
+                    axis='xyz'[self.selected_axis],
+                    clockwise=clockwise,
+                )
+            )
 
             cubes = self.cubes
             selected_indices = self.selected_indices
@@ -142,14 +149,40 @@ class RubiksCube(GrabbableBehavior, Widget):
         else:
             return False
 
-        self._update_colors()
+        self._needs_update = True
         return True
 
-    async def _rotate(self, r, cubes):
+    async def _rotate(self, cubes, axis, clockwise):
+        theta = QUARTER_TURN / ROTATION_FRAMES * (1 if clockwise else -1)
+        r = getattr(rotation, axis)(theta).copy()
+
         for _ in range(ROTATION_FRAMES):
             for cube in cubes:
                 cube @ r
 
-            self._update_colors()
+            self._needs_update = True
 
-            await asyncio.sleep(.08)
+            await asyncio.sleep(ROTATION_FRAME_DURATION)
+
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+        self._last_mouse_pos = mouse_event.position
+
+    def grab_update(self, mouse_event):
+        last_y, last_x = self._last_mouse_pos
+        y, x = self._last_mouse_pos = mouse_event.position
+
+        # Horizontal movement rotates around vertical axis and vice-versa.
+        alpha = np.pi * (last_y - y) / self.height  # vertical movement flipped, world coordinates opposite screen coordinates
+        self.camera.rotate_x(alpha)
+
+        beta = np.pi * (x - last_x) / self.width
+        self.camera.rotate_y(beta)
+
+        self._needs_update = True
+
+    def render(self, canvas_view, colors_view, rect):
+        if self._needs_update:
+            self._redraw_cube()
+
+        super().render(canvas_view, colors_view, rect)
