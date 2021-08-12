@@ -9,9 +9,10 @@ from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from nurses_2.colors import BLACK
 
+from . import rotation
 from .camera import Camera
 from .cube import Cube
-from . import rotation
+from .background import Background
 
 ROTATION_FRAMES = 15
 ROTATION_FRAME_DURATION = .08
@@ -28,14 +29,12 @@ class RubiksCube(GrabbableBehavior, Widget):
         self,
         *args,
         aspect_ratio=True,
-        background_color=BLACK,
         default_char="▀",
         **kwargs
     ):
         super().__init__(*args, default_char=default_char, **kwargs)
 
         self.aspect_ratio = aspect_ratio
-        self.background_color = background_color
 
         self.camera = Camera()
         self.cubes = np.array(
@@ -45,6 +44,10 @@ class RubiksCube(GrabbableBehavior, Widget):
 
         self._selected_row = self._selected_axis = 0
         self._select()
+
+        self.background = Background()
+        self.add_widget(self.background)
+        self.background.play()
 
         self.resize(self.dim)
 
@@ -91,37 +94,12 @@ class RubiksCube(GrabbableBehavior, Widget):
 
     def resize(self, dim):
         super().resize(dim)
-
         self._colors_buffer = np.zeros((2 * self.height, self.width, 3), dtype=np.uint8)
-        self._needs_update = True
-
-    def _redraw_cube(self):
-        """
-        Redraw the cube.
-        """
-        colors_buffer = self._colors_buffer
-        colors_buffer[:, :] = self.background_color
-
-        cam = self.camera
-        cubes = list(self.cubes.flatten())
-        cubes.sort(key=lambda cube: np.linalg.norm(cam.pos - cube.pos), reverse=True)
-
-        for cube in cubes:
-            cam.render_cube(cube, colors_buffer, self.aspect_ratio)
-
-        np.concatenate((colors_buffer[::2], colors_buffer[1::2]), axis=-1, out=self.colors)
-
-        self._needs_update = False
 
     def on_press(self, key_press):
         if key_press.key.lower() == "r":
-
-
             self.rotate_selected_cubes(is_clockwise=key_press.key.isupper())
-
-            return True
-
-        if key_press.key == "up":
+        elif key_press.key == "up":
             self.selected_row += 1
         elif key_press.key == "down":
             self.selected_row -= 1
@@ -134,7 +112,6 @@ class RubiksCube(GrabbableBehavior, Widget):
         else:
             return False
 
-        self._needs_update = True
         return True
 
     def rotate_selected_cubes(self, is_clockwise, animate=True):
@@ -202,8 +179,6 @@ class RubiksCube(GrabbableBehavior, Widget):
             for cube in cubes:
                 cube @ r
 
-            self._needs_update = True
-
             await asyncio.sleep(ROTATION_FRAME_DURATION)
 
     def grab(self, mouse_event):
@@ -221,10 +196,20 @@ class RubiksCube(GrabbableBehavior, Widget):
         beta = np.pi * (x - last_x) / self.width
         self.camera.rotate_y(beta)
 
-        self._needs_update = True
-
     def render(self, canvas_view, colors_view, rect):
-        if self._needs_update:
-            self._redraw_cube()
+        colors_buffer = self._colors_buffer
+
+        frame_colors = self.background.current_frame.colors
+        colors_buffer[::2] = frame_colors[..., :3]
+        colors_buffer[1::2] = frame_colors[..., 3:]
+
+        cam = self.camera
+        cubes = list(self.cubes.flatten())
+        cubes.sort(key=lambda cube: np.linalg.norm(cam.pos - cube.pos), reverse=True)
+
+        for cube in cubes:
+            cam.render_cube(cube, colors_buffer, self.aspect_ratio)
+
+        np.concatenate((colors_buffer[::2], colors_buffer[1::2]), axis=-1, out=self.colors)
 
         super().render(canvas_view, colors_view, rect)

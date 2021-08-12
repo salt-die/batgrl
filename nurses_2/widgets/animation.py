@@ -90,6 +90,10 @@ class Animation(Widget):
         for frame, _ in self.frames:
             frame.interpolation = new_interpolation
 
+    @property
+    def current_frame(self):
+        return self.frames[self._current_frame][0]
+
     def resize(self, dim):
         for frame, _ in self.frames:
             frame.resize(dim)
@@ -132,5 +136,5 @@ class Animation(Widget):
         Stop animation.
         """
         self.pause()
-        self.current_frame = 0
+        self._current_frame = 0
         self.children[0] = self.frames[0][0]
