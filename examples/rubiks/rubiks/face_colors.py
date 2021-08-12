@@ -15,3 +15,10 @@ FACE_COLORS = (
     LEFT_COLOR,
     RIGHT_COLOR,
 )
+
+SELECTED_COLORS = tuple(
+    Color(
+        *(127 + channel // 2 for channel in color)
+    )
+    for color in FACE_COLORS
+)
