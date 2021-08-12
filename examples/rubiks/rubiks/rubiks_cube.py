@@ -117,12 +117,13 @@ class RubiksCube(GrabbableBehavior, Widget):
             if not self._rotate_task.done():
                 return True
 
-            clockwise=int(key_press.key.isupper())
+            clockwise = int(key_press.key.isupper())
+            axis = 'xyz'[self.selected_axis]
 
             self._rotate_task = asyncio.create_task(
                 self._rotate(
                     cubes=list(self.selected_cubes),
-                    axis='xyz'[self.selected_axis],
+                    axis=axis,
                     clockwise=clockwise,
                 )
             )
@@ -130,10 +131,11 @@ class RubiksCube(GrabbableBehavior, Widget):
             cubes = self.cubes
             selected_indices = self.selected_indices
 
-            cubes[selected_indices] = np.rot90(
-                cubes[selected_indices],
-                clockwise,
-            )
+            direction = 2 * clockwise - 1
+            if axis == 'z':
+                direction *= -1
+
+            cubes[selected_indices] = np.rot90(cubes[selected_indices], direction)
 
             return True
 
@@ -152,7 +154,11 @@ class RubiksCube(GrabbableBehavior, Widget):
         return True
 
     async def _rotate(self, cubes, axis, clockwise):
-        theta = QUARTER_TURN / ROTATION_FRAMES * (1 if clockwise else -1)
+        theta = QUARTER_TURN / ROTATION_FRAMES
+
+        if not clockwise:
+            theta *= -1
+
         r = self._ROTATION_BUFFER
         r[:] = getattr(rotation, axis)(theta)
 
