@@ -1,6 +1,6 @@
 # 3D Rubik's Cube.
 
-Shameless port of [Robust Reindeer's Codejam 8 Project](https://github.com/bjoseru/pdcj8-robust-reindeer) to nurses.
+Shameless port of [Robust Reindeer's Codejam 8 Project](https://github.com/bjoseru/pdcj8-robust-reindeer) to `nurses_2`.
 
 Controls
 --------
