@@ -6,7 +6,7 @@ from . import rotation
 
 
 class Camera:
-    __slots__ = "translation", "rotation", "plane", "camera_matrix"
+    __slots__ = "translation", "plane", "camera_matrix"
 
     INITIAL_Z_DISTANCE = 6.0
 
@@ -21,25 +21,23 @@ class Camera:
 
     DISTORTION_COEF = np.array([0.0, 0.0, 0.0, 0.0])
 
-    _POSITION_BUFFER = np.zeros(3, dtype=float)
     _POINTS_2D_INT_BUFFER = np.zeros((2, 2, 2, 2), dtype=int)
     _NORMALS_BUFFER = np.zeros(6, dtype=float)
+    _POS_BUFFER = np.zeros(3, dtype=float)
 
     def __init__(self):
         self.translation = np.array([0.0, 0.0, self.INITIAL_Z_DISTANCE])
 
-        self.rotation = np.array(
+        self.plane = plane = np.array(
             [
-                self.INITIAL_X_ANGLE,
-                self.INITIAL_Y_ANGLE,
-                self.INITIAL_Z_ANGLE,
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
             ]
         )
-
-        self.plane = plane = np.array([0.0, 0.0, -1.0])
-        np.matmul(rotation.x(self.INITIAL_X_ANGLE), plane, out=plane)
-        np.matmul(rotation.y(self.INITIAL_Y_ANGLE), plane, out=plane)
-        np.matmul(rotation.z(self.INITIAL_Z_ANGLE), plane, out=plane)
+        np.matmul(plane, rotation.x(self.INITIAL_X_ANGLE), out=plane)
+        np.matmul(plane, rotation.y(self.INITIAL_Y_ANGLE), out=plane)
+        np.matmul(plane, rotation.z(self.INITIAL_Z_ANGLE), out=plane)
 
         self.camera_matrix = np.array(
             [
@@ -59,11 +57,14 @@ class Camera:
 
     @property
     def pos(self):
-        return np.multiply(
-            self.plane,
-            self.z_distance,
-            out=self._POSITION_BUFFER,
-        )
+        """
+        Position of camera in world coordinates.
+        """
+        # General camera position is calculated as
+        # `-self.plane.T @ self.translation`, but
+        # translation for camera is [0, 0, Z],
+        # so simplification is possible.
+        return np.multiply(self.plane[2], -self.z_distance, out=self._POS_BUFFER)
 
     @property
     def focal_x(self):
@@ -82,16 +83,13 @@ class Camera:
         self.camera_matrix[1, 1] = value
 
     def rotate_x(self, theta):
-        self.rotation[0] += theta
-        np.matmul(rotation.x(theta), self.plane, out=self.plane)
+        np.matmul(self.plane, rotation.x(theta), out=self.plane)
 
     def rotate_y(self, theta):
-        self.rotation[1] += theta
-        np.matmul(rotation.y(theta), self.plane, out=self.plane)
+        np.matmul(self.plane, rotation.y(theta), out=self.plane)
 
     def rotate_z(self, theta):
-        self.rotation[2] += theta
-        np.matmul(rotation.z(theta), self.plane, out=self.plane)
+        np.matmul(self.plane, rotation.z(theta), out=self.plane)
 
     def render_cube(self, cube, image, aspect_ratio=True):
         """
@@ -109,7 +107,7 @@ class Camera:
 
         points_2d, _ = cv2.projectPoints(
             cube.vertices.reshape(-1, 3),
-            self.rotation,
+            cv2.Rodrigues(self.plane)[0],
             self.translation,
             self.camera_matrix,
             self.DISTORTION_COEF,
