@@ -21,6 +21,8 @@ class RubiksCube(GrabbableBehavior, Widget):
     """
     A 3-dimensional Rubik's Cube.
     """
+    _ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
+
     def __init__(
         self,
         *args,
@@ -36,10 +38,7 @@ class RubiksCube(GrabbableBehavior, Widget):
 
         self.camera = Camera()
         self.cubes = np.array(
-            [
-                Cube(np.array(position))
-                for position in product((-1, 0, 1), (1, 0, -1), (1, 0, -1))
-            ],
+            list(map( Cube, product((-1, 0, 1), (1, 0, -1), (1, 0, -1)) )),
             dtype=object,
         ).reshape(3, 3, 3)
 
@@ -154,7 +153,8 @@ class RubiksCube(GrabbableBehavior, Widget):
 
     async def _rotate(self, cubes, axis, clockwise):
         theta = QUARTER_TURN / ROTATION_FRAMES * (1 if clockwise else -1)
-        r = getattr(rotation, axis)(theta).copy()
+        r = self._ROTATION_BUFFER
+        r[:] = getattr(rotation, axis)(theta)
 
         for _ in range(ROTATION_FRAMES):
             for cube in cubes:
