@@ -1,3 +1,4 @@
+import asyncio
 import numpy as np
 
 
@@ -5,7 +6,7 @@ class Cube:
     """
     A 1 x 1 x 1 cube.
     """
-    __slots__ = "pos", "vertices", "normals",
+    __slots__ = "pos", "vertices", "normals", "is_selected",
 
     BASE = np.full((2, 2, 2, 3), .45)  # Each axis represents two faces of the cube
 
@@ -21,18 +22,20 @@ class Cube:
             [ 0, -1,  0], # Bottom
             [-1,  0,  0], # Left
             [ 1,  0 , 0], # Right
-        ]
+        ],
+        dtype=float,
     )
 
     def __init__(self, pos):
-        self.pos = pos
+        self.pos = pos.astype(float)
         self.vertices = self.BASE + pos
         self.normals = self.NORMALS.copy()
+        self.is_selected = False
 
     def __matmul__(self, r):
-        np.matmult(self.pos, r, out=self.pos)
-        np.matmult(self.vertices, r, out=self.vertices)
-        np.matmult(self.normals, r, out=self.normals)
+        np.matmul(self.pos, r, out=self.pos)
+        np.matmul(self.vertices, r, out=self.vertices)
+        np.matmul(self.normals, r, out=self.normals)
 
     @property
     def faces(self):
