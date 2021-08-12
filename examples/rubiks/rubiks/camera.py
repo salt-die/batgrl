@@ -6,7 +6,15 @@ from . import rotation
 
 
 class Camera:
-    __slots__ = "translation", "plane", "camera_matrix"
+    __slots__ = (
+        "translation",
+        "plane",
+        "camera_matrix",
+        # Buffers
+        "_POINTS_2D_INT_BUFFER",
+        "_NORMALS_BUFFER",
+        "_POS_BUFFER",
+    )
 
     INITIAL_Z_DISTANCE = 6.0
 
@@ -21,11 +29,11 @@ class Camera:
 
     DISTORTION_COEF = np.array([0.0, 0.0, 0.0, 0.0])
 
-    _POINTS_2D_INT_BUFFER = np.zeros((2, 2, 2, 2), dtype=int)
-    _NORMALS_BUFFER = np.zeros(6, dtype=float)
-    _POS_BUFFER = np.zeros(3, dtype=float)
-
     def __init__(self):
+        self._POINTS_2D_INT_BUFFER = np.zeros((2, 2, 2, 2), dtype=int)
+        self._NORMALS_BUFFER = np.zeros(6, dtype=float)
+        self._POS_BUFFER = np.zeros(3, dtype=float)
+
         self.translation = np.array([0.0, 0.0, self.INITIAL_Z_DISTANCE])
 
         self.plane = plane = np.array(

@@ -21,8 +21,6 @@ class RubiksCube(GrabbableBehavior, Widget):
     """
     A 3-dimensional Rubik's Cube.
     """
-    _ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
-
     def __init__(
         self,
         *args,
@@ -31,6 +29,7 @@ class RubiksCube(GrabbableBehavior, Widget):
         **kwargs
     ):
         super().__init__(*args, default_char=default_char, **kwargs)
+        self._ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
 
         self.aspect_ratio = aspect_ratio
 
