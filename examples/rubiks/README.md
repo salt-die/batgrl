@@ -13,4 +13,6 @@ Controls
 
 `left` / `right` to change axis
 
+`s` to scamble the cube
+
 Drag mouse to rotate entire cube.

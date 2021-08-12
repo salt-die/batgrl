@@ -1,5 +1,6 @@
 import asyncio
 from itertools import product
+from random import randrange
 
 import numpy as np
 import cv2
@@ -114,28 +115,9 @@ class RubiksCube(GrabbableBehavior, Widget):
 
     def on_press(self, key_press):
         if key_press.key.lower() == "r":
-            if not self._rotate_task.done():
-                return True
 
-            clockwise = int(key_press.key.isupper())
-            axis = 'xyz'[self.selected_axis]
 
-            self._rotate_task = asyncio.create_task(
-                self._rotate(
-                    cubes=list(self.selected_cubes),
-                    axis=axis,
-                    clockwise=clockwise,
-                )
-            )
-
-            cubes = self.cubes
-            selected_indices = self.selected_indices
-
-            direction = 2 * clockwise - 1
-            if axis == 'z':
-                direction *= -1
-
-            cubes[selected_indices] = np.rot90(cubes[selected_indices], direction)
+            self.rotate_selected_cubes(is_clockwise=key_press.key.isupper())
 
             return True
 
@@ -147,16 +129,70 @@ class RubiksCube(GrabbableBehavior, Widget):
             self.selected_axis -= 1
         elif key_press.key == "right":
             self.selected_axis += 1
+        elif key_press.key == "s":
+            self.scramble()
         else:
             return False
 
         self._needs_update = True
         return True
 
-    async def _rotate(self, cubes, axis, clockwise):
+    def rotate_selected_cubes(self, is_clockwise, animate=True):
+        """
+        Rotate the currently selected plane.
+        """
+        if not self._rotate_task.done():
+            return
+
+        axis = 'xyz'[self.selected_axis]
+
+        if animate:
+            self._rotate_task = asyncio.create_task(
+                self._rotate(
+                    cubes=list(self.selected_cubes),
+                    axis=axis,
+                    is_clockwise=is_clockwise,
+                )
+            )
+        else:
+            theta = QUARTER_TURN
+            if not is_clockwise:
+                theta *= -1
+
+            r = getattr(rotation, axis)(theta)
+
+            for cube in self.selected_cubes:
+                cube @ r
+
+        cubes = self.cubes
+        selected_indices = self.selected_indices
+
+        direction = 2 * is_clockwise - 1
+        if axis == 'z':
+            direction *= -1
+
+        cubes[selected_indices] = np.rot90(cubes[selected_indices], direction)
+
+    def scramble(self, nmoves=20):
+        current_row = self._selected_row
+        current_axis = self._selected_axis
+        self._unselect()
+
+        for _ in range(nmoves):
+            self._selected_row = randrange(3)
+            self._selected_axis = randrange(3)
+            clockwise = randrange(2)
+
+            self.rotate_selected_cubes(clockwise, animate=False)
+
+        self._selected_row = current_row
+        self._selected_axis = current_axis
+        self._select()
+
+    async def _rotate(self, cubes, axis, is_clockwise):
         theta = QUARTER_TURN / ROTATION_FRAMES
 
-        if not clockwise:
+        if not is_clockwise:
             theta *= -1
 
         r = self._ROTATION_BUFFER
