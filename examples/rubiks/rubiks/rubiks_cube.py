@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 
 from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors.draggable_behavior import DraggableBehavior
+from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from nurses_2.colors import BLACK
 
 from .camera import Camera
@@ -15,7 +15,7 @@ from . import rotation
 ROTATION_FRAMES = 15
 
 
-class RubiksCube(DraggableBehavior, Widget):
+class RubiksCube(GrabbableBehavior, Widget):
     """
     A 3-dimensional Rubik's Cube.
     """
