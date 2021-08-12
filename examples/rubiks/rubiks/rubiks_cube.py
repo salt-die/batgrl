@@ -29,6 +29,7 @@ class RubiksCube(GrabbableBehavior, Widget):
         **kwargs
     ):
         super().__init__(*args, default_char=default_char, **kwargs)
+
         self._ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
 
         self.aspect_ratio = aspect_ratio
@@ -118,7 +119,7 @@ class RubiksCube(GrabbableBehavior, Widget):
         if not self._rotate_task.done():
             return
 
-        axis = 'xyz'[self.selected_axis]
+        axis = "xyz"[self.selected_axis]
 
         if animate:
             self._rotate_task = asyncio.create_task(
@@ -142,7 +143,7 @@ class RubiksCube(GrabbableBehavior, Widget):
         selected_indices = self.selected_indices
 
         direction = 2 * is_clockwise - 1
-        if axis == 'z':
+        if axis == "z":
             direction *= -1
 
         cubes[selected_indices] = np.rot90(cubes[selected_indices], direction)
