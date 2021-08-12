@@ -3,11 +3,9 @@ from itertools import product
 from random import randrange
 
 import numpy as np
-import cv2
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
-from nurses_2.colors import BLACK
 
 from . import rotation
 from .camera import Camera
