@@ -1,24 +1,13 @@
 # nurses_2 - terminal graphics
 
-> A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses) depending on [prompt-toolkit](https://github.com/prompt-toolkit) instead of curses.`nurses_2` is meant for vt100 enabled, true color terminals.  (No support otherwise.)
+> A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses). [nurses](https://www.github.com/salt-die/nurses) is dead. `nurses_2` depends on [prompt-toolkit](https://github.com/prompt-toolkit) instead of curses. `nurses_2` is meant for vt100 enabled, true color terminals.  (No support otherwise.)
 
-This is a widget and async-centric library for creating graphical applications in the terminal. Why would you want to create graphical applications in a terminal? Because you like to!
-
-# /examples/basic_example_1.py
-
-![Basic example 1](preview_images/basic_example_1.gif)
+This is a widget and async-centric library for creating graphical applications in the terminal.
+Only the truly mad would venture here; here be dragons.
 
 # /examples/exploding_logo.py
 
 ![Exploding logo example](preview_images/exploding_logo.gif)
-
-# /examples/button_example.py
-
-![Button example](preview_images/button_example.gif)
-
-# /examples/image_example.py
-
-![Image example](preview_images/image_example.gif)
 
 # /examples/exploding_logo_redux.py
 
@@ -35,3 +24,7 @@ This is a widget and async-centric library for creating graphical applications i
 # /examples/tetris
 
 ![Tetris demonstration](preview_images/tetris_demonstration.gif)
+
+# /examples/rubiks
+
+![Rubik's Cube demonstration](preview_images/rubiks_demonstration.gif)
