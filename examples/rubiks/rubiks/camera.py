@@ -1,16 +1,8 @@
 import cv2
 import numpy as np
 
-import rotation
-
-TESTING = __name__ == "__main__"
-
-if TESTING:
-    # Running as a standalone file
-    from face_colors import FACE_COLORS
-else:
-    # Relative import will work.
-    from .face_colors import FACE_COLORS
+from .face_colors import FACE_COLORS, SELECTED_COLORS
+from . import rotation
 
 
 class Camera:
@@ -101,13 +93,13 @@ class Camera:
         self.rotation[2] += theta
         np.matmul(rotation.z(theta), self.plane, out=self.plane)
 
-    def render_cube(self, cube, image, adjust_aspect=True):
+    def render_cube(self, cube, image, aspect_ratio=True):
         """
         Project and render a cube onto an image array.
         """
         h, w, _ = image.shape
 
-        if adjust_aspect:
+        if aspect_ratio:
             if w > h:
                 self.focal_x = h / w
                 self.focal_y = 1.0
@@ -132,23 +124,6 @@ class Camera:
 
         normals = np.matmul(cube.normals, self.pos, out=self._NORMALS_BUFFER)
 
-        for normal, face, color in zip(normals, cube.faces, FACE_COLORS):
+        for normal, face, color, select_color in zip(normals, cube.faces, FACE_COLORS, SELECTED_COLORS):
             if normal > 0:
-                cv2.fillConvexPoly(image, vertices_2d[face], color[::-1] if TESTING else color)
-
-
-if TESTING:
-    from itertools import product
-
-    from cube import Cube
-
-    image = np.zeros((150, 300, 3), dtype=np.uint8)
-
-    cubes = [Cube(np.array(position)) for position in product((-1, 0, 1), repeat=3)]
-    cam = Camera()
-    cubes.sort(key=lambda cube: np.linalg.norm(cam.pos - cube.pos), reverse=True)
-
-    for cube in cubes:
-        cam.render_cube(cube, image)
-
-    cv2.imwrite('test.png', image)
+                cv2.fillConvexPoly(image, vertices_2d[face], select_color if cube.is_selected else color)
