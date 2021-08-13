@@ -37,14 +37,7 @@ class Camera:
 
         self.translation = np.array([0.0, 0.0, self.INITIAL_Z_DISTANCE])
 
-        self.plane = plane = np.array(
-            [
-                [1.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0],
-                [0.0, 0.0, 1.0],
-            ]
-        )
-        np.matmul(plane, rotation.x(self.INITIAL_X_ANGLE), out=plane)
+        self.plane = plane = rotation.x(self.INITIAL_X_ANGLE).copy()
         np.matmul(plane, rotation.y(self.INITIAL_Y_ANGLE), out=plane)
         np.matmul(plane, rotation.z(self.INITIAL_Z_ANGLE), out=plane)
 
