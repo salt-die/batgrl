@@ -3,6 +3,7 @@ from itertools import product
 from random import randrange
 
 import numpy as np
+from numpy.linalg import norm
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
@@ -15,6 +16,8 @@ from .background import Background
 ROTATION_FRAMES = 15
 ROTATION_FRAME_DURATION = .08
 QUARTER_TURN = np.pi / 2
+
+
 
 
 class RubiksCube(GrabbableBehavior, Widget):
@@ -203,7 +206,7 @@ class RubiksCube(GrabbableBehavior, Widget):
 
         cam = self.camera
         cubes = list(self.cubes.flatten())
-        cubes.sort(key=lambda cube: np.linalg.norm(cam.pos - cube.pos), reverse=True)
+        cubes.sort(key=lambda cube: norm(cam.pos - cube.pos), reverse=True)
 
         for cube in cubes:
             cam.render_cube(cube, colors_buffer, self.aspect_ratio)
