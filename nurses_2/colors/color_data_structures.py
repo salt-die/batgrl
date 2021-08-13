@@ -6,6 +6,13 @@ __all__ = (
     "color_pair"
 )
 
+def clamp_channel(channel):
+    if channel < 0:
+        return 0
+    if channel > 255:
+        return 255
+    return channel
+
 
 class Color(NamedTuple):
     """
@@ -26,6 +33,11 @@ class Color(NamedTuple):
             int(hexcode[:2], 16),
             int(hexcode[2:4], 16),
             int(hexcode[4:], 16),
+        )
+
+    def __mul__(self, other):
+        return type(self)(
+            *(clamp_channel(channel * other) for channel in self)
         )
 
 
