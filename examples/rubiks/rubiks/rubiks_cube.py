@@ -18,8 +18,6 @@ ROTATION_FRAME_DURATION = .08
 QUARTER_TURN = np.pi / 2
 
 
-
-
 class RubiksCube(GrabbableBehavior, Widget):
     """
     A 3-dimensional Rubik's Cube.
