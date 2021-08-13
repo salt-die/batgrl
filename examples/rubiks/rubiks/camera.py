@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from numpy.linalg import norm
 
 from .face_colors import FACE_COLORS, SELECTED_COLORS
 from . import rotation
@@ -134,8 +135,11 @@ class Camera:
         it = zip(normals, cube.face_pos, cube.faces, SELECTED_COLORS if cube.is_selected else FACE_COLORS)
 
         faces = [(face_pos, face, color) for normal, face_pos, face, color in it if normal > 0]
-        # Sort faces by distance to camera.
-        faces.sort(key=lambda tup: np.linalg.norm(tup[0] - pos), reverse=True)
+        faces = [(norm(face_pos - pos), face, color) for face_pos, face, color in faces]
 
-        for _, face, color in faces:
-            cv2.fillConvexPoly(image, vertices_2d[face], color)
+        # Sort faces by distance to camera.
+        faces.sort(key=lambda tup: tup[0], reverse=True)
+
+        for distance, face, color in faces:
+                                                               # Darken color by distance #
+            cv2.fillConvexPoly(image, vertices_2d[face], color * (7 ** (-distance * .1)))
