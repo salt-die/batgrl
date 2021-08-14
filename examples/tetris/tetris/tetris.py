@@ -12,6 +12,7 @@ from nurses_2.widgets.widget_utilities import clamp
 
 from .color_scheme import *
 from .matrix import MatrixWidget
+from .modal_screen import GAME_OVER, PAUSED, ModalScreen
 from .piece import CurrentPiece, GhostPiece, CenteredPiece
 from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
 
@@ -155,6 +156,10 @@ class Tetris(Image):
         right = self.matrix_widget.right
         self.colors[:, left:right] //= 3
 
+        self.paused_screen = ModalScreen(PAUSED, self.pause)
+        self.game_over_screen = ModalScreen(GAME_OVER, self.new_game)
+        self.add_widgets(self.paused_screen, self.game_over_screen)
+
     def new_game(self):
         self._game_task.cancel()
         self._lock_down_task.cancel()
@@ -214,12 +219,12 @@ class Tetris(Image):
             await asyncio.sleep(self.gravity)
 
     def pause(self):
-        # TODO: Countdown on un-pause
         if self.is_paused:
             self._game_task = asyncio.create_task(self._run_game())
         else:
             self._game_task.cancel()
             self._lock_down_task.cancel()
+            self.paused_screen.enable()
 
         self.is_paused = not self.is_paused
 
@@ -281,7 +286,7 @@ class Tetris(Image):
 
         if self.collides((0, 0), current_piece):
             self._game_task.cancel()
-            # TODO: GAMEOVER SCREEN
+            self.game_over_screen.enable()
 
     def collides(self, offset, piece, orientation=None):
         """
@@ -355,6 +360,9 @@ class Tetris(Image):
                 self.start_lock_down()
 
             return True
+
+        elif dy and self._lock_down_task.done():
+            self.start_lock_down()
 
         return False
 
@@ -456,26 +464,14 @@ class Tetris(Image):
             pass
 
     def on_press(self, key_press):
+        if self.game_over_screen.is_enabled or self.paused_screen.is_enabled:
+            return True
+
         key = key_press.key
 
-        if self.is_paused:
-            # TODO: Remove this after pause modal screen is added.
-            if key == "f1":
-                self.pause()
-                return True
-
-            return False
-
-        if key == "c-m":  # c-m is "enter"
-            self.new_game()
-            return
-
-        if self._game_task.done():
-            return
-
-        current_piece = self.current_piece
-
         if handle := {
+            "f1": self.pause,
+            "c-m": self.new_game,
             "right": lambda: self.move_current_piece(dx=1),
             "6": lambda: self.move_current_piece(dx=1),
             "left": lambda: self.move_current_piece(dx=-1),
