@@ -468,9 +468,6 @@ class Tetris(Image):
             pass
 
     def on_press(self, key_press):
-        if self.modal_screen.is_enabled:
-            return True
-
         key = key_press.key
 
         if handle := {
