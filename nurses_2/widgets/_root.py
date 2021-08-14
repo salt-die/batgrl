@@ -115,6 +115,9 @@ class _Root(Widget):
         )
 
         for child in self.children:
+            if not child.is_visible or not child.is_enabled:
+                continue
+
             if region := overlap(rect, child):
                 dest_slice, child_rect = region
                 child.render(canvas[dest_slice], colors[dest_slice], child_rect)
