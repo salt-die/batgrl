@@ -134,5 +134,4 @@ class Camera:
         faces.sort(key=lambda tup: tup[0], reverse=True)
 
         for distance, face, color in faces:
-                                                               # Darken color by distance #
-            cv2.fillConvexPoly(image, vertices_2d[face], color * (7 ** (-distance * .1)))
+            cv2.fillConvexPoly(image, vertices_2d[face], color.fog(distance))

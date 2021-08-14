@@ -35,9 +35,17 @@ class Color(NamedTuple):
             int(hexcode[4:], 16),
         )
 
-    def __mul__(self, other):
+    def fog(self, distance, scale=7, exp=.1):
+        """
+        Return color as if seen through a fog from a distance.
+
+        Color will be multiplied by:
+            `scale ** (-distance * exp)`
+        """
+        factor = scale ** (-distance * exp)
+
         return type(self)(
-            *(clamp_channel(channel * other) for channel in self)
+            *(clamp_channel(channel * factor) for channel in self)
         )
 
 
