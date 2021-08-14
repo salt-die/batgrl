@@ -498,7 +498,7 @@ class Tetris(Image):
             "up"   : self.rotate_current_piece,
             "3"    : self.rotate_current_piece,
             "7"    : self.rotate_current_piece,
-            "f1"   : self.pause
+            "f1"   : self.pause,
         }.get(key, False):
             handle()
             return True
