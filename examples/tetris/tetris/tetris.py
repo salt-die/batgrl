@@ -286,7 +286,9 @@ class Tetris(Image):
 
         if self.collides((0, 0), current_piece):
             self._game_task.cancel()
-            self.game_over_screen.enable()
+            game_over = self.game_over_screen
+            game_over.enable()
+            game_over.add_text(f"{f'Final Score: {self.score}':^{game_over.width}}", row=-2)
 
     def collides(self, offset, piece, orientation=None):
         """
