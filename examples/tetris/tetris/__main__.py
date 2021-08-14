@@ -11,8 +11,10 @@ class AutoPositionTetris(AutoPositionBehavior, Tetris):
 class TetrisApp(App):
     async def on_start(self):
         tetris = AutoPositionTetris(pos_hint=(.5, .5), anchor=Anchor.CENTER)
+
         self.root.add_widget(tetris)
-        tetris.game_over_screen.enable()
+
+        tetris.modal_screen.enable(callback=tetris.new_game, is_game_over=True)
 
 
 TetrisApp().run()

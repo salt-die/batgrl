@@ -65,8 +65,6 @@ PAUSED = """
 class ModalScreen(AutoPositionBehavior, Widget):
     def __init__(
         self,
-        display,
-        callback,
         anchor=Anchor.CENTER,
         pos_hint=(.5, .5),
         is_enabled=False,
@@ -82,9 +80,6 @@ class ModalScreen(AutoPositionBehavior, Widget):
         for i, color in enumerate(GRADIENT):
             self.colors[i, :] = color
 
-        self.display = display
-        self.callback = callback
-
         self._countdown_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
     def on_press(self, key_press):
@@ -93,13 +88,15 @@ class ModalScreen(AutoPositionBehavior, Widget):
 
         return True
 
-    def enable(self):
+    def enable(self, callback, is_game_over):
+        self.callback = callback
+
         if self.parent is not self.root:
             root = self.root
             self.parent.remove_widget(self)
             root.add_widget(self)
 
-        for i, line in enumerate(self.display, start=1):
+        for i, line in enumerate(GAME_OVER if is_game_over else PAUSED, start=1):
             self.add_text(line, row=i)
 
         self._line_glow_task = asyncio.create_task(self._line_glow())

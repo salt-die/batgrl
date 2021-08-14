@@ -12,7 +12,7 @@ from nurses_2.widgets.widget_utilities import clamp
 
 from .color_scheme import *
 from .matrix import MatrixWidget
-from .modal_screen import GAME_OVER, PAUSED, ModalScreen
+from .modal_screen import ModalScreen
 from .piece import CurrentPiece, GhostPiece, CenteredPiece
 from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
 
@@ -156,9 +156,8 @@ class Tetris(Image):
         right = self.matrix_widget.right
         self.colors[:, left:right] //= 3
 
-        self.paused_screen = ModalScreen(PAUSED, self.pause)
-        self.game_over_screen = ModalScreen(GAME_OVER, self.new_game)
-        self.add_widgets(self.paused_screen, self.game_over_screen)
+        self.modal_screen = ModalScreen()
+        self.add_widget(self.modal_screen)
 
     def new_game(self):
         self._game_task.cancel()
@@ -224,7 +223,10 @@ class Tetris(Image):
         else:
             self._game_task.cancel()
             self._lock_down_task.cancel()
-            self.paused_screen.enable()
+
+            modal = self.modal_screen
+            modal.enable(callback=self.pause, is_game_over=False)
+            modal.add_text(f"{f'Current Score: {self.score}':^{modal.width}}", row=-2)
 
         self.is_paused = not self.is_paused
 
@@ -286,9 +288,9 @@ class Tetris(Image):
 
         if self.collides((0, 0), current_piece):
             self._game_task.cancel()
-            game_over = self.game_over_screen
-            game_over.enable()
-            game_over.add_text(f"{f'Final Score: {self.score}':^{game_over.width}}", row=-2)
+            modal = self.modal_screen
+            modal.enable(callback=self.new_game, is_game_over=True)
+            modal.add_text(f"{f'Final Score: {self.score}':^{modal.width}}", row=-2)
 
     def collides(self, offset, piece, orientation=None):
         """
@@ -466,7 +468,7 @@ class Tetris(Image):
             pass
 
     def on_press(self, key_press):
-        if self.game_over_screen.is_enabled or self.paused_screen.is_enabled:
+        if self.modal_screen.is_enabled:
             return True
 
         key = key_press.key
