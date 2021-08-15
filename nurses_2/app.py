@@ -11,9 +11,9 @@ from .colors import BLACK_ON_BLACK
 from .mouse.handler import create_vt100_mouse_event
 from .widgets._root import _Root
 
-ESCAPE_TIMEOUT = .05  # Seconds before we flush an escape character in the input queue.
-POLL_INTERVAL = .5  # Seconds between polling for resize events.
-REFRESH_INTERVAL = 0  # Seconds between screen redraws.
+FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
+RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
+RENDER_INTERVAL      = 0     # Seconds between screen renders.
 
 
 class App(ABC):
@@ -36,7 +36,8 @@ class App(ABC):
     Notes
     -----
     To create an app, inherit this class and implement the async method `on_start`. Typical
-    use would be to add widgets to `self.root` and schedule those widgets' coroutines.
+    use would be to add widgets to `self.root` (the root of the widget tree) and schedule those widgets'
+    coroutines. `on_start` is scheduled concurrently so it may run indefinitely if needed.
 
     Example
     -------
@@ -74,7 +75,7 @@ class App(ABC):
             from prompt_toolkit.output.windows10 import is_win_vt100_enabled
 
             if not is_win_vt100_enabled() and not is_conemu_ansi():
-                raise RuntimeError("nurses not supported on non-vt100 enabled terminals")
+                raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 
         try:
             asyncio.run(self._run_async())
@@ -121,7 +122,7 @@ class App(ABC):
 
                 nonlocal flush_timer
                 flush_timer.cancel()
-                flush_timer = loop.call_later(ESCAPE_TIMEOUT, flush_input)
+                flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
 
             def flush_input():
                 """
@@ -131,20 +132,22 @@ class App(ABC):
                     if key.key == exit_key:
                         return self.exit()
 
-                    if key.key in MOUSE_EVENTS:
-                        dispatch_click(create_mouse_event(key))
+                    if key.key == Keys.WindowsMouseEvent:
+                        dispatch_click(key.data)
+                    elif key.key == Keys.Vt100MouseEvent:
+                        dispatch_click(create_vt100_mouse_event(key.data))
                     else:
                         dispatch_press(key)
 
             async def poll_size():
                 """
-                Poll terminal dimensions every `POLL_INTERVAL` seconds. Resize if dimensions have changed.
+                Poll terminal dimensions every `RESIZE_POLL_INTERVAL` seconds. Resize if dimensions have changed.
                 """
                 size = env_out.get_size()
                 resize = root.resize
 
                 while True:
-                    await asyncio.sleep(POLL_INTERVAL)
+                    await asyncio.sleep(RESIZE_POLL_INTERVAL)
 
                     new_size = env_out.get_size()
                     if size != new_size:
@@ -153,12 +156,12 @@ class App(ABC):
 
             async def auto_render():
                 """
-                Render screen every `REFRESH_INTERVAL` seconds.
+                Render screen every `RENDER_INTERVAL` seconds.
                 """
                 render = root.render
 
                 while True:
-                    await asyncio.sleep(REFRESH_INTERVAL)
+                    await asyncio.sleep(RENDER_INTERVAL)
                     render()
 
             with env_in.raw_mode(), env_in.attach(read_from_input):
