@@ -1,17 +1,12 @@
 from typing import NamedTuple
 
+from ..utils import clamp
+
 __all__ = (
     "Color",
     "ColorPair",
     "color_pair",
 )
-
-def clamp_channel(channel):
-    if channel < 0:
-        return 0
-    if channel > 255:
-        return 255
-    return channel
 
 
 class Color(NamedTuple):
@@ -45,7 +40,7 @@ class Color(NamedTuple):
         factor = scale ** (-distance * exp)
 
         return type(self)(
-            *(clamp_channel(channel * factor) for channel in self)
+            *(clamp(channel * factor, 0, 255) for channel in self)
         )
 
 

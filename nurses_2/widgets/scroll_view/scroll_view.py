@@ -1,8 +1,8 @@
 from ...colors import Color
 from ...mouse import MouseEventType
+from ...utils import clamp
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
-from ..widget_utilities import clamp
 from .scrollbars import _HorizontalBar, _VerticalBar
 from .scrollbar_data_structures import ScrollBarSettings
 
@@ -73,8 +73,8 @@ class ScrollView(GrabbableBehavior, Widget):
         self.show_vertical_bar = show_vertical_bar
         self.show_horizontal_bar = show_horizontal_bar
         self.scrollwheel_enabled = scrollwheel_enabled
-        self._vertical_proportion = clamp(vertical_proportion)
-        self._horizontal_proportion = clamp(horizontal_proportion)
+        self._vertical_proportion = clamp(vertical_proportion, 0, 1)
+        self._horizontal_proportion = clamp(horizontal_proportion, 0, 1)
         self._view = None
         self._grabbed = False
 
@@ -90,7 +90,7 @@ class ScrollView(GrabbableBehavior, Widget):
     @vertical_proportion.setter
     def vertical_proportion(self, value):
         if self.allow_vertical_scroll:
-            self._vertical_proportion = clamp(value)
+            self._vertical_proportion = clamp(value, 0, 1)
         vertical_bar = self.children[0]
         vertical_bar.indicator.update_geometry()
 
@@ -101,7 +101,7 @@ class ScrollView(GrabbableBehavior, Widget):
     @horizontal_proportion.setter
     def horizontal_proportion(self, value):
         if self.allow_horizontal_scroll:
-            self._horizontal_proportion = clamp(value)
+            self._horizontal_proportion = clamp(value, 0, 1)
         horizontal_bar = self.children[1]
         horizontal_bar.indicator.update_geometry()
 
@@ -223,14 +223,14 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def _scroll_left(self, n=1):
         if self._view is not None:
-            self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance)
+            self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance, 0, 1)
 
     def _scroll_right(self, n=1):
         self._scroll_left(-n)
 
     def _scroll_up(self, n=1):
         if self._view is not None:
-            self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance)
+            self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance, 0, 1)
 
     def _scroll_down(self, n=1):
         self._scroll_up(-n)

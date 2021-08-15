@@ -1,4 +1,4 @@
-from ..widget_utilities import clamp
+from ...utils import clamp
 from .grabbable_behavior import GrabbableBehavior
 
 
@@ -9,7 +9,7 @@ class DraggableBehavior(GrabbableBehavior):
     Parameters
     ----------
     disable_oob : bool, default: False
-        If true, widget won't be traslated outside of its parent's bounding box.
+        If true, widget won't be translated outside of its parent's bounding box.
     disable_ptf : bool, default: False
         If true, widget won't be pulled-to-front when clicked.
     allow_vertical : bool, default: True

@@ -1,6 +1,6 @@
 from ..mouse import MouseEventType
+from ..utils import clamp
 from .widget import Widget
-from .widget_utilities import clamp
 
 
 class Scatter(Widget):
@@ -11,7 +11,7 @@ class Scatter(Widget):
     Parameters
     ----------
     disable_oob : bool, default: False
-        Disallow widgets from being translated out-of-bounds if True.
+        Disallow widgets from being translated out-of-bounds if true.
     disable_ptf : bool, default: False
         If true, widgets won't be pulled-to-front when clicked.
     """
@@ -37,8 +37,8 @@ class Scatter(Widget):
                 grabbed.left += x - last_x
 
                 if self.disable_oob:
-                    grabbed.top = clamp(grabbed.top, 0, self.height - grabbed.height)
-                    grabbed.left = clamp(grabbed.left, 0, self.width - grabbed.width)
+                    grabbed.top = clamp(grabbed.top, 0, self.height - grabbed.height, 0, 1)
+                    grabbed.left = clamp(grabbed.left, 0, self.width - grabbed.width, 0, 1)
 
             return True
 
