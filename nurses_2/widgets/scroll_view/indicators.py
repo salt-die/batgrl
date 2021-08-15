@@ -16,6 +16,7 @@ class _IndicatorBehavior:
 
     def ungrab(self, mouse_event):
         super().ungrab(mouse_event)
+
         self.update_color(mouse_event)
 
     def on_click(self, mouse_event):
@@ -42,16 +43,12 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
     def grab(self, mouse_event):
         super().grab(mouse_event)
         self.colors[..., 3:] = self.active_color
-        self._last_y = mouse_event.position.y
 
     def grab_update(self, mouse_event):
         vertical_bar = self.parent
         scroll_view = vertical_bar.parent
 
-        dy = mouse_event.position.y - self._last_y
-        self._last_y = mouse_event.position.y
-
-        scroll_view.vertical_proportion += dy / vertical_bar.fill_width
+        scroll_view.vertical_proportion += self.mouse_dy / vertical_bar.fill_width
 
 
 class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
@@ -70,13 +67,9 @@ class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
     def grab(self, mouse_event):
         super().grab(mouse_event)
         self.colors[..., 3:] = self.active_color
-        self._last_x = mouse_event.position.x
 
     def grab_update(self, mouse_event):
         horizontal_bar = self.parent
         scroll_view = horizontal_bar.parent
 
-        dx = mouse_event.position.x - self._last_x
-        self._last_x = mouse_event.position.x
-
-        scroll_view.horizontal_proportion += dx / horizontal_bar.fill_width
+        scroll_view.horizontal_proportion += self.mouse_dx / horizontal_bar.fill_width

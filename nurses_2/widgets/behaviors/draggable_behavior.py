@@ -34,19 +34,15 @@ class DraggableBehavior(GrabbableBehavior):
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
-        self._last_mouse_pos = mouse_event.position
 
         if not self.disable_ptf:
             self.parent.pull_to_front(self)
 
     def grab_update(self, mouse_event):
-        last_y, last_x = self._last_mouse_pos
-        y, x = self._last_mouse_pos = mouse_event.position
-
         if self.allow_vertical:
-            self.top += y - last_y
+            self.top += self.mouse_dy
         if self.allow_horizontal:
-            self.left += x - last_x
+            self.left += self.mouse_dx
 
         if self.disable_oob:
             self.top = clamp(self.top, 0, self.parent.height - self.height)

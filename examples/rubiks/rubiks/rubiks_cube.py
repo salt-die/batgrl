@@ -180,19 +180,12 @@ class RubiksCube(GrabbableBehavior, Widget):
 
             await asyncio.sleep(ROTATION_FRAME_DURATION)
 
-    def grab(self, mouse_event):
-        super().grab(mouse_event)
-        self._last_mouse_pos = mouse_event.position
-
     def grab_update(self, mouse_event):
-        last_y, last_x = self._last_mouse_pos
-        y, x = self._last_mouse_pos = mouse_event.position
-
         # Horizontal movement rotates around vertical axis and vice-versa.
-        alpha = np.pi * (last_y - y) / self.height  # vertical movement flipped, world coordinates opposite screen coordinates
+        alpha = np.pi * -self.mouse_dy / self.height  # vertical movement flipped, world coordinates opposite screen coordinates
         self.camera.rotate_x(alpha)
 
-        beta = np.pi * (x - last_x) / self.width
+        beta = np.pi * self.mouse_dx / self.width
         self.camera.rotate_y(beta)
 
     def render(self, canvas_view, colors_view, rect):
