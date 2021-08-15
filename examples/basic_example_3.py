@@ -1,5 +1,6 @@
 """
-Scatter and DraggableBehavior example.
+Scatter and DraggableBehavior both inherit from GrabbableBehavior, but what
+happens if you want a draggable Scatter? Exactly what you'd expect!
 """
 import asyncio
 
@@ -9,35 +10,24 @@ from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, WHITE, gradient, color_pair
 from nurses_2.widgets import Widget
 from nurses_2.widgets.scatter import Scatter
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.behaviors.draggable_behavior import DraggableBehavior
 
 WHITE_ON_GREEN = color_pair(WHITE, GREEN)
 WHITE_ON_BLUE = color_pair(WHITE, BLUE)
 
 
-class BorderWidget(AutoSizeBehavior, DraggableBehavior, Widget):
+class DraggableScatter(DraggableBehavior, Scatter):
     ...
-
-
-class AutoGeometryScatter(Scatter):
-    def __init__(self, **kwargs):
-        super().__init__(pos=(1, 2), **kwargs)
-
-    def update_geometry(self):
-        h, w = self.parent.dim
-
-        self.resize((h - 2, w - 4))
-
-        super().update_geometry()
 
 
 class PrettyWidget(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.colors[:] = 50
         grad = gradient((self.width >> 1) - 2, WHITE_ON_GREEN, WHITE_ON_BLUE)
+
+        self.colors[:] = 50
         self.colors[1:-1, 2:-2] = grad + grad[::-1]
+
         asyncio.create_task(self.roll())
 
     async def roll(self):
@@ -52,13 +42,10 @@ class MyApp(App):
         widget_1 = PrettyWidget(dim=(20, 40))
         widget_2 = PrettyWidget(dim=(10, 50))
 
-        autogeometry_scatter = AutoGeometryScatter(default_color_pair=25)
-        autogeometry_scatter.add_widgets(widget_1, widget_2)
+        draggable_scatter = DraggableScatter(dim=(30, 100), default_color_pair=25)
+        draggable_scatter.add_widgets(widget_1, widget_2)
 
-        border_widget = BorderWidget(size_hint=(.75, .75), default_color_pair=WHITE_ON_BLUE)
-        border_widget.add_widget(autogeometry_scatter)
-
-        self.root.add_widget(border_widget)
+        self.root.add_widget(draggable_scatter)
 
 
 MyApp().run()
