@@ -8,9 +8,8 @@ import numpy as np
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.widget_utilities import clamp
 
-from .color_scheme import *
+from .color_scheme import CLEAR_LINE_FLASH_COLOR
 from .matrix import MatrixWidget
 from .modal_screen import ModalScreen
 from .piece import CurrentPiece, GhostPiece, CenteredPiece
