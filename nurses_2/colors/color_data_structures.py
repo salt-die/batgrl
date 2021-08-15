@@ -48,19 +48,27 @@ class ColorPair(NamedTuple):
     """
     A tuple representing a foreground and background color.
     """
-    foreground_red:   int
-    foreground_green: int
-    foreground_blue:  int
-    background_red:   int
-    background_green: int
-    background_blue:  int
+    fg_red:   int
+    fg_green: int
+    fg_blue:  int
+    bg_red:   int
+    bg_green: int
+    bg_blue:  int
 
     @classmethod
-    def from_colors(cls, foreground_color: Color, background_color: Color):
+    def from_colors(cls, fg_color: Color, bg_color: Color):
         """
         Return a `ColorPair` from two `Color`s.
         """
-        return cls(*foreground_color, *background_color)
+        return cls(*fg_color, *bg_color)
+
+    @property
+    def fg_color(self):
+        return Color(*self[:3])
+
+    @property
+    def bg_color(self):
+        return Color(*self[3:])
 
 
 color_pair = ColorPair.from_colors  # Alias

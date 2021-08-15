@@ -26,22 +26,22 @@ def rainbow_gradient(n):
             *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
         )
 
-def foreground_rainbow(ncolors=20, background_color: Color=BLACK):
+def foreground_rainbow(ncolors=20, bg_color: Color=BLACK):
     """
     A rainbow gradient of `ncolors` `ColorPair`s with a given background color.
     """
     return [
-        color_pair(foreground_color, background_color)
-        for foreground_color in rainbow_gradient(ncolors)
+        color_pair(fg_color, bg_color)
+        for fg_color in rainbow_gradient(ncolors)
     ]
 
-def background_rainbow(ncolors=20, foreground_color: Color=WHITE):
+def background_rainbow(ncolors=20, fg_color: Color=WHITE):
     """
     Return a rainbow gradient of `ncolors` `ColorPair`s with a given foreground color.
     """
     return [
-        color_pair(foreground_color, background_color)
-        for background_color in rainbow_gradient(ncolors)
+        color_pair(fg_color, bg_color)
+        for bg_color in rainbow_gradient(ncolors)
     ]
 
 def lerp(start_pair: ColorPair, end_pair: ColorPair, proportion):
