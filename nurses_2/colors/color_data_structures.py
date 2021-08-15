@@ -3,7 +3,7 @@ from typing import NamedTuple
 __all__ = (
     "Color",
     "ColorPair",
-    "color_pair"
+    "color_pair",
 )
 
 def clamp_channel(channel):
