@@ -13,8 +13,8 @@ class _Handle(GrabbableBehavior, Widget):
 
     def update_geometry(self):
         slider = self.parent
-        self.left = round(slider.proportion * (slider.width - 1))
+        self.left = round(slider.proportion * slider.fill_width)
 
     def grab_update(self, mouse_event):
         slider = self.parent
-        slider.proportion += self.mouse_dx / (slider.width - 1)
+        slider.proportion += self.mouse_dx / slider.fill_width

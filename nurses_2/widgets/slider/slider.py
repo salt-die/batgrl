@@ -1,6 +1,7 @@
 from typing import Optional, Callable
 
 from ...colors import Color
+from ...mouse import MouseEventType
 from ...utils import clamp
 from ..widget import Widget
 from ..widget_data_structures import Point
@@ -55,7 +56,8 @@ class Slider(Widget):
         self.callback = callback
         self._proportion = 0
 
-        self.add_widget(_Handle(handle_color))
+        self.handle = _Handle(handle_color)
+        self.add_widget(self.handle)
         self.proportion = proportion
 
     @property
@@ -70,8 +72,7 @@ class Slider(Widget):
             min, max = self.min, self.max
             self.value = (max - min) * self._proportion + min
 
-            handle = self.children[0]
-            handle.update_geometry()
+            self.handle.update_geometry()
 
     @property
     def value(self):
@@ -82,3 +83,22 @@ class Slider(Widget):
         self._value = value
         if self.callback is not None:
             self.callback(value)
+
+    @property
+    def fill_width(self):
+        """
+        Width of the slider minus the width of the handle.
+        """
+        return self.width - self.handle.width
+
+    def on_click(self, mouse_event):
+        if (
+            mouse_event.event_type == MouseEventType.MOUSE_DOWN
+            and self.collides_coords(mouse_event.position)
+        ):
+            x = self.absolute_to_relative_coords(mouse_event.position).x
+
+            self.proportion = x / self.fill_width
+            self.handle.grab(mouse_event)
+
+            return True
