@@ -38,7 +38,7 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         vertical_bar = self.parent
         scroll_view = vertical_bar.parent
 
-        self.top = round(scroll_view.vertical_proportion * vertical_bar.fill_width)
+        self.top = round(scroll_view.vertical_proportion * vertical_bar.fill_height)
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
@@ -48,7 +48,7 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         vertical_bar = self.parent
         scroll_view = vertical_bar.parent
 
-        scroll_view.vertical_proportion += self.mouse_dy / vertical_bar.fill_width
+        scroll_view.vertical_proportion += self.mouse_dy / vertical_bar.fill_height
 
 
 class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):

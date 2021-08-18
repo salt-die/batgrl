@@ -29,7 +29,10 @@ class _VerticalBar(Widget):
         super().update_geometry()
 
     @property
-    def fill_width(self):
+    def fill_height(self):
+        """
+        Height of the scroll bar minus the height of the indicator.
+        """
         return (
             self.height
             - self.indicator.height
@@ -45,7 +48,7 @@ class _VerticalBar(Widget):
             sv = self.parent
 
             if not (y >= self.height - HBAR_HEIGHT and sv.show_horizontal_bar):
-                sv.vertical_proportion = y / self.fill_width
+                sv.vertical_proportion = y / self.fill_height
                 self.indicator.grab(mouse_event)
 
             return True
@@ -73,6 +76,9 @@ class _HorizontalBar(Widget):
 
     @property
     def fill_width(self):
+        """
+        Width of the scroll bar minus the width of the indicator.
+        """
         return (
             self.width
             - self.indicator.width
