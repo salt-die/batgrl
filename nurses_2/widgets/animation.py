@@ -16,8 +16,8 @@ class Animation(Widget):
     paths : Path | Iterable[Path]
         Path to folder of images for frames in animation (loaded in lexographical order of
         filenames) or an iterable of paths to each frame in the animation.
-    animation_speed : float | Sequence[float], default: 1/12
-        Time between updates of frames of the animation in seconds.  If sequence is
+    frame_duration : float | Sequence[float], default: 1/12
+        Time between updates of frames of the animation in seconds.  If a sequence is
         provided it must have length equal to number of frames in the animation.
     loop : bool, default: True
         If true, restart animation after last frame.
@@ -32,7 +32,7 @@ class Animation(Widget):
         self,
         *args,
         paths: Union[Path, Iterable[Path]],
-        animation_speed: Union[float, Sequence[float]]=1/12,
+        frame_duration: Union[float, Sequence[float]]=1/12,
         loop=True,
         alpha=1.0,
         interpolation=Interpolation.LINEAR,
@@ -48,12 +48,12 @@ class Animation(Widget):
                 assert path.exists(), f"{path} doesn't exist"
                 assert path.is_file(), f"{path} isn't a file"
 
-        if isinstance(animation_speed, float):
-            animation_speed = (animation_speed, ) * len(paths)
+        if isinstance(frame_duration, float):
+            frame_duration = (frame_duration, ) * len(paths)
         else:
-            assert len(animation_speed) == len(frames), (
-                f"number of frames ({len(frames)}) not equal"
-                f" to length of animation_speed ({len(animation_speed)})"
+            assert len(frame_duration) == len(paths), (
+                f"number of frames ({len(paths)}) not equal"
+                f" to length of frame_duration ({len(frame_duration)})"
             )
 
         kwargs.pop('default_char', None)
@@ -62,7 +62,7 @@ class Animation(Widget):
 
         self.frames = tuple(
             (Image(dim=self.dim, path=path, alpha=alpha, interpolation=interpolation), time)
-            for path, time in zip(paths, animation_speed)
+            for path, time in zip(paths, frame_duration)
         )
         self._current_frame = 0
         self.loop = loop
@@ -115,6 +115,7 @@ class Animation(Widget):
             self._current_frame += 1
             if self._current_frame >= len(frames):
                 self._current_frame = 0
+
                 if not self.loop:
                     break
 
@@ -122,7 +123,7 @@ class Animation(Widget):
         """
         Play animation.
         """
-        self.stop()
+        self.pause()
         self._animation = asyncio.create_task(self._play_animation())
 
     def pause(self):
