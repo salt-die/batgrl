@@ -17,21 +17,9 @@ def add_polar_vectors(r1, a1, r2, a2):
     return r, a
 
 
-class RedBloodCell(HalfBlockParticle):
-    @property
-    def polar(self):
-        return self._polar
-
-    @polar.setter
-    def polar(self, pos):
-        self._polar = pos
-        r, a = pos
-        self.top = r * np.sin(a) + self.parent.height // 2
-        self.left = int(r * np.cos(a)) + self.parent.width // 2
-
-
 class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
-    def __init__(self,
+    def __init__(
+        self,
         *args,
         rng,
         nparticles=50,
@@ -39,21 +27,20 @@ class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
         barrier_radius=10.0,
         pass_probability=.001,
         step_distance=.5,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.rng = rng
 
-        self._coords = coords = np.zeros((nparticles, 2), dtype=float, order="F")
-        coords[:, 0] += np.sqrt(rng.uniform(size=nparticles)) * radius
-        coords[:, 1] += rng.uniform(size=nparticles) * 2.0 * np.pi
+        self._radii = np.sqrt(rng.uniform(size=nparticles)) * radius
+        self._angles = rng.uniform(size=nparticles) * 2.0 * np.pi
 
         self.barrier_radius = barrier_radius
         self.pass_probability = pass_probability
         self.step_distance = step_distance
 
         for _ in range(nparticles):
-            self.add_widget(RedBloodCell(color=RED))
+            self.add_widget(HalfBlockParticle(color=RED))
 
     def run(self):
         asyncio.create_task(self.step_forever())
@@ -69,27 +56,34 @@ class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
 
     def _step(self):
         n = len(self.children)
+
         rng = self.rng
         step_angles = rng.random(size=n) * 2 * np.pi
         is_passing = rng.random(size=n) < self.pass_probability
-        br = self.barrier_radius
-        coords = self._coords
 
-        new_r, coords[:, 1] = add_polar_vectors(
-            coords[:, 0],
-            coords[:, 1],
+        br = self.barrier_radius
+        radii = self._radii
+        angles = self._angles
+
+        new_r, angles[:] = add_polar_vectors(
+            radii,
+            angles,
             self.step_distance,
             step_angles,
         )
 
-        coords[:, 0] = np.where(
+        radii[:] = np.where(
               # Hasn't passed barrier #                             # Has passed barrier #
-            ((coords[:, 0] < br) & ((new_r < br) | is_passing)) | ((coords[:, 0] > br) & (new_r > br)),
-            new_r, coords[:, 0]
+            ((radii < br) & ((new_r < br) | is_passing)) | ((radii > br) & (new_r > br)),
+            new_r, radii
         )
 
-        for particle, polar in zip(self.children, coords):
-            particle.polar = polar
+        tops = radii * np.sin(angles) + self.height // 2
+        lefts = (radii * np.cos(angles) + self.width // 2).astype(int)
+
+        for cell, top, left in zip(self.children, tops, lefts):
+            cell.top = top
+            cell.left = left
 
 
 class RedBloodCellDiffusionApp(App):
