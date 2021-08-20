@@ -73,7 +73,7 @@ class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
         )
 
         radii[:] = np.where(
-              # Hasn't passed barrier #                             # Has passed barrier #
+              # Hasn't passed barrier #                      # Has passed barrier #
             ((radii < br) & ((new_r < br) | is_passing)) | ((radii > br) & (new_r > br)),
             new_r, radii
         )
