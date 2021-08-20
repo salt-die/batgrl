@@ -1,10 +1,15 @@
 import asyncio
+
+import cv2
 import numpy as np
 
 from nurses_2.app import App
+from nurses_2.widgets import Widget
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.behaviors import AutoSizeBehavior
-from nurses_2.colors import RED
+from nurses_2.colors import RED, BLACK_ON_BLACK, Color
+
+DARK_RED = Color.from_hex("701402")
 
 def add_polar_vectors(r1, a1, r2, a2):
     a = a2 - a1
@@ -17,22 +22,44 @@ def add_polar_vectors(r1, a1, r2, a2):
     return r, a
 
 
+class Circle(AutoSizeBehavior, Widget):
+    """
+    A circle drawn with cv2.
+    """
+    def __init__(self, *args, radius=10, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs):
+        super().__init__(*args, default_char=default_char, default_color_pair=default_color_pair, **kwargs)
+        self.radius = radius
+
+    def update_geometry(self):
+        super().update_geometry()
+
+        h, w = self.parent.dim
+
+        image = np.zeros((h * 2, w, 3), dtype=np.uint8)
+        cv2.circle(image, (w // 2, h - h % 2), self.radius, DARK_RED, thickness=-1)
+
+        self.colors[..., :3] = image[::2]
+        self.colors[..., 3:] = image[1::2]
+
+
 class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
+    """
+    Brownian motion with a barrier.
+    """
     def __init__(
         self,
         *args,
         rng,
-        nparticles=50,
-        radius=2.0,
+        nparticles=100,
         barrier_radius=10.0,
         pass_probability=.001,
-        step_distance=.5,
+        step_distance=.2,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.rng = rng
 
-        self._radii = np.sqrt(rng.uniform(size=nparticles)) * radius
+        self._radii = np.sqrt(rng.uniform(size=nparticles)) * barrier_radius / 5
         self._angles = rng.uniform(size=nparticles) * 2.0 * np.pi
 
         self.barrier_radius = barrier_radius
@@ -78,7 +105,7 @@ class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
             new_r, radii
         )
 
-        tops = radii * np.sin(angles) + self.height // 2
+        tops = radii * np.sin(angles) / 2 + self.height // 2
         lefts = (radii * np.cos(angles) + self.width // 2).astype(int)
 
         for cell, top, left in zip(self.children, tops, lefts):
@@ -89,7 +116,7 @@ class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
 class RedBloodCellDiffusionApp(App):
     async def on_start(self):
         simulation = RedBloodCellDiffusion(rng=np.random.default_rng())
-        self.root.add_widget(simulation)
+        self.root.add_widgets(Circle(), simulation)
         simulation.run()
 
 
