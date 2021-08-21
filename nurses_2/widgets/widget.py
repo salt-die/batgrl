@@ -55,13 +55,12 @@ class Widget:
         """
         Resize canvas. Content is preserved as much as possible.
         """
-        self._size = size
+        self._size = h, w = size
 
         old_canvas = self.canvas
         old_colors = self.colors
 
         old_h, old_w = old_canvas.shape
-        h, w = size
 
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
