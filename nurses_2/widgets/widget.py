@@ -53,7 +53,7 @@ class Widget:
 
     def resize(self, size: Size):
         """
-        Resize canvas. Content is preserved as much as possible.
+        Resize widget. Content is preserved as much as possible.
         """
         self._size = h, w = size
 
