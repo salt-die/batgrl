@@ -22,9 +22,9 @@ FRICTION = .97
 
 PERCENTS = tuple(np.linspace(0, 1, 30))
 
-IMAGE_DIR = Path('images')
-PATH_TO_BACKGROUND = IMAGE_DIR / 'background.png'
-PATH_TO_LOGO_FULL = IMAGE_DIR / 'python_discord_logo.png'
+IMAGE_DIR = Path("images")
+PATH_TO_BACKGROUND = IMAGE_DIR / "background.png"
+PATH_TO_LOGO_FULL = IMAGE_DIR / "python_discord_logo.png"
 
 
 class PokeParticle(HalfBlockParticle):

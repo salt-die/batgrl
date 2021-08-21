@@ -47,7 +47,7 @@ class RayCaster(Widget):
         default_char="▀",
         **kwargs,
     ):
-        kwargs.pop('transparent', None)
+        kwargs.pop("transparent", None)
 
         super().__init__(*args, default_char=default_char, **kwargs)
 

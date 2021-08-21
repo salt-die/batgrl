@@ -22,9 +22,9 @@ class VideoPlayer(Widget):
         A path to video, URL to video stream, or capturing device (by index).
     """
     def __init__(self, *args, source: Union[Path, str, int], **kwargs):
-        kwargs.pop('default_char', None)
-        kwargs.pop('default_color_pair', None)
-        kwargs.pop('is_transparent', None)
+        kwargs.pop("default_char", None)
+        kwargs.pop("default_color_pair", None)
+        kwargs.pop("is_transparent", None)
 
         super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
 

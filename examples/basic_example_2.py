@@ -28,7 +28,7 @@ class MyApp(App):
         big_widget = Widget(size=BIG_WIDGET_SIZE)
 
         for y in range(BIG_WIDGET_SIZE.height):
-            big_widget.add_text(" ".join(f'({y:<2}, {x:<2})' for x in range(N)), row=y)
+            big_widget.add_text(" ".join(f"({y:<2}, {x:<2})" for x in range(N)), row=y)
             big_widget.colors[y] = gradient(BIG_WIDGET_SIZE.width, LEFT_GRADIENT[y], RIGHT_GRADIENT[y])
 
         scroll_view = AutoPositionScrollView(size=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))

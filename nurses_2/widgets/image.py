@@ -19,7 +19,7 @@ class Interpolation(IntEnum):
 
 class ReloadTextureProperty:
     def __set_name__(self, owner, name):
-        self.name = '_' + name
+        self.name = "_" + name
 
     def __get__(self, instance, owner):
         if instance is None:
@@ -71,7 +71,7 @@ class Image(Widget):
         is_transparent=True,
         **kwargs
     ):
-        kwargs.pop('default_color_pair', None)
+        kwargs.pop("default_color_pair", None)
 
         super().__init__(
             *args,

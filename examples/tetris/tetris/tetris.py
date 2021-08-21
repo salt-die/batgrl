@@ -67,8 +67,8 @@ class Tetris(Image):
         BORDER_WIDTH = 1
 
         display_geometry = {
-            'size': (4, 8),
-            'pos': (BORDER_WIDTH, 2 * BORDER_WIDTH),
+            "size": (4, 8),
+            "pos": (BORDER_WIDTH, 2 * BORDER_WIDTH),
         }
 
         bsize = bh, bw = 4 + 2 * BORDER_WIDTH, 8 + 4 * BORDER_WIDTH  # border size; border height, border width

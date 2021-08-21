@@ -52,7 +52,7 @@ SIZE = 28, 56           # Size of LOGO
 CODE_RAIN_HEIGHT = 8    # The height of the trail of the code rain + 1,  this should be divisible by 2
 LAST_RAINFALL = 25      # Number of seconds until the last rain drops.
 FALL_TIME = .2          # Seconds until rain falls another row
-RANDOM_CHARACTERS = list('=^74xt2ZI508')
+RANDOM_CHARACTERS = list("=^74xt2ZI508")
 
 # Colors
 GREEN_ON_BLACK = color_pair(GREEN, BLACK)
@@ -83,7 +83,7 @@ class CodeRain(Widget):
     drops_falling= 0
 
     def __init__(self, column, target_row, character, gradient, delay, **kwargs):
-        kwargs.pop('is_transparent', None)
+        kwargs.pop("is_transparent", None)
 
         super().__init__(
             size=(CODE_RAIN_HEIGHT, 1),

@@ -56,8 +56,8 @@ class Animation(Widget):
                 f" to length of frame_duration ({len(frame_duration)})"
             )
 
-        kwargs.pop('default_char', None)
-        kwargs.pop('default_color_pair', None)
+        kwargs.pop("default_char", None)
+        kwargs.pop("default_color_pair", None)
         super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
 
         self.frames = tuple(

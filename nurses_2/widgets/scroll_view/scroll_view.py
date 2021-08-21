@@ -197,13 +197,13 @@ class ScrollView(GrabbableBehavior, Widget):
             horizontal_bar.render(canvas_view[dest_slice], colors_view[dest_slice], horizontal_bar_rect)
 
     def on_press(self, key_press):
-        if key_press.key == 'up':
+        if key_press.key == "up":
             self._scroll_up()
-        elif key_press.key == 'down':
+        elif key_press.key == "down":
             self._scroll_down()
-        elif key_press.key == 'left':
+        elif key_press.key == "left":
             self._scroll_left()
-        elif key_press.key == 'right':
+        elif key_press.key == "right":
             self._scroll_right()
         else:
             return super().on_press(key_press)

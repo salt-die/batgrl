@@ -22,7 +22,7 @@ class Color(NamedTuple):
         if hexcode.startswith("#"):
             hexcode = hexcode[1:]
 
-        assert len(hexcode) == 6, f'{hexcode} has bad length'
+        assert len(hexcode) == 6, f"{hexcode} has bad length"
 
         return cls(
             int(hexcode[:2], 16),

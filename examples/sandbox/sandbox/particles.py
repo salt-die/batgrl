@@ -54,14 +54,14 @@ class Element(ABC):
     STATE = None
     DEFAULT_REPLACEMENT = None
 
-    LIFETIME = float('inf')  # Replace this element after LIFETIME updates.
+    LIFETIME = float("inf")  # Replace this element after LIFETIME updates.
     INACTIVE = 100  # Sleep if inactive INACTIVE times in a row.
     SLEEP = 0  # Seconds between updates.
 
     all_elements = { }
 
     def __init_subclass__(cls):
-        if hasattr(cls, 'COLORS'):
+        if hasattr(cls, "COLORS"):
             cls.COLOR = next(cls.COLORS)
 
         if all(getattr(cls, attr) is not None for attr in ("COLOR", "DENSITY", "STATE")):
@@ -253,7 +253,7 @@ class MovingElement(Element):
         if (
             move(dy, 0) or move(dy, dx) or move(dy, -dx)  # Try to move vertically...
             or self.STATE != State.SOLID and (move(0, dx) or move(0, -dx))  # Try to move horizontally...
-        ) or self.LIFETIME != float('inf'):  # Elements with finite lifetime don't sleep.
+        ) or self.LIFETIME != float("inf"):  # Elements with finite lifetime don't sleep.
             self.inactivity = 0  # Move was successful so inactivity is reset to 0.
         else:
             self.sleep_if_inactive()  # Move was not successful so increment inactivity or go to sleep.
@@ -300,14 +300,14 @@ class Snow(ColorVariationBehavior, MovingElement):
     STATE = State.SOLID
     DEFAULT_REPLACEMENT = Water
     SLEEP = .1
-    MELT_TIME = float('inf')
+    MELT_TIME = float("inf")
 
     def _move(self, dy, dx):
         if dx != 0:  # Not allowing snow to move directly down so it meanders more.
             return super()._move(dy, dx)
 
     def update_neighbor(self, neighbor):
-        if self.MELT_TIME == float('inf') and isinstance(neighbor, Water):
+        if self.MELT_TIME == float("inf") and isinstance(neighbor, Water):
             self.MELT_TIME = 30 * random()  # Give the snow some time to settle before it descends into the water.
             self.SLEEP *= 2
             return True
