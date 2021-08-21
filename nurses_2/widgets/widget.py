@@ -10,8 +10,8 @@ class Widget:
 
     Parameters
     ----------
-    dim : Size, default: Size(10, 10)
-        Dimensions of widget.
+    size : Size, default: Size(10, 10)
+        Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
     is_transparent : bool, default: False
@@ -27,7 +27,7 @@ class Widget:
     """
     def __init__(
         self,
-        dim: Size=Size(10, 10),
+        size: Size=Size(10, 10),
         pos: Point=Point(0, 0),
         *,
         is_transparent=False,
@@ -36,7 +36,7 @@ class Widget:
         default_char=" ",
         default_color_pair=WHITE_ON_BLACK,
     ):
-        self._dim = dim
+        self._size = size
         self.pos = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
@@ -45,28 +45,28 @@ class Widget:
         self.parent = None
         self.children = [ ]
 
-        self.canvas = np.full(dim, default_char, dtype=object)
-        self.colors = np.full((*dim, 6), default_color_pair, dtype=np.uint8)
+        self.canvas = np.full(size, default_char, dtype=object)
+        self.colors = np.full((*size, 6), default_color_pair, dtype=np.uint8)
 
         self.default_char = default_char
         self.default_color_pair = default_color_pair
 
-    def resize(self, dim: Size):
+    def resize(self, size: Size):
         """
         Resize canvas. Content is preserved as much as possible.
         """
-        self._dim = dim
+        self._size = size
 
         old_canvas = self.canvas
         old_colors = self.colors
 
         old_h, old_w = old_canvas.shape
-        h, w = dim
+        h, w = size
 
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full(dim, self.default_char, dtype=object)
+        self.canvas = np.full(size, self.default_char, dtype=object)
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
@@ -81,8 +81,8 @@ class Widget:
         """
 
     @property
-    def dim(self):
-        return self._dim
+    def size(self):
+        return self._size
 
     @property
     def pos(self):
@@ -105,11 +105,11 @@ class Widget:
 
     @property
     def height(self):
-        return self._dim[0]
+        return self._size[0]
 
     @property
     def width(self):
-        return self._dim[1]
+        return self._size[1]
 
     @property
     def bottom(self):
@@ -143,7 +143,7 @@ class Widget:
         `Rect` of bounding box on screen.
         """
         top, left = self.absolute_pos
-        height, width = self.dim
+        height, width = self.size
         return Rect(
             top,
             left,

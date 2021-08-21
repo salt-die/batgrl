@@ -21,7 +21,7 @@ class _VerticalBar(Widget):
         self.add_widget(self.indicator)
 
     def update_geometry(self):
-        h, w = self.parent.dim
+        h, w = self.parent.size
 
         self.left = w - VBAR_WIDTH
         self.resize((h, VBAR_WIDTH))
@@ -67,7 +67,7 @@ class _HorizontalBar(Widget):
         self.add_widget(self.indicator)
 
     def update_geometry(self):
-        h, w = self.parent.dim
+        h, w = self.parent.size
 
         self.top = h - HBAR_HEIGHT
         self.resize((HBAR_HEIGHT, w))

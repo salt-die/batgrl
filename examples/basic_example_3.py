@@ -39,10 +39,10 @@ class PrettyWidget(Widget):
 
 class MyApp(App):
     async def on_start(self):
-        widget_1 = PrettyWidget(dim=(20, 40))
-        widget_2 = PrettyWidget(dim=(10, 50))
+        widget_1 = PrettyWidget(size=(20, 40))
+        widget_2 = PrettyWidget(size=(10, 50))
 
-        draggable_scatter = DraggableScatter(dim=(30, 100), default_color_pair=25)
+        draggable_scatter = DraggableScatter(size=(30, 100), default_color_pair=25)
         draggable_scatter.add_widgets(widget_1, widget_2)
 
         self.root.add_widget(draggable_scatter)

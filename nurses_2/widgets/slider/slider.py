@@ -46,7 +46,7 @@ class Slider(Widget):
         default_char="=",
         **kwargs,
         ):
-        super().__init__(dim=(1, width), pos=pos, default_char=default_char, **kwargs)
+        super().__init__(size=(1, width), pos=pos, default_char=default_char, **kwargs)
 
         assert min < max
         self.min = min

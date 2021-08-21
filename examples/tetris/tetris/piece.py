@@ -65,7 +65,7 @@ class CenteredPiece(CurrentPiece):
     """
     A Piece that centers itself inside a 4x8 area when resized.
     """
-    def resize(self, dim):
-        super().resize(dim)
+    def resize(self, size):
+        super().resize(size)
         self.top = 2 - self.height // 2
         self.left = 4 - self.width // 2

@@ -115,21 +115,21 @@ class Image(Widget):
         else:
             self.texture = cv2.cvtColor(bgr_texture, cv2.COLOR_BGR2RGB)
 
-        self.resize(self.dim)
+        self.resize(self.size)
 
-    def resize(self, dim: Size):
+    def resize(self, size: Size):
         """
         Resize image.
         """
-        self._dim = h, w = dim
-        TEXTURE_DIM = w, 2 * h
+        self._size = h, w = size
+        tex_size = w, 2 * h
 
-        self.canvas = np.full(dim, self.default_char, dtype=object)
+        self.canvas = np.full(size, self.default_char, dtype=object)
 
         if self.texture_alpha is not None:
             resized_texture_alpha = cv2.resize(
                 self.texture_alpha,
-                TEXTURE_DIM,
+                tex_size,
                 interpolation=self.interpolation
             )
             alpha_as_float = resized_texture_alpha / 255 * self.alpha
@@ -137,7 +137,7 @@ class Image(Widget):
         else:
             self.alpha_channels = np.full((h, w, 2, 1), self.alpha, dtype=np.float16)
 
-        texture =  cv2.resize(self.texture, TEXTURE_DIM, interpolation=self.interpolation)
+        texture =  cv2.resize(self.texture, tex_size, interpolation=self.interpolation)
         self.colors = np.dstack((texture[::2], texture[1::2]))
 
         for child in self.children:

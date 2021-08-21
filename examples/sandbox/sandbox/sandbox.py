@@ -23,8 +23,8 @@ class Sandbox(AutoPositionBehavior, Widget):
     """
     Sandbox widget.
     """
-    def __init__(self, dim: Size):
-        super().__init__(dim=dim, anchor=Anchor.CENTER, pos_hint=(.5, .5), default_char="▀")
+    def __init__(self, size: Size):
+        super().__init__(size=size, anchor=Anchor.CENTER, pos_hint=(.5, .5), default_char="▀")
 
         # Build array of particles -- Initially all Air
         self.world = world = np.full((2 * self.height, self.width), None, dtype=object)
@@ -34,7 +34,7 @@ class Sandbox(AutoPositionBehavior, Widget):
 
         # Add children widgets
         self.display = ElementDisplay(
-            dim=(1, 9),
+            size=(1, 9),
             pos=(1, 0),
             anchor=Anchor.CENTER,
             pos_hint=(None, 0.5),

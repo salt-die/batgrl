@@ -150,7 +150,7 @@ class MyApp(App):
     async def on_start(self):
         background = AutoSizeImage(path=PATH_TO_BACKGROUND)
 
-        logo = Image(dim=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True, alpha=.8)
+        logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True, alpha=.8)
 
         field = AutoSizeHalfBlockField()
 

@@ -61,7 +61,7 @@ class Animation(Widget):
         super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
 
         self.frames = tuple(
-            (Image(dim=self.dim, path=path, alpha=alpha, interpolation=interpolation), time)
+            (Image(size=self.size, path=path, alpha=alpha, interpolation=interpolation), time)
             for path, time in zip(paths, frame_duration)
         )
         self._current_frame = 0
@@ -94,11 +94,11 @@ class Animation(Widget):
     def current_frame(self):
         return self.frames[self._current_frame][0]
 
-    def resize(self, dim):
+    def resize(self, size):
         for frame, _ in self.frames:
-            frame.resize(dim)
+            frame.resize(size)
 
-        super().resize(dim)
+        super().resize(size)
 
     async def _play_animation(self):
         frames = self.frames

@@ -48,7 +48,7 @@ j888888888888888888888888888888888888888'  8888888888888
                 `^888888888888888888888^
                   `'"^^V888888888V^^'
 """
-DIM = 28, 56            # Dimensions of LOGO
+SIZE = 28, 56           # Size of LOGO
 CODE_RAIN_HEIGHT = 8    # The height of the trail of the code rain + 1,  this should be divisible by 2
 LAST_RAINFALL = 25      # Number of seconds until the last rain drops.
 FALL_TIME = .2          # Seconds until rain falls another row
@@ -67,7 +67,7 @@ WHITE_TO_YELLOW = gradient(25, WHITE_ON_BLACK, YELLOW_ON_BLACK)
 
 def generate_delays():
     rng = default_rng()
-    random = rng.laplace(size=DIM)
+    random = rng.laplace(size=SIZE)
     scale = random.max() - random.min()
     random = 1 - (random - random.min()) / scale
     random *= LAST_RAINFALL
@@ -86,7 +86,7 @@ class CodeRain(Widget):
         kwargs.pop('is_transparent', None)
 
         super().__init__(
-            dim=(CODE_RAIN_HEIGHT, 1),
+            size=(CODE_RAIN_HEIGHT, 1),
             pos=(-CODE_RAIN_HEIGHT, column),
             is_transparent=True,
             **kwargs,
@@ -154,7 +154,7 @@ class CodeRain(Widget):
 class MyApp(App):
     async def on_start(self):
         # Ending colors of logo:  True: Blue, False: Yellow
-        colors = np.ones(DIM, dtype=bool)
+        colors = np.ones(SIZE, dtype=bool)
         colors[-7:] = colors[-13: -7, -41:] = False
         colors[-14, -17:] = colors[-20: -14, -15:] = False
 

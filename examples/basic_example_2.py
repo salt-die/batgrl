@@ -25,13 +25,13 @@ class AutoPositionScrollView(AutoPositionBehavior, ScrollView):
 
 class MyApp(App):
     async def on_start(self):
-        big_widget = Widget(dim=BIG_WIDGET_SIZE)
+        big_widget = Widget(size=BIG_WIDGET_SIZE)
 
         for y in range(BIG_WIDGET_SIZE.height):
             big_widget.add_text(" ".join(f'({y:<2}, {x:<2})' for x in range(N)), row=y)
             big_widget.colors[y] = gradient(BIG_WIDGET_SIZE.width, LEFT_GRADIENT[y], RIGHT_GRADIENT[y])
 
-        scroll_view = AutoPositionScrollView(dim=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
+        scroll_view = AutoPositionScrollView(size=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
         scroll_view.add_widget(big_widget)
 
         self.root.add_widget(scroll_view)

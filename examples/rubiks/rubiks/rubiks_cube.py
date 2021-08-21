@@ -48,7 +48,7 @@ class RubiksCube(GrabbableBehavior, Widget):
         self.add_widget(self.background)
         self.background.play()
 
-        self.resize(self.dim)
+        self.resize(self.size)
 
         self._rotate_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
@@ -91,8 +91,8 @@ class RubiksCube(GrabbableBehavior, Widget):
     def selected_cubes(self):
         return self.cubes[self.selected_indices].flatten()
 
-    def resize(self, dim):
-        super().resize(dim)
+    def resize(self, size):
+        super().resize(size)
         self._colors_buffer = np.zeros((2 * self.height, self.width, 3), dtype=np.uint8)
 
     def on_press(self, key_press):

@@ -60,7 +60,7 @@ class VideoPlayer(Widget):
 
             # `cv2` may write warnings to stdout on Windows when releasing cameras.
             # We force a screen regeneration by calling resize on the root widget.
-            self.root.resize(self.root.dim)
+            self.root.resize(self.root.size)
 
             atexit.unregister(self._resource.release)
             self._resource = None
@@ -68,13 +68,13 @@ class VideoPlayer(Widget):
             self.canvas[:] = self.default_char
             self.colors[:, :] = self.default_color_pair
 
-    def resize(self, dim):
-        super().resize(dim)
+    def resize(self, size):
+        super().resize(size)
 
         # If video is paused, resize current frame.
         if self._video.done() and self._current_frame is not None:
-            dim = self.width, 2 * self.height
-            resized_frame = cv2.resize(self._current_frame, dim)
+            size = self.width, 2 * self.height
+            resized_frame = cv2.resize(self._current_frame, size)
             BGR_to_RGB = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
 
             np.concatenate((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
@@ -107,8 +107,8 @@ class VideoPlayer(Widget):
             if not ret_flag:
                 break
 
-            dim = self.width, 2 * self.height
-            resized_frame = resize(self._current_frame, dim)
+            size = self.width, 2 * self.height
+            resized_frame = resize(self._current_frame, size)
             BGR_to_RGB = recolor(resized_frame, BGR2RGB)
 
             concat((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)

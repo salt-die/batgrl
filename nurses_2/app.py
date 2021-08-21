@@ -44,8 +44,8 @@ class App(ABC):
     ```py
     class MyApp(App):
         async def on_start(self):
-            widget_1 = BouncingWidget(dim=(20, 20))
-            widget_2 = BouncingWidget(dim=(10, 30))
+            widget_1 = BouncingWidget(size=(20, 20))
+            widget_2 = BouncingWidget(size=(10, 30))
 
             self.root.add_widgets(widget_1, widget_2)
 
@@ -141,7 +141,7 @@ class App(ABC):
 
             async def poll_size():
                 """
-                Poll terminal dimensions every `RESIZE_POLL_INTERVAL` seconds. Resize if dimensions have changed.
+                Poll terminal size every `RESIZE_POLL_INTERVAL` seconds.
                 """
                 size = env_out.get_size()
                 resize = root.resize

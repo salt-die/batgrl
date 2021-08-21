@@ -19,19 +19,19 @@ class PosHint(NamedTuple):
 
 class AutoPositionBehavior:
     """
-    Position of widget is set to some proportion of parent's dimensions (given by `pos_hint`).
+    Position of widget is set to some proportion of parent's size (given by `pos_hint`).
 
     Notes
     -----
     If a user widget is inheriting both AutoSizeBehavior and AutoPositionBehavior, AutoSizeBehavior should be
-    before AutoPositionBehavior as anchor position will require the correct dimensions of the widget.
+    before AutoPositionBehavior as anchor position will require the correct size of the widget.
 
     Parameters
     ----------
     anchor : Anchor, default: Anchor.TOP_LEFT
         The part of this widget anchored to the pos_hint.
     pos_hint : PosHint, default: PosHint(0.0, 0.0)
-        The location of the anchor as a proportion parent's dimensions. A None in the pos_hint indicates
+        The location of the anchor as a proportion parent's size. A None in the pos_hint indicates
         top or left attribute will be used to position widget normally.
     """
     def __init_subclass__(cls):
@@ -79,7 +79,7 @@ class AutoPositionBehavior:
         elif anchor == Anchor.CENTER:
             offset_top, offset_left = self.center
 
-        h, w = self.parent.dim
+        h, w = self.parent.size
         top_hint, left_hint = self.pos_hint
 
         if top_hint is not None:

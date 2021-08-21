@@ -33,7 +33,7 @@ class BouncingWidget(Widget):
         self.coord_view = coord_view
         self.collides_view = collides_view
 
-        h, w = self.dim
+        h, w = self.size
         for i in range(h):
             for j in range(w):
                 self.canvas[i, j] = 'NURSES!   '[(i + j) % 10]
@@ -84,14 +84,14 @@ class BouncingWidget(Widget):
 
 class MyApp(App):
     async def on_start(self):
-        info_display = Widget(dim=(3, 54))
+        info_display = Widget(size=(3, 54))
         info_display.add_text("Click relative to widget_1: ", row=0)
         info_display.add_text("Click relative to widget_2: ", row=1)
         info_display.add_text("Collides: ", row=(0, 1), column=41)
         info_display.add_text("Widgets overlap: ", row=2)
 
-        widget_1 = BouncingWidget(dim=(20, 20), is_transparent=True)
-        widget_2 = BouncingWidget(dim=(10, 30), is_transparent=True)
+        widget_1 = BouncingWidget(size=(20, 20), is_transparent=True)
+        widget_2 = BouncingWidget(size=(10, 30), is_transparent=True)
 
         self.root.add_widgets(widget_1, widget_2, info_display)
 

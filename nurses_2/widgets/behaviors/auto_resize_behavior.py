@@ -11,17 +11,17 @@ class SizeHint(NamedTuple):
 
 class AutoSizeBehavior:
     """
-    Dimensions of widget are set to some proportion of its parent's dimensions (given by `size_hint`).
+    Size of widget is set to some proportion of its parent's size (given by `size_hint`).
 
     Notes
     -----
     If a user widget is inheriting both AutoSizeBehavior and AutoPositionBehavior, AutoSizeBehavior should be
-    before AutoPositionBehavior as anchor position will require the correct dimensions of the widget.
+    before AutoPositionBehavior as anchor position will require the correct size of the widget.
 
     Parameters
     ----------
     size_hint : SizeHint, default: SizeHint(1.0, 1.0)
-        Dimension as a proportion of parent's dimension. A None in the size_hint indicates
+        Size as a proportion of parent's size. A None in the size_hint indicates
         height or width attribute will be used to size the widget normally.
     """
     def __init__(self, *args, size_hint: SizeHint=SizeHint(1.0, 1.0), **kwargs):
@@ -43,7 +43,7 @@ class AutoSizeBehavior:
             self.update_geometry()
 
     def update_geometry(self):
-        h, w = self.parent.dim
+        h, w = self.parent.size
         h_hint, w_hint = self.size_hint
 
         height = self.height if h_hint is None else int(h_hint * h)

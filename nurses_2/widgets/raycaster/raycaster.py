@@ -65,10 +65,10 @@ class RayCaster(Widget):
         self._pos_frac = np.zeros((2,), dtype=np.float16)
         self._floor_pos = np.zeros((2,), dtype=np.float16)
 
-        self.resize(self.dim)
+        self.resize(self.size)
 
-    def resize(self, dim):
-        super().resize(dim)
+    def resize(self, size):
+        super().resize(size)
         height = self.height
         width = self.width
 

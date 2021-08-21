@@ -13,7 +13,7 @@ GREEN_ON_BLACK = color_pair(GREEN, BLACK)
 
 class MyApp(App):
     async def on_start(self):
-        display = Widget(dim=(2, 30))
+        display = Widget(size=(2, 30))
         display.add_text("Slider 1 Value:", row=0)
         display.add_text("Slider 2 Value:", row=1)
 

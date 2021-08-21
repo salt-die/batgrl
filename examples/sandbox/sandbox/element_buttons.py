@@ -21,7 +21,7 @@ class ElementButton(ButtonBehavior, Widget):
         self.element = element
 
         super().__init__(
-            dim=(2, 4),
+            size=(2, 4),
             pos=pos,
             default_color_pair=color_pair(BLACK, element.COLOR),
             always_release=True,
@@ -50,7 +50,7 @@ class ButtonContainer(Widget):
         nelements = len(Element.all_elements)
 
         super().__init__(
-            dim=(3 * nelements + 1, 8),
+            size=(3 * nelements + 1, 8),
             default_color_pair=color_pair(BLACK, MENU_BACKGROUND_COLOR),
         )
 

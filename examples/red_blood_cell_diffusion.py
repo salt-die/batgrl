@@ -33,7 +33,7 @@ class Circle(AutoSizeBehavior, Widget):
     def update_geometry(self):
         super().update_geometry()
 
-        h, w = self.parent.dim
+        h, w = self.parent.size
 
         image = np.zeros((h * 2, w, 3), dtype=np.uint8)
         cv2.circle(image, (w // 2, h - h % 2), self.radius, DARK_RED, thickness=-1)

@@ -49,7 +49,7 @@ def setup_background(widget):
 
 
 class Tetris(Image):
-    def __init__(self, matrix_dim=(22, 10), arika=True):
+    def __init__(self, matrix_size=(22, 10), arika=True):
         ##################################################################
         # Tetris Layout includes the matrix (where pieces stack) and two #
         # displays for held piece and next piece. Piece displays have    #
@@ -67,17 +67,17 @@ class Tetris(Image):
         BORDER_WIDTH = 1
 
         display_geometry = {
-            'dim': (4, 8),
+            'size': (4, 8),
             'pos': (BORDER_WIDTH, 2 * BORDER_WIDTH),
         }
 
-        bdim = bh, bw = 4 + 2 * BORDER_WIDTH, 8 + 4 * BORDER_WIDTH  # border dimension; border height, border width
-        h, w = matrix_dim
+        bsize = bh, bw = 4 + 2 * BORDER_WIDTH, 8 + 4 * BORDER_WIDTH  # border size; border height, border width
+        h, w = matrix_size
 
         t, b, l, r = SPACING, h - (bh + SPACING), SPACING, 3 * SPACING + bw + 2 * w  # offsets for border widgets
 
         super().__init__(
-            dim=(h, 4 * SPACING + 2 * bw + 2 * w),
+            size=(h, 4 * SPACING + 2 * bw + 2 * w),
             path=TETRIS_BACKGROUND_PATH,
         )
         self.tetromino_generator = tetromino_generator(ARIKA_TETROMINOS if arika else TETROMINOS)
@@ -90,8 +90,8 @@ class Tetris(Image):
 
         # Setup HELD display
         ##############################################
-        held_border = Widget(dim=bdim, pos=(t, l))   #
-        held_border.add_text(f"{'HOLD':^{bdim[1]}}") #
+        held_border = Widget(size=bsize, pos=(t, l))   #
+        held_border.add_text(f"{'HOLD':^{bsize[1]}}") #
         held_space = Widget(**display_geometry)      #
                                                      #
         held_border.add_widget(held_space)           #
@@ -99,8 +99,8 @@ class Tetris(Image):
 
         # Setup NEXT display
         ##############################################
-        next_border = Widget(dim=bdim, pos=(t, r))   #
-        next_border.add_text(f"{'NEXT':^{bdim[1]}}") #
+        next_border = Widget(size=bsize, pos=(t, r))   #
+        next_border.add_text(f"{'NEXT':^{bsize[1]}}") #
         next_space = Widget(**display_geometry)      #
                                                      #
         next_border.add_widget(next_space)           #
@@ -108,8 +108,8 @@ class Tetris(Image):
 
         # Setup SCORE display
         #################################################
-        score_border = Widget(dim=bdim, pos=(b, l))     #
-        score_border.add_text(f"{'SCORE':^{bdim[1]}}")  #
+        score_border = Widget(size=bsize, pos=(b, l))     #
+        score_border.add_text(f"{'SCORE':^{bsize[1]}}")  #
         self.score_display = Widget(**display_geometry) #
                                                         #
         score_border.add_widget(self.score_display)     #
@@ -117,8 +117,8 @@ class Tetris(Image):
 
         # Setup LEVEL Display
         #################################################
-        level_border = Widget(dim=bdim, pos=(b, r))     #
-        level_border.add_text(f"{'LEVEL':^{bdim[1]}}")  #
+        level_border = Widget(size=bsize, pos=(b, r))     #
+        level_border.add_text(f"{'LEVEL':^{bsize[1]}}")  #
         self.level_display = Widget(**display_geometry) #
                                                         #
         level_border.add_widget(self.level_display)     #
@@ -136,10 +136,10 @@ class Tetris(Image):
         next_space.add_widget(self.next_piece)
 
         # matrix is a boolean array where True values indicate that a mino exists in that location.
-        self.matrix = np.zeros(matrix_dim, dtype=np.bool8)
+        self.matrix = np.zeros(matrix_size, dtype=np.bool8)
         # matrix_widget is the visual representation of matrix
         self.matrix_widget = MatrixWidget(
-            dim=(h, 2 * w),
+            size=(h, 2 * w),
             pos=(0, 2 * SPACING + bw),
             is_transparent=True,
         )

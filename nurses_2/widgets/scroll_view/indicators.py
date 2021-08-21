@@ -29,7 +29,7 @@ class _IndicatorBehavior:
 
 class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
     def __init__(self, inactive_color, hover_color, active_color, length):
-        super().__init__(dim=(length, 2), default_color_pair=color_pair(BLACK, inactive_color))
+        super().__init__(size=(length, 2), default_color_pair=color_pair(BLACK, inactive_color))
         self.active_color = active_color
         self.hover_color = hover_color
         self.inactive_color = inactive_color
@@ -53,7 +53,7 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
 
 class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
     def __init__(self, inactive_color, hover_color, active_color, length):
-        super().__init__(dim=(1, length << 1), default_color_pair=color_pair(BLACK, inactive_color))
+        super().__init__(size=(1, length << 1), default_color_pair=color_pair(BLACK, inactive_color))
         self.active_color = active_color
         self.hover_color = hover_color
         self.inactive_color = inactive_color

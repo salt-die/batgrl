@@ -71,7 +71,7 @@ class ModalScreen(AutoPositionBehavior, Widget):
         **kwargs,
     ):
         super().__init__(
-            dim=(10, 70),
+            size=(10, 70),
             anchor=anchor,
             pos_hint=pos_hint,
             is_enabled=is_enabled,

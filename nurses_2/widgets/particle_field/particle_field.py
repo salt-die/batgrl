@@ -15,8 +15,8 @@ class ParticleField(Widget):
     ------
     TypeError if `add_widget` argument is not an instance of `Particle`.
     """
-    def __init__(self, dim=Size(10, 10), pos=Point(0, 0), *, is_visible=True, is_enabled=True):
-        self._dim = dim
+    def __init__(self, size=Size(10, 10), pos=Point(0, 0), *, is_visible=True, is_enabled=True):
+        self._size = size
         self.top, self.left = pos
         self.is_visible = is_visible
         self.is_enabled = is_enabled
@@ -24,8 +24,8 @@ class ParticleField(Widget):
         self.parent = None
         self.children = [ ]
 
-    def resize(self, dim: Size):
-        self._dim = dim
+    def resize(self, size: Size):
+        self._size = size
 
         for child in self.children:
             child.update_geometry()
@@ -114,7 +114,7 @@ class Particle:
         """
 
     @property
-    def dim(self):
+    def size(self):
         return 1, 1
 
     @property

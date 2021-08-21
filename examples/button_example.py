@@ -20,7 +20,7 @@ class MyButton(ButtonBehavior, Widget):
         self.info_display = info_display
         self._down_roll_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-        super().__init__(dim=(5, 20), **kwargs)
+        super().__init__(size=(5, 20), **kwargs)
 
         self.add_text(f"{'Press Me':^{self.width}}", row=self.height // 2)
 
@@ -61,7 +61,7 @@ class MyButton(ButtonBehavior, Widget):
 
 class MyApp(App):
     async def on_start(self):
-        info_display = Widget(dim=(5, 28))
+        info_display = Widget(size=(5, 28))
         info_display.add_text("Waiting for input:", row=0)
         info_display.add_text("Position:", row=1)
         info_display.add_text("Event:", row=2)
