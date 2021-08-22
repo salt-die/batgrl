@@ -11,11 +11,13 @@ from nurses_2.widgets.parallax import Parallax
 IMAGES_DIR = Path("images") / "parallax"
 SIZE = 30, 100
 
+
 class MyApp(App):
     async def on_start(self):
+        sorted_dir =  sorted(IMAGES_DIR.iterdir(), key=lambda path: path.stem)
         layers = [
             Image(size=SIZE, path=path)
-            for path in sorted(IMAGES_DIR.iterdir(), key=lambda path: path.stem) if path.suffix == ".png"
+            for path in sorted_dir if path.suffix == ".png"
         ]
 
         nlayers = len(layers)
