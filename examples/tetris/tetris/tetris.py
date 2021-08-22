@@ -214,7 +214,11 @@ class Tetris(Image):
     async def _run_game(self):
         while True:
             self.move_current_piece(dy=1, dx=0)
-            await asyncio.sleep(self.gravity)
+
+            try:
+                await asyncio.sleep(self.gravity)
+            except asyncio.CancelledError:
+                return
 
     def pause(self):
         if self.is_paused:
@@ -341,6 +345,9 @@ class Tetris(Image):
                 break
 
     def move_current_piece(self, dy=0, dx=0):
+        """
+        Move current piece. Returns true if the move was successful else false.
+        """
         current_piece =self.current_piece
 
         if not self.collides((dy, dx), current_piece):
@@ -353,7 +360,7 @@ class Tetris(Image):
                 elif self.move_reset < MOVE_RESET:
                     self._lock_down_task.cancel()
                     self.move_reset += 1
-                else:
+                else:  # Lock down task was started and move reset surpassed.
                     return False
 
                 current_piece.left += 2 * dx
