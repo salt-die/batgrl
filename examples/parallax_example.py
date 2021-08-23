@@ -40,7 +40,6 @@ class MyApp(App):
             while True:
                 for theta in angles:
                     parallax_00.offset = radius * np.cos(theta), radius * np.sin(theta)
-
                     await asyncio.sleep(.016)
 
         async def horizontal_movement():
