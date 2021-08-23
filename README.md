@@ -1,9 +1,17 @@
 # nurses_2 - terminal graphics
 
-> A continuation and rewrite of [nurses](https://www.github.com/salt-die/nurses). [nurses](https://www.github.com/salt-die/nurses) is dead. `nurses_2` depends on [prompt-toolkit](https://github.com/prompt-toolkit) instead of curses. `nurses_2` is meant for vt100 enabled, true color terminals.  (No support otherwise.)
+This is a widget and async-centric library for creating graphical applications in the terminal. Support only for vt-100 enabled, truecolor terminals.
 
-This is a widget and async-centric library for creating graphical applications in the terminal.
-Only the truly mad would venture here; here be dragons.
+How it works
+------------
+A widget's visual state is stored in numpy arrays. Because numpy arrays follow the buffer protocol, views of these arrays can be passed to other widgets without copying any data. To render the current screen, the root widget, for each of its children, finds the rectangular region of the screen a child overlaps and passes a view of this region to that child. The child is then responsible for rendering into this view. It may continue the process, passing
+overlapping region views of the view to *its* children as well.
+
+Input dispatching is similar. Starting with the root widget all input is recursively dispatched to the entire widget tree until a input handler (`on_press` or `on_click` methods) returns `True`.  `True` indicates the input was handled and stops the dispatching.
+
+Getting Started
+---------------
+To create a nurses_2 app, inherit the `App` class and implement the `on_start` asynchronous method. The root widget of the app is named `root` and widgets can be added to it with `root.add_widget` or `root.add_widgets`. One can find examples in the `/examples/` directory. Once implemented, the app can be run by instantiating it and calling the `run` method.
 
 # /examples/exploding_logo.py
 
