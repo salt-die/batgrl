@@ -20,3 +20,5 @@ HIDDEN_REVERSED = color_pair(BORDER, HIDDEN_SQUARE)
 
 COUNT_SQUARE    = from_hex("b0d9e5")
 COUNT           = color_pair(BORDER, COUNT_SQUARE)
+
+FLAG_COLOR      = from_hex("d87845")
