@@ -6,18 +6,22 @@ from nurses_2.widgets.widget_data_structures import Point
 
 from .colors import HIDDEN
 from .count import Count
+from .grid import Grid
+from .hidden import Hidden
 
 SIZE = 16, 30
 NMINES = 99
 KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
 RNG = np.random.default_rng()
+V_SPACING = Grid.V_SPACING
+H_SPACING = Grid.H_SPACING
 
 
 class MineSweeper(Widget):
     def __init__(self, pos=Point(0, 0), **kwargs):
         h, w = SIZE
 
-        super().__init__(pos=pos, size=(2 * h + 1, 4 * w + 1), **kwargs)
+        super().__init__(pos=pos, size=(V_SPACING * h + 1, H_SPACING * w + 1), **kwargs)
 
         self.reset()
 
@@ -31,7 +35,7 @@ class MineSweeper(Widget):
             0,
             convolve(self.minefield, KERNEL, mode='constant')
         )
-        self.add_widget(Count(count))
+        self.add_widgets(Count(count), Hidden(count.shape))
 
     def init_minefield(self):
         self.minefield = minefield = np.zeros(SIZE, dtype=int)

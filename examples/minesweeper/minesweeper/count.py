@@ -2,9 +2,8 @@ from functools import partial
 
 import numpy as np
 
-from .grid import Grid
-
 from .colors import *
+from .grid import Grid
 
 @np.vectorize
 def stringify(n):
@@ -28,7 +27,8 @@ def colorify(n):
 
 class Count(Grid):
     def __init__(self, count, **kwargs):
-        super().__init__(size=count.shape, is_light=True, default_color_pair=HIDDEN, **kwargs)
+        super().__init__(size=count.shape, is_light=True, default_color_pair=COUNT, **kwargs)
+        vs, hs = self.V_SPACING, self.H_SPACING
 
-        self.canvas[1::2, 2::4] = stringify(count)
-        self.colors[1::2, 2::4, :3] = np.dstack(colorify(count))
+        self.canvas[vs//2::vs, hs//2::hs] = stringify(count)
+        self.colors[vs//2::vs, hs//2::hs, :3] = np.dstack(colorify(count))
