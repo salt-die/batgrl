@@ -1,9 +1,10 @@
+from itertools import product
+
 import numpy as np
 from scipy.ndimage import convolve
 
 from nurses_2.mouse import MouseButton, MouseEventType
 from nurses_2.widgets.widget import overlapping_region
-from nurses_2.widgets.behaviors.button_behavior import ButtonStates
 
 from .colors import *
 from .grid import Grid
@@ -12,13 +13,17 @@ FLAG = "⚑"
 
 
 class Hidden(Grid):
-    def __init__(self, size, **kwargs):
+    def __init__(self, count, minefield, **kwargs):
         super().__init__(
-            size=size,
+            size=count.shape,
             is_light=False,
             default_color_pair=HIDDEN,
             **kwargs,
         )
+        self.count = count
+        self.minefield = minefield
+        self.revealed = np.zeros_like(count, dtype=bool)
+
         vs, hs = self.V_SPACING, self.H_SPACING
 
         self.colors[vs//2::vs, hs//2::hs, :3] = FLAG_COLOR
@@ -30,39 +35,48 @@ class Hidden(Grid):
 
         self.hidden = convolve(squares, kernel, mode="constant")
 
-        self.state = ButtonStates.NORMAL
-        self._last_cell = 0, 0
+        self._pressed_cell = self._pressed_button = None
 
     def on_click(self, mouse_event):
-        if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-            if (
-                self.state == ButtonStates.NORMAL
-                and self.collides_coords(mouse_event.position)
-            ):
-                if mouse_event.button == MouseButton.LEFT:
-                    self._normal_press(mouse_event.position)
-                elif mouse_event.button == MouseButton.RIGHT:
-                    self._flag_press(mouse_event.position)
-                else:
-                    return False
+        position, event_type, button, _ = mouse_event
 
-                return True
+        if event_type not in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_UP):
+            return False
 
-            self._release()
-
-        elif mouse_event.event_type == MouseEventType.MOUSE_UP:
-            if (
-                self.state == ButtonStates.DOWN
-                and self.is_same_cell(mouse_event.position)
-            ):
+        if not self.collides_coords(position):
+            if event_type == MouseEventType.MOUSE_UP:
                 self._release()
-                self.reveal_cell(self._last_cell)
+            else:
+                return False
 
-                return True
+        elif event_type == MouseEventType.MOUSE_DOWN:
+            self._pressed_cell = self._cell_from_pos(position)
+            self._pressed_button = button
+
+            if button == MouseButton.LEFT:
+                self._normal_press()
+            elif button == MouseButton.RIGHT:
+                self._flag_press()
+            elif button == MouseButton.MIDDLE:
+                self._super_press()
+            else:
+                return False
+
+        else:  # MOUSE_UP
+            if (
+                self._cell_from_pos(position) == self._pressed_cell
+                and self._pressed_button in (MouseButton.LEFT, MouseButton.MIDDLE)
+            ):
+                self.reveal_cell(self._pressed_cell, reveal_neighbors=self._pressed_button == MouseButton.MIDDLE)
 
             self._release()
 
-    def _cell(self, mouse_position):
+        return True
+
+    def _cell_from_pos(self, mouse_position):
+        """
+        Return the cell-coordinates cooresponding to given mouse position.
+        """
         y, x = self.absolute_to_relative_coords(mouse_position)
 
         if y == self.height - 1:
@@ -71,71 +85,107 @@ class Hidden(Grid):
         if x == self.width - 1:
             x -= 1
 
-        vs, hs = self.V_SPACING, self.H_SPACING
+        return y // self.V_SPACING, x // self.H_SPACING
 
-        return y - (y % vs), x - (x % hs)
-
-    def is_same_cell(self, mouse_position):
-        return self._cell(mouse_position) == self._last_cell
-
-    def is_cell_hidden(self, cell):
-        y, x = cell
-        vs, hs = self.V_SPACING, self.H_SPACING
-        return (self.hidden[y: y + vs + 1, x: x + hs + 1] != 0).all()
-
-    def is_cell_flagged(self, cell):
+    def _cell_center(self, cell):
+        """
+        A cell's center in grid-coordinates.
+        """
         y, x = cell
         vs, hs = self.V_SPACING, self.H_SPACING
 
-        return self.canvas[y + vs // 2, x + hs // 2] == FLAG
+        return y * vs + vs // 2, x * hs + hs // 2
 
-    def recolor_cell(self, cell, color_pair):
+    def _cell_slice(self, cell):
+        """
+        Return a tuple of slices that indicate a cell's rect in the grid.
+        """
         y, x = cell
-        vs, hs = self.V_SPACING, self.H_SPACING
-
-        self.colors[y: y + vs + 1, x: x + hs + 1] = color_pair
-        self.colors[y + vs // 2, x + hs // 2, :3] = FLAG_COLOR
-
-    def _normal_press(self, mouse_position):
-        self._last_cell = cell = self._cell(mouse_position)
 
         vs, hs = self.V_SPACING, self.H_SPACING
+        j, i = y * vs, x * hs
 
-        if self.is_cell_flagged(cell):
-            return
+        return slice(j, j + vs + 1), slice(i, i + hs + 1)
 
-        if self.is_cell_hidden(cell):
-            self.recolor_cell(cell, HIDDEN_REVERSED)
-            self.state = ButtonStates.DOWN
+    def _recolor_cell(self, cell, color_pair):
+        self.colors[self._cell_slice(cell)] = color_pair
 
-    def _flag_press(self, mouse_position):
-        y, x = cell = self._cell(mouse_position)
+        u, v = self._cell_center(cell)
+        self.colors[u, v, :3] = FLAG_COLOR
 
-        if self.is_cell_hidden(cell):
-            vs, hs = self.V_SPACING, self.H_SPACING
-            v, u = y + vs // 2, x + hs // 2
+    def _neighbors(self, cell):
+        y, x = cell
+        h, w = self.minefield.shape
 
-            if self.is_cell_flagged(cell):
-                self.canvas[v, u] = " "
-            else:
-                self.canvas[v, u] = FLAG
+        for j, i in product((-1, 0, 1), repeat=2):
+            if j == i == 0:
+                continue
+
+            v, u = j + y, i + x
+            # Bounds check
+            if v < 0 or v >= h or u < 0 or u >= w:
+                continue
+
+            yield v, u
+
+    def is_flagged(self, cell):
+        return self.canvas[self._cell_center(cell)] == FLAG
+
+    def _normal_press(self):
+        cell = self._pressed_cell
+
+        if not self.revealed[cell] and not self.is_flagged(cell):
+            self._recolor_cell(cell, HIDDEN_REVERSED)
+
+    def _flag_press(self):
+        cell = self._pressed_cell
+
+        if not self.revealed[cell]:
+            self.canvas[self._cell_center(cell)] = " " if self.is_flagged(cell) else FLAG
+
+    def _super_press(self):
+        cell = self._pressed_cell
+
+        if not self.revealed[cell] and not self.is_flagged(cell):
+            self._recolor_cell(cell, HIDDEN_REVERSED)
+
+        for neighbor in self._neighbors(cell):
+            if not self.is_flagged(neighbor):
+                self._recolor_cell(neighbor, HIDDEN_REVERSED)
 
     def _release(self):
-        self.recolor_cell(self._last_cell, HIDDEN)
-        self.state = ButtonStates.NORMAL
+        cell = self._pressed_cell
 
-    def reveal_cell(self, cell):
-        if self.is_cell_hidden(cell):
-            y, x = cell
-            vs, hs = self.V_SPACING, self.H_SPACING
-            self.hidden[y: y + vs + 1, x: x + hs + 1] -= 1
+        self._recolor_cell(cell, HIDDEN)
+
+        if self._pressed_button == MouseButton.MIDDLE:
+            for neighbor in self._neighbors(cell):
+                self._recolor_cell(neighbor, HIDDEN)
+
+        self._pressed_cell = self._pressed_button = None
+
+    def reveal_cell(self, cell, reveal_neighbors: bool):
+        if self.revealed[cell] or self.is_flagged(cell):
+            return
+
+        self.revealed[cell] = True
+
+        if self.minefield[cell]:
+            self.canvas[:] = "X"  # Temporary
+            return True
+
+        self.hidden[self._cell_slice(cell)] -= 1
+
+        if reveal_neighbors or self.count[cell] == 0:
+            for neighbor in self._neighbors(cell):
+                self.reveal_cell(neighbor, reveal_neighbors=False)
 
     def render(self, canvas_view, colors_view, rect):
         t, l, b, r, _, _ = rect
 
         index_rect = slice(t, b), slice(l, r)
         source = self.canvas[index_rect]
-        visible = self.hidden != 0
+        visible = self.hidden[index_rect] != 0
 
         canvas_view[visible] = source[visible]
         colors_view[visible] = self.colors[index_rect][visible]
