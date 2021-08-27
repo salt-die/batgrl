@@ -12,7 +12,7 @@ class Grid(Widget):
         h, w = size
         vs, hs = self.V_SPACING, self.H_SPACING
 
-        super().__init__(size=(vs * h + 1, hs * w + 1), **kwargs)
+        super().__init__(pos=(1, 0), size=(vs * h + 1, hs * w + 1), **kwargs)
 
         canvas = self.canvas
 
