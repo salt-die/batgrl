@@ -5,6 +5,8 @@ import numpy as np
 from .colors import *
 from .grid import Grid
 
+BOMB = "💣"
+
 @np.vectorize
 def stringify(n):
     return " " if n == 0 else str(n)
@@ -26,7 +28,7 @@ def colorify(n):
 
 
 class Count(Grid):
-    def __init__(self, count, **kwargs):
+    def __init__(self, count, minefield, **kwargs):
         super().__init__(
             size=count.shape,
             is_light=True,
@@ -36,4 +38,6 @@ class Count(Grid):
         vs, hs = self.V_SPACING, self.H_SPACING
 
         self.canvas[vs//2::vs, hs//2::hs] = stringify(count)
+        self.canvas[vs//2::vs, hs//2::hs][minefield == 1] = BOMB
+
         self.colors[vs//2::vs, hs//2::hs, :3] = np.dstack(colorify(count))
