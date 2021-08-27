@@ -22,7 +22,9 @@ class Minefield(Grid):
         )
         self.count = count
         self.minefield = minefield
+        self.nmines = minefield.sum()
         self.revealed = np.zeros_like(count, dtype=bool)
+        self._is_gameover = False
 
         vs, hs = self.V_SPACING, self.H_SPACING
 
@@ -44,10 +46,10 @@ class Minefield(Grid):
             return False
 
         if not self.collides_coords(position):
-            if event_type == MouseEventType.MOUSE_UP:
+            if event_type == MouseEventType.MOUSE_UP and self._pressed_cell:
                 self._release()
-            else:
-                return False
+
+            return False
 
         elif event_type == MouseEventType.MOUSE_DOWN:
             self._pressed_cell = self._cell_from_pos(position)
@@ -63,11 +65,14 @@ class Minefield(Grid):
                 return False
 
         else:  # MOUSE_UP
+            if not self._pressed_cell:
+                return False
+
             if (
                 self._cell_from_pos(position) == self._pressed_cell
                 and self._pressed_button in (MouseButton.LEFT, MouseButton.MIDDLE)
             ):
-                self.reveal_cell(self._pressed_cell, reveal_neighbors=self._pressed_button == MouseButton.MIDDLE)
+               self.reveal_cell(self._pressed_cell, reveal_neighbors=self._pressed_button == MouseButton.MIDDLE)
 
             self._release()
 
@@ -132,6 +137,9 @@ class Minefield(Grid):
         return self.canvas[self._cell_center(cell)] == FLAG
 
     def _normal_press(self):
+        if not self._is_gameover:
+            self.parent.reset_button.update_down()
+
         cell = self._pressed_cell
 
         if not self.revealed[cell] and not self.is_flagged(cell):
@@ -141,9 +149,15 @@ class Minefield(Grid):
         cell = self._pressed_cell
 
         if not self.revealed[cell]:
-            self.canvas[self._cell_center(cell)] = " " if self.is_flagged(cell) else FLAG
+            is_flagged = self.is_flagged(cell)
+
+            self.canvas[self._cell_center(cell)] = " " if is_flagged else FLAG
+            self.parent.mines += 1 if is_flagged else -1
 
     def _super_press(self):
+        if not self._is_gameover:
+            self.parent.reset_button.update_down()
+
         cell = self._pressed_cell
 
         if not self.revealed[cell] and not self.is_flagged(cell):
@@ -154,6 +168,9 @@ class Minefield(Grid):
                 self._recolor_cell(neighbor, HIDDEN_REVERSED)
 
     def _release(self):
+        if not self._is_gameover:
+            self.parent.reset_button.update_normal()
+
         cell = self._pressed_cell
 
         self._recolor_cell(cell, HIDDEN)
@@ -165,25 +182,38 @@ class Minefield(Grid):
         self._pressed_cell = self._pressed_button = None
 
     def reveal_cell(self, cell, reveal_neighbors: bool):
-        if reveal_neighbors:  # TODO: Check if cell count - adjacent flags == 0
+        if reveal_neighbors:
+            adjacent_flags = sum(map(self.is_flagged, self._neighbors(cell)))
+
+            if self.revealed[cell] and self.count[cell] != adjacent_flags:
+                return
+
             for neighbor in self._neighbors(cell):
                 self.reveal_cell(neighbor, reveal_neighbors=False)
 
         if self.revealed[cell] or self.is_flagged(cell):
             return
 
-        self.revealed[cell] = True
-
         if self.minefield[cell]:
-            self.hidden[:] = 0
-            self.revealed[:] = True
-            return True
+            self._game_over(win=False)
+            return
 
+        self.revealed[cell] = True
         self.hidden[self._cell_slice(cell)] -= 1
 
         if self.count[cell] == 0:
             for neighbor in self._neighbors(cell):
                 self.reveal_cell(neighbor, reveal_neighbors=False)
+
+        if (self.revealed == False).sum() == self.nmines:
+            self._game_over(win=True)
+            return
+
+    def _game_over(self, win: bool):
+        self.hidden[:] = 0
+        self.revealed[:] = True
+        self._is_gameover = True
+        self.parent.game_over(win=win)
 
     def render(self, canvas_view, colors_view, rect):
         t, l, b, r, _, _ = rect
