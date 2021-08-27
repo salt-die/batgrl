@@ -12,7 +12,7 @@ from .grid import Grid
 FLAG = "⚑"
 
 
-class Hidden(Grid):
+class Minefield(Grid):
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
             size=count.shape,
@@ -150,7 +150,7 @@ class Hidden(Grid):
             self._recolor_cell(cell, HIDDEN_REVERSED)
 
         for neighbor in self._neighbors(cell):
-            if not self.is_flagged(neighbor):
+            if not self.revealed[neighbor] and not self.is_flagged(neighbor):
                 self._recolor_cell(neighbor, HIDDEN_REVERSED)
 
     def _release(self):
@@ -165,18 +165,23 @@ class Hidden(Grid):
         self._pressed_cell = self._pressed_button = None
 
     def reveal_cell(self, cell, reveal_neighbors: bool):
+        if reveal_neighbors:  # TODO: Check if cell count - adjacent flags == 0
+            for neighbor in self._neighbors(cell):
+                self.reveal_cell(neighbor, reveal_neighbors=False)
+
         if self.revealed[cell] or self.is_flagged(cell):
             return
 
         self.revealed[cell] = True
 
         if self.minefield[cell]:
-            self.canvas[:] = "X"  # Temporary
+            self.hidden[:] = 0
+            self.revealed[:] = True
             return True
 
         self.hidden[self._cell_slice(cell)] -= 1
 
-        if reveal_neighbors or self.count[cell] == 0:
+        if self.count[cell] == 0:
             for neighbor in self._neighbors(cell):
                 self.reveal_cell(neighbor, reveal_neighbors=False)
 
