@@ -11,7 +11,6 @@ def patch_win32_input(win32_input):
     def _handle_mouse(ev):
         FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
         RIGHTMOST_BUTTON_PRESSED =  0x0002
-        FROM_LEFT_2ND_BUTTON_PRESSED = 0x0004
 
         RIGHT_ALT_PRESSED = 0x0001
         LEFT_ALT_PRESSED = 0x0002
