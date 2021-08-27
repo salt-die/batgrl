@@ -4,10 +4,10 @@ from scipy.ndimage import convolve
 from nurses_2.widgets import Widget
 from nurses_2.widgets.widget_data_structures import Point
 
-from .colors import HIDDEN
+from .colors import COUNT
 from .count import Count
 from .grid import Grid
-from .hidden import Hidden
+from .minefield import Minefield
 
 SIZE = 16, 30
 NMINES = 99
@@ -30,7 +30,14 @@ class MineSweeper(Widget):
 
         minefield = self.create_minefield()
         count = convolve(minefield, KERNEL, mode='constant')
-        self.add_widgets(Count(count), Hidden(count, minefield))
+
+        self.add_widgets(Count(count, minefield), Minefield(count, minefield))
+
+    def game_over(self):
+        # Stop timer
+        # Un-flagged bombs explode "💥"
+        # Wrong-flags replaced with "✗"
+        ...
 
     def create_minefield(self):
         minefield = np.zeros(SIZE, dtype=int)
@@ -44,3 +51,8 @@ class MineSweeper(Widget):
                     break
 
         return minefield
+
+    def on_press(self, key_press):
+        if key_press.key == "c-m":  # Enter
+            self.reset()
+            return True
