@@ -52,6 +52,9 @@ class Minefield(Grid):
             return False
 
         elif event_type == MouseEventType.MOUSE_DOWN:
+            if self._pressed_cell:
+                self._release()
+
             self._pressed_cell = self._cell_from_pos(position)
             self._pressed_button = button
 
