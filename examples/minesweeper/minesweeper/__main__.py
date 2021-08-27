@@ -15,4 +15,4 @@ class MineSweeperApp(App):
         )
 
 
-MineSweeperApp().run()
+MineSweeperApp(title="MineSweeper").run()
