@@ -4,8 +4,8 @@ from_hex = Color.from_hex
 
 ZERO            = from_hex("aba1ad")
 ONE             = from_hex("272ae5")
-TWO             = from_hex("2ae527")
-THREE           = from_hex("e53327")
+TWO             = from_hex("25ba0b")
+THREE           = from_hex("8e2222")
 FOUR            = from_hex("0a2b99")
 FIVE            = from_hex("7f1b07")
 SIX             = from_hex("0ba9c1")
@@ -21,4 +21,6 @@ HIDDEN_REVERSED = color_pair(BORDER, HIDDEN_SQUARE)
 COUNT_SQUARE    = from_hex("b0d9e5")
 COUNT           = color_pair(BORDER, COUNT_SQUARE)
 
-FLAG_COLOR      = from_hex("d87845")
+DATA_BAR        = color_pair(HIDDEN_SQUARE, COUNT_SQUARE)
+
+FLAG_COLOR      = from_hex("6d1004")
