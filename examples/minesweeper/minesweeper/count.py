@@ -21,13 +21,18 @@ def colorify(n):
         SIX,
         SEVEN,
         EIGHT,
-        ZERO,  # This color shouldn't be indexed, but little harm in including it.
+        ZERO,
     )[n]
 
 
 class Count(Grid):
     def __init__(self, count, **kwargs):
-        super().__init__(size=count.shape, is_light=True, default_color_pair=COUNT, **kwargs)
+        super().__init__(
+            size=count.shape,
+            is_light=True,
+            default_color_pair=COUNT,
+            **kwargs,
+        )
         vs, hs = self.V_SPACING, self.H_SPACING
 
         self.canvas[vs//2::vs, hs//2::hs] = stringify(count)
