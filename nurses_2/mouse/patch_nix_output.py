@@ -1,4 +1,4 @@
-def patch_nix_output(nix_input):
+def patch_nix_output(nix_output):
     """
     Add ANY_EVENT_MOUSE mode to other mouse modes.  This allows mouse movement tracking.
     """
@@ -14,6 +14,6 @@ def patch_nix_output(nix_input):
         self.write_raw("\x1b[?1015l")
         self.write_raw("\x1b[?1006l")
 
-    input_cls = type(nix_input)
-    input_cls.enable_mouse_support = enable_mouse_support
-    input_cls.disable_mouse_support = disable_mouse_support
+    output_cls = type(nix_output)
+    output_cls.enable_mouse_support = enable_mouse_support
+    output_cls.disable_mouse_support = disable_mouse_support
