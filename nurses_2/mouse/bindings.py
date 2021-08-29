@@ -113,6 +113,17 @@ TERM_SGR = {
     (59, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL),
     (63, "m"): (MOUSE_MOVE, NO_BUTTON, SHIFT_ALT_CONTROL),
 
+    # This is duplicated from the block above with capital "M". WSL seems to produce lowercase "m" escape codes,
+    # but "M" will be expected for other linux systems.
+    (35, "M"): (MOUSE_MOVE, NO_BUTTON, NO_MODIFIER),
+    (39, "M"): (MOUSE_MOVE, NO_BUTTON, SHIFT),
+    (43, "M"): (MOUSE_MOVE, NO_BUTTON, ALT),
+    (47, "M"): (MOUSE_MOVE, NO_BUTTON, SHIFT_ALT),
+    (51, "M"): (MOUSE_MOVE, NO_BUTTON, CONTROL),
+    (55, "M"): (MOUSE_MOVE, NO_BUTTON, SHIFT_CONTROL),
+    (59, "M"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL),
+    (63, "M"): (MOUSE_MOVE, NO_BUTTON, SHIFT_ALT_CONTROL),
+
     (64, "M"): (SCROLL_UP, NO_BUTTON, NO_MODIFIER),
     (68, "M"): (SCROLL_UP, NO_BUTTON, SHIFT),
     (72, "M"): (SCROLL_UP, NO_BUTTON, ALT),
