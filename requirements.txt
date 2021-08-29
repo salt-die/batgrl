@@ -1,2 +1,2 @@
 numpy == 1.20.2
-prompt-toolkit == 3.0.18
+opencv-python  == 4.5.2
