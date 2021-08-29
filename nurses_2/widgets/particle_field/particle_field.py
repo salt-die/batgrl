@@ -156,8 +156,4 @@ class Particle:
     def on_click(self, mouse_event):
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
-
-        Notes
-        -----
-        `mouse_event` is a `prompt_toolkit` MouseEvent`.
         """
