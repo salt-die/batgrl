@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import contextmanager
 
-from prompt_toolkit.input import create_input
-from prompt_toolkit.output import create_output
-from prompt_toolkit.utils import is_windows, is_conemu_ansi
-from prompt_toolkit.keys import Keys
+from .test_toolkit.input import create_input
+from .test_toolkit.output import create_output
+from .test_toolkit.utils import is_windows, is_conemu_ansi
+from .test_toolkit.keys import Keys
 
 from .colors import BLACK_ON_BLACK
 from .widgets._root import _Root
@@ -15,14 +15,8 @@ RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
 IS_WINDOWS = is_windows()
 
-# Patch better mouse handling:
-if IS_WINDOWS:
-    from .mouse.patch_win32_console_input_reader import patch_win32_console_input_reader
-    patch_win32_console_input_reader()
-else:
+if not IS_WINDOWS:
     from .mouse.create_vt100_mouse_event import create_vt100_mouse_event as mouse_event
-    from .mouse.patch_vt100_output import patch_vt100_output
-    patch_vt100_output()
 
 class App(ABC):
     """
@@ -80,7 +74,7 @@ class App(ABC):
         Run the app.
         """
         if IS_WINDOWS:
-            from prompt_toolkit.output.windows10 import is_win_vt100_enabled
+            from .test_toolkit.output.windows10 import is_win_vt100_enabled
 
             if not is_win_vt100_enabled() and not is_conemu_ansi():
                 raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
