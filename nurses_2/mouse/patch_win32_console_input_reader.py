@@ -1,14 +1,17 @@
 """
-Patch more mouse support for windows. Extra *nix mouse support found in `handler.py`.
+A patch to prompt_toolkit's ConsoleInputReader that detects modifiers. Event is packaged
+directly into a nurses_2 MouseEvent to save string parsing (prompt_toolkit joins `data`
+into a string for reasons unknown).
 """
+from prompt_toolkit.input.win32 import ConsoleInputReader
 from prompt_toolkit.key_binding import KeyPress
 from prompt_toolkit.keys import Keys
 
 from ..widgets.widget_data_structures import Point
 from .mouse_data_structures import *
 
-def patch_win32_input(win32_input):
-    def _handle_mouse(ev):
+def patch_win32_console_input_reader():
+    def _handle_mouse(self, ev):
         FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
         RIGHTMOST_BUTTON_PRESSED =  0x0002
 
@@ -63,4 +66,4 @@ def patch_win32_input(win32_input):
         data = MouseEvent(position, event_type, button, modifier)
         return [ KeyPress(Keys.WindowsMouseEvent, data) ]
 
-    win32_input.console_input_reader._handle_mouse = _handle_mouse
+    ConsoleInputReader._handle_mouse = _handle_mouse

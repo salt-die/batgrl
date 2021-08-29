@@ -8,13 +8,21 @@ from prompt_toolkit.utils import is_windows, is_conemu_ansi
 from prompt_toolkit.keys import Keys
 
 from .colors import BLACK_ON_BLACK
-from .mouse.handler import create_vt100_mouse_event
 from .widgets._root import _Root
 
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
+IS_WINDOWS = is_windows()
 
+# Patch better mouse handling:
+if IS_WINDOWS:
+    from .mouse.patch_win32_console_input_reader import patch_win32_console_input_reader
+    patch_win32_console_input_reader()
+else:
+    from .mouse.create_vt100_mouse_event import create_vt100_mouse_event as mouse_event
+    from .mouse.patch_vt100_output import patch_vt100_output
+    patch_vt100_output()
 
 class App(ABC):
     """
@@ -71,7 +79,7 @@ class App(ABC):
         """
         Run the app.
         """
-        if is_windows():
+        if IS_WINDOWS:
             from prompt_toolkit.output.windows10 import is_win_vt100_enabled
 
             if not is_win_vt100_enabled() and not is_conemu_ansi():
@@ -105,39 +113,67 @@ class App(ABC):
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
 
-            def read_from_input():
-                """
-                Read and process input.
-                """
-                for key in env_in.read_keys():
-                    if key.key == exit_key:
-                        return self.exit()
+            if IS_WINDOWS:
+                def read_from_input():
+                    """
+                    Read and process input.
+                    """
+                    for key in env_in.read_keys():
+                        if key.key == exit_key:
+                            return self.exit()
 
-                    if key.key == Keys.WindowsMouseEvent:
-                        dispatch_click(key.data)
-                    elif key.key == Keys.Vt100MouseEvent:
-                        dispatch_click(create_vt100_mouse_event(key.data))
-                    else:
-                        dispatch_press(key)
+                        if key.key == Keys.WindowsMouseEvent:
+                            dispatch_click(key.data)
+                        else:
+                            dispatch_press(key)
 
-                nonlocal flush_timer
-                flush_timer.cancel()
-                flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
+                    nonlocal flush_timer
+                    flush_timer.cancel()
+                    flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
 
-            def flush_input():
-                """
-                Flush input.
-                """
-                for key in env_in.flush_keys():
-                    if key.key == exit_key:
-                        return self.exit()
+                def flush_input():
+                    """
+                    Flush input.
+                    """
+                    for key in env_in.flush_keys():
+                        if key.key == exit_key:
+                            return self.exit()
 
-                    if key.key == Keys.WindowsMouseEvent:
-                        dispatch_click(key.data)
-                    elif key.key == Keys.Vt100MouseEvent:
-                        dispatch_click(create_vt100_mouse_event(key.data))
-                    else:
-                        dispatch_press(key)
+                        if key.key == Keys.WindowsMouseEvent:
+                            dispatch_click(key.data)
+                        else:
+                            dispatch_press(key)
+
+            else:
+                def read_from_input():
+                    """
+                    Read and process input.
+                    """
+                    for key in env_in.read_keys():
+                        if key.key == exit_key:
+                            return self.exit()
+
+                        if key.key == Keys.Vt100MouseEvent:
+                            dispatch_click(mouse_event(key.data))
+                        else:
+                            dispatch_press(key)
+
+                    nonlocal flush_timer
+                    flush_timer.cancel()
+                    flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
+
+                def flush_input():
+                    """
+                    Flush input.
+                    """
+                    for key in env_in.flush_keys():
+                        if key.key == exit_key:
+                            return self.exit()
+
+                        if key.key == Keys.Vt100MouseEvent:
+                            dispatch_click(mouse_event(key.data))
+                        else:
+                            dispatch_press(key)
 
             async def poll_size():
                 """
@@ -178,26 +214,17 @@ def create_environment(title):
     Enter alternate screen and create platform specific input. Restore screen and close input on exit.
     """
     env_out = create_output()
-    # Patch better mouse handling:
-    if not is_windows():
-        from .mouse.patch_nix_output import patch_nix_output
-        patch_nix_output(env_out)
-
-    env_out.enable_mouse_support()
-    env_out.enter_alternate_screen()
-    if title is not None:
-        env_out.set_title(title)
-    env_out.flush()
-
     env_in = create_input()
-    # Patch better mouse handling:
-    if is_windows():
-        from .mouse.patch_win32_input import patch_win32_input
-        patch_win32_input(env_in)
-
-    env_in.flush_keys()  # Ignoring type-ahead
 
     try:
+        env_out.enable_mouse_support()
+        env_out.enter_alternate_screen()
+        if title is not None:
+            env_out.set_title(title)
+        env_out.flush()
+
+        env_in.flush_keys()  # Ignoring type-ahead
+
         yield env_out, env_in
     finally:
         env_in.flush_keys()

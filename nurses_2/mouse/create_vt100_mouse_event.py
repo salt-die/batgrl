@@ -1,7 +1,7 @@
-from prompt_toolkit.keys import Keys
-
+"""
+Create a nurses_2 MouseEvent from a prompt_toolkit KeyPress' data.
+"""
 from ..widgets.widget_data_structures import Point
-
 from .mouse_data_structures import *
 from .bindings import TERM_SGR, TYPICAL, URXVT
 

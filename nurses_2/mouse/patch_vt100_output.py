@@ -1,7 +1,10 @@
-def patch_nix_output(nix_output):
-    """
-    Add ANY_EVENT_MOUSE mode to other mouse modes.  This allows mouse movement tracking.
-    """
+"""
+Patch prompt_toolkit's Vt100_Output's enable_mouse_support to receive mouse movement events.
+"""
+
+from prompt_toolkit.output.vt100 import Vt100_Output
+
+def patch_vt100_output():
     def enable_mouse_support(self):
         self.write_raw("\x1b[?1000h")
         self.write_raw("\x1b[?1003h")  # ANY_EVENT_MOUSE
@@ -14,6 +17,5 @@ def patch_nix_output(nix_output):
         self.write_raw("\x1b[?1015l")
         self.write_raw("\x1b[?1006l")
 
-    output_cls = type(nix_output)
-    output_cls.enable_mouse_support = enable_mouse_support
-    output_cls.disable_mouse_support = disable_mouse_support
+    Vt100_Output.enable_mouse_support = enable_mouse_support
+    Vt100_Output.disable_mouse_support = disable_mouse_support
