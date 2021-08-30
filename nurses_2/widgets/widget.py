@@ -332,7 +332,7 @@ class Widget:
 
         Notes
         -----
-        `key` is a `prompt_toolkit` `KeyPress`.
+        `key` is a `prompt_toolkit` `Key`.
         """
 
     def on_click(self, mouse_event):
