@@ -7,7 +7,7 @@ from .bindings import TERM_SGR, TYPICAL, URXVT
 
 def create_vt100_mouse_event(data):
     """
-    Create a MouseEvent from a KeyPress.
+    Create a MouseEvent.
     """
     if data[2] == "M":  # Typical: "Esc[MaB*"
         mouse_event, x, y = map(ord, data[3:])

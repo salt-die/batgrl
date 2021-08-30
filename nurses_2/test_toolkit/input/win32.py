@@ -9,18 +9,15 @@ from ctypes import windll
 from ctypes import Array, pointer
 from ctypes.wintypes import DWORD, HANDLE
 from typing import (
-    Callable,
-    ContextManager,
     Dict,
-    Iterable,
     Iterator,
     List,
     Optional,
-    TextIO,
 )
 
 from ...mouse.mouse_data_structures import *
 from ...widgets.widget_data_structures import Point
+from ...data_structures import PasteEvent
 from ..eventloop.win32 import create_win32_event, wait_for_handle, wait_for_handles
 from ..key_binding.key_processor import KeyPress
 from ..keys import Keys
@@ -111,8 +108,8 @@ class Win32Input(Input):
     def fileno(self):
         return sys.stdin.fileno()
 
-    def close(self) -> None:
-        self.console_input_reader.close()
+    def close(self):
+        pass
 
     @property
     def handle(self) -> HANDLE:
@@ -196,18 +193,7 @@ class ConsoleInputReader:
         self._fdcon = None
         self.recognize_paste = recognize_paste
 
-        # When stdin is a tty, use that handle, otherwise, create a handle from
-        # CONIN$.
-        if sys.stdin.isatty():
-            self.handle = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
-        else:
-            self._fdcon = os.open("CONIN$", os.O_RDWR | os.O_BINARY)
-            self.handle = HANDLE(msvcrt.get_osfhandle(self._fdcon))
-
-    def close(self):
-        "Close fdcon."
-        if self._fdcon is not None:
-            os.close(self._fdcon)
+        self.handle = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
     def read(self):
         """
@@ -222,119 +208,81 @@ class ConsoleInputReader:
         arrtype = INPUT_RECORD * max_count
         input_records = arrtype()
 
-        # Check whether there is some input to read. `ReadConsoleInputW` would
-        # block otherwise.
-        # (Actually, the event loop is responsible to make sure that this
-        # function is only called when there is something to read, but for some
-        # reason this happened in the asyncio_win32 loop, and it's better to be
-        # safe anyway.)
-        if not wait_for_handle(self.handle, timeout=0):
-            return
-
-        # Get next batch of input event.
         windll.kernel32.ReadConsoleInputW(
             self.handle, pointer(input_records), max_count, pointer(read)
         )
 
-        # First, get all the keys from the input buffer, in order to determine
-        # whether we should consider this a paste event or not.
-        all_keys = list(self._get_keys(read, input_records))
+        all_keys = [ ]
+        mouse_events = [ ]
 
-        # Fill in 'data' for key presses.
-        all_keys = [self._insert_key_data(key) for key in all_keys]
+        for key in self._get_keys(read, input_records):
+            (mouse_events if isinstance(key, MouseEvent) else all_keys).append(key)
 
         # Correct non-bmp characters that are passed as separate surrogate codes
-        all_keys = list(self._merge_paired_surrogates(all_keys))
+        all_keys = tuple(self._merge_paired_surrogates(all_keys))
 
         if self.recognize_paste and self._is_paste(all_keys):
-            gen = iter(all_keys)
-            k: Optional[KeyPress]
+            key_iter = iter(all_keys)
 
-            for k in gen:
-                # Pasting: if the current key consists of text or \n, turn it
-                # into a BracketedPaste.
-                data = []
-                while k and (not isinstance(k.key, Keys) or k.key == Keys.ControlJ):
-                    data.append(k.data)
-                    try:
-                        k = next(gen)
-                    except StopIteration:
-                        k = None
+            for key in key_iter:
+                paste_text = [ ]
 
-                if data:
-                    yield KeyPress(Keys.BracketedPaste, "".join(data))
-                if k is not None:
-                    yield k
+                while key and (not isinstance(key, Keys) or key is Keys.ControlJ):
+                    paste_text.append("\n" if key is Keys.ControlJ else key)
+                    key = next(gen, False)
+
+                if paste_text:
+                    yield PasteEvent("".join(paste_text))
+
+                if key is not None:
+                    yield key
         else:
-            for k2 in all_keys:
-                yield k2
+            yield from all_keys
 
-    def _insert_key_data(self, key_press: KeyPress) -> KeyPress:
-        """
-        Insert KeyPress data, for vt100 compatibility.
-        """
-        if key_press.data:
-            return key_press
+        yield from mouse_events
 
-        if isinstance(key_press.key, Keys):
-            data = REVERSE_ANSI_SEQUENCES.get(key_press.key, "")
-        else:
-            data = ""
-
-        return KeyPress(key_press.key, data)
-
-    def _get_keys(
-        self, read: DWORD, input_records: "Array[INPUT_RECORD]"
-    ) -> Iterator[KeyPress]:
+    def _get_keys(self, read: DWORD, input_records):
         """
         Generator that yields `KeyPress` objects from the input records.
         """
-        for i in range(read.value):
+        for i in range(read.value): # TODO: Test iterating over input_records directly.
             ir = input_records[i]
 
-            # Get the right EventType from the EVENT_RECORD.
-            # (For some reason the Windows console application 'cmder'
-            # [http://gooseberrycreative.com/cmder/] can return '0' for
-            # ir.EventType. -- Just ignore that.)
-            if ir.EventType in EventTypes:
-                ev = getattr(ir.Event, EventTypes[ir.EventType])
+            if attr := EventTypes.get(ir.EventType, False):
+                ev = getattr(ir.Event, attr)
 
-                # Process if this is a key event. (We also have mouse, menu and
-                # focus events.)
                 if type(ev) == KEY_EVENT_RECORD and ev.KeyDown:
-                    for key_press in self._event_to_key_presses(ev):
-                        yield key_press
+                    yield from self._event_to_key(ev)
 
                 elif type(ev) == MOUSE_EVENT_RECORD:
-                    for key_press in self._handle_mouse(ev):
-                        yield key_press
+                    yield self._handle_mouse(ev)
 
     @staticmethod
-    def _merge_paired_surrogates(key_presses: List[KeyPress]) -> Iterator[KeyPress]:
+    def _merge_paired_surrogates(keys):
         """
         Combines consecutive KeyPresses with high and low surrogates into
         single characters
         """
         buffered_high_surrogate = None
-        for key in key_presses:
-            is_text = not isinstance(key.key, Keys)
-            is_high_surrogate = is_text and "\uD800" <= key.key <= "\uDBFF"
-            is_low_surrogate = is_text and "\uDC00" <= key.key <= "\uDFFF"
+
+        for key in keys:
+            is_text = not isinstance(key, Keys)
+            is_high_surrogate = is_text and "\uD800" <= key <= "\uDBFF"
+            is_low_surrogate = is_text and "\uDC00" <= key <= "\uDFFF"
 
             if buffered_high_surrogate:
                 if is_low_surrogate:
-                    # convert high surrogate + low surrogate to single character
-                    fullchar = (
-                        (buffered_high_surrogate.key + key.key)
+                    yield (
+                        (buffered_high_surrogate + key)
                         .encode("utf-16-le", "surrogatepass")
                         .decode("utf-16-le")
                     )
-                    key = KeyPress(fullchar, fullchar)
+                    buffered_high_surrogate = None
                 else:
                     yield buffered_high_surrogate
-                buffered_high_surrogate = None
+                    buffered_high_surrogate = key
 
-            if is_high_surrogate:
+            elif is_high_surrogate:
                 buffered_high_surrogate = key
             else:
                 yield key
@@ -343,7 +291,7 @@ class ConsoleInputReader:
             yield buffered_high_surrogate
 
     @staticmethod
-    def _is_paste(keys: List[KeyPress]) -> bool:
+    def _is_paste(keys):
         """
         Return `True` when we should consider this list of keys as a paste
         event. Pasted text on windows will be turned into a
@@ -356,90 +304,72 @@ class ConsoleInputReader:
         text_count = 0
         newline_count = 0
 
-        for k in keys:
-            if not isinstance(k.key, Keys):
+        for key in keys:
+            if not isinstance(key, Keys):
                 text_count += 1
-            if k.key == Keys.ControlM:
+            elif key is Keys.ControlM:
                 newline_count += 1
 
         return newline_count >= 1 and text_count > 1
 
-    def _event_to_key_presses(self, ev: KEY_EVENT_RECORD) -> List[KeyPress]:
+    def _event_to_key(self, ev: KEY_EVENT_RECORD):
         """
         For this `KEY_EVENT_RECORD`, return a list of `KeyPress` instances.
         """
-        assert type(ev) == KEY_EVENT_RECORD and ev.KeyDown
-
-        result: Optional[KeyPress] = None
-
         control_key_state = ev.ControlKeyState
         u_char = ev.uChar.UnicodeChar
-        # Use surrogatepass because u_char may be an unmatched surrogate
-        ascii_char = u_char.encode("utf-8", "surrogatepass")
-
-        # NOTE: We don't use `ev.uChar.AsciiChar`. That appears to be the
-        # unicode code point truncated to 1 byte. See also:
-        # https://github.com/ipython/ipython/issues/10004
-        # https://github.com/jonathanslenders/python-prompt-toolkit/issues/389
 
         if u_char == "\x00":
-            if ev.VirtualKeyCode in self.keycodes:
-                result = KeyPress(self.keycodes[ev.VirtualKeyCode], "")
+            key = self.keycodes.get(ev.VirtualKeyCode)
+
         else:
-            if ascii_char in self.mappings:
-                if self.mappings[ascii_char] == Keys.ControlJ:
-                    u_char = (
-                        "\n"  # Windows sends \n, turn into \r for unix compatibility.
-                    )
-                result = KeyPress(self.mappings[ascii_char], u_char)
-            else:
-                result = KeyPress(u_char, u_char)
-
-        # First we handle Shift-Control-Arrow/Home/End (need to do this first)
-        if (
-            (
-                control_key_state & self.LEFT_CTRL_PRESSED
-                or control_key_state & self.RIGHT_CTRL_PRESSED
+            key = self.mappings.get(
+                u_char.encode("utf-8", "surrogatepass"),
+                u_char,
             )
-            and control_key_state & self.SHIFT_PRESSED
-            and result
-        ):
-            mapping: Dict[str, str] = {
-                Keys.Left: Keys.ControlShiftLeft,
-                Keys.Right: Keys.ControlShiftRight,
-                Keys.Up: Keys.ControlShiftUp,
-                Keys.Down: Keys.ControlShiftDown,
-                Keys.Home: Keys.ControlShiftHome,
-                Keys.End: Keys.ControlShiftEnd,
-                Keys.Insert: Keys.ControlShiftInsert,
-                Keys.PageUp: Keys.ControlShiftPageUp,
-                Keys.PageDown: Keys.ControlShiftPageDown,
-            }
-            result.key = mapping.get(result.key, result.key)
 
-        # Correctly handle Control-Arrow/Home/End and Control-Insert/Delete keys.
+        if not key:
+            return
+
         if (
             control_key_state & self.LEFT_CTRL_PRESSED
             or control_key_state & self.RIGHT_CTRL_PRESSED
-        ) and result:
-            mapping = {
-                Keys.Left: Keys.ControlLeft,
-                Keys.Right: Keys.ControlRight,
-                Keys.Up: Keys.ControlUp,
-                Keys.Down: Keys.ControlDown,
-                Keys.Home: Keys.ControlHome,
-                Keys.End: Keys.ControlEnd,
-                Keys.Insert: Keys.ControlInsert,
-                Keys.Delete: Keys.ControlDelete,
-                Keys.PageUp: Keys.ControlPageUp,
-                Keys.PageDown: Keys.ControlPageDown,
-            }
-            result.key = mapping.get(result.key, result.key)
+        ):
+            if key == " ":
+                key = Keys.ControlSpace
 
-        # Turn 'Tab' into 'BackTab' when shift was pressed.
-        # Also handle other shift-key combination
-        if control_key_state & self.SHIFT_PRESSED and result:
-            mapping = {
+            elif key is Keys.ControlJ:
+                key = Keys.Escape
+
+            elif control_key_state & self.SHIFT_PRESSED:
+                key = {
+                    Keys.Left: Keys.ControlShiftLeft,
+                    Keys.Right: Keys.ControlShiftRight,
+                    Keys.Up: Keys.ControlShiftUp,
+                    Keys.Down: Keys.ControlShiftDown,
+                    Keys.Home: Keys.ControlShiftHome,
+                    Keys.End: Keys.ControlShiftEnd,
+                    Keys.Insert: Keys.ControlShiftInsert,
+                    Keys.PageUp: Keys.ControlShiftPageUp,
+                    Keys.PageDown: Keys.ControlShiftPageDown,
+                }.get(key, key)
+
+            else:
+                key = {
+                    Keys.Left: Keys.ControlLeft,
+                    Keys.Right: Keys.ControlRight,
+                    Keys.Up: Keys.ControlUp,
+                    Keys.Down: Keys.ControlDown,
+                    Keys.Home: Keys.ControlHome,
+                    Keys.End: Keys.ControlEnd,
+                    Keys.Insert: Keys.ControlInsert,
+                    Keys.Delete: Keys.ControlDelete,
+                    Keys.PageUp: Keys.ControlPageUp,
+                    Keys.PageDown: Keys.ControlPageDown,
+                }.get(key, key)
+
+        elif control_key_state & self.SHIFT_PRESSED:
+            key = {
                 Keys.Tab: Keys.BackTab,
                 Keys.Left: Keys.ShiftLeft,
                 Keys.Right: Keys.ShiftRight,
@@ -451,50 +381,12 @@ class ConsoleInputReader:
                 Keys.Delete: Keys.ShiftDelete,
                 Keys.PageUp: Keys.ShiftPageUp,
                 Keys.PageDown: Keys.ShiftPageDown,
-            }
-            result.key = mapping.get(result.key, result.key)
+            }.get(key, key)
 
-        # Turn 'Space' into 'ControlSpace' when control was pressed.
-        if (
-            (
-                control_key_state & self.LEFT_CTRL_PRESSED
-                or control_key_state & self.RIGHT_CTRL_PRESSED
-            )
-            and result
-            and result.data == " "
-        ):
-            result = KeyPress(Keys.ControlSpace, " ")
+        if control_key_state & self.LEFT_ALT_PRESSED:
+            yield Keys.Escape
 
-        # Turn Control-Enter into META-Enter. (On a vt100 terminal, we cannot
-        # detect this combination. But it's really practical on Windows.)
-        if (
-            (
-                control_key_state & self.LEFT_CTRL_PRESSED
-                or control_key_state & self.RIGHT_CTRL_PRESSED
-            )
-            and result
-            and result.key == Keys.ControlJ
-        ):
-            return [KeyPress(Keys.Escape, ""), result]
-
-        # Return result. If alt was pressed, prefix the result with an
-        # 'Escape' key, just like unix VT100 terminals do.
-
-        # NOTE: Only replace the left alt with escape. The right alt key often
-        #       acts as altgr and is used in many non US keyboard layouts for
-        #       typing some special characters, like a backslash. We don't want
-        #       all backslashes to be prefixed with escape. (Esc-\ has a
-        #       meaning in E-macs, for instance.)
-        if result:
-            meta_pressed = control_key_state & self.LEFT_ALT_PRESSED
-
-            if meta_pressed:
-                return [KeyPress(Keys.Escape, ""), result]
-            else:
-                return [result]
-
-        else:
-            return []
+        yield key
 
     def _handle_mouse(self, ev):
         FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
@@ -548,5 +440,4 @@ class ConsoleInputReader:
 
         modifier = MouseModifier(mods)
 
-        data = MouseEvent(position, event_type, button, modifier)
-        return [ KeyPress(Keys.WindowsMouseEvent, data) ]
+        return MouseEvent(position, event_type, button, modifier)

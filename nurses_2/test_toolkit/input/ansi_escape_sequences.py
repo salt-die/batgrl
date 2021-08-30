@@ -1,26 +1,10 @@
 """
-Mappings from VT100 (ANSI) escape sequences to the corresponding prompt_toolkit
-keys.
-
-We are not using the terminfo/termcap databases to detect the ANSI escape
-sequences for the input. Instead, we recognize 99% of the most common
-sequences. This works well, because in practice, every modern terminal is
-mostly Xterm compatible.
-
-Some useful docs:
-- Mintty: https://github.com/mintty/mintty/blob/master/wiki/Keycodes.md
+Mappings from VT100 (ANSI) escape sequences to the corresponding
+prompt_toolkit keys.
 """
-from typing import Dict, Tuple, Union
-
 from ..keys import Keys
 
-__all__ = [
-    "ANSI_SEQUENCES",
-    "REVERSE_ANSI_SEQUENCES",
-]
-
-# Mapping of vt100 escape codes to Keys.
-ANSI_SEQUENCES: Dict[str, Union[Keys, Tuple[Keys, ...]]] = {
+ANSI_SEQUENCES = {
     # Control keys.
     "\x00": Keys.ControlAt,  # Control-At (Also for Ctrl-Space)
     "\x01": Keys.ControlA,  # Control-A (home)
@@ -55,13 +39,6 @@ ANSI_SEQUENCES: Dict[str, Union[Keys, Tuple[Keys, ...]]] = {
     "\x1d": Keys.ControlSquareClose,  # Control-]
     "\x1e": Keys.ControlCircumflex,  # Control-^
     "\x1f": Keys.ControlUnderscore,  # Control-underscore (Also for Ctrl-hyphen.)
-    # ASCII Delete (0x7f)
-    # Vt220 (and Linux terminal) send this when pressing backspace. We map this
-    # to ControlH, because that will make it easier to create key bindings that
-    # work everywhere, with the trade-off that it's no longer possible to
-    # handle backspace and control-h individually for the few terminals that
-    # support it. (Most terminals send ControlH when backspace is pressed.)
-    # See: http://www.ibb.net/~anne/keyboard.html
     "\x7f": Keys.ControlH,
     # --
     # Various
@@ -315,21 +292,3 @@ ANSI_SEQUENCES: Dict[str, Union[Keys, Tuple[Keys, ...]]] = {
     "\x1b[1;8x": (Keys.Escape, Keys.ControlShift8),
     "\x1b[1;8y": (Keys.Escape, Keys.ControlShift9),
 }
-
-
-def _get_reverse_ansi_sequences() -> Dict[Keys, str]:
-    """
-    Create a dictionary that maps prompt_toolkit keys back to the VT100 escape
-    sequences.
-    """
-    result: Dict[Keys, str] = {}
-
-    for sequence, key in ANSI_SEQUENCES.items():
-        if not isinstance(key, tuple):
-            if key not in result:
-                result[key] = sequence
-
-    return result
-
-
-REVERSE_ANSI_SEQUENCES = _get_reverse_ansi_sequences()

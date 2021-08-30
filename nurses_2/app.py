@@ -8,15 +8,14 @@ from .test_toolkit.utils import is_windows, is_conemu_ansi
 from .test_toolkit.keys import Keys
 
 from .colors import BLACK_ON_BLACK
+from .data_structures import PasteEvent
+from .mouse import MouseEvent
 from .widgets._root import _Root
 
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
-IS_WINDOWS = is_windows()
 
-if not IS_WINDOWS:
-    from .mouse.create_vt100_mouse_event import create_vt100_mouse_event as mouse_event
 
 class App(ABC):
     """
@@ -73,7 +72,7 @@ class App(ABC):
         """
         Run the app.
         """
-        if IS_WINDOWS:
+        if is_windows():
             from .test_toolkit.output.windows10 import is_win_vt100_enabled
 
             if not is_win_vt100_enabled() and not is_conemu_ansi():
@@ -107,67 +106,39 @@ class App(ABC):
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
 
-            if IS_WINDOWS:
-                def read_from_input():
-                    """
-                    Read and process input.
-                    """
-                    for key in env_in.read_keys():
-                        if key.key == exit_key:
-                            return self.exit()
+            def read_from_input():
+                """
+                Read and process input.
+                """
+                for key in env_in.read_keys():
+                    if key == exit_key:
+                        return self.exit()
 
-                        if key.key == Keys.WindowsMouseEvent:
-                            dispatch_click(key.data)
-                        else:
-                            dispatch_press(key)
+                    if isinstance(key, MouseEvent):
+                        dispatch_click(key)
+                    elif isinstance(key, PasteEvent):
+                        pass  # TODO: Add a Widget method to handle pastes.
+                    else:
+                        dispatch_press(key)
 
-                    nonlocal flush_timer
-                    flush_timer.cancel()
-                    flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
+                nonlocal flush_timer
+                flush_timer.cancel()
+                flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
 
-                def flush_input():
-                    """
-                    Flush input.
-                    """
-                    for key in env_in.flush_keys():
-                        if key.key == exit_key:
-                            return self.exit()
+            def flush_input():
+                """
+                Flush input.
+                """
+                for key in env_in.flush_keys():
+                    if key == exit_key:
+                        return self.exit()
 
-                        if key.key == Keys.WindowsMouseEvent:
-                            dispatch_click(key.data)
-                        else:
-                            dispatch_press(key)
-
-            else:
-                def read_from_input():
-                    """
-                    Read and process input.
-                    """
-                    for key in env_in.read_keys():
-                        if key.key == exit_key:
-                            return self.exit()
-
-                        if key.key == Keys.Vt100MouseEvent:
-                            dispatch_click(mouse_event(key.data))
-                        else:
-                            dispatch_press(key)
-
-                    nonlocal flush_timer
-                    flush_timer.cancel()
-                    flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
-
-                def flush_input():
-                    """
-                    Flush input.
-                    """
-                    for key in env_in.flush_keys():
-                        if key.key == exit_key:
-                            return self.exit()
-
-                        if key.key == Keys.Vt100MouseEvent:
-                            dispatch_click(mouse_event(key.data))
-                        else:
-                            dispatch_press(key)
+                    if isinstance(key, MouseEvent):
+                        dispatch_click(key)
+                    elif isinstance(key, PasteEvent):
+                        pass  # TODO: Add a Widget method to handle pastes.
+                    else:
+                        dispatch_press(key)
 
             async def poll_size():
                 """

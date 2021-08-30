@@ -95,18 +95,18 @@ class RubiksCube(GrabbableBehavior, Widget):
         super().resize(size)
         self._colors_buffer = np.zeros((2 * self.height, self.width, 3), dtype=np.uint8)
 
-    def on_press(self, key_press):
-        if key_press.key.lower() == "r":
-            self.rotate_selected_cubes(is_clockwise=key_press.key.isupper())
-        elif key_press.key == "up":
+    def on_press(self, key):
+        if key.lower() == "r":
+            self.rotate_selected_cubes(is_clockwise=key.isupper())
+        elif key == "up":
             self.selected_row += 1
-        elif key_press.key == "down":
+        elif key == "down":
             self.selected_row -= 1
-        elif key_press.key == "left":
+        elif key == "left":
             self.selected_axis -= 1
-        elif key_press.key == "right":
+        elif key == "right":
             self.selected_axis += 1
-        elif key_press.key == "s":
+        elif key == "s":
             self.scramble()
         else:
             return False

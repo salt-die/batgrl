@@ -4,36 +4,21 @@ Parser for VT100 input stream.
 import re
 from typing import Callable, Dict, Generator, Tuple, Union
 
-from ..key_binding.key_processor import KeyPress
+from ...mouse import MouseEvent
+from ...mouse.create_vt100_mouse_event import create_vt100_mouse_event
+from ...data_structures import PasteEvent
 from ..keys import Keys
 from .ansi_escape_sequences import ANSI_SEQUENCES
 
-__all__ = [
-    "Vt100Parser",
-]
+__all__ = "Vt100Parser",
 
-
-# Regex matching any CPR response
-# (Note that we use '\Z' instead of '$', because '$' could include a trailing
-# newline.)
 _cpr_response_re = re.compile("^" + re.escape("\x1b[") + r"\d+;\d+R\Z")
-
-# Mouse events:
-# Typical: "Esc[MaB*"  Urxvt: "Esc[96;14;13M" and for Xterm SGR: "Esc[<64;85;12M"
 _mouse_event_re = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
 
-# Regex matching any valid prefix of a CPR response.
-# (Note that it doesn't contain the last character, the 'R'. The prefix has to
-# be shorter.)
 _cpr_response_prefix_re = re.compile("^" + re.escape("\x1b[") + r"[\d;]*\Z")
-
 _mouse_event_prefix_re = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,2})\Z")
 
-
-class _Flush:
-    """Helper object to indicate flush operation to the parser."""
-
-    pass
+FLUSH = object()
 
 
 class _IsPrefixOfLongerMatchCache(Dict[str, bool]):
@@ -83,22 +68,22 @@ class Vt100Parser:
     # Lookup table of ANSI escape sequences for a VT100 terminal
     # Hint: in order to know what sequences your terminal writes to stdin, run
     #       "od -c" and start typing.
-    def __init__(self, feed_key_callback: Callable[[KeyPress], None]) -> None:
+    def __init__(self, feed_key_callback):
         self.feed_key_callback = feed_key_callback
         self.reset()
 
-    def reset(self, request: bool = False) -> None:
+    def reset(self, request=False):
         self._in_bracketed_paste = False
         self._start_parser()
 
-    def _start_parser(self) -> None:
+    def _start_parser(self):
         """
         Start the parser coroutine.
         """
         self._input_parser = self._input_parser_generator()
-        self._input_parser.send(None)  # type: ignore
+        self._input_parser.send(None)
 
-    def _get_match(self, prefix: str) -> Union[None, Keys, Tuple[Keys, ...]]:
+    def _get_match(self, prefix):
         """
         Return the key (or keys) that maps to this prefix.
         """
@@ -108,16 +93,12 @@ class Vt100Parser:
         if _cpr_response_re.match(prefix):
             return Keys.CPRResponse
 
-        elif _mouse_event_re.match(prefix):
-            return Keys.Vt100MouseEvent
+        if _mouse_event_re.match(prefix):
+            return MouseEvent
 
-        # Otherwise, use the mappings.
-        try:
-            return ANSI_SEQUENCES[prefix]
-        except KeyError:
-            return None
+        return ANSI_SEQUENCES.get(prefix)
 
-    def _input_parser_generator(self) -> Generator[None, Union[str, _Flush], None]:
+    def _input_parser_generator(self):
         """
         Coroutine (state machine) for the input parser.
         """
@@ -134,7 +115,7 @@ class Vt100Parser:
                 # Get next character.
                 c = yield
 
-                if isinstance(c, _Flush):
+                if c is FLUSH:
                     flush = True
                 else:
                     prefix += c
@@ -142,34 +123,28 @@ class Vt100Parser:
             # If we have some data, check for matches.
             if prefix:
                 is_prefix_of_longer_match = _IS_PREFIX_OF_LONGER_MATCH_CACHE[prefix]
-                match = self._get_match(prefix)
 
                 # Exact matches found, call handlers..
-                if (flush or not is_prefix_of_longer_match) and match:
-                    self._call_handler(match, prefix)
-                    prefix = ""
+                if flush or not is_prefix_of_longer_match:
+                    if match := self._get_match(prefix):
+                        self._call_handler(match, prefix)
+                        prefix = ""
 
-                # No exact match found.
-                elif (flush or not is_prefix_of_longer_match) and not match:
-                    found = False
-                    retry = True
+                    else:
+                        retry = True
 
-                    # Loop over the input, try the longest match first and
-                    # shift.
-                    for i in range(len(prefix), 0, -1):
-                        match = self._get_match(prefix[:i])
-                        if match:
-                            self._call_handler(match, prefix[:i])
-                            prefix = prefix[i:]
-                            found = True
+                        # Loop over the input, try the longest match first and
+                        # shift.
+                        for i in range(len(prefix), 0, -1):
+                            if match := self._get_match(prefix[:i]):
+                                self._call_handler(match, prefix[:i])
+                                prefix = prefix[i:]
+                                break
+                        else:
+                            self._call_handler(prefix[0], prefix[0])
+                            prefix = prefix[1:]
 
-                    if not found:
-                        self._call_handler(prefix[0], prefix[0])
-                        prefix = prefix[1:]
-
-    def _call_handler(
-        self, key: Union[str, Keys, Tuple[Keys, ...]], insert_text: str
-    ) -> None:
+    def _call_handler(self, key, insert_text):
         """
         Callback to handler.
         """
@@ -181,31 +156,27 @@ class Vt100Parser:
             for i, k in enumerate(key):
                 self._call_handler(k, insert_text if i == 0 else "")
         else:
-            if key == Keys.BracketedPaste:
+            if key is Keys.BracketedPaste:
                 self._in_bracketed_paste = True
                 self._paste_buffer = ""
+            elif key is MouseEvent:
+                self.feed_key_callback(create_vt100_mouse_event(insert_text))
             else:
-                self.feed_key_callback(KeyPress(key, insert_text))
+                self.feed_key_callback(key)
 
-    def feed(self, data: str) -> None:
+    def feed(self, data):
         """
         Feed the input stream.
-
-        :param data: Input string (unicode).
         """
-        # Handle bracketed paste. (We bypass the parser that matches all other
-        # key presses and keep reading input until we see the end mark.)
-        # This is much faster then parsing character by character.
         if self._in_bracketed_paste:
             self._paste_buffer += data
             end_mark = "\x1b[201~"
 
-            if end_mark in self._paste_buffer:
-                end_index = self._paste_buffer.index(end_mark)
-
+            end_index = self._paste_buffer.find(end_mark)
+            if end_index != -1:
                 # Feed content to key bindings.
                 paste_content = self._paste_buffer[:end_index]
-                self.feed_key_callback(KeyPress(Keys.BracketedPaste, paste_content))
+                self.feed_key_callback(PasteEvent(paste_content))
 
                 # Quit bracketed paste mode and handle remaining input.
                 self._in_bracketed_paste = False
@@ -214,30 +185,19 @@ class Vt100Parser:
 
                 self.feed(remaining)
 
-        # Handle normal input character by character.
         else:
             for i, c in enumerate(data):
                 if self._in_bracketed_paste:
-                    # Quit loop and process from this position when the parser
-                    # entered bracketed paste.
                     self.feed(data[i:])
                     break
-                else:
-                    self._input_parser.send(c)
 
-    def flush(self) -> None:
+                self._input_parser.send(c)
+
+    def flush(self):
         """
         Flush the buffer of the input stream.
-
-        This will allow us to handle the escape key (or maybe meta) sooner.
-        The input received by the escape key is actually the same as the first
-        characters of e.g. Arrow-Up, so without knowing what follows the escape
-        sequence, we don't know whether escape has been pressed, or whether
-        it's something else. This flush function should be called after a
-        timeout, and processes everything that's still in the buffer as-is, so
-        without assuming any characters will follow.
         """
-        self._input_parser.send(_Flush())
+        self._input_parser.send(FLUSH)
 
     def feed_and_flush(self, data: str) -> None:
         """
