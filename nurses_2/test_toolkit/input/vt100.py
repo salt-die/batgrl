@@ -16,7 +16,6 @@ from typing import (
     Union,
 )
 from contextlib import contextmanager
-from ..key_binding import KeyPress
 from .base import Input
 from .posix_utils import PosixStdinReader
 from .vt100_parser import Vt100Parser
@@ -37,57 +36,45 @@ class Vt100Input(Input):
         self.stdin = stdin = sys.stdin
         self._fileno = stdin.fileno()
 
-        self._buffer: List[KeyPress] = []  # Buffer to collect the Key objects.
-        self.stdin_reader = PosixStdinReader(self._fileno, encoding=stdin.encoding)
+        self._buffer = []  # Buffer to collect the Key objects.
+        self.stdin_reader = PosixStdinReader(self._fileno)
         self.vt100_parser = Vt100Parser(lambda key: self._buffer.append(key))
 
     @contextmanager
     def attach(self, callback):
-        loop = get_event_loop()
         fd = self.fileno()
 
-        def callback_wrapper():
-            if self.closed:
-                loop.remove_reader(fd)
-            callback()
-
-        loop.add_reader(fd, callback_wrapper)
+        loop = get_event_loop()
+        loop.add_reader(fd, callback)
 
         try:
             yield
+
         finally:
             loop.remove_reader(fd)
 
-    def read_keys(self) -> List[KeyPress]:
-        "Read list of KeyPress."
-        # Read text from stdin.
+    def read_keys(self):
+        """
+        Read keys from stdin.
+        """
         data = self.stdin_reader.read()
 
-        # Pass it through our vt100 parser.
         self.vt100_parser.feed(data)
 
-        # Return result.
         result = self._buffer
         self._buffer = []
         return result
 
-    def flush_keys(self) -> List[KeyPress]:
+    def flush_keys(self):
         """
         Flush pending keys and return them.
         (Used for flushing the 'escape' key.)
         """
-        # Flush all pending keys. (This is most important to flush the vt100
-        # 'Escape' key early when nothing else follows.)
         self.vt100_parser.flush()
 
-        # Return result.
         result = self._buffer
         self._buffer = []
         return result
-
-    @property
-    def closed(self) -> bool:
-        return self.stdin_reader.closed
 
     @contextmanager
     def raw_mode(self):

@@ -5,7 +5,7 @@ import re
 from typing import Callable, Dict, Generator, Tuple, Union
 
 from ...mouse import MouseEvent
-from ...mouse.create_vt100_mouse_event import create_vt100_mouse_event
+from ...mouse.create_vt100_mouse_event import create_vt100_mouse_event as mouse_event
 from ...data_structures import PasteEvent
 from ..keys import Keys
 from .ansi_escape_sequences import ANSI_SEQUENCES
@@ -52,22 +52,7 @@ _IS_PREFIX_OF_LONGER_MATCH_CACHE = _IsPrefixOfLongerMatchCache()
 class Vt100Parser:
     """
     Parser for VT100 input stream.
-    Data can be fed through the `feed` method and the given callback will be
-    called with KeyPress objects.
-
-    ::
-
-        def callback(key):
-            pass
-        i = Vt100Parser(callback)
-        i.feed('data\x01...')
-
-    :attr feed_key_callback: Function that will be called when a key is parsed.
     """
-
-    # Lookup table of ANSI escape sequences for a VT100 terminal
-    # Hint: in order to know what sequences your terminal writes to stdin, run
-    #       "od -c" and start typing.
     def __init__(self, feed_key_callback):
         self.feed_key_callback = feed_key_callback
         self.reset()
@@ -94,7 +79,7 @@ class Vt100Parser:
             return Keys.CPRResponse
 
         if _mouse_event_re.match(prefix):
-            return MouseEvent
+            return Keys.Vt100MouseEvent
 
         return ANSI_SEQUENCES.get(prefix)
 
@@ -151,16 +136,15 @@ class Vt100Parser:
         if isinstance(key, tuple):
             # Received ANSI sequence that corresponds with multiple keys
             # (probably alt+something). Handle keys individually, but only pass
-            # data payload to first KeyPress (so that we won't insert it
-            # multiple times).
+            # data payload to first key.
             for i, k in enumerate(key):
                 self._call_handler(k, insert_text if i == 0 else "")
         else:
             if key is Keys.BracketedPaste:
                 self._in_bracketed_paste = True
                 self._paste_buffer = ""
-            elif key is MouseEvent:
-                self.feed_key_callback(create_vt100_mouse_event(insert_text))
+            elif key is Keys.Vt100MouseEvent:
+                self.feed_key_callback(mouse_event(insert_text))
             else:
                 self.feed_key_callback(key)
 

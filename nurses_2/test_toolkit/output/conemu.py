@@ -31,10 +31,6 @@ class ConEmuOutput:
         self.win32_output = Win32Output(stdout)
         self.vt100_output = Vt100_Output(stdout, lambda: Size(0, 0))
 
-    @property
-    def responds_to_cpr(self) -> bool:
-        return False  # We don't need this on Windows.
-
     def __getattr__(self, name: str) -> Any:
         if name in (
             "get_size",

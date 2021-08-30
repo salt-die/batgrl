@@ -19,7 +19,6 @@ from ...mouse.mouse_data_structures import *
 from ...widgets.widget_data_structures import Point
 from ...data_structures import PasteEvent
 from ..eventloop.win32 import create_win32_event, wait_for_handle, wait_for_handles
-from ..key_binding.key_processor import KeyPress
 from ..keys import Keys
 from ..win32_types import (
     INPUT_RECORD,
@@ -77,10 +76,6 @@ class Win32Input(Input):
 
     def flush(self):
         pass
-
-    @property
-    def closed(self):
-        return False
 
     @contextmanager
     def raw_mode(self):
@@ -196,8 +191,7 @@ class ConsoleInputReader:
 
     def read(self):
         """
-        Return a list of `KeyPress` instances. It won't return anything when
-        there was nothing to read.  (This function doesn't block.)
+        Yield `Key`s.
 
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
         """
@@ -242,7 +236,7 @@ class ConsoleInputReader:
 
     def _get_keys(self, read: DWORD, input_records):
         """
-        Generator that yields `KeyPress` objects from the input records.
+        Generator that yields `Key`s from the input records.
         """
         for i in range(read.value): # TODO: Test iterating over input_records directly.
             ir = input_records[i]
@@ -259,7 +253,7 @@ class ConsoleInputReader:
     @staticmethod
     def _merge_paired_surrogates(keys):
         """
-        Combines consecutive KeyPresses with high and low surrogates into
+        Combines consecutive Keys with high and low surrogates into
         single characters
         """
         buffered_high_surrogate = None
@@ -313,7 +307,7 @@ class ConsoleInputReader:
 
     def _event_to_key(self, ev: KEY_EVENT_RECORD):
         """
-        For this `KEY_EVENT_RECORD`, return a list of `KeyPress` instances.
+        Yield a Key from a KEY_EVENT_RECORD.
         """
         control_key_state = ev.ControlKeyState
         u_char = ev.uChar.UnicodeChar
