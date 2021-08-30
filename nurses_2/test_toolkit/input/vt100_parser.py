@@ -9,8 +9,6 @@ from ...data_structures import PasteEvent
 from ..keys import Keys
 from .ansi_escape_sequences import ANSI_SEQUENCES
 
-__all__ = "Vt100Parser",
-
 _cpr_response_re = re.compile("^" + re.escape("\x1b[") + r"\d+;\d+R\Z")
 _mouse_event_re = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
 
@@ -134,14 +132,13 @@ class Vt100Parser:
             # data payload to first key.
             for i, k in enumerate(key):
                 self._call_handler(k, insert_text if i == 0 else "")
+        elif key is Keys.BracketedPaste:
+            self._in_bracketed_paste = True
+            self._paste_buffer = ""
+        elif key is Keys.Vt100MouseEvent:
+            self.feed_key_callback(mouse_event(insert_text))
         else:
-            if key is Keys.BracketedPaste:
-                self._in_bracketed_paste = True
-                self._paste_buffer = ""
-            elif key is Keys.Vt100MouseEvent:
-                self.feed_key_callback(mouse_event(insert_text))
-            else:
-                self.feed_key_callback(key)
+            self.feed_key_callback(key)
 
     def feed(self, data):
         """
@@ -178,7 +175,7 @@ class Vt100Parser:
         """
         self._input_parser.send(FLUSH)
 
-    def feed_and_flush(self, data: str) -> None:
+    def feed_and_flush(self, data):
         """
         Wrapper around ``feed`` and ``flush``.
         """
