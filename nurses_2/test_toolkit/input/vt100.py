@@ -25,7 +25,6 @@ from .vt100_parser import Vt100Parser
 __all__ = [
     "Vt100Input",
     "raw_mode",
-    "cooked_mode",
 ]
 
 
@@ -87,13 +86,6 @@ class Vt100Input(Input):
         """
         return _attached_input(self, input_ready_callback)
 
-    def detach(self) -> ContextManager[None]:
-        """
-        Return a context manager that makes sure that this input is not active
-        in the current event loop.
-        """
-        return _detached_input(self)
-
     def read_keys(self) -> List[KeyPress]:
         "Read list of KeyPress."
         # Read text from stdin.
@@ -127,9 +119,6 @@ class Vt100Input(Input):
 
     def raw_mode(self) -> ContextManager[None]:
         return raw_mode(self.stdin.fileno())
-
-    def cooked_mode(self) -> ContextManager[None]:
-        return cooked_mode(self.stdin.fileno())
 
     def fileno(self) -> int:
         return self.stdin.fileno()
@@ -180,24 +169,6 @@ def _attached_input(
             _current_callbacks[loop, fd] = previous
         else:
             del _current_callbacks[loop, fd]
-
-
-@contextlib.contextmanager
-def _detached_input(input: Vt100Input) -> Generator[None, None, None]:
-    loop = get_event_loop()
-    fd = input.fileno()
-    previous = _current_callbacks.get((loop, fd))
-
-    if previous:
-        loop.remove_reader(fd)
-        _current_callbacks[loop, fd] = None
-
-    try:
-        yield
-    finally:
-        if previous:
-            loop.add_reader(fd, previous)
-            _current_callbacks[loop, fd] = previous
 
 
 class raw_mode:
@@ -280,25 +251,3 @@ class raw_mode:
 
             # # Put the terminal in application mode.
             # self._stdout.write('\x1b[?1h')
-
-
-class cooked_mode(raw_mode):
-    """
-    The opposite of ``raw_mode``, used when we need cooked mode inside a
-    `raw_mode` block.  Used in `Application.run_in_terminal`.::
-
-        with cooked_mode(stdin):
-            ''' the pseudo-terminal stdin is now used in cooked mode. '''
-    """
-
-    @classmethod
-    def _patch_lflag(cls, attrs: int) -> int:
-        return attrs | (termios.ECHO | termios.ICANON | termios.IEXTEN | termios.ISIG)
-
-    @classmethod
-    def _patch_iflag(cls, attrs: int) -> int:
-        # Turn the ICRNL flag back on. (Without this, calling `input()` in
-        # run_in_terminal doesn't work and displays ^M instead. Ptpython
-        # evaluates commands using `run_in_terminal`, so it's important that
-        # they translate ^M back into ^J.)
-        return attrs | termios.ICRNL

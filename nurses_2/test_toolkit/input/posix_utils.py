@@ -2,9 +2,7 @@ import os
 import select
 from codecs import getincrementaldecoder
 
-__all__ = [
-    "PosixStdinReader",
-]
+__all__ = "PosixStdinReader",
 
 
 class PosixStdinReader:

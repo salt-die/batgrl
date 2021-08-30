@@ -10,7 +10,6 @@ from ..win32_types import SECURITY_ATTRIBUTES
 WAIT_TIMEOUT = 0x00000102
 INFINITE = -1
 
-
 def wait_for_handles(
     handles: List[HANDLE], timeout: int = INFINITE
 ) -> Optional[HANDLE]:
@@ -44,7 +43,6 @@ def wait_for_handles(
         return None
     else:
         return handles[ret]
-
 
 def create_win32_event() -> HANDLE:
     """

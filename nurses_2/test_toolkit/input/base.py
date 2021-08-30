@@ -7,10 +7,7 @@ from typing import Callable, ContextManager, Generator, List
 
 from ..key_binding import KeyPress
 
-__all__ = [
-    "Input",
-    "DummyInput",
-]
+__all__ = "Input",
 
 
 class Input(metaclass=ABCMeta):
@@ -63,75 +60,12 @@ class Input(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def cooked_mode(self) -> ContextManager[None]:
-        """
-        Context manager that turns the input into cooked mode.
-        """
-
-    @abstractmethod
     def attach(self, input_ready_callback: Callable[[], None]) -> ContextManager[None]:
         """
         Return a context manager that makes this input active in the current
         event loop.
         """
 
-    @abstractmethod
-    def detach(self) -> ContextManager[None]:
-        """
-        Return a context manager that makes sure that this input is not active
-        in the current event loop.
-        """
-
     def close(self) -> None:
         "Close input."
         pass
-
-
-class PipeInput(Input):
-    """
-    Abstraction for pipe input.
-    """
-
-    @abstractmethod
-    def send_bytes(self, data: bytes) -> None:
-        """Feed byte string into the pipe"""
-
-    @abstractmethod
-    def send_text(self, data: str) -> None:
-        """Feed a text string into the pipe"""
-
-
-class DummyInput(Input):
-    """
-    Input for use in a `DummyApplication`
-    """
-
-    def fileno(self) -> int:
-        raise NotImplementedError
-
-    def typeahead_hash(self) -> str:
-        return "dummy-%s" % id(self)
-
-    def read_keys(self) -> List[KeyPress]:
-        return []
-
-    @property
-    def closed(self) -> bool:
-        return True
-
-    def raw_mode(self) -> ContextManager[None]:
-        return _dummy_context_manager()
-
-    def cooked_mode(self) -> ContextManager[None]:
-        return _dummy_context_manager()
-
-    def attach(self, input_ready_callback: Callable[[], None]) -> ContextManager[None]:
-        return _dummy_context_manager()
-
-    def detach(self) -> ContextManager[None]:
-        return _dummy_context_manager()
-
-
-@contextmanager
-def _dummy_context_manager() -> Generator[None, None, None]:
-    yield

@@ -3,13 +3,9 @@ from typing import Optional, TextIO
 
 from ..utils import is_windows
 
-from .base import Input, PipeInput
+from .base import Input
 
-__all__ = [
-    "create_input",
-    "create_pipe_input",
-]
-
+__all__ = "create_input",
 
 def create_input(
     stdin: Optional[TextIO] = None, always_prefer_tty: bool = False
@@ -41,18 +37,3 @@ def create_input(
                         break
 
         return Vt100Input(stdin)
-
-
-def create_pipe_input() -> PipeInput:
-    """
-    Create an input pipe.
-    This is mostly useful for unit testing.
-    """
-    if is_windows():
-        from .win32_pipe import Win32PipeInput
-
-        return Win32PipeInput()
-    else:
-        from .posix_pipe import PosixPipeInput
-
-        return PosixPipeInput()

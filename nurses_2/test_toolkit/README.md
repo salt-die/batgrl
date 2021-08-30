@@ -1,4 +1,6 @@
 This is a highly hacked apart and occasionally patched `prompt_toolkit`.  This section will be under heavy construction for the foreseeable future.
+The goal is to trim down to the bare minimum and restructure some of the io to reduce function calls.
+
 
 `prompt_toolkit`'s license and copyright:
 
