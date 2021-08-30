@@ -2,8 +2,6 @@ import sys
 
 from ..utils import is_windows
 
-__all__ = "create_input",
-
 def create_input():
     if not sys.stdin.isatty():
         raise RuntimeError("Interactive terminal required.")

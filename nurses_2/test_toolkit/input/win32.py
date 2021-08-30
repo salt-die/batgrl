@@ -4,16 +4,8 @@ from asyncio import get_event_loop
 from contextlib import contextmanager
 
 import msvcrt
-from ctypes import windll
-
-from ctypes import Array, pointer
+from ctypes import Array, pointer, windll
 from ctypes.wintypes import DWORD, HANDLE
-from typing import (
-    Dict,
-    Iterator,
-    List,
-    Optional,
-)
 
 from ...mouse.mouse_data_structures import *
 from ...widgets.widget_data_structures import Point
@@ -27,12 +19,11 @@ from ..win32_types import (
     STD_INPUT_HANDLE,
     EventTypes,
 )
-from .base import Input
 
 
-class Win32Input(Input):
+class Win32Input:
     """
-    `Input` class that reads from the Windows console.
+    Class that reads from the Windows console.
     """
     def __init__(self):
         self.console_input_reader = ConsoleInputReader()  # ? Can we combine these classes?
@@ -76,6 +67,9 @@ class Win32Input(Input):
 
     def flush(self):
         pass
+
+    def flush_keys(self):
+        return [ ]
 
     @contextmanager
     def raw_mode(self):

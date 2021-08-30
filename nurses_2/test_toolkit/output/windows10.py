@@ -1,18 +1,12 @@
 from ctypes import byref, windll
 from ctypes.wintypes import DWORD, HANDLE
-from typing import Any, Optional, TextIO
 
 from ...widgets.widget_data_structures import Size
 from ..utils import is_windows
 from ..win32_types import STD_OUTPUT_HANDLE
 
-from .base import Output
 from .vt100 import Vt100_Output
 from .win32 import Win32Output
-
-__all__ = [
-    "Windows10_Output",
-]
 
 # See: https://msdn.microsoft.com/pl-pl/library/windows/desktop/ms686033(v=vs.85).aspx
 ENABLE_PROCESSED_INPUT = 0x0001
@@ -24,14 +18,12 @@ class Windows10_Output:
     Windows 10 output abstraction. This enables and uses vt100 escape sequences.
     """
 
-    def __init__(
-        self, stdout: TextIO
-    ) -> None:
-        self.win32_output = Win32Output(stdout)
-        self.vt100_output = Vt100_Output(stdout, lambda: Size(0, 0))
+    def __init__(self):
+        self.win32_output = Win32Output()
+        self.vt100_output = Vt100_Output()
         self._hconsole = HANDLE(windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE))
 
-    def flush(self) -> None:
+    def flush(self):
         """
         Write to output stream and flush.
         """
@@ -52,7 +44,7 @@ class Windows10_Output:
             # Restore console mode.
             windll.kernel32.SetConsoleMode(self._hconsole, original_mode)
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name):
         if name in (
             "get_size",
             "get_rows_below_cursor_position",
@@ -66,9 +58,6 @@ class Windows10_Output:
             return getattr(self.win32_output, name)
         else:
             return getattr(self.vt100_output, name)
-
-
-Output.register(Windows10_Output)
 
 
 def is_win_vt100_enabled() -> bool:
@@ -87,7 +76,7 @@ def is_win_vt100_enabled() -> bool:
 
     try:
         # Try to enable VT100 sequences.
-        result: int = windll.kernel32.SetConsoleMode(
+        result = windll.kernel32.SetConsoleMode(
             hconsole, DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING)
         )
 

@@ -1,22 +1,10 @@
 from enum import Enum
-from typing import Dict, List
-
-__all__ = [
-    "Keys",
-    "ALL_KEYS",
-]
 
 
 class Keys(str, Enum):
     """
     List of keys for use in key bindings.
-
-    Note that this is an "StrEnum", all values can be compared against
-    strings.
     """
-
-    value: str
-
     Escape = "escape"  # Also Control-[
     ShiftEscape = "s-escape"
 
@@ -200,20 +188,3 @@ class Keys(str, Enum):
     ShiftControlRight = ControlShiftRight
     ShiftControlHome = ControlShiftHome
     ShiftControlEnd = ControlShiftEnd
-
-
-ALL_KEYS: List[str] = [k.value for k in Keys]
-
-
-# Aliases.
-KEY_ALIASES: Dict[str, str] = {
-    "backspace": "c-h",
-    "c-space": "c-@",
-    "enter": "c-m",
-    "tab": "c-i",
-    # ShiftControl was renamed to ControlShift.
-    "s-c-left": "c-s-left",
-    "s-c-right": "c-s-right",
-    "s-c-home": "c-s-home",
-    "s-c-end": "c-s-end",
-}

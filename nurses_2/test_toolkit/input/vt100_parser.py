@@ -2,7 +2,6 @@
 Parser for VT100 input stream.
 """
 import re
-from typing import Callable, Dict, Generator, Tuple, Union
 
 from ...mouse import MouseEvent
 from ...mouse.create_vt100_mouse_event import create_vt100_mouse_event as mouse_event
@@ -21,26 +20,22 @@ _mouse_event_prefix_re = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,
 FLUSH = object()
 
 
-class _IsPrefixOfLongerMatchCache(Dict[str, bool]):
+class _IsPrefixOfLongerMatchCache(dict):
     """
     Dictionary that maps input sequences to a boolean indicating whether there is
     any key that start with this characters.
     """
 
-    def __missing__(self, prefix: str) -> bool:
-        # (hard coded) If this could be a prefix of a CPR response, return
-        # True.
-        if _cpr_response_prefix_re.match(prefix) or _mouse_event_prefix_re.match(
-            prefix
-        ):
-            result = True
-        else:
-            # If this could be a prefix of anything else, also return True.
-            result = any(
-                v
-                for k, v in ANSI_SEQUENCES.items()
-                if k.startswith(prefix) and k != prefix
+    def __missing__(self, prefix):
+        result = (
+            bool(_cpr_response_prefix_re.match(prefix))
+            or bool(_mouse_event_prefix_re.match(prefix))
+            or any(
+                value
+                for key, value in ANSI_SEQUENCES.items()
+                if key.startswith(prefix) and key != prefix
             )
+        )
 
         self[prefix] = result
         return result

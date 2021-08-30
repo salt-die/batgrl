@@ -193,7 +193,6 @@ def create_environment(title):
         yield env_out, env_in
     finally:
         env_in.flush_keys()
-        env_in.close()
 
         env_out.quit_alternate_screen()
         env_out.reset_attributes()

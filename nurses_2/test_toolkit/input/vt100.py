@@ -1,42 +1,24 @@
-import io
 import sys
 import termios
 import tty
-from asyncio import AbstractEventLoop, get_event_loop
-from typing import (
-    Callable,
-    ContextManager,
-    Dict,
-    Generator,
-    List,
-    Optional,
-    Set,
-    TextIO,
-    Tuple,
-    Union,
-)
+from asyncio import get_event_loop
 from contextlib import contextmanager
-from .base import Input
+
 from .posix_utils import PosixStdinReader
 from .vt100_parser import Vt100Parser
 
-__all__ = [
-    "Vt100Input",
-    "raw_mode",
-]
 
-
-class Vt100Input(Input):
+class Vt100Input:
     """
     Vt100 input for Posix systems.
     (This uses a posix file descriptor that can be registered in the event loop.)
     """
 
     def __init__(self):
-        self.stdin = stdin = sys.stdin
-        self._fileno = stdin.fileno()
+        self.stdin = sys.stdin
+        self._fileno = self.stdin.fileno()
 
-        self._buffer = []  # Buffer to collect the Key objects.
+        self._buffer = [ ]  # Buffer to collect the Key objects.
         self.stdin_reader = PosixStdinReader(self._fileno)
         self.vt100_parser = Vt100Parser(lambda key: self._buffer.append(key))
 
