@@ -21,7 +21,6 @@ from typing import (
 
 from ...mouse.mouse_data_structures import *
 from ...widgets.widget_data_structures import Point
-from ..eventloop import run_in_executor_with_context
 from ..eventloop.win32 import create_win32_event, wait_for_handle, wait_for_handles
 from ..key_binding.key_processor import KeyPress
 from ..keys import Keys
@@ -52,22 +51,25 @@ class Win32Input(Input):
 
         try:
             loop = get_event_loop()
+            run_in_executor = loop.run_in_executor
+            call_soon_threadsafe = loop.call_soon_threadsafe
+
             remove_event = create_win32_event()
 
             def ready():
                 try:
                     callback()
                 finally:
-                    run_in_executor_with_context(wait, loop=loop)
+                    run_in_executor(None, wait)
 
             def wait():
                 if wait_for_handles([remove_event, handle]) is remove_event:
                     windll.kernel32.CloseHandle(remove_event)
                     return
 
-                loop.call_soon_threadsafe(ready)
+                call_soon_threadsafe(ready)
 
-            run_in_executor_with_context(wait, loop=loop)
+            run_in_executor(None, wait)
 
             yield
 

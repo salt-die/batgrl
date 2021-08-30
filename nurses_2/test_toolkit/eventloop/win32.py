@@ -1,7 +1,7 @@
 from ctypes import pointer
 from ctypes import windll
 from ctypes.wintypes import BOOL, DWORD, HANDLE
-from typing import List, Optional
+from typing import List
 
 from ..win32_types import SECURITY_ATTRIBUTES
 
