@@ -308,13 +308,13 @@ class Widget:
                 dest_slice, child_rect = region
                 child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
 
-    def dispatch_press(self, key_press):
+    def dispatch_press(self, key):
         """
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
         """
         return (
-            any(widget.dispatch_press(key_press) for widget in reversed(self.children) if widget.is_enabled)
-            or self.on_press(key_press)
+            any(widget.dispatch_press(key) for widget in reversed(self.children) if widget.is_enabled)
+            or self.on_press(key)
         )
 
     def dispatch_click(self, mouse_event):
@@ -326,13 +326,13 @@ class Widget:
             or self.on_click(mouse_event)
         )
 
-    def on_press(self, key_press):
+    def on_press(self, key):
         """
         Handle key press. (Handled key presses should return True else False or None).
 
         Notes
         -----
-        `key_press` is a `prompt_toolkit` `KeyPress`.
+        `key` is a `prompt_toolkit` `KeyPress`.
         """
 
     def on_click(self, mouse_event):

@@ -82,7 +82,7 @@ class ModalScreen(AutoPositionBehavior, Widget):
 
         self._countdown_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-    def on_press(self, key_press):
+    def on_press(self, key):
         if self._countdown_task.done():
             self._countdown_task = asyncio.create_task(self.countdown())
 

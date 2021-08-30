@@ -28,7 +28,6 @@ from ..win32_types import (
     STD_INPUT_HANDLE,
     EventTypes,
 )
-from .ansi_escape_sequences import REVERSE_ANSI_SEQUENCES
 from .base import Input
 
 

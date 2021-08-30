@@ -39,7 +39,7 @@ class Vt100Input(Input):
 
         self._buffer: List[KeyPress] = []  # Buffer to collect the Key objects.
         self.stdin_reader = PosixStdinReader(self._fileno, encoding=stdin.encoding)
-        self.vt100_parser = Vt100Parser(lambda key_press: self._buffer.append(key_press))
+        self.vt100_parser = Vt100Parser(lambda key: self._buffer.append(key))
 
     @contextmanager
     def attach(self, callback):

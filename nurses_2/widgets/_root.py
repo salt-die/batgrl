@@ -140,11 +140,11 @@ class _Root(Widget):
         write("\x1b[0m")  # Reset attributes
         env_out.flush()
 
-    def dispatch_press(self, key_press):
+    def dispatch_press(self, key):
         """
         Dispatch key press to descendants until handled.
         """
-        any(widget.dispatch_press(key_press) for widget in reversed(self.children) if widget.is_enabled)
+        any(widget.dispatch_press(key) for widget in reversed(self.children) if widget.is_enabled)
 
     def dispatch_click(self, mouse_event):
         """

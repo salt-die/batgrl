@@ -473,9 +473,7 @@ class Tetris(Image):
         while self.move_current_piece(dy=1):
             pass
 
-    def on_press(self, key_press):
-        key = key_press.key
-
+    def on_press(self, key):
         # Named lambdas.  Do something about it.
         move_right = lambda: self.move_current_piece(dx=1)
         move_left = lambda: self.move_current_piece(dx=-1)

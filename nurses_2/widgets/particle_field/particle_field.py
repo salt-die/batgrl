@@ -65,14 +65,14 @@ class ParticleField(Widget):
                 canvas_view[pos] = child.char
                 colors_view[pos] = child.color
 
-    def dispatch_press(self, key_press):
+    def dispatch_press(self, key):
         """
         Dispatch key press to children.
         """
         # Note this dispatching is in reverse order from widget base.
         return (
-            self.on_press(key_press)
-            or any(particle.on_press(key_press) for particle in reversed(self.children) if particle.is_visible)
+            self.on_press(key)
+            or any(particle.on_press(key) for particle in reversed(self.children) if particle.is_visible)
         )
 
     def dispatch_click(self, mouse_event):
@@ -144,13 +144,13 @@ class Particle:
         y, x = self.parent.absolute_to_relative_coords(coords)
         return y - self.top, x - self.left
 
-    def on_press(self, key_press):
+    def on_press(self, key):
         """
         Handle key press. (Handled key presses should return True else False or None).
 
         Notes
         -----
-        `key_press` is a `prompt_toolkit` `KeyPress`.
+        `key` is a `prompt_toolkit` `KeyPress`.
         """
 
     def on_click(self, mouse_event):
