@@ -22,7 +22,7 @@ from typing import (
 from ...mouse.mouse_data_structures import *
 from ...widgets.widget_data_structures import Point
 from ..eventloop import run_in_executor_with_context
-from ..eventloop.win32 import create_win32_event, wait_for_handles
+from ..eventloop.win32 import create_win32_event, wait_for_handle, wait_for_handles
 from ..key_binding.key_processor import KeyPress
 from ..keys import Keys
 from ..win32_types import (
@@ -40,29 +40,39 @@ class Win32Input(Input):
     """
     `Input` class that reads from the Windows console.
     """
-    def __init__(self, stdin: Optional[TextIO] = None) -> None:
-        self.win32_handles = _Win32Handles()
-        self.console_input_reader = ConsoleInputReader()
+    def __init__(self):
+        self.console_input_reader = ConsoleInputReader()  # ? Can we combine these classes?
 
     @contextmanager
     def attach(self, callback):
         """
         Context manager that makes this input active in the current event loop.
         """
-        win32_handles = self.win32_handles
         handle = self.handle
 
-        # Add reader.
-        previous_callback = win32_handles.remove_win32_handle(handle)
-        win32_handles.add_win32_handle(handle, callback)
-
         try:
-            yield
-        finally:
-            win32_handles.remove_win32_handle(handle)
+            loop = get_event_loop()
+            remove_event = create_win32_event()
 
-            if previous_callback:
-                win32_handles.add_win32_handle(handle, previous_callback)
+            def ready():
+                try:
+                    callback()
+                finally:
+                    run_in_executor_with_context(wait, loop=loop)
+
+            def wait():
+                if wait_for_handles([remove_event, handle]) is remove_event:
+                    windll.kernel32.CloseHandle(remove_event)
+                    return
+
+                loop.call_soon_threadsafe(ready)
+
+            run_in_executor_with_context(wait, loop=loop)
+
+            yield
+
+        finally:
+            windll.kernel32.SetEvent(remove_event)
 
     def read_keys(self):
         return list(self.console_input_reader.read())
@@ -99,9 +109,6 @@ class Win32Input(Input):
     def fileno(self):
         return sys.stdin.fileno()
 
-    def typeahead_hash(self) -> str:
-        return "win32-input"
-
     def close(self) -> None:
         self.console_input_reader.close()
 
@@ -111,11 +118,6 @@ class Win32Input(Input):
 
 
 class ConsoleInputReader:
-    """
-    :param recognize_paste: When True, try to discover paste actions and turn
-        the event into a BracketedPaste.
-    """
-
     # Keys with character data.
     mappings = {
         b"\x1b": Keys.Escape,
@@ -194,7 +196,6 @@ class ConsoleInputReader:
 
         # When stdin is a tty, use that handle, otherwise, create a handle from
         # CONIN$.
-        self.handle: HANDLE
         if sys.stdin.isatty():
             self.handle = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
         else:
@@ -225,7 +226,7 @@ class ConsoleInputReader:
         # function is only called when there is something to read, but for some
         # reason this happened in the asyncio_win32 loop, and it's better to be
         # safe anyway.)
-        if not wait_for_handles([self.handle], timeout=0):
+        if not wait_for_handle(self.handle, timeout=0):
             return
 
         # Get next batch of input event.
@@ -547,82 +548,3 @@ class ConsoleInputReader:
 
         data = MouseEvent(position, event_type, button, modifier)
         return [ KeyPress(Keys.WindowsMouseEvent, data) ]
-
-
-class _Win32Handles:
-    """
-    Utility to keep track of which handles are connectod to which callbacks.
-
-    `add_win32_handle` starts a tiny event loop in another thread which waits
-    for the Win32 handle to become ready. When this happens, the callback will
-    be called in the current asyncio event loop using `call_soon_threadsafe`.
-
-    `remove_win32_handle` will stop this tiny event loop.
-
-    NOTE: We use this technique, so that we don't have to use the
-          `ProactorEventLoop` on Windows and we can wait for things like stdin
-          in a `SelectorEventLoop`. This is important, because our inputhook
-          mechanism (used by IPython), only works with the `SelectorEventLoop`.
-    """
-
-    def __init__(self):
-        self._handle_callbacks = {}
-
-        self._remove_events = {}
-
-    def add_win32_handle(self, handle, callback):
-        """
-        Add a Win32 handle to the event loop.
-        """
-        handle_value = handle.value
-
-        if handle_value is None:
-            raise ValueError("Invalid handle.")
-
-        # Make sure to remove a previous registered handler first.
-        self.remove_win32_handle(handle)
-
-        loop = get_event_loop()
-        self._handle_callbacks[handle_value] = callback
-
-        # Create remove event.
-        remove_event = create_win32_event()
-        self._remove_events[handle_value] = remove_event
-
-        def ready() -> None:
-            try:
-                callback()
-            finally:
-                run_in_executor_with_context(wait, loop=loop)
-
-        def wait():
-            result = wait_for_handles([remove_event, handle])
-
-            if result is remove_event:
-                windll.kernel32.CloseHandle(remove_event)
-                return
-            else:
-                loop.call_soon_threadsafe(ready)
-
-        run_in_executor_with_context(wait, loop=loop)
-
-    def remove_win32_handle(self, handle: HANDLE) -> Optional[Callable[[], None]]:
-        """
-        Remove a Win32 handle from the event loop.
-        Return either the registered handler or `None`.
-        """
-        if handle.value is None:
-            return None  # Ignore.
-
-        # Trigger remove events, so that the reader knows to stop.
-        try:
-            event = self._remove_events.pop(handle.value)
-        except KeyError:
-            pass
-        else:
-            windll.kernel32.SetEvent(event)
-
-        try:
-            return self._handle_callbacks.pop(handle.value)
-        except KeyError:
-            return None

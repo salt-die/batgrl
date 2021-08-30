@@ -26,12 +26,6 @@ class Input(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def typeahead_hash(self) -> str:
-        """
-        Identifier for storing type ahead key presses.
-        """
-
-    @abstractmethod
     def read_keys(self) -> List[KeyPress]:
         """
         Return a list of Key objects which are read/parsed from the input.
