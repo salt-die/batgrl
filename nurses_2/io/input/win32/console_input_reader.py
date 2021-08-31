@@ -26,6 +26,8 @@ RIGHTMOST_BUTTON_PRESSED =  0x0002
 MOUSE_MOVED = 0x0001
 MOUSE_WHEELED = 0x0004
 
+MAX_BYTES = 2048
+
 
 class ConsoleInputReader:
     def __init__(self, recognize_paste=True):
@@ -34,32 +36,24 @@ class ConsoleInputReader:
 
     def read(self):
         """
-        Yield `Key`s.
+        Yield input events.
 
         http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
         """
-        max_count = 2048  # Max events to read at the same time.
-
-        read = DWORD(0)
-        arrtype = INPUT_RECORD * max_count
+        arrtype = INPUT_RECORD * MAX_BYTES
         input_records = arrtype()
 
         windll.kernel32.ReadConsoleInputW(
-            self.handle, pointer(input_records), max_count, pointer(read)
+            self.handle, pointer(input_records), MAX_BYTES, pointer(DWORD(0))
         )
 
-        all_keys = [ ]
-        mouse_events = [ ]
-
-        # ? I feel a better input optimization is possible.
-        for key in self._get_keys(read, input_records):
-            (mouse_events if isinstance(key, MouseEvent) else all_keys).append(key)
+        keys, mouse_events = self._get_keys(input_records)
 
         # Correct non-bmp characters that are passed as separate surrogate codes
-        all_keys = tuple(self._merge_paired_surrogates(all_keys))
+        keys = tuple(self._merge_paired_surrogates(keys))
 
-        if self.recognize_paste and self._is_paste(all_keys):
-            key_iter = iter(all_keys)
+        if self.recognize_paste and self._is_paste(keys):
+            key_iter = iter(keys)
 
             for key in key_iter:
                 paste_text = [ ]
@@ -74,25 +68,30 @@ class ConsoleInputReader:
                 if key:
                     yield key
         else:
-            yield from all_keys
+            yield from keys
 
         yield from mouse_events
 
-    def _get_keys(self, read: DWORD, input_records):
+    def _get_keys(self, input_records):
         """
-        Generator that yields `Key`s from the input records.
+        Fill keys and mouse_events with events from input_records.
         """
-        for i in range(read.value): # TODO: Test iterating over input_records directly.
-            ir = input_records[i]
+        keys = [ ]
+        mouse_events = [ ]
+        handle_key = self._handle_key
+        handle_mouse = self._handle_mouse
 
+        for ir in input_records:
             if attr := EventTypes.get(ir.EventType, False):
                 ev = getattr(ir.Event, attr)
 
-                if type(ev) == KEY_EVENT_RECORD and ev.KeyDown:
-                    yield from self._handle_key(ev)
+                if type(ev) is KEY_EVENT_RECORD and ev.KeyDown:
+                    keys.extend(handle_key(ev))
 
-                elif type(ev) == MOUSE_EVENT_RECORD:
-                    yield self._handle_mouse(ev)
+                elif type(ev) is MOUSE_EVENT_RECORD:
+                    mouse_events.append(handle_mouse(ev))
+
+        return keys, mouse_events
 
     @staticmethod
     def _merge_paired_surrogates(keys):
@@ -152,7 +151,7 @@ class ConsoleInputReader:
     @staticmethod
     def _handle_key(ev: KEY_EVENT_RECORD):
         """
-        Yield a Key from a KEY_EVENT_RECORD.
+        Yield a Key (or two: if left-alt is pressed, Key.Escape will be yielded before key) from a KEY_EVENT_RECORD.
         """
         control_key_state = ev.ControlKeyState
         u_char = ev.uChar.UnicodeChar
