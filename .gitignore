@@ -1,7 +1,3 @@
 *.pyc
 TODO.md
-_testing/
-_win32_support/
-_nurses_io/
 _graphic_app/
-_patches/
