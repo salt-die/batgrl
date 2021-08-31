@@ -182,13 +182,6 @@ class Vt100_Output:
             if not (e.args and (e.args[0] == errno.EINTR or e.args[0] == 0)):
                 raise
 
-    def ask_for_cpr(self):
-        """
-        Asks for a cursor position report (CPR).
-        """
-        self.write_raw("\x1b[6n")
-        self.flush()
-
     def bell(self):
         """
         Play bell sound.

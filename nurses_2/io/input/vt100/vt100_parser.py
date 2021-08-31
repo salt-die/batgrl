@@ -5,14 +5,11 @@ import re
 
 from ....data_structures import Point
 from ..keys import Key
-from ..mouse_data_structures import MouseEvent
-from ..paste_event import PasteEvent
+from ..event_data_structures import MouseEvent, PasteEvent
 from .ansi_escape_sequences import ANSI_SEQUENCES
 from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 
-_CPR_RE          = re.compile("^" + re.escape("\x1b[") + r"\d+;\d+R\Z")
 _MOUSE_RE        = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
-_CPR_PREFEX_RE   = re.compile("^" + re.escape("\x1b[") + r"[\d;]*\Z")
 _MOUSE_PREFIX_RE = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,2})\Z")
 
 FLUSH = object()
@@ -25,8 +22,7 @@ class _HasLongMatch(dict):
     """
     def __missing__(self, prefix):
         result = (
-            bool(_CPR_PREFEX_RE.match(prefix))
-            or bool(_MOUSE_PREFIX_RE.match(prefix))
+            bool(_MOUSE_PREFIX_RE.match(prefix))
             or any(
                 value for key, value in ANSI_SEQUENCES.items()
                 if key.startswith(prefix) and key != prefix
@@ -63,12 +59,6 @@ class Vt100Parser:
         """
         Return the key (or keys) that maps to this prefix.
         """
-        # (hard coded) If we match a CPR response, return Key.CPRResponse.
-        # (This one doesn't fit in the ANSI_SEQUENCES, because it contains
-        # integer variables.)
-        if _CPR_RE.match(prefix):
-            return Key.CPRResponse
-
         if _MOUSE_RE.match(prefix):
             return Key.Vt100MouseEvent
 
