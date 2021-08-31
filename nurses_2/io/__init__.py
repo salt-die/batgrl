@@ -6,8 +6,7 @@ from .input.paste_event import PasteEvent
 from .input.keys import Key
 
 __all__ = (
-    "create_input",
-    "create_output",
+    "create_io",
     "MouseEventType",
     "MouseButton",
     "MouseModifier",
@@ -17,33 +16,25 @@ __all__ = (
     "Key",
 )
 
-def create_input():
+def create_io():
     """
-    Return a platform specific input implementation.
+    Return a platform specific io.
     """
     if not sys.stdin.isatty():
         raise RuntimeError("Interactive terminal required.")
 
     if is_windows():
+        from .output.windows10 import is_win_vt100_enabled, Windows10_Output
+
+        if not (is_conemu_ansi() or is_win_vt100_enabled()):
+            raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
+
         from .input.win32 import Win32Input
-        return Win32Input()
+
+        return Win32Input(), Windows10_Output()
 
     else:
         from .input.vt100 import Vt100Input
-        return Vt100Input()
-
-def create_output():
-    """
-    Return a platform specific output implementation.
-    """
-    if is_windows():
-        from .output.windows10 import is_win_vt100_enabled, Windows10_Output
-
-        if is_conemu_ansi() or is_win_vt100_enabled():
-            return Windows10_Output()
-
-        raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
-
-    else:
         from .output.vt100 import Vt100_Output
-        return Vt100_Output()
+
+        return Vt100Input(), Vt100_Output()

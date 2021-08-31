@@ -3,12 +3,7 @@ import asyncio
 from contextlib import contextmanager
 
 from .colors import BLACK_ON_BLACK
-from .io import (
-    create_input,
-    create_output,
-    PasteEvent,
-    MouseEvent,
-)
+from .io import create_io, PasteEvent, MouseEvent
 from .widgets._root import _Root
 
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
@@ -171,8 +166,7 @@ def create_environment(title):
     """
     Enter alternate screen and create platform specific input. Restore screen and close input on exit.
     """
-    env_out = create_output()
-    env_in = create_input()
+    env_in, env_out = create_io()
 
     try:
         env_out.enable_mouse_support()
