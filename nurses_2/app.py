@@ -191,3 +191,4 @@ def create_environment(title):
         env_out.reset_attributes()
         env_out.disable_mouse_support()
         env_out.flush()
+        env_out.restore_console()
