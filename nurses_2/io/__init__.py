@@ -39,12 +39,8 @@ def create_output():
     if is_windows():
         from .output.windows10 import is_win_vt100_enabled, Windows10_Output
 
-        if is_win_vt100_enabled():
+        if is_conemu_ansi() or is_win_vt100_enabled():
             return Windows10_Output()
-
-        if is_conemu_ansi():
-            from .output.conemu import ConEmuOutput
-            return ConEmuOutput()
 
         raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 

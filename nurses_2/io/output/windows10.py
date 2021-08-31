@@ -4,7 +4,7 @@ from ctypes import byref, pointer, windll
 from ctypes.wintypes import DWORD, HANDLE
 
 from ...data_structures import Size
-from ..utils import is_windows
+from ..utils import is_windows, is_conemu_ansi
 from ..win32_types import (
     CONSOLE_SCREEN_BUFFER_INFO,
     SMALL_RECT,
@@ -37,16 +37,20 @@ class Windows10_Output(Vt100_Output):
         super().__init__()
         self._hconsole = HANDLE(windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE))
 
-        self._original_mode = DWORD(0)
+        if is_conemu_ansi():
+            self._original_mode = None
 
-        # Remember the previous console mode.
-        windll.kernel32.GetConsoleMode(self._hconsole, byref(self._original_mode))
+        else:
+            self._original_mode = DWORD(0)
 
-        # Enable processing of vt100 sequences.
-        windll.kernel32.SetConsoleMode(
-            self._hconsole,
-            DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING),
-        )
+            # Remember the previous console mode.
+            windll.kernel32.GetConsoleMode(self._hconsole, byref(self._original_mode))
+
+            # Enable processing of vt100 sequences.
+            windll.kernel32.SetConsoleMode(
+                self._hconsole,
+                DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING),
+            )
 
     def get_win32_screen_buffer_info(self) -> CONSOLE_SCREEN_BUFFER_INFO:
         """
@@ -158,7 +162,8 @@ class Windows10_Output(Vt100_Output):
         """
         Restore console to original mode.
         """
-        windll.kernel32.SetConsoleMode(self._hconsole, self._original_mode)
+        if self._original_mode is not None:
+            windll.kernel32.SetConsoleMode(self._hconsole, self._original_mode)
 
 
 def is_win_vt100_enabled() -> bool:
