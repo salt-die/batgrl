@@ -1,14 +1,10 @@
 from enum import Enum, IntFlag
-from typing import NamedTuple
-
-from ...data_structures import Point
 
 __all__ = (
     "MouseEventType",
     "MouseButton",
     "MouseModifier",
     "MouseModifierKey",
-    "MouseEvent",
 )
 
 
@@ -34,20 +30,18 @@ class MouseModifierKey(IntFlag):
     CONTROL = 4
 
 
+SHIFT = MouseModifierKey.SHIFT
+ALT = MouseModifierKey.ALT
+CONTROL = MouseModifierKey.CONTROL
+
+
 class MouseModifier(Enum):
     NO_MODIFIER       = 0
-    SHIFT             = MouseModifierKey.SHIFT
-    ALT               = MouseModifierKey.ALT
-    SHIFT_ALT         = MouseModifierKey.SHIFT | MouseModifierKey.ALT
-    CONTROL           = MouseModifierKey.CONTROL
-    SHIFT_CONTROL     = MouseModifierKey.SHIFT | MouseModifierKey.CONTROL
-    ALT_CONTROL       = MouseModifierKey.ALT | MouseModifierKey.CONTROL
-    SHIFT_ALT_CONTROL = MouseModifierKey.SHIFT | MouseModifierKey.ALT | MouseModifierKey.CONTROL
+    SHIFT             = SHIFT
+    ALT               = ALT
+    SHIFT_ALT         = SHIFT | ALT
+    CONTROL           = CONTROL
+    SHIFT_CONTROL     = SHIFT | CONTROL
+    ALT_CONTROL       = ALT | CONTROL
+    SHIFT_ALT_CONTROL = SHIFT | ALT | CONTROL
     UNKNOWN_MODIFIER  = "UNKNOWN"
-
-
-class MouseEvent(NamedTuple):
-    position: Point
-    event_type: MouseEventType
-    button: MouseButton
-    modifier: MouseModifier

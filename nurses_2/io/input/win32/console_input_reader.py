@@ -10,7 +10,7 @@ from ...win32_types import (
     EventTypes,
 )
 from ..keys import Key
-from ..paste_event import PasteEvent
+from ..event_data_structures import MouseEvent, PasteEvent
 from ..mouse_data_structures import *
 from .key_maps import *
 
