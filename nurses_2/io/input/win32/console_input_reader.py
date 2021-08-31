@@ -9,7 +9,7 @@ from ...win32_types import (
     STD_INPUT_HANDLE,
     EventTypes,
 )
-from ..keys import Keys
+from ..keys import Key
 from ..paste_event import PasteEvent
 from ..mouse_data_structures import *
 from .key_maps import *
@@ -64,8 +64,8 @@ class ConsoleInputReader:
             for key in key_iter:
                 paste_text = [ ]
 
-                while key and (not isinstance(key, Keys) or key is Keys.ControlJ):
-                    paste_text.append("\n" if key is Keys.ControlJ else key)
+                while key and (not isinstance(key, Key) or key is Key.ControlJ):
+                    paste_text.append("\n" if key is Key.ControlJ else key)
                     key = next(gen, False)
 
                 if paste_text:
@@ -97,13 +97,13 @@ class ConsoleInputReader:
     @staticmethod
     def _merge_paired_surrogates(keys):
         """
-        Combines consecutive Keys with high and low surrogates into
+        Combines consecutive Key with high and low surrogates into
         single characters
         """
         buffered_high_surrogate = None
 
         for key in keys:
-            is_text = not isinstance(key, Keys)
+            is_text = not isinstance(key, Key)
             is_high_surrogate = is_text and "\uD800" <= key <= "\uDBFF"
             is_low_surrogate = is_text and "\uDC00" <= key <= "\uDFFF"
 
@@ -132,7 +132,7 @@ class ConsoleInputReader:
         """
         Return `True` when we should consider this list of keys as a paste
         event. Pasted text on windows will be turned into a
-        `Keys.BracketedPaste` event. (It's not 100% correct, but it is probably
+        `Key.BracketedPaste` event. (It's not 100% correct, but it is probably
         the best possible way to detect pasting of text and handle that
         correctly.)
         """
@@ -142,9 +142,9 @@ class ConsoleInputReader:
         newline_count = 0
 
         for key in keys:
-            if not isinstance(key, Keys):
+            if not isinstance(key, Key):
                 text_count += 1
-            elif key is Keys.ControlM:
+            elif key is Key.ControlM:
                 newline_count += 1
 
         return newline_count >= 1 and text_count > 1
@@ -170,10 +170,10 @@ class ConsoleInputReader:
             or control_key_state & RIGHT_CTRL_PRESSED
         ):
             if key == " ":
-                key = Keys.ControlSpace
+                key = Key.ControlSpace
 
-            elif key is Keys.ControlJ:
-                key = Keys.Escape
+            elif key is Key.ControlJ:
+                key = Key.Escape
 
             elif control_key_state & SHIFT_PRESSED:
                 key = CONTROL_SHIFT_KEYS.get(key, key)
@@ -185,7 +185,7 @@ class ConsoleInputReader:
             key = SHIFT_KEYS.get(key, key)
 
         if control_key_state & LEFT_ALT_PRESSED:
-            yield Keys.Escape
+            yield Key.Escape
 
         yield key
 

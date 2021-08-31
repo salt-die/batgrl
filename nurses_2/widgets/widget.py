@@ -2,7 +2,7 @@ import numpy as np
 
 from ..colors import WHITE_ON_BLACK
 from ..data_structures import Point, Size
-from ..io import Keys
+from ..io import Key
 from .widget_data_structures import CanvasView, Rect
 
 
@@ -328,7 +328,7 @@ class Widget:
             or self.on_click(mouse_event)
         )
 
-    def on_press(self, key: Keys):
+    def on_press(self, key: Key):
         """
         Handle key press. (Handled key presses should return True else False or None).
         """

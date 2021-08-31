@@ -1,4 +1,4 @@
-from ..keys import Keys
+from ..keys import Key
 
 __all__ = (
     "ANSI_SEQUENCES",
@@ -9,104 +9,104 @@ __all__ = (
 )
 
 ANSI_SEQUENCES = {
-    b"\x1b": Keys.Escape,
-    b"\x00": Keys.ControlSpace,        # Control-Space (Also for Ctrl-@)
-    b"\x01": Keys.ControlA,            # Control-A (home)
-    b"\x02": Keys.ControlB,            # Control-B (emacs cursor left)
-    b"\x03": Keys.ControlC,            # Control-C (interrupt)
-    b"\x04": Keys.ControlD,            # Control-D (exit)
-    b"\x05": Keys.ControlE,            # Control-E (end)
-    b"\x06": Keys.ControlF,            # Control-F (cursor forward)
-    b"\x07": Keys.ControlG,            # Control-G
-    b"\x08": Keys.ControlH,            # Control-H (8) (Identical to '\b')
-    b"\x09": Keys.ControlI,            # Control-I (9) (Identical to '\t')
-    b"\x0a": Keys.ControlJ,            # Control-J (10) (Identical to '\n')
-    b"\x0b": Keys.ControlK,            # Control-K (delete until end of line; vertical tab)
-    b"\x0c": Keys.ControlL,            # Control-L (clear; form feed)
-    b"\x0d": Keys.ControlM,            # Control-M (enter)
-    b"\x0e": Keys.ControlN,            # Control-N (14) (history forward)
-    b"\x0f": Keys.ControlO,            # Control-O (15)
-    b"\x10": Keys.ControlP,            # Control-P (16) (history back)
-    b"\x11": Keys.ControlQ,            # Control-Q
-    b"\x12": Keys.ControlR,            # Control-R (18) (reverse search)
-    b"\x13": Keys.ControlS,            # Control-S (19) (forward search)
-    b"\x14": Keys.ControlT,            # Control-T
-    b"\x15": Keys.ControlU,            # Control-U
-    b"\x16": Keys.ControlV,            # Control-V
-    b"\x17": Keys.ControlW,            # Control-W
-    b"\x18": Keys.ControlX,            # Control-X
-    b"\x19": Keys.ControlY,            # Control-Y (25)
-    b"\x1a": Keys.ControlZ,            # Control-Z
-    b"\x1c": Keys.ControlBackslash,    # Both Control-\ and Ctrl-|
-    b"\x1d": Keys.ControlSquareClose,  # Control-]
-    b"\x1e": Keys.ControlCircumflex,   # Control-^
-    b"\x1f": Keys.ControlUnderscore,   # Control-underscore (Also for Ctrl-hyphen.)
-    b"\x7f": Keys.Backspace,           # (127) Backspace   (ASCII Delete.)
+    b"\x1b": Key.Escape,
+    b"\x00": Key.ControlSpace,        # Control-Space (Also for Ctrl-@)
+    b"\x01": Key.ControlA,            # Control-A (home)
+    b"\x02": Key.ControlB,            # Control-B (emacs cursor left)
+    b"\x03": Key.ControlC,            # Control-C (interrupt)
+    b"\x04": Key.ControlD,            # Control-D (exit)
+    b"\x05": Key.ControlE,            # Control-E (end)
+    b"\x06": Key.ControlF,            # Control-F (cursor forward)
+    b"\x07": Key.ControlG,            # Control-G
+    b"\x08": Key.ControlH,            # Control-H (8) (Identical to '\b')
+    b"\x09": Key.ControlI,            # Control-I (9) (Identical to '\t')
+    b"\x0a": Key.ControlJ,            # Control-J (10) (Identical to '\n')
+    b"\x0b": Key.ControlK,            # Control-K (delete until end of line; vertical tab)
+    b"\x0c": Key.ControlL,            # Control-L (clear; form feed)
+    b"\x0d": Key.ControlM,            # Control-M (enter)
+    b"\x0e": Key.ControlN,            # Control-N (14) (history forward)
+    b"\x0f": Key.ControlO,            # Control-O (15)
+    b"\x10": Key.ControlP,            # Control-P (16) (history back)
+    b"\x11": Key.ControlQ,            # Control-Q
+    b"\x12": Key.ControlR,            # Control-R (18) (reverse search)
+    b"\x13": Key.ControlS,            # Control-S (19) (forward search)
+    b"\x14": Key.ControlT,            # Control-T
+    b"\x15": Key.ControlU,            # Control-U
+    b"\x16": Key.ControlV,            # Control-V
+    b"\x17": Key.ControlW,            # Control-W
+    b"\x18": Key.ControlX,            # Control-X
+    b"\x19": Key.ControlY,            # Control-Y (25)
+    b"\x1a": Key.ControlZ,            # Control-Z
+    b"\x1c": Key.ControlBackslash,    # Both Control-\ and Ctrl-|
+    b"\x1d": Key.ControlSquareClose,  # Control-]
+    b"\x1e": Key.ControlCircumflex,   # Control-^
+    b"\x1f": Key.ControlUnderscore,   # Control-underscore (Also for Ctrl-hyphen.)
+    b"\x7f": Key.Backspace,           # (127) Backspace   (ASCII Delete.)
 }
 
 KEY_CODES = {
     # Home/End
-    33: Keys.PageUp,
-    34: Keys.PageDown,
-    35: Keys.End,
-    36: Keys.Home,
+    33: Key.PageUp,
+    34: Key.PageDown,
+    35: Key.End,
+    36: Key.Home,
     # Arrows
-    37: Keys.Left,
-    38: Keys.Up,
-    39: Keys.Right,
-    40: Keys.Down,
-    45: Keys.Insert,
-    46: Keys.Delete,
+    37: Key.Left,
+    38: Key.Up,
+    39: Key.Right,
+    40: Key.Down,
+    45: Key.Insert,
+    46: Key.Delete,
     # F-keys.
-    112: Keys.F1,
-    113: Keys.F2,
-    114: Keys.F3,
-    115: Keys.F4,
-    116: Keys.F5,
-    117: Keys.F6,
-    118: Keys.F7,
-    119: Keys.F8,
-    120: Keys.F9,
-    121: Keys.F10,
-    122: Keys.F11,
-    123: Keys.F12,
+    112: Key.F1,
+    113: Key.F2,
+    114: Key.F3,
+    115: Key.F4,
+    116: Key.F5,
+    117: Key.F6,
+    118: Key.F7,
+    119: Key.F8,
+    120: Key.F9,
+    121: Key.F10,
+    122: Key.F11,
+    123: Key.F12,
 }
 
 CONTROL_SHIFT_KEYS = {
-    Keys.Left: Keys.ControlShiftLeft,
-    Keys.Right: Keys.ControlShiftRight,
-    Keys.Up: Keys.ControlShiftUp,
-    Keys.Down: Keys.ControlShiftDown,
-    Keys.Home: Keys.ControlShiftHome,
-    Keys.End: Keys.ControlShiftEnd,
-    Keys.Insert: Keys.ControlShiftInsert,
-    Keys.PageUp: Keys.ControlShiftPageUp,
-    Keys.PageDown: Keys.ControlShiftPageDown,
+    Key.Left: Key.ControlShiftLeft,
+    Key.Right: Key.ControlShiftRight,
+    Key.Up: Key.ControlShiftUp,
+    Key.Down: Key.ControlShiftDown,
+    Key.Home: Key.ControlShiftHome,
+    Key.End: Key.ControlShiftEnd,
+    Key.Insert: Key.ControlShiftInsert,
+    Key.PageUp: Key.ControlShiftPageUp,
+    Key.PageDown: Key.ControlShiftPageDown,
 }
 
 CONTROL_KEYS = {
-    Keys.Left: Keys.ControlLeft,
-    Keys.Right: Keys.ControlRight,
-    Keys.Up: Keys.ControlUp,
-    Keys.Down: Keys.ControlDown,
-    Keys.Home: Keys.ControlHome,
-    Keys.End: Keys.ControlEnd,
-    Keys.Insert: Keys.ControlInsert,
-    Keys.Delete: Keys.ControlDelete,
-    Keys.PageUp: Keys.ControlPageUp,
-    Keys.PageDown: Keys.ControlPageDown,
+    Key.Left: Key.ControlLeft,
+    Key.Right: Key.ControlRight,
+    Key.Up: Key.ControlUp,
+    Key.Down: Key.ControlDown,
+    Key.Home: Key.ControlHome,
+    Key.End: Key.ControlEnd,
+    Key.Insert: Key.ControlInsert,
+    Key.Delete: Key.ControlDelete,
+    Key.PageUp: Key.ControlPageUp,
+    Key.PageDown: Key.ControlPageDown,
 }
 
 SHIFT_KEYS = {
-    Keys.Tab: Keys.BackTab,
-    Keys.Left: Keys.ShiftLeft,
-    Keys.Right: Keys.ShiftRight,
-    Keys.Up: Keys.ShiftUp,
-    Keys.Down: Keys.ShiftDown,
-    Keys.Home: Keys.ShiftHome,
-    Keys.End: Keys.ShiftEnd,
-    Keys.Insert: Keys.ShiftInsert,
-    Keys.Delete: Keys.ShiftDelete,
-    Keys.PageUp: Keys.ShiftPageUp,
-    Keys.PageDown: Keys.ShiftPageDown,
+    Key.Tab: Key.BackTab,
+    Key.Left: Key.ShiftLeft,
+    Key.Right: Key.ShiftRight,
+    Key.Up: Key.ShiftUp,
+    Key.Down: Key.ShiftDown,
+    Key.Home: Key.ShiftHome,
+    Key.End: Key.ShiftEnd,
+    Key.Insert: Key.ShiftInsert,
+    Key.Delete: Key.ShiftDelete,
+    Key.PageUp: Key.ShiftPageUp,
+    Key.PageDown: Key.ShiftPageDown,
 }

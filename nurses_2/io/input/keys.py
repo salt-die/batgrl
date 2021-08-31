@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Keys(str, Enum):
+class Key(str, Enum):
     """
     List of keys for use in key bindings.
     """

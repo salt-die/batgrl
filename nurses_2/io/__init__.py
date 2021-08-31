@@ -3,7 +3,7 @@ import sys
 from .utils import is_conemu_ansi, is_windows
 from .input.mouse_data_structures import *
 from .input.paste_event import PasteEvent
-from .input.keys import Keys
+from .input.keys import Key
 
 __all__ = (
     "create_input",
@@ -14,7 +14,7 @@ __all__ = (
     "MouseModifierKey",
     "MouseEvent",
     "PasteEvent",
-    "Keys",
+    "Key",
 )
 
 def create_input():

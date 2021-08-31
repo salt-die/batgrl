@@ -1,6 +1,6 @@
 from ...colors import WHITE_ON_BLACK
 from ...data_structures import Point, Size
-from ...io import Keys, MouseEvent
+from ...io import Key, MouseEvent
 from ..widget import Widget
 from ..widget_data_structures import Rect
 
@@ -146,7 +146,7 @@ class Particle:
         y, x = self.parent.absolute_to_relative_coords(coords)
         return y - self.top, x - self.left
 
-    def on_press(self, key: Keys):
+    def on_press(self, key: Key):
         """
         Handle key press. (Handled key presses should return True else False or None).
         """

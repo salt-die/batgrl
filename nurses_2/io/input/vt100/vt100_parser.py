@@ -4,7 +4,7 @@ Parser for VT100 input stream.
 import re
 
 from ....data_structures import Point
-from ..keys import Keys
+from ..keys import Key
 from ..mouse_data_structures import MouseEvent
 from ..paste_event import PasteEvent
 from .ansi_escape_sequences import ANSI_SEQUENCES
@@ -63,14 +63,14 @@ class Vt100Parser:
         """
         Return the key (or keys) that maps to this prefix.
         """
-        # (hard coded) If we match a CPR response, return Keys.CPRResponse.
+        # (hard coded) If we match a CPR response, return Key.CPRResponse.
         # (This one doesn't fit in the ANSI_SEQUENCES, because it contains
         # integer variables.)
         if _CPR_RE.match(prefix):
-            return Keys.CPRResponse
+            return Key.CPRResponse
 
         if _MOUSE_RE.match(prefix):
-            return Keys.Vt100MouseEvent
+            return Key.Vt100MouseEvent
 
         return ANSI_SEQUENCES.get(prefix)
 
@@ -124,10 +124,10 @@ class Vt100Parser:
             # data payload to first key.
             for i, k in enumerate(key):
                 self._call_handler(k, data if i == 0 else "")
-        elif key is Keys.BracketedPaste:
+        elif key is Key.BracketedPaste:
             self._in_bracketed_paste = True
             self._paste_buffer = ""
-        elif key is Keys.Vt100MouseEvent:
+        elif key is Key.Vt100MouseEvent:
             self.feed_key_callback(self.mouse_event(data))
         else:
             self.feed_key_callback(key)
