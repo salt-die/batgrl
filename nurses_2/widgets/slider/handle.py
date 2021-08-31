@@ -16,5 +16,9 @@ class _Handle(GrabbableBehavior, Widget):
         self.left = round(slider.proportion * slider.fill_width)
 
     def grab_update(self, mouse_event):
+        _, x = self.absolute_to_relative_coords(mouse_event.position)
+        if self.mouse_dx > 0 and x < 0 or self.mouse_dx < 0 and x > 0:
+            return
+
         slider = self.parent
         slider.proportion += self.mouse_dx / slider.fill_width
