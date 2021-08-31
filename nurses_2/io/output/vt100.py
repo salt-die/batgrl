@@ -195,3 +195,8 @@ class Vt100_Output:
         """
         self.write_raw("\a")
         self.flush()
+
+    def restore_console(self):
+        """
+        Windows only.
+        """
