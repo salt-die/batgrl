@@ -94,25 +94,22 @@ class Vt100Parser:
         prefix = ""
         flush = False
 
-        try:
-            while True:
-                # Get next character.
-                c = yield
+        while True:
+            # Get next character.
+            c = yield
 
-                if c is FLUSH:
-                    flush = True
-                else:
-                    prefix += c
+            if c is FLUSH:
+                flush = True
+            else:
+                prefix += c
 
-                while flush and prefix:
-                    prefix = self._find_longest_match(prefix)
+            while flush and prefix:
+                prefix = self._find_longest_match(prefix)
 
-                flush = False
+            flush = False
 
-                if prefix and not _HAS_LONG_MATCH[prefix]:
-                    prefix = self._find_longest_match(prefix)
-        except Exception as e:
-            raise SystemExit from e
+            if prefix and not _HAS_LONG_MATCH[prefix]:
+                prefix = self._find_longest_match(prefix)
 
     def _call_handler(self, key, data):
         """
