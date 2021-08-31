@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.mouse import MouseButton
+from nurses_2.io import MouseButton
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.image import Image

@@ -1,4 +1,4 @@
-from .mouse_data_structures import *
+from ..mouse_data_structures import *
 
 LEFT = MouseButton.LEFT
 MIDDLE = MouseButton.MIDDLE

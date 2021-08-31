@@ -1,5 +1,5 @@
 from ...colors import BLACK, color_pair
-from ...mouse import MouseEventType
+from ...io import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget
 

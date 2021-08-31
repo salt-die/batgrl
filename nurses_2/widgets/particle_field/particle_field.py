@@ -1,6 +1,8 @@
 from ...colors import WHITE_ON_BLACK
+from ...data_structures import Point, Size
+from ...io import Keys, MouseEvent
 from ..widget import Widget
-from ..widget_data_structures import Point, Size, Rect
+from ..widget_data_structures import Rect
 
 
 class ParticleField(Widget):
@@ -144,16 +146,12 @@ class Particle:
         y, x = self.parent.absolute_to_relative_coords(coords)
         return y - self.top, x - self.left
 
-    def on_press(self, key):
+    def on_press(self, key: Keys):
         """
         Handle key press. (Handled key presses should return True else False or None).
-
-        Notes
-        -----
-        `key` is a `prompt_toolkit` `Key`.
         """
 
-    def on_click(self, mouse_event):
+    def on_click(self, mouse_event: MouseEvent):
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
         """

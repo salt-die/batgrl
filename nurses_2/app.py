@@ -2,14 +2,13 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import contextmanager
 
-from .test_toolkit.input import create_input
-from .test_toolkit.output import create_output
-from .test_toolkit.utils import is_windows, is_conemu_ansi
-from .test_toolkit.keys import Keys
-
 from .colors import BLACK_ON_BLACK
-from .data_structures import PasteEvent
-from .mouse import MouseEvent
+from .io import (
+    create_input,
+    create_output,
+    PasteEvent,
+    MouseEvent,
+)
 from .widgets._root import _Root
 
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
@@ -72,12 +71,6 @@ class App(ABC):
         """
         Run the app.
         """
-        if is_windows():
-            from .test_toolkit.output.windows10 import is_win_vt100_enabled
-
-            if not is_win_vt100_enabled() and not is_conemu_ansi():
-                raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
-
         try:
             asyncio.run(self._run_async())
         except asyncio.CancelledError:

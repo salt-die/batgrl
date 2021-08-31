@@ -1,6 +1,6 @@
 from enum import Enum
 
-from ...mouse import MouseEventType
+from ...io import MouseEventType
 
 
 class ButtonStates(Enum):

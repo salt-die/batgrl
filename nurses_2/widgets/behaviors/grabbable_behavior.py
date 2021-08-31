@@ -1,5 +1,5 @@
-from ...mouse import MouseEventType
-from ..widget_data_structures import Point
+from ...io import MouseEventType
+from ...data_structures import Point
 
 
 class GrabbableBehavior:

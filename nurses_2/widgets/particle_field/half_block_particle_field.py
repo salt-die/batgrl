@@ -1,7 +1,8 @@
 import numpy as np
 
 from ...colors import BLACK
-from ..widget_data_structures import Point, Rect
+from ...data_structures import Point
+from ..widget_data_structures import Rect
 from .particle_field import ParticleField, Particle
 
 

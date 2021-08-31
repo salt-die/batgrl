@@ -1,7 +1,7 @@
 from enum import Enum, IntFlag
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
 
-from ..widgets.widget_data_structures import Point
+from ...data_structures import Point
 
 __all__ = (
     "MouseEventType",

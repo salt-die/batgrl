@@ -1,10 +1,10 @@
 from typing import Optional, Callable
 
 from ...colors import Color
-from ...mouse import MouseEventType
+from ...io import MouseEventType
 from ...utils import clamp
 from ..widget import Widget
-from ..widget_data_structures import Point
+from ...data_structures import Point
 from .handle import _Handle
 
 

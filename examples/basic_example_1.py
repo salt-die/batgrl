@@ -7,7 +7,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import gradient, background_rainbow, Color, color_pair
-from nurses_2.mouse import MouseEventType
+from nurses_2.io import MouseEventType
 from nurses_2.widgets import Widget
 
 ORANGE = Color(255, 140, 66)

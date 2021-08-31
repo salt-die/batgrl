@@ -172,8 +172,6 @@ class Keys(str, Enum):
     WindowsMouseEvent = "<windows-mouse-event>"
     BracketedPaste = "<bracketed-paste>"
 
-    # For internal use: key which is ignored.
-    # (The key binding for this key should not do anything.)
     Ignore = "<ignore>"
 
     # Some 'Key' aliases (for backwards-compatibility).

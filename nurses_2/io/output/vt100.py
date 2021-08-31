@@ -5,19 +5,16 @@ import errno
 import os
 import sys
 
-from ...widgets.widget_data_structures import Size
-from ..utils import get_bell_environment_variable, get_term_environment_variable
+from ...data_structures import Size
+from ..utils import get_term_environment_variable
 
 
 class Vt100_Output:
     def __init__(self):
         self.stdout = sys.stdout
         self.term = get_term_environment_variable()
-        self.enable_bell = get_bell_environment_variable()
 
         self._buffer = [ ]
-
-        self.write_binary = True # Propagate throughout
 
     def get_size(self) -> Size:
         size = os.get_terminal_size(self.stdout.fileno())
@@ -196,6 +193,5 @@ class Vt100_Output:
         """
         Play bell sound.
         """
-        if self.enable_bell:
-            self.write_raw("\a")
-            self.flush()
+        self.write_raw("\a")
+        self.flush()

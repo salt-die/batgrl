@@ -4,7 +4,7 @@ import tty
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
-from .posix_utils import PosixStdinReader
+from .posix_reader import PosixStdinReader
 from .vt100_parser import Vt100Parser
 
 
@@ -44,7 +44,7 @@ class Vt100Input:
         self.vt100_parser.feed(data)
 
         result = self._buffer
-        self._buffer = []
+        self._buffer = [ ]
         return result
 
     def flush_keys(self):
@@ -55,7 +55,7 @@ class Vt100Input:
         self.vt100_parser.flush()
 
         result = self._buffer
-        self._buffer = []
+        self._buffer = [ ]
         return result
 
     @contextmanager

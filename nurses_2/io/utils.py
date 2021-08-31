@@ -13,13 +13,6 @@ def is_conemu_ansi():
     """
     return is_windows() and os.environ.get("ConEmuANSI", "OFF") == "ON"
 
-def get_bell_environment_variable():
-    """
-    True if env variable is set to true (true, TRUE, TrUe, 1).
-    """
-    value = os.environ.get("PROMPT_TOOLKIT_BELL", "true")
-    return value.lower() in ("1", "true")
-
 def get_term_environment_variable():
     """
     Return the $TERM environment variable.

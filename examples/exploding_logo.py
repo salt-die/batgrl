@@ -12,7 +12,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import foreground_rainbow
-from nurses_2.mouse import MouseButton
+from nurses_2.io import MouseButton
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.particle_field import Particle, ParticleField
 

@@ -1,6 +1,5 @@
 """
-Mappings from VT100 (ANSI) escape sequences to the corresponding
-prompt_toolkit keys.
+Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
 """
 from ..keys import Keys
 

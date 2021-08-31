@@ -1,5 +1,5 @@
 from ...colors import BLACK, color_pair
-from ...mouse import MouseEventType
+from ...io import MouseEventType
 from ..widget import Widget
 from .indicators import _VerticalIndicator, _HorizontalIndicator
 from .scrollbar_data_structures import ScrollBarSettings

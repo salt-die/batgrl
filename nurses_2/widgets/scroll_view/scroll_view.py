@@ -1,5 +1,5 @@
 from ...colors import Color
-from ...mouse import MouseEventType
+from ...io import MouseEventType
 from ...utils import clamp
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region

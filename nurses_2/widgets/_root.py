@@ -1,8 +1,9 @@
 import numpy as np
 
 from ..colors import Color
+from ..data_structures import Point, Size
 from .widget import Widget, overlapping_region
-from .widget_data_structures import Point, Size, Rect
+from .widget_data_structures import Rect
 
 
 class _Root(Widget):

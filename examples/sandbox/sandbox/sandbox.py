@@ -3,8 +3,8 @@ from functools import partial
 import numpy as np
 
 from nurses_2.colors import Color, color_pair
-from nurses_2.mouse import MouseButton
-from nurses_2.widgets.widget_data_structures import Size
+from nurses_2.io import MouseButton
+from nurses_2.data_structures import Size
 from nurses_2.widgets.widget import Widget, overlapping_region
 from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior
 

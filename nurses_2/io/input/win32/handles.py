@@ -3,7 +3,7 @@ from ctypes import windll
 from ctypes.wintypes import BOOL, DWORD, HANDLE
 from typing import List
 
-from ..win32_types import SECURITY_ATTRIBUTES
+from ...win32_types import SECURITY_ATTRIBUTES
 
 WAIT_TIMEOUT = 0x00000102
 INFINITE = -1

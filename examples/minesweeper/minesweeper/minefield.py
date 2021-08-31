@@ -3,7 +3,7 @@ from itertools import product
 import numpy as np
 from scipy.ndimage import convolve
 
-from nurses_2.mouse import MouseButton, MouseEventType
+from nurses_2.io import MouseButton, MouseEventType
 from nurses_2.widgets.widget import overlapping_region
 
 from .colors import *

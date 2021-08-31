@@ -3,34 +3,32 @@ Parser for VT100 input stream.
 """
 import re
 
-from ...mouse import MouseEvent
-from ...mouse.create_vt100_mouse_event import create_vt100_mouse_event as mouse_event
-from ...data_structures import PasteEvent
+from ....data_structures import Point
 from ..keys import Keys
+from ..mouse_data_structures import MouseEvent
+from ..paste_event import PasteEvent
 from .ansi_escape_sequences import ANSI_SEQUENCES
+from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 
-_cpr_response_re = re.compile("^" + re.escape("\x1b[") + r"\d+;\d+R\Z")
-_mouse_event_re = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
-
-_cpr_response_prefix_re = re.compile("^" + re.escape("\x1b[") + r"[\d;]*\Z")
-_mouse_event_prefix_re = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,2})\Z")
+_CPR_RE          = re.compile("^" + re.escape("\x1b[") + r"\d+;\d+R\Z")
+_MOUSE_RE        = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
+_CPR_PREFEX_RE   = re.compile("^" + re.escape("\x1b[") + r"[\d;]*\Z")
+_MOUSE_PREFIX_RE = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,2})\Z")
 
 FLUSH = object()
 
 
-class _IsPrefixOfLongerMatchCache(dict):
+class _HasLongMatch(dict):
     """
-    Dictionary that maps input sequences to a boolean indicating whether there is
-    any key that start with this characters.
+    Maps input sequences to a boolean indicating whether there is
+    any key that starts with the sequence.
     """
-
     def __missing__(self, prefix):
         result = (
-            bool(_cpr_response_prefix_re.match(prefix))
-            or bool(_mouse_event_prefix_re.match(prefix))
+            bool(_CPR_PREFEX_RE.match(prefix))
+            or bool(_MOUSE_PREFIX_RE.match(prefix))
             or any(
-                value
-                for key, value in ANSI_SEQUENCES.items()
+                value for key, value in ANSI_SEQUENCES.items()
                 if key.startswith(prefix) and key != prefix
             )
         )
@@ -39,7 +37,7 @@ class _IsPrefixOfLongerMatchCache(dict):
         return result
 
 
-_IS_PREFIX_OF_LONGER_MATCH_CACHE = _IsPrefixOfLongerMatchCache()
+_HAS_LONG_MATCH = _HasLongMatch()
 
 
 class Vt100Parser:
@@ -68,28 +66,36 @@ class Vt100Parser:
         # (hard coded) If we match a CPR response, return Keys.CPRResponse.
         # (This one doesn't fit in the ANSI_SEQUENCES, because it contains
         # integer variables.)
-        if _cpr_response_re.match(prefix):
+        if _CPR_RE.match(prefix):
             return Keys.CPRResponse
 
-        if _mouse_event_re.match(prefix):
+        if _MOUSE_RE.match(prefix):
             return Keys.Vt100MouseEvent
 
         return ANSI_SEQUENCES.get(prefix)
+
+    def _find_longest_match(self, prefix):
+        """
+        Iteratively look for key matches to prefix. If a match is found pass
+        the match to the call handler and return the remaining bit of the prefix.
+        """
+        for i in range(len(prefix), 0, -1):
+            if match := self._get_match(prefix[:i]):
+                self._call_handler(match, prefix[:i])
+                return prefix[i:]
+
+        self._call_handler(prefix[0], prefix[0])
+        return prefix[1:]
 
     def _input_parser_generator(self):
         """
         Coroutine (state machine) for the input parser.
         """
         prefix = ""
-        retry = False
         flush = False
 
-        while True:
-            flush = False
-
-            if retry:
-                retry = False
-            else:
+        try:
+            while True:
                 # Get next character.
                 c = yield
 
@@ -98,31 +104,17 @@ class Vt100Parser:
                 else:
                     prefix += c
 
-            # If we have some data, check for matches.
-            if prefix:
-                is_prefix_of_longer_match = _IS_PREFIX_OF_LONGER_MATCH_CACHE[prefix]
+                while flush and prefix:
+                    prefix = self._find_longest_match(prefix)
 
-                # Exact matches found, call handlers..
-                if flush or not is_prefix_of_longer_match:
-                    if match := self._get_match(prefix):
-                        self._call_handler(match, prefix)
-                        prefix = ""
+                flush = False
 
-                    else:
-                        retry = True
+                if prefix and not _HAS_LONG_MATCH[prefix]:
+                    prefix = self._find_longest_match(prefix)
+        except Exception as e:
+            raise SystemExit from e
 
-                        # Loop over the input, try the longest match first and
-                        # shift.
-                        for i in range(len(prefix), 0, -1):
-                            if match := self._get_match(prefix[:i]):
-                                self._call_handler(match, prefix[:i])
-                                prefix = prefix[i:]
-                                break
-                        else:
-                            self._call_handler(prefix[0], prefix[0])
-                            prefix = prefix[1:]
-
-    def _call_handler(self, key, insert_text):
+    def _call_handler(self, key, data):
         """
         Callback to handler.
         """
@@ -131,14 +123,45 @@ class Vt100Parser:
             # (probably alt+something). Handle keys individually, but only pass
             # data payload to first key.
             for i, k in enumerate(key):
-                self._call_handler(k, insert_text if i == 0 else "")
+                self._call_handler(k, data if i == 0 else "")
         elif key is Keys.BracketedPaste:
             self._in_bracketed_paste = True
             self._paste_buffer = ""
         elif key is Keys.Vt100MouseEvent:
-            self.feed_key_callback(mouse_event(insert_text))
+            self.feed_key_callback(self.mouse_event(data))
         else:
             self.feed_key_callback(key)
+
+    @staticmethod
+    def mouse_event(data):
+        """
+        Create a MouseEvent.
+        """
+        if data[2] == "M":  # Typical: "Esc[MaB*"
+            mouse_event, x, y = map(ord, data[3:])
+            mouse_info = TYPICAL.get(mouse_event)
+
+            if x >= 0xDC00:
+                x -= 0xDC00
+            if y >= 0xDC00:
+                y -= 0xDC00
+
+            x -= 32
+            y -= 32
+
+        else:
+            if data[2] == "<":  # Xterm SGR: "Esc[<64;85;12M"
+                mouse_event, x, y = map(int, data[3:-1].split(";"))
+                mouse_info = TERM_SGR.get((mouse_event, data[-1]))
+
+            else:  # Urxvt: "Esc[96;14;13M"
+                mouse_event, x, y = map(int, data[2:-1].split(";"))
+                mouse_info = URXVT.get(mouse_event)
+
+            x -= 1
+            y -= 1
+
+        return MouseEvent(Point(y, x), *mouse_info)
 
     def feed(self, data):
         """
@@ -146,15 +169,15 @@ class Vt100Parser:
         """
         if self._in_bracketed_paste:
             self._paste_buffer += data
-            end_mark = "\x1b[201~"
 
+            end_mark = "\x1b[201~"
             end_index = self._paste_buffer.find(end_mark)
-            if end_index != -1:
-                # Feed content to key bindings.
+
+            if end_index != -1:  # Bracketed paste end found. Clip data.
                 paste_content = self._paste_buffer[:end_index]
+
                 self.feed_key_callback(PasteEvent(paste_content))
 
-                # Quit bracketed paste mode and handle remaining input.
                 self._in_bracketed_paste = False
                 remaining = self._paste_buffer[end_index + len(end_mark) :]
                 self._paste_buffer = ""

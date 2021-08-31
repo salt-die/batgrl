@@ -5,8 +5,9 @@ import cv2
 import numpy as np
 
 from ..colors import BLACK_ON_BLACK
+from ..data_structures import Size
 from .widget import Widget, overlapping_region
-from .widget_data_structures import Size, Rect
+from .widget_data_structures import Rect
 
 
 class Interpolation(IntEnum):
