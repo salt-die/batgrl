@@ -8,11 +8,6 @@ from ...win32_types import SECURITY_ATTRIBUTES
 WAIT_TIMEOUT = 0x00000102
 INFINITE = -1
 
-def wait_for_handle(handle: HANDLE, timeout=INFINITE):
-    ret = windll.kernel32.WaitForSingleObject(handle, DWORD(timeout))
-
-    return None if ret == WAIT_TIMEOUT else handle
-
 def wait_for_handles(handles: List[HANDLE], timeout=INFINITE):
     arrtype = HANDLE * len(handles)
     handle_array = arrtype(*handles)

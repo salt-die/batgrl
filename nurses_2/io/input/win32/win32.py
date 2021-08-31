@@ -7,7 +7,7 @@ from ctypes.wintypes import DWORD, HANDLE
 
 from ...win32_types import STD_INPUT_HANDLE
 from .console_input_reader import ConsoleInputReader
-from .handles import create_win32_event, wait_for_handle, wait_for_handles
+from .handles import create_win32_event, wait_for_handles
 
 
 class Win32Input:
