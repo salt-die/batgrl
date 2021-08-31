@@ -37,6 +37,17 @@ class Windows10_Output(Vt100_Output):
         super().__init__()
         self._hconsole = HANDLE(windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE))
 
+        self._original_mode = DWORD(0)
+
+        # Remember the previous console mode.
+        windll.kernel32.GetConsoleMode(self._hconsole, byref(self._original_mode))
+
+        # Enable processing of vt100 sequences.
+        windll.kernel32.SetConsoleMode(
+            self._hconsole,
+            DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING),
+        )
+
     def get_win32_screen_buffer_info(self) -> CONSOLE_SCREEN_BUFFER_INFO:
         """
         Return Screen buffer info.
@@ -130,27 +141,6 @@ class Windows10_Output(Vt100_Output):
             original_mode.value & ~ENABLE_MOUSE_INPUT,
         )
 
-    def flush(self):
-        """
-        Write to output stream and flush.
-        """
-        original_mode = DWORD(0)
-
-        # Remember the previous console mode.
-        windll.kernel32.GetConsoleMode(self._hconsole, byref(original_mode))
-
-        # Enable processing of vt100 sequences.
-        windll.kernel32.SetConsoleMode(
-            self._hconsole,
-            DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING),
-        )
-
-        try:
-            super().flush()
-        finally:
-            # Restore console mode.
-            windll.kernel32.SetConsoleMode(self._hconsole, original_mode)
-
     def get_size(self) -> Size:
         info = self.get_win32_screen_buffer_info()
 
@@ -163,6 +153,12 @@ class Windows10_Output(Vt100_Output):
         width = min(maxwidth, width)
 
         return Size(height, width)
+
+    def restore_console(self):
+        """
+        Restore console to original mode.
+        """
+        windll.kernel32.SetConsoleMode(self._hconsole, self._original_mode)
 
 
 def is_win_vt100_enabled() -> bool:
