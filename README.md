@@ -4,10 +4,10 @@ This is a widget and async-centric library for creating graphical applications i
 
 How it works
 ------------
-A widget's visual state is stored in numpy arrays. Because numpy arrays follow the buffer protocol, views of these arrays can be passed to other widgets without copying any data. To render the current screen, the root widget, for each of its children, finds the rectangular region of the screen a child overlaps and passes a view of this region to that child. The child is then responsible for rendering into this view. It may continue the process, passing
+A widget's visual state is stored in numpy arrays. Because numpy arrays follow the buffer protocol, views of these arrays can be passed to other widgets without copying any data. To render the current screen, the root widget, for each of its children, finds the rectangular region of the screen a child overlaps and passes a view of this region to that child. The child is then responsible for rendering into this view and it may continue the process, passing
 overlapping region views of the view to *its* children as well.
 
-Input dispatching is similar. Starting with the root widget all input is recursively dispatched to the entire widget tree until a input handler (`on_press` or `on_click` methods) returns `True`.  `True` indicates the input was handled and stops the dispatching.
+Input is also dispatched recursively throughout the widget tree until an input handler (an `on_press` or `on_click` method) returns `True`. `True` indicates the input was handled and stops the dispatching.
 
 Getting Started
 ---------------
