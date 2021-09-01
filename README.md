@@ -29,3 +29,7 @@ To create a nurses_2 app, inherit the `App` class and implement the `on_start` a
 # /examples/rubiks
 
 ![Rubik's Cube demonstration](preview_images/rubiks_demonstration.gif)
+
+# /examples/minesweeper
+
+![Minesweeper Preview](preview_images/minesweeper.gif)
