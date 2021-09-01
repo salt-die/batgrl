@@ -14,10 +14,15 @@ from .minefield import Minefield, FLAG
 
 SIZE = 16, 30
 NMINES = 99
+
+# Emojis
 EXPLODED = "💥"
 BAD_FLAG = "✗"
+HAPPY = "😀"
+SURPRISED = "😮"
 KNOCKED_OUT = "😵"
 COOL = "😎"
+
 KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
 RNG = np.random.default_rng()
 V_SPACING = Grid.V_SPACING
@@ -30,10 +35,10 @@ class AutoPositionWidget(AutoPositionBehavior, Widget):
 
 class ResetButton(ButtonBehavior, AutoPositionBehavior, Widget):
     def update_normal(self):
-        self.add_text("😀")
+        self.add_text(HAPPY)
 
     def update_down(self):
-        self.add_text("😮")
+        self.add_text(SURPRISED)
 
     def on_release(self):
         self.parent.reset()
