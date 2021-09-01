@@ -176,13 +176,30 @@ class Widget:
 
     def normalize_canvas(self):
         """
-        Add zero-width characters after each full-width character, but only if the
-        full-width character is followed by a default_char.
+        Add zero-width characters after each full-width character.
 
         Raises
         ------
         ValueError
             If full-width character is followed by non-default character.
+
+        Notes
+        -----
+        In some cases, even with normalized canvases, widgets with full-width characters
+        could cause display issues.
+
+        Imagine the following case:
+                      _________
+                     | fw  ____|___
+                     | fw | fw  ___|_
+                     | fw | fw | fw  |
+                     | fw | fw | fw  |
+                     |____|____|_____|
+
+        `fw` represents a full-width character and each widget is offset from the next by one.
+        One can end up with an entire row of full-width characters which will likely ruin the
+        display. If `normalize_canvas` and `add_text` aren't sufficient for the user, a custom
+        render method will likely need to be implemented.
         """
         canvas = self.canvas
         edge = self.width - 1
