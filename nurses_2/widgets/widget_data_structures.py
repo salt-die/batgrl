@@ -1,9 +1,11 @@
 from typing import NamedTuple
 
+from wcwidth import wcswidth
+
 
 class CanvasView:
     """
-    A wrapper around a `numpy` `ndarray` view with `Widget`'s `add_text` method.
+    A wrapper around a `numpy` `ndarray` with a convenient `add_text` method.
 
     Notes
     -----
@@ -40,10 +42,19 @@ class CanvasView:
         column: int
             The first column to which text is added.
         """
-        if column < 0:
-            column += self.canvas.shape[1]
+        canvas = self.canvas
 
-        self.canvas[row, column:column + len(text)] = tuple(text)
+        if column < 0:
+            column += canvas.shape[1]
+
+        i = 0
+        for letter in text:
+            canvas[row, column + i] = letter
+            i += 1
+
+            if wcswidth(letter) == 2:
+                canvas[row, column + i] = chr(0x200B)  # Zero-width space
+                i += 1
 
 
 class Rect(NamedTuple):
