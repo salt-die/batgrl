@@ -39,5 +39,6 @@ class Count(Grid):
 
         self.canvas[vs//2::vs, hs//2::hs] = stringify(count)
         self.canvas[vs//2::vs, hs//2::hs][minefield == 1] = BOMB
+        self.normalize_canvas()  # Zero-width characters are inserted after the full-width BOMBS.
 
         self.colors[vs//2::vs, hs//2::hs, :3] = np.dstack(colorify(count))
