@@ -1,9 +1,11 @@
 import numpy as np
+from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK
 from ..data_structures import Point, Size
 from ..io import Key
 from .widget_data_structures import CanvasView, Rect
+from ..utils import character_width
 
 
 class Widget:
@@ -172,24 +174,32 @@ class Widget:
         """
         return self.root.app
 
-    def add_text(self, text, row=0, column=0):
+    def normalize_canvas(self):
         """
-        Add text to the canvas.
+        Add zero-width characters after each full-width character, but only if the
+        full-width character is followed by a default_char.
 
-        Parameters
-        ----------
-        text: str
-            Text to add to canvas.
-        row: int | tuple[int, ...] | slice
-            Row or rows to which text is added. This will be passed as-is as the first argument
-            to `numpy`'s `ndarray.__getitem__`.
-        column: int
-            The first column to which text is added.
+        Raises
+        ------
+        ValueError
+            If full-width character is followed by non-default character.
         """
-        if column < 0:
-            column += self.canvas.shape[1]
+        canvas = self.canvas
+        edge = self.width - 1
+        default_char = self.default_char
 
-        self.canvas[row, column:column + len(text)] = tuple(text)
+        char_widths = character_width(self.canvas)
+
+        canvas[char_widths == 0] = default_char  # Zero-width characters are replaced with the default character.
+
+        where_fullwidth = np.argwhere(char_widths == 2)
+        for y, x in where_fullwidth:
+            if x != edge and canvas[y, x + 1] != default_char:
+                raise ValueError("can't normalize, full-width character followed by non-default char")
+
+            canvas[y, x + 1] = chr(0x200B)  # Zero-width space
+
+    add_text = CanvasView.add_text
 
     @property
     def get_view(self) -> CanvasView:
