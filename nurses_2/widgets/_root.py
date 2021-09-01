@@ -31,7 +31,8 @@ class _Root(Widget):
         self._last_canvas = np.full(size, self.default_char, dtype=object)
         self._last_colors = np.full((*size, 6), self.default_color_pair, dtype=np.uint8)
 
-        self.canvas = np.full_like(self._last_canvas, "><")  # "><" will guarantee an entire screen redraw.
+        invalidate_char = "a" if "a" != self.default_char else "b"  # A character that guarantees full-screen redraw.
+        self.canvas = np.full_like(self._last_canvas, invalidate_char)
         self.colors = self._last_colors.copy()
 
         # Buffer arrays to re-use in the `render` method:
