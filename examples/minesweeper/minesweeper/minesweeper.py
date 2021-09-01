@@ -5,7 +5,7 @@ from scipy.ndimage import convolve
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor, ButtonBehavior
-from nurses_2.widgets.widget_data_structures import Point
+from nurses_2.data_structures import Point
 
 from .colors import COUNT, FLAG_COLOR, DATA_BAR
 from .count import Count, BOMB
