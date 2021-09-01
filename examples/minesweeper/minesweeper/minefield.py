@@ -8,8 +8,7 @@ from nurses_2.widgets.widget import overlapping_region
 
 from .colors import *
 from .grid import Grid
-
-FLAG = "⚑"
+from .unicode_chars import FLAG
 
 
 class Minefield(Grid):

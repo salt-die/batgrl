@@ -1,0 +1,11 @@
+BAD_FLAG    = "✗"
+BOMB        = "💣"
+COOL        = "😎"
+EXPLODED    = "💥"
+FLAG        = "⚑"
+HAPPY       = "😀"
+KNOCKED_OUT = "😵"
+SURPRISED   = "😮"
+
+LIGHT_BOX   = "─│┌┬┐└┴┘├┼┤"
+HEAVY_BOX   = "━┃┏┳┓┗┻┛┣╋┫"

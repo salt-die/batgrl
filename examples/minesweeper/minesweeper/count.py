@@ -4,8 +4,8 @@ import numpy as np
 
 from .colors import *
 from .grid import Grid
+from .unicode_chars import BOMB
 
-BOMB = "💣"
 
 @np.vectorize
 def stringify(n):

@@ -1,7 +1,6 @@
 from nurses_2.widgets import Widget
 
-LIGHT_BOX = "─│┌┬┐└┴┘├┼┤"
-HEAVY_BOX = "━┃┏┳┓┗┻┛┣╋┫"
+from .unicode_chars import LIGHT_BOX, HEAVY_BOX
 
 
 class Grid(Widget):

@@ -8,23 +8,17 @@ from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor, ButtonBehav
 from nurses_2.data_structures import Point
 
 from .colors import COUNT, FLAG_COLOR, DATA_BAR
-from .count import Count, BOMB
+from .count import Count
 from .grid import Grid
-from .minefield import Minefield, FLAG
+from .minefield import Minefield
+from .unicode_chars import *
 
 SIZE = 16, 30
 NMINES = 99
 
-# Emojis
-EXPLODED = "💥"
-BAD_FLAG = "✗"
-HAPPY = "😀"
-SURPRISED = "😮"
-KNOCKED_OUT = "😵"
-COOL = "😎"
-
 KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
 RNG = np.random.default_rng()
+
 V_SPACING = Grid.V_SPACING
 H_SPACING = Grid.H_SPACING
 
