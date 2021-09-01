@@ -188,13 +188,13 @@ class Widget:
         In some cases, even with normalized canvases, widgets with full-width characters
         could cause display issues.
 
-        Imagine the following case:
+        Imagine the following arrangement of widgets:
                       _________
                      | fw  ____|___
-                     | fw | fw  ___|_
-                     | fw | fw | fw  |
-                     | fw | fw | fw  |
-                     |____|____|_____|
+                     | fw | fw  ___|__
+                     | fw | fw | fw  _|__
+                     | fw | fw | fw | fw |
+                     |____|____|____|____|
 
         `fw` represents a full-width character and each widget is offset from the next by one.
         One can end up with an entire row of full-width characters which will likely ruin the
