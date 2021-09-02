@@ -28,6 +28,10 @@ def colorify(n):
 
 
 class Count(Grid):
+    """
+    A widget that displays the number of adjacent bombs of each cell. This widget will be
+    initially hidden by the `MineField` widget.
+    """
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
             size=count.shape,
