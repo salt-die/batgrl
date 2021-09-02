@@ -171,8 +171,10 @@ def create_environment(title):
     try:
         env_out.enable_mouse_support()
         env_out.enter_alternate_screen()
+
         if title is not None:
             env_out.set_title(title)
+
         env_out.flush()
 
         env_in.flush_keys()  # Ignoring type-ahead
@@ -184,5 +186,11 @@ def create_environment(title):
         env_out.quit_alternate_screen()
         env_out.reset_attributes()
         env_out.disable_mouse_support()
+        env_out.show_cursor()
+
+        # Blinking line cursor. Show cursor will stop a blinking cursor.
+        # Saving cursor attributes is a mystery to me for now.
+        env_out.write_raw("\x1b[\x35 q")
+
         env_out.flush()
         env_out.restore_console()
