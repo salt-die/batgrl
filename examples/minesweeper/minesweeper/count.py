@@ -39,10 +39,10 @@ class Count(Grid):
             default_color_pair=COUNT,
             **kwargs,
         )
-        vs, hs = self.V_SPACING, self.H_SPACING
+        v_center, h_center = self.cell_center_indices
 
-        self.canvas[vs//2::vs, hs//2::hs] = stringify(count)
-        self.canvas[vs//2::vs, hs//2::hs][minefield == 1] = BOMB
-        self.normalize_canvas()  # Zero-width characters are inserted after the full-width BOMBS.
+        self.canvas[v_center, h_center] = stringify(count)
+        self.canvas[v_center, h_center][minefield == 1] = BOMB
+        self.normalize_canvas()  # Zero-width characters are inserted after the full-width `BOMB`s.
 
-        self.colors[vs//2::vs, hs//2::hs, :3] = np.dstack(colorify(count))
+        self.colors[v_center, h_center, :3] = np.dstack(colorify(count))

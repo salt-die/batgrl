@@ -12,6 +12,9 @@ from .unicode_chars import FLAG
 
 
 class Minefield(Grid):
+    """
+    A grid that becomes transparent when clicked revealing the counts underneath.
+    """
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
             size=count.shape,
@@ -22,19 +25,20 @@ class Minefield(Grid):
         self.count = count
         self.minefield = minefield
         self.nmines = minefield.sum()
-        self.revealed = np.zeros_like(count, dtype=bool)
         self._is_gameover = False
 
         vs, hs = self.V_SPACING, self.H_SPACING
+        v_center, h_center = self.cell_center_indices
 
-        self.colors[vs//2::vs, hs//2::hs, :3] = FLAG_COLOR
+        self.colors[v_center, h_center, :3] = FLAG_COLOR
 
         # Build an array whose zero values indicate revealed areas.
         kernel = np.ones((vs + 1, hs + 1))
         squares = np.zeros(self.size, dtype=int)
-        squares[vs//2::vs, hs//2::hs] = 1
+        squares[v_center, h_center] = 1
 
         self.hidden = convolve(squares, kernel, mode="constant")
+        self.hidden_cells = self.hidden[v_center, h_center]
 
         self._pressed_cell = self._pressed_button = None
 
@@ -50,7 +54,7 @@ class Minefield(Grid):
 
             return False
 
-        elif event_type == MouseEventType.MOUSE_DOWN:
+        if event_type == MouseEventType.MOUSE_DOWN:
             if self._pressed_cell:
                 self._release()
 
@@ -144,13 +148,13 @@ class Minefield(Grid):
 
         cell = self._pressed_cell
 
-        if not self.revealed[cell] and not self.is_flagged(cell):
+        if self.hidden_cells[cell] != 0 and not self.is_flagged(cell):
             self._recolor_cell(cell, HIDDEN_REVERSED)
 
     def _flag_press(self):
         cell = self._pressed_cell
 
-        if not self.revealed[cell]:
+        if self.hidden_cells[cell] != 0:
             is_flagged = self.is_flagged(cell)
 
             self.canvas[self._cell_center(cell)] = " " if is_flagged else FLAG
@@ -162,11 +166,11 @@ class Minefield(Grid):
 
         cell = self._pressed_cell
 
-        if not self.revealed[cell] and not self.is_flagged(cell):
+        if self.hidden_cells[cell] != 0 and not self.is_flagged(cell):
             self._recolor_cell(cell, HIDDEN_REVERSED)
 
         for neighbor in self._neighbors(cell):
-            if not self.revealed[neighbor] and not self.is_flagged(neighbor):
+            if self.hidden_cells[neighbor] != 0 and not self.is_flagged(neighbor):
                 self._recolor_cell(neighbor, HIDDEN_REVERSED)
 
     def _release(self):
@@ -187,33 +191,31 @@ class Minefield(Grid):
         if reveal_neighbors:
             adjacent_flags = sum(map(self.is_flagged, self._neighbors(cell)))
 
-            if self.revealed[cell] and self.count[cell] != adjacent_flags:
+            if self.hidden_cells[cell] == 0 and self.count[cell] != adjacent_flags:
                 return
 
             for neighbor in self._neighbors(cell):
                 self.reveal_cell(neighbor, reveal_neighbors=False)
 
-        if self.revealed[cell] or self.is_flagged(cell):
+        if self.hidden_cells[cell] == 0 or self.is_flagged(cell):
             return
 
         if self.minefield[cell]:
             self._game_over(win=False)
             return
 
-        self.revealed[cell] = True
         self.hidden[self._cell_slice(cell)] -= 1
 
         if self.count[cell] == 0:
             for neighbor in self._neighbors(cell):
                 self.reveal_cell(neighbor, reveal_neighbors=False)
 
-        if (self.revealed == False).sum() == self.nmines:
+        if self.hidden_cells.sum() == self.nmines:
             self._game_over(win=True)
             return
 
     def _game_over(self, win: bool):
         self.hidden[:] = 0
-        self.revealed[:] = True
         self._is_gameover = True
         self.parent.game_over(win=win)
 

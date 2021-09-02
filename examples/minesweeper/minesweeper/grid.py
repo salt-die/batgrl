@@ -35,3 +35,9 @@ class Grid(Widget):
         canvas[0, -1] = tr
         canvas[-1, 0] = bl
         canvas[-1, -1] = br
+
+    @property
+    def cell_center_indices(self):
+        vs, hs = self.V_SPACING, self.H_SPACING
+
+        return slice(vs//2, None, vs), slice(hs//2, None, hs)
