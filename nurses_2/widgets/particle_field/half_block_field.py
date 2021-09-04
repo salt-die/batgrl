@@ -8,7 +8,7 @@ from .particle_field import ParticleField, Particle
 
 class HalfBlockField(ParticleField):
     """
-    A widget that only has HalfBlockParticle children.
+    A widget that only has HalfBlockParticle ("▀") children.
 
     Notes
     -----
