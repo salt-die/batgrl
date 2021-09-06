@@ -23,7 +23,7 @@ class HalfBlockField(ParticleField):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.buffer = np.zeros((3, ), dtype=np.float16)
+        self._buffer = np.zeros((3, ), dtype=np.float16)
 
     def add_widget(self, widget):
         if not isinstance(widget, HalfBlockParticle):
@@ -35,7 +35,7 @@ class HalfBlockField(ParticleField):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
-        buffer = self.buffer
+        buffer = self._buffer
         subtract, multiply, add = np.subtract, np.multiply, np.add
         t, l, _, _, h, w = rect
 
