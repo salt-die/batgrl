@@ -37,14 +37,6 @@ class Image(Widget):
     """
     An Image widget.
 
-    Notes
-    -----
-    Updating the following properties immediately reloads the image:
-        * path
-        * is_grayscale
-        * alpha
-        * interpolation
-
     Parameters
     ----------
     path : pathlib.Path
@@ -56,6 +48,14 @@ class Image(Widget):
         Otherwise, `alpha` is default value for image's alpha channel.
     interpolation : Interpolation, default: Interpolation.LINEAR
         The interpolation used when resizing the image.
+
+    Notes
+    -----
+    Updating the following properties immediately reloads the image:
+    * path
+    * is_grayscale
+    * alpha
+    * interpolation
     """
     path = ReloadTextureProperty()
     is_grayscale = ReloadTextureProperty()
