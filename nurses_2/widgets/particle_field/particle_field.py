@@ -45,6 +45,12 @@ class ParticleField(Widget):
 
         super().add_widget(widget)
 
+    def add_particle(self, particle):
+        """
+        Alias for `add_widget`.
+        """
+        self.add_widget(particle)
+
     def walk(self):
         yield self
         yield from self.children
