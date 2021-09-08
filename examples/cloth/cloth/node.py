@@ -1,18 +1,25 @@
 class Node:
-    def __init__(self, position, *, is_moving=True):
-        self.position = self._previous_position = position
+    def __init__(self, position: complex, *, mass=1.0, is_anchored=False):
+        self._position = self._previous_position = position
         self.velocity = self.acceleration = 0j
-        self.is_moving = is_moving
+        self.mass = mass
+        self.is_anchored = is_anchored
 
-    def step(self):
-        self._previous_position = self.position
-        self.velocity += self.acceleration
-        self.position += self.velocity
+    @property
+    def position(self):
+        return self._position
 
-    def update_velocity(self):
-        self.velocity = self.position - self._previous_position
+    @position.setter
+    def position(self, value):
+        if not self.is_anchored:
+            self._previous_position = self._position
+            self._position = value
+
+    def step(self, dt):
+        if not self.is_anchored:
+            self.velocity += self.acceleration / self.mass * dt
+            self.position += self.velocity * dt
+
+    def update_velocity(self, dt):
+        self.velocity = (self.position - self._previous_position) / dt
         self.acceleration = 0j
-
-    def move(self):
-        if self.is_moving:
-            self.position += self.velocity
