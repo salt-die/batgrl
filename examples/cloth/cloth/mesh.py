@@ -28,12 +28,6 @@ class Mesh:
                     b = nodes[y][x + 1]
                     links.append(Link(a, b))
 
-            applyGravity();
-            applyAirFriction();
-            updatePositions(sub_step_dt);
-            solveConstraints();
-            updateDerivatives(sub_step_dt);
-
         self.nodes = [node for node in row for row in nodes]  # flatten
         self.links = links
 
