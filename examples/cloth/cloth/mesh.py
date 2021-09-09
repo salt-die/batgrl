@@ -1,9 +1,6 @@
 from .node import Node
 from .link import Link
 
-GRAVITY = 0 + 1500j
-FRICTION = .5
-
 
 class Mesh:
     def __init__(self, height, width):
@@ -28,23 +25,15 @@ class Mesh:
                     b = nodes[y][x + 1]
                     links.append(Link(a, b))
 
+        for node in nodes[0]:
+            node.is_anchored = True
+
         self.nodes = [node for node in row for row in nodes]  # flatten
         self.links = links
 
-    def step(self, dt):
-        for node in self.nodes:
-            node.acceleration -= node.velocity * FRICTION
-            node.acceleration += GRAVITY * node.mass
-
-            node.step(dt)
-            node.update_velocity(dt)
-
-        broken_links = False
+    def step(self):
         for link in self.links:
             link.step()
 
-            if link.is_broken:
-                broken_links = True
-
-        if broken_links:
-            self.links = [link for link in self.links if not link.is_broken]
+        for node in self.nodes:
+            node.step()
