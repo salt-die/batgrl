@@ -45,10 +45,10 @@ class Cloth(GrabbableBehavior, Widget):
         mesh.step()
 
         for link in mesh.links:
-            a_pos = scale * link.a.position
+            a_pos = scale * link.a.coords
             ay, ax = int(a_pos.real), int(a_pos.imag)
 
-            b_pos = scale * link.b.position
+            b_pos = scale * link.b.coords
             by, bx = int(b_pos.real), int(b_pos.imag)
 
             cv2.line(texture, (ax, ay), (bx, by), color)
@@ -69,5 +69,5 @@ class Cloth(GrabbableBehavior, Widget):
         mouse_pos = complex(*self.absolute_to_relative_coords(mouse_event.position))
 
         for node in self.mesh.nodes:
-            force_direction = self.scale * node.position - mouse_pos
-            node.velocity += .001 * force_direction / abs(force_direction)**2
+            force_direction = self.scale * node.coords - mouse_pos
+            node.velocity += .001 * force_direction / abs(force_direction)
