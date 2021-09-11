@@ -81,4 +81,4 @@ class Cloth(GrabbableBehavior, Widget):
             magnitude = abs(force_direction)
             if magnitude:
                 force_normal = force_direction / magnitude
-                node.acceleration += .01 * force_normal
+                node.acceleration -= .01 * force_normal
