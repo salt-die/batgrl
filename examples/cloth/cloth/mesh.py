@@ -1,16 +1,20 @@
+import numpy as np
+
 from .node import Node
 from .link import Link
 
 
 class Mesh:
-    def __init__(self, size):
+    def __init__(self, size, *, nanchors=None):
         height, width = size
 
+        # Create a grid of nodes.
         nodes = [
             [Node(position=complex(y, x)) for x in range(width)]
             for y in range(height)
         ]
 
+        # Link adjacent nodes.
         links = [ ]
         for y in range(height):
             for x in range(width):
@@ -24,11 +28,14 @@ class Mesh:
                     b = nodes[y][x + 1]
                     links.append(Link(a, b))
 
-        # nodes[0][0].is_anchored = nodes[0][-1].is_anchored = True
-        # nodes[0][width // 3].is_anchored = nodes[0][2 * width // 3].is_anchored = True
-
-        for node in nodes[0]:
-            node.is_anchored = True
+        if nanchors is None:  # Anchor entire top row.
+            for node in nodes[0]:
+                node.is_anchored = True
+        elif nanchors == 1:  # Anchor midpoint of top row.
+            nodes[0][width // 2].is_anchored = True
+        else:
+            for i in np.linspace(0, width - 1, nanchors).astype(int):
+                nodes[0][i].is_anchored = True
 
         self.nodes = [node for row in nodes for node in row]  # flatten
         self.links = links

@@ -14,7 +14,7 @@ class Cloth(GrabbableBehavior, Widget):
     def __init__(self, *args, mesh_size: Size, scale=5, default_char="▀", **kwargs):
         super().__init__(*args, default_char=default_char, **kwargs)
 
-        self.mesh = Mesh(mesh_size)
+        self.mesh = Mesh(mesh_size, nanchors=5)
         self.scale = scale
 
         self.resize(self.size)  # Creates empty texture where links are drawn.
