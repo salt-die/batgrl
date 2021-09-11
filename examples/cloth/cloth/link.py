@@ -2,11 +2,10 @@ from .node import Node
 
 
 class Link:
-    def __init__(self, a: Node, b: Node, *, stiffness=.3, damping=.05):
+    def __init__(self, a: Node, b: Node, *, stiffness=.3):
         self.a = a
         self.b = b
         self.stiffness = stiffness
-        self.damping = damping
 
         self.rest_length = abs(a.position - b.position)
 
@@ -16,19 +15,13 @@ class Link:
 
         direction = b.position - a.position
         length = abs(direction)
+        length_dif = length - self.rest_length
 
-        if length < self.rest_length:
+        if length_dif < 0:
             return
 
         force_normal = direction / length
-        velocity_dif = b.velocity - a.velocity
-
-        damping = (
-            velocity_dif.real * force_normal.real
-            + velocity_dif.imag * force_normal.imag
-        ) * self.damping
-
-        momentum = force_normal * ((length - self.rest_length) * self.stiffness + damping)
+        momentum = force_normal * length_dif * self.stiffness
 
         a.acceleration += momentum
         b.acceleration -= momentum
