@@ -14,16 +14,10 @@ class Cloth(GrabbableBehavior, Widget):
     def __init__(self, *args, mesh_size: Size, scale=5, default_char="▀", **kwargs):
         super().__init__(*args, default_char=default_char, **kwargs)
 
-        self.texture = np.full(
-            (2 * self.height, self.width, 3),
-            self.default_color_pair[3:],
-            dtype=np.uint8,
-        )
         self.mesh = Mesh(mesh_size)
         self.scale = scale
 
-        # Center the nodes horizontally in the widget with following offset:
-        self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * scale) / 2 * 1j
+        self.resize(self.size)  # Creates empty texture where links are drawn.
 
     def resize(self, size):
         super().resize(size)
@@ -33,6 +27,7 @@ class Cloth(GrabbableBehavior, Widget):
             dtype=np.uint8,
         )
 
+        # Center the nodes horizontally in the widget with following offset:
         self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j
 
     def step(self):
