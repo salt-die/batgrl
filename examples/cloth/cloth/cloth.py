@@ -76,7 +76,7 @@ class Cloth(Widget):
         for node in self.mesh.nodes:
             force_direction = scale * node.position + h_offset - mouse_pos
             magnitude = abs(force_direction)
-            if magnitude:
+            if magnitude != 0:
                 force_normal = force_direction / magnitude
                 node.acceleration -= .01 * force_normal
 
