@@ -3,6 +3,7 @@ import asyncio
 import cv2
 import numpy as np
 
+from nurses_2.colors import BLUE, RED, gradient
 from nurses_2.data_structures import Size
 from nurses_2.io import MouseButton
 from nurses_2.widgets import Widget
@@ -13,6 +14,9 @@ from .mesh import Mesh
 class Cloth(Widget):
     def __init__(self, *args, mesh_size: Size, scale=5, default_char="▀", **kwargs):
         super().__init__(*args, default_char=default_char, **kwargs)
+
+        pos_gradient = gradient(self.default_color_pair, RED, 10)
+        self.neg_gradient = gradient(self.default_color_pair, BLUE, 10)
 
         self.mesh = Mesh(mesh_size, nanchors=5)
         self.scale = scale
@@ -50,6 +54,9 @@ class Cloth(Widget):
 
             b_pos = scale * link.b.position + h_offset
             by, bx = int(b_pos.real), int(b_pos.imag)
+
+            if link.stretch < 0:
+
 
             cv2.line(texture, (ax, ay), (bx, by), color)
 

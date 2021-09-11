@@ -8,7 +8,7 @@ from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")
-GRADIENT = gradient(9, (*DARK_PURPLE, *BLACK), (*LIGHT_PURPLE, *BLACK))
+GRADIENT = gradient((*DARK_PURPLE, *BLACK), (*LIGHT_PURPLE, *BLACK), 9)
 LINE_GLOW_DURATION = .09
 
 ONE = """

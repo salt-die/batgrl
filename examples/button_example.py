@@ -12,8 +12,8 @@ WHITE_ON_YELLOW = color_pair(WHITE, YELLOW)
 
 class MyButton(ButtonBehavior, Widget):
     GRADIENT = (
-        gradient(10, WHITE_ON_YELLOW, WHITE_ON_BLUE)
-        + gradient(10, WHITE_ON_BLUE, WHITE_ON_YELLOW)
+        gradient(WHITE_ON_YELLOW, WHITE_ON_BLUE, 10)
+        + gradient(WHITE_ON_BLUE, WHITE_ON_YELLOW, 10)
     )
 
     def __init__(self, info_display, **kwargs):

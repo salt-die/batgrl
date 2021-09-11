@@ -17,7 +17,7 @@ PURPLE = Color(87, 10, 175)
 ORANGE_ON_GREY = color_pair(ORANGE, GREY)
 TEAL_ON_PURPLE = color_pair(TEAL, PURPLE)
 
-ORANGE_TO_TEAL = gradient(ncolors=10, start_pair=ORANGE_ON_GREY, end_pair=TEAL_ON_PURPLE)
+ORANGE_TO_TEAL = gradient(start=ORANGE_ON_GREY, end=TEAL_ON_PURPLE, ncolors=10)
 WHITE_ON_RAINBOW = background_rainbow(ncolors=10)
 
 

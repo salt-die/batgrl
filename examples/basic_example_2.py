@@ -15,8 +15,8 @@ WHITE_ON_RED = color_pair(WHITE, RED)
 WHITE_ON_GREEN = color_pair(WHITE, GREEN)
 WHITE_ON_BLUE = color_pair(WHITE, BLUE)
 
-LEFT_GRADIENT = gradient(BIG_WIDGET_SIZE.rows, WHITE_ON_RED, WHITE_ON_GREEN)
-RIGHT_GRADIENT = gradient(BIG_WIDGET_SIZE.rows, WHITE_ON_GREEN, WHITE_ON_BLUE)
+LEFT_GRADIENT = gradient(WHITE_ON_RED, WHITE_ON_GREEN, BIG_WIDGET_SIZE.rows)
+RIGHT_GRADIENT = gradient(WHITE_ON_GREEN, WHITE_ON_BLUE, BIG_WIDGET_SIZE.rows)
 
 
 class AutoPositionScrollView(AutoPositionBehavior, ScrollView):
@@ -29,7 +29,7 @@ class MyApp(App):
 
         for y in range(BIG_WIDGET_SIZE.rows):
             big_widget.add_text(" ".join(f"({y:<2}, {x:<2})" for x in range(N)), row=y)
-            big_widget.colors[y] = gradient(BIG_WIDGET_SIZE.columns, LEFT_GRADIENT[y], RIGHT_GRADIENT[y])
+            big_widget.colors[y] = gradient(LEFT_GRADIENT[y], RIGHT_GRADIENT[y], BIG_WIDGET_SIZE.columns)
 
         scroll_view = AutoPositionScrollView(size=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
         scroll_view.add_widget(big_widget)

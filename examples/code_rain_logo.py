@@ -59,11 +59,11 @@ GREEN_ON_BLACK = color_pair(GREEN, BLACK)
 
 BLUE = Color(48, 105, 152)
 BLUE_ON_BLACK = color_pair(BLUE, BLACK)
-WHITE_TO_BLUE = gradient(25, WHITE_ON_BLACK, BLUE_ON_BLACK)
+WHITE_TO_BLUE = gradient(WHITE_ON_BLACK, BLUE_ON_BLACK, 25)
 
 YELLOW = Color(255, 212, 59)
 YELLOW_ON_BLACK = color_pair(YELLOW, BLACK)
-WHITE_TO_YELLOW = gradient(25, WHITE_ON_BLACK, YELLOW_ON_BLACK)
+WHITE_TO_YELLOW = gradient(WHITE_ON_BLACK, YELLOW_ON_BLACK, 25)
 
 def generate_delays():
     rng = default_rng()
@@ -76,8 +76,8 @@ def generate_delays():
 
 class CodeRain(Widget):
     GRADIENT = (
-        gradient(CODE_RAIN_HEIGHT // 2, BLACK_ON_BLACK, GREEN_ON_BLACK)
-        + gradient(CODE_RAIN_HEIGHT // 2, GREEN_ON_BLACK, WHITE_ON_BLACK)
+        gradient(BLACK_ON_BLACK, GREEN_ON_BLACK, CODE_RAIN_HEIGHT // 2)
+        + gradient(GREEN_ON_BLACK, WHITE_ON_BLACK, CODE_RAIN_HEIGHT // 2)
     )
 
     drops_falling= 0
