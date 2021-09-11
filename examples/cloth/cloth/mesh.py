@@ -6,13 +6,13 @@ GRAVITY = 1500 + 0j
 
 class Mesh:
     def __init__(self, height, width):
-        nodes = [ ]
-        for y in range(height):
-            row = [ ]
-            for x in range(width):
-                row.append(Node(complex(y, x)))
+        self.height = height
+        self.width = width
 
-            nodes.append(row)
+        nodes = [
+            [Node(complex(y, x)) for x in range(width)]
+            for y in range(height)
+        ]
 
         links = [ ]
         for y in range(height):
@@ -30,7 +30,7 @@ class Mesh:
         for node in nodes[0]:
             node.is_anchored = True
 
-        self.nodes = [node for node in row for row in nodes]  # flatten
+        self.nodes = [node for row in nodes for node in row]  # flatten
         self.links = links
 
     def step(self):

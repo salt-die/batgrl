@@ -19,5 +19,4 @@ class ClothApp(App):
         await cloth.step_forever()
 
 
-
 ClothApp().run()

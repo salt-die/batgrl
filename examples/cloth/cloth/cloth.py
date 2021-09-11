@@ -23,6 +23,9 @@ class Cloth(GrabbableBehavior, Widget):
         self.mesh = Mesh(*mesh_size)
         self.scale = scale
 
+        # Center the nodes horizontally in the widget with following offset:
+        self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * scale) / 2 * 1j
+
     def resize(self, size):
         super().resize(size)
         self.texture = np.full(
@@ -30,6 +33,8 @@ class Cloth(GrabbableBehavior, Widget):
             self.default_color_pair[3:],
             dtype=np.uint8,
         )
+
+        self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j
 
     def step(self):
         """
@@ -41,14 +46,15 @@ class Cloth(GrabbableBehavior, Widget):
         mesh = self.mesh
         color = self.default_color_pair[:3]
         scale = self.scale
+        h_offset = self.h_offset
 
         mesh.step()
 
         for link in mesh.links:
-            a_pos = scale * link.a.coords
+            a_pos = scale * link.a.position + h_offset
             ay, ax = int(a_pos.real), int(a_pos.imag)
 
-            b_pos = scale * link.b.coords
+            b_pos = scale * link.b.position + h_offset
             by, bx = int(b_pos.real), int(b_pos.imag)
 
             cv2.line(texture, (ax, ay), (bx, by), color)
@@ -69,5 +75,8 @@ class Cloth(GrabbableBehavior, Widget):
         mouse_pos = complex(*self.absolute_to_relative_coords(mouse_event.position))
 
         for node in self.mesh.nodes:
-            force_direction = self.scale * node.coords - mouse_pos
-            node.velocity += .001 * force_direction / abs(force_direction)
+            force_direction = self.scale * node.position - mouse_pos
+            magnitude = abs(force_direction)
+            if magnitude:
+                force_normal = force_direction / abs(force_direction)
+                node.acceleration += .01 * force_normal
