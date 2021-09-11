@@ -17,7 +17,7 @@ class Link:
         self.stretch = stretch = (length - self.rest_length) / length
 
         if stretch > 0:
-            # Typical calculation is `direction * sr / (a.mass + b.mass)`,
+            # Typical calculation is `direction * stretch / (a.mass + b.mass)`,
             # but nodes have implicit mass of 1.
             momentum = direction * stretch * .5
 
