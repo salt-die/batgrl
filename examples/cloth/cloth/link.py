@@ -14,16 +14,12 @@ class Link:
 
         direction = b.position - a.position
         length = abs(direction)
-        length_dif = length - self.rest_length
+        self.stretch = stretch = (length - self.rest_length) / length
 
-        if length_dif < 0:
-            return
+        if stretch > 0:
+            # Typical calculation is `direction * sr / (a.mass + b.mass)`,
+            # but nodes have implicit mass of 1.
+            momentum = direction * stretch * .5
 
-        force_normal = direction / length
-
-        # Typical calculation is `force_normal * length_dif / (a.mass + b.mass)`, but we've implicitly given
-        # all nodes a mass of 1.
-        momentum = force_normal * length_dif * .5
-
-        a.acceleration += momentum
-        b.acceleration -= momentum
+            a.acceleration += momentum
+            b.acceleration -= momentum
