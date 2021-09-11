@@ -2,10 +2,9 @@ from .node import Node
 
 
 class Link:
-    def __init__(self, a: Node, b: Node, *, stiffness=.3):
+    def __init__(self, a: Node, b: Node):
         self.a = a
         self.b = b
-        self.stiffness = stiffness
 
         self.rest_length = abs(a.position - b.position)
 
@@ -21,7 +20,10 @@ class Link:
             return
 
         force_normal = direction / length
-        momentum = force_normal * length_dif * self.stiffness
+
+        # Typical calculation is `force_normal * length_dif / (a.mass + b.mass)`, but we've implicitly given
+        # all nodes a mass of 1.
+        momentum = force_normal * length_dif * .5
 
         a.acceleration += momentum
         b.acceleration -= momentum
