@@ -1,8 +1,6 @@
 from .node import Node
 from .link import Link
 
-GRAVITY = 1500 + 0j
-
 
 class Mesh:
     def __init__(self, size):
