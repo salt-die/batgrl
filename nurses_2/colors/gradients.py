@@ -22,9 +22,7 @@ def rainbow_gradient(n):
     THETA = TAU / n
 
     for i in range(n):
-        yield Color(
-            *(np.sin(THETA * i + OFFSETS) * 127 + 128).astype(np.uint8)
-        )
+        yield Color(*(int(i) for i in (np.sin(THETA * i + OFFSETS) * 127 + 128)))
 
 def foreground_rainbow(ncolors=20, bg_color: Color=BLACK):
     """
