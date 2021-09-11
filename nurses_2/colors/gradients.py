@@ -44,28 +44,27 @@ def background_rainbow(ncolors=20, fg_color: Color=WHITE):
         for bg_color in rainbow_gradient(ncolors)
     ]
 
-def lerp(start_pair: ColorPair, end_pair: ColorPair, proportion):
+def lerp(start, end, proportion):
     """
-    Linear interpolation between `start_pair` and `end_pair`.
+    Linear interpolation between `start` and `end`.
     """
-    for a, b in zip(start_pair, end_pair):
+    for a, b in zip(start, end):
         yield round((1 - proportion) * a + proportion * b)
 
-def gradient(ncolors, start_pair: ColorPair, end_pair: ColorPair):
+def gradient(start, end, ncolors):
     """
-    Return a gradient of `ColorPair`s from `start_pair` to `end_pair`
-    with `ncolors` (> 1) colors.
+    Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
     """
     assert ncolors > 1, f"not enough colors ({ncolors=})"
 
-    grad = [ start_pair ]
+    grad = [ start ]
 
     for i in range(ncolors - 2):
         proportion = (i + 1) / (ncolors - 1)
         grad.append(
-            ColorPair(*lerp(start_pair, end_pair, proportion))
+            tuple(lerp(start, end, proportion))
         )
 
-    grad.append(end_pair)
+    grad.append(end)
 
     return grad
