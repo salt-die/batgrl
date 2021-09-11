@@ -1,5 +1,4 @@
 import asyncio
-from time import monotonic
 
 import cv2
 import numpy as np
