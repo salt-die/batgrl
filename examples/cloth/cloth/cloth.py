@@ -20,7 +20,7 @@ class Cloth(GrabbableBehavior, Widget):
             self.default_color_pair[3:],
             dtype=np.uint8,
         )
-        self.mesh = Mesh(*mesh_size)
+        self.mesh = Mesh(mesh_size)
         self.scale = scale
 
         # Center the nodes horizontally in the widget with following offset:

@@ -5,9 +5,8 @@ GRAVITY = 1500 + 0j
 
 
 class Mesh:
-    def __init__(self, height, width):
-        self.height = height
-        self.width = width
+    def __init__(self, size):
+        height, width = size
 
         nodes = [
             [Node(complex(y, x)) for x in range(width)]
