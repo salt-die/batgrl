@@ -73,9 +73,11 @@ class Cloth(GrabbableBehavior, Widget):
 
     def grab_update(self, mouse_event):
         mouse_pos = complex(*self.absolute_to_relative_coords(mouse_event.position))
+        scale = self.scale
+        h_offset = self.h_offset
 
         for node in self.mesh.nodes:
-            force_direction = self.scale * node.position - mouse_pos
+            force_direction = scale * node.position + h_offset - mouse_pos
             magnitude = abs(force_direction)
             if magnitude:
                 force_normal = force_direction / abs(force_direction)
