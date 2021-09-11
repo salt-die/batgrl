@@ -7,7 +7,7 @@ class Mesh:
         height, width = size
 
         nodes = [
-            [Node(complex(y, x)) for x in range(width)]
+            [Node(position=complex(y, x)) for x in range(width)]
             for y in range(height)
         ]
 
@@ -23,6 +23,9 @@ class Mesh:
                 if x != width - 1:  # attach right
                     b = nodes[y][x + 1]
                     links.append(Link(a, b))
+
+        # nodes[0][0].is_anchored = nodes[0][-1].is_anchored = True
+        # nodes[0][width // 3].is_anchored = nodes[0][2 * width // 3].is_anchored = True
 
         for node in nodes[0]:
             node.is_anchored = True
