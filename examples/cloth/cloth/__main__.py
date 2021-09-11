@@ -3,7 +3,7 @@ from nurses_2.widgets.behaviors import AutoSizeBehavior
 
 from .cloth import Cloth
 
-MESH_SIZE = 10, 20
+MESH_SIZE = 11, 21
 
 
 class AutoSizeCloth(AutoSizeBehavior, Cloth):
