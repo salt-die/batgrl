@@ -33,7 +33,7 @@ class Mesh:
                 node.is_anchored = True
         elif nanchors == 1:  # Anchor midpoint of top row.
             nodes[0][width // 2].is_anchored = True
-        else:
+        else:  # Evenly spaced nanchors anchors on top row.
             for i in np.linspace(0, width - 1, nanchors).astype(int):
                 nodes[0][i].is_anchored = True
 
