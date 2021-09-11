@@ -4,13 +4,13 @@ import cv2
 import numpy as np
 
 from nurses_2.data_structures import Size
+from nurses_2.io import MouseButton
 from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
 
 from .mesh import Mesh
 
 
-class Cloth(GrabbableBehavior, Widget):
+class Cloth(Widget):
     def __init__(self, *args, mesh_size: Size, scale=5, default_char="▀", **kwargs):
         super().__init__(*args, default_char=default_char, **kwargs)
 
@@ -65,7 +65,10 @@ class Cloth(GrabbableBehavior, Widget):
             except asyncio.CancelledError:
                 return
 
-    def grab_update(self, mouse_event):
+    def on_click(self, mouse_event):
+        if mouse_event.button != MouseButton.LEFT:
+            return False
+
         mouse_pos = complex(*self.absolute_to_relative_coords(mouse_event.position))
         scale = self.scale
         h_offset = self.h_offset
@@ -76,3 +79,5 @@ class Cloth(GrabbableBehavior, Widget):
             if magnitude:
                 force_normal = force_direction / magnitude
                 node.acceleration -= .01 * force_normal
+
+        return True
