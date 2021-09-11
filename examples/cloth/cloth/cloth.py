@@ -80,5 +80,5 @@ class Cloth(GrabbableBehavior, Widget):
             force_direction = scale * node.position + h_offset - mouse_pos
             magnitude = abs(force_direction)
             if magnitude:
-                force_normal = force_direction / abs(force_direction)
+                force_normal = force_direction / magnitude
                 node.acceleration += .01 * force_normal
