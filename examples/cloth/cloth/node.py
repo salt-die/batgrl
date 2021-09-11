@@ -1,5 +1,5 @@
-FRICTION = .99
-GRAVITY = .01 + 0j
+FRICTION = .97  # Technically, friction would be `1 - FRICTION`. In other words, decrease this value for *more* friction.
+GRAVITY = .015 + 0j
 
 
 class Node:
