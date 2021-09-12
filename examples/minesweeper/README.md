@@ -1,3 +1,3 @@
 # Minesweeper
 
-Requires scipy to run (`python -m minesweeper`).
+Requires `scipy`. `python -m minesweeper` to run.

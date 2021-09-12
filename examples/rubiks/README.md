@@ -2,6 +2,8 @@
 
 Shameless port of [Robust Reindeer's Codejam 8 Project](https://github.com/bjoseru/pdcj8-robust-reindeer) to `nurses_2`.
 
+`python -m rubiks` to run.
+
 Controls
 --------
 `r` to rotate selected plane counter-clockwise
