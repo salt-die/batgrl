@@ -14,7 +14,7 @@ class Link:
 
         direction = b.position - a.position
         length = abs(direction)
-        self.stretch = stretch = (length - self.rest_length) / length
+        stretch = (length - self.rest_length) / length
 
         if stretch > 0:
             # Typical calculation is `direction * stretch / (a.mass + b.mass)`,
