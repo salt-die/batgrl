@@ -253,8 +253,6 @@ class RayCaster(Widget):
         steps = self._steps                   #
         sides = self._sides                   #
         multiply = np.multiply                #
-        divide = np.true_divide               #
-        errstate = np.errstate                #
         cast_ray = self.cast_ray              #
         #######################################
 
@@ -262,8 +260,8 @@ class RayCaster(Widget):
         ############################################################
         np.dot(self._ray_angles, camera.plane, out=rotated_angles) #
                                                                    #
-        with errstate(divide="ignore"):                            #
-            divide(1.0, rotated_angles, out=deltas)                #
+        with np.errstate(divide="ignore"):                         #
+            np.true_divide(1.0, rotated_angles, out=deltas)        #
         np.absolute(deltas, out=deltas)                            #
                                                                    #
         np.sign(rotated_angles, out=steps, casting="unsafe")       #
