@@ -53,8 +53,7 @@ class Cloth(Widget):
 
             cv2.line(texture, (ax, ay), (bx, by), color)
 
-        self.colors[..., :3] = texture[::2]
-        self.colors[..., 3:] = texture[1::2]
+        np.concatenate((texture[::2], texture[1::2]), axis=-1, out=self.colors)
 
     async def step_forever(self):
         while True:
