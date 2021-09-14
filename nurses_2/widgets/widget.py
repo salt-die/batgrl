@@ -253,13 +253,12 @@ class Widget:
         self_top, self_left, self_bottom, self_right, _, _ = self.absolute_rect
         other_top, other_left, other_bottom, other_right, _ , _ = widget.absolute_rect
 
-        if self_top >= other_bottom or other_top >= self_bottom:
-            return False
-
-        if self_left >= other_right or other_left >= self_right:
-            return False
-
-        return True
+        return not (
+            self_top >= other_bottom
+            or other_top >= self_bottom
+            or self_left >= other_right
+            or other_left >= self_right
+        )
 
     def add_widget(self, widget):
         """
