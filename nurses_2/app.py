@@ -90,6 +90,7 @@ class App(ABC):
             )
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click
+            dispatch_paste = root.dispatch_paste
 
             loop = asyncio.get_event_loop()
             flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
@@ -105,7 +106,7 @@ class App(ABC):
                     if isinstance(key, MouseEvent):
                         dispatch_click(key)
                     elif isinstance(key, PasteEvent):
-                        pass  # TODO: Add a Widget method to handle pastes.
+                        dispatch_paste(key)
                     else:
                         dispatch_press(key)
 
@@ -124,7 +125,7 @@ class App(ABC):
                     if isinstance(key, MouseEvent):
                         dispatch_click(key)
                     elif isinstance(key, PasteEvent):
-                        pass  # TODO: Add a Widget method to handle pastes.
+                        dispatch_paste(key)
                     else:
                         dispatch_press(key)
 

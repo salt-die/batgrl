@@ -354,6 +354,15 @@ class Widget:
             or self.on_click(mouse_event)
         )
 
+    def dispatch_paste(self, paste_event):
+        """
+        Dispatch paste event until handled.
+        """
+        return (
+            any(widget.dispatch_paste(paste_event) for widget in reversed(self.children) if widget.is_enabled)
+            or self.on_paste(paste_event)
+        )
+
     def on_press(self, key: Key):
         """
         Handle key press. (Handled key presses should return True else False or None).
@@ -364,12 +373,16 @@ class Widget:
         Handle mouse event. (Handled mouse events should return True else False or None).
         """
 
+    def on_paste(self, paste_event):
+        """
+        Handle paste event.
+        """
+
 
 def overlapping_region(rect: Rect, child: Widget):
     """
     Find the overlapping region of a piece of screen and a child widget's canvas.
     """
-    # Warning! This is a "tight" part of rendering, short variable names ahead.
     t, l, _, _, h, w = rect  # top, left, height, width
 
     ct = child.top - t

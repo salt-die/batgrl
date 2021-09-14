@@ -153,3 +153,9 @@ class _Root(Widget):
         Dispatch mouse event to descendents until handled.
         """
         any(widget.dispatch_click(mouse_event) for widget in reversed(self.children) if widget.is_enabled)
+
+    def dispatch_paste(self, paste_event):
+        """
+        Dispatch paste event to descendents until handled.
+        """
+        any(widget.dispatch_paste(paste_event) for widget in reversed(self.children) if widget.is_enabled)
