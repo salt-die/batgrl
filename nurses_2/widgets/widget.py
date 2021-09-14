@@ -202,7 +202,6 @@ class Widget:
         render method will likely need to be implemented.
         """
         canvas = self.canvas
-        edge = self.width - 1
         default_char = self.default_char
 
         char_widths = character_width(self.canvas)
@@ -211,7 +210,10 @@ class Widget:
 
         where_fullwidth = np.argwhere(char_widths == 2)
         for y, x in where_fullwidth:
-            if x != edge and canvas[y, x + 1] != default_char:
+            if x == self.width - 1:
+                raise ValueError("can't normalize, full-width character on edge")
+
+            if canvas[y, x + 1] != default_char:
                 raise ValueError("can't normalize, full-width character followed by non-default char")
 
             canvas[y, x + 1] = chr(0x200B)  # Zero-width space
