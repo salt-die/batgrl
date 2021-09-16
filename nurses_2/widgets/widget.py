@@ -316,8 +316,8 @@ class Widget:
         Paint region given by rect into canvas_view and colors_view.
         """
         t, l, b, r, _, _ = rect
-
         index_rect = slice(t, b), slice(l, r)
+
         if self.is_transparent:
             source = self.canvas[index_rect]
             visible = source != " "  # " " isn't painted if transparent.
