@@ -131,7 +131,7 @@ class Image(Widget):
             resized_texture_alpha = cv2.resize(
                 self.texture_alpha,
                 tex_size,
-                interpolation=self.interpolation
+                interpolation=self.interpolation,
             )
             alpha_as_float = resized_texture_alpha / 255 * self.alpha
             self.alpha_channels = np.dstack((alpha_as_float[::2], alpha_as_float[1::2]))[..., None]
