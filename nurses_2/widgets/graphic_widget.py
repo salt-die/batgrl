@@ -57,7 +57,7 @@ class GraphicWidget(Widget):
         Resize widget.
         """
         h, w = size
-        cv2.resize(
+        self.texture = cv2.resize(
             self.texture,
             (w, 2 * h),
             interpolation=self.interpolation,
@@ -76,10 +76,23 @@ class GraphicWidget(Widget):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
-        t, l, b, r, h, w = rect
+        t, l, b, r, _, _ = rect
 
-        index_rect = slice(t, b), slice(l, r)
+        canvas_view[:] = self.default_char
 
-        buffer = np.zeros((2 * h, w, 3), dtype=np.float16)
+        texture = self.texture
+        even_rows = texture[2 * t: 2 * b: 2, l: r]
+        odd_rows = texture[2 * t + 1: 2 * b: 2, l: r]
 
-        raise NotImplementedError
+        foreground = colors_view[..., :3]
+        background = colors_view[..., 3:]
+
+        # RGBA on rgb == rgb + (RGB - rgb) * A
+        even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=np.float16)
+        odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=np.float16)
+
+        np.multiply(even_buffer, even_rows[..., 3], out=even_buffer)
+        np.multiply(odd_buffer, odd_rows[..., 3], out=odd_buffer)
+
+        np.add(even_buffer, foreground, out=foreground, casting="unsafe")
+        np.add(odd_buffer, background, out=background, casting="unsafe")
