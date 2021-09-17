@@ -123,6 +123,14 @@ class Widget:
         return self.left + self.width
 
     @property
+    def default_fg_color(self):
+        return self.default_color_pair.fg_color
+
+    @property
+    def default_bg_color(self):
+        return self.default_color_pair.bg_color
+
+    @property
     def rect(self):
         """
         `Rect` of bounding box relative to parent.
