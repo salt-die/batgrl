@@ -18,7 +18,12 @@ class Interpolation(IntEnum):
 
 class GraphicWidget(Widget):
     """
-    Base for graphical widgets.
+    Base for graphic widgets.
+
+    Graphic widgets are widgets that are rendered entirely with the upper half block character, "▀".
+    Graphic widgets' color information is stored in a (2 * height, width, 4)-shaped array, `texture`.
+    `texture` can be treated as a uint8 RGB image texture with an alpha channel. Unlike its parent Widget,
+    GraphicWidget does not have `canvas` or `colors` attributes.
     """
     def __init__(
         self,
