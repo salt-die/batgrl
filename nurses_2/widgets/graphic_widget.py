@@ -32,25 +32,25 @@ class GraphicWidget(Widget):
         default_color_pair=BLACK_ON_BLACK,
         interpolation=Interpolation.LINEAR,
     ):
-        self._size = size
+        self._size = h, w = size
         self.pos = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
 
-        self.parent = None
-        self.children = [ ]
-
-        self.texture = np.full(
-            (2 * self.height, self.width, 4),
-            (*default_color_pair[:3], 1),
-            dtype=np.uint8,
-        )
-
         self.default_char = default_char
         self.default_color_pair = default_color_pair
 
         self.interpolation = interpolation
+
+        self.parent = None
+        self.children = [ ]
+
+        self.texture = np.full(
+            (2 * h, w, 4),
+            (self.default_bg_color, 255),
+            dtype=np.uint8,
+        )
 
     def resize(self, size: Size):
         """
@@ -92,7 +92,10 @@ class GraphicWidget(Widget):
         odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=np.float16)
 
         np.multiply(even_buffer, even_rows[..., 3], out=even_buffer)
+        np.divide(even_buffer, 255, out=even_buffer)
+
         np.multiply(odd_buffer, odd_rows[..., 3], out=odd_buffer)
+        np.divide(odd_buffer, 255, out=odd_buffer)
 
         np.add(even_buffer, foreground, out=foreground, casting="unsafe")
         np.add(odd_buffer, background, out=background, casting="unsafe")
