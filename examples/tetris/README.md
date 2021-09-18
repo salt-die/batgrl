@@ -1,3 +1,6 @@
-# Tetris for nurses_2
+# Tetris
 
-`python -m tetris` to run.
+A Tetris clone made with `nurses_2`. `python -m tetris` to run.
+
+# Preview
+![Tetris demonstration](../../preview_images/tetris_demonstration.gif)

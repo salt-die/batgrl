@@ -1,8 +1,6 @@
 # 3D Rubik's Cube.
 
-Shameless port of [Robust Reindeer's Codejam 8 Project](https://github.com/bjoseru/pdcj8-robust-reindeer) to `nurses_2`.
-
-`python -m rubiks` to run.
+Shameless port of [Robust Reindeer's Codejam 8 Project](https://github.com/bjoseru/pdcj8-robust-reindeer) to `nurses_2`. `python -m rubiks` to run.
 
 Controls
 --------
@@ -17,3 +15,6 @@ Controls
 `s` to scramble the cube
 
 Drag mouse to rotate entire cube.
+
+# Preview
+![Rubik's Cube Demonstration](../../preview_images/rubiks_demonstration.gif)
