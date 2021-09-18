@@ -5,7 +5,8 @@ import numpy as np
 
 from ..colors import BLACK_ON_BLACK
 from ..data_structures import Point, Size
-from .widget import Widget
+from ..utils import clamp
+from .widget import Widget, overlapping_region
 
 
 class Interpolation(IntEnum):
@@ -24,17 +25,28 @@ class GraphicWidget(Widget):
     Graphic widgets' color information is stored in a (2 * height, width, 4)-shaped array, `texture`.
     `texture` can be treated as a uint8 RGB image texture with an alpha channel. Unlike its parent Widget,
     GraphicWidget does not have `canvas` or `colors` attributes.
+
+    Parameters
+    ----------
+    is_transparent : bool, default: True
+        If False the underlying texture's alpha channel is ignored.
+    alpha : float, default: 1.0
+        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
+        value. (0 <= alpha <= 1.0)
+    interpolation : Interpolation, default: Interpolation.LINEAR
+        The interpolation used when resizing the GraphicWidget.
     """
     def __init__(
         self,
         size: Size=Size(10, 10),
         pos: Point=Point(0, 0),
         *,
-        is_transparent=False,
+        is_transparent=True,
         is_visible=True,
         is_enabled=True,
         default_char="▀",
         default_color_pair=BLACK_ON_BLACK,
+        alpha=1.0,
         interpolation=Interpolation.LINEAR,
     ):
         self._size = h, w = size
@@ -47,6 +59,7 @@ class GraphicWidget(Widget):
         self.default_color_pair = default_color_pair
 
         self.interpolation = interpolation
+        self.alpha = clamp(alpha, 0, 1.0)
 
         self.parent = None
         self.children = [ ]
@@ -85,6 +98,8 @@ class GraphicWidget(Widget):
 
         canvas_view[:] = self.default_char
 
+        alpha = self.alpha
+
         texture = self.texture
         even_rows = texture[2 * t: 2 * b: 2, l: r]
         odd_rows = texture[2 * t + 1: 2 * b: 2, l: r]
@@ -92,15 +107,28 @@ class GraphicWidget(Widget):
         foreground = colors_view[..., :3]
         background = colors_view[..., 3:]
 
-        # RGBA on rgb == rgb + (RGB - rgb) * A
-        even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=np.float16)
-        odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=np.float16)
+        if not self.is_transparent:
+            foreground[:] = even_rows
+            background[:] = odd_rows
+        else:
+            even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=np.float16)
+            odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=np.float16)
 
-        np.multiply(even_buffer, even_rows[..., 3], out=even_buffer)
-        np.divide(even_buffer, 255, out=even_buffer)
+            np.multiply(even_buffer, even_rows[..., 3], out=even_buffer)
+            np.multiply(even_buffer, alpha, out=even_buffer)
+            np.divide(even_buffer, 255, out=even_buffer)
 
-        np.multiply(odd_buffer, odd_rows[..., 3], out=odd_buffer)
-        np.divide(odd_buffer, 255, out=odd_buffer)
+            np.multiply(odd_buffer, odd_rows[..., 3], out=odd_buffer)
+            np.multiply(odd_buffer, alpha, out=odd_buffer)
+            np.divide(odd_buffer, 255, out=odd_buffer)
 
-        np.add(even_buffer, foreground, out=foreground, casting="unsafe")
-        np.add(odd_buffer, background, out=background, casting="unsafe")
+            np.add(even_buffer, foreground, out=foreground, casting="unsafe")
+            np.add(odd_buffer, background, out=background, casting="unsafe")
+
+        for child in self.children:
+            if not child.is_visible or not child.is_enabled:
+                continue
+
+            if region := overlapping_region(rect, child):
+                dest_slice, child_rect = region
+                child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
