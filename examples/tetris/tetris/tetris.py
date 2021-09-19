@@ -92,27 +92,27 @@ class Tetris(Image):
         self.is_paused = False
 
         # Setup HELD display
-        ##############################################
-        held_border = Widget(size=bsize, pos=(t, l))   #
+        ###############################################
+        held_border = Widget(size=bsize, pos=(t, l))  #
         held_border.add_text(f"{'HOLD':^{bsize[1]}}") #
-        held_space = Widget(**display_geometry)      #
-                                                     #
-        held_border.add_widget(held_space)           #
-        ##############################################
+        held_space = Widget(**display_geometry)       #
+                                                      #
+        held_border.add_widget(held_space)            #
+        ###############################################
 
         # Setup NEXT display
-        ##############################################
-        next_border = Widget(size=bsize, pos=(t, r))   #
+        ###############################################
+        next_border = Widget(size=bsize, pos=(t, r))  #
         next_border.add_text(f"{'NEXT':^{bsize[1]}}") #
-        next_space = Widget(**display_geometry)      #
-                                                     #
-        next_border.add_widget(next_space)           #
-        ##############################################
+        next_space = Widget(**display_geometry)       #
+                                                      #
+        next_border.add_widget(next_space)            #
+        ###############################################
 
         # Setup SCORE display
         #################################################
-        score_border = Widget(size=bsize, pos=(b, l))     #
-        score_border.add_text(f"{'SCORE':^{bsize[1]}}")  #
+        score_border = Widget(size=bsize, pos=(b, l))   #
+        score_border.add_text(f"{'SCORE':^{bsize[1]}}") #
         self.score_display = Widget(**display_geometry) #
                                                         #
         score_border.add_widget(self.score_display)     #
@@ -120,8 +120,8 @@ class Tetris(Image):
 
         # Setup LEVEL Display
         #################################################
-        level_border = Widget(size=bsize, pos=(b, r))     #
-        level_border.add_text(f"{'LEVEL':^{bsize[1]}}")  #
+        level_border = Widget(size=bsize, pos=(b, r))   #
+        level_border.add_text(f"{'LEVEL':^{bsize[1]}}") #
         self.level_display = Widget(**display_geometry) #
                                                         #
         level_border.add_widget(self.level_display)     #
