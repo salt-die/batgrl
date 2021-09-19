@@ -5,7 +5,7 @@ from random import randrange
 import numpy as np
 from numpy.linalg import norm
 
-from nurses_2.widgets import Widget
+from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
 
 from . import rotation
@@ -18,7 +18,7 @@ ROTATION_FRAME_DURATION = .08
 QUARTER_TURN = np.pi / 2
 
 
-class RubiksCube(GrabbableBehavior, Widget):
+class RubiksCube(GrabbableBehavior, GraphicWidget):
     """
     A 3-dimensional Rubik's Cube.
     """
@@ -26,10 +26,9 @@ class RubiksCube(GrabbableBehavior, Widget):
         self,
         *args,
         aspect_ratio=True,
-        default_char="▀",
         **kwargs
     ):
-        super().__init__(*args, default_char=default_char, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
 
@@ -47,8 +46,6 @@ class RubiksCube(GrabbableBehavior, Widget):
         self.background = Background()
         self.add_widget(self.background)
         self.background.play()
-
-        self.resize(self.size)
 
         self._rotate_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
@@ -90,10 +87,6 @@ class RubiksCube(GrabbableBehavior, Widget):
     @property
     def selected_cubes(self):
         return self.cubes[self.selected_indices].flatten()
-
-    def resize(self, size):
-        super().resize(size)
-        self._colors_buffer = np.zeros((2 * self.height, self.width, 3), dtype=np.uint8)
 
     def on_press(self, key):
         if key.lower() == "r":
@@ -189,19 +182,14 @@ class RubiksCube(GrabbableBehavior, Widget):
         self.camera.rotate_y(beta)
 
     def render(self, canvas_view, colors_view, rect):
-        colors_buffer = self._colors_buffer
-
-        frame_colors = self.background.current_frame.colors
-        colors_buffer[::2] = frame_colors[..., :3]
-        colors_buffer[1::2] = frame_colors[..., 3:]
+        texture = self.texture
+        texture[:] = self.background.current_frame.texture
 
         cam = self.camera
         cubes = list(self.cubes.flatten())
         cubes.sort(key=lambda cube: norm(cam.pos - cube.pos), reverse=True)
 
         for cube in cubes:
-            cam.render_cube(cube, colors_buffer, self.aspect_ratio)
-
-        np.concatenate((colors_buffer[::2], colors_buffer[1::2]), axis=-1, out=self.colors)
+            cam.render_cube(cube, texture, self.aspect_ratio)
 
         super().render(canvas_view, colors_view, rect)
