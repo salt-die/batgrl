@@ -1,13 +1,17 @@
 import asyncio
 from pathlib import Path
-from typing import Iterable, Sequence, Union
+from typing import Iterable, Sequence, Union, NamedTuple
 
-from ..colors import BLACK_ON_BLACK
-from .widget import Widget
-from .image import Image, Interpolation
+from .graphic_widget import GraphicWidget, Interpolation
+from .image import Image
 
 
-class Animation(Widget):
+class Frame(NamedTuple):
+    image: Image
+    duration: float
+
+
+class Animation(GraphicWidget):
     """
     An animation widget.
 
@@ -34,8 +38,6 @@ class Animation(Widget):
         paths: Union[Path, Iterable[Path]],
         frame_duration: Union[float, Sequence[float]]=1/12,
         loop=True,
-        alpha=1.0,
-        interpolation=Interpolation.LINEAR,
         **kwargs
     ):
         if isinstance(paths, Path):
@@ -56,37 +58,51 @@ class Animation(Widget):
                 f" to length of frame_duration ({len(frame_duration)})"
             )
 
-        kwargs.pop("default_char", None)
-        kwargs.pop("default_color_pair", None)
-        super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
+        self.frames = ()
+
+        super().__init__(*args, **kwargs)
 
         self.frames = tuple(
-            (Image(size=self.size, path=path, alpha=alpha, interpolation=interpolation), time)
+            Frame(
+                Image(
+                    size=self.size,
+                    path=path,
+                    alpha=self.alpha,
+                    interpolation=self.interpolation
+                ),
+                time,
+            )
             for path, time in zip(paths, frame_duration)
         )
+
         self._current_frame = 0
         self.loop = loop
         self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
         for frame, _ in self.frames:
             frame.parent = self
+
         self.add_widget(self.frames[0][0])
 
     @property
     def alpha(self):
-        return self.frames[0][0].alpha
+        return self._alpha
 
     @alpha.setter
     def alpha(self, new_alpha):
+        self._alpha = new_alpha
+
         for frame, _ in self.frames:
             frame.alpha = new_alpha
 
     @property
     def interpolation(self):
-        return self.frames[0][0].interpolation
+        return self._interpolation
 
     @interpolation.setter
     def interpolation(self, new_interpolation):
+        self._interpolation = new_interpolation
+
         for frame, _ in self.frames:
             frame.interpolation = new_interpolation
 
