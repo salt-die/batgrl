@@ -3,16 +3,17 @@ import asyncio
 import cv2
 import numpy as np
 
+from nurses_2.colors import WHITE_ON_BLACK
 from nurses_2.data_structures import Size
 from nurses_2.io import MouseButton
-from nurses_2.widgets import Widget
+from nurses_2.widgets.graphic_widget import GraphicWidget
 
 from .mesh import Mesh
 
 
-class Cloth(Widget):
-    def __init__(self, *args, mesh_size: Size, scale=5, default_char="▀", **kwargs):
-        super().__init__(*args, default_char=default_char, **kwargs)
+class Cloth(GraphicWidget):
+    def __init__(self, *args, mesh_size: Size, scale=5, default_color_pair=WHITE_ON_BLACK, **kwargs):
+        super().__init__(*args, default_color_pair=default_color_pair, **kwargs)
 
         self.mesh = Mesh(mesh_size, nanchors=5)
         self.scale = scale
@@ -21,11 +22,6 @@ class Cloth(Widget):
 
     def resize(self, size):
         super().resize(size)
-        self.texture = np.full(
-            (2 * size[0], size[1], 3),
-            self.default_color_pair[3:],
-            dtype=np.uint8,
-        )
 
         # Center the nodes horizontally in the widget with following offset:
         self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j
@@ -35,9 +31,9 @@ class Cloth(Widget):
         Step the mesh and draw a line for each link.
         """
         texture = self.texture
-        texture[:] = self.default_color_pair[3:]
+        texture[..., :3] = self.default_bg_color
 
-        color = self.default_color_pair[:3]
+        color = *self.default_fg_color, 255
         mesh = self.mesh
         scale = self.scale
         h_offset = self.h_offset
@@ -52,8 +48,6 @@ class Cloth(Widget):
             by, bx = int(b_pos.real), int(b_pos.imag)
 
             cv2.line(texture, (ax, ay), (bx, by), color)
-
-        np.concatenate((texture[::2], texture[1::2]), axis=-1, out=self.colors)
 
     async def step_forever(self):
         while True:
