@@ -2,12 +2,10 @@ from typing import Sequence, Union
 
 import numpy as np
 
-from .widget import Widget
-from .image import Image
-from .tiled_image import TiledImage
+from .graphic_widget import GraphicWidget
 
 
-class Parallax(Widget):
+class Parallax(GraphicWidget):
     """
     A parallax widget.
 
@@ -20,15 +18,14 @@ class Parallax(Widget):
         layer by `round(x * offset)` where offset is either `vertical_offset` or
         `horizontal_offset` of the parallax.
     """
-    def __init__(self, *args, layers: Sequence[Union[Image, TiledImage]], speeds: Sequence[float], **kwargs):
+    def __init__(self, *args, layers: Sequence[GraphicWidget], speeds: Sequence[float], **kwargs):
         assert len(layers) == len(speeds), f"Inconsistent lengths of layers ({len(layers)}) and speeds ({len(speeds)})"
 
         super().__init__(*args, **kwargs)
 
         self.layers = layers
 
-        self._image_copies = [layer.colors.copy() for layer in layers]
-        self._alpha_copies = [layer.alpha_channels.copy() for layer in layers]
+        self._image_copies = [layer.texture.copy() for layer in layers]
 
         self.speeds = speeds
 
@@ -65,13 +62,11 @@ class Parallax(Widget):
         self._adjust()
 
     def _adjust(self):
-        for speed, image, alpha, layer in zip(
+        for speed, image, layer in zip(
             self.speeds,
             self._image_copies,
-            self._alpha_copies,
             self.layers
         ):
             rolls = -round(speed * self._vertical_offset), -round(speed * self._horizontal_offset)
             axis = 0, 1
-            layer.colors = np.roll(image, rolls, axis)
-            layer.alpha_channels = np.roll(alpha, rolls, axis)
+            layer.texture = np.roll(image, rolls, axis)
