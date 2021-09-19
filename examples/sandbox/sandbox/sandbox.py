@@ -5,7 +5,7 @@ import numpy as np
 from nurses_2.colors import Color, color_pair
 from nurses_2.io import MouseButton
 from nurses_2.data_structures import Size
-from nurses_2.widgets.widget import Widget, overlapping_region
+from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ElementDisplay, ButtonContainer
@@ -19,7 +19,7 @@ def particles_to_colors(particle):
     return particle.COLOR
 
 
-class Sandbox(AutoPositionBehavior, Widget):
+class Sandbox(AutoPositionBehavior, GraphicWidget):
     """
     Sandbox widget.
     """
@@ -47,9 +47,7 @@ class Sandbox(AutoPositionBehavior, Widget):
 
     def render(self, canvas_view, colors_view, rect):
         # Color of each particle in `self.world` is written into color array.
-        colors = np.dstack(particles_to_colors(self.world))
-        np.concatenate((colors[::2], colors[1::2]), axis=-1, out=self.colors)
-
+        self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
         super().render(canvas_view, colors_view, rect)
 
     def on_click(self, mouse_event):
