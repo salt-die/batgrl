@@ -8,11 +8,11 @@ import cv2
 import numpy as np
 
 from ..colors import BLACK_ON_BLACK
-from .widget import Widget
+from .graphic_widget import GraphicWidget, Interpolation
 
 
 # Seeking is not implemented yet, but may get added soon™
-class VideoPlayer(Widget):
+class VideoPlayer(GraphicWidget):
     """
     A video player.
 
@@ -22,11 +22,7 @@ class VideoPlayer(Widget):
         A path to video, URL to video stream, or capturing device (by index).
     """
     def __init__(self, *args, source: Union[Path, str, int], **kwargs):
-        kwargs.pop("default_char", None)
-        kwargs.pop("default_color_pair", None)
-        kwargs.pop("is_transparent", None)
-
-        super().__init__(*args, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
@@ -65,8 +61,8 @@ class VideoPlayer(Widget):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self.canvas[:] = self.default_char
-            self.colors[:, :] = self.default_color_pair
+            self.texture[..., :3] = self.default_bg_color
+            self.texture[..., 3] = 255
 
     def resize(self, size):
         super().resize(size)
@@ -75,13 +71,10 @@ class VideoPlayer(Widget):
         if self._video.done() and self._current_frame is not None:
             size = self.width, 2 * self.height
             resized_frame = cv2.resize(self._current_frame, size)
-            BGR_to_RGB = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
-
-            np.concatenate((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
+            self.texture[..., :3] = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
 
     async def _play_video(self):
         # Bring in to locals:
-        concat = np.concatenate
         resize = cv2.resize
         recolor = cv2.cvtColor
         MSEC = cv2.CAP_PROP_POS_MSEC
@@ -109,9 +102,7 @@ class VideoPlayer(Widget):
 
             size = self.width, 2 * self.height
             resized_frame = resize(self._current_frame, size)
-            BGR_to_RGB = recolor(resized_frame, BGR2RGB)
-
-            concat((BGR_to_RGB[::2], BGR_to_RGB[1::2]), axis=-1, out=self.colors)
+            self.texture[..., :3] = recolor(resized_frame, BGR2RGB)
 
             try:
                 await asyncio.sleep(seconds_ahead)
