@@ -150,27 +150,27 @@ class MyApp(App):
     async def on_start(self):
         background = AutoSizeImage(path=PATH_TO_BACKGROUND)
 
-        logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL, is_transparent=True, alpha=.8)
+        logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL)
 
         field = AutoSizeHalfBlockField()
 
         for y in range(logo.height):
             for x in range(logo.width):
-                if logo.alpha_channels[y, x, 0]:
+                if logo.texture[2 * y, x, 3]:
                     field.add_widget(
                         PokeParticle(
                             pos=(y + .25, x),
-                            color=logo.colors[y, x, :3],
-                            alpha=logo.alpha_channels[y, x, 0],
+                            color=logo.texture[2 * y, x, :3],
+                            alpha=logo.texture[2 * y, x, 3] / 255 * .8,
                         )
                     )
 
-                if logo.alpha_channels[y, x, 1]:
+                if logo.texture[2 * y + 1, x, 3]:
                     field.add_widget(
                         PokeParticle(
                             pos=(y + .75, x),
-                            color=logo.colors[y, x, 3:],
-                            alpha=logo.alpha_channels[y, x, 1],
+                            color=logo.texture[2 * y + 1, x, :3],
+                            alpha=logo.texture[2 * y + 1, x, 3] / 255 * .8,
                         )
                     )
 
