@@ -4,12 +4,12 @@ import cv2
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets import Widget
+from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.colors import RED, BLACK_ON_BLACK, Color
 
-DARK_RED = Color.from_hex("701402")
+DARK_RED = *Color.from_hex("701402"), 255
 
 def add_polar_vectors(r1, a1, r2, a2):
     a = a2 - a1
@@ -22,24 +22,18 @@ def add_polar_vectors(r1, a1, r2, a2):
     return r, a
 
 
-class Circle(AutoSizeBehavior, Widget):
+class Circle(AutoSizeBehavior, GraphicWidget):
     """
     A circle drawn with cv2.
     """
-    def __init__(self, *args, radius=10, default_char="▀", default_color_pair=BLACK_ON_BLACK, **kwargs):
-        super().__init__(*args, default_char=default_char, default_color_pair=default_color_pair, **kwargs)
+    def __init__(self, *args, radius=10, **kwargs):
+        super().__init__(*args, **kwargs)
         self.radius = radius
 
     def update_geometry(self):
         super().update_geometry()
-
-        h, w = self.parent.size
-
-        image = np.zeros((h * 2, w, 3), dtype=np.uint8)
-        cv2.circle(image, (w // 2, h - h % 2), self.radius, DARK_RED, thickness=-1)
-
-        self.colors[..., :3] = image[::2]
-        self.colors[..., 3:] = image[1::2]
+        h, w = self.size
+        cv2.circle(self.texture, (w // 2, h - h % 2), self.radius, DARK_RED, thickness=-1)
 
 
 class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
