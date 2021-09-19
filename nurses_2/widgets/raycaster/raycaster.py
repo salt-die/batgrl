@@ -2,12 +2,12 @@ from typing import List, Optional
 
 import numpy as np
 
-from ...widgets import Widget
 from ...colors import BLACK, Color
+from ...widgets.graphic_widget import GraphicWidget
 from .protocols import Map, Camera, Texture
 
 
-class RayCaster(Widget):
+class RayCaster(GraphicWidget):
     """
     A raycaster for nurses_2.
 
@@ -44,12 +44,9 @@ class RayCaster(Widget):
         ceiling_color: Color=BLACK,
         floor: Optional[Texture]=None,
         floor_color: Color=BLACK,
-        default_char="▀",
         **kwargs,
     ):
-        kwargs.pop("transparent", None)
-
-        super().__init__(*args, default_char=default_char, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.map = map
         self.camera = camera
@@ -71,9 +68,6 @@ class RayCaster(Widget):
         super().resize(size)
         height = self.height
         width = self.width
-
-        # Note double resolution due to half-block characters.
-        self._colors = np.full((height << 1, width, 3), 0, dtype=np.uint8)
 
         # Precalculate angle of rays cast.
         self._ray_angles = angles = np.ones((width, 2), dtype=np.float16)
@@ -137,8 +131,8 @@ class RayCaster(Widget):
         # Rendering #
         #############
 
-        colors = self._colors
-        height = colors.shape[0]
+        texture = self.texture[:, ::-1]
+        height = texture.shape[0]
 
         column_height = int(height / distance) if distance else 1000  # 1000 == infinity, roughly
 
@@ -153,8 +147,8 @@ class RayCaster(Widget):
         end = half_height + half_column        #
         ########################################
 
-        texture = (self.wall_textures if side else self.light_wall_textures)[texture_index - 1]
-        tex_h, tex_w, _ = texture.shape
+        wall_texture = (self.wall_textures if side else self.light_wall_textures)[texture_index - 1]
+        tex_h, tex_w, _ = wall_texture.shape
 
         # Exactly where wall was hit by ray as a percentage of its width.
         wall_x = (camera_pos[1 - side] + distance * ray_angle[1 - side]) % 1
@@ -165,28 +159,28 @@ class RayCaster(Widget):
             tex_x = tex_w - tex_x - 1
 
         # Interpolate texture onto column
-        #######################################################
-        drawn_height = end - start                            #
-        offset = (column_height - drawn_height) / 2           #
-        ratio = tex_h / column_height                         #
-        texture_start = offset * ratio                        #
-        texture_end = (offset + drawn_height) * ratio         #
-        tex_ys = np.linspace(                                 #
-            texture_start,                                    #
-            texture_end,                                      #
-            num=drawn_height,                                 #
-            endpoint=False,                                   #
-            dtype=int                                         #
-        )                                                     #
-        texture_column = texture[tex_ys, tex_x].astype(float) #
-        #######################################################
+        ############################################################
+        drawn_height = end - start                                 #
+        offset = (column_height - drawn_height) / 2                #
+        ratio = tex_h / column_height                              #
+        texture_start = offset * ratio                             #
+        texture_end = (offset + drawn_height) * ratio              #
+        tex_ys = np.linspace(                                      #
+            texture_start,                                         #
+            texture_end,                                           #
+            num=drawn_height,                                      #
+            endpoint=False,                                        #
+            dtype=int                                              #
+        )                                                          #
+        texture_column = wall_texture[tex_ys, tex_x].astype(float) #
+        ############################################################
 
         # Darken colors further away.
         texture_column *= np.e ** (-distance * .05)
         np.clip(texture_column, 0, 255, out=texture_column, casting="unsafe")
 
         # Paint column.
-        colors[start: end, column] = texture_column
+        texture[start: end, column] = texture_column
 
         # Render floor and ceiling.
         ###################################################################################
@@ -194,8 +188,8 @@ class RayCaster(Widget):
         floor = self.floor                                                                #
                                                                                           #
         if ceiling is None and floor is None:                                             #
-            colors[:start, column] = self.ceiling_color                                   #
-            colors[end:, column] = self.floor_color                                       #
+            texture[:start, column] = self.ceiling_color                                  #
+            texture[end:, column] = self.floor_color                                      #
             return                                                                        #
                                                                                           #
         # Buffer views                                                                    #
@@ -228,22 +222,19 @@ class RayCaster(Widget):
         if ceiling is not None:                                                           #
             # Note reversed order of texture coordinates from floor                       #
             np.multiply(ceiling.shape[:2], tex_frac[::-1], out=tex_int, casting="unsafe") #
-            colors[:start, column] = ceiling[tex_int[:, 0], tex_int[:, 1]]                #
+            texture[:start, column] = ceiling[tex_int[:, 0], tex_int[:, 1]]               #
         else:                                                                             #
-            colors[:start, column] = self.ceiling_color                                   #
+            texture[:start, column] = self.ceiling_color                                  #
                                                                                           #
         # Paint floor                                                                     #
         if floor is not None:                                                             #
             np.multiply(floor.shape[:2], tex_frac, out=tex_int, casting="unsafe")         #
-            colors[end:, column] = floor[tex_int[:, 0], tex_int[:, 1]]                    #
+            texture[end:, column] = floor[tex_int[:, 0], tex_int[:, 1]]                   #
         else:                                                                             #
-            colors[end:, column] = self.floor_color                                       #
+            texture[end:, column] = self.floor_color                                      #
         ###################################################################################
 
     def render(self, canvas_view, colors_view, rect):
-        colors = self._colors[:, ::-1]  # `::-1` -- Not sure why rendering is flipped, but this is an easy fix.
-        height = self.height
-
         # Bring in to locals
         #######################################
         camera = self.camera                  #
@@ -275,7 +266,5 @@ class RayCaster(Widget):
 
         for column in range(self.width):
             cast_ray(column)
-
-        np.concatenate((colors[::2], colors[1::2]), axis=-1, out=self.colors)
 
         super().render(canvas_view, colors_view, rect)
