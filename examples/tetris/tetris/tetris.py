@@ -45,7 +45,10 @@ def tetromino_generator(tetrominos):
 
 def setup_background(widget):
     t, l, b, r, _, _ = widget.rect
-    widget.colors[..., 3:] = widget.parent.colors[t: b, l: r, 3:] // 2
+    if isinstance(widget.parent, Image):
+        widget.colors[..., 3:] = widget.parent.texture[2 * t + 1: 2 * b: 2, l: r, :3] // 2
+    else:
+        widget.colors[..., 3:] = widget.parent.colors[t: b, l: r, 3:] // 2
 
 
 class Tetris(Image):
@@ -153,7 +156,7 @@ class Tetris(Image):
         # Darken background behind matrix.
         left = self.matrix_widget.left
         right = self.matrix_widget.right
-        self.colors[:, left:right] //= 3
+        self.texture[:, left: right, :3] //= 3
 
         self.modal_screen = ModalScreen()
         self.add_widget(self.modal_screen)
