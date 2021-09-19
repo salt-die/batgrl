@@ -7,6 +7,7 @@ from ..colors import BLACK_ON_BLACK
 from ..data_structures import Point, Size
 from ..utils import clamp
 from .widget import Widget, overlapping_region
+from .widget_data_structures import Rect
 
 
 class Interpolation(IntEnum):
@@ -66,7 +67,7 @@ class GraphicWidget(Widget):
 
         self.texture = np.full(
             (2 * h, w, 4),
-            (self.default_bg_color, 255),
+            (*self.default_bg_color, 255),
             dtype=np.uint8,
         )
 
@@ -74,7 +75,7 @@ class GraphicWidget(Widget):
         """
         Resize widget.
         """
-        h, w = size
+        self._size = h, w = size
         self.texture = cv2.resize(
             self.texture,
             (w, 2 * h),
@@ -108,17 +109,17 @@ class GraphicWidget(Widget):
         background = colors_view[..., 3:]
 
         if not self.is_transparent:
-            foreground[:] = even_rows
-            background[:] = odd_rows
+            foreground[:] = even_rows[..., :3]
+            background[:] = odd_rows[..., :3]
         else:
             even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=np.float16)
             odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=np.float16)
 
-            np.multiply(even_buffer, even_rows[..., 3], out=even_buffer)
+            np.multiply(even_buffer, even_rows[..., 3, None], out=even_buffer)
             np.multiply(even_buffer, alpha, out=even_buffer)
             np.divide(even_buffer, 255, out=even_buffer)
 
-            np.multiply(odd_buffer, odd_rows[..., 3], out=odd_buffer)
+            np.multiply(odd_buffer, odd_rows[..., 3, None], out=odd_buffer)
             np.multiply(odd_buffer, alpha, out=odd_buffer)
             np.divide(odd_buffer, 255, out=odd_buffer)
 
