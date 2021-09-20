@@ -1,5 +1,7 @@
+import cv2
 import numpy as np
 
+from .graphic_widget import Interpolation
 from .widget import Widget
 
 _TO_BIN = np.array(
@@ -45,13 +47,59 @@ def texture_to_braille(arr):
     return vectorized_chr(ords)
 
 
-# Method to update canvas with texture?
-# Option to auto-update on render? (potentially slow)
 class BrailleGraphicWidget(Widget):
-    def __init__(self, *args, **kwargs):
+    """
+    A widget painted with braille unicode characters.
+
+    Parameters
+    ----------
+    interpolation : Interpolation, default: Interpolation.LINEAR
+        The interpolation used when resizing the widget's texture.
+    auto_apply_texture : bool, default: False
+        If true, `apply_texture` is called on every render.
+
+    Notes
+    -----
+    BrailleGraphicWidgets have an underlying boolean array, `texture`. This texture can be
+    applied to the canvas using the `apply_texture` method. Which converts 4x2 rectangular slices
+    of the texture into corresponding braille characters. (The texture will be 4x the widget's height
+    and 2x the widget's width.)
+    """
+    def __init__(
+        self,
+        *args,
+        interpolation=Interpolation.LINEAR,
+        auto_apply_texture=False,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
 
         h, w = self.size
         self.texture = np.zeros((4 * h, 2 * w), dtype=np.uint8)
+        self.interpolation = interpolation
+        self.auto_apply_texture = auto_apply_texture
 
-        raise NotImplementedError
+    def resize(self, size):
+        self._size = h, w = size
+        self.colors = np.full(
+            (*size, 6),
+            self.default_color_pair,
+            dtype=np.uint8,
+        )
+
+        self.texture = cv2.resize(
+            self.texture,
+            (2 * w, 4 * h),
+            interpolation=self.interpolation,
+        )
+
+        self.apply_texture()
+
+    def apply_texture(self):
+        self.canvas = texture_to_braille(self.texture)
+
+    def render(self, canvas_view, colors_view, rect):
+        if self.auto_apply_texture:
+            self.apply_texture()
+
+        super().render(canvas_view, colors_view, rect)
