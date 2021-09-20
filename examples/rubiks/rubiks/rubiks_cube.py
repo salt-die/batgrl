@@ -86,7 +86,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
 
     @property
     def selected_cubes(self):
-        return self.cubes[self.selected_indices].flatten()
+        return self.cubes[self.selected_indices].flat
 
     def on_press(self, key):
         if key.lower() == "r":
@@ -186,7 +186,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         texture[:] = self.background.current_frame.texture
 
         cam = self.camera
-        cubes = list(self.cubes.flatten())
+        cubes = list(self.cubes.flat)
         cubes.sort(key=lambda cube: norm(cam.pos - cube.pos), reverse=True)
 
         for cube in cubes:
