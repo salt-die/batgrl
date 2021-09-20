@@ -11,6 +11,7 @@ _TO_BIN = np.array(
     ],
     dtype=np.uint8,
 )
+_TO_BIN.flags.writeable = False
 
 vectorized_chr = np.vectorize(chr)
 
@@ -37,8 +38,8 @@ def texture_to_braille(arr):
     ords = np.sum(
         sectioned * _TO_BIN,
         axis=(2, 3),
-        initial=0x2800,  # First braille ord
-        dtype=np.uint16
+        initial=0x2800,  # first braille ord
+        dtype=np.uint16,
     )
 
     return vectorized_chr(ords)
