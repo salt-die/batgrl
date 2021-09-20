@@ -2,51 +2,44 @@ import numpy as np
 
 from .widget import Widget
 
+_TO_BIN = np.array(
+    [
+        [ 1,   8],
+        [ 2,  16],
+        [ 4,  32],
+        [64, 128],
+    ],
+    dtype=np.uint8,
+)
+
 vectorized_chr = np.vectorize(chr)
 
 def texture_to_braille(arr):
     """
-    Convert a texture array to array of braille characters.
+    Convert a `(m, n)`-shaped texture array to a `(m // 4, n // 2)`-shaped
+    array of braille characters.
 
     Example
     -------
            In            -->           Out
     [0 1 0 1 1 0 1 0]           ['⢸' '⠺' '⡅' '⢵']
     [0 1 1 1 0 0 0 1]           ['⡄' '⡾' '⢜' '⠠']
-    [0 1 0 1 1 0 1 1]           ['⡺' '⣟' '⠪' '⢻']
-    [0 1 0 0 1 0 0 1]           ['⢷' '⢡' '⢛' '⢾']
+    [0 1 0 1 1 0 1 1]
+    [0 1 0 0 1 0 0 1]
     [0 0 0 1 0 1 0 0]
     [0 0 1 1 0 1 0 0]
     [1 0 1 1 1 0 0 1]
     [1 0 1 0 0 1 0 0]
-    [0 1 1 1 0 1 1 1]
-    [1 1 1 1 1 0 1 1]
-    [0 1 1 0 0 1 0 1]
-    [1 0 1 1 0 0 0 1]
-    [1 0 1 0 1 1 0 1]
-    [1 1 0 0 1 1 1 1]
-    [1 1 0 1 0 0 1 1]
-    [0 1 0 1 0 1 0 1]
     """
-    BRAILLE_ORD = 0x2800
-
     h, w = arr.shape
-    ords = np.full((h // 4, w // 2), BRAILLE_ORD, dtype=np.uint16)
-    _buffer = np.zeros_like(ords)
+    sectioned = np.rollaxis(arr.reshape(h // 4, w // 2, 4, 2), 2, 1)
 
-    slices = (
-        arr[ ::4,  ::2],
-        arr[1::4,  ::2],
-        arr[2::4,  ::2],
-        arr[ ::4, 1::2],
-        arr[1::4, 1::2],
-        arr[2::4, 1::2],
-        arr[3::4,  ::2],
-        arr[3::4, 1::2],
+    ords = np.sum(
+        sectioned * _TO_BIN,
+        axis=(2, 3),
+        initial=0x2800,  # First braille ord
+        dtype=np.uint16
     )
-
-    for i, s in enumerate(slices):
-        ords += np.multiply(s, 2**i, out=_buffer)
 
     return vectorized_chr(ords)
 
