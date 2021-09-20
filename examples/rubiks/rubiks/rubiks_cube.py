@@ -79,10 +79,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
 
     @property
     def selected_indices(self):
-        return (
-            *((slice(None), ) * self.selected_axis),
-            self._selected_row,
-        )
+        return *(np.index_exp[:] * self.selected_axis), self._selected_row
 
     @property
     def selected_cubes(self):
