@@ -32,7 +32,7 @@ def texture_to_braille(arr):
     [1 0 1 0 0 1 0 0]
     """
     h, w = arr.shape
-    sectioned = np.rollaxis(arr.reshape(h // 4, w // 2, 4, 2), 2, 1)
+    sectioned = np.swapaxes(arr.reshape(h // 4, w // 2, 4, 2), 1, 2)
 
     ords = np.sum(
         sectioned * _TO_BIN,
