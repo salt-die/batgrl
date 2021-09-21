@@ -64,6 +64,8 @@ class BrailleGraphicWidget(Widget):
     applied to the canvas using the `apply_texture` method. Which converts 4x2 rectangular slices
     of the texture into corresponding braille characters. (The texture will be 4x the widget's height
     and 2x the widget's width.)
+
+    Resizing resets `colors` to `default_color_pair`.
     """
     def __init__(
         self,
