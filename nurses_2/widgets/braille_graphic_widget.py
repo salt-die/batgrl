@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cv2
 import numpy as np
 
@@ -100,7 +102,21 @@ class BrailleGraphicWidget(Widget):
         self.apply_texture()
 
     def apply_texture(self):
+        """
+        Paint texture to canvas.
+        """
         self.canvas = texture_to_braille(self.texture)
+
+    def load_texture(self, path: Path):
+        """
+        Load texture from path and paint to canvas.
+        """
+        img_grey = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+        _, img_binary = cv2.threshold(img_grey, 255 >> 1, 1, cv2.THRESH_BINARY)
+
+        h, w = self.size
+        self.texture = cv2.resize(img_binary, (2 * w, 4 * h))
+        self.apply_texture()
 
     def render(self, canvas_view, colors_view, rect):
         if self.auto_apply_texture:
