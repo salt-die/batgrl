@@ -54,13 +54,12 @@ class ConsoleInputReader:
 
         if self.recognize_paste and self._is_paste(keys):
             key_iter = iter(keys)
-
             for key in key_iter:
                 paste_text = [ ]
 
-                while key and (not isinstance(key, Key) or key is Key.ControlJ):
-                    paste_text.append("\n" if key is Key.ControlJ else key)
-                    key = next(gen, False)
+                while key and (not isinstance(key, Key) or key is Key.ControlM):
+                    paste_text.append("\n" if key is Key.ControlM else key)
+                    key = next(key_iter, False)
 
                 if paste_text:
                     yield PasteEvent("".join(paste_text))
