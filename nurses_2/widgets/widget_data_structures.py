@@ -41,6 +41,11 @@ class CanvasView:
             to `numpy`'s `ndarray.__getitem__`.
         column: int
             The first column to which text is added.
+
+        Notes
+        -----
+        Text is meant to be a single line of text. Text is not wrapped if it is too long, instead
+        index error is raised.
         """
         canvas = self.canvas
 
