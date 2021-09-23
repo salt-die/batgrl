@@ -226,8 +226,6 @@ class Widget:
 
             canvas[y, x + 1] = chr(0x200B)  # Zero-width space
 
-    add_text = CanvasView.add_text
-
     @property
     def get_view(self) -> CanvasView:
         """
@@ -241,6 +239,8 @@ class Widget:
         the `add_text` `row` and `column` parameters make sense.
         """
         return CanvasView(self.canvas)
+
+    add_text = CanvasView.add_text
 
     def absolute_to_relative_coords(self, coords: Point):
         """
