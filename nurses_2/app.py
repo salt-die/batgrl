@@ -171,6 +171,7 @@ def create_environment(title):
 
     try:
         env_out.enable_mouse_support()
+        env_out.enable_bracketed_paste()
         env_out.enter_alternate_screen()
 
         if title is not None:
@@ -187,6 +188,7 @@ def create_environment(title):
         env_out.quit_alternate_screen()
         env_out.reset_attributes()
         env_out.disable_mouse_support()
+        env_out.disable_bracketed_paste()
         env_out.show_cursor()
 
         # Blinking line cursor. Show cursor will stop a blinking cursor.
