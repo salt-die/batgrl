@@ -1,3 +1,6 @@
+"""
+Paste into the terminal to test paste dispatching.
+"""
 import asyncio
 
 from nurses_2.app import App
