@@ -1,10 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import numpy as np
 
 from ...colors import BLACK, Color
 from ...widgets.graphic_widget import GraphicWidget
 from .protocols import Map, Camera, Texture
+from .data_structures import Sprite
 
 
 class RayCaster(GraphicWidget):
@@ -22,6 +23,10 @@ class RayCaster(GraphicWidget):
     light_wall_textures : Optional[list[Texture]], default: None
         If provided, walls north/south face will use textures in `light_wall_textures` instead
         of `wall_textures`.
+    sprites : Optional[list[Sprite]], default: None
+        List of Sprites.
+    sprite_textures : Optional[list[Texture]], default: None
+        Textures for sprites.
     ceiling : Optional[Texture], default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
@@ -40,6 +45,8 @@ class RayCaster(GraphicWidget):
         camera: Camera,
         wall_textures: List[Texture],
         light_wall_textures: Optional[List[Texture]]=None,
+        sprites: Optional[List[Sprite]]=None,
+        sprite_textures: Optional[List[Texture]]=None,
         ceiling: Optional[Texture]=None,
         ceiling_color: Color=BLACK,
         floor: Optional[Texture]=None,
@@ -52,6 +59,8 @@ class RayCaster(GraphicWidget):
         self.camera = camera
         self.wall_textures = wall_textures
         self.light_wall_textures = light_wall_textures or wall_textures
+        self.sprites = sprites
+        self.sprite_textures = sprite_textures
         self.ceiling = ceiling
         self.ceiling_color = ceiling_color
         self.floor = floor
@@ -233,6 +242,11 @@ class RayCaster(GraphicWidget):
         else:                                                                             #
             texture[end:, column] = self.floor_color                                      #
         ###################################################################################
+
+    def cast_sprites(self):
+        """
+        Render all sprites.
+        """
 
     def render(self, canvas_view, colors_view, rect):
         # Bring in to locals
