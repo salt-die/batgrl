@@ -247,6 +247,19 @@ class RayCaster(GraphicWidget):
         """
         Render all sprites.
         """
+        texture = self.texture
+        h, w, _ = texture.shape
+        camera = self.camera
+        camera_pos = camera.pos
+        sprites = self.sprites
+
+        for sprite in sprites:
+            sprite.relative = camera_pos - sprite.pos
+
+        sprites.sort()
+
+        # Camera Inverse used to calculate transformed position of sprites.
+        cam_inv = np.linalg.inv(-camera.plane[::-1])
 
     def render(self, canvas_view, colors_view, rect):
         # Bring in to locals
