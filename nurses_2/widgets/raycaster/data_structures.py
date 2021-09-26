@@ -7,9 +7,9 @@ class Sprite:
     """
     A sprite.
     """
-    def __init__(self, pos: np.ndarray, texture_name: str)
+    def __init__(self, pos: np.ndarray, texture_idx: int)
     self.pos = pos
-    self.texture_name = texture_name
+    self.texture_idx = texture_idx
     self.relative = np.array([0.0, 0.0])
 
     @property
