@@ -3,6 +3,7 @@ from typing import List, Optional, Dict
 import numpy as np
 
 from ...colors import BLACK, Color
+from ...utils import clamp
 from ...widgets.graphic_widget import GraphicWidget
 from .protocols import Map, Camera, Texture
 from .data_structures import Sprite
@@ -95,6 +96,7 @@ class RayCaster(GraphicWidget):
         self._tex_frac = np.zeros_like(weights)
         self._tex_frac_2 = np.zeros_like(weights)
         self._tex_int = np.zeros_like(weights, dtype=np.int16)
+        self._column_distances = np.zeros_like(angles)
 
     def cast_ray(self, column):
         """
@@ -130,11 +132,12 @@ class RayCaster(GraphicWidget):
                     - camera_pos[side]
                     + (0 if step[side] == 1 else 1)
                 ) / ray_angle[side]
-
                 break
 
         else:  # No walls in range.
             distance = 1000  # 1000 == infinity, roughly
+
+        self._column_distances[column] = distance
 
         #############
         # Rendering #
@@ -252,6 +255,7 @@ class RayCaster(GraphicWidget):
         camera = self.camera
         camera_pos = camera.pos
         sprites = self.sprites
+        sprite_textures = self.sprite_textures
 
         for sprite in sprites:
             sprite.relative = camera_pos - sprite.pos
@@ -260,6 +264,45 @@ class RayCaster(GraphicWidget):
 
         # Camera Inverse used to calculate transformed position of sprites.
         cam_inv = np.linalg.inv(-camera.plane[::-1])
+
+        for sprite in sprites:  # Draw each sprite from furthest to closest.
+            # Transformed position of sprites due to camera position
+            x, y = sprite.relative @ cam_inv
+
+            if y <= 0:  # Sprite is behind player, don't draw it.
+                continue
+
+            # Sprite x-position on screen
+            sprite_x = int(w / 2 * (1 + x / y))
+
+            sprite_height = int(h / y)
+            sprite_width = int(w / y / 2)
+            if sprite_height == 0 or sprite_width == 0:  # Sprite too small.
+                continue
+
+            jump_height = player.z * sprite_height
+            start_y = clamp(int((h - sprite_height) / 2), 0, h)
+            end_y = clamp(int((h + sprite_height) / 2), 0, h)
+
+            start_x = clamp(-sprite_width // 2 + sprite_x, 0, w)
+            end_x = clamp(sprite_width // 2 + sprite_x, 0, w)
+
+            columns = np.arange(start_x, end_x)
+            columns = columns[(0 <= columns) & (columns <= w) & (y <= self._column_distances[columns])]
+
+            sprite_tex = sprite_textures[sprite.texture_idx]
+            tex_height, tex_width = tex.shape
+
+            clip_y = (sprite_height - h) / 2
+            tex_ys = np.clip((np.arange(start_y, end_y) + clip_y) * tex_height / sprite_height, 0, None).astype(int)
+
+            clip_x = sprite_x - sprite_width / 2
+            tex_xs = ((columns - clip_x) * tex_width / sprite_width).astype(int)
+
+            tex_rect = sprite_tex[tex_ys][:, tex_xs]
+
+            # TODO correctly calculate alphas
+            texture[start_y:end_y, columns] = tex_rect
 
     def render(self, canvas_view, colors_view, rect):
         # Bring in to locals
