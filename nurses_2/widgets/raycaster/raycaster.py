@@ -68,9 +68,9 @@ class RayCaster(GraphicWidget):
         self.floor_color = floor_color
 
         # Buffers
-        self._pos_int = np.zeros((2,), dtype=np.int16)
-        self._pos_frac = np.zeros((2,), dtype=np.float16)
-        self._floor_pos = np.zeros((2,), dtype=np.float16)
+        self._pos_int = np.zeros((2,), dtype=int)
+        self._pos_frac = np.zeros((2,), dtype=float)
+        self._floor_pos = np.zeros((2,), dtype=float)
 
         self.resize(self.size)
 
@@ -80,23 +80,23 @@ class RayCaster(GraphicWidget):
         width = self.width
 
         # Precalculate angle of rays cast.
-        self._ray_angles = angles = np.ones((width, 2), dtype=np.float16)
+        self._ray_angles = angles = np.ones((width, 2), dtype=float)
         angles[:, 1] = np.linspace(-1, 1, width)
 
         # Precalculate distances for ceiling and floor textures
-        self._distances = distances = np.linspace(.001, height, num=height, endpoint=False, dtype=np.float16)
-        np.divide(height, distances, out=distances, dtype=np.float16)
+        self._distances = distances = np.linspace(.001, height, num=height, endpoint=False, dtype=float)
+        np.divide(height, distances, out=distances, dtype=float)
 
         # Buffers
         self._rotated_angles = np.zeros_like(angles)
         self._deltas = np.zeros_like(angles)
         self._sides = np.zeros_like(angles)
-        self._steps = np.zeros_like(angles, dtype=np.int16)
-        self._weights = weights = np.zeros((height, 2), dtype=np.float16)
+        self._steps = np.zeros_like(angles, dtype=int)
+        self._weights = weights = np.zeros((height, 2), dtype=float)
         self._tex_frac = np.zeros_like(weights)
         self._tex_frac_2 = np.zeros_like(weights)
-        self._tex_int = np.zeros_like(weights, dtype=np.int16)
-        self._column_distances = np.zeros_like(angles)
+        self._tex_int = np.zeros_like(weights, dtype=int)
+        self._column_distances = np.zeros((width,), dtype=float)
 
     def cast_ray(self, column):
         """
@@ -256,6 +256,7 @@ class RayCaster(GraphicWidget):
         camera_pos = camera.pos
         sprites = self.sprites
         sprite_textures = self.sprite_textures
+        column_distances = self._column_distances
 
         for sprite in sprites:
             sprite.relative = camera_pos - sprite.pos
@@ -269,7 +270,7 @@ class RayCaster(GraphicWidget):
             # Transformed position of sprites due to camera position
             x, y = sprite.relative @ cam_inv
 
-            if y <= 0:  # Sprite is behind player, don't draw it.
+            if y <= 0:  # Sprite is behind camera, don't draw it.
                 continue
 
             # Sprite x-position on screen
@@ -280,7 +281,6 @@ class RayCaster(GraphicWidget):
             if sprite_height == 0 or sprite_width == 0:  # Sprite too small.
                 continue
 
-            jump_height = player.z * sprite_height
             start_y = clamp(int((h - sprite_height) / 2), 0, h)
             end_y = clamp(int((h + sprite_height) / 2), 0, h)
 
@@ -288,10 +288,10 @@ class RayCaster(GraphicWidget):
             end_x = clamp(sprite_width // 2 + sprite_x, 0, w)
 
             columns = np.arange(start_x, end_x)
-            columns = columns[(0 <= columns) & (columns <= w) & (y <= self._column_distances[columns])]
+            columns = columns[(0 <= columns) & (columns <= w) & (y <= column_distances[columns])]
 
             sprite_tex = sprite_textures[sprite.texture_idx]
-            tex_height, tex_width = tex.shape
+            tex_height, tex_width, _ = sprite_tex.shape
 
             clip_y = (sprite_height - h) / 2
             tex_ys = np.clip((np.arange(start_y, end_y) + clip_y) * tex_height / sprite_height, 0, None).astype(int)
@@ -336,5 +336,7 @@ class RayCaster(GraphicWidget):
 
         for column in range(self.width):
             cast_ray(column)
+
+        self.cast_sprites()
 
         super().render(canvas_view, colors_view, rect)

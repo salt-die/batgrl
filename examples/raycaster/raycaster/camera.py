@@ -19,7 +19,7 @@ def rotation_matrix(theta):
             [ x, y],
             [-y, x],
         ],
-        dtype=np.float16,
+        dtype=float,
     )
 
 
@@ -32,10 +32,10 @@ class Camera:
             [1.001, 0.001],
             [0.0, FIELD_OF_VIEW],
         ],
-        dtype=np.float16,
+        dtype=float,
     )
 
-    pos = np.array([2.5, 2.5], dtype=np.float16)
+    pos = np.array([2.5, 2.5], dtype=float)
 
     def __init__(self):
         self.plane = self.INITIAL_PLANE.copy()
