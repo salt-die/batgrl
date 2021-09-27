@@ -5,7 +5,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.widgets.behaviors import AutoSizeBehavior
-from nurses_2.widgets.raycaster import RayCaster
+from nurses_2.widgets.raycaster import RayCaster, Sprite
 
 from .animated_texture import AnimatedTexture
 from .camera import Camera
@@ -14,6 +14,7 @@ FRAMES_DIR = Path("..") / "frames" / "spinner"
 IMAGES_DIR = Path("..") / "images"
 CEILING_PATH = IMAGES_DIR / "bluestone.png"
 FLOOR_PATH = IMAGES_DIR / "greystone.png"
+SPRITE = IMAGES_DIR / "pixel_python.png"
 MAP = np.array(
     [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -54,6 +55,8 @@ class MyApp(App):
             camera=Camera(),
             wall_textures=[ AnimatedTexture(textures) ],
             light_wall_textures=[ AnimatedTexture(textures, lighten=True) ],
+            sprites=[Sprite(pos=(2.5, 2.5), texture_idx=0)],
+            sprite_textures=[ load_image(SPRITE) ],
             ceiling=load_image(CEILING_PATH),
             floor=load_image(FLOOR_PATH),
         )
