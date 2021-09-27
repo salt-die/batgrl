@@ -1,5 +1,3 @@
-from typing import NamedTuple
-
 import numpy as np
 
 
@@ -7,10 +5,12 @@ class Sprite:
     """
     A sprite.
     """
-    def __init__(self, pos: np.ndarray, texture_idx: int)
-    self.pos = pos
-    self.texture_idx = texture_idx
-    self.relative = np.array([0.0, 0.0])
+    __slots__ = "pos", "texture_idx", "_relative", "distance"
+
+    def __init__(self, pos: np.ndarray, texture_idx: int):
+        self.pos = pos
+        self.texture_idx = texture_idx
+        self.relative = np.array([0.0, 0.0])
 
     @property
     def relative(self):
