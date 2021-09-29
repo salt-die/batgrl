@@ -250,8 +250,10 @@ class RayCaster(GraphicWidget):
         """
         Render all sprites.
         """
-        texture = self.texture
+        texture = self.texture[:, ::-1]
         h, w, _ = texture.shape
+        half_w = w / 2
+
         camera = self.camera
         camera_pos = camera.pos
         sprites = self.sprites
@@ -264,45 +266,63 @@ class RayCaster(GraphicWidget):
         sprites.sort()
 
         # Camera Inverse used to calculate transformed position of sprites.
-        cam_inv = np.linalg.inv(-camera.plane[::-1])
+        cam_inv = np.linalg.inv(-camera.plane)
 
         for sprite in sprites:  # Draw each sprite from furthest to closest.
             # Transformed position of sprites due to camera position
-            x, y = sprite.relative @ cam_inv
+            y, x = sprite.relative @ cam_inv
 
             if y <= 0:  # Sprite is behind camera, don't draw it.
                 continue
 
             # Sprite x-position on screen
-            sprite_x = int(w / 2 * (1 + x / y))
+            sprite_x = int(half_w * (1 + x / y))
 
             sprite_height = int(h / y)
-            sprite_width = int(w / y / 2)
+            sprite_width = int(half_w / y)
             if sprite_height == 0 or sprite_width == 0:  # Sprite too small.
                 continue
 
+            start_x = clamp(sprite_x - sprite_width // 2, 0, w)
+            end_x = clamp(sprite_x + sprite_width // 2, 0, w)
+            columns = np.arange(start_x, end_x)
+
+            # Remove columns that are behind walls or off-screen:
+            # Buffered version of `(0 <= columns) & (columns <= w) & (y <= column_distances[columns])`
+            _where_buffer_1 = 0 <= columns
+            _where_buffer_2 = columns <= w
+            np.logical_and(_where_buffer_1, _where_buffer_2, out=_where_buffer_1)
+            np.less_equal(y, column_distances[columns], out=_where_buffer_2)
+            np.logical_and(_where_buffer_1, _where_buffer_2, out=_where_buffer_1)
+            columns = columns[_where_buffer_1]
+
             start_y = clamp(int((h - sprite_height) / 2), 0, h)
             end_y = clamp(int((h + sprite_height) / 2), 0, h)
-
-            start_x = clamp(-sprite_width // 2 + sprite_x, 0, w)
-            end_x = clamp(sprite_width // 2 + sprite_x, 0, w)
-
-            columns = np.arange(start_x, end_x)
-            columns = columns[(0 <= columns) & (columns <= w) & (y <= column_distances[columns])]
+            rows = np.arange(start_y, end_y, dtype=float)
 
             sprite_tex = sprite_textures[sprite.texture_idx]
             tex_height, tex_width, _ = sprite_tex.shape
 
             clip_y = (sprite_height - h) / 2
-            tex_ys = np.clip((np.arange(start_y, end_y) + clip_y) * tex_height / sprite_height, 0, None).astype(int)
+            np.add(rows, clip_y, out=rows)
+            np.multiply(rows, tex_height / sprite_height, out=rows)
+            np.clip(rows, 0, None, out=rows)
 
             clip_x = sprite_x - sprite_width / 2
-            tex_xs = ((columns - clip_x) * tex_width / sprite_width).astype(int)
+            tex_xs = columns - clip_x
+            np.multiply(tex_xs, tex_width, out=tex_xs)
+            np.divide(tex_xs, sprite_width, out=tex_xs)
 
-            tex_rect = sprite_tex[tex_ys][:, tex_xs]
+            sprite_rect = sprite_tex[rows.astype(int)][:, tex_xs.astype(int)].astype(float)
+            sprite_rgb = sprite_rect[..., :3]
+            tex_rect = texture[start_y: end_y, columns, :3]
 
-            # TODO correctly calculate alphas
-            texture[start_y:end_y, columns] = tex_rect
+            np.subtract(sprite_rgb, tex_rect, out=sprite_rgb)
+            np.multiply(sprite_rgb, sprite_rect[..., 3, None], out=sprite_rgb)
+            np.divide(sprite_rgb, 255, out=sprite_rgb)
+            np.add(sprite_rgb, tex_rect, out=sprite_rgb)
+
+            texture[start_y: end_y, columns, :3] = sprite_rgb
 
     def render(self, canvas_view, colors_view, rect):
         # Bring in to locals
