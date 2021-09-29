@@ -112,8 +112,8 @@ class GraphicWidget(Widget):
             foreground[:] = even_rows[..., :3]
             background[:] = odd_rows[..., :3]
         else:
-            even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=np.float16)
-            odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=np.float16)
+            even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=float)
+            odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=float)
 
             np.multiply(even_buffer, even_rows[..., 3, None], out=even_buffer)
             np.multiply(even_buffer, alpha, out=even_buffer)
