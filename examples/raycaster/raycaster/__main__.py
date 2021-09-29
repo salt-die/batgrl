@@ -35,10 +35,21 @@ def load_image(path):
     """
     Load an image as numpy array from a pathlib.Path.
     """
-    path_str = str(path)
-    bgr_image = cv2.imread(path_str, cv2.IMREAD_ANYCOLOR)
-    rgba_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGBA)
-    return rgba_image
+    path = str(path)
+    image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+
+    if image.dtype == np.dtype(np.uint16):
+        image = (image // 257).astype(np.uint8)
+    elif image.dtype == np.dtype(np.float32):
+        image = (image * 255).astype(np.uint8)
+
+    # Add an alpha channel if there isn't one.
+    h, w, c = image.shape
+    if c == 3:
+        default_alpha_channel = np.full((h, w, 1), 255, dtype=np.uint8)
+        image = np.dstack((image, default_alpha_channel))
+
+    return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
 
 
 class AutoSizeCaster(AutoSizeBehavior, RayCaster):
