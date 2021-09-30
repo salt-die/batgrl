@@ -66,7 +66,12 @@ class MyApp(App):
             camera=Camera(),
             wall_textures=[ AnimatedTexture(textures) ],
             light_wall_textures=[ AnimatedTexture(textures, lighten=True) ],
-            sprites=[Sprite(pos=(2.5, 2.5), texture_idx=0)],
+            sprites=[
+                Sprite(pos=(2.5, 2.5), texture_idx=0),
+                Sprite(pos=(2.5, 7.5), texture_idx=0),
+                Sprite(pos=(7.5, 7.5), texture_idx=0),
+                Sprite(pos=(7.5, 2.5), texture_idx=0),
+            ],
             sprite_textures=[ load_image(SPRITE) ],
             ceiling=load_image(CEILING_PATH),
             floor=load_image(FLOOR_PATH),
