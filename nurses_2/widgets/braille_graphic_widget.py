@@ -47,15 +47,18 @@ class BrailleGraphicWidget(Widget):
         self._load_texture()
 
     def _load_texture(self):
-        img = cv2.imread(str(self.path), cv2.IMREAD_COLOR)
-        img_hls = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
-
         h, w = self.size
-        img_resized = cv2.resize(img_hls, (2 * w, 4 * h))
 
-        sectioned = np.swapaxes(img_resized.reshape(h, 4, w, 2, 3), 1, 2)
+        img = cv2.imread(str(self.path), cv2.IMREAD_COLOR)
+        img_bgr = cv2.resize(img, (2 * w, 4 * h))
 
-        lightness = sectioned[..., 1]
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        img_hls = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HLS)
+
+        rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 4, w, 2, 3), 1, 2)
+        hls_sectioned = np.swapaxes(img_hls.reshape(h, 4, w, 2, 3), 1, 2)
+
+        lightness = hls_sectioned[..., 1]
         average_lightness = np.average(lightness, axis=(2, 3))
         where_dots = lightness > average_lightness[..., None, None]
 
@@ -68,20 +71,19 @@ class BrailleGraphicWidget(Widget):
         self.canvas = vectorized_chr(ords)
 
         # TODO: Probably describe what's going on here...
-        # TODO: Background needs to be weighted more than foreground.
         ndots = where_dots.sum(axis=(2, 3))
         ndots_neg = 8 - ndots
 
-        background = sectioned.copy()
+        background = rgb_sectioned.copy()
         background[where_dots] = 0
         bg = background.sum(axis=(2, 3)) / ndots_neg[..., None]
 
-        foreground = sectioned.copy()
+        foreground = rgb_sectioned.copy()
         foreground[~where_dots] = 0
         fg = foreground.sum(axis=(2, 3)) / ndots[..., None]
 
         fixed_bg = np.where(~np.isin(bg, (np.nan, np.inf)), bg, fg).astype(np.uint8)
         fixed_fg = np.where(~np.isin(fg, (np.nan, np.inf)), fg, bg).astype(np.uint8)
 
-        self.colors[..., :3] = cv2.cvtColor(fixed_fg, cv2.COLOR_HLS2RGB)
-        self.colors[..., 3:] = cv2.cvtColor(fixed_bg, cv2.COLOR_HLS2RGB)
+        self.colors[..., :3] = fixed_bg
+        self.colors[..., 3:] = fixed_fg
