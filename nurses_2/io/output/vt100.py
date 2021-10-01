@@ -83,19 +83,6 @@ class Vt100_Output:
         self.write_raw("\x1b[?1015l")
         self.write_raw("\x1b[?1006l")
 
-    def erase_end_of_line(self):
-        """
-        Erases from the current cursor position to the end of the current line.
-        """
-        self.write_raw("\x1b[K")
-
-    def erase_down(self):
-        """
-        Erases the screen from the current line down to the bottom of the
-        screen.
-        """
-        self.write_raw("\x1b[J")
-
     def reset_attributes(self):
         self.write_raw("\x1b[0m")
 
@@ -110,55 +97,6 @@ class Vt100_Output:
 
     def disable_bracketed_paste(self):
         self.write_raw("\x1b[?2004l")
-
-    def reset_cursor_key_mode(self):
-        """
-        For vt100 only.
-        Put the terminal in cursor mode (instead of application mode).
-        """
-        # Put the terminal in cursor mode. (Instead of application mode.)
-        self.write_raw("\x1b[?1l")
-
-    def cursor_goto(self, row=0, column=0):
-        """
-        Move cursor position.
-        """
-        self.write_raw(f"\x1b[{row};{column}H")
-
-    def cursor_up(self, amount):
-        if amount == 0:
-            pass
-        elif amount == 1:
-            self.write_raw("\x1b[A")
-        else:
-            self.write_raw(f"\x1b[{amount}A")
-
-    def cursor_down(self, amount):
-        if amount == 0:
-            pass
-        elif amount == 1:
-            self.write_raw("\x1b[B")
-        else:
-            self.write_raw(f"\x1b[{amount}B")
-
-    def cursor_forward(self, amount):
-        if amount == 0:
-            pass
-        elif amount == 1:
-            self.write_raw("\x1b[C")
-        else:
-            self.write_raw(f"\x1b[{amount}C")
-
-    def cursor_backward(self, amount):
-        if amount == 0:
-            pass
-        elif amount == 1:
-            self.write_raw("\b")  # '\x1b[D'
-        else:
-            self.write_raw(f"\x1b[{amount}D")
-
-    def hide_cursor(self):
-        self.write_raw("\x1b[?25l")
 
     def show_cursor(self):
         self.write_raw("\x1b[?12l\x1b[?25h")  # Stop blinking cursor and show.
