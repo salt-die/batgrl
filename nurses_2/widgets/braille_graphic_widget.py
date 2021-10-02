@@ -58,6 +58,11 @@ class BrailleGraphicWidget(Widget):
         rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 4, w, 2, 3), 1, 2)
         hls_sectioned = np.swapaxes(img_hls.reshape(h, 4, w, 2, 3), 1, 2)
 
+        # The coloring strategy is first to find the average lightness of each 4x2 section of the image.
+        # Where the color is brighter than the average lightness a braille dot is place otherwise no dot.
+        # Then, for each 4x2 cell, the background color will be the average of the colors darker than the average lightness.
+        # The foreground color will be the average of the colors lighter than the average lightness.
+
         lightness = hls_sectioned[..., 1]
         average_lightness = np.average(lightness, axis=(2, 3))
         where_dots = lightness > average_lightness[..., None, None]
@@ -70,7 +75,6 @@ class BrailleGraphicWidget(Widget):
         )
         self.canvas = vectorized_chr(ords)
 
-        # TODO: Probably describe what's going on here...
         ndots = where_dots.sum(axis=(2, 3))
         ndots_neg = 8 - ndots
 
