@@ -58,7 +58,7 @@ class BrailleImage(Widget):
         hls_sectioned = np.swapaxes(img_hls.reshape(h, 4, w, 2, 3), 1, 2)
 
         # First, find the average lightness of each 4x2 section of the image (`average_lightness`).
-        # Braille dots are placed wherever the lightness is greater than `average_lightness`.
+        # Braille dots are placed where the lightness is greater than `average_lightness`.
         # The background color will be the average of the colors darker than `average_lightness`.
         # The foreground color will be the average of the colors lighter than `average_lightness`.
 
@@ -84,7 +84,7 @@ class BrailleImage(Widget):
 
         foreground = rgb_sectioned.copy()
         foreground[~where_dots] = 0
-        fg = foreground.sum(axis=(2, 3)) / ndots[..., None]  # average of colors light than `average_lightness`
+        fg = foreground.sum(axis=(2, 3)) / ndots[..., None]  # average of colors lighter than `average_lightness`
 
         self.colors[..., :3] = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg)
         self.colors[..., 3:] = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg)
