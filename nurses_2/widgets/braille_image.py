@@ -80,14 +80,11 @@ class BrailleImage(Widget):
 
         background = rgb_sectioned.copy()
         background[where_dots] = 0
-        bg = background.sum(axis=(2, 3)) / ndots_neg[..., None]
+        bg = background.sum(axis=(2, 3)) / ndots_neg[..., None]  # average of colors darker than `average_lightness`
 
         foreground = rgb_sectioned.copy()
         foreground[~where_dots] = 0
-        fg = foreground.sum(axis=(2, 3)) / ndots[..., None]
+        fg = foreground.sum(axis=(2, 3)) / ndots[..., None]  # average of colors light than `average_lightness`
 
-        fixed_bg = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg).astype(np.uint8)
-        fixed_fg = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg).astype(np.uint8)
-
-        self.colors[..., :3] = fixed_bg
-        self.colors[..., 3:] = fixed_fg
+        self.colors[..., :3] = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg)
+        self.colors[..., 3:] = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg)
