@@ -3,7 +3,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .graphic_widget import Interpolation
 from .widget import Widget
 
 _TO_BIN = np.array(
@@ -20,9 +19,9 @@ _TO_BIN.flags.writeable = False
 vectorized_chr = np.vectorize(chr)
 
 
-class BrailleGraphicWidget(Widget):
+class BrailleImage(Widget):
     """
-    A widget painted with braille unicode characters.
+    An image painted with braille unicode characters.
 
     Parameters
     ----------

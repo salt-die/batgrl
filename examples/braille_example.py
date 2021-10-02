@@ -1,13 +1,13 @@
 from pathlib import Path
 
 from nurses_2.app import App
-from nurses_2.widgets.braille_graphic_widget import BrailleGraphicWidget
+from nurses_2.widgets.braille_image import BrailleImage
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 
 IMG_SOURCE = Path("images") / "sunset.jpg"
 
 
-class AutoSizeBraille(AutoSizeBehavior, BrailleGraphicWidget):
+class AutoSizeBraille(AutoSizeBehavior, BrailleImage):
     ...
 
 
