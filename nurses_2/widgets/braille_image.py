@@ -57,15 +57,16 @@ class BrailleImage(Widget):
         rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 4, w, 2, 3), 1, 2)
         hls_sectioned = np.swapaxes(img_hls.reshape(h, 4, w, 2, 3), 1, 2)
 
-        # The coloring strategy is first to find the average lightness of each 4x2 section of the image.
-        # Where the color is brighter than the average lightness a braille dot is place otherwise no dot.
-        # Then, for each 4x2 cell, the background color will be the average of the colors darker than the average lightness.
-        # The foreground color will be the average of the colors lighter than the average lightness.
+        # First, find the average lightness of each 4x2 section of the image (`average_lightness`).
+        # Braille dots are placed wherever the lightness is greater than `average_lightness`.
+        # The background color will be the average of the colors darker than `average_lightness`.
+        # The foreground color will be the average of the colors lighter than `average_lightness`.
 
         lightness = hls_sectioned[..., 1]
         average_lightness = np.average(lightness, axis=(2, 3))
         where_dots = lightness > average_lightness[..., None, None]
 
+        # `ords` is an array of braille character ordinals created from `where_dots`.
         ords = np.sum(
             where_dots * _TO_BIN,
             axis=(2, 3),
@@ -85,8 +86,8 @@ class BrailleImage(Widget):
         foreground[~where_dots] = 0
         fg = foreground.sum(axis=(2, 3)) / ndots[..., None]
 
-        fixed_bg = np.where(~np.isin(bg, (np.nan, np.inf)), bg, fg).astype(np.uint8)
-        fixed_fg = np.where(~np.isin(fg, (np.nan, np.inf)), fg, bg).astype(np.uint8)
+        fixed_bg = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg).astype(np.uint8)
+        fixed_fg = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg).astype(np.uint8)
 
         self.colors[..., :3] = fixed_bg
         self.colors[..., 3:] = fixed_fg
