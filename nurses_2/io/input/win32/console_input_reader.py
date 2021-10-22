@@ -30,8 +30,7 @@ MAX_BYTES = 2048
 
 
 class ConsoleInputReader:
-    def __init__(self, recognize_paste=True):
-        self.recognize_paste = recognize_paste
+    def __init__(self):
         self.handle = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
     def read(self):
@@ -52,7 +51,7 @@ class ConsoleInputReader:
         # Correct non-bmp characters that are passed as separate surrogate codes
         keys = tuple(self._merge_paired_surrogates(keys))
 
-        if self.recognize_paste and self._is_paste(keys):
+        if self._is_paste(keys):
             key_iter = iter(keys)
             for key in key_iter:
                 paste_text = [ ]
