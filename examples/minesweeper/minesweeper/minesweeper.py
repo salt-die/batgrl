@@ -1,7 +1,7 @@
 import asyncio
 
 import numpy as np
-from scipy.ndimage import convolve
+import cv2
 
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor, ButtonBehavior
@@ -16,7 +16,7 @@ from .unicode_chars import *
 SIZE = 16, 30
 NMINES = 99
 
-KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
+KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]], dtype=np.uint8)
 RNG = np.random.default_rng()
 
 V_SPACING = Grid.V_SPACING
@@ -97,7 +97,7 @@ class MineSweeper(Widget):
         self.mines = NMINES
 
         minefield = self.create_minefield()
-        count = convolve(minefield, KERNEL, mode='constant')
+        count = cv2.filter2D(minefield, -1, KERNEL, borderType=cv2.BORDER_CONSTANT)
 
         self.add_widgets(Count(count, minefield), Minefield(count, minefield))
 
@@ -125,7 +125,7 @@ class MineSweeper(Widget):
             self.reset_button.add_text(COOL)
 
     def create_minefield(self):
-        minefield = np.zeros(SIZE, dtype=int)
+        minefield = np.zeros(SIZE, dtype=np.uint8)
         h, w = SIZE
 
         for _ in range(NMINES):

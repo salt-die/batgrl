@@ -1,6 +1,6 @@
 # Minesweeper
 
-Requires `scipy`. `python -m minesweeper` to run.
+`python -m minesweeper` to run.
 
 # Preview
 ![Minesweeper Preview](../../preview_images/minesweeper.gif)

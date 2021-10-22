@@ -1,7 +1,7 @@
 from itertools import product
 
 import numpy as np
-from scipy.ndimage import convolve
+import cv2
 
 from nurses_2.io import MouseButton, MouseEventType
 from nurses_2.widgets.widget import overlapping_region
@@ -33,11 +33,11 @@ class Minefield(Grid):
         self.colors[v_center, h_center, :3] = FLAG_COLOR
 
         # Build an array whose zero values indicate revealed areas.
-        kernel = np.ones((vs + 1, hs + 1))
-        squares = np.zeros(self.size, dtype=int)
+        kernel = np.ones((vs + 1, hs + 1), dtype=np.uint8)
+        squares = np.zeros(self.size, dtype=np.uint8)
         squares[v_center, h_center] = 1
 
-        self.hidden = convolve(squares, kernel, mode="constant")
+        self.hidden = cv2.filter2D(squares, -1, kernel, borderType=cv2.BORDER_CONSTANT)
         self.hidden_cells = self.hidden[v_center, h_center]
 
         self._pressed_cell = self._pressed_button = None
