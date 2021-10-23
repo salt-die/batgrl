@@ -4,63 +4,35 @@ import tty
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
-from .posix_reader import PosixStdinReader
-from .vt100_parser import Vt100Parser
+from .vt100_reader import Vt100Reader
 
 
 class Vt100Input:
     """
     Vt100 input for Posix systems.
-    (This uses a posix file descriptor that can be registered in the event loop.)
     """
-
     def __init__(self):
-        self.stdin = sys.stdin
-        self._fileno = self.stdin.fileno()
-
-        self._buffer = [ ]  # Buffer to collect the Key objects.
-        self.stdin_reader = PosixStdinReader(self._fileno)
-        self.vt100_parser = Vt100Parser(lambda key: self._buffer.append(key))
+        self.vt100_reader = Vt100Reader()
 
     @contextmanager
     def attach(self, callback):
-        fd = self.fileno()
+        """
+        Context manager that makes this input active in the current event loop.
+        """
+        fileno = sys.stdin.fileno()
 
         loop = get_event_loop()
-        loop.add_reader(fd, callback)
+        loop.add_reader(fileno, callback)
 
         try:
             yield
 
         finally:
-            loop.remove_reader(fd)
-
-    def read_keys(self):
-        """
-        Read keys from stdin.
-        """
-        data = self.stdin_reader.read()
-
-        self.vt100_parser.feed(data)
-
-        result = self._buffer
-        self._buffer = [ ]
-        return result
-
-    def flush_keys(self):
-        """
-        Flush pending keys and return them.
-        (Used for flushing the 'escape' key.)
-        """
-        self.vt100_parser.flush()
-
-        result = self._buffer
-        self._buffer = [ ]
-        return result
+            loop.remove_reader(fileno)
 
     @contextmanager
     def raw_mode(self):
-        fileno = self.stdin.fileno()
+        fileno = sys.stdin.fileno()
 
         try:
             attrs_before = termios.tcgetattr(fileno)
@@ -100,5 +72,15 @@ class Vt100Input:
                 except termios.error:
                     pass
 
-    def fileno(self) -> int:
-        return self.stdin.fileno()
+    def read_keys(self):
+        """
+        Read keys from stdin.
+        """
+        return self.vt100_reader.read_keys()
+
+    def flush_keys(self):
+        """
+        Flush pending keys and return them.
+        (Used for flushing the 'escape' key.)
+        """
+        return self.vt100_reader.flush_keys()
