@@ -160,16 +160,10 @@ class Key(str, Enum):
     ControlF23 = "c-f23"
     ControlF24 = "c-f24"
 
-    # Matches any key.
-    Any = "<any>"
-
     # Special.
     ScrollUp = "<scroll-up>"
     ScrollDown = "<scroll-down>"
 
-    CPRResponse = "<cursor-position-response>"
-    Vt100MouseEvent = "<vt100-mouse-event>"
-    WindowsMouseEvent = "<windows-mouse-event>"
     BracketedPaste = "<bracketed-paste>"
 
     Ignore = "<ignore>"
