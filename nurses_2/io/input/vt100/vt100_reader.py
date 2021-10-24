@@ -34,7 +34,7 @@ def read_stdin(max_bytes=1024):
 
     return DECODER.decode(data)
 
-def create_mouse_event(data):
+def _create_mouse_event(data):
     """
     Create a MouseEvent from ansi escapes.
     """
@@ -93,6 +93,7 @@ class Vt100Reader:
 
         self._parser = self._parser_generator()
         self._parser.send(None)  # Prime the generator.
+
         self._events = [ ]
 
     def _parser_generator(self):
@@ -137,7 +138,7 @@ class Vt100Reader:
             suffix = data[i:]
 
             if _MOUSE_RE.match(prefix) is not None:
-                self._events.append(create_mouse_event(prefix))
+                self._events.append(_create_mouse_event(prefix))
                 return suffix
 
             if (key := ANSI_SEQUENCES.get(prefix)) is not None:
