@@ -1,9 +1,9 @@
 """
 Output for vt100 terminals.
 """
-import errno
-import os
-import sys
+from errno import EINTR
+from os import get_terminal_size
+from sys import stdout
 
 from ...data_structures import Size
 from ..utils import get_term_environment_variable
@@ -11,26 +11,12 @@ from ..utils import get_term_environment_variable
 
 class Vt100_Output:
     def __init__(self):
-        self.stdout = sys.stdout
         self.term = get_term_environment_variable()
-
         self._buffer = [ ]
 
     def get_size(self) -> Size:
-        size = os.get_terminal_size(self.stdout.fileno())
-        return Size(size.lines, size.columns)
-
-    def fileno(self):
-        """
-        Stdout file descriptor.
-        """
-        return self.stdout.fileno()
-
-    def encoding(self):
-        """
-        Stdout encoding.
-        """
-        return self.stdout.encoding
+        cols, rows = get_terminal_size()
+        return Size(rows, cols)
 
     def write_raw(self, data):
         """
@@ -50,10 +36,8 @@ class Vt100_Output:
         Set terminal title.
         """
         if self.term not in ("linux", "eterm-color"):
-            title = title.replace("\x1b", "").replace("\x07", "")
-            self.write_raw(
-                f'\x1b]2;{title}\x07'
-            )
+            title = "".join(c for c in title if c not in "\x1b\x07")
+            self.write_raw(f"\x1b]2;{title}\x07")
 
     def clear_title(self):
         self.set_title("")
@@ -109,15 +93,14 @@ class Vt100_Output:
             return
 
         data = "".join(self._buffer)
-        self._buffer = [ ]
-        out = self.stdout
+        self._buffer.clear()
 
         try:
-            out.buffer.write(data.encode(out.encoding or "utf-8", "replace"))
-            out.flush()
+            stdout.buffer.write(data.encode(errors="replace"))
+            stdout.flush()
 
         except IOError as e:
-            if not (e.args and (e.args[0] == errno.EINTR or e.args[0] == 0)):
+            if not (e.args and e.args[0] in (0, EINTR)):
                 raise
 
     def bell(self):
