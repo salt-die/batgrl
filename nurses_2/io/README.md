@@ -1,4 +1,4 @@
-This io is based on `prompt_toolkit`'s input and output implementations. Much of the code is unmodified, but plenty has been removed or patched for nurses_2 functionality.
+This io is based on `prompt_toolkit`'s input and output implementations. Some of the code is unmodified, but much has been removed, rewritten or patched for nurses_2 functionality.
 
 `prompt_toolkit`'s license and copyright:
 
