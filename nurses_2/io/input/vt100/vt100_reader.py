@@ -140,10 +140,10 @@ class Vt100Reader:
             match ANSI_SEQUENCES.get(prefix):
                 case None:
                     continue
-                case Key() as key:
-                    self._events.append(key)
                 case Key.BracketedPaste:
                     self._in_bracketed_paste = True
+                case Key() as key:
+                    self._events.append(key)
                 case tuple() as key:
                     self._events.extend(key)
 
