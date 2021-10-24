@@ -17,16 +17,23 @@ class App(ABC):
 
     Parameters
     ----------
-    exit_key : Optional[str], default: "escape"
-        Quit the app when this key is pressed. Use None to disable exit_key (not recommended).
+    exit_key : Optional[str], default: Key.ControlF1
+        Quit the app when this key is pressed.
     default_char : str, default: " "
         Default background character for root widget.
     default_color_pair : ColorPair, default: BLACK_ON_BLACK
         Default background color pair for root widget.
     title : Optional[str], default: None
-        Set terminal title if supported.
+        Set terminal title (if supported).
     """
-    def __init__(self, *, exit_key=Key.Escape, default_char=" ", default_color_pair=BLACK_ON_BLACK, title=None):
+    def __init__(
+        self,
+        *,
+        exit_key=Key.ControlF1,
+        default_char=" ",
+        default_color_pair=BLACK_ON_BLACK,
+        title=None
+    ):
         self.exit_key = exit_key
         self.default_char = default_char
         self.default_color_pair = default_color_pair
