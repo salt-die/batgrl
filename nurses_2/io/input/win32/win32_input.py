@@ -1,14 +1,18 @@
 """
 Win32 Input.
+
+This namespace has functions analogous to Vt100Input's methods. `read_keys` is brought in from `console_input_reader`.
 """
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
 from ctypes import pointer, windll
-from ctypes.wintypes import DWORD
+from ctypes.wintypes import BOOL, DWORD, HANDLE
 
-from .handles import create_win32_event, wait_for_handles
+from ...win32_types import SECURITY_ATTRIBUTES
 from .console_input_reader import STDIN_HANDLE, read_keys  # read_keys is expected to be in this namespace
+
+TWO_ARR = HANDLE * 2
 
 @contextmanager
 def attach(callback):
@@ -19,8 +23,17 @@ def attach(callback):
         loop = get_event_loop()
         run_in_executor = loop.run_in_executor
         call_soon_threadsafe = loop.call_soon_threadsafe
+        wait_for = windll.kernel32.WaitForMultipleObjects
 
-        remove_event = create_win32_event()
+        # Anonymous win32 event.
+        remove_event = HANDLE(
+            windll.kernel32.CreateEventA(
+                pointer(SECURITY_ATTRIBUTES()),
+                BOOL(True),
+                BOOL(False),
+                None,
+            )
+        )
 
         def ready():
             try:
@@ -29,7 +42,7 @@ def attach(callback):
                 run_in_executor(None, wait)
 
         def wait():
-            if wait_for_handles(remove_event, STDIN_HANDLE) is remove_event:
+            if wait_for(2, TWO_ARR(remove_event, STDIN_HANDLE), BOOL(False), DWORD(-1)) == 0:
                 windll.kernel32.CloseHandle(remove_event)
                 return
 
