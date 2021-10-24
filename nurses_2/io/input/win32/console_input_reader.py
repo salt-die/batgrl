@@ -19,17 +19,13 @@ from .key_maps import *
 
 RIGHT_ALT_PRESSED = 0x0001
 LEFT_ALT_PRESSED = 0x0002
+ALT_PRESSED = RIGHT_ALT_PRESSED + LEFT_ALT_PRESSED
+
 RIGHT_CTRL_PRESSED = 0x0004
 LEFT_CTRL_PRESSED = 0x0008
+CTRL_PRESSED = RIGHT_CTRL_PRESSED + LEFT_CTRL_PRESSED
+
 SHIFT_PRESSED = 0x0010
-
-FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
-RIGHTMOST_BUTTON_PRESSED =  0x0002
-
-MOUSE_MOVED = 0x0001
-MOUSE_WHEELED = 0x0004
-
-MAX_BYTES = 2048
 
 STDIN_HANDLE = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
@@ -112,47 +108,40 @@ def _handle_paste(keys):
 
 def _handle_key(ev: KEY_EVENT_RECORD):
     """
-    Yield a Key (or two: if left-alt is pressed, Key.Escape will be yielded before key) from a KEY_EVENT_RECORD.
+    Yield a Keys from a KEY_EVENT_RECORD.
     """
-    control_key_state = ev.ControlKeyState
     u_char = ev.uChar.UnicodeChar
 
     key = (
         KEY_CODES.get(ev.VirtualKeyCode) if u_char == "\x00"
-        else ANSI_SEQUENCES.get(u_char.encode("utf-8", "surrogatepass"), u_char)
+        else ANSI_SEQUENCES.get(u_char.encode(errors="surrogatepass"), u_char)
     )
 
-    if not key:
+    if key is None:
         return
 
-    if (
-        control_key_state & LEFT_CTRL_PRESSED
-        or control_key_state & RIGHT_CTRL_PRESSED
-    ):
-        if key == " ":
-            key = Key.ControlSpace
-
-        elif key is Key.ControlJ:
-            key = Key.Escape
-
-        elif control_key_state & SHIFT_PRESSED:
+    if ev.ControlKeyState & CTRL_PRESSED:
+        if ev.ControlKeyState & SHIFT_PRESSED:
             key = CONTROL_SHIFT_KEYS.get(key, key)
 
         else:
             key = CONTROL_KEYS.get(key, key)
 
-    elif control_key_state & SHIFT_PRESSED:
+    elif ev.ControlKeyState & SHIFT_PRESSED:
         key = SHIFT_KEYS.get(key, key)
 
-    if control_key_state & LEFT_ALT_PRESSED:
+    if ev.ControlKeyState & LEFT_ALT_PRESSED:
         yield Key.Escape
 
     yield key
 
 def _handle_mouse(ev):
-    position = Point(ev.MousePosition.Y, ev.MousePosition.X)
+    FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
+    RIGHTMOST_BUTTON_PRESSED =  0x0002
 
-    # Event type
+    MOUSE_MOVED = 0x0001
+    MOUSE_WHEELED = 0x0004
+
     if ev.EventFlags & MOUSE_MOVED:
         event_type = MouseEventType.MOUSE_MOVE
     elif ev.EventFlags & MOUSE_WHEELED:
@@ -165,33 +154,32 @@ def _handle_mouse(ev):
     else:
         event_type = MouseEventType.MOUSE_DOWN
 
-    # Buttons
+    # https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str?redirectedfrom=MSDN
     if not ev.ButtonState:
         button = MouseButton.NO_BUTTON
     elif ev.ButtonState & FROM_LEFT_1ST_BUTTON_PRESSED:
         button = MouseButton.LEFT
     elif ev.ButtonState & RIGHTMOST_BUTTON_PRESSED:
         button = MouseButton.RIGHT
-    # More buttons here:
-    #     https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str?redirectedfrom=MSDN
-    # For now, just assume middle-mouse button.
     else:
         button = MouseButton.MIDDLE
 
-    # Modifiers
     mods = 0
-    if ev.ControlKeyState & LEFT_ALT_PRESSED or ev.ControlKeyState & RIGHT_ALT_PRESSED:
+    if ev.ControlKeyState & ALT_PRESSED:
         mods |= MouseModifierKey.ALT
-    if ev.ControlKeyState & LEFT_CTRL_PRESSED or ev.ControlKeyState & RIGHT_CTRL_PRESSED:
+    if ev.ControlKeyState & CTRL_PRESSED:
         mods |= MouseModifierKey.CONTROL
     if ev.ControlKeyState & SHIFT_PRESSED:
         mods |= MouseModifierKey.SHIFT
 
-    modifier = MouseModifier(mods)
+    return MouseEvent(
+        Point(ev.MousePosition.Y, ev.MousePosition.X),
+        event_type,
+        button,
+        MouseModifier(mods),
+    )
 
-    return MouseEvent(position, event_type, button, modifier)
-
-def _get_keys(input_records):  # TODO: Tee keys instead of separating into lists.
+def _get_keys(input_records):
     """
     Fill keys and mouse_events with events from input_records.
     """
@@ -199,13 +187,10 @@ def _get_keys(input_records):  # TODO: Tee keys instead of separating into lists
     mouse_events = [ ]
 
     for ir in input_records:
-        if attr := EventTypes.get(ir.EventType, False):
-            ev = getattr(ir.Event, attr)
-
-            if type(ev) is KEY_EVENT_RECORD and ev.KeyDown:
+        match getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
+            case KEY_EVENT_RECORD() as ev if ev.KeyDown:
                 keys.extend(_handle_key(ev))
-
-            elif type(ev) is MOUSE_EVENT_RECORD:
+            case MOUSE_EVENT_RECORD() as ev:
                 mouse_events.append(_handle_mouse(ev))
 
     return keys, mouse_events
@@ -216,8 +201,9 @@ def read_keys():
 
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
     """
-    arrtype = INPUT_RECORD * MAX_BYTES
-    input_records = arrtype()
+    MAX_BYTES = 2048
+    ARR_TYPE = INPUT_RECORD * MAX_BYTES
+    input_records = ARR_TYPE()
 
     windll.kernel32.ReadConsoleInputW(
         STDIN_HANDLE, pointer(input_records), MAX_BYTES, pointer(DWORD(0))
