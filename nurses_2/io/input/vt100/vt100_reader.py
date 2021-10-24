@@ -144,8 +144,8 @@ class Vt100Reader:
                     self._in_bracketed_paste = True
                 case Key() as key:
                     self._events.append(key)
-                case tuple() as key:
-                    self._events.extend(key)
+                case tuple() as keys:
+                    self._events.extend(keys)
 
             return suffix
 
