@@ -85,6 +85,9 @@ CONTROL_SHIFT_KEYS = {
 }
 
 CONTROL_KEYS = {
+    " ": Key.ControlSpace,
+    Key.ControlJ: Key.Escape,  # I'm unsure why prompt-toolkit converted this to Escape.
+
     Key.Left: Key.ControlLeft,
     Key.Right: Key.ControlRight,
     Key.Up: Key.ControlUp,
@@ -95,6 +98,31 @@ CONTROL_KEYS = {
     Key.Delete: Key.ControlDelete,
     Key.PageUp: Key.ControlPageUp,
     Key.PageDown: Key.ControlPageDown,
+
+    Key.F1: Key.ControlF1,
+    Key.F2: Key.ControlF2,
+    Key.F3: Key.ControlF3,
+    Key.F4: Key.ControlF4,
+    Key.F5: Key.ControlF5,
+    Key.F6: Key.ControlF6,
+    Key.F7: Key.ControlF7,
+    Key.F8: Key.ControlF8,
+    Key.F9: Key.ControlF9,
+    Key.F10: Key.ControlF10,
+    Key.F11: Key.ControlF11,
+    Key.F12: Key.ControlF12,
+    Key.F13: Key.ControlF13,
+    Key.F14: Key.ControlF14,
+    Key.F15: Key.ControlF15,
+    Key.F16: Key.ControlF16,
+    Key.F17: Key.ControlF17,
+    Key.F18: Key.ControlF18,
+    Key.F19: Key.ControlF19,
+    Key.F20: Key.ControlF20,
+    Key.F21: Key.ControlF21,
+    Key.F22: Key.ControlF22,
+    Key.F23: Key.ControlF23,
+    Key.F24: Key.ControlF24,
 }
 
 SHIFT_KEYS = {
