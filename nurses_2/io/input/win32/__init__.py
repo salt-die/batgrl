@@ -1,1 +1,1 @@
-from .win32 import Win32Input
+from . import win32_input

@@ -29,9 +29,9 @@ def create_io():
         if not (is_conemu_ansi() or is_win_vt100_enabled()):
             raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 
-        from .input.win32 import Win32Input
+        from .input.win32 import win32_input  # Note we return a namespace and not a class.
 
-        return Win32Input(), Windows10_Output()
+        return win32_input, Windows10_Output()
 
     else:
         from .input.vt100 import Vt100Input
