@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
 import asyncio
+from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
 from .colors import BLACK_ON_BLACK
-from .io import create_io, PasteEvent, MouseEvent
+from .io import create_io, PasteEvent, MouseEvent, Key
 from .widgets._root import _Root
 
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
@@ -19,38 +19,14 @@ class App(ABC):
     ----------
     exit_key : Optional[str], default: "escape"
         Quit the app when this key is pressed. Use None to disable exit_key (not recommended).
-        If the exit key is modified while the app is running, the app will still use the old key
-        until it exits.
     default_char : str, default: " "
         Default background character for root widget.
     default_color_pair : ColorPair, default: BLACK_ON_BLACK
         Default background color pair for root widget.
     title : Optional[str], default: None
         Set terminal title if supported.
-
-    Notes
-    -----
-    To create an app, inherit this class and implement the async method `on_start`. Typical
-    use would be to add widgets to `self.root` (the root of the widget tree) and schedule those widgets'
-    coroutines. `on_start` is scheduled concurrently so it may run indefinitely if needed.
-
-    Example
-    -------
-    ```py
-    class MyApp(App):
-        async def on_start(self):
-            widget_1 = BouncingWidget(size=(20, 20))
-            widget_2 = BouncingWidget(size=(10, 30))
-
-            self.root.add_widgets(widget_1, widget_2)
-
-            widget_1.start(velocity=1 + 1j, roll_axis=0)
-            widget_2.start(velocity=-1 - 1j, roll_axis=1)
-
-    MyApp().run()
-    ```
     """
-    def __init__(self, *, exit_key="escape", default_char=" ", default_color_pair=BLACK_ON_BLACK, title=None):
+    def __init__(self, *, exit_key=Key.Escape, default_char=" ", default_color_pair=BLACK_ON_BLACK, title=None):
         self.exit_key = exit_key
         self.default_char = default_char
         self.default_color_pair = default_color_pair
@@ -80,8 +56,6 @@ class App(ABC):
         Build environment, create root, and schedule app-specific tasks.
         """
         with create_environment(self.title) as (env_out, env_in):
-            exit_key = self.exit_key
-
             self.root = root = _Root(
                 app=self,
                 env_out=env_out,
@@ -100,15 +74,15 @@ class App(ABC):
                 Read and process input.
                 """
                 for key in env_in.read_keys():
-                    if key == exit_key:
-                        return self.exit()
-
-                    if isinstance(key, MouseEvent):
-                        dispatch_click(key)
-                    elif isinstance(key, PasteEvent):
-                        dispatch_paste(key)
-                    else:
-                        dispatch_press(key)
+                    match key:
+                        case self.exit_key:
+                            return self.exit()
+                        case MouseEvent():
+                            dispatch_click(key)
+                        case PasteEvent():
+                            dispatch_paste(key)
+                        case _:
+                            dispatch_press(key)
 
                 nonlocal flush_timer
                 flush_timer.cancel()
@@ -119,15 +93,15 @@ class App(ABC):
                 Flush input.
                 """
                 for key in env_in.flush_keys():
-                    if key == exit_key:
-                        return self.exit()
-
-                    if isinstance(key, MouseEvent):
-                        dispatch_click(key)
-                    elif isinstance(key, PasteEvent):
-                        dispatch_paste(key)
-                    else:
-                        dispatch_press(key)
+                    match key:
+                        case self.exit_key:
+                            return self.exit()
+                        case MouseEvent():
+                            dispatch_click(key)
+                        case PasteEvent():
+                            dispatch_paste(key)
+                        case _:
+                            dispatch_press(key)
 
             async def poll_size():
                 """
@@ -165,23 +139,22 @@ class App(ABC):
 @contextmanager
 def create_environment(title):
     """
-    Enter alternate screen and create platform specific input. Restore screen and close input on exit.
+    Setup and return input and output.
     """
     env_in, env_out = create_io()
 
+    env_in.flush_keys()  # Ignoring type-ahead
+
+    env_out.enable_mouse_support()
+    env_out.enable_bracketed_paste()
+    env_out.enter_alternate_screen()
+    if title is not None:
+        env_out.set_title(title)
+    env_out.flush()
+
     try:
-        env_out.enable_mouse_support()
-        env_out.enable_bracketed_paste()
-        env_out.enter_alternate_screen()
-
-        if title is not None:
-            env_out.set_title(title)
-
-        env_out.flush()
-
-        env_in.flush_keys()  # Ignoring type-ahead
-
         yield env_out, env_in
+
     finally:
         env_in.flush_keys()
 
@@ -190,10 +163,6 @@ def create_environment(title):
         env_out.disable_mouse_support()
         env_out.disable_bracketed_paste()
         env_out.show_cursor()
-
-        # Blinking line cursor. Show cursor will stop a blinking cursor.
-        # Saving cursor attributes is a mystery to me for now.
-        env_out.write_raw("\x1b[\x35 q")
-
+        env_out.blinking_line_cursor()
         env_out.flush()
         env_out.restore_console()
