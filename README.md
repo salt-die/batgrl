@@ -33,3 +33,7 @@ To create a nurses_2 app, inherit the `App` class and implement the `on_start` a
 # /examples/minesweeper
 
 ![Minesweeper Preview](preview_images/minesweeper.gif)
+
+# /examples/cloth
+
+![Cloth Preview](preview_images/cloth_preview.gif)
