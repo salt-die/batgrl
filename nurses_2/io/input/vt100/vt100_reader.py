@@ -105,29 +105,25 @@ class Vt100Reader:
         data = ""
 
         while True:
-            char = yield
+            match (yield):
+                case None:  # Flush
+                    while data:
+                        data = find_longest_match(data)
 
-            if char is None:  # Flush
-                self._in_bracketed_paste = False
+                case char:
+                    data += char
 
-                while data:
-                    data = find_longest_match(data)
+            if self._in_bracketed_paste:
+                if data.endswith(END_PASTE):
+                    self._events.append(
+                        PasteEvent(data.removesuffix(END_PASTE))
+                    )
 
-            else:
-                data += char
+                    data = ""
+                    self._in_bracketed_paste = False
 
-                # If in bracketed paste, collect data until END_PASTE.
-                if self._in_bracketed_paste:
-                    if data.endswith(END_PASTE):
-                        self._events.append(
-                            PasteEvent(data.removesuffix(END_PASTE))
-                        )
-
-                        data = ""
-                        self._in_bracketed_paste = False
-
-                elif data and not _HAS_LONGER_MATCH[data]:
-                    data = find_longest_match(data)
+            elif data and not _HAS_LONGER_MATCH[data]:
+                data = find_longest_match(data)
 
     def _find_longest_match(self, data):
         """
@@ -141,15 +137,17 @@ class Vt100Reader:
                 self._events.append(_create_mouse_event(prefix))
                 return suffix
 
-            if (key := ANSI_SEQUENCES.get(prefix)) is not None:
-                if key is Key.BracketedPaste:
-                    self._in_bracketed_paste = True
-                elif isinstance(key, tuple):
-                    self._events.extend(key)
-                else:
+            match ANSI_SEQUENCES.get(prefix):
+                case None:
+                    continue
+                case Key() as key:
                     self._events.append(key)
+                case Key.BracketedPaste:
+                    self._in_bracketed_paste = True
+                case tuple() as key:
+                    self._events.extend(key)
 
-                return suffix
+            return suffix
 
         self._events.append(prefix)
         return suffix
