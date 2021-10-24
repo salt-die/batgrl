@@ -83,7 +83,10 @@ class Vt100_Output:
         self.write_raw("\x1b[?2004l")
 
     def show_cursor(self):
-        self.write_raw("\x1b[?12l\x1b[?25h")  # Stop blinking cursor and show.
+        self.write_raw("\x1b[?12l\x1b[?25h")
+
+    def blinking_line_cursor(self):
+        self.write_raw("\x1b[\x35 q")
 
     def flush(self):
         """
