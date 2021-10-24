@@ -46,10 +46,10 @@ class Vt100Input:
                 pass
             else:
                 newattr[tty.LFLAG] = newattr[tty.LFLAG] & ~(
-                    termios.ECHO |
-                    termios.ICANON |
-                    termios.IEXTEN |
-                    termios.ISIG
+                    termios.ECHO
+                    | termios.ICANON
+                    | termios.IEXTEN
+                    | termios.ISIG
                 )
                 newattr[tty.IFLAG] = newattr[tty.IFLAG] & ~(
                     termios.IXON
