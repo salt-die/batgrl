@@ -59,6 +59,9 @@ def _handle_key(ev: KEY_EVENT_RECORD):
     yield key
 
 def _handle_mouse(ev):
+    """
+    Return MouseEvent from EVENT_RECORD.
+    """
     FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
     RIGHTMOST_BUTTON_PRESSED =  0x0002
 
@@ -103,6 +106,10 @@ def _handle_mouse(ev):
     )
 
 def _purge(text):
+    """
+    Merge surrogate pairs, detect any PasteEvents and otherwise, yield Keys from text.
+    Text is cleared afterwards.
+    """
     chars = (
         "".join(text)
         .encode("utf-16", "surrogatepass")
@@ -113,8 +120,7 @@ def _purge(text):
         yield PasteEvent(chars)
 
     else:
-        for char in chars:
-            yield Key.ControlM if char == "\n" else char
+        yield from (Key.ControlM if char == "\n" else char for char in chars)
 
     text.clear()
 
