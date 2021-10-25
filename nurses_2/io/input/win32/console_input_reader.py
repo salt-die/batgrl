@@ -179,22 +179,6 @@ def _handle_mouse(ev):
         MouseModifier(mods),
     )
 
-def _get_keys(input_records):
-    """
-    Fill keys and mouse_events with events from input_records.
-    """
-    keys = [ ]
-    mouse_events = [ ]
-
-    for ir in input_records:
-        match getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
-            case KEY_EVENT_RECORD() as ev if ev.KeyDown:
-                keys.extend(_handle_key(ev))
-            case MOUSE_EVENT_RECORD() as ev:
-                mouse_events.append(_handle_mouse(ev))
-
-    return keys, mouse_events
-
 def read_keys():
     """
     Yield input events.
@@ -209,10 +193,15 @@ def read_keys():
         STDIN_HANDLE, pointer(input_records), MAX_BYTES, pointer(DWORD(0))
     )
 
-    keys, mouse_events = _get_keys(input_records)
+    keys = [ ]
 
-    # Correct non-bmp characters that are passed as separate surrogate codes
+    for ir in input_records:
+        match getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
+            case KEY_EVENT_RECORD() as ev if ev.KeyDown:
+                keys.extend(_handle_key(ev))
+            case MOUSE_EVENT_RECORD() as ev:
+                yield _handle_mouse(ev)
+
     keys = tuple(_merge_paired_surrogates(keys))
 
     yield from _handle_paste(keys) if _is_paste(keys) else keys
-    yield from mouse_events
