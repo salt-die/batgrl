@@ -101,7 +101,7 @@ def _handle_mouse(ev):
         MouseModifier(mods),
     )
 
-def _purge(text):
+def _purge(text: list[str]):
     """
     Merge surrogate pairs, detect any PasteEvents and otherwise, yield Keys from text.
     Text is cleared afterwards.
