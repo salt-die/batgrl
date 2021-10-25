@@ -19,13 +19,11 @@ from .key_maps import *
 
 RIGHT_ALT_PRESSED = 0x0001
 LEFT_ALT_PRESSED = 0x0002
-ALT_PRESSED = RIGHT_ALT_PRESSED + LEFT_ALT_PRESSED
-
 RIGHT_CTRL_PRESSED = 0x0004
 LEFT_CTRL_PRESSED = 0x0008
-CTRL_PRESSED = RIGHT_CTRL_PRESSED + LEFT_CTRL_PRESSED
-
 SHIFT_PRESSED = 0x0010
+CTRL_PRESSED = RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED
+ALT_PRESSED = RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED
 
 STDIN_HANDLE = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
@@ -33,30 +31,28 @@ def _handle_key(ev: KEY_EVENT_RECORD):
     """
     Yield a Keys from a KEY_EVENT_RECORD.
     """
-    u_char = ev.uChar.UnicodeChar
+    match ev.uChar.UnicodeChar:
+        case "\x00":
+            key = KEY_CODES.get(ev.VirtualKeyCode)
 
-    key = (
-        KEY_CODES.get(ev.VirtualKeyCode) if u_char == "\x00"
-        else ANSI_SEQUENCES.get(u_char.encode(errors="surrogatepass"), u_char)
-    )
+            if key is None:
+                return
 
-    if key is None:
-        return
-
-    if ev.ControlKeyState & CTRL_PRESSED:
-        if ev.ControlKeyState & SHIFT_PRESSED:
-            key = CONTROL_SHIFT_KEYS.get(key, key)
-
-        else:
-            key = CONTROL_KEYS.get(key, key)
-
-    elif ev.ControlKeyState & SHIFT_PRESSED:
-        key = SHIFT_KEYS.get(key, key)
+        case u_char:
+            key = ANSI_SEQUENCES.get(u_char.encode(errors="surrogatepass"), u_char)
 
     if ev.ControlKeyState & LEFT_ALT_PRESSED:
         yield Key.Escape
 
-    yield key
+    if ev.ControlKeyState & CTRL_PRESSED:
+        if ev.ControlKeyState & SHIFT_PRESSED:
+            yield CONTROL_SHIFT_KEYS.get(key, key)
+        else:
+            yield CONTROL_KEYS.get(key, key)
+    elif ev.ControlKeyState & SHIFT_PRESSED:
+        yield SHIFT_KEYS.get(key, key)
+    else:
+        yield key
 
 def _handle_mouse(ev):
     """
