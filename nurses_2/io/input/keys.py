@@ -168,15 +168,8 @@ class Key(str, Enum):
 
     Ignore = "<ignore>"
 
-    # Some 'Key' aliases (for backwards-compatibility).
+    # Aliases
     ControlSpace = ControlAt
     Tab = ControlI
     Enter = ControlM
     Backspace = ControlH
-
-    # ShiftControl was renamed to ControlShift in
-    # 888fcb6fa4efea0de8333177e1bbc792f3ff3c24 (20 Feb 2020).
-    ShiftControlLeft = ControlShiftLeft
-    ShiftControlRight = ControlShiftRight
-    ShiftControlHome = ControlShiftHome
-    ShiftControlEnd = ControlShiftEnd
