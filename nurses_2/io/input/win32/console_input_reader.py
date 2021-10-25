@@ -29,83 +29,6 @@ SHIFT_PRESSED = 0x0010
 
 STDIN_HANDLE = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
-def _merge_paired_surrogates(keys):
-    """
-    Combines consecutive Key with high and low surrogates into
-    single characters
-    """
-    buffered_high_surrogate = None
-
-    for key in keys:
-        is_text = not isinstance(key, Key)
-        is_high_surrogate = is_text and "\uD800" <= key <= "\uDBFF"
-        is_low_surrogate = is_text and "\uDC00" <= key <= "\uDFFF"
-
-        if buffered_high_surrogate:
-            if is_low_surrogate:
-                yield (
-                    (buffered_high_surrogate + key)
-                    .encode("utf-16-le", "surrogatepass")
-                    .decode("utf-16-le")
-                )
-                buffered_high_surrogate = None
-            else:
-                yield buffered_high_surrogate
-                buffered_high_surrogate = key
-
-        elif is_high_surrogate:
-            buffered_high_surrogate = key
-        else:
-            yield key
-
-    if buffered_high_surrogate:
-        yield buffered_high_surrogate
-
-def _is_paste(keys):
-    """
-    A list of keys will be considered a paste if there is
-    at least one newline and at least two other characters.
-    """
-    n_text = 0
-    has_newline = False
-
-    for key in keys:
-        if n_text < 2 and not isinstance(key, Key):
-            n_text += 1
-
-            if n_text > 1 and has_newline:  # Early escape
-                return True
-
-        elif not has_newline and key is Key.ControlM:
-            has_newline = True
-
-            if n_text > 1 and has_newline:  # Early escape
-                return True
-
-    return False
-
-def _handle_paste(keys):
-    """
-    Collect text into a PasteEvent.
-    """
-    key_iter = iter(keys)
-
-    paste_text = [ ]
-
-    while (
-        (key := next(key_iter, False))
-        and (not isinstance(key, Key) or key is Key.ControlM)
-    ):
-        paste_text.append("\n" if key is Key.ControlM else key)
-
-    if paste_text:
-        yield PasteEvent("".join(paste_text))
-
-    if key:
-        yield key
-
-    yield from key_iter
-
 def _handle_key(ev: KEY_EVENT_RECORD):
     """
     Yield a Keys from a KEY_EVENT_RECORD.
@@ -179,6 +102,22 @@ def _handle_mouse(ev):
         MouseModifier(mods),
     )
 
+def _purge(text):
+    chars = (
+        "".join(text)
+        .encode("utf-16", "surrogatepass")
+        .decode("utf-16")
+    )  # Merge surrogate pairs.
+
+    if "\n" in chars and len(chars) > 3:  # Heuristic for detecting paste event.
+        yield PasteEvent(chars)
+
+    else:
+        for char in chars:
+            yield Key.ControlM if char == "\n" else char
+
+    text.clear()
+
 def read_keys():
     """
     Yield input events.
@@ -193,15 +132,24 @@ def read_keys():
         STDIN_HANDLE, pointer(input_records), MAX_BYTES, pointer(DWORD(0))
     )
 
-    keys = [ ]
-
+    text = [ ]
     for ir in input_records:
         match getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
             case KEY_EVENT_RECORD() as ev if ev.KeyDown:
-                keys.extend(_handle_key(ev))
+                for key in _handle_key(ev):
+                    match key:
+                        case Key.ControlM:
+                            text.append("\n")
+                        case Key():
+                            if text:
+                                yield from _purge(text)
+                            yield key
+                        case _:
+                            text.append(key)
+
             case MOUSE_EVENT_RECORD() as ev:
+                if text:
+                    yield from _purge(text)
                 yield _handle_mouse(ev)
 
-    keys = tuple(_merge_paired_surrogates(keys))
-
-    yield from _handle_paste(keys) if _is_paste(keys) else keys
+    yield from _purge(text)
