@@ -2,292 +2,308 @@
 Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
 """
 from ..keys import Key
+from ..event_data_structures import Mods, KeyPressEvent
+
+NO_MODS           = Mods(False, False, False)
+ALT               = Mods(True , False, False)
+CONTROL           = Mods(False, True , False)
+SHIFT             = Mods(False, False, True )
+ALT_CONTROL       = Mods(True , True , False)
+ALT_SHIFT         = Mods(True , False, True )
+CONTROL_SHIFT     = Mods(False, True , True )
+ALT_CONTROL_SHIFT = Mods(True , True , True )
 
 ANSI_SEQUENCES = {
-    # Control keys.
-    "\x00": Key.ControlAt,  # Control-At (Also for Ctrl-Space)
-    "\x01": Key.ControlA,  # Control-A (home)
-    "\x02": Key.ControlB,  # Control-B (emacs cursor left)
-    "\x03": Key.ControlC,  # Control-C (interrupt)
-    "\x04": Key.ControlD,  # Control-D (exit)
-    "\x05": Key.ControlE,  # Control-E (end)
-    "\x06": Key.ControlF,  # Control-F (cursor forward)
-    "\x07": Key.ControlG,  # Control-G
-    "\x08": Key.ControlH,  # Control-H (8) (Identical to '\b')
-    "\x09": Key.ControlI,  # Control-I (9) (Identical to '\t')
-    "\x0a": Key.ControlJ,  # Control-J (10) (Identical to '\n')
-    "\x0b": Key.ControlK,  # Control-K (delete until end of line; vertical tab)
-    "\x0c": Key.ControlL,  # Control-L (clear; form feed)
-    "\x0d": Key.ControlM,  # Control-M (13) (Identical to '\r')
-    "\x0e": Key.ControlN,  # Control-N (14) (history forward)
-    "\x0f": Key.ControlO,  # Control-O (15)
-    "\x10": Key.ControlP,  # Control-P (16) (history back)
-    "\x11": Key.ControlQ,  # Control-Q
-    "\x12": Key.ControlR,  # Control-R (18) (reverse search)
-    "\x13": Key.ControlS,  # Control-S (19) (forward search)
-    "\x14": Key.ControlT,  # Control-T
-    "\x15": Key.ControlU,  # Control-U
-    "\x16": Key.ControlV,  # Control-V
-    "\x17": Key.ControlW,  # Control-W
-    "\x18": Key.ControlX,  # Control-X
-    "\x19": Key.ControlY,  # Control-Y (25)
-    "\x1a": Key.ControlZ,  # Control-Z
-    "\x1b": Key.Escape,  # Also Control-[
-    "\x9b": Key.ShiftEscape,
-    "\x1c": Key.ControlBackslash,  # Both Control-\ (also Ctrl-| )
-    "\x1d": Key.ControlSquareClose,  # Control-]
-    "\x1e": Key.ControlCircumflex,  # Control-^
-    "\x1f": Key.ControlUnderscore,  # Control-underscore (Also for Ctrl-hyphen.)
-    "\x7f": Key.ControlH,
-    # --
-    # Various
-    "\x1b[1~": Key.Home,  # tmux
-    "\x1b[2~": Key.Insert,
-    "\x1b[3~": Key.Delete,
-    "\x1b[4~": Key.End,  # tmux
-    "\x1b[5~": Key.PageUp,
-    "\x1b[6~": Key.PageDown,
-    "\x1b[7~": Key.Home,  # xrvt
-    "\x1b[8~": Key.End,  # xrvt
-    "\x1b[Z": Key.BackTab,  # shift + tab
-    "\x1b\x09": Key.BackTab,  # Linux console
-    "\x1b[~": Key.BackTab,  # Windows console
-    # --
-    # Function keys.
-    "\x1bOP": Key.F1,
-    "\x1bOQ": Key.F2,
-    "\x1bOR": Key.F3,
-    "\x1bOS": Key.F4,
-    "\x1b[[A": Key.F1,  # Linux console.
-    "\x1b[[B": Key.F2,  # Linux console.
-    "\x1b[[C": Key.F3,  # Linux console.
-    "\x1b[[D": Key.F4,  # Linux console.
-    "\x1b[[E": Key.F5,  # Linux console.
-    "\x1b[11~": Key.F1,  # rxvt-unicode
-    "\x1b[12~": Key.F2,  # rxvt-unicode
-    "\x1b[13~": Key.F3,  # rxvt-unicode
-    "\x1b[14~": Key.F4,  # rxvt-unicode
-    "\x1b[15~": Key.F5,
-    "\x1b[17~": Key.F6,
-    "\x1b[18~": Key.F7,
-    "\x1b[19~": Key.F8,
-    "\x1b[20~": Key.F9,
-    "\x1b[21~": Key.F10,
-    "\x1b[23~": Key.F11,
-    "\x1b[24~": Key.F12,
-    "\x1b[25~": Key.F13,
-    "\x1b[26~": Key.F14,
-    "\x1b[28~": Key.F15,
-    "\x1b[29~": Key.F16,
-    "\x1b[31~": Key.F17,
-    "\x1b[32~": Key.F18,
-    "\x1b[33~": Key.F19,
-    "\x1b[34~": Key.F20,
-    # Xterm
-    "\x1b[1;2P": Key.F13,
-    "\x1b[1;2Q": Key.F14,
-    # '\x1b[1;2R': Key.F15,  # Conflicts with CPR response.
-    "\x1b[1;2S": Key.F16,
-    "\x1b[15;2~": Key.F17,
-    "\x1b[17;2~": Key.F18,
-    "\x1b[18;2~": Key.F19,
-    "\x1b[19;2~": Key.F20,
-    "\x1b[20;2~": Key.F21,
-    "\x1b[21;2~": Key.F22,
-    "\x1b[23;2~": Key.F23,
-    "\x1b[24;2~": Key.F24,
-    # --
-    # Control + function keys.
-    "\x1b[1;5P": Key.ControlF1,
-    "\x1b[1;5Q": Key.ControlF2,
-    # "\x1b[1;5R": Key.ControlF3,  # Conflicts with CPR response.
-    "\x1b[1;5S": Key.ControlF4,
-    "\x1b[15;5~": Key.ControlF5,
-    "\x1b[17;5~": Key.ControlF6,
-    "\x1b[18;5~": Key.ControlF7,
-    "\x1b[19;5~": Key.ControlF8,
-    "\x1b[20;5~": Key.ControlF9,
-    "\x1b[21;5~": Key.ControlF10,
-    "\x1b[23;5~": Key.ControlF11,
-    "\x1b[24;5~": Key.ControlF12,
-    "\x1b[1;6P": Key.ControlF13,
-    "\x1b[1;6Q": Key.ControlF14,
-    # "\x1b[1;6R": Key.ControlF15,  # Conflicts with CPR response.
-    "\x1b[1;6S": Key.ControlF16,
-    "\x1b[15;6~": Key.ControlF17,
-    "\x1b[17;6~": Key.ControlF18,
-    "\x1b[18;6~": Key.ControlF19,
-    "\x1b[19;6~": Key.ControlF20,
-    "\x1b[20;6~": Key.ControlF21,
-    "\x1b[21;6~": Key.ControlF22,
-    "\x1b[23;6~": Key.ControlF23,
-    "\x1b[24;6~": Key.ControlF24,
-    # --
-    # Tmux (Win32 subsystem) sends the following scroll events.
-    "\x1b[62~": Key.ScrollUp,
-    "\x1b[63~": Key.ScrollDown,
-    "\x1b[200~": Key.BracketedPaste,  # Start of bracketed paste.
-    # --
-    # Sequences generated by numpad 5. Not sure what it means. (It doesn't
-    # appear in 'infocmp'. Just ignore.
-    "\x1b[E": Key.Ignore,  # Xterm.
-    "\x1b[G": Key.Ignore,  # Linux console.
-    # --
-    # Meta/control/escape + pageup/pagedown/insert/delete.
-    "\x1b[3;2~": Key.ShiftDelete,  # xterm, gnome-terminal.
-    "\x1b[5;2~": Key.ShiftPageUp,
-    "\x1b[6;2~": Key.ShiftPageDown,
-    "\x1b[2;3~": (Key.Escape, Key.Insert),
-    "\x1b[3;3~": (Key.Escape, Key.Delete),
-    "\x1b[5;3~": (Key.Escape, Key.PageUp),
-    "\x1b[6;3~": (Key.Escape, Key.PageDown),
-    "\x1b[2;4~": (Key.Escape, Key.ShiftInsert),
-    "\x1b[3;4~": (Key.Escape, Key.ShiftDelete),
-    "\x1b[5;4~": (Key.Escape, Key.ShiftPageUp),
-    "\x1b[6;4~": (Key.Escape, Key.ShiftPageDown),
-    "\x1b[3;5~": Key.ControlDelete,  # xterm, gnome-terminal.
-    "\x1b[5;5~": Key.ControlPageUp,
-    "\x1b[6;5~": Key.ControlPageDown,
-    "\x1b[3;6~": Key.ControlShiftDelete,
-    "\x1b[5;6~": Key.ControlShiftPageUp,
-    "\x1b[6;6~": Key.ControlShiftPageDown,
-    "\x1b[2;7~": (Key.Escape, Key.ControlInsert),
-    "\x1b[5;7~": (Key.Escape, Key.ControlPageDown),
-    "\x1b[6;7~": (Key.Escape, Key.ControlPageDown),
-    "\x1b[2;8~": (Key.Escape, Key.ControlShiftInsert),
-    "\x1b[5;8~": (Key.Escape, Key.ControlShiftPageDown),
-    "\x1b[6;8~": (Key.Escape, Key.ControlShiftPageDown),
-    # --
-    # Arrows.
-    # (Normal cursor mode).
-    "\x1b[A": Key.Up,
-    "\x1b[B": Key.Down,
-    "\x1b[C": Key.Right,
-    "\x1b[D": Key.Left,
-    "\x1b[H": Key.Home,
-    "\x1b[F": Key.End,
-    # Tmux sends following keystrokes when control+arrow is pressed, but for
-    # Emacs ansi-term sends the same sequences for normal arrow keys. Consider
-    # it a normal arrow press, because that's more important.
-    # (Application cursor mode).
-    "\x1bOA": Key.Up,
-    "\x1bOB": Key.Down,
-    "\x1bOC": Key.Right,
-    "\x1bOD": Key.Left,
-    "\x1bOF": Key.End,
-    "\x1bOH": Key.Home,
-    # Shift + arrows.
-    "\x1b[1;2A": Key.ShiftUp,
-    "\x1b[1;2B": Key.ShiftDown,
-    "\x1b[1;2C": Key.ShiftRight,
-    "\x1b[1;2D": Key.ShiftLeft,
-    "\x1b[1;2F": Key.ShiftEnd,
-    "\x1b[1;2H": Key.ShiftHome,
-    # Meta + arrow keys. Several terminals handle this differently.
-    # The following sequences are for xterm and gnome-terminal.
-    #     (Iterm sends ESC followed by the normal arrow_up/down/left/right
-    #     sequences, and the OSX Terminal sends ESCb and ESCf for "alt
-    #     arrow_left" and "alt arrow_right." We don't handle these
-    #     explicitly, in here, because would could not distinguish between
-    #     pressing ESC (to go to Vi navigation mode), followed by just the
-    #     'b' or 'f' key. These combinations are handled in
-    #     the input processor.)
-    "\x1b[1;3A": (Key.Escape, Key.Up),
-    "\x1b[1;3B": (Key.Escape, Key.Down),
-    "\x1b[1;3C": (Key.Escape, Key.Right),
-    "\x1b[1;3D": (Key.Escape, Key.Left),
-    "\x1b[1;3F": (Key.Escape, Key.End),
-    "\x1b[1;3H": (Key.Escape, Key.Home),
-    # Alt+shift+number.
-    "\x1b[1;4A": (Key.Escape, Key.ShiftDown),
-    "\x1b[1;4B": (Key.Escape, Key.ShiftUp),
-    "\x1b[1;4C": (Key.Escape, Key.ShiftRight),
-    "\x1b[1;4D": (Key.Escape, Key.ShiftLeft),
-    "\x1b[1;4F": (Key.Escape, Key.ShiftEnd),
-    "\x1b[1;4H": (Key.Escape, Key.ShiftHome),
-    # Control + arrows.
-    "\x1b[1;5A": Key.ControlUp,  # Cursor Mode
-    "\x1b[1;5B": Key.ControlDown,  # Cursor Mode
-    "\x1b[1;5C": Key.ControlRight,  # Cursor Mode
-    "\x1b[1;5D": Key.ControlLeft,  # Cursor Mode
-    "\x1b[1;5F": Key.ControlEnd,
-    "\x1b[1;5H": Key.ControlHome,
-    # Tmux sends following keystrokes when control+arrow is pressed, but for
-    # Emacs ansi-term sends the same sequences for normal arrow keys. Consider
-    # it a normal arrow press, because that's more important.
-    "\x1b[5A": Key.ControlUp,
-    "\x1b[5B": Key.ControlDown,
-    "\x1b[5C": Key.ControlRight,
-    "\x1b[5D": Key.ControlLeft,
-    "\x1bOc": Key.ControlRight,  # rxvt
-    "\x1bOd": Key.ControlLeft,  # rxvt
-    # Control + shift + arrows.
-    "\x1b[1;6A": Key.ControlShiftDown,
-    "\x1b[1;6B": Key.ControlShiftUp,
-    "\x1b[1;6C": Key.ControlShiftRight,
-    "\x1b[1;6D": Key.ControlShiftLeft,
-    "\x1b[1;6F": Key.ControlShiftEnd,
-    "\x1b[1;6H": Key.ControlShiftHome,
-    # Control + Meta + arrows.
-    "\x1b[1;7A": (Key.Escape, Key.ControlDown),
-    "\x1b[1;7B": (Key.Escape, Key.ControlUp),
-    "\x1b[1;7C": (Key.Escape, Key.ControlRight),
-    "\x1b[1;7D": (Key.Escape, Key.ControlLeft),
-    "\x1b[1;7F": (Key.Escape, Key.ControlEnd),
-    "\x1b[1;7H": (Key.Escape, Key.ControlHome),
-    # Meta + Shift + arrows.
-    "\x1b[1;8A": (Key.Escape, Key.ControlShiftDown),
-    "\x1b[1;8B": (Key.Escape, Key.ControlShiftUp),
-    "\x1b[1;8C": (Key.Escape, Key.ControlShiftRight),
-    "\x1b[1;8D": (Key.Escape, Key.ControlShiftLeft),
-    "\x1b[1;8F": (Key.Escape, Key.ControlShiftEnd),
-    "\x1b[1;8H": (Key.Escape, Key.ControlShiftHome),
-    # Meta + arrow on (some?) Macs when using iTerm defaults (see issue #483).
-    "\x1b[1;9A": (Key.Escape, Key.Up),
-    "\x1b[1;9B": (Key.Escape, Key.Down),
-    "\x1b[1;9C": (Key.Escape, Key.Right),
-    "\x1b[1;9D": (Key.Escape, Key.Left),
-    # --
-    # Control/shift/meta + number in mintty.
-    # (c-2 will actually send c-@ and c-6 will send c-^.)
-    "\x1b[1;5p": Key.Control0,
-    "\x1b[1;5q": Key.Control1,
-    "\x1b[1;5r": Key.Control2,
-    "\x1b[1;5s": Key.Control3,
-    "\x1b[1;5t": Key.Control4,
-    "\x1b[1;5u": Key.Control5,
-    "\x1b[1;5v": Key.Control6,
-    "\x1b[1;5w": Key.Control7,
-    "\x1b[1;5x": Key.Control8,
-    "\x1b[1;5y": Key.Control9,
-    "\x1b[1;6p": Key.ControlShift0,
-    "\x1b[1;6q": Key.ControlShift1,
-    "\x1b[1;6r": Key.ControlShift2,
-    "\x1b[1;6s": Key.ControlShift3,
-    "\x1b[1;6t": Key.ControlShift4,
-    "\x1b[1;6u": Key.ControlShift5,
-    "\x1b[1;6v": Key.ControlShift6,
-    "\x1b[1;6w": Key.ControlShift7,
-    "\x1b[1;6x": Key.ControlShift8,
-    "\x1b[1;6y": Key.ControlShift9,
-    "\x1b[1;7p": (Key.Escape, Key.Control0),
-    "\x1b[1;7q": (Key.Escape, Key.Control1),
-    "\x1b[1;7r": (Key.Escape, Key.Control2),
-    "\x1b[1;7s": (Key.Escape, Key.Control3),
-    "\x1b[1;7t": (Key.Escape, Key.Control4),
-    "\x1b[1;7u": (Key.Escape, Key.Control5),
-    "\x1b[1;7v": (Key.Escape, Key.Control6),
-    "\x1b[1;7w": (Key.Escape, Key.Control7),
-    "\x1b[1;7x": (Key.Escape, Key.Control8),
-    "\x1b[1;7y": (Key.Escape, Key.Control9),
-    "\x1b[1;8p": (Key.Escape, Key.ControlShift0),
-    "\x1b[1;8q": (Key.Escape, Key.ControlShift1),
-    "\x1b[1;8r": (Key.Escape, Key.ControlShift2),
-    "\x1b[1;8s": (Key.Escape, Key.ControlShift3),
-    "\x1b[1;8t": (Key.Escape, Key.ControlShift4),
-    "\x1b[1;8u": (Key.Escape, Key.ControlShift5),
-    "\x1b[1;8v": (Key.Escape, Key.ControlShift6),
-    "\x1b[1;8w": (Key.Escape, Key.ControlShift7),
-    "\x1b[1;8x": (Key.Escape, Key.ControlShift8),
-    "\x1b[1;8y": (Key.Escape, Key.ControlShift9),
+    "\x00": KeyPressEvent(" ", CONTROL),
+    "\x01": KeyPressEvent("a", CONTROL),
+    "\x02": KeyPressEvent("b", CONTROL),
+    "\x03": KeyPressEvent("c", CONTROL),
+    "\x04": KeyPressEvent("d", CONTROL),
+    "\x05": KeyPressEvent("e", CONTROL),
+    "\x06": KeyPressEvent("f", CONTROL),
+    "\x07": KeyPressEvent("g", CONTROL),
+    "\x08": KeyPressEvent("h", CONTROL),
+    "\x09": KeyPressEvent(Key.Tab, NO_MODS),
+    "\x0a": KeyPressEvent("j", CONTROL),
+    "\x0b": KeyPressEvent("k", CONTROL),
+    "\x0c": KeyPressEvent("l", CONTROL),
+    "\x0d": KeyPressEvent(Key.Enter, NO_MODS),
+    "\x0e": KeyPressEvent("n", CONTROL),
+    "\x0f": KeyPressEvent("o", CONTROL),
+    "\x10": KeyPressEvent("p", CONTROL),
+    "\x11": KeyPressEvent("q", CONTROL),
+    "\x12": KeyPressEvent("r", CONTROL),
+    "\x13": KeyPressEvent("s", CONTROL),
+    "\x14": KeyPressEvent("t", CONTROL),
+    "\x15": KeyPressEvent("u", CONTROL),
+    "\x16": KeyPressEvent("v", CONTROL),
+    "\x17": KeyPressEvent("w", CONTROL),
+    "\x18": KeyPressEvent("x", CONTROL),
+    "\x19": KeyPressEvent("y", CONTROL),
+    "\x1a": KeyPressEvent("z", CONTROL),
+    "\x1b": KeyPressEvent(Key.Escape, NO_MODS),
+    "\x9b": KeyPressEvent(Key.Escape, SHIFT),
+    "\x1c": KeyPressEvent("\\", CONTROL),
+    "\x1d": KeyPressEvent("]", CONTROL),
+    "\x1e": KeyPressEvent("^", CONTROL),
+    "\x1f": KeyPressEvent("-", CONTROL),
+    "\x7f": KeyPressEvent("h", CONTROL),
+
+    "\x1b[1~": KeyPressEvent(Key.Home, NO_MODS),
+    "\x1b[2~": KeyPressEvent(Key.Insert, NO_MODS),
+    "\x1b[3~": KeyPressEvent(Key.Delete, NO_MODS),
+    "\x1b[4~": KeyPressEvent(Key.End, NO_MODS),
+    "\x1b[5~": KeyPressEvent(Key.PageUp, NO_MODS),
+    "\x1b[6~": KeyPressEvent(Key.PageDown, NO_MODS),
+    "\x1b[7~": KeyPressEvent(Key.Home, NO_MODS),
+    "\x1b[8~": KeyPressEvent(Key.End, NO_MODS),
+    "\x1b[Z": KeyPressEvent(Key.Tab, SHIFT),
+    "\x1b\x09": KeyPressEvent(Key.Tab, SHIFT),
+    "\x1b[~": KeyPressEvent(Key.Tab, SHIFT),
+
+    "\x1bOP": KeyPressEvent(Key.F1, NO_MODS),
+    "\x1bOQ": KeyPressEvent(Key.F2, NO_MODS),
+    "\x1bOR": KeyPressEvent(Key.F3, NO_MODS),
+    "\x1bOS": KeyPressEvent(Key.F4, NO_MODS),
+    "\x1b[[A": KeyPressEvent(Key.F1, NO_MODS),
+    "\x1b[[B": KeyPressEvent(Key.F2, NO_MODS),
+    "\x1b[[C": KeyPressEvent(Key.F3, NO_MODS),
+    "\x1b[[D": KeyPressEvent(Key.F4, NO_MODS),
+    "\x1b[[E": KeyPressEvent(Key.F5, NO_MODS),
+    "\x1b[11~": KeyPressEvent(Key.F1, NO_MODS),
+    "\x1b[12~": KeyPressEvent(Key.F2, NO_MODS),
+    "\x1b[13~": KeyPressEvent(Key.F3, NO_MODS),
+    "\x1b[14~": KeyPressEvent(Key.F4, NO_MODS),
+    "\x1b[15~": KeyPressEvent(Key.F5, NO_MODS),
+    "\x1b[17~": KeyPressEvent(Key.F6, NO_MODS),
+    "\x1b[18~": KeyPressEvent(Key.F7, NO_MODS),
+    "\x1b[19~": KeyPressEvent(Key.F8, NO_MODS),
+    "\x1b[20~": KeyPressEvent(Key.F9, NO_MODS),
+    "\x1b[21~": KeyPressEvent(Key.F10, NO_MODS),
+    "\x1b[23~": KeyPressEvent(Key.F11, NO_MODS),
+    "\x1b[24~": KeyPressEvent(Key.F12, NO_MODS),
+    "\x1b[25~": KeyPressEvent(Key.F13, NO_MODS),
+    "\x1b[26~": KeyPressEvent(Key.F14, NO_MODS),
+    "\x1b[28~": KeyPressEvent(Key.F15, NO_MODS),
+    "\x1b[29~": KeyPressEvent(Key.F16, NO_MODS),
+    "\x1b[31~": KeyPressEvent(Key.F17, NO_MODS),
+    "\x1b[32~": KeyPressEvent(Key.F18, NO_MODS),
+    "\x1b[33~": KeyPressEvent(Key.F19, NO_MODS),
+    "\x1b[34~": KeyPressEvent(Key.F20, NO_MODS),
+    "\x1b[1;2P": KeyPressEvent(Key.F13, NO_MODS),
+    "\x1b[1;2Q": KeyPressEvent(Key.F14, NO_MODS),
+    '\x1b[1;2R': KeyPressEvent(Key.F15, NO_MODS),
+    "\x1b[1;2S": KeyPressEvent(Key.F16, NO_MODS),
+    "\x1b[15;2~": KeyPressEvent(Key.F17, NO_MODS),
+    "\x1b[17;2~": KeyPressEvent(Key.F18, NO_MODS),
+    "\x1b[18;2~": KeyPressEvent(Key.F19, NO_MODS),
+    "\x1b[19;2~": KeyPressEvent(Key.F20, NO_MODS),
+    "\x1b[20;2~": KeyPressEvent(Key.F21, NO_MODS),
+    "\x1b[21;2~": KeyPressEvent(Key.F22, NO_MODS),
+    "\x1b[23;2~": KeyPressEvent(Key.F23, NO_MODS),
+    "\x1b[24;2~": KeyPressEvent(Key.F24, NO_MODS),
+    "\x1b[1;5P": KeyPressEvent(Key.F1, CONTROL),
+    "\x1b[1;5Q": KeyPressEvent(Key.F2, CONTROL),
+    "\x1b[1;5R": KeyPressEvent(Key.F3, CONTROL),
+    "\x1b[1;5S": KeyPressEvent(Key.F4, CONTROL),
+    "\x1b[15;5~": KeyPressEvent(Key.F5, CONTROL),
+    "\x1b[17;5~": KeyPressEvent(Key.F6, CONTROL),
+    "\x1b[18;5~": KeyPressEvent(Key.F7, CONTROL),
+    "\x1b[19;5~": KeyPressEvent(Key.F8, CONTROL),
+    "\x1b[20;5~": KeyPressEvent(Key.F9, CONTROL),
+    "\x1b[21;5~": KeyPressEvent(Key.F10, CONTROL),
+    "\x1b[23;5~": KeyPressEvent(Key.F11, CONTROL),
+    "\x1b[24;5~": KeyPressEvent(Key.F12, CONTROL),
+    "\x1b[1;6P": KeyPressEvent(Key.F13, CONTROL),
+    "\x1b[1;6Q": KeyPressEvent(Key.F14, CONTROL),
+    "\x1b[1;6R": KeyPressEvent(Key.F15, CONTROL),
+    "\x1b[1;6S": KeyPressEvent(Key.F16, CONTROL),
+    "\x1b[15;6~": KeyPressEvent(Key.F17, CONTROL),
+    "\x1b[17;6~": KeyPressEvent(Key.F18, CONTROL),
+    "\x1b[18;6~": KeyPressEvent(Key.F19, CONTROL),
+    "\x1b[19;6~": KeyPressEvent(Key.F20, CONTROL),
+    "\x1b[20;6~": KeyPressEvent(Key.F21, CONTROL),
+    "\x1b[21;6~": KeyPressEvent(Key.F22, CONTROL),
+    "\x1b[23;6~": KeyPressEvent(Key.F23, CONTROL),
+    "\x1b[24;6~": KeyPressEvent(Key.F24, CONTROL),
+    "\x1b[62~": KeyPressEvent(Key.ScrollUp, NO_MODS),
+    "\x1b[63~": KeyPressEvent(Key.ScrollDown, NO_MODS),
+    "\x1b[200~": Key.BracketedPaste,
+    "\x1b[E": Key.Ignore,
+    "\x1b[G": Key.Ignore,
+    "\x1b[3;2~": KeyPressEvent(Key.Delete, SHIFT),
+    "\x1b[5;2~": KeyPressEvent(Key.PageUp, SHIFT),
+    "\x1b[6;2~": KeyPressEvent(Key.PageDown, SHIFT),
+    "\x1b[2;3~": KeyPressEvent(Key.Insert, ALT),
+    "\x1b[3;3~": KeyPressEvent(Key.Delete, ALT),
+    "\x1b[5;3~": KeyPressEvent(Key.PageUp, ALT),
+    "\x1b[6;3~": KeyPressEvent(Key.PageDown, ALT),
+    "\x1b[2;4~": KeyPressEvent(Key.Insert, ALT_SHIFT),
+    "\x1b[3;4~": KeyPressEvent(Key.Delete, ALT_SHIFT),
+    "\x1b[5;4~": KeyPressEvent(Key.PageUp, ALT_SHIFT),
+    "\x1b[6;4~": KeyPressEvent(Key.PageDown, ALT_SHIFT),
+    "\x1b[3;5~": KeyPressEvent(Key.Delete, CONTROL),
+    "\x1b[5;5~": KeyPressEvent(Key.PageUp, CONTROL),
+    "\x1b[6;5~": KeyPressEvent(Key.PageDown, CONTROL),
+    "\x1b[3;6~": KeyPressEvent(Key.Delete, CONTROL_SHIFT),
+    "\x1b[5;6~": KeyPressEvent(Key.PageUp, CONTROL_SHIFT),
+    "\x1b[6;6~": KeyPressEvent(Key.PageDown, CONTROL_SHIFT),
+    "\x1b[2;7~": KeyPressEvent(Key.Insert, ALT_CONTROL),
+    "\x1b[5;7~": KeyPressEvent(Key.PageUp, ALT_CONTROL),
+    "\x1b[6;7~": KeyPressEvent(Key.PageDown, ALT_CONTROL),
+    "\x1b[2;8~": KeyPressEvent(Key.Insert, ALT_CONTROL_SHIFT),
+    "\x1b[5;8~": KeyPressEvent(Key.PageUp, ALT_CONTROL_SHIFT),
+    "\x1b[6;8~": KeyPressEvent(Key.PageDown, ALT_CONTROL_SHIFT),
+    "\x1b[A": KeyPressEvent(Key.Up, NO_MODS),
+    "\x1b[B": KeyPressEvent(Key.Down, NO_MODS),
+    "\x1b[C": KeyPressEvent(Key.Right, NO_MODS),
+    "\x1b[D": KeyPressEvent(Key.Left, NO_MODS),
+    "\x1b[F": KeyPressEvent(Key.End, NO_MODS),
+    "\x1b[H": KeyPressEvent(Key.Home, NO_MODS),
+    "\x1bOA": KeyPressEvent(Key.Up, NO_MODS),
+    "\x1bOB": KeyPressEvent(Key.Down, NO_MODS),
+    "\x1bOC": KeyPressEvent(Key.Right, NO_MODS),
+    "\x1bOD": KeyPressEvent(Key.Left, NO_MODS),
+    "\x1bOF": KeyPressEvent(Key.End, NO_MODS),
+    "\x1bOH": KeyPressEvent(Key.Home, NO_MODS),
+    "\x1b[1;2A": KeyPressEvent(Key.Up, SHIFT),
+    "\x1b[1;2B": KeyPressEvent(Key.Down, SHIFT),
+    "\x1b[1;2C": KeyPressEvent(Key.Right, SHIFT),
+    "\x1b[1;2D": KeyPressEvent(Key.Left, SHIFT),
+    "\x1b[1;2F": KeyPressEvent(Key.End, SHIFT),
+    "\x1b[1;2H": KeyPressEvent(Key.Home, SHIFT),
+    "\x1b[1;3A": KeyPressEvent(Key.Up, ALT),
+    "\x1b[1;3B": KeyPressEvent(Key.Down, ALT),
+    "\x1b[1;3C": KeyPressEvent(Key.Right, ALT),
+    "\x1b[1;3D": KeyPressEvent(Key.Left, ALT),
+    "\x1b[1;3F": KeyPressEvent(Key.End, ALT),
+    "\x1b[1;3H": KeyPressEvent(Key.Home, ALT),
+    "\x1b[1;4A": KeyPressEvent(Key.Up, ALT_SHIFT),
+    "\x1b[1;4B": KeyPressEvent(Key.Down, ALT_SHIFT),
+    "\x1b[1;4C": KeyPressEvent(Key.Right, ALT_SHIFT),
+    "\x1b[1;4D": KeyPressEvent(Key.Left, ALT_SHIFT),
+    "\x1b[1;4F": KeyPressEvent(Key.End, ALT_SHIFT),
+    "\x1b[1;4H": KeyPressEvent(Key.Home, ALT_SHIFT),
+    "\x1b[1;5A": KeyPressEvent(Key.Up, CONTROL),
+    "\x1b[1;5B": KeyPressEvent(Key.Down, CONTROL),
+    "\x1b[1;5C": KeyPressEvent(Key.Right, CONTROL),
+    "\x1b[1;5D": KeyPressEvent(Key.Left, CONTROL),
+    "\x1b[1;5F": KeyPressEvent(Key.End, CONTROL),
+    "\x1b[1;5H": KeyPressEvent(Key.Home, CONTROL),
+    "\x1b[5A": KeyPressEvent(Key.Up, CONTROL),
+    "\x1b[5B": KeyPressEvent(Key.Down, CONTROL),
+    "\x1b[5C": KeyPressEvent(Key.Right, CONTROL),
+    "\x1b[5D": KeyPressEvent(Key.Left, CONTROL),
+    "\x1bOc": KeyPressEvent(Key.Right, CONTROL),
+    "\x1bOd": KeyPressEvent(Key.Left, CONTROL),
+    "\x1b[1;6A": KeyPressEvent(Key.Up, CONTROL_SHIFT),
+    "\x1b[1;6B": KeyPressEvent(Key.Down, CONTROL_SHIFT),
+    "\x1b[1;6C": KeyPressEvent(Key.Right, CONTROL_SHIFT),
+    "\x1b[1;6D": KeyPressEvent(Key.Left, CONTROL_SHIFT),
+    "\x1b[1;6F": KeyPressEvent(Key.End, CONTROL_SHIFT),
+    "\x1b[1;6H": KeyPressEvent(Key.Home, CONTROL_SHIFT),
+    "\x1b[1;7A": KeyPressEvent(Key.Up, ALT_CONTROL),
+    "\x1b[1;7B": KeyPressEvent(Key.Down, ALT_CONTROL),
+    "\x1b[1;7C": KeyPressEvent(Key.Right, ALT_CONTROL),
+    "\x1b[1;7D": KeyPressEvent(Key.Left, ALT_CONTROL),
+    "\x1b[1;7F": KeyPressEvent(Key.End, ALT_CONTROL),
+    "\x1b[1;7H": KeyPressEvent(Key.Home, ALT_CONTROL),
+    "\x1b[1;8A": KeyPressEvent(Key.Up, ALT_CONTROL_SHIFT),
+    "\x1b[1;8B": KeyPressEvent(Key.Down, ALT_CONTROL_SHIFT),
+    "\x1b[1;8C": KeyPressEvent(Key.Right, ALT_CONTROL_SHIFT),
+    "\x1b[1;8D": KeyPressEvent(Key.Left, ALT_CONTROL_SHIFT),
+    "\x1b[1;8F": KeyPressEvent(Key.End, ALT_CONTROL_SHIFT),
+    "\x1b[1;8H": KeyPressEvent(Key.Home, ALT_CONTROL_SHIFT),
+    "\x1b[1;9A": KeyPressEvent(Key.Up, ALT),
+    "\x1b[1;9B": KeyPressEvent(Key.Down, ALT),
+    "\x1b[1;9C": KeyPressEvent(Key.Right, ALT),
+    "\x1b[1;9D": KeyPressEvent(Key.Left, ALT),
+    "\x1b[1;5p": KeyPressEvent("0", CONTROL),
+    "\x1b[1;5q": KeyPressEvent("1", CONTROL),
+    "\x1b[1;5r": KeyPressEvent("2", CONTROL),
+    "\x1b[1;5s": KeyPressEvent("3", CONTROL),
+    "\x1b[1;5t": KeyPressEvent("4", CONTROL),
+    "\x1b[1;5u": KeyPressEvent("5", CONTROL),
+    "\x1b[1;5v": KeyPressEvent("6", CONTROL),
+    "\x1b[1;5w": KeyPressEvent("7", CONTROL),
+    "\x1b[1;5x": KeyPressEvent("8", CONTROL),
+    "\x1b[1;5y": KeyPressEvent("9", CONTROL),
+    "\x1b[1;6p": KeyPressEvent("0", CONTROL_SHIFT),
+    "\x1b[1;6q": KeyPressEvent("1", CONTROL_SHIFT),
+    "\x1b[1;6r": KeyPressEvent("2", CONTROL_SHIFT),
+    "\x1b[1;6s": KeyPressEvent("3", CONTROL_SHIFT),
+    "\x1b[1;6t": KeyPressEvent("4", CONTROL_SHIFT),
+    "\x1b[1;6u": KeyPressEvent("5", CONTROL_SHIFT),
+    "\x1b[1;6v": KeyPressEvent("6", CONTROL_SHIFT),
+    "\x1b[1;6w": KeyPressEvent("7", CONTROL_SHIFT),
+    "\x1b[1;6x": KeyPressEvent("8", CONTROL_SHIFT),
+    "\x1b[1;6y": KeyPressEvent("9", CONTROL_SHIFT),
+    "\x1b[1;7p": KeyPressEvent("0", ALT_CONTROL),
+    "\x1b[1;7q": KeyPressEvent("1", ALT_CONTROL),
+    "\x1b[1;7r": KeyPressEvent("2", ALT_CONTROL),
+    "\x1b[1;7s": KeyPressEvent("3", ALT_CONTROL),
+    "\x1b[1;7t": KeyPressEvent("4", ALT_CONTROL),
+    "\x1b[1;7u": KeyPressEvent("5", ALT_CONTROL),
+    "\x1b[1;7v": KeyPressEvent("6", ALT_CONTROL),
+    "\x1b[1;7w": KeyPressEvent("7", ALT_CONTROL),
+    "\x1b[1;7x": KeyPressEvent("8", ALT_CONTROL),
+    "\x1b[1;7y": KeyPressEvent("9", ALT_CONTROL),
+    "\x1b[1;8p": KeyPressEvent("0", ALT_CONTROL_SHIFT),
+    "\x1b[1;8q": KeyPressEvent("1", ALT_CONTROL_SHIFT),
+    "\x1b[1;8r": KeyPressEvent("2", ALT_CONTROL_SHIFT),
+    "\x1b[1;8s": KeyPressEvent("3", ALT_CONTROL_SHIFT),
+    "\x1b[1;8t": KeyPressEvent("4", ALT_CONTROL_SHIFT),
+    "\x1b[1;8u": KeyPressEvent("5", ALT_CONTROL_SHIFT),
+    "\x1b[1;8v": KeyPressEvent("6", ALT_CONTROL_SHIFT),
+    "\x1b[1;8w": KeyPressEvent("7", ALT_CONTROL_SHIFT),
+    "\x1b[1;8x": KeyPressEvent("8", ALT_CONTROL_SHIFT),
+    "\x1b[1;8y": KeyPressEvent("9", ALT_CONTROL_SHIFT),
+    # WSL
+    "\x1b[1;3P": KeyPressEvent(Key.F1, ALT),
+    "\x1b[1;3Q": KeyPressEvent(Key.F2, ALT),
+    "\x1b[1;3R": KeyPressEvent(Key.F3, ALT),
+    "\x1b[15;3~": KeyPressEvent(Key.F5, ALT),
+    "\x1b[17;3~": KeyPressEvent(Key.F6, ALT),
+    "\x1b[18;3~": KeyPressEvent(Key.F7, ALT),
+    "\x1b[19;3~": KeyPressEvent(Key.F8, ALT),
+    "\x1b[20;3~": KeyPressEvent(Key.F9, ALT),
+    "\x1b[21;3~": KeyPressEvent(Key.F10, ALT),
+    "\x1b[23;3~": KeyPressEvent(Key.F11, ALT),
+    "\x1b[24;3~": KeyPressEvent(Key.F12, ALT),
+    "\x1b[1;7P": KeyPressEvent(Key.F1, ALT_CONTROL),
+    "\x1b[1;7Q": KeyPressEvent(Key.F2, ALT_CONTROL),
+    "\x1b[1;7R": KeyPressEvent(Key.F3, ALT_CONTROL),
+    "\x1b[1;7S": KeyPressEvent(Key.F4, ALT_CONTROL),
+    "\x1b[15;7~": KeyPressEvent(Key.F5, ALT_CONTROL),
+    "\x1b[17;7~": KeyPressEvent(Key.F6, ALT_CONTROL),
+    "\x1b[18;7~": KeyPressEvent(Key.F7, ALT_CONTROL),
+    "\x1b[19;7~": KeyPressEvent(Key.F8, ALT_CONTROL),
+    "\x1b[20;7~": KeyPressEvent(Key.F9, ALT_CONTROL),
+    "\x1b[21;7~": KeyPressEvent(Key.F10, ALT_CONTROL),
+    "\x1b[23;7~": KeyPressEvent(Key.F11, ALT_CONTROL),
+    "\x1b[24;7~": KeyPressEvent(Key.F12, ALT_CONTROL),
+    "\x1b[1;4P": KeyPressEvent(Key.F1, ALT_SHIFT),
+    "\x1b[1;4Q": KeyPressEvent(Key.F2, ALT_SHIFT),
+    "\x1b[1;4R": KeyPressEvent(Key.F3, ALT_SHIFT),
+    "\x1b[1;4S": KeyPressEvent(Key.F4, ALT_SHIFT),
+    "\x1b[15;4~": KeyPressEvent(Key.F5, ALT_SHIFT),
+    "\x1b[17;4~": KeyPressEvent(Key.F6, ALT_SHIFT),
+    "\x1b[18;4~": KeyPressEvent(Key.F7, ALT_SHIFT),
+    "\x1b[19;4~": KeyPressEvent(Key.F8, ALT_SHIFT),
+    "\x1b[20;4~": KeyPressEvent(Key.F9, ALT_SHIFT),
+    "\x1b[21;4~": KeyPressEvent(Key.F10, ALT_SHIFT),
+    "\x1b[23;4~": KeyPressEvent(Key.F11, ALT_SHIFT),
+    "\x1b[24;4~": KeyPressEvent(Key.F12, ALT_SHIFT),
+    "\x1b[1;8P": KeyPressEvent(Key.F1, ALT_CONTROL_SHIFT),
+    "\x1b[1;8Q": KeyPressEvent(Key.F2, ALT_CONTROL_SHIFT),
+    "\x1b[1;8R": KeyPressEvent(Key.F3, ALT_CONTROL_SHIFT),
+    "\x1b[1;8S": KeyPressEvent(Key.F4, ALT_CONTROL_SHIFT),
+    "\x1b[15;8~": KeyPressEvent(Key.F5, ALT_CONTROL_SHIFT),
+    "\x1b[17;8~": KeyPressEvent(Key.F6, ALT_CONTROL_SHIFT),
+    "\x1b[18;8~": KeyPressEvent(Key.F7, ALT_CONTROL_SHIFT),
+    "\x1b[19;8~": KeyPressEvent(Key.F8, ALT_CONTROL_SHIFT),
+    "\x1b[20;8~": KeyPressEvent(Key.F9, ALT_CONTROL_SHIFT),
+    "\x1b[21;8~": KeyPressEvent(Key.F10, ALT_CONTROL_SHIFT),
+    "\x1b[23;8~": KeyPressEvent(Key.F11, ALT_CONTROL_SHIFT),
+    "\x1b[24;8~": KeyPressEvent(Key.F12, ALT_CONTROL_SHIFT),
 }

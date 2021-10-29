@@ -13,9 +13,9 @@ from ...win32_types import (
     EventTypes,
 )
 from ..keys import Key
-from ..event_data_structures import MouseEvent, PasteEvent
-from ..mouse_data_structures import *
-from .key_maps import *
+from ..event_data_structures import Mods, KeyPressEvent, MouseEvent, PasteEvent
+from ..mouse_data_structures import MouseButton, MouseEventType
+from .key_maps import ANSI_SEQUENCES, KEY_CODES
 
 RIGHT_ALT_PRESSED = 0x0001
 LEFT_ALT_PRESSED = 0x0002
@@ -41,18 +41,14 @@ def _handle_key(ev: KEY_EVENT_RECORD):
         case u_char:
             key = ANSI_SEQUENCES.get(u_char.encode(errors="surrogatepass"), u_char)
 
-    if ev.ControlKeyState & LEFT_ALT_PRESSED:
-        yield Key.Escape
-
-    if ev.ControlKeyState & CTRL_PRESSED:
-        if ev.ControlKeyState & SHIFT_PRESSED:
-            yield CONTROL_SHIFT_KEYS.get(key, key)
-        else:
-            yield CONTROL_KEYS.get(key, key)
-    elif ev.ControlKeyState & SHIFT_PRESSED:
-        yield SHIFT_KEYS.get(key, key)
-    else:
-        yield key
+    return KeyPressEvent(
+        key,
+        Mods(
+            bool(ev.ControlKeyState & ALT_PRESSED),
+            bool(ev.ControlKeyState & CTRL_PRESSED),
+            bool(ev.ControlKeyState & SHIFT_PRESSED),
+        )
+    )
 
 def _handle_mouse(ev):
     """
@@ -86,19 +82,15 @@ def _handle_mouse(ev):
     else:
         button = MouseButton.MIDDLE
 
-    mods = 0
-    if ev.ControlKeyState & ALT_PRESSED:
-        mods |= MouseModifierKey.ALT
-    if ev.ControlKeyState & CTRL_PRESSED:
-        mods |= MouseModifierKey.CONTROL
-    if ev.ControlKeyState & SHIFT_PRESSED:
-        mods |= MouseModifierKey.SHIFT
-
     return MouseEvent(
         Point(ev.MousePosition.Y, ev.MousePosition.X),
         event_type,
         button,
-        MouseModifier(mods),
+        Mods(
+            bool(ev.ControlKeyState & ALT_PRESSED),
+            bool(ev.ControlKeyState & CTRL_PRESSED),
+            bool(ev.ControlKeyState & SHIFT_PRESSED),
+        )
     )
 
 def _purge(text: list[str]):
@@ -116,7 +108,13 @@ def _purge(text: list[str]):
         yield PasteEvent(chars)
 
     else:
-        yield from (Key.ControlM if char == "\n" else char for char in chars)
+        yield from (
+            KeyPressEvent(
+                Key.Enter if char == "\n" else char,
+                Mods(False, False, False)
+            )
+            for char in chars
+        )
 
     text.clear()
 
@@ -136,20 +134,21 @@ def read_keys():
 
     text = [ ]
     for ir in input_records:
-        match getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
-            case KEY_EVENT_RECORD() as ev if ev.KeyDown:
-                for key in _handle_key(ev):
-                    match key:
-                        case Key.ControlM:
-                            text.append("\n")
-                        case Key():
-                            if text:
-                                yield from _purge(text)
-                            yield key
-                        case _:
-                            text.append(key)
+        match ev := getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
+            case KEY_EVENT_RECORD() if ev.KeyDown:
+                match _handle_key(ev):
+                    case None:
+                        continue
+                    case KeyPressEvent(Key.Enter, (False, False, False)):
+                        text.append("\n")
+                    case KeyPressEvent(str() as char, (False, False, _)) if not isinstance(char, Key):
+                        text.append(char)
+                    case key_press:
+                        if text:
+                            yield from _purge(text)
+                        yield key_press
 
-            case MOUSE_EVENT_RECORD() as ev:
+            case MOUSE_EVENT_RECORD():
                 if text:
                     yield from _purge(text)
                 yield _handle_mouse(ev)

@@ -75,9 +75,3 @@ def raw_mode():
 
     finally:
         windll.kernel32.SetConsoleMode(STDIN_HANDLE, original_mode)
-
-def flush_keys():
-    """
-    Provided for combatibility with Vt100Input.
-    """
-    return ()

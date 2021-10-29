@@ -1,16 +1,16 @@
 import sys
 
 from .utils import is_conemu_ansi, is_windows
-from .input.mouse_data_structures import *
-from .input.event_data_structures import MouseEvent, PasteEvent
+from .input.mouse_data_structures import MouseEventType, MouseButton
+from .input.event_data_structures import Mods, KeyPressEvent, MouseEvent, PasteEvent
 from .input.keys import Key
 
 __all__ = (
     "create_io",
     "MouseEventType",
     "MouseButton",
-    "MouseModifier",
-    "MouseModifierKey",
+    "Mods",
+    "KeyPressEvent",
     "MouseEvent",
     "PasteEvent",
     "Key",

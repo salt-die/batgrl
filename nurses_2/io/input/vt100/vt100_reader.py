@@ -9,8 +9,8 @@ from codecs import getincrementaldecoder
 
 from ....data_structures import Point
 from ..keys import Key
-from ..event_data_structures import MouseEvent, PasteEvent
-from .ansi_escape_sequences import ANSI_SEQUENCES
+from ..event_data_structures import KeyPressEvent, MouseEvent, PasteEvent
+from .ansi_escape_sequences import NO_MODS, ALT, ANSI_SEQUENCES
 from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 
 _MOUSE_RE        = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
@@ -73,8 +73,7 @@ class _HasLongerMatch(dict):
         result = (
             bool(_MOUSE_PREFIX_RE.match(prefix))
             or any(
-                value for key, value in ANSI_SEQUENCES.items()
-                if key != prefix and key.startswith(prefix)
+                key != prefix and key.startswith(prefix) for key in ANSI_SEQUENCES
             )
         )
 
@@ -140,34 +139,29 @@ class Vt100Reader:
             match ANSI_SEQUENCES.get(prefix):
                 case None:
                     continue
+                case Key.Ignore:
+                    pass
                 case Key.BracketedPaste:
                     self._in_bracketed_paste = True
-                case Key() as key:
-                    self._events.append(key)
-                case tuple() as keys:
-                    self._events.extend(keys)
+                case KeyPressEvent(Key.Escape, (False, False, False)) if len(data) > 1:
+                    self._events.append(KeyPressEvent(data[1], ALT))
+                    return data[2:]
+                case key_press:
+                    self._events.append(key_press)
 
             return suffix
 
-        self._events.append(prefix)
+        self._events.append(KeyPressEvent(prefix, NO_MODS))
         return suffix
 
     def read_keys(self):
         parser = self._parser
 
-        for char in read_stdin():
-            parser.send(char)
+        while can_read := read_stdin():
+            for char in can_read:
+                parser.send(char)
 
-        try:
-            return self._events
-        finally:
-            self._events = [ ]
-
-    def flush_keys(self):
-        """
-        Flush the buffer of the input stream.
-        """
-        self._parser.send(None)  # Flush signal
+        parser.send(None)
 
         try:
             return self._events

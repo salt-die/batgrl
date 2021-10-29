@@ -3,12 +3,13 @@ from abc import ABC, abstractmethod
 from contextlib import contextmanager
 
 from .colors import BLACK_ON_BLACK
-from .io import create_io, PasteEvent, MouseEvent, Key
+from .io import create_io, Mods, KeyPressEvent, PasteEvent, MouseEvent, Key
 from .widgets._root import _Root
 
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
+ESCAPE = KeyPressEvent(Key.Escape, Mods(alt=False, ctrl=False, shift=False))
 
 
 class App(ABC):
@@ -17,7 +18,7 @@ class App(ABC):
 
     Parameters
     ----------
-    exit_key : Optional[str], default: Key.ControlF1
+    exit_key : Optional[KeyPressEvent], default: ESCAPE
         Quit the app when this key is pressed.
     default_char : str, default: " "
         Default background character for root widget.
@@ -29,7 +30,7 @@ class App(ABC):
     def __init__(
         self,
         *,
-        exit_key=Key.ControlF1,
+        exit_key=ESCAPE,
         default_char=" ",
         default_color_pair=BLACK_ON_BLACK,
         title=None
@@ -74,32 +75,12 @@ class App(ABC):
             dispatch_paste = root.dispatch_paste
 
             loop = asyncio.get_event_loop()
-            flush_timer = asyncio.TimerHandle(0, lambda: None, (), loop)  # dummy handle
 
             def read_from_input():
                 """
                 Read and process input.
                 """
                 for key in env_in.read_keys():
-                    match key:
-                        case self.exit_key:
-                            return self.exit()
-                        case MouseEvent():
-                            dispatch_click(key)
-                        case PasteEvent():
-                            dispatch_paste(key)
-                        case _:
-                            dispatch_press(key)
-
-                nonlocal flush_timer
-                flush_timer.cancel()
-                flush_timer = loop.call_later(FLUSH_TIMEOUT, flush_input)
-
-            def flush_input():
-                """
-                Flush input.
-                """
-                for key in env_in.flush_keys():
                     match key:
                         case self.exit_key:
                             return self.exit()
@@ -150,8 +131,6 @@ def create_environment(title):
     """
     env_in, env_out = create_io()
 
-    env_in.flush_keys()  # Ignoring type-ahead
-
     env_out.enable_mouse_support()
     env_out.enable_bracketed_paste()
     env_out.enter_alternate_screen()
@@ -163,8 +142,6 @@ def create_environment(title):
         yield env_out, env_in
 
     finally:
-        env_in.flush_keys()
-
         env_out.quit_alternate_screen()
         env_out.reset_attributes()
         env_out.disable_mouse_support()

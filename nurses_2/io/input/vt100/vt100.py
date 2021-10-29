@@ -77,10 +77,3 @@ class Vt100Input:
         Read keys from stdin.
         """
         return self.vt100_reader.read_keys()
-
-    def flush_keys(self):
-        """
-        Flush pending keys and return them.
-        (Used for flushing the 'escape' key.)
-        """
-        return self.vt100_reader.flush_keys()
