@@ -18,26 +18,13 @@ class Vt100_Output:
         cols, rows = get_terminal_size()
         return Size(rows, cols)
 
-    def write_raw(self, data):
-        """
-        Write raw data to output.
-        """
-        self._buffer.append(data)
-
-    def write(self, data):
-        """
-        Write text to output.
-        (Removes vt100 escape codes. -- used for safely writing text.)
-        """
-        self._buffer.append(data.replace("\x1b", "?"))
-
     def set_title(self, title):
         """
         Set terminal title.
         """
         if self.term not in ("linux", "eterm-color"):
             title = "".join(c for c in title if c not in "\x1b\x07")
-            self.write_raw(f"\x1b]2;{title}\x07")
+            self._buffer.append(f"\x1b]2;{title}\x07")
 
     def clear_title(self):
         self.set_title("")
@@ -47,46 +34,44 @@ class Vt100_Output:
         Erases the screen with the background colour and moves the cursor to
         home.
         """
-        self.write_raw("\x1b[2J")
+        self._buffer.append("\x1b[2J")
 
     def enter_alternate_screen(self):
-        self.write_raw("\x1b[?1049h\x1b[H")
+        self._buffer.append("\x1b[?1049h\x1b[H")
 
     def quit_alternate_screen(self):
-        self.write_raw("\x1b[?1049l")
+        self._buffer.append("\x1b[?1049l")
 
     def enable_mouse_support(self):
-        self.write_raw("\x1b[?1000h")
-        self.write_raw("\x1b[?1003h")  # ANY_EVENT_MOUSE
-        self.write_raw("\x1b[?1015h")
-        self.write_raw("\x1b[?1006h")
+        self._buffer.append(
+            "\x1b[?1000h"
+            "\x1b[?1003h"
+            "\x1b[?1015h"
+            "\x1b[?1006h"
+        )
 
     def disable_mouse_support(self):
-        self.write_raw("\x1b[?1000l")
-        self.write_raw("\x1b[?1003l")  # DISABLE ANY_EVENT_MOUSE
-        self.write_raw("\x1b[?1015l")
-        self.write_raw("\x1b[?1006l")
+        self._buffer.append(
+            "\x1b[?1000l"
+            "\x1b[?1003l"
+            "\x1b[?1015l"
+            "\x1b[?1006l"
+        )
 
     def reset_attributes(self):
-        self.write_raw("\x1b[0m")
-
-    def disable_autowrap(self):
-        self.write_raw("\x1b[?7l")
-
-    def enable_autowrap(self):
-        self.write_raw("\x1b[?7h")
+        self._buffer.append("\x1b[0m")
 
     def enable_bracketed_paste(self):
-        self.write_raw("\x1b[?2004h")
+        self._buffer.append("\x1b[?2004h")
 
     def disable_bracketed_paste(self):
-        self.write_raw("\x1b[?2004l")
+        self._buffer.append("\x1b[?2004l")
 
     def show_cursor(self):
-        self.write_raw("\x1b[?12l\x1b[?25h")
+        self._buffer.append("\x1b[?12l\x1b[?25h")
 
     def blinking_line_cursor(self):
-        self.write_raw("\x1b[\x35 q")
+        self._buffer.append("\x1b[\x35 q")
 
     def flush(self):
         """
@@ -105,13 +90,6 @@ class Vt100_Output:
         except IOError as e:
             if not (e.args and e.args[0] in (0, EINTR)):
                 raise
-
-    def bell(self):
-        """
-        Play bell sound.
-        """
-        self.write_raw("\a")
-        self.flush()
 
     def restore_console(self):
         """
