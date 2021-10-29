@@ -2,7 +2,7 @@
 Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
 """
 from ..keys import Key
-from ..event_data_structures import Mods, KeyPressEvent
+from ..events import Mods, KeyPressEvent
 
 NO_MODS           = Mods(False, False, False)
 ALT               = Mods(True , False, False)

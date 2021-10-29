@@ -9,7 +9,7 @@ from codecs import getincrementaldecoder
 
 from ....data_structures import Point
 from ..keys import Key
-from ..event_data_structures import KeyPressEvent, MouseEvent, PasteEvent
+from ..events import KeyPressEvent, MouseEvent, PasteEvent
 from .ansi_escape_sequences import NO_MODS, ALT, ANSI_SEQUENCES
 from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 

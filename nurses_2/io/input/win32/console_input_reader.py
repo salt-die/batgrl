@@ -13,8 +13,7 @@ from ...win32_types import (
     EventTypes,
 )
 from ..keys import Key
-from ..event_data_structures import Mods, KeyPressEvent, MouseEvent, PasteEvent
-from ..mouse_data_structures import MouseButton, MouseEventType
+from ..events import Mods, KeyPressEvent, MouseButton, MouseEventType, MouseEvent, PasteEvent
 from .key_maps import ANSI_SEQUENCES, KEY_CODES
 
 RIGHT_ALT_PRESSED = 0x0001
@@ -29,7 +28,7 @@ STDIN_HANDLE = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
 def _handle_key(ev: KEY_EVENT_RECORD):
     """
-    Yield a Keys from a KEY_EVENT_RECORD.
+    Return a KeyPressEvent from a KEY_EVENT_RECORD.
     """
     match ev.uChar.UnicodeChar:
         case "\x00":
@@ -141,12 +140,12 @@ def read_keys():
                         continue
                     case KeyPressEvent(Key.Enter, (False, False, False)):
                         text.append("\n")
-                    case KeyPressEvent(str() as char, (False, False, _)) if not isinstance(char, Key):
-                        text.append(char)
-                    case key_press:
+                    case KeyPressEvent(key, (alt, ctrl, _)) as key_press_event if isinstance(key, Key) or alt or ctrl:
                         if text:
                             yield from _purge(text)
-                        yield key_press
+                        yield key_press_event
+                    case KeyPressEvent(char, _):
+                        text.append(char)
 
             case MOUSE_EVENT_RECORD():
                 if text:

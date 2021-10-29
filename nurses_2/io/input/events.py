@@ -1,14 +1,17 @@
 from functools import cache
 from collections import namedtuple
+from enum import Enum
 from typing import NamedTuple
 
 from ...data_structures import Point
 from .keys import Key
-from .mouse_data_structures import MouseEventType, MouseButton
 
 __all__ = (
     "Mods",
+    "Key",
     "KeyPressEvent",
+    "MouseEventType",
+    "MouseButton",
     "MouseEvent",
     "PasteEvent",
 )
@@ -45,6 +48,22 @@ class KeyPressEvent(namedtuple("KeyPressEvent", "key mods")):
     @cache
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls, *args, **kwargs)
+
+
+class MouseEventType(Enum):
+    MOUSE_UP    = "MOUSE_UP"
+    MOUSE_DOWN  = "MOUSE_DOWN"
+    SCROLL_UP   = "SCROLL_UP"
+    SCROLL_DOWN = "SCROLL_DOWN"
+    MOUSE_MOVE  = "MOUSE_MOVE"
+
+
+class MouseButton(Enum):
+    LEFT           = "LEFT"
+    MIDDLE         = "MIDDLE"
+    RIGHT          = "RIGHT"
+    NO_BUTTON      = "NO_BUTTON"
+    UNKNOWN_BUTTON = "UNKNOWN_BUTTON"
 
 
 class MouseEvent(NamedTuple):

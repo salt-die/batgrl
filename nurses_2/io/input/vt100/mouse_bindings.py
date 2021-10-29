@@ -1,17 +1,16 @@
-from ..mouse_data_structures import MouseButton, MouseEventType
-from ..event_data_structures import Mods
-
-LEFT = MouseButton.LEFT
-MIDDLE = MouseButton.MIDDLE
-RIGHT = MouseButton.RIGHT
-NO_BUTTON = MouseButton.NO_BUTTON
-UNKNOWN_BUTTON = MouseButton.UNKNOWN_BUTTON
+from ..events import Mods, MouseEventType, MouseButton
 
 MOUSE_UP = MouseEventType.MOUSE_UP
 MOUSE_DOWN = MouseEventType.MOUSE_DOWN
 MOUSE_MOVE = MouseEventType.MOUSE_MOVE
 SCROLL_UP = MouseEventType.SCROLL_UP
 SCROLL_DOWN = MouseEventType.SCROLL_DOWN
+
+LEFT = MouseButton.LEFT
+MIDDLE = MouseButton.MIDDLE
+RIGHT = MouseButton.RIGHT
+NO_BUTTON = MouseButton.NO_BUTTON
+UNKNOWN_BUTTON = MouseButton.UNKNOWN_BUTTON
 
 NO_MODS = UNKNOWN_MODIFIER = Mods(False, False, False)
 ALT                        = Mods(True , False, False)
