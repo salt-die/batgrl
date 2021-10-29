@@ -13,9 +13,7 @@ def clamp(value, min, max):
 
     return value
 
-@np.vectorize
-def character_width(char):
-    """
-    Return the width of a single unicode glyph, vectorized.
-    """
-    return wcswidth(char)
+character_width = np.vectorize(wcswidth)
+"""
+Return the width of a single unicode glyph, vectorized.
+"""
