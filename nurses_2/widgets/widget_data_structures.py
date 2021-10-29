@@ -13,6 +13,8 @@ class CanvasView:
     E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
     the `add_text` `row` and `column` parameters make sense.
     """
+    __slots__ = "canvas",
+
     def __init__(self, canvas):
         if canvas.ndim == 1:
             canvas = canvas[None]
