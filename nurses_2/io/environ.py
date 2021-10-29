@@ -3,15 +3,15 @@ import sys
 
 def is_windows():
     """
-    True when we are using Windows.
+    Return True on Windows.
     """
     return sys.platform.startswith("win")  # E.g. 'win32', not 'darwin' or 'linux2'
 
 def is_conemu_ansi():
     """
-    True when the ConEmu Windows console is used.
+    Return True if using ConEmu.
     """
-    return is_windows() and os.environ.get("ConEmuANSI", "OFF") == "ON"
+    return os.environ.get("ConEmuANSI", "OFF") == "ON"
 
 def get_term_environment_variable():
     """

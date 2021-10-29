@@ -1,6 +1,6 @@
 import sys
 
-from .utils import is_conemu_ansi, is_windows
+from .environ import is_conemu_ansi, is_windows
 from .input.events import (
     Key,
     Mods,
@@ -31,9 +31,9 @@ def create_io():
         raise RuntimeError("Interactive terminal required.")
 
     if is_windows():
-        from .output.windows10 import is_win_vt100_enabled, Windows10_Output
+        from .output.windows10 import is_vt100_enabled, Windows10_Output
 
-        if not is_conemu_ansi() and not is_win_vt100_enabled():
+        if not is_conemu_ansi() and not is_vt100_enabled():
             raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 
         from .input.win32 import win32_input

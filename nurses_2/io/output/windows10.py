@@ -2,7 +2,7 @@ from ctypes import byref, pointer, windll
 from ctypes.wintypes import DWORD, HANDLE
 
 from ...data_structures import Size
-from ..utils import is_windows, is_conemu_ansi
+from ..environ import is_windows, is_conemu_ansi
 from ..win32_types import (
     CONSOLE_SCREEN_BUFFER_INFO,
     STD_INPUT_HANDLE,
@@ -84,14 +84,10 @@ class Windows10_Output(Vt100_Output):
             windll.kernel32.SetConsoleMode(self._hconsole, self._original_mode)
 
 
-def is_win_vt100_enabled() -> bool:
+def is_vt100_enabled():
     """
-    Returns True when we're running Windows and VT100 escape sequences are
-    supported.
+    Return True if VT100 escape sequences are supported.
     """
-    if not is_windows():
-        return False
-
     hconsole = HANDLE(windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE))
 
     # Get original console mode.

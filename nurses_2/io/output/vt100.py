@@ -6,7 +6,7 @@ from os import get_terminal_size
 from sys import stdout
 
 from ...data_structures import Size
-from ..utils import get_term_environment_variable
+from ..environ import get_term_environment_variable
 
 
 class Vt100_Output:
