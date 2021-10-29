@@ -72,7 +72,7 @@ class _HasLongerMatch(dict):
         result = (
             bool(_MOUSE_PREFIX_RE.match(prefix))
             or any(
-                key != prefix and key.startswith(prefix) for key in ANSI_SEQUENCES
+                key != prefix and key.startswith(prefix) for key in ANSI_ESCAPES
             )
         )
 
