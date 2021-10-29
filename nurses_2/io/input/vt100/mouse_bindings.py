@@ -12,7 +12,7 @@ RIGHT = MouseButton.RIGHT
 NO_BUTTON = MouseButton.NO_BUTTON
 UNKNOWN_BUTTON = MouseButton.UNKNOWN_BUTTON
 
-NO_MODS = UNKNOWN_MODIFIER = Mods(False, False, False)
+NO_MODS = UNKNOWN_MODIFIER = Mods.NO_MODS
 ALT                        = Mods(True , False, False)
 CONTROL                    = Mods(False, True , False)
 SHIFT                      = Mods(False, False, True )

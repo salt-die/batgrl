@@ -117,7 +117,7 @@ def _purge(text: list[str]):
         yield from (
             KeyPressEvent(
                 Key.Enter if char == "\n" else char,
-                Mods(False, False, False)
+                Mods.NO_MODS,
             )
             for char in chars
         )
@@ -130,12 +130,11 @@ def read_keys():
 
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
     """
-    MAX_BYTES = 2048
-    ARR_TYPE = INPUT_RECORD * MAX_BYTES
+    ARR_TYPE = INPUT_RECORD * 2048
     input_records = ARR_TYPE()
 
     windll.kernel32.ReadConsoleInputW(
-        STDIN_HANDLE, pointer(input_records), MAX_BYTES, pointer(DWORD(0))
+        STDIN_HANDLE, pointer(input_records), 2048, pointer(DWORD(0))
     )
 
     text = [ ]
@@ -145,7 +144,7 @@ def read_keys():
                 match _handle_key(ev):
                     case None:
                         continue
-                    case KeyPressEvent(Key.Enter, (False, False, False)):
+                    case KeyPressEvent.ENTER:
                         text.append("\n")
                     case KeyPressEvent(key, (alt, ctrl, _)) as key_press_event if isinstance(key, Key) or alt or ctrl:
                         if text:
