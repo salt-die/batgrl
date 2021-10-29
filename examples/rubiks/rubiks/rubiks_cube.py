@@ -85,21 +85,24 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
     def selected_cubes(self):
         return self.cubes[self.selected_indices].flat
 
-    def on_press(self, key):
-        if key.lower() == "r":
-            self.rotate_selected_cubes(is_clockwise=key.isupper())
-        elif key == "up":
-            self.selected_row += 1
-        elif key == "down":
-            self.selected_row -= 1
-        elif key == "left":
-            self.selected_axis -= 1
-        elif key == "right":
-            self.selected_axis += 1
-        elif key == "s":
-            self.scramble()
-        else:
-            return False
+    def on_press(self, key_press_event):
+        match key_press_event.key:
+            case "r":
+                self.rotate_selected_cubes(is_clockwise=False)
+            case "R":
+                self.rotate_selected_cubes(is_clockwise=True)
+            case "up":
+                self.selected_row += 1
+            case "down":
+                self.selected_row -= 1
+            case "left":
+                self.selected_axis -= 1
+            case "right":
+                self.selected_axis += 1
+            case "s":
+                self.scramble()
+            case _:
+                return False
 
         return True
 

@@ -7,13 +7,13 @@ from nurses_2.widgets.behaviors import AutoSizeBehavior
 class ShowKeyPress(AutoSizeBehavior, Widget):
     current_row = 0
 
-    def on_press(self, key):
+    def on_press(self, key_press_event):
         if self.current_row == self.height:
             self.current_row = 0
 
         row = self.current_row
 
-        self.add_text(f"Got Press: {key!r}", row)
+        self.add_text(f"Got Press: {key_press_event!r}", row)
         asyncio.create_task(self.clear_row(row))
 
         self.current_row += 1

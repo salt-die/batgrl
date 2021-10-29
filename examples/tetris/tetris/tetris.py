@@ -476,38 +476,28 @@ class Tetris(Image):
         while self.move_current_piece(dy=1):
             pass
 
-    def on_press(self, key):
-        # Named lambdas.  Do something about it.
-        move_right = lambda: self.move_current_piece(dx=1)
-        move_left = lambda: self.move_current_piece(dx=-1)
-        move_down = lambda: self.affix_piece() if not self.move_current_piece(dy=1) else None
-        use_held = lambda: self.new_piece(from_held=True)
-        rotate_ccw = lambda: self.rotate_current_piece(clockwise=False)
+    def on_press(self, key_press_event):
+        match key_press_event.key:
+            case "f1":
+                self.pause()
+            case "enter":
+                self.new_game()
+            case "right" | "6":
+                self.move_current_piece(dx=1)
+            case "left" | "4":
+                self.move_current_piece(dx=-1)
+            case "down" | "2":
+                if not self.move_current_piece(dy=1):
+                    self.affix_piece()
+            case " " | "8":
+                self.drop_current_piece()
+            case "c" | "0":
+                self.new_piece(from_held=True)
+            case "z" | "1" | "5" | "9":
+                self.rotate_current_piece(clockwise=False)
+            case "x" | "up" | "3" | "7":
+                self.rotate_current_piece()
+            case _:
+                return False
 
-        if handle := {
-            "f1"   : self.pause,
-            "c-m"  : self.new_game,
-            "right": move_right,
-            "6"    : move_right,
-            "left" : move_left,
-            "4"    : move_left,
-            "down" : move_down,
-            "2"    : move_down,
-            " "    : self.drop_current_piece,
-            "8"    : self.drop_current_piece,
-            "c"    : use_held,
-            "0"    : use_held,
-            "z"    : rotate_ccw,
-            "1"    : rotate_ccw,
-            "5"    : rotate_ccw,
-            "9"    : rotate_ccw,
-            "x"    : self.rotate_current_piece,
-            "up"   : self.rotate_current_piece,
-            "3"    : self.rotate_current_piece,
-            "7"    : self.rotate_current_piece,
-            "f1"   : self.pause,
-        }.get(key, False):
-            handle()
-            return True
-
-        return False
+        return True
