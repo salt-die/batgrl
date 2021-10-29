@@ -51,7 +51,7 @@ class MyButton(ButtonBehavior, Widget):
         info.add_text(f"{str(mouse_event.position):<18}", row=1, column=10)
         info.add_text(f"{str(mouse_event.event_type)[15:35]:<21}", row=2, column=7)
         info.add_text(f"{str(mouse_event.button)[12:]:<20}", row=3, column=8)
-        info.add_text(f"{str(mouse_event.modifier)[14:]:<18}"[:17], row=4, column=10)
+        info.add_text(f"{str(mouse_event.mods)[5:-1]:<44}", row=4, column=6)
         return super().on_click(mouse_event)
 
     async def _reset_view(self):
@@ -61,12 +61,12 @@ class MyButton(ButtonBehavior, Widget):
 
 class MyApp(App):
     async def on_start(self):
-        info_display = Widget(size=(5, 28))
+        info_display = Widget(size=(5, 50))
         info_display.add_text("Waiting for input:", row=0)
         info_display.add_text("Position:", row=1)
         info_display.add_text("Event:", row=2)
         info_display.add_text("Button:", row=3)
-        info_display.add_text("Modifier:", row=4)
+        info_display.add_text("Mods:", row=4)
 
         button = MyButton(info_display, pos=(10, 10))
 
