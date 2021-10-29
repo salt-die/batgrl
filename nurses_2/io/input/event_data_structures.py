@@ -38,24 +38,20 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
         return self.ctrl
 
 
-class KeyPressEvent(namedtuple("KeyPressEvent", "key modifiers")):
+class KeyPressEvent(namedtuple("KeyPressEvent", "key mods")):
     key: Key | str
-    modifiers: Mods
+    mods: Mods
 
     @cache
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls, *args, **kwargs)
-
-    @property
-    def mods(self):
-        return self.modifiers
 
 
 class MouseEvent(NamedTuple):
     position: Point
     event_type: MouseEventType
     button: MouseButton
-    modifier: Mods
+    mods: Mods
 
 
 class PasteEvent(NamedTuple):
