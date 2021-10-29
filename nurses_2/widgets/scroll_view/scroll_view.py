@@ -1,6 +1,5 @@
-from nurses_2.io.input.event_data_structures import MouseEvent
 from ...colors import Color
-from ...io import KeyPressEvent, MouseEventType
+from ...io import KeyPressEvent, MouseEventType, MouseEvent
 from ...utils import clamp
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
@@ -260,12 +259,12 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def on_click(self, mouse_event: MouseEvent):
         if self.collides_coords(mouse_event.position):
-            if mouse_event.event_type == MouseEventType.SCROLL_UP:
-                self._scroll_up()
-                return True
+            match mouse_event.event_type:
+                case MouseEventType.SCROLL_UP:
+                    self._scroll_up()
+                case MouseEventType.SCROLL_DOWN:
+                    self._scroll_down()
+                case _:
+                    return super().on_click(mouse_event)
 
-            if mouse_event.event_type == MouseEventType.SCROLL_DOWN:
-                self._scroll_down()
-                return True
-
-        return super().on_click(mouse_event)
+            return True
