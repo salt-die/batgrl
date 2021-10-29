@@ -5,7 +5,6 @@ from ..colors import WHITE_ON_BLACK
 from ..data_structures import Point, Size
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import CanvasView, Rect
-from ..utils import character_width
 
 
 class Widget:
@@ -182,6 +181,14 @@ class Widget:
         """
         return self.root.app
 
+    @staticmethod
+    @np.vectorize
+    def character_width(char):
+        """
+        Vectorized `wcswidth`.
+        """
+        return wcswidth(char)
+
     def normalize_canvas(self):
         """
         Add zero-width characters after each full-width character.
@@ -212,7 +219,7 @@ class Widget:
         canvas = self.canvas
         default_char = self.default_char
 
-        char_widths = character_width(self.canvas)
+        char_widths = self.character_width(self.canvas)
 
         canvas[char_widths == 0] = default_char  # Zero-width characters are replaced with the default character.
 
