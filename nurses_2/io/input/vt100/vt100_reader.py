@@ -17,9 +17,9 @@ _MOUSE_PREFIX_RE = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,2})\Z"
 
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
 
-def read_stdin(max_bytes=1024):
+def read_stdin():
     """
-    Read `max_bytes` (non-blocking) from stdin and return it decoded.
+    Read (non-blocking) from stdin and return it decoded.
     """
     fileno = sys.stdin.fileno()
 
@@ -27,7 +27,7 @@ def read_stdin(max_bytes=1024):
         return ""
 
     try:
-        data = os.read(fileno, max_bytes)
+        data = os.read(fileno, 2048)
     except OSError:
         data = b""
 
@@ -142,7 +142,7 @@ class Vt100Reader:
                     pass
                 case Key.BracketedPaste:
                     self._in_bracketed_paste = True
-                case KeyPressEvent(Key.Escape, (False, False, False)) if len(data) > 1:
+                case KeyPressEvent.ESCAPE if len(data) > 1:
                     self._events.append(KeyPressEvent(data[1], ALT))
                     return data[2:]
                 case key_press:
