@@ -146,6 +146,5 @@ def create_environment(title):
         env_out.disable_mouse_support()
         env_out.disable_bracketed_paste()
         env_out.show_cursor()
-        env_out.blinking_line_cursor()
         env_out.flush()
         env_out.restore_console()
