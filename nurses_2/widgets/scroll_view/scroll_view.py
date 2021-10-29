@@ -1,6 +1,6 @@
+from ...clamp import clamp
 from ...colors import Color
 from ...io import KeyPressEvent, MouseEventType, MouseEvent
-from ...utils import clamp
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
 from .scrollbars import _HorizontalBar, _VerticalBar

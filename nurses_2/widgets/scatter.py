@@ -1,5 +1,5 @@
+from ..clamp import clamp
 from ..io import MouseEventType
-from ..utils import clamp
 from .widget import Widget
 from .behaviors.grabbable_behavior import GrabbableBehavior
 

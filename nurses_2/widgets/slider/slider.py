@@ -1,9 +1,9 @@
 from typing import Callable
 
+from ...clamp import clamp
 from ...colors import Color
 from ...data_structures import Point
 from ...io import MouseEventType
-from ...utils import clamp
 from ..widget import Widget
 from .handle import _Handle
 

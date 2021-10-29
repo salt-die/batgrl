@@ -3,9 +3,9 @@ from enum import IntEnum
 import cv2
 import numpy as np
 
+from ..clamp import clamp
 from ..colors import BLACK_ON_BLACK
 from ..data_structures import Point, Size
-from ..utils import clamp
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Rect
 

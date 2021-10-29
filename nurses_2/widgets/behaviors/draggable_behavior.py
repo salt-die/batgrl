@@ -1,4 +1,4 @@
-from ...utils import clamp
+from ...clamp import clamp
 from .grabbable_behavior import GrabbableBehavior
 
 

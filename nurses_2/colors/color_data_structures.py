@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from ..utils import clamp
+from ..clamp import clamp
 
 __all__ = (
     "Color",
