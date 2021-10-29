@@ -1,6 +1,6 @@
 from ...colors import WHITE_ON_BLACK
 from ...data_structures import Point, Size
-from ...io import Key, MouseEvent
+from ...io import MouseEvent, KeyPressEvent
 from ..widget import Widget
 from ..widget_data_structures import Rect
 
@@ -73,17 +73,17 @@ class ParticleField(Widget):
                 canvas_view[pos] = child.char
                 colors_view[pos] = child.color
 
-    def dispatch_press(self, key):
+    def dispatch_press(self, key_press_event: KeyPressEvent):
         """
         Dispatch key press to children.
         """
         # Note this dispatching is in reverse order from widget base.
         return (
-            self.on_press(key)
-            or any(particle.on_press(key) for particle in reversed(self.children) if particle.is_visible)
+            self.on_press(key_press_event)
+            or any(particle.on_press(key_press_event) for particle in reversed(self.children) if particle.is_visible)
         )
 
-    def dispatch_click(self, mouse_event):
+    def dispatch_click(self, mouse_event: MouseEvent):
         """
         Dispatch mouse event to children.
         """
@@ -152,9 +152,9 @@ class Particle:
         y, x = self.parent.absolute_to_relative_coords(coords)
         return y - self.top, x - self.left
 
-    def on_press(self, key: Key):
+    def on_press(self, key_press_event: KeyPressEvent):
         """
-        Handle key press. (Handled key presses should return True else False or None).
+        Handle key press event. (Handled key presses should return True else False or None).
         """
 
     def on_click(self, mouse_event: MouseEvent):

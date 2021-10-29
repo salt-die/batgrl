@@ -3,7 +3,7 @@ from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK
 from ..data_structures import Point, Size
-from ..io import Key
+from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import CanvasView, Rect
 from ..utils import character_width
 
@@ -346,16 +346,16 @@ class Widget:
                 dest_slice, child_rect = region
                 child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
 
-    def dispatch_press(self, key):
+    def dispatch_press(self, key_press_event: KeyPressEvent):
         """
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
         """
         return (
-            any(widget.dispatch_press(key) for widget in reversed(self.children) if widget.is_enabled)
-            or self.on_press(key)
+            any(widget.dispatch_press(key_press_event) for widget in reversed(self.children) if widget.is_enabled)
+            or self.on_press(key_press_event)
         )
 
-    def dispatch_click(self, mouse_event):
+    def dispatch_click(self, mouse_event: MouseEvent):
         """
         Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)
         """
@@ -364,7 +364,7 @@ class Widget:
             or self.on_click(mouse_event)
         )
 
-    def dispatch_paste(self, paste_event):
+    def dispatch_paste(self, paste_event: PasteEvent):
         """
         Dispatch paste event until handled.
         """
@@ -373,17 +373,17 @@ class Widget:
             or self.on_paste(paste_event)
         )
 
-    def on_press(self, key: Key):
+    def on_press(self, key_press_event: KeyPressEvent):
         """
-        Handle key press. (Handled key presses should return True else False or None).
+        Handle key press event. (Handled key presses should return True else False or None).
         """
 
-    def on_click(self, mouse_event):
+    def on_click(self, mouse_event: MouseEvent):
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
         """
 
-    def on_paste(self, paste_event):
+    def on_paste(self, paste_event: PasteEvent):
         """
         Handle paste event.
         """

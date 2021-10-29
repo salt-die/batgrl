@@ -1,5 +1,6 @@
+from nurses_2.io.input.event_data_structures import MouseEvent
 from ...colors import Color
-from ...io import MouseEventType
+from ...io import KeyPressEvent, MouseEventType
 from ...utils import clamp
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget, overlapping_region
@@ -196,21 +197,22 @@ class ScrollView(GrabbableBehavior, Widget):
             dest_slice, horizontal_bar_rect = region
             horizontal_bar.render(canvas_view[dest_slice], colors_view[dest_slice], horizontal_bar_rect)
 
-    def on_press(self, key):
-        if key == "up":
-            self._scroll_up()
-        elif key == "down":
-            self._scroll_down()
-        elif key == "left":
-            self._scroll_left()
-        elif key == "right":
-            self._scroll_right()
-        else:
-            return super().on_press(key)
+    def on_press(self, key_press_event: KeyPressEvent):
+        match key_press_event.key:
+            case "up":
+                self._scroll_up()
+            case "down":
+                self._scroll_down()
+            case "left":
+                self._scroll_left()
+            case "right":
+                self._scroll_right()
+            case _:
+                return super().on_press(key_press_event)
 
         return True
 
-    def grab_update(self, mouse_event):
+    def grab_update(self, mouse_event: MouseEvent):
         self._scroll_up(self.mouse_dy)
         self._scroll_left(self.mouse_dx)
 
@@ -228,17 +230,17 @@ class ScrollView(GrabbableBehavior, Widget):
     def _scroll_down(self, n=1):
         self._scroll_up(-n)
 
-    def dispatch_press(self, key):
+    def dispatch_press(self, key_press_event: KeyPressEvent):
         if (
             self._view is not None
             and self._view.is_enabled
-            and self._view.dispatch_press(key)
+            and self._view.dispatch_press(key_press_event)
         ):
             return True
 
-        return self.on_press(key)
+        return self.on_press(key_press_event)
 
-    def dispatch_click(self, mouse_event):
+    def dispatch_click(self, mouse_event: MouseEvent):
         v_bar, h_bar = self.children
 
         if self.show_horizontal_bar and h_bar.dispatch_click(mouse_event):
@@ -256,7 +258,7 @@ class ScrollView(GrabbableBehavior, Widget):
 
         return self.on_click(mouse_event)
 
-    def on_click(self, mouse_event):
+    def on_click(self, mouse_event: MouseEvent):
         if self.collides_coords(mouse_event.position):
             if mouse_event.event_type == MouseEventType.SCROLL_UP:
                 self._scroll_up()
