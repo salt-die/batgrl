@@ -1,4 +1,6 @@
-from nurses_2.io.input.vt100.ansi_escapes import ANSI_ESCAPES
+"""
+Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
+"""
 from ..keys import Key
 
 ANSI_ESCAPES = {
