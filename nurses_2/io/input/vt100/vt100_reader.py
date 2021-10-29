@@ -162,7 +162,6 @@ class Vt100Reader:
 
         send(None)  # Flush
 
-        try:
-            return self._events
-        finally:
-            self._events = [ ]
+        yield from self._events
+
+        self._events.clear()
