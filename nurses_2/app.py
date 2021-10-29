@@ -9,7 +9,6 @@ from .widgets._root import _Root
 FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
-ESCAPE = KeyPressEvent(Key.Escape, Mods(alt=False, ctrl=False, shift=False))
 
 
 class App(ABC):
@@ -18,19 +17,19 @@ class App(ABC):
 
     Parameters
     ----------
-    exit_key : Optional[KeyPressEvent], default: ESCAPE
+    exit_key : KeyPressEvent | None, default: KeyPressEvent.ESCAPE
         Quit the app when this key is pressed.
     default_char : str, default: " "
         Default background character for root widget.
     default_color_pair : ColorPair, default: BLACK_ON_BLACK
         Default background color pair for root widget.
-    title : Optional[str], default: None
+    title : str | None, default: None
         Set terminal title (if supported).
     """
     def __init__(
         self,
         *,
-        exit_key=ESCAPE,
+        exit_key=KeyPressEvent.ESCAPE,
         default_char=" ",
         default_color_pair=BLACK_ON_BLACK,
         title=None

@@ -1,5 +1,3 @@
-from typing import List, Optional, Dict
-
 import numpy as np
 
 from ...colors import BLACK, Color
@@ -21,18 +19,18 @@ class RayCaster(GraphicWidget):
         A view in the map.
     wall_textures : List[Texture]
         Textures for walls.
-    light_wall_textures : Optional[list[Texture]], default: None
+    light_wall_textures : list[Texture] | None, default: None
         If provided, walls north/south face will use textures in `light_wall_textures` instead
         of `wall_textures`.
-    sprites : Optional[list[Sprite]], default: None
+    sprites : list[Sprite] | None, default: None
         List of Sprites.
-    sprite_textures : Optional[list[Texture]], default: None
+    sprite_textures : list[Texture] | None, default: None
         Textures for sprites.
-    ceiling : Optional[Texture], default: None
+    ceiling : Texture | None, default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
         Color of ceiling if no ceiling texture.
-    floor : Optional[Texture], default: None
+    floor : Texture | None, default: None
         Floor texture.
     floor_color : Color, default: BLACK
         Color of floor if no floor texture.
@@ -44,13 +42,13 @@ class RayCaster(GraphicWidget):
         *args,
         map: Map,
         camera: Camera,
-        wall_textures: List[Texture],
-        light_wall_textures: Optional[List[Texture]]=None,
-        sprites: Optional[List[Sprite]]=None,
-        sprite_textures: Optional[List[Texture]]=None,
-        ceiling: Optional[Texture]=None,
+        wall_textures: list[Texture] | None,
+        light_wall_textures: list[Texture] | None=None,
+        sprites: list[Sprite] | None=None,
+        sprite_textures: list[Texture] | None=None,
+        ceiling: Texture | None=None,
         ceiling_color: Color=BLACK,
-        floor: Optional[Texture]=None,
+        floor: Texture | None=None,
         floor_color: Color=BLACK,
         **kwargs,
     ):

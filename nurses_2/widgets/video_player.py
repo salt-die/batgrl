@@ -2,10 +2,8 @@ import asyncio
 import atexit
 from pathlib import Path
 import time
-from typing import Union
 
 import cv2
-import numpy as np
 
 from ..colors import BLACK_ON_BLACK
 from .graphic_widget import GraphicWidget, Interpolation
@@ -21,7 +19,7 @@ class VideoPlayer(GraphicWidget):
     source : pathlib.Path | str | int
         A path to video, URL to video stream, or capturing device (by index).
     """
-    def __init__(self, *args, source: Union[Path, str, int], **kwargs):
+    def __init__(self, *args, source: Path | str | int, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._resource = None

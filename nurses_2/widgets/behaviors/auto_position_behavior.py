@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 from warnings import warn
 
 from .auto_resize_behavior import AutoSizeBehavior
@@ -13,8 +13,8 @@ class Anchor(str, Enum):
 
 
 class PosHint(NamedTuple):
-    y: Optional[float]
-    x: Optional[float]
+    y: float | None
+    x: float | None
 
 
 class AutoPositionBehavior:

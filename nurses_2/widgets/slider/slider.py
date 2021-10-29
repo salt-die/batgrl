@@ -1,10 +1,10 @@
-from typing import Optional, Callable
+from typing import Callable
 
 from ...colors import Color
+from ...data_structures import Point
 from ...io import MouseEventType
 from ...utils import clamp
 from ..widget import Widget
-from ...data_structures import Point
 from .handle import _Handle
 
 
@@ -28,7 +28,7 @@ class Slider(Widget):
         Color of slider handle.
     slider_enabled : bool, default: True
         Allow dragging handle.
-    callback : Optional[Callable], default: None
+    callback : Callable | None, default: None
         Single argument callable that takes the new value of slider, when slider
         value is updated.
     """
@@ -42,7 +42,7 @@ class Slider(Widget):
         proportion=0.0,
         handle_color: Color,
         slider_enabled=True,
-        callback: Optional[Callable]=None,
+        callback: Callable | None=None,
         default_char="=",
         **kwargs,
         ):

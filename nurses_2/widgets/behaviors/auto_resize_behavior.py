@@ -1,12 +1,12 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 def _is_valid_hint(hint):
     return hint is None or 0 < hint
 
 
 class SizeHint(NamedTuple):
-    height: Optional[float]
-    width: Optional[float]
+    height: float | None
+    width: float | None
 
 
 class AutoSizeBehavior:

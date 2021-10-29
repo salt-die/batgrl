@@ -1,4 +1,4 @@
-from typing import Sequence, Union
+from typing import Sequence
 
 import numpy as np
 
@@ -11,7 +11,7 @@ class Parallax(GraphicWidget):
 
     Parameters
     ----------
-    layers: Sequence[Union[Image, TiledImage]]
+    layers: Sequence[GraphicWidget]
         Individual layers of the parallax in background-to-foreground order.
     speeds: Sequence[float]
         The scrolling speed of each individual layer. A speed of x will scroll a

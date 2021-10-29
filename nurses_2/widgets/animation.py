@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from typing import Iterable, Sequence, Union, NamedTuple
+from typing import Iterable, Sequence, NamedTuple
 
 from .graphic_widget import GraphicWidget, Interpolation
 from .image import Image
@@ -35,8 +35,8 @@ class Animation(GraphicWidget):
     def __init__(
         self,
         *args,
-        paths: Union[Path, Iterable[Path]],
-        frame_duration: Union[float, Sequence[float]]=1/12,
+        paths: Path | Iterable[Path],
+        frame_duration: float | Sequence[float]=1/12,
         loop=True,
         **kwargs
     ):
