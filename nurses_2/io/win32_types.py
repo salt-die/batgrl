@@ -3,7 +3,6 @@ from ctypes.wintypes import BOOL, DWORD, LPVOID, WCHAR, WORD
 
 STD_INPUT_HANDLE = c_ulong(-10)
 STD_OUTPUT_HANDLE = c_ulong(-11)
-STD_ERROR_HANDLE = c_ulong(-12)
 
 
 class COORD(Structure):
