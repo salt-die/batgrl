@@ -1,4 +1,5 @@
 from functools import cache
+from collections import namedtuple
 from typing import NamedTuple
 
 from ...data_structures import Point
@@ -26,11 +27,15 @@ class PasteEvent(NamedTuple):
 # TODO: Move following Modifier into MouseEvent as well.
 # For alt-presses, a single character will be preceded by Key.Escape. This complicates binding alt-presses.
 # Instead, we can package everything into a KeyPressEvent.
-@cache
-class Modifiers(NamedTuple):
+# collections.namedtuple used so __new__ can be cached.
+class Mods(namedtuple("Mods", "alt ctrl shift")):
     alt: bool
     ctrl: bool
     shift: bool
+
+    @cache
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
 
     @property
     def meta(self):
@@ -47,10 +52,13 @@ class Modifiers(NamedTuple):
         return self.ctrl
 
 
-@cache
-class KeyPressEvent(NamedTuple):
+class KeyPressEvent(namedtuple("KeyPressEvent", "key modifiers")):
     key: Key | str
-    modifiers: Modifiers
+    modifiers: Mods
+
+    @cache
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
 
     @property
     def mods(self):
