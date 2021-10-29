@@ -262,9 +262,9 @@ class ScrollView(GrabbableBehavior, Widget):
             match mouse_event.event_type:
                 case MouseEventType.SCROLL_UP:
                     self._scroll_up()
+                    return True
                 case MouseEventType.SCROLL_DOWN:
                     self._scroll_down()
-                case _:
-                    return super().on_click(mouse_event)
+                    return True
 
-            return True
+        return super().on_click(mouse_event)
