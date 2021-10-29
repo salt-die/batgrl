@@ -154,13 +154,13 @@ class Vt100Reader:
         return suffix
 
     def read_keys(self):
-        parser = self._parser
+        send = self._parser.send
 
-        while can_read := read_stdin():
-            for char in can_read:
-                parser.send(char)
+        while chars := read_stdin():
+            for char in chars:
+                send(char)
 
-        parser.send(None)
+        send(None)  # Flush
 
         try:
             return self._events
