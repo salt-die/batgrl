@@ -33,7 +33,7 @@ def create_io():
     if is_windows():
         from .output.windows10 import is_win_vt100_enabled, Windows10_Output
 
-        if not is_conemu_ansi() or not is_win_vt100_enabled():
+        if not is_conemu_ansi() and not is_win_vt100_enabled():
             raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 
         from .input.win32 import win32_input
