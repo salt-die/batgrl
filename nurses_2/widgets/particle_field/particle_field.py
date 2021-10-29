@@ -52,7 +52,9 @@ class ParticleField(Widget):
         self.add_widget(particle)
 
     def walk(self):
-        yield self
+        """
+        Yield all descendents.
+        """
         yield from self.children
 
     def render(self, canvas_view, colors_view, rect: Rect):
@@ -80,7 +82,9 @@ class ParticleField(Widget):
         # Note this dispatching is in reverse order from widget base.
         return (
             self.on_press(key_press_event)
-            or any(particle.on_press(key_press_event) for particle in reversed(self.children) if particle.is_visible)
+            or any(
+                particle.on_press(key_press_event)
+                for particle in reversed(self.children) if particle.is_visible)
         )
 
     def dispatch_click(self, mouse_event: MouseEvent):
@@ -90,7 +94,9 @@ class ParticleField(Widget):
         # Note this dispatching is in reverse order from widget base.
         return (
             self.on_click(mouse_event)
-            or any(particle.on_click(mouse_event) for particle in reversed(self.children) if particle.is_visible)
+            or any(
+                particle.on_click(mouse_event)
+                for particle in reversed(self.children) if particle.is_visible)
         )
 
 
