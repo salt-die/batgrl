@@ -320,7 +320,7 @@ class Widget:
 
     def walk(self):
         """
-        Yield self and all descendents.
+        Yield all descendents.
         """
         for child in self.children:
             yield child
