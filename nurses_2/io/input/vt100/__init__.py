@@ -1,1 +1,1 @@
-from .vt100 import Vt100Input
+from . import vt100_input

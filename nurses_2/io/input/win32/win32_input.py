@@ -1,7 +1,5 @@
 """
 Win32 Input.
-
-This namespace has functions analogous to Vt100Input's methods. `read_keys` is brought in from `console_input_reader`.
 """
 from asyncio import get_event_loop
 from contextlib import contextmanager
