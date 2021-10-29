@@ -8,9 +8,8 @@ import sys
 from codecs import getincrementaldecoder
 
 from ....data_structures import Point
-from ..keys import Key
-from ..events import KeyPressEvent, MouseEvent, PasteEvent
-from .ansi_escape_sequences import NO_MODS, ALT, ANSI_SEQUENCES
+from ..events import Key, KeyPressEvent, MouseEvent, PasteEvent
+from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
 from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 
 _MOUSE_RE        = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
@@ -136,7 +135,7 @@ class Vt100Reader:
                 self._events.append(_create_mouse_event(prefix))
                 return suffix
 
-            match ANSI_SEQUENCES.get(prefix):
+            match ANSI_ESCAPES.get(prefix):
                 case None:
                     continue
                 case Key.Ignore:

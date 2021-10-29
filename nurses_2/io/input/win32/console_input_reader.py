@@ -12,9 +12,16 @@ from ...win32_types import (
     STD_INPUT_HANDLE,
     EventTypes,
 )
-from ..keys import Key
-from ..events import Mods, KeyPressEvent, MouseButton, MouseEventType, MouseEvent, PasteEvent
-from .key_maps import ANSI_SEQUENCES, KEY_CODES
+from ..events import (
+    Key,
+    Mods,
+    KeyPressEvent,
+    MouseButton,
+    MouseEventType,
+    MouseEvent,
+    PasteEvent,
+)
+from .ansi_escapes import ANSI_ESCAPES, KEY_CODES
 
 RIGHT_ALT_PRESSED = 0x0001
 LEFT_ALT_PRESSED = 0x0002
@@ -38,7 +45,7 @@ def _handle_key(ev: KEY_EVENT_RECORD):
                 return
 
         case u_char:
-            key = ANSI_SEQUENCES.get(u_char.encode(errors="surrogatepass"), u_char)
+            key = ANSI_ESCAPES.get(u_char.encode(errors="surrogatepass"), u_char)
 
     return KeyPressEvent(
         key,

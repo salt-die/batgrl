@@ -1,6 +1,7 @@
+from nurses_2.io.input.vt100.ansi_escapes import ANSI_ESCAPES
 from ..keys import Key
 
-ANSI_SEQUENCES = {
+ANSI_ESCAPES = {
     b"\x1b": Key.Escape,
     b"\x00": " ",
     b"\x01": "a",

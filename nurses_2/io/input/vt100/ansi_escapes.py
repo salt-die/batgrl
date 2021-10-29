@@ -1,8 +1,7 @@
 """
 Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
 """
-from ..keys import Key
-from ..events import Mods, KeyPressEvent
+from ..events import Key, Mods, KeyPressEvent
 
 NO_MODS           = Mods(False, False, False)
 ALT               = Mods(True , False, False)
@@ -13,7 +12,7 @@ ALT_SHIFT         = Mods(True , False, True )
 CONTROL_SHIFT     = Mods(False, True , True )
 ALT_CONTROL_SHIFT = Mods(True , True , True )
 
-ANSI_SEQUENCES = {
+ANSI_ESCAPES = {
     "\x00": KeyPressEvent(" ", CONTROL),
     "\x01": KeyPressEvent("a", CONTROL),
     "\x02": KeyPressEvent("b", CONTROL),
