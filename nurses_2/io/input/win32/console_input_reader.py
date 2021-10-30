@@ -21,7 +21,7 @@ from ..events import (
     MouseEvent,
     PasteEvent,
 )
-from .ansi_escapes import ANSI_ESCAPES, KEY_CODES
+from .key_codes import KEY_CODES
 
 RIGHT_ALT_PRESSED = 0x0001
 LEFT_ALT_PRESSED = 0x0002
@@ -37,24 +37,20 @@ def _handle_key(ev: KEY_EVENT_RECORD):
     """
     Return a KeyPressEvent from a KEY_EVENT_RECORD.
     """
-    match ev.uChar.UnicodeChar:
-        case "\x00":
-            key = KEY_CODES.get(ev.VirtualKeyCode)
+    key = KEY_CODES.get(ev.VirtualKeyCode)
 
-            if key is None:
-                return
+    if key is None:
+        return None
 
-        case u_char:
-            key = ANSI_ESCAPES.get(u_char.encode(errors="surrogatepass"), u_char)
+    key_state = ev.ControlKeyState
 
-    return KeyPressEvent(
-        key,
-        Mods(
-            bool(ev.ControlKeyState & ALT_PRESSED),
-            bool(ev.ControlKeyState & CTRL_PRESSED),
-            bool(ev.ControlKeyState & SHIFT_PRESSED),
-        )
-    )
+    alt = bool(key_state & ALT_PRESSED)
+    ctrl = bool(key_state & CTRL_PRESSED)
+
+    if not (isinstance(key, Key) or alt or ctrl):
+        key = ev.uChar.UnicodeChar
+
+    return KeyPressEvent(key, Mods(alt, ctrl, bool(key_state & SHIFT_PRESSED)))
 
 def _handle_mouse(ev):
     """
