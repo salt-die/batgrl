@@ -10,8 +10,6 @@ from ctypes.wintypes import BOOL, DWORD, HANDLE
 from ...win32_types import SECURITY_ATTRIBUTES
 from .console_input_reader import STDIN_HANDLE, read_keys  # read_keys is expected to be in this namespace
 
-TWO_ARR = HANDLE * 2
-
 @contextmanager
 def attach(callback):
     """
@@ -22,16 +20,20 @@ def attach(callback):
         run_in_executor = loop.run_in_executor
         call_soon_threadsafe = loop.call_soon_threadsafe
         wait_for = windll.kernel32.WaitForMultipleObjects
+        FALSE = BOOL(False)
+        NO_TIMEOUT = DWORD(-1)
 
         # Anonymous win32 event.
-        remove_event = HANDLE(
+        REMOVE_EVENT = HANDLE(
             windll.kernel32.CreateEventA(
                 pointer(SECURITY_ATTRIBUTES()),
                 BOOL(True),
-                BOOL(False),
+                FALSE,
                 None,
             )
         )
+
+        EVENTS = (HANDLE * 2)(REMOVE_EVENT, STDIN_HANDLE)
 
         def ready():
             try:
@@ -40,18 +42,17 @@ def attach(callback):
                 run_in_executor(None, wait)
 
         def wait():
-            if wait_for(2, TWO_ARR(remove_event, STDIN_HANDLE), BOOL(False), DWORD(-1)) == 0:
-                windll.kernel32.CloseHandle(remove_event)
-                return
-
-            call_soon_threadsafe(ready)
+            if wait_for(2, EVENTS, FALSE, NO_TIMEOUT) == 0:
+                windll.kernel32.CloseHandle(REMOVE_EVENT)
+            else:
+                call_soon_threadsafe(ready)
 
         run_in_executor(None, wait)
 
         yield
 
     finally:
-        windll.kernel32.SetEvent(remove_event)
+        windll.kernel32.SetEvent(REMOVE_EVENT)
 
 @contextmanager
 def raw_mode():
