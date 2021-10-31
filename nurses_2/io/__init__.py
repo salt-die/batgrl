@@ -25,7 +25,7 @@ __all__ = (
 
 def _create_io():
     """
-    Return a platform specific io.
+    Return platform specific io.
     """
     if not sys.stdin.isatty():
         raise RuntimeError("Interactive terminal required.")
