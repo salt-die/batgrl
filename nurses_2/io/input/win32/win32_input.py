@@ -1,7 +1,6 @@
 """
 Win32 Input.
 """
-import asyncio
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
