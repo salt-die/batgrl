@@ -1,9 +1,8 @@
 import asyncio
 from abc import ABC, abstractmethod
-from contextlib import contextmanager
 
 from .colors import BLACK_ON_BLACK
-from .io import create_io, Mods, KeyPressEvent, PasteEvent, MouseEvent, Key
+from .io import KeyPressEvent, MouseEvent, PasteEvent, io
 from .widgets._root import _Root
 
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
@@ -61,18 +60,20 @@ class App(ABC):
         """
         Build environment, create root, and schedule app-specific tasks.
         """
-        with create_environment(self.title) as (env_out, env_in):
+        with io() as (env_in, env_out):
             self.root = root = _Root(
                 app=self,
                 env_out=env_out,
                 default_char=self.default_char,
                 default_color_pair=self.default_color_pair,
             )
+
+            if self.title:
+                env_out.set_title(self.title)
+
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click
             dispatch_paste = root.dispatch_paste
-
-            loop = asyncio.get_event_loop()
 
             def read_from_input():
                 """
@@ -84,10 +85,10 @@ class App(ABC):
                             return self.exit()
                         case MouseEvent():
                             dispatch_click(key)
+                        case KeyPressEvent():
+                            dispatch_press(key)
                         case PasteEvent():
                             dispatch_paste(key)
-                        case _:
-                            dispatch_press(key)
 
             async def poll_size():
                 """
@@ -120,30 +121,3 @@ class App(ABC):
                     auto_render(),
                     self.on_start(),
                 )
-
-
-@contextmanager
-def create_environment(title):
-    """
-    Setup and return input and output.
-    """
-    env_in, env_out = create_io()
-
-    env_out.enable_mouse_support()
-    env_out.enable_bracketed_paste()
-    env_out.enter_alternate_screen()
-    if title is not None:
-        env_out.set_title(title)
-    env_out.flush()
-
-    try:
-        yield env_out, env_in
-
-    finally:
-        env_out.quit_alternate_screen()
-        env_out.reset_attributes()
-        env_out.disable_mouse_support()
-        env_out.disable_bracketed_paste()
-        env_out.show_cursor()
-        env_out.flush()
-        env_out.restore_console()
