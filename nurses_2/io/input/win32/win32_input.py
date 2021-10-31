@@ -8,7 +8,13 @@ from ctypes import pointer, windll
 from ctypes.wintypes import BOOL, DWORD, HANDLE
 
 from ...win32_types import SECURITY_ATTRIBUTES
-from .console_input_reader import STDIN_HANDLE, read_keys  # read_keys is expected to be in this namespace
+from .console_input_reader import STDIN_HANDLE, read_keys
+
+__all__ = (
+    "attach",
+    "raw_input",
+    "read_keys",
+)
 
 @contextmanager
 def attach(callback):

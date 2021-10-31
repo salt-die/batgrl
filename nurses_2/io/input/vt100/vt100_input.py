@@ -9,8 +9,13 @@ from contextlib import contextmanager
 
 from .vt100_reader import Vt100Reader
 
-READER = Vt100Reader()
-read_keys = READER.read_keys
+__all__ = (
+    "attach",
+    "raw_mode",
+    "read_keys",
+)
+
+read_keys = Vt100Reader().read_keys
 
 @contextmanager
 def attach(callback):
