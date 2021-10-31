@@ -37,20 +37,21 @@ def _handle_key(ev: KEY_EVENT_RECORD):
     """
     Return a KeyPressEvent from a KEY_EVENT_RECORD.
     """
-    key = KEY_CODES.get(ev.VirtualKeyCode)
+    key = KEY_CODES.get(ev.VirtualKeyCode, ev.uChar.UnicodeChar)
 
-    if key is None:
+    if key == "\x00":
         return None
 
     key_state = ev.ControlKeyState
 
-    alt = bool(key_state & ALT_PRESSED)
-    ctrl = bool(key_state & CTRL_PRESSED)
+    alt   = bool(key_state & ALT_PRESSED)
+    ctrl  = bool(key_state & CTRL_PRESSED)
+    shift = bool(key_state & SHIFT_PRESSED)
 
     if not (isinstance(key, Key) or alt or ctrl):
         key = ev.uChar.UnicodeChar
 
-    return KeyPressEvent(key, Mods(alt, ctrl, bool(key_state & SHIFT_PRESSED)))
+    return KeyPressEvent(key, Mods(alt, ctrl, shift))
 
 def _handle_mouse(ev):
     """
@@ -106,7 +107,7 @@ def _purge(text: list[str]):
         .decode("utf-16")
     )  # Merge surrogate pairs.
 
-    if "\n" in chars and len(chars) > 3:  # Heuristic for detecting paste event.
+    if len(chars) > 2:  # Heuristic for detecting paste event.
         yield PasteEvent(chars)
 
     else:
