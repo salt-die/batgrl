@@ -1,6 +1,7 @@
 """
 Win32 Input.
 """
+import asyncio
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
@@ -23,9 +24,12 @@ def attach(callback):
     """
     try:
         loop = get_event_loop()
+
         run_in_executor = loop.run_in_executor
         call_soon_threadsafe = loop.call_soon_threadsafe
+
         wait_for = windll.kernel32.WaitForMultipleObjects
+
         FALSE = BOOL(False)
         NO_TIMEOUT = DWORD(-1)
 
