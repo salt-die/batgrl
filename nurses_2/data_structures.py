@@ -9,3 +9,11 @@ class Point(NamedTuple):
 class Size(NamedTuple):
     rows: int
     columns: int
+
+    @property
+    def height(self):
+        return self.rows
+
+    @property
+    def width(self):
+        return self.columns
