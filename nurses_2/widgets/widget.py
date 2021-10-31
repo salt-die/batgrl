@@ -39,8 +39,9 @@ class Widget:
         default_char=" ",
         default_color_pair=WHITE_ON_BLACK,
     ):
-        self._size = size
+        self._size = Size(*size)
         self.pos = pos
+
         self.is_transparent = is_transparent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
@@ -58,12 +59,13 @@ class Widget:
         """
         Resize widget. Content is preserved as much as possible.
         """
-        self._size = h, w = size
+        old_h, old_w = self._size
+
+        h, w = size
+        self._size = Size(h, w)
 
         old_canvas = self.canvas
         old_colors = self.colors
-
-        old_h, old_w = old_canvas.shape
 
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
@@ -109,9 +111,21 @@ class Widget:
     def height(self):
         return self._size[0]
 
+    rows = height  # alias
+
     @property
     def width(self):
         return self._size[1]
+
+    columns = width  # alias
+
+    @property
+    def y(self):
+        return self.top
+
+    @property
+    def x(self):
+        return self.left
 
     @property
     def bottom(self):
