@@ -6,7 +6,6 @@ from .colors import BLACK_ON_BLACK
 from .io import create_io, Mods, KeyPressEvent, PasteEvent, MouseEvent, Key
 from .widgets._root import _Root
 
-FLUSH_TIMEOUT        = 0.05  # Seconds before we flush an escape character in the input queue.
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
 
