@@ -362,32 +362,32 @@ class Fire(CycleColorBehavior, MovingElement):
     STATE = State.SOLID
 
     def update_neighbor(self, neighbor):
-        if isinstance(neighbor, Wood):
-            if random() > .99:
-                neighbor.replace(Fire)
+        match neighbor:
+            case Wood():
+                if random() > .99:
+                    neighbor.replace(Fire)
 
-            return True  # Return True to stop Fire from moving if it is next to wood, i.e., it sticks to wood.
-
-        elif isinstance(neighbor, Air):
-            if random() > .989:
-                neighbor.replace(Smoke)
-
-        elif isinstance(neighbor, Water):
-            if random() > .95:
-                neighbor.replace(Steam)
-
-                self.replace()
+                # Return True to stop Fire from moving if
+                # it is next to wood, i.e., it sticks to wood.
                 return True
+            case Air():
+                if random() > .989:
+                    neighbor.replace(Smoke)
+            case Water():
+                if random() > .95:
+                    neighbor.replace(Steam)
 
-            elif random() > .95:
-                self.replace(Smoke)
-                return True
+                    self.replace()
+                    return True
 
-        elif isinstance(neighbor, Snow):
-            if random() > .945:
-                neighbor.replace(Water)
-
-        elif isinstance(neighbor, Oil):
-            if random() > .92:
-                neighbor.replace(Fire)
-                self.world[neighbor.pos].LIFETIME = 25  # Fire from oil will have a short lifetime.
+                elif random() > .95:
+                    self.replace(Smoke)
+                    return True
+            case Snow():
+                if random() > .945:
+                    neighbor.replace(Water)
+            case Oil():
+                if random() > .92:
+                    neighbor.replace(Fire)
+                    # Fire from oil will have a short lifetime.
+                    self.world[neighbor.pos].LIFETIME = 25
