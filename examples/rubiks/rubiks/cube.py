@@ -1,4 +1,3 @@
-import asyncio
 import numpy as np
 
 CUBE_WIDTH = .9
