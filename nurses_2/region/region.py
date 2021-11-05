@@ -1,5 +1,3 @@
-from ..data_structures import Size
-from ..widgets import Widget
 from .band import Band
 
 _EMPTY_BAND = Band(0, 0, [])
@@ -11,10 +9,14 @@ class Region:
     """
     __slots__ = "bands",
 
-    def __init__(self, *, size: Size | None=None, bands: list[Band] | None=None):
-        self.bands = bands or [ Band(0, size.height, [0, size.width]) ]
+    def __init__(self, area: list[Band]):
+        match area:
+            case list():
+                self.bands = area
+            case _:
+                self.bands = [ Band(0, area.height, [0, area.width]) ]
 
-    def _reband(self, widget: Widget):
+    def _reband(self, widget):
         """
         Adjust bands' top and bottoms to fit widget's rect. Return a region that
         covers widget.
@@ -40,7 +42,7 @@ class Region:
 
             i += 1
 
-        return Region(bands=widget_bands)
+        return Region(widget_bands)
 
     def _divmod(self, other):
         self_bands = iter(self.bands)
@@ -49,31 +51,22 @@ class Region:
         self_band = next(self_bands, None)
         other_band = next(other_bands, None)
 
-        div_bands = [ ]
-        mod_bands = [ ]
-
         while self_band is not None or other_band is not None:
             if (
                 other_band is None
                 or self_band is not None and self_band.top < other_band.top
             ):
-                div, mod = self_band.divmod(_EMPTY_BAND)
+                self_band.divmod(_EMPTY_BAND)
                 self_band = next(self_bands, None)
 
             elif self_band is None or other_band.top < self_band.top:
-                div, mod = other_band.divmod(_EMPTY_BAND)
+                other_band.divmod(_EMPTY_BAND)
                 other_band = next(other_bands, None)
 
             else:
-                div, mod = self_band.divmod(other_band)
+                self_band.divmod(other_band)
                 self_band = next(self_bands, None)
                 other_band = next(other_bands, None)
-
-            div_bands.extend(div)
-            mod_bands.extend(mod)
-
-        other.bands = div_bands
-        self.bands = mod_bands
 
     def _coalesce(self):
         """
@@ -94,7 +87,7 @@ class Region:
             else:
                 i += 1
 
-    def divmod(self, other: Widget):
+    def divmod(self, other):
         widget_region = self._reband(other)
         self._divmod(widget_region)
 
@@ -102,6 +95,11 @@ class Region:
         widget_region._coalesce()
 
         return widget_region
+
+    @property
+    def slices(self):
+        for band in self.bands:
+            yield from band.slices
 
     def __repr__(self):
         attrs = ', '.join(
