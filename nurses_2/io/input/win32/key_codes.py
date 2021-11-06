@@ -1,5 +1,5 @@
 """
-Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
+Mapping from key codes to the corresponding keys.
 """
 from ..keys import Key
 
