@@ -33,8 +33,8 @@ WATER_COLOR = Color.from_hex("1259FF")
 def wrap_border(array):
     array[:2] = array[-4: -2][::-1]
     array[-2:] = array[2: 4][::-1]
-    array[:, :2] = array[:, -4: -2][::-1]
-    array[:, -2:] = array[:, 2: 4][::-1]
+    array[2: -2, :2] = array[2: -2, -4: -2][::-1]
+    array[2: -2, -2:] = array[2: -2, 2: 4][::-1]
 
 def sigmoid(array):
     return 1 / (1 + np.e**-array)
