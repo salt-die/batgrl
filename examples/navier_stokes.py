@@ -11,8 +11,6 @@ from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 
-RHO = .9
-
 # Kernels
 CONVECTION = np.array([
     [   0, .25,    0],
@@ -86,13 +84,14 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
 
         self.momentum = (
             filter2D(momentum, -1, DIFFUSION, borderType=cv2.BORDER_REFLECT)
-        ) + filter2D(pressure, -1, CONVECTION, borderType=cv2.BORDER_REFLECT) * RHO
+            + filter2D(pressure, -1, CONVECTION, borderType=cv2.BORDER_REFLECT)
+        )
 
         delta = filter2D(self.momentum, -1, POISSON, borderType=cv2.BORDER_REFLECT)
 
         self.pressure = (
             filter2D(pressure, -1, POISSON, borderType=cv2.BORDER_REFLECT)
-            + RHO / 2 * (delta - delta**2)
+            + .5 * (delta - delta**2)
         )
 
         self.texture[..., :3] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
