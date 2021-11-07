@@ -7,7 +7,7 @@ from cv2 import filter2D
 
 from nurses_2.app import App
 from nurses_2.colors import Color
-from nurses_2.io import MouseButton, MouseEvent
+from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 
@@ -59,7 +59,7 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
 
         super().resize(size)
 
-    def on_click(self, mouse_event: MouseEvent):
+    def on_click(self, mouse_event):
         if not self.collides_coords(mouse_event.position):
             return False
 
