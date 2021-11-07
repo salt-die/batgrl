@@ -44,13 +44,12 @@ class Band:
         mod_walls = [ ]
 
         while self_wall is not None or other_wall is not None:
-            match (self_wall, other_wall):
-                case (None, _):
-                    threshold = other_wall
-                case (_, None):
-                    threshold = self_wall
-                case _:
-                    threshold = min(self_wall, other_wall)
+            if self_wall is None:
+                threshold = other_wall
+            elif other_wall is None:
+                threshold = self_wall
+            else:
+                threshold = min(self_wall, other_wall)
 
             if self_wall == threshold:
                 inside_self ^= True
