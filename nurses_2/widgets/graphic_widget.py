@@ -24,7 +24,7 @@ class GraphicWidget(Widget):
 
     Graphic widgets are widgets that are rendered entirely with the upper half block character, "▀".
     Graphic widgets' color information is stored in a (2 * height, width, 4)-shaped array, `texture`.
-    `texture` can be treated as a uint8 RGBA image texture. Unlike its parent Widget, GraphicWidget
+    `texture` can be treated as a uint8 RGBA image texture. Unlike its parent, Widget, GraphicWidget
     does not have `canvas` or `colors` attributes.
 
     Parameters
