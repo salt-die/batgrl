@@ -61,7 +61,8 @@ def _create_mouse_event(data):
         x -= 1
         y -= 1
 
-    return MouseEvent(Point(y, x), *mouse_info)
+    if mouse_info is not None:
+        return MouseEvent(Point(y, x), *mouse_info)
 
 
 class _HasLongerMatch(dict):
@@ -132,7 +133,8 @@ class Vt100Reader:
             suffix = data[i:]
 
             if _MOUSE_RE.match(prefix) is not None:
-                self._events.append(_create_mouse_event(prefix))
+                if (mouse_event := _create_mouse_event(prefix)) is not None:
+                    self._events.append(mouse_event)
                 return suffix
 
             match ANSI_ESCAPES.get(prefix):
