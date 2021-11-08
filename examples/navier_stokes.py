@@ -1,8 +1,15 @@
 """
 Click to add fluid. `r` to reset.
+
+`cv2` convolutions (`filter2D`) currently don't support boundary wrapping. This is done manually by creating
+pressure and momentum arrays equal to the widget's texture plus a 2-width border and copying data into that border.
+
+This simulates discrete Navier-Stokes with 0 viscosity and a rho of 1. Note that using DIFFUSION kernel instead of
+POISSON kernel (for the convolutions that used POISSON) will achieve almost identical results.
+
+An alternative visualization is to copy the derivative of the pressure array into the widget's texture instead.
 """
 import numpy as np
-import cv2
 from cv2 import filter2D
 
 from nurses_2.app import App
@@ -46,14 +53,10 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
         self.resize(self.size)
 
     def resize(self, size):
-        """
-        Resize widget.
-        """
-        h, w = size
-        gsize = 2 * h + 4, w + 4
+        size_with_border = 2 * size.height + 4, size.width + 4
 
-        self.pressure = np.zeros(gsize, dtype=float)
-        self.momentum = np.zeros(gsize, dtype=float)
+        self.pressure = np.zeros(size_with_border, dtype=float)
+        self.momentum = np.zeros(size_with_border, dtype=float)
 
         super().resize(size)
 
@@ -82,17 +85,11 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
         wrap_border(momentum)
         wrap_border(pressure)
 
-        self.momentum = (
-            filter2D(momentum, -1, DIFFUSION, borderType=cv2.BORDER_REFLECT)
-            + filter2D(pressure, -1, CONVECTION, borderType=cv2.BORDER_REFLECT)
-        )
+        self.momentum = filter2D(momentum, -1, DIFFUSION) + filter2D(pressure, -1, CONVECTION)
 
-        delta = filter2D(self.momentum, -1, POISSON, borderType=cv2.BORDER_REFLECT)
+        delta = filter2D(self.momentum, -1, POISSON)
 
-        self.pressure = (
-            filter2D(pressure, -1, POISSON, borderType=cv2.BORDER_REFLECT)
-            + .5 * (delta - delta**2)
-        )
+        self.pressure = filter2D(pressure, -1, POISSON) + .5 * (delta - delta**2)
 
         self.texture[..., :3] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
 
