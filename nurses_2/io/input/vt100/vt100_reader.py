@@ -145,7 +145,7 @@ class Vt100Reader:
                 case KeyPressEvent.ESCAPE if len(suffix) >= 1:
                     if len(suffix) == 1:  # alt + character (probably)
                         self._events.append(KeyPressEvent(suffix, ALT))
-                    else:  # an unrecognized escape sequence; entire sequence (including escape) added to events
+                    else:  # an unrecognized escape sequence; entire sequence (including escape) added as KeyPressEvent
                         self._events.append(KeyPressEvent(data, NO_MODS))
                     return ""
                 case key_press:
