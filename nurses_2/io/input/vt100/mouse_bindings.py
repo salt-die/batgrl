@@ -12,14 +12,14 @@ RIGHT = MouseButton.RIGHT
 NO_BUTTON = MouseButton.NO_BUTTON
 UNKNOWN_BUTTON = MouseButton.UNKNOWN_BUTTON
 
-NO_MODS = UNKNOWN_MODIFIER = Mods.NO_MODS
-ALT                        = Mods(True , False, False)
-CONTROL                    = Mods(False, True , False)
-SHIFT                      = Mods(False, False, True )
-ALT_CONTROL                = Mods(True , True , False)
-ALT_SHIFT                  = Mods(True , False, True )
-CONTROL_SHIFT              = Mods(False, True , True )
-ALT_CONTROL_SHIFT          = Mods(True , True , True )
+NO_MODS           = Mods.NO_MODS
+ALT               = Mods(True , False, False)
+CONTROL           = Mods(False, True , False)
+SHIFT             = Mods(False, False, True )
+ALT_CONTROL       = Mods(True , True , False)
+ALT_SHIFT         = Mods(True , False, True )
+CONTROL_SHIFT     = Mods(False, True , True )
+ALT_CONTROL_SHIFT = Mods(True , True , True )
 
 TERM_SGR = {
     ( 0, "m"): (MOUSE_UP, LEFT, NO_MODS),
@@ -103,16 +103,6 @@ TERM_SGR = {
     (58, "M"): (MOUSE_MOVE, RIGHT, ALT_CONTROL),
     (62, "M"): (MOUSE_MOVE, RIGHT, ALT_CONTROL_SHIFT),
 
-    (35, "m"): (MOUSE_MOVE, NO_BUTTON, NO_MODS),
-    (39, "m"): (MOUSE_MOVE, NO_BUTTON, SHIFT),
-    (43, "m"): (MOUSE_MOVE, NO_BUTTON, ALT),
-    (47, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_SHIFT),
-    (51, "m"): (MOUSE_MOVE, NO_BUTTON, CONTROL),
-    (55, "m"): (MOUSE_MOVE, NO_BUTTON, CONTROL_SHIFT),
-    (59, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL),
-    (63, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL_SHIFT),
-
-    # This is duplicated from the block above with capital "M" for WSL.
     (35, "M"): (MOUSE_MOVE, NO_BUTTON, NO_MODS),
     (39, "M"): (MOUSE_MOVE, NO_BUTTON, SHIFT),
     (43, "M"): (MOUSE_MOVE, NO_BUTTON, ALT),
@@ -121,6 +111,16 @@ TERM_SGR = {
     (55, "M"): (MOUSE_MOVE, NO_BUTTON, CONTROL_SHIFT),
     (59, "M"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL),
     (63, "M"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL_SHIFT),
+
+    # This is duplicated from the block above with lowercase "m" for WSL.
+    (35, "m"): (MOUSE_MOVE, NO_BUTTON, NO_MODS),
+    (39, "m"): (MOUSE_MOVE, NO_BUTTON, SHIFT),
+    (43, "m"): (MOUSE_MOVE, NO_BUTTON, ALT),
+    (47, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_SHIFT),
+    (51, "m"): (MOUSE_MOVE, NO_BUTTON, CONTROL),
+    (55, "m"): (MOUSE_MOVE, NO_BUTTON, CONTROL_SHIFT),
+    (59, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL),
+    (63, "m"): (MOUSE_MOVE, NO_BUTTON, ALT_CONTROL_SHIFT),
 
     (64, "M"): (SCROLL_UP, NO_BUTTON, NO_MODS),
     (68, "M"): (SCROLL_UP, NO_BUTTON, SHIFT),
@@ -142,23 +142,24 @@ TERM_SGR = {
 }
 
 TYPICAL = {
-    32: (MOUSE_DOWN, LEFT, UNKNOWN_MODIFIER),
-    33: (MOUSE_DOWN, MIDDLE, UNKNOWN_MODIFIER),
-    34: (MOUSE_DOWN, RIGHT, UNKNOWN_MODIFIER),
-    35: (MOUSE_UP, UNKNOWN_BUTTON,  UNKNOWN_MODIFIER),
+    32: (MOUSE_DOWN, LEFT, NO_MODS),
+    33: (MOUSE_DOWN, MIDDLE, NO_MODS),
+    34: (MOUSE_DOWN, RIGHT, NO_MODS),
+    35: (MOUSE_UP, UNKNOWN_BUTTON, NO_MODS),
 
-    64: (MOUSE_MOVE, LEFT, UNKNOWN_MODIFIER),
-    65: (MOUSE_MOVE, MIDDLE, UNKNOWN_MODIFIER),
-    66: (MOUSE_MOVE, RIGHT, UNKNOWN_MODIFIER),
-    67: (MOUSE_MOVE, NO_BUTTON, UNKNOWN_MODIFIER),
+    64: (MOUSE_MOVE, LEFT, NO_MODS),
+    65: (MOUSE_MOVE, MIDDLE, NO_MODS),
+    66: (MOUSE_MOVE, RIGHT, NO_MODS),
+    67: (MOUSE_MOVE, NO_BUTTON, NO_MODS),
 
-    96: (SCROLL_UP, NO_BUTTON, UNKNOWN_MODIFIER),
-    97: (SCROLL_DOWN, NO_BUTTON, UNKNOWN_MODIFIER),
+    96: (SCROLL_UP, NO_BUTTON, NO_MODS),
+    97: (SCROLL_DOWN, NO_BUTTON, NO_MODS),
 }
 
 URXVT = {
-    32: (MOUSE_DOWN, UNKNOWN_BUTTON, UNKNOWN_MODIFIER),
-    35: (MOUSE_UP, UNKNOWN_BUTTON, UNKNOWN_MODIFIER),
-    96: (SCROLL_UP, NO_BUTTON, UNKNOWN_MODIFIER),
-    97: (SCROLL_DOWN, NO_BUTTON, UNKNOWN_MODIFIER),
+    32: (MOUSE_DOWN, UNKNOWN_BUTTON, NO_MODS),
+    35: (MOUSE_UP, UNKNOWN_BUTTON, NO_MODS),
+
+    96: (SCROLL_UP, NO_BUTTON, NO_MODS),
+    97: (SCROLL_DOWN, NO_BUTTON, NO_MODS),
 }
