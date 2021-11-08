@@ -67,11 +67,11 @@ class AColor(NamedTuple):
         Color will be multiplied by:
             `e ** -distance`
         """
-        factor = e ** -distance
+        p = e ** -distance
 
         r, g, b, _ = self
 
-        return type(self)(factor * r, factor * g, factor * b)
+        return type(self)(p * r, p * g, p * b)
 
 
 class ColorPair(NamedTuple):
