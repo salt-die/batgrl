@@ -7,7 +7,8 @@ pressure and momentum arrays equal to the widget's texture plus a 2-width border
 This simulates discrete Navier-Stokes with 0 viscosity and a rho of 1. Note that using DIFFUSION kernel instead of
 POISSON kernel (for the convolutions that used POISSON) will achieve almost identical results.
 
-An alternative visualization is to copy the derivative of the pressure array into the widget's texture instead.
+An alternative (read: *possibly better*) visualization is to copy the derivative of the pressure array into the
+widget's texture instead. This can be approximated by taking the difference of current pressure and previous pressure.
 """
 import numpy as np
 from cv2 import filter2D
