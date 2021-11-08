@@ -1,5 +1,7 @@
 from typing import NamedTuple
 
+from ...data_structures import Size
+
 def _is_valid_hint(hint):
     return hint is None or 0 < hint
 
@@ -49,6 +51,6 @@ class AutoSizeBehavior:
         height = self.height if h_hint is None else int(h_hint * h)
         width = self.width if w_hint is None else int(w_hint * w)
 
-        self.resize((height, width))
+        self.resize(Size(height, width))
 
         super().update_geometry()
