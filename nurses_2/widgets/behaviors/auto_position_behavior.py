@@ -4,11 +4,16 @@ from warnings import warn
 
 from .auto_resize_behavior import AutoSizeBehavior
 
+
 class Anchor(str, Enum):
     CENTER = "CENTER"
+    LEFT_CENTER = "LEFT_CENTER"
+    RIGHT_CENTER = "RIGHT_CENTER"
     TOP_LEFT = "TOP_LEFT"
+    TOP_CENTER = "TOP_CENTER"
     TOP_RIGHT = "TOP_RIGHT"
     BOTTOM_LEFT = "BOTTOM_LEFT"
+    BOTTOM_CENTER = "BOTTOM_CENTER"
     BOTTOM_RIGHT = "BOTTOM_RIGHT"
 
 
@@ -66,18 +71,25 @@ class AutoPositionBehavior:
             self.update_geometry()
 
     def update_geometry(self):
-        anchor = self.anchor
-
-        if anchor == Anchor.TOP_LEFT:
-            offset_top, offset_left = 0, 0
-        elif anchor == Anchor.TOP_RIGHT:
-            offset_top, offset_left = 0, self.right
-        elif anchor == Anchor.BOTTOM_LEFT:
-            offset_top, offset_left = self.bottom, 0
-        elif anchor == Anchor.BOTTOM_RIGHT:
-            offset_top, offset_left = self.bottom, self.right
-        elif anchor == Anchor.CENTER:
-            offset_top, offset_left = self.center
+        match self.anchor:
+            case Anchor.TOP_LEFT:
+                offset_top, offset_left = 0, 0
+            case Anchor.TOP_RIGHT:
+                offset_top, offset_left = 0, self.right
+            case Anchor.BOTTOM_LEFT:
+                offset_top, offset_left = self.bottom, 0
+            case Anchor.BOTTOM_RIGHT:
+                offset_top, offset_left = self.bottom, self.right
+            case Anchor.CENTER:
+                offset_top, offset_left = self.center
+            case Anchor.TOP_CENTER:
+                offset_top, offset_left = 0, self.center.x
+            case Anchor.BOTTOM_CENTER:
+                offset_top, offset_left = self.bottom, self.center.y
+            case Anchor.LEFT_CENTER:
+                offset_top, offset_left = self.center.y, 0
+            case Anchor.RIGHT_CENTER:
+                offset_top, offset_left = self.center.y, self.right
 
         h, w = self.parent.size
         top_hint, left_hint = self.pos_hint
