@@ -1,6 +1,6 @@
 import numpy as np
 
-from ...colors import BLACK
+from ...colors import AColor, ABLACK
 from ...data_structures import Point
 from ..widget_data_structures import Rect
 from .particle_field import ParticleField, Particle
@@ -43,9 +43,11 @@ class HalfBlockField(ParticleField):
             if 0 <= top < h and 0 <= left < w:
                 canvas_view[pos] = "▀"
 
+                *rgb, a = child.color
+
                 color = colors_view[pos][3:] if (ct % 1) >= .5 else colors_view[pos][:3]
-                subtract(child.color, color, out=buffer, dtype=np.float16)
-                multiply(buffer, child.alpha, out=buffer)
+                subtract(rgb, color, out=buffer, dtype=np.float16)
+                multiply(buffer, a / 255, out=buffer)
                 add(buffer, color, out=color, casting="unsafe")
 
 
@@ -60,9 +62,8 @@ class HalfBlockParticle(Particle):
     The y-component of `pos` can be a float. The fractional part determines
     whether the half block is upper or lower.
     """
-    def __init__(self, pos=Point(0, 0), *, color=BLACK, alpha=1.0, is_visible=True):
+    def __init__(self, pos=Point(0, 0), *, color: AColor=ABLACK, is_visible=True):
         self.top, self.left = pos
         self.color = color
-        self.alpha = alpha
         self.is_visible = is_visible
         self.parent = None

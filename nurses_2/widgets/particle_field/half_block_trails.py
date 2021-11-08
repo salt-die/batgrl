@@ -2,7 +2,7 @@ from collections import deque
 
 import numpy as np
 
-from ...colors import BLACK
+from ...colors import AColor, ABLACK
 from ...data_structures import Point
 from ..widget_data_structures import Rect
 from .particle_field import ParticleField, Particle
@@ -42,7 +42,7 @@ class HalfBlockTrails(ParticleField):
 
         for child in self.children:
             child.trail.appendleft(child.pos)
-            child_color = child.color
+            child_color = child.color[:3]
 
             for (top, left), alpha in zip(child.trail, child.alphas):
                 pos = offset_top, offset_left = int(top) - t, left - l
@@ -60,19 +60,18 @@ class TrailParticle(Particle):
     """
     A .5x1 TUI element that's Widget-like, except it has no render method.
 
-    Requires a `HalfBlockField` to be rendered.
+    Requires a `HalfBlockTrails` to be rendered.
 
     Notes
     -----
     The y-component of `pos` can be a float. The fractional part determines
     whether the half block is upper or lower.
     """
-    def __init__(self, pos=Point(0, 0), *, trail_length=3, color=BLACK, alpha=1.0, is_visible=True):
+    def __init__(self, pos=Point(0, 0), *, trail_length=3, color: AColor=ABLACK, is_visible=True):
         self.top, self.left = pos
         self.color = color
-        self.alpha = alpha
         self.is_visible = is_visible
         self.parent = None
 
         self.trail = deque(maxlen=trail_length + 1)
-        self.alphas = np.linspace(1, 0, trail_length + 1, endpoint=False)
+        self.alphas = np.linspace(color.alpha / 255, 0, trail_length + 1, endpoint=False)

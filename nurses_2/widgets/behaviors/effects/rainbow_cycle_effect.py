@@ -43,10 +43,10 @@ class RainbowCycleEffect(Effect):
 
     def apply_effect(self, canvas_view, colors_view, rect):
         if self.enable_foreground_rainbow:
-            colors_view[..., :3] = (colors_view[..., :3].astype(int) + self._current_color) % 255
+            colors_view[..., :3] = colors_view[..., :3] + self._current_color
 
         if self.enable_background_rainbow:
-            colors_view[..., 3:] = (colors_view[..., 3:].astype(int) + self._current_color) % 255
+            colors_view[..., 3:] = colors_view[..., 3:] + self._current_color
 
     async def cycle_colors(self):
         rainbow = self._rainbow

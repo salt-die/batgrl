@@ -26,13 +26,17 @@ class ElementButton(ButtonBehavior, Widget):
             default_color_pair=color_pair(BLACK, element.COLOR),
             always_release=True,
         )
-        self.down_color = color_pair(BLACK, (127 + c // 2 for c in element.COLOR))
+
+        self.down_color = color_pair(
+            BLACK,
+            Color(*(127 + c // 2 for c in element.COLOR)),
+        )
 
     def update_down(self):
-        self.colors[:, :] = self.down_color
+        self.colors[:] = self.down_color
 
     def update_normal(self):
-        self.colors[:, :] = self.default_color_pair
+        self.colors[:] = self.default_color_pair
 
     def on_release(self):
         element = self.element

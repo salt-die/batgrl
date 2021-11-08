@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from ..clamp import clamp
-from ..colors import BLACK_ON_BLACK
+from ..colors import BLACK_ON_BLACK, AColor
 from ..data_structures import Point, Size
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Rect
@@ -67,9 +67,17 @@ class GraphicWidget(Widget):
 
         self.texture = np.full(
             (2 * h, w, 4),
-            (*self.default_bg_color, 255),
+            self.default_bg_color,
             dtype=np.uint8,
         )
+
+    @property
+    def default_fg_color(self):
+        return AColor(*self.default_color_pair.fg_color)
+
+    @property
+    def default_bg_color(self):
+        return AColor(*self.default_color_pair.bg_color)
 
     def resize(self, size: Size):
         """

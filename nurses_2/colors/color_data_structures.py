@@ -1,9 +1,10 @@
 from typing import NamedTuple
 
-from ..clamp import clamp
+from math import e
 
 __all__ = (
     "Color",
+    "AColor",
     "ColorPair",
     "color_pair",
 )
@@ -19,8 +20,7 @@ class Color(NamedTuple):
 
     @classmethod
     def from_hex(cls, hexcode: str):
-        if hexcode.startswith("#"):
-            hexcode = hexcode[1:]
+        hexcode = hexcode.removeprefix("#")
 
         assert len(hexcode) == 6, f"{hexcode} has bad length"
 
@@ -30,18 +30,48 @@ class Color(NamedTuple):
             int(hexcode[4:], 16),
         )
 
-    def fog(self, distance, scale=7, exp=.1):
+
+class AColor(NamedTuple):
+    """
+    A tuple representing a color with an alpha channel.
+    """
+    red:   int
+    green: int
+    blue:  int
+    alpha: int = 255
+
+    @classmethod
+    def from_hex(cls, hexcode: str):
+        hexcode = hexcode.removeprefix("#")
+
+        assert len(hexcode) in (6, 8), f"{hexcode} has bad length"
+
+        if len(hexcode) == 6:
+            return cls(
+                int(hexcode[:2], 16),
+                int(hexcode[2:4], 16),
+                int(hexcode[4:], 16),
+            )
+
+        return cls(
+            int(hexcode[:2], 16),
+            int(hexcode[2:4], 16),
+            int(hexcode[4:6], 16),
+            int(hexcode[6:], 16)
+        )
+
+    def fog(self, distance):
         """
         Return color as if seen through a fog from a distance.
 
         Color will be multiplied by:
-            `scale ** (-distance * exp)`
+            `e ** -distance`
         """
-        factor = scale ** (-distance * exp)
+        factor = e ** -distance
 
-        return type(self)(
-            *(clamp(channel * factor, 0, 255) for channel in self)
-        )
+        r, g, b, _ = self
+
+        return type(self)(factor * r, factor * g, factor * b)
 
 
 class ColorPair(NamedTuple):
@@ -56,11 +86,11 @@ class ColorPair(NamedTuple):
     bg_blue:  int
 
     @classmethod
-    def from_colors(cls, fg_color: Color, bg_color: Color):
+    def from_colors(cls, fg_color: Color | AColor, bg_color: Color | AColor):
         """
         Return a `ColorPair` from two `Color`s.
         """
-        return cls(*fg_color, *bg_color)
+        return cls(*fg_color[:3], *bg_color[:3])
 
     @property
     def fg_color(self):

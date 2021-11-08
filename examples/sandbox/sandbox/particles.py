@@ -41,7 +41,13 @@ class ColorVariationBehavior:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         random_delta = 10 * random(3) - 5  # Three random values between -5 and 5
-        random_color = np.clip(random_delta + self.COLOR, 0, 255, dtype=np.uint8, casting="unsafe")
+        random_color = np.clip(
+            random_delta + self.COLOR,
+            0,
+            255,
+            dtype=np.uint8,
+            casting="unsafe"
+        )
         self.COLOR = Color(*random_color)
 
 

@@ -1,7 +1,6 @@
 import asyncio
 
 import cv2
-import numpy as np
 
 from nurses_2.colors import WHITE_ON_BLACK
 from nurses_2.data_structures import Size
@@ -31,9 +30,9 @@ class Cloth(GraphicWidget):
         Step the mesh and draw a line for each link.
         """
         texture = self.texture
-        texture[..., :3] = self.default_bg_color
+        texture[:] = self.default_bg_color
 
-        color = *self.default_fg_color, 255
+        color = self.default_fg_color
         mesh = self.mesh
         scale = self.scale
         h_offset = self.h_offset

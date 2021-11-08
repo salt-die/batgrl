@@ -59,8 +59,7 @@ class VideoPlayer(GraphicWidget):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self.texture[..., :3] = self.default_bg_color
-            self.texture[..., 3] = 255
+            self.texture[:] = self.default_bg_color
 
     def resize(self, size):
         super().resize(size)

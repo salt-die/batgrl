@@ -1,6 +1,6 @@
-from nurses_2.colors import Color
+from nurses_2.colors import AColor
 
-from_hex = Color.from_hex
+from_hex = AColor.from_hex
 
 RED    = from_hex("cc2808")  # Front
 ORANGE = from_hex("f46e07")  # Back
@@ -20,8 +20,8 @@ FACE_COLORS = (
 
 # Brighten FACE_COLORS
 SELECTED_COLORS = tuple(
-    Color(
-        *(85 + 2 * channel // 3 for channel in color)
+    AColor(
+        *(85 + 2 * channel // 3 for channel in color[:3])
     )
     for color in FACE_COLORS
 )

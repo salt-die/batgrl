@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from nurses_2.colors import Color, color_pair
+from nurses_2.colors import color_pair
 from nurses_2.io import MouseButton
 from nurses_2.data_structures import Size
 from nurses_2.widgets.graphic_widget import GraphicWidget

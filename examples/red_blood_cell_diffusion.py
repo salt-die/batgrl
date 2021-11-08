@@ -7,9 +7,10 @@ from nurses_2.app import App
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.behaviors import AutoSizeBehavior
-from nurses_2.colors import RED, BLACK_ON_BLACK, Color
+from nurses_2.colors import AColor
 
-DARK_RED = *Color.from_hex("701402"), 255
+RED = AColor(255, 0, 0)
+DARK_RED = AColor.from_hex("701402")
 
 def add_polar_vectors(r1, a1, r2, a2):
     a = a2 - a1

@@ -30,7 +30,7 @@ def create_colors(shape, color):
     Return a nurses_2 widget colors array from a tetromino shape and color.
     """
     colors = np.zeros((*shape.shape, 6), dtype=np.uint8)
-    colors[shape == 1] = *color, *color
+    colors[shape == 1] = color * 2
     return np.repeat(colors, 2, axis=1)
 
 

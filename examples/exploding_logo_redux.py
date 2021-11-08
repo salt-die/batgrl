@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
+from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
@@ -156,21 +157,19 @@ class MyApp(App):
 
         for y in range(logo.height):
             for x in range(logo.width):
-                if logo.texture[2 * y, x, 3]:
+                if a := logo.texture[2 * y, x, 3]:
                     field.add_widget(
                         PokeParticle(
                             pos=(y + .25, x),
-                            color=logo.texture[2 * y, x, :3],
-                            alpha=logo.texture[2 * y, x, 3] / 255 * .8,
+                            color=AColor(*logo.texture[2 * y, x, :3], int(.8 * a)),
                         )
                     )
 
-                if logo.texture[2 * y + 1, x, 3]:
+                if a := logo.texture[2 * y + 1, x, 3]:
                     field.add_widget(
                         PokeParticle(
                             pos=(y + .75, x),
-                            color=logo.texture[2 * y + 1, x, :3],
-                            alpha=logo.texture[2 * y + 1, x, 3] / 255 * .8,
+                            color=AColor(*logo.texture[2 * y + 1, x, :3], int(.8 * a)),
                         )
                     )
 

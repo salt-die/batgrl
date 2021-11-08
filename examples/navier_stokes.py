@@ -15,7 +15,7 @@ import numpy as np
 from cv2 import filter2D
 
 from nurses_2.app import App
-from nurses_2.colors import Color
+from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors import AutoSizeBehavior
@@ -37,7 +37,7 @@ POISSON = np.array([
     [   0, .25,    0],
 ])
 
-WATER_COLOR = Color.from_hex("1259FF")
+WATER_COLOR = AColor.from_hex("1259FF")
 
 def wrap_border(array):
     array[:2] = array[-4: -2][::-1]
@@ -93,7 +93,8 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
 
         self.pressure = filter2D(pressure, -1, POISSON) + .5 * (delta - delta**2)
 
-        self.texture[..., :3] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
+        # Note the alpha channel is affected by `pressure` as well.
+        self.texture[:] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
 
         super().render(canvas_view, colors_view, rect)
 
