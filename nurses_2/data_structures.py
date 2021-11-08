@@ -7,13 +7,13 @@ class Point(NamedTuple):
 
 
 class Size(NamedTuple):
-    rows: int
-    columns: int
+    height: int
+    width: int
 
     @property
-    def height(self):
-        return self.rows
+    def rows(self):
+        return self.height
 
     @property
-    def width(self):
-        return self.columns
+    def columns(self):
+        return self.width
