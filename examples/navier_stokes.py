@@ -2,7 +2,8 @@
 Click to add fluid. `r` to reset.
 
 `cv2` convolutions (`filter2D`) currently don't support boundary wrapping. This is done manually by creating
-pressure and momentum arrays equal to the widget's texture plus a 2-width border and copying data into that border.
+pressure and momentum arrays with sizes equal to the widget's texture's size plus a 2-width border and
+copying data into that border.
 
 This simulates discrete Navier-Stokes with 0 viscosity and a rho of 1. Note that using DIFFUSION kernel instead of
 POISSON kernel (for the convolutions that used POISSON) will achieve almost identical results.
