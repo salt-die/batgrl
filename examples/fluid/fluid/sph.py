@@ -1,6 +1,7 @@
+from collections import namedtuple
 import numpy as np
 
-from nurses_2.data_structures import Size
+from .data_structures import Rect, Particle, QuadTree
 
 
 class SPHSolver:
@@ -17,73 +18,69 @@ class SPHSolver:
     EPS = H
     BOUND_DAMPING = -.5
 
-    def __init__(self, bounds: Size, nparticles=1000):
-        self.height, self.width = bounds
-        self.state = np.zeros((nparticles, 8), dtype=float)
+    def __init__(self, extent: Rect, nparticles=1000):
+        self.extent = extent
+        self.qtree = QuadTree(extent)
+        self.init_dam(nparticles)
 
-        self._differences = np.zeros((nparticles, nparticles, 2))
-        self._pow_buf = np.zeros_like(self._differences)
-
-        self._distances = np.zeros((nparticles, nparticles))
-        self._sqr_buffer = np.zeros_like(self._distances)
-
-    def init_dam(self):
+    def init_dam(self, nparticles):
         """
         Position particles in a verticle column.
         """
+        qtree = self.qtree
+        t, l, b, r = self.extent
+
+        COLUMNS = 10
+        PARTICLES_PER_COLUMN, remainder = divmod(nparticles, COLUMNS)
+
+        width = r - l
+        height = b - t
+        dam_width = width / 5
+
+        for column in np.linspace(l + dam_width, l + 2 * dam_width, COLUMNS):
+            for row in np.linspace(t, b, PARTICLES_PER_COLUMN):
+                qtree.insert(Particle((row, column)))
+
+        for _ in range(remainder):
+            qtree.insert(
+                Particle(
+                    (
+                        np.random.random() * height + t,
+                        np.random.random() * width + l,
+                    )
+                )
+            )
 
     def step(self):
         """
         For each particle, compute densities and pressures, then forces, and
         finally integrate to obtain new positions.
         """
-        HSQ = self.HSQ
-        MASS = self.MASS
-        POLY6 = self.POLY6
-        REST_DENS = self.REST_DENS
-        GAS_CONST = self.GAS_CONST
+        self._density_pressure()
+        self._forces()
+        self._integrate()
 
-        state = self.state
+    def _density_pressure(self):
+        """
+        for (auto &pi : particles)
+        {
+            pi.rho = 0.f;
+            for (auto &pj : particles)
+            {
+                Vector2d rij = pj.x - pi.x;
+                float r2 = rij.squaredNorm();
 
-        positions = state[:, :2]
-        velocities = state[:, 2:4]
-        forces = state[:, 4:6]
-        rho = state[:, 6]
-        p = state[:, 7]
+                if (r2 < HSQ)
+                {
+                    // this computation is symmetric
+                    pi.rho += MASS * POLY6 * pow(HSQ - r2, 3.f);
+                }
+            }
+            pi.p = GAS_CONST * (pi.rho - REST_DENS);
+        }
+        """
 
-        # Distances
-        ###########
-
-        # Every pairwise combination of distances is computed.
-        # This could be optimized with a line-sweep or a tree-like data structure.
-        differences = np.subtract(positions[None], positions[:, None], out=self._differences)
-        pow_buf = np.power(differences, 2, out=self._pow_buffer)
-
-        distances = pow_buf.sum(axis=-1, out=self._distances)
-        distances[np.tril_indices_from(distances)] = 0
-        distances[distances >= HSQ] = 0
-
-        # Density and pressure
-        ######################
-
-        # (HSQ - distances)**3.0
-        _sqr_buffer = np.subtract(HSQ, distances, out=self._sqr_buffer)
-        np.power(distances, 3.0, out=_sqr_buffer)
-
-        rho[:] = _sqr_buffer.sum(axis=-1)
-        rho *= MASS * POLY6
-
-        np.subtract(rho, REST_DENS, out=p)
-        p *= GAS_CONST
-
-        # Forces
-        ########
-        np.sqrt(distances, out=distances)
-
-        with np.errstate(divide="ignore", invalid="ignore"):
-            normals = np.divide(differences, distances, out=differences)
-
-
+    def _forces(self):
         """
         for (auto &pi : particles)
         {
@@ -109,7 +106,7 @@ class SPHSolver:
             pi.f = fpress + fvisc + fgrav;
         """
 
-        # Integrate
+    def _integrate(self):
         """
         for (auto &p : particles)
         {
