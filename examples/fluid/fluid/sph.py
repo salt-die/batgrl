@@ -1,7 +1,7 @@
-from collections import namedtuple
 import numpy as np
+from scipy.spatial import KDTree
 
-from .data_structures import Rect, Particle, QuadTree
+from nurses_2.data_structures import Size
 
 
 class SPHSolver:
@@ -9,129 +9,122 @@ class SPHSolver:
     REST_DENS = 300.0
     GAS_CONST = 2000.0
     H = 16.0
-    HSQ = H**2
     MASS = 2.5
     VISC = 200.0
     POLY6 = 4.0 / (np.pi * H**8.0)
     SPIKY_GRAD = -10.0 / (np.pi * H**5.0)
     VISC_LAP = 40.0 / (np.pi * H**5.0)
-    EPS = H
     BOUND_DAMPING = -.5
 
-    def __init__(self, extent: Rect, nparticles=1000):
-        self.extent = extent
-        self.qtree = QuadTree(extent)
-        self.init_dam(nparticles)
+    def __init__(self, size: Size, nparticles=1000):
+        self.size = size
+        self.state = np.zeros((nparticles, 8))
+        self.init_dam()
 
-    def init_dam(self, nparticles):
+    @property
+    def positions(self):
+        return self.state[:, :2]
+
+    @property
+    def velocities(self):
+        return self.state[:, 2:4]
+
+    @property
+    def acceleration(self):
+        return self.state[:, 4:6]
+
+    @property
+    def densities(self):
+        return self.state[:, 6]
+
+    @property
+    def pressure(self):
+        return self.state[:, 7]
+
+    def init_dam(self):
         """
         Position particles in a verticle column.
         """
-        qtree = self.qtree
-        t, l, b, r = self.extent
-
-        COLUMNS = 10
-        PARTICLES_PER_COLUMN, remainder = divmod(nparticles, COLUMNS)
-
-        width = r - l
-        height = b - t
+        height, width = self.size
         dam_width = width / 5
 
-        for column in np.linspace(l + dam_width, l + 2 * dam_width, COLUMNS):
-            for row in np.linspace(t, b, PARTICLES_PER_COLUMN):
-                qtree.insert(Particle((row, column)))
-
-        for _ in range(remainder):
-            qtree.insert(
-                Particle(
-                    (
-                        np.random.random() * height + t,
-                        np.random.random() * width + l,
-                    )
-                )
-            )
+        self.positions[:] = np.random.random((self.state.shape[0], 2))
+        self.positions *= height, dam_width
+        self.positions += 0, dam_width
 
     def step(self):
         """
         For each particle, compute densities and pressures, then forces, and
         finally integrate to obtain new positions.
         """
-        self._density_pressure()
-        self._forces()
+        pairs = KDTree(self.positions).query_pairs(self.H)
+        self._density_pressure(pairs)
+        self._forces(pairs)
         self._integrate()
 
-    def _density_pressure(self):
-        """
-        for (auto &pi : particles)
-        {
-            pi.rho = 0.f;
-            for (auto &pj : particles)
-            {
-                Vector2d rij = pj.x - pi.x;
-                float r2 = rij.squaredNorm();
+    def _density_pressure(self, pairs):
+        MASS = self.MASS
+        POLY6 = self.POLY6
+        H = self.H
 
-                if (r2 < HSQ)
-                {
-                    // this computation is symmetric
-                    pi.rho += MASS * POLY6 * pow(HSQ - r2, 3.f);
-                }
-            }
-            pi.p = GAS_CONST * (pi.rho - REST_DENS);
-        }
-        """
+        positions = self.positions
+        densities = self.densities
 
-    def _forces(self):
-        """
-        for (auto &pi : particles)
-        {
-            Vector2d fpress(0.f, 0.f);
-            Vector2d fvisc(0.f, 0.f);
-            for (auto &pj : particles)
-            {
-                if (&pi == &pj)
-                {
-                    continue;
-                }
+        norm = np.linalg.norm
 
-                Vector2d rij = pj.x - pi.x;
-                float r = rij.norm();
+        densities[:] = 0.0
 
-                if (r < H)
-                {
-                    fpress += -rij.normalized() * MASS * (pi.p + pj.p) / (2.f * pj.rho) * SPIKY_GRAD * pow(H - r, 3.f);
-                    fvisc += VISC * MASS * (pj.v - pi.v) / pj.rho * VISC_LAP * (H - r);
-                }
-            }
-            Vector2d fgrav = G * MASS / pi.rho;
-            pi.f = fpress + fvisc + fgrav;
-        """
+        for i, j in pairs:
+            density = MASS * POLY6 * (H - norm(positions[i] - positions[j]))**3
+            densities[i] += density
+            densities[j] += density
+
+        self.pressure[:] = self.GAS_CONST * (densities - self.REST_DENS)
+
+    def _forces(self, pairs):
+        positions = self.positions
+        velocities = self.velocities
+        acceleration = self.acceleration
+        density = self.densities
+        pressure = self.pressure
+
+        MASS = self.MASS
+        SPIKY_GRAD = self.SPIKY_GRAD
+        H = self.H
+        VISC = self.VISC
+        VISC_LAP = self.VISC_LAP
+
+        norm = np.linalg.norm
+
+        acceleration[:] = 0.0
+
+        for i, j in pairs:
+            relative = positions[i] - positions[j]
+            distance = norm(relative)
+            normal = relative / distance
+
+            strength = H - distance
+
+            force_ij = -normal * MASS * (pressure[i] + pressure[j]) * SPIKY_GRAD * strength**3 * .5
+            visc_ij = VISC * MASS * (velocities[j] - velocities[i]) * VISC_LAP * strength
+
+            acceleration[i] += force_ij / density[j]
+            acceleration[i] += visc_ij / density[j]
+
+            acceleration[j] += -force_ij / density[i]
+            acceleration[j] += -visc_ij / density[j]
+
+        acceleration += self.GRAVITY * MASS / density
 
     def _integrate(self):
-        """
-        for (auto &p : particles)
-        {
-            p.v += DT * p.f / p.rho;
-            p.x += DT * p.v;
+        velocities = self.velocities
+        positions = self.positions
 
-            if (p.x(0) - EPS < 0.f)
-            {
-                p.v(0) *= BOUND_DAMPING;
-                p.x(0) = EPS;
-            }
-            if (p.x(0) + EPS > VIEW_WIDTH)
-            {
-                p.v(0) *= BOUND_DAMPING;
-                p.x(0) = VIEW_WIDTH - EPS;
-            }
-            if (p.x(1) - EPS < 0.f)
-            {
-                p.v(1) *= BOUND_DAMPING;
-                p.x(1) = EPS;
-            }
-            if (p.x(1) + EPS > VIEW_HEIGHT)
-            {
-                p.v(1) *= BOUND_DAMPING;
-                p.x(1) = VIEW_HEIGHT - EPS;
-            }
-        }
-        """
+        velocities += self.acceleration / self.densities
+        positions += self.velocities
+
+        # Move out-of-bounds particles back in-bounds.
+        oob = (positions < 0) | (positions > self.size)
+
+        positions[oob] *= -1
+        velocities[oob] *= self.BOUND_DAMPING
