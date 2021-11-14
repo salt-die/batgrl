@@ -1,6 +1,4 @@
 import numpy as np
-from numpy import pi
-from scipy.spatial import KDTree
 
 from nurses_2.data_structures import Size
 
@@ -12,7 +10,19 @@ class SPHSolver:
 
     def resize(self, size: Size):
         self.size = size
-        self.state = np.zeros((self.nparticles, 8), dtype=float)
+
+        nparticles = self.nparticles
+        self.state = np.zeros((nparticles, 8), dtype=float)
+
+        # Buffers
+        self._relatives_buffer = np.zeros((nparticles, nparticles, 2))
+        self._relatives_sqr_buffer = np.zeros_like(self._relatives_buffer)
+        self._distance_sqr_buffer = np.zeros((nparticles, nparticles), dtype=float)
+        self._neighbors_buffer = np.zeros_like(self._distance_sqr_buffer, dtype=bool)
+        self._lower_tri = np.tril_indices_from(self._distance_sqr_buffer)
+        self._1d_buffer = np.zeros(nparticles)
+        self._2d_buffer = np.zeros((nparticles, 2))
+
         self.init_dam()
 
     def init_dam(self):
@@ -35,11 +45,10 @@ class SPHSolver:
         """
         H = 1.44
         GAS_CONST = 2000.0
-        REST_DENS = 25.0
-        VISC = 100.0
+        REST_DENS = 100.0
+        VISC = 2000.0 / (np.pi * H**5.0)
         POLY6 = 2.0 / (np.pi * H**8.0)
-        SPIKY_GRAD = -10.0 / (np.pi * H**5.0)
-        VISC_LAP = 20.0 / (np.pi * H**5.0)
+        SPIKY_GRAD = -5.0 / (np.pi * H**5.0)
         GRAVITY = 10.0
 
         state = self.state
@@ -49,46 +58,66 @@ class SPHSolver:
         densities = state[:, 6]
         pressure = state[:, 7]
 
-        norm = np.linalg.norm
+        # Brute force neighbors:
+        relatives = np.subtract(positions[None], positions[:, None], out=self._relatives_buffer)
+        relatives_sqr = np.power(relatives, 2, out=self._relatives_sqr_buffer)
+        distance_sqr = relatives_sqr.sum(axis=-1, out=self._distance_sqr_buffer)
 
-        pairs = KDTree(positions).query_pairs(H)
+        neighbors = np.less(distance_sqr, H**2, out=self._neighbors_buffer)
+        neighbors[self._lower_tri] = False
 
-        # Density / Pressure update ######################################
-        densities[:] = REST_DENS                                         #
-                                                                         #
-        for i, j in pairs:                                               #
-            density = POLY6 * (H - norm(positions[i] - positions[j]))**3 #
-            densities[i] += density                                      #
-            densities[j] += density                                      #
-                                                                         #
-        pressure[:] = GAS_CONST * (densities - REST_DENS)                #
-        ##################################################################
+        ys, xs = pairs = np.nonzero(neighbors)
+        distance_sqr = distance_sqr[pairs]
 
-        # Forces update ######################################################################
-        acceleration[:] = 0.0                                                                #
-                                                                                             #
-        for i, j in pairs:                                                                   #
-            relative = positions[i] - positions[j]                                           #
-            distance = norm(relative)                                                        #
-                                                                                             #
-            normal = relative / distance                                                     #
-                                                                                             #
-            strength = H - distance                                                          #
-                                                                                             #
-            force_ij = -normal * (pressure[i] + pressure[j]) * SPIKY_GRAD * strength**3 * .5 #
-            visc_ij = VISC * (velocities[j] - velocities[i]) * VISC_LAP * strength           #
-                                                                                             #
-            acceleration[i] += force_ij / densities[j]                                       #
-            acceleration[i] += visc_ij / densities[j]                                        #
-                                                                                             #
-            acceleration[j] += -force_ij / densities[i]                                      #
-            acceleration[j] += -visc_ij / densities[i]                                       #
-                                                                                             #
-        acceleration[:, 0] += GRAVITY / densities                                            #
-        ######################################################################################
+        _pairs_buffer = np.zeros_like(distance_sqr)
+        _1d_buffer = self._1d_buffer
+
+        # Density / Pressure update ####################################
+        densities[:] = REST_DENS                                       #
+                                                                       #
+        np.subtract(H, distance_sqr, out=_pairs_buffer)                #
+        np.power(_pairs_buffer, 3, out=_pairs_buffer)                  #
+        density = np.multiply(_pairs_buffer, POLY6, out=_pairs_buffer) #
+        densities[ys] += density                                       #
+        densities[xs] += density                                       #
+                                                                       #
+        np.subtract(densities, REST_DENS, out=_1d_buffer)              #
+        np.multiply(GAS_CONST, _1d_buffer, out=pressure)               #
+        ################################################################
+
+        # Forces update #######################################################
+        acceleration[:] = 0.0                                                 #
+                                                                              #
+        y_dens = densities[ys][:, None]                                       #
+        x_dens = densities[xs][:, None]                                       #
+                                                                              #
+        distances = np.sqrt(distance_sqr)[:, None]                            #
+        normals = relatives[pairs] / distances                                #
+        strengths = np.subtract(H, distances, out=distances)                  #
+                                                                              #
+        _skinny_buffer = (pressure[ys] + pressure[xs])[:, None]               #
+        _fat_buffer = SPIKY_GRAD * normals                                    #
+        np.multiply(_fat_buffer, _skinny_buffer, out=_fat_buffer)             #
+        np.power(strengths, 3, out=_skinny_buffer)                            #
+        forces_ij = np.multiply(_fat_buffer, _skinny_buffer, out=_fat_buffer) #
+                                                                              #
+        _fat_buffer_2 = forces_ij / x_dens                                    #
+                                                                              #
+        acceleration[ys] += _fat_buffer_2                                     #
+        acceleration[xs] -= np.divide(forces_ij, y_dens, out=_fat_buffer_2)   #
+                                                                              #
+        np.subtract(velocities[xs], velocities[ys], out=_fat_buffer)          #
+        np.multiply(VISC, _fat_buffer, out=_fat_buffer)                       #
+        viscs_ij = np.multiply(strengths, _fat_buffer, out=_fat_buffer)       #
+                                                                              #
+        acceleration[ys] += np.divide(viscs_ij, x_dens, out=_fat_buffer_2)    #
+        acceleration[xs] -= np.divide(viscs_ij, y_dens, out=_fat_buffer_2)    #
+                                                                              #
+        acceleration[:, 0] += np.divide(GRAVITY, densities, out=_1d_buffer)   #
+        #######################################################################
 
         # Integrate
-        velocities += acceleration / densities[:, None]
+        velocities += np.divide(acceleration, densities[:, None], self._2d_buffer)
         positions += velocities
 
         # Move out-of-bounds particles #####
