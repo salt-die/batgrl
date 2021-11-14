@@ -33,16 +33,14 @@ class SPHSolver:
         For each particle, compute densities and pressures, then forces, and
         finally integrate to obtain new positions.
         """
-        H = 1.0
-        MASS = 2.5
+        H = 1.44
         GAS_CONST = 2000.0
-        REST_DENS = 300.0
-        VISC = 200.0
-        POLY6 = 4.0 / (np.pi * H**8.0)
+        REST_DENS = 25.0
+        VISC = 100.0
+        POLY6 = 2.0 / (np.pi * H**8.0)
         SPIKY_GRAD = -10.0 / (np.pi * H**5.0)
-        VISC_LAP = 40.0 / (np.pi * H**5.0)
+        VISC_LAP = 20.0 / (np.pi * H**5.0)
         GRAVITY = 10.0
-        DT = .0001
 
         state = self.state
         positions = state[:, :2]
@@ -56,10 +54,10 @@ class SPHSolver:
         pairs = KDTree(positions).query_pairs(H)
 
         # Density / Pressure update #############################################
-        densities[:] = 0.0                                                      #
+        densities[:] = REST_DENS                                                #
                                                                                 #
         for i, j in pairs:                                                      #
-            density = MASS * POLY6 * (H - norm(positions[i] - positions[j]))**3 #
+            density = POLY6 * (H - norm(positions[i] - positions[j]))**3        #
             densities[i] += density                                             #
             densities[j] += density                                             #
                                                                                 #
@@ -78,8 +76,8 @@ class SPHSolver:
                                                                                                     #
             strength = H - distance                                                                 #
                                                                                                     #
-            force_ij = -normal * MASS * (pressure[i] + pressure[j]) * SPIKY_GRAD * strength**3 * .5 #
-            visc_ij = VISC * MASS * (velocities[j] - velocities[i]) * VISC_LAP * strength           #
+            force_ij = -normal * (pressure[i] + pressure[j]) * SPIKY_GRAD * strength**3 * .5        #
+            visc_ij = VISC * (velocities[j] - velocities[i]) * VISC_LAP * strength                  #
                                                                                                     #
             acceleration[i] += force_ij / densities[j]                                              #
             acceleration[i] += visc_ij / densities[j]                                               #
@@ -87,31 +85,32 @@ class SPHSolver:
             acceleration[j] += -force_ij / densities[i]                                             #
             acceleration[j] += -visc_ij / densities[i]                                              #
                                                                                                     #
-        acceleration[:, 0] += GRAVITY * (MASS / densities)                                          #
+        acceleration[:, 0] += GRAVITY / densities                                                   #
         #############################################################################################
 
         # Integrate
-        velocities += DT * acceleration / densities[:, None]
-        positions += DT * velocities
+        velocities += acceleration / densities[:, None]
+        positions += velocities
 
         # Move out-of-bounds particles back in-bounds. ###
 
         # Too tired to properly vectorize...
         h, w = self.size
-        top = positions[:, 0] < 0
-        left = positions[:, 1] < 0
-        bottom = positions[:, 0] >= h
-        right = positions[:, 1] >= w
+        ys = positions[:, 0]
+        xs = positions[:, 1]
 
-        positions[:, 0][top] -= 2 * positions[:, 0][top]
-        positions[:, 1][left] -= 2 * positions[:, 1][left]
-        positions[:, 0][bottom] -= 2 * (positions[:, 0][bottom] - h)
-        positions[:, 1][right] -= 2 * (positions[:, 1][right] - w)
+        top = ys < 0
+        left = xs < 0
+        bottom = ys >= h
+        right = xs >= w
+
+        ys[top]     = -ys[top]
+        xs[left]    = -xs[left]
+        ys[bottom] -= 2 * (ys[bottom] - h)
+        xs[right]  -= 2 * (xs[right] - w)
 
         velocities[:, 0][top] *= -.5
         velocities[:, 1][left] *= -.5
         velocities[:, 0][bottom] *= -.5
         velocities[:, 1][right] *= -.5
         ##################################################
-
-        np.clip(velocities, -1000, 1000, out=velocities) # Try to keep simulation from blowing up.
