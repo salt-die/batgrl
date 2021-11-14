@@ -53,64 +53,60 @@ class SPHSolver:
 
         pairs = KDTree(positions).query_pairs(H)
 
-        # Density / Pressure update #############################################
-        densities[:] = REST_DENS                                                #
-                                                                                #
-        for i, j in pairs:                                                      #
-            density = POLY6 * (H - norm(positions[i] - positions[j]))**3        #
-            densities[i] += density                                             #
-            densities[j] += density                                             #
-                                                                                #
-        np.clip(densities, .1, None, out=densities)
-        pressure[:] = GAS_CONST * (densities - REST_DENS)                       #
-        #########################################################################
+        # Density / Pressure update ######################################
+        densities[:] = REST_DENS                                         #
+                                                                         #
+        for i, j in pairs:                                               #
+            density = POLY6 * (H - norm(positions[i] - positions[j]))**3 #
+            densities[i] += density                                      #
+            densities[j] += density                                      #
+                                                                         #
+        pressure[:] = GAS_CONST * (densities - REST_DENS)                #
+        ##################################################################
 
-        # Forces update #############################################################################
-        acceleration[:] = 0.0                                                                       #
-                                                                                                    #
-        for i, j in pairs:                                                                          #
-            relative = positions[i] - positions[j]                                                  #
-            distance = norm(relative)                                                               #
-                                                                                                    #
-            normal = relative / distance                                                            #
-                                                                                                    #
-            strength = H - distance                                                                 #
-                                                                                                    #
-            force_ij = -normal * (pressure[i] + pressure[j]) * SPIKY_GRAD * strength**3 * .5        #
-            visc_ij = VISC * (velocities[j] - velocities[i]) * VISC_LAP * strength                  #
-                                                                                                    #
-            acceleration[i] += force_ij / densities[j]                                              #
-            acceleration[i] += visc_ij / densities[j]                                               #
-                                                                                                    #
-            acceleration[j] += -force_ij / densities[i]                                             #
-            acceleration[j] += -visc_ij / densities[i]                                              #
-                                                                                                    #
-        acceleration[:, 0] += GRAVITY / densities                                                   #
-        #############################################################################################
+        # Forces update ######################################################################
+        acceleration[:] = 0.0                                                                #
+                                                                                             #
+        for i, j in pairs:                                                                   #
+            relative = positions[i] - positions[j]                                           #
+            distance = norm(relative)                                                        #
+                                                                                             #
+            normal = relative / distance                                                     #
+                                                                                             #
+            strength = H - distance                                                          #
+                                                                                             #
+            force_ij = -normal * (pressure[i] + pressure[j]) * SPIKY_GRAD * strength**3 * .5 #
+            visc_ij = VISC * (velocities[j] - velocities[i]) * VISC_LAP * strength           #
+                                                                                             #
+            acceleration[i] += force_ij / densities[j]                                       #
+            acceleration[i] += visc_ij / densities[j]                                        #
+                                                                                             #
+            acceleration[j] += -force_ij / densities[i]                                      #
+            acceleration[j] += -visc_ij / densities[i]                                       #
+                                                                                             #
+        acceleration[:, 0] += GRAVITY / densities                                            #
+        ######################################################################################
 
         # Integrate
         velocities += acceleration / densities[:, None]
         positions += velocities
 
-        # Move out-of-bounds particles back in-bounds. ###
-
-        # Too tired to properly vectorize...
-        h, w = self.size
-        ys = positions[:, 0]
-        xs = positions[:, 1]
-
-        top = ys < 0
-        left = xs < 0
-        bottom = ys >= h
-        right = xs >= w
-
-        ys[top]     = -ys[top]
-        xs[left]    = -xs[left]
-        ys[bottom] -= 2 * (ys[bottom] - h)
-        xs[right]  -= 2 * (xs[right] - w)
-
-        velocities[:, 0][top] *= -.5
-        velocities[:, 1][left] *= -.5
-        velocities[:, 0][bottom] *= -.5
-        velocities[:, 1][right] *= -.5
-        ##################################################
+        # Move out-of-bounds particles #####
+        h, w = self.size                   #
+        ys, xs = positions.T               #
+                                           #
+        top = ys < 0                       #
+        left = xs < 0                      #
+        bottom = ys >= h                   #
+        right = xs >= w                    #
+                                           #
+        ys[top]     = -ys[top]             #
+        xs[left]    = -xs[left]            #
+        ys[bottom] -= 2 * (ys[bottom] - h) #
+        xs[right]  -= 2 * (xs[right] - w)  #
+                                           #
+        velocities[:, 0][top] *= -.5       #
+        velocities[:, 1][left] *= -.5      #
+        velocities[:, 0][bottom] *= -.5    #
+        velocities[:, 1][right] *= -.5     #
+        ####################################
