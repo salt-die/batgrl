@@ -50,7 +50,7 @@ class SPHSolver:
 
         self.positions[:] = np.random.random((self.state.shape[0], 2))
         self.positions *= height, dam_width
-        self.positions += 0, dam_width
+        self.positions[:, 1] += dam_width
 
     def step(self):
         """
