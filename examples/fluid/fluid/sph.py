@@ -105,8 +105,8 @@ class SPHSolver:
         ys[bottom] -= 2 * (ys[bottom] - h) #
         xs[right]  -= 2 * (xs[right] - w)  #
                                            #
-        velocities[:, 0][top] *= -.5       #
-        velocities[:, 1][left] *= -.5      #
-        velocities[:, 0][bottom] *= -.5    #
-        velocities[:, 1][right] *= -.5     #
+        velocities[top] *= -.5             #
+        velocities[left] *= -.5            #
+        velocities[bottom] *= -.5          #
+        velocities[right] *= -.5           #
         ####################################
