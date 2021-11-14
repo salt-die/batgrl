@@ -1,3 +1,5 @@
+from itertools import cycle
+
 import numpy as np
 
 from nurses_2.data_structures import Size
@@ -6,6 +8,14 @@ from nurses_2.data_structures import Size
 class SPHSolver:
     def __init__(self, size: Size, nparticles=1000):
         self.nparticles = nparticles
+
+        thetas = np.linspace(0, 2 * np.pi, 2000)
+        self.circle = cycle(
+            10 * np.array(
+                (np.sin(thetas), np.cos(thetas)),
+            ).T
+        )
+
         self.resize(size)
 
     def resize(self, size: Size):
@@ -44,12 +54,12 @@ class SPHSolver:
         finally integrate to obtain new positions.
         """
         H = 1.44
-        GAS_CONST = 2000.0
+        GAS_CONST = 3000.0
         REST_DENS = 100.0
-        VISC = 2000.0 / (np.pi * H**5.0)
+        VISC = 4000.0 / (np.pi * H**5.0)
         POLY6 = 2.0 / (np.pi * H**8.0)
         SPIKY_GRAD = -5.0 / (np.pi * H**5.0)
-        GRAVITY = 10.0
+        GRAVITY = next(self.circle)
 
         state = self.state
         positions = state[:, :2]
@@ -71,6 +81,7 @@ class SPHSolver:
 
         _pairs_buffer = np.zeros_like(distance_sqr)
         _1d_buffer = self._1d_buffer
+        _2d_buffer = self._2d_buffer
 
         # Density / Pressure update ####################################
         densities[:] = REST_DENS                                       #
@@ -85,39 +96,39 @@ class SPHSolver:
         np.multiply(GAS_CONST, _1d_buffer, out=pressure)               #
         ################################################################
 
-        # Forces update #######################################################
-        acceleration[:] = 0.0                                                 #
-                                                                              #
-        y_dens = densities[ys][:, None]                                       #
-        x_dens = densities[xs][:, None]                                       #
-                                                                              #
-        distances = np.sqrt(distance_sqr)[:, None]                            #
-        normals = relatives[pairs] / distances                                #
-        strengths = np.subtract(H, distances, out=distances)                  #
-                                                                              #
-        _skinny_buffer = (pressure[ys] + pressure[xs])[:, None]               #
-        _fat_buffer = SPIKY_GRAD * normals                                    #
-        np.multiply(_fat_buffer, _skinny_buffer, out=_fat_buffer)             #
-        np.power(strengths, 3, out=_skinny_buffer)                            #
-        forces_ij = np.multiply(_fat_buffer, _skinny_buffer, out=_fat_buffer) #
-                                                                              #
-        _fat_buffer_2 = forces_ij / x_dens                                    #
-                                                                              #
-        acceleration[ys] += _fat_buffer_2                                     #
-        acceleration[xs] -= np.divide(forces_ij, y_dens, out=_fat_buffer_2)   #
-                                                                              #
-        np.subtract(velocities[xs], velocities[ys], out=_fat_buffer)          #
-        np.multiply(VISC, _fat_buffer, out=_fat_buffer)                       #
-        viscs_ij = np.multiply(strengths, _fat_buffer, out=_fat_buffer)       #
-                                                                              #
-        acceleration[ys] += np.divide(viscs_ij, x_dens, out=_fat_buffer_2)    #
-        acceleration[xs] -= np.divide(viscs_ij, y_dens, out=_fat_buffer_2)    #
-                                                                              #
-        acceleration[:, 0] += np.divide(GRAVITY, densities, out=_1d_buffer)   #
-        #######################################################################
+        # Forces update ########################################################
+        acceleration[:] = 0.0                                                  #
+                                                                               #
+        y_dens = densities[ys][:, None]                                        #
+        x_dens = densities[xs][:, None]                                        #
+                                                                               #
+        distances = np.sqrt(distance_sqr)[:, None]                             #
+        normals = relatives[pairs] / distances                                 #
+        strengths = np.subtract(H, distances, out=distances)                   #
+                                                                               #
+        _skinny_buffer = (pressure[ys] + pressure[xs])[:, None]                #
+        _fat_buffer = SPIKY_GRAD * normals                                     #
+        np.multiply(_fat_buffer, _skinny_buffer, out=_fat_buffer)              #
+        np.power(strengths, 3, out=_skinny_buffer)                             #
+        forces_ij = np.multiply(_fat_buffer, _skinny_buffer, out=_fat_buffer)  #
+                                                                               #
+        _fat_buffer_2 = forces_ij / x_dens                                     #
+                                                                               #
+        acceleration[ys] += _fat_buffer_2                                      #
+        acceleration[xs] -= np.divide(forces_ij, y_dens, out=_fat_buffer_2)    #
+                                                                               #
+        np.subtract(velocities[xs], velocities[ys], out=_fat_buffer)           #
+        np.multiply(VISC, _fat_buffer, out=_fat_buffer)                        #
+        viscs_ij = np.multiply(strengths, _fat_buffer, out=_fat_buffer)        #
+                                                                               #
+        acceleration[ys] += np.divide(viscs_ij, x_dens, out=_fat_buffer_2)     #
+        acceleration[xs] -= np.divide(viscs_ij, y_dens, out=_fat_buffer_2)     #
+                                                                               #
+        acceleration += np.divide(GRAVITY, densities[:, None], out=_2d_buffer) #
+        ########################################################################
 
         # Integrate
-        velocities += np.divide(acceleration, densities[:, None], self._2d_buffer)
+        velocities += np.divide(acceleration, densities[:, None], _2d_buffer)
         positions += velocities
 
         # Move out-of-bounds particles #####
