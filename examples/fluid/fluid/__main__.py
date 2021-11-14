@@ -1,6 +1,7 @@
 from nurses_2.app import App
 from nurses_2.colors import AColor
 from nurses_2.widgets.behaviors.auto_position_behavior import AutoPositionBehavior, Anchor
+from nurses_2.widgets import Widget
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
 from .sph import SPHSolver
@@ -8,7 +9,7 @@ from .sph import SPHSolver
 WATER_COLOR = AColor.from_hex("1e1ea8")
 
 
-class Fluid(AutoPositionBehavior, GraphicWidget):
+class Fluid(GraphicWidget):
     def __init__(self, *args, nparticles=150, **kwargs):
         super().__init__(*args, **kwargs)
         y, x = self.size
@@ -33,15 +34,20 @@ class Fluid(AutoPositionBehavior, GraphicWidget):
         return super().render(canvas_view, colors_view, rect)
 
 
+class Label(AutoPositionBehavior, Widget):
+    ...
+
 class MyApp(App):
     async def on_start(self):
-        self.root.add_widget(
-            Fluid(
-                size=(10, 25),
-                pos_hint=(.5, .5),
-                anchor=Anchor.CENTER,
-            )
+        label = Label(
+            size=(11, 30),
+            pos_hint=(.5, .5),
+            anchor=Anchor.CENTER,
         )
+        label.add_widget(Fluid(size=(10, 30), pos=(1, 0)))
+        label.add_text(f"{'Smooth Particle Hydrodynamics':^25}")
+
+        self.root.add_widget(label)
 
 
 MyApp().run()
