@@ -4,6 +4,13 @@ import numpy as np
 
 from nurses_2.data_structures import Size
 
+H = 1.44
+GAS_CONST = 3000.0
+REST_DENS = 100.0
+VISC = 4000.0 / (np.pi * H**5.0)
+POLY6 = 2.0 / (np.pi * H**8.0)
+SPIKY_GRAD = -5.0 / (np.pi * H**5.0)
+
 
 class SPHSolver:
     def __init__(self, size: Size, nparticles=1000):
@@ -53,12 +60,6 @@ class SPHSolver:
         For each particle, compute densities and pressures, then forces, and
         finally integrate to obtain new positions.
         """
-        H = 1.44
-        GAS_CONST = 3000.0
-        REST_DENS = 100.0
-        VISC = 4000.0 / (np.pi * H**5.0)
-        POLY6 = 2.0 / (np.pi * H**8.0)
-        SPIKY_GRAD = -5.0 / (np.pi * H**5.0)
         GRAVITY = next(self.circle)
 
         state = self.state
