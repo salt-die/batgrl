@@ -45,7 +45,7 @@ class MyApp(App):
             anchor=Anchor.CENTER,
         )
         label.add_widget(Fluid(size=(10, 30), pos=(1, 0)))
-        label.add_text(f"{'Smooth Particle Hydrodynamics':^25}")
+        label.add_text(f"{'Smooth Particle Hydrodynamics':^30}")
 
         self.root.add_widget(label)
 
