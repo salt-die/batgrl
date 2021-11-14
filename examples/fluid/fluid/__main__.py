@@ -37,6 +37,7 @@ class Fluid(GraphicWidget):
 class Label(AutoPositionBehavior, Widget):
     ...
 
+
 class MyApp(App):
     async def on_start(self):
         label = Label(
