@@ -4,7 +4,6 @@ from scipy.spatial import KDTree
 from nurses_2.data_structures import Size
 
 H = .8
-HSQ = H**2
 GAS_CONST = 3000.0
 REST_DENS = 300.0
 POLY6 = 1.0 / (np.pi * H**8.0)
