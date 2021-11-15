@@ -1,13 +1,15 @@
 import numpy as np
 from scipy.spatial import KDTree
 
-H = .8
-GAS_CONST = 3000.0
-REST_DENS = 300.0
+H = .49
+GAS_CONST = 200.0
+REST_DENS = 200.0
 POLY6 = 1.0 / (np.pi * H**8.0)
-VISC = 4000.0 / (np.pi * H**5.0)
+VISC = 5000.0 / (np.pi * H**5.0)
 SPIKY_GRAD = -5.0 / (np.pi * H**5.0)
 GRAVITY = 40.0
+
+# ? A mysterious negative velocity bias is keeping Solver from settling.
 
 
 class SPHSolver:
@@ -45,71 +47,67 @@ class SPHSolver:
         densities    = state[:, 6]
         pressure     = state[:, 7]
 
-        ys, xs = KDTree(positions).query_pairs(H, output_type='ndarray').T
+        js, ks = KDTree(positions, balanced_tree=False).query_pairs(H, output_type='ndarray').T
 
-        relatives = positions[xs] - positions[ys]
+        relatives = positions[ks] - positions[js]
         distances = np.linalg.norm(relatives, axis=-1)
 
         strengths = H - distances
         strengths_cubed = strengths ** 3
 
-        # Density / Pressure update #######################
-        density = POLY6 * strengths_cubed                 #
-                                                          #
-        densities[:] = REST_DENS                          #
-        densities[ys] += density                          #
-        densities[xs] += density                          #
-                                                          #
-        pressure[:] = GAS_CONST * (densities - REST_DENS) #
-        ###################################################
+        # Update density / pressure
+        density = POLY6 * strengths_cubed
 
-        # Forces update ##############################
-        acceleration[:, 0] += GRAVITY / densities    #
-                                                     #
-        pressure_yx = (                              #
-            SPIKY_GRAD                               #
-            * relatives                              #
-            / distances[:, None]                     #
-            * (pressure[xs] + pressure[ys])[:, None] #
-            * strengths_cubed[:, None]               #
-        )                                            #
-                                                     #
-        viscs_yx = (                                 #
-            VISC                                     #
-            * (velocities[xs] - velocities[ys])      #
-            * strengths[:, None]                     #
-         )                                           #
-                                                     #
-        total = pressure_yx + viscs_yx               #
-                                                     #
-        densities = densities[:, None]               #
-        acceleration[ys] += total / densities[xs]    #
-        acceleration[xs] -= total / densities[ys]    #
-        ##############################################
+        densities[:] = REST_DENS
+        densities[js] += density
+        densities[ks] += density
+
+        pressure[:] = GAS_CONST * (densities - REST_DENS)
+
+        # Update forces
+        pressure_jk = (
+            SPIKY_GRAD
+            * relatives
+            / distances[:, None]
+            * (pressure[ks] + pressure[js])[:, None]
+            * strengths_cubed[:, None]
+        )
+
+        viscs_jk = (
+            VISC
+            * (velocities[ks] - velocities[js])
+            * strengths[:, None]
+         )
+
+        total = pressure_jk + viscs_jk
+
+        acceleration[:, 0] += GRAVITY
+        acceleration[js] += total
+        acceleration[ks] -= total
+        acceleration /= densities[:, None]
 
         # Integrate
-        velocities += acceleration / densities
+        velocities += acceleration / densities[:, None]
         positions += velocities
 
-        # Move out-of-bounds particles ##
-        h, w = self.size                #
-        ys, xs = positions.T            #
-        vys, vxs = velocities.T         #
-                                        #
-        top = ys < 0                    #
-        left = xs < 0                   #
-        bottom = ys >= h                #
-        right = xs >= w                 #
-                                        #
-        ys[top]    *= -1                #
-        xs[left]   *= -1                #
-        ys[bottom] = 2 * h - ys[bottom] #
-        xs[right]  = 2 * w - xs[right]  #
-                                        #
-        vys[top]    *= -.5              #
-        vxs[left]   *= -.5              #
-        vys[bottom] *= -.5              #
-        vxs[right]  *= -.5              #
-        #################################
-
         acceleration[:] = 0.0  # Reset forces
+
+        # Boundary conditions
+        h, w = self.size
+        ys, xs = positions.T
+        vys, vxs = velocities.T
+
+        top = ys < 0
+        left = xs < 0
+        bottom = ys >= h
+        right = xs >= w
+
+        ys[top]    *= -1
+        xs[left]   *= -1
+        ys[bottom] = 2 * h - ys[bottom]
+        xs[right]  = 2 * w - xs[right]
+
+        vys[top]    *= -.5
+        vxs[left]   *= -.5
+        vys[bottom] *= -.5
+        vxs[right]  *= -.5
