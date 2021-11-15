@@ -1,19 +1,20 @@
+import numpy as np
+
 from nurses_2.app import App
-from nurses_2.colors import AColor
+from nurses_2.colors import Color
 from nurses_2.widgets.behaviors.auto_position_behavior import AutoPositionBehavior, Anchor
-from nurses_2.widgets import Widget
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
 from .sph import SPHSolver
 
-WATER_COLOR = AColor.from_hex("1e1ea8")
+WATER_COLOR = Color.from_hex("1e1ea8")
 
 
-class Fluid(GraphicWidget):
-    def __init__(self, *args, nparticles=150, **kwargs):
+class Fluid(AutoPositionBehavior, GraphicWidget):
+    def __init__(self, *args, nparticles=400, **kwargs):
         super().__init__(*args, **kwargs)
         y, x = self.size
-        self.sph_solver = SPHSolver((2 * y, x), nparticles)
+        self.sph_solver = SPHSolver((2 * y - 1, x - 1), nparticles)
 
     def on_press(self, key_press_event):
         match key_press_event.key:
@@ -24,31 +25,32 @@ class Fluid(GraphicWidget):
         return False
 
     def render(self, canvas_view, colors_view, rect):
-        self.sph_solver.step()
+        solver = self.sph_solver
+        solver.step()
 
         self.texture[:] = self.default_bg_color
 
-        y, x = self.sph_solver.state[:, :2].astype(int).T
-        self.texture[y, x] = WATER_COLOR
+        positions = solver.state[:, :2]
+        pressure = solver.state[:, -1]
+
+        ys, xs = positions.astype(np.uint).T
+        alphas = (255 / (1 + np.e**-(.125 * pressure))).astype(int)
+
+        self.texture[ys, xs, :3] = WATER_COLOR
+        self.texture[ys, xs, 3] = alphas
 
         return super().render(canvas_view, colors_view, rect)
 
 
-class Label(AutoPositionBehavior, Widget):
-    ...
-
-
 class MyApp(App):
     async def on_start(self):
-        label = Label(
-            size=(11, 30),
-            pos_hint=(.5, .5),
-            anchor=Anchor.CENTER,
+        self.root.add_widget(
+            Fluid(
+                size=(20, 50),
+                pos_hint=(.5, .5),
+                anchor=Anchor.CENTER,
+            )
         )
-        label.add_widget(Fluid(size=(10, 30), pos=(1, 0)))
-        label.add_text(f"{'Smooth Particle Hydrodynamics':^30}")
-
-        self.root.add_widget(label)
 
 
 MyApp().run()
