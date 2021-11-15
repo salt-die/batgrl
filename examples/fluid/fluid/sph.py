@@ -1,8 +1,6 @@
 import numpy as np
 from scipy.spatial import KDTree
 
-from nurses_2.data_structures import Size
-
 H = .8
 GAS_CONST = 3000.0
 REST_DENS = 300.0
@@ -13,30 +11,27 @@ GRAVITY = 40.0
 
 
 class SPHSolver:
-    def __init__(self, size: Size, nparticles=1000):
+    def __init__(self, size, nparticles=1000):
         self.nparticles = nparticles
         self.resize(size)
 
-    def resize(self, size: Size):
+    def resize(self, size):
         self.size = size
-
-        nparticles = self.nparticles
-        self.state = np.zeros((nparticles, 8), dtype=float)
-
+        self.state = np.zeros((self.nparticles, 8), dtype=float)
         self.init_dam()
 
     def init_dam(self):
         """
         Position particles in a verticle column.
         """
-        height, width = self.size
-        dam_width = width / 5
+        h, w = self.size
+        dam_width = w / 5
 
         positions = self.state[:, :2]
 
         positions[:] = np.random.random((self.nparticles, 2))
-        positions *= height, dam_width
-        positions[:, 1] += (width - dam_width) / 2
+        positions *= h, dam_width
+        positions[:, 1] += (w - dam_width) / 2
 
     def step(self):
         """
@@ -56,10 +51,10 @@ class SPHSolver:
         distances = np.linalg.norm(relatives, axis=-1)
 
         strengths = H - distances
-        str_cubed = strengths ** 3
+        strengths_cubed = strengths ** 3
 
         # Density / Pressure update #######################
-        density = POLY6 * str_cubed                       #
+        density = POLY6 * strengths_cubed                 #
                                                           #
         densities[:] = REST_DENS                          #
         densities[ys] += density                          #
@@ -69,12 +64,14 @@ class SPHSolver:
         ###################################################
 
         # Forces update ##############################
+        acceleration[:, 0] += GRAVITY / densities    #
+                                                     #
         pressure_yx = (                              #
             SPIKY_GRAD                               #
             * relatives                              #
             / distances[:, None]                     #
             * (pressure[xs] + pressure[ys])[:, None] #
-            * str_cubed[:, None]                     #
+            * strengths_cubed[:, None]               #
         )                                            #
                                                      #
         viscs_yx = (                                 #
@@ -85,12 +82,9 @@ class SPHSolver:
                                                      #
         total = pressure_yx + viscs_yx               #
                                                      #
-        acceleration[:, 0] += GRAVITY / densities    #
-                                                     #
         densities = densities[:, None]               #
         acceleration[ys] += total / densities[xs]    #
         acceleration[xs] -= total / densities[ys]    #
-                                                     #
         ##############################################
 
         # Integrate

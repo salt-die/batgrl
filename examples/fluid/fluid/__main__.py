@@ -11,7 +11,7 @@ WATER_COLOR = Color.from_hex("1e1ea8")
 
 
 class Fluid(AutoPositionBehavior, GraphicWidget):
-    def __init__(self, *args, nparticles=400, **kwargs):
+    def __init__(self, *args, nparticles=1000, **kwargs):
         super().__init__(*args, **kwargs)
         y, x = self.size
         self.sph_solver = SPHSolver((2 * y - 1, x - 1), nparticles)
@@ -28,14 +28,13 @@ class Fluid(AutoPositionBehavior, GraphicWidget):
         solver = self.sph_solver
         solver.step()
 
-        self.texture[:] = self.default_bg_color
-
         positions = solver.state[:, :2]
-        pressure = solver.state[:, -1]
+        ys, xs = positions.astype(int).T
 
-        ys, xs = positions.astype(np.uint).T
+        pressure = solver.state[:, -1]
         alphas = (255 / (1 + np.e**-(.125 * pressure))).astype(int)
 
+        self.texture[:] = self.default_bg_color
         self.texture[ys, xs, :3] = WATER_COLOR
         self.texture[ys, xs, 3] = alphas
 
