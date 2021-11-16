@@ -69,7 +69,7 @@ class CanvasView:
                 case 2:
                     canvas[row, column + i] = letter
                     if column + i + 1 < columns:
-                        canvas[column + i + 1] = chr(0x200B)  # Zero-width space
+                        canvas[row, column + i + 1] = chr(0x200B)  # Zero-width space
                     i += 2
 
 
