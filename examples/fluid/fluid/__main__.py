@@ -52,6 +52,7 @@ class MyApp(App):
     async def on_start(self):
         WIDTH = 51
         HWIDTH = WIDTH // 2
+
         container = AutoPositionWidget(
             size=(26, WIDTH),
             pos_hint=(.5, .5),
@@ -69,11 +70,10 @@ class MyApp(App):
             min=.4,
             max=1.44,
             proportion=.04711,
-            handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "H", value),
                 container.add_text(
-                    f'{f"H: {round(solver.H, 4)}":<{HWIDTH}}'[:HWIDTH]
+                    f'{f"Neighbor Distance: {round(solver.H, 4)}":<{HWIDTH}}',
                 ),
             ),
             default_color_pair=WATER_ON_BLACK,
@@ -85,11 +85,10 @@ class MyApp(App):
             min=100.0,
             max=4000.0,
             proportion=.02564,
-            handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "GAS_CONST", value),
                 container.add_text(
-                    f'{f"GAS_CONST: {round(solver.GAS_CONST, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    f'{f"Gas Constant: {round(solver.GAS_CONST, 4)}":<{HWIDTH}}',
                     column=HWIDTH,
                 ),
             ),
@@ -102,11 +101,10 @@ class MyApp(App):
             min=40.0,
             max=400.0,
             proportion=.44444,
-            handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "REST_DENS", value),
                 container.add_text(
-                    f'{f"REST_DENS: {round(solver.REST_DENS, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    f'{f"Rest Density: {round(solver.REST_DENS, 4)}":<{HWIDTH}}',
                     row=2,
                 ),
             ),
@@ -119,11 +117,10 @@ class MyApp(App):
             min=1.0,
             max=10.0,
             proportion=0.0,
-            handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "POLYF", value),
                 container.add_text(
-                    f'{f"POLY: {round(solver.POLYF, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    f'{f"Poly 6 Kernel: {round(solver.POLYF, 4)}":<{HWIDTH}}',
                     row=2,
                     column=HWIDTH,
                 ),
@@ -137,11 +134,10 @@ class MyApp(App):
             min=1000.0,
             max=5000.0,
             proportion=1.0,
-            handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "VISCF", value),
                 container.add_text(
-                    f'{f"VISC: {round(solver.VISCF, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    f'{f"Viscosity: {round(solver.VISCF, 4)}":<{HWIDTH}}',
                     row=4,
                 ),
             ),
@@ -154,11 +150,10 @@ class MyApp(App):
             min=-10.0,
             max=-1.0,
             proportion=.55555,
-            handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "SPIKYF", value),
                 container.add_text(
-                    f'{f"SPIKY: {round(solver.SPIKYF, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    f'{f"Spiky Gradient: {round(solver.SPIKYF, 4)}":<{HWIDTH}}',
                     row=4,
                     column=HWIDTH,
                 ),
