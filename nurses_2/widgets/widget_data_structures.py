@@ -57,7 +57,7 @@ class CanvasView:
 
         i = 0
         for letter in text:
-            if column + i == columns:
+            if column + i >= columns:
                 break
 
             match wcswidth(letter):
