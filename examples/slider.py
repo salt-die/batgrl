@@ -4,7 +4,7 @@ Example slider widget.
 import asyncio
 
 from nurses_2.app import App
-from nurses_2.colors import BLUE, GREEN, BLACK, color_pair
+from nurses_2.colors import BLUE, GREEN, BLACK, RED, color_pair
 from nurses_2.widgets import Widget
 from nurses_2.widgets.slider import Slider
 
@@ -24,6 +24,7 @@ class MyApp(App):
             max=100,
             handle_color=BLUE,
             callback=lambda value: display.add_text(f"{round(value, 3):<10}", row=0, column=16),
+            fill_color=RED,
             default_color_pair=GREEN_ON_BLACK,
         )
         slider_2 = Slider(
@@ -33,6 +34,7 @@ class MyApp(App):
             max=50,
             handle_color=BLUE,
             callback=lambda value: display.add_text(f"{round(value, 3):<10}", row=1, column=16),
+            fill_color=RED,
             default_color_pair=GREEN_ON_BLACK,
         )
         self.root.add_widgets(display, slider_1, slider_2)
