@@ -23,7 +23,7 @@ class MyApp(App):
             min=0,
             max=100,
             handle_color=BLUE,
-            callback=lambda value: display.add_text(f"{value:<10}"[:10], row=0, column=16),
+            callback=lambda value: display.add_text(f"{value:<10}", row=0, column=16),
             default_color_pair=GREEN_ON_BLACK,
         )
         slider_2 = Slider(
@@ -32,7 +32,7 @@ class MyApp(App):
             min=-20,
             max=50,
             handle_color=BLUE,
-            callback=lambda value: display.add_text(f"{value:<10}"[:10], row=1, column=16),
+            callback=lambda value: display.add_text(f"{value:<10}", row=1, column=16),
             default_color_pair=GREEN_ON_BLACK,
         )
         self.root.add_widgets(display, slider_1, slider_2)
