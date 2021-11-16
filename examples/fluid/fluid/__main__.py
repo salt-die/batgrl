@@ -1,7 +1,7 @@
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import Color, color_pair, BLACK, BLACK_ON_BLACK
+from nurses_2.colors import Color, ColorPair, BLACK, BLACK_ON_BLACK
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors.auto_position_behavior import AutoPositionBehavior, Anchor
 from nurses_2.widgets.graphic_widget import GraphicWidget
@@ -10,7 +10,8 @@ from nurses_2.widgets.slider import Slider
 from .sph import SPHSolver
 
 WATER_COLOR = Color.from_hex("1e1ea8")
-WATER_ON_BLACK = color_pair(WATER_COLOR, BLACK)
+FILL_COLOR = Color.from_hex("2fa399")
+WATER_ON_BLACK = ColorPair.from_colors(WATER_COLOR, BLACK)
 
 
 class Fluid(GraphicWidget):
@@ -64,8 +65,13 @@ class MyApp(App):
         fluid = Fluid(pos=(6, 0), size=(20, 50))
         solver = fluid.sph_solver
 
+        slider_settings = {
+            "width": HWIDTH,
+            "fill_color": FILL_COLOR,
+            "default_color_pair": WATER_ON_BLACK,
+        }
+
         adjust_H = Slider(
-            width=HWIDTH,
             pos=(1, 0),
             min=.4,
             max=1.44,
@@ -76,11 +82,10 @@ class MyApp(App):
                     f'{f"Neighbor Distance: {round(solver.H, 4)}":<{HWIDTH}}',
                 ),
             ),
-            default_color_pair=WATER_ON_BLACK,
+            **slider_settings,
         )
 
         adjust_GAS_CONST = Slider(
-            width=HWIDTH,
             pos=(1, HWIDTH + 1),
             min=100.0,
             max=4000.0,
@@ -92,11 +97,10 @@ class MyApp(App):
                     column=HWIDTH,
                 ),
             ),
-            default_color_pair=WATER_ON_BLACK,
+            **slider_settings,
         )
 
         adjust_REST_DENS = Slider(
-            width=HWIDTH,
             pos=(3, 0),
             min=40.0,
             max=400.0,
@@ -108,11 +112,10 @@ class MyApp(App):
                     row=2,
                 ),
             ),
-            default_color_pair=WATER_ON_BLACK,
+            **slider_settings,
         )
 
         adjust_POLYF = Slider(
-            width=HWIDTH,
             pos=(3, HWIDTH + 1),
             min=1.0,
             max=10.0,
@@ -125,11 +128,10 @@ class MyApp(App):
                     column=HWIDTH,
                 ),
             ),
-            default_color_pair=WATER_ON_BLACK,
+            **slider_settings,
         )
 
         adjust_VISCF = Slider(
-            width=HWIDTH,
             pos=(5, 0),
             min=1000.0,
             max=5000.0,
@@ -141,11 +143,10 @@ class MyApp(App):
                     row=4,
                 ),
             ),
-            default_color_pair=WATER_ON_BLACK,
+            **slider_settings,
         )
 
         adjust_SPIKYF = Slider(
-            width=HWIDTH,
             pos=(5, HWIDTH + 1),
             min=-10.0,
             max=-1.0,
@@ -158,7 +159,7 @@ class MyApp(App):
                     column=HWIDTH,
                 ),
             ),
-            default_color_pair=WATER_ON_BLACK,
+            **slider_settings,
         )
 
         container.add_widgets(
