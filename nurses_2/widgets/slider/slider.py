@@ -26,6 +26,8 @@ class Slider(Widget):
         Starting proportion of slider.
     handle_color : Color | None, default: None
         Color of slider handle. If None, handle color is `default_fg_color`.
+    fill_color: Color | None, default: None
+        Color of "filled" portion of slider.
     slider_enabled : bool, default: True
         Allow dragging handle.
     callback : Callable | None, default: None
@@ -41,9 +43,10 @@ class Slider(Widget):
         max,
         proportion=0.0,
         handle_color: Color | None=None,
+        fill_color: Color | None=None,
         slider_enabled=True,
         callback: Callable | None=None,
-        default_char="=",
+        default_char="▬",
         **kwargs,
         ):
         super().__init__(size=(1, width), pos=pos, default_char=default_char, **kwargs)
@@ -55,6 +58,8 @@ class Slider(Widget):
         self.slider_enabled = slider_enabled
         self.callback = callback
         self._proportion = 0
+
+        self.fill_color = fill_color or self.default_fg_color
 
         self.handle = _Handle(handle_color or self.default_fg_color)
         self.add_widget(self.handle)
@@ -73,6 +78,10 @@ class Slider(Widget):
             self.value = (max - min) * self._proportion + min
 
             self.handle.update_geometry()
+            handle_x = self.handle.x
+            self.colors[:, :handle_x, :3] = self.fill_color
+            self.colors[:, handle_x:, :3] = self.default_fg_color
+
 
     @property
     def value(self):
