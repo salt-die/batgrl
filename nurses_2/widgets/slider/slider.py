@@ -24,13 +24,13 @@ class Slider(Widget):
         Maximum value.
     proportion : float, default: 0.0
         Starting proportion of slider.
-    handle_color : Color
-        Color of slider handle.
+    handle_color : Color | None, default: None
+        Color of slider handle. If None, handle color is `default_fg_color`.
     slider_enabled : bool, default: True
         Allow dragging handle.
     callback : Callable | None, default: None
-        Single argument callable that takes the new value of slider, when slider
-        value is updated.
+        Single argument callable that takes the new value of slider. Called
+        when slider value is updated.
     """
     def __init__(
         self,
@@ -40,7 +40,7 @@ class Slider(Widget):
         min,
         max,
         proportion=0.0,
-        handle_color: Color,
+        handle_color: Color | None=None,
         slider_enabled=True,
         callback: Callable | None=None,
         default_char="=",
@@ -56,7 +56,7 @@ class Slider(Widget):
         self.callback = callback
         self._proportion = 0
 
-        self.handle = _Handle(handle_color)
+        self.handle = _Handle(handle_color or self.default_fg_color)
         self.add_widget(self.handle)
         self.proportion = proportion
 
