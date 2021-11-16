@@ -72,7 +72,9 @@ class MyApp(App):
             handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "H", value),
-                container.add_text(f'{f"H: {solver.H}":<{HWIDTH}}'[:HWIDTH]),
+                container.add_text(
+                    f'{f"H: {round(solver.H, 4)}":<{HWIDTH}}'[:HWIDTH]
+                ),
             ),
             default_color_pair=WATER_ON_BLACK,
         )
@@ -86,7 +88,10 @@ class MyApp(App):
             handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "GAS_CONST", value),
-                container.add_text(f'{f"GAS_CONST: {solver.GAS_CONST}":<{HWIDTH}}'[:HWIDTH], column=HWIDTH),
+                container.add_text(
+                    f'{f"GAS_CONST: {round(solver.GAS_CONST, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    column=HWIDTH,
+                ),
             ),
             default_color_pair=WATER_ON_BLACK,
         )
@@ -100,7 +105,10 @@ class MyApp(App):
             handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "REST_DENS", value),
-                container.add_text(f'{f"REST_DENS: {solver.REST_DENS}":<{HWIDTH}}'[:HWIDTH], row=2),
+                container.add_text(
+                    f'{f"REST_DENS: {round(solver.REST_DENS, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    row=2,
+                ),
             ),
             default_color_pair=WATER_ON_BLACK,
         )
@@ -114,7 +122,11 @@ class MyApp(App):
             handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "POLYF", value),
-                container.add_text(f'{f"POLY: {solver.POLYF}":<{HWIDTH}}'[:HWIDTH], row=2, column=HWIDTH),
+                container.add_text(
+                    f'{f"POLY: {round(solver.POLYF, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    row=2,
+                    column=HWIDTH,
+                ),
             ),
             default_color_pair=WATER_ON_BLACK,
         )
@@ -128,7 +140,10 @@ class MyApp(App):
             handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "VISCF", value),
-                container.add_text(f'{f"VISC: {solver.VISCF}":<{HWIDTH}}'[:HWIDTH], row=4),
+                container.add_text(
+                    f'{f"VISC: {round(solver.VISCF, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    row=4,
+                ),
             ),
             default_color_pair=WATER_ON_BLACK,
         )
@@ -142,7 +157,11 @@ class MyApp(App):
             handle_color=WATER_COLOR,
             callback=lambda value: (
                 setattr(solver, "SPIKYF", value),
-                container.add_text(f'{f"SPIKY: {solver.SPIKYF}":<{HWIDTH}}'[:HWIDTH], row=4, column=HWIDTH),
+                container.add_text(
+                    f'{f"SPIKY: {round(solver.SPIKYF, 4)}":<{HWIDTH}}'[:HWIDTH],
+                    row=4,
+                    column=HWIDTH,
+                ),
             ),
             default_color_pair=WATER_ON_BLACK,
         )
