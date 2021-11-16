@@ -50,18 +50,27 @@ class CanvasView:
         index error is raised.
         """
         canvas = self.canvas
+        columns = canvas.shape[1]
 
         if column < 0:
-            column += canvas.shape[1]
+            column += columns
 
         i = 0
         for letter in text:
-            canvas[row, column + i] = letter
-            i += 1
+            if column + i == columns:
+                break
 
-            if wcswidth(letter) == 2:
-                canvas[row, column + i] = chr(0x200B)  # Zero-width space
-                i += 1
+            match wcswidth(letter):
+                case 0:
+                    continue
+                case 1:
+                    canvas[row, column + i] = letter
+                    i += 1
+                case 2:
+                    canvas[row, column + i] = letter
+                    if column + i + 1 < columns:
+                        canvas[column + i + 1] = chr(0x200B)  # Zero-width space
+                    i += 2
 
 
 class Rect(NamedTuple):
