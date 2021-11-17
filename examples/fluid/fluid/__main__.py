@@ -79,7 +79,7 @@ class MyApp(App):
             callback=lambda value: (
                 setattr(solver, "H", value),
                 container.add_text(
-                    f'{f"Neighbor Distance: {round(solver.H, 4)}":<{HWIDTH}}',
+                    f'{f"Smoothing Length: {round(solver.H, 4)}":<{HWIDTH}}',
                 ),
             ),
             **slider_settings,
