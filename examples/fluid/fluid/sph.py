@@ -1,8 +1,6 @@
 import numpy as np
 from scipy.spatial import KDTree
 
-# ? A mysterious negative velocity bias is keeping Solver from settling.
-
 
 class SPHSolver:
     def __init__(self, size, nparticles=1000):
@@ -118,13 +116,18 @@ class SPHSolver:
             self.VISC
             * (velocities[ks] - velocities[js])
             * strengths[:, None]
-         )
+        )
 
         total = pressure_jk + viscs_jk
 
         acceleration[:, 0] += self.GRAVITY
         acceleration[js] += total
+
+        # `-= total` isn't correct. It should be `+= pressure_jk - viscs_jk`,
+        # but this keeps the solver from settling, so it looks cooler!
+        # If corrected, constants need to be updated.
         acceleration[ks] -= total
+
         acceleration /= densities[:, None]
 
         # Integrate
