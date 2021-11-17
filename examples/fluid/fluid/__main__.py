@@ -1,7 +1,8 @@
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import Color, ColorPair, BLACK, BLACK_ON_BLACK
+from nurses_2.colors import Color, ColorPair, BLACK, BLACK_ON_BLACK, WHITE_ON_BLACK
+from nurses_2.io import MouseButton
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors.auto_position_behavior import AutoPositionBehavior, Anchor
 from nurses_2.widgets.graphic_widget import GraphicWidget
@@ -27,6 +28,25 @@ class Fluid(GraphicWidget):
                 return True
 
         return False
+
+    def on_click(self, mouse_event):
+        if (
+            mouse_event.button is MouseButton.NO_BUTTON
+            or not self.collides_coords(mouse_event.position)
+        ):
+            return False
+
+        # Apply a force from click to every particle in the solver.
+        my, mx = self.absolute_to_relative_coords(mouse_event.position)
+
+        relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
+
+        self.sph_solver.state[:, 4:6] += (
+            1000 * relative_positions
+            / np.linalg.norm(relative_positions, axis=-1, keepdims=True)
+        )
+
+        return True
 
     def render(self, canvas_view, colors_view, rect):
         solver = self.sph_solver
@@ -60,7 +80,7 @@ class MyApp(App):
             anchor=Anchor.CENTER,
             default_color_pair=BLACK_ON_BLACK
         )
-        container.colors[:6, :, :3] = 255
+        container.colors[:6] = WHITE_ON_BLACK
 
         fluid = Fluid(pos=(6, 0), size=(20, 50))
         solver = fluid.sph_solver
