@@ -55,7 +55,9 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
         self.resize(self.size)
 
     def resize(self, size):
-        size_with_border = 2 * size.height + 4, size.width + 4
+        h, w = size
+
+        size_with_border = 2 * h + 4, w + 4
 
         self.pressure = np.zeros(size_with_border, dtype=float)
         self.momentum = np.zeros(size_with_border, dtype=float)
@@ -76,9 +78,10 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
             return True
 
     def on_press(self, key_press_event):
-        if key_press_event.key in ("r", "R"):
-            self.resize(self.size)  # Reset
-            return True
+        match key_press_event.key:
+            case "r" | "R":
+                self.resize(self.size)  # Reset
+                return True
 
     def render(self, canvas_view, colors_view, rect):
         pressure = self.pressure
