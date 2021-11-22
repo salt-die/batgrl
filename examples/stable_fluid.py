@@ -4,9 +4,16 @@ Stable fluid simulation. WIP
 import numpy as np
 
 from scipy.ndimage import map_coordinates, gaussian_filter
+from scipy.ndimage.filters import convolve
 
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
+DIF_KERNEL = np.array([-.5, 0, .5])
+
+# Steps to solve:
+# * Advect velocity
+# * Vorticity
+# * Vorticity Confinement
 
 class StableFluid(GraphicWidget):
     def __init__(self, *args, **kwargs):
@@ -21,14 +28,18 @@ class StableFluid(GraphicWidget):
         self.dye = np.zeros((h, w))
         self.indices = np.indices((h, w))
         self.velocity = np.zeros((2, h, w))
-        self.curl_mask = np.triu(np.ones((2, 2), dtype=bool), k=1)
+
+    def _init_inflow(self):
+        """
+        Init constant velocity field.
+        """
 
     def render(self, canvas_view, colors_view, rect: Rect):
-        h, w = self.texture.shape
         vy, vx = velocity = self.velocity
         dye = self.dye
-        curl_mask = self.curl_mask
 
+        # Advect
+        ########
         advection = self.indices - velocity
 
         map_coordinates(advection, vy, output=vy, mode="wrap")
@@ -39,9 +50,16 @@ class StableFluid(GraphicWidget):
         gaussian_filter(velocity, 1, output=velocity)
         gaussian_filter(dye, 1, output=dye)
 
-        jacobian = np.stack((np.gradient(vy), np.gradient(vx))).reshape(2, 2, h, w)
+        # Divergence
+        ############
+        div_y = convolve(vy, DIF_KERNEL[None], mode="wrap")
+        div_x = convolve(vx, DIF_KERNEL[:, None], mode="wrap")
 
-        divergence = jacobian.trace()
-        curl = (jacobian[curl_mask] - jacobian[curl_mask.T]).squeeze()
+        div = div_y + div_x
+
+        # Project
+        #########
+        vy -= div_y
+        vx -= div_x
 
         super().render(canvas_view, colors_view, rect)
