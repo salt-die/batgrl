@@ -1,12 +1,12 @@
 """
-Stable fluid simulation. WIP
+Stable fluid simulation.
 """
 from itertools import cycle
 
 import numpy as np
 
-from scipy.ndimage import map_coordinates, gaussian_filter
-from scipy.ndimage.filters import convolve
+from scipy.ndimage import map_coordinates
+from scipy.ndimage.filters import convolve, gaussian_filter
 
 from nurses_2.colors import rainbow_gradient
 from nurses_2.io import MouseEvent, MouseButton
@@ -16,14 +16,21 @@ from nurses_2.app import App
 
 DIF_KERNEL = np.array([-.5, 0.0, .5])
 GRAD_KERNEL = np.array([-1.0, 0.0, 1.0])
-POISSON_KERNEL = np.array([
+GAUSSIAN_KERNEL = np.array([
+    [.0625, .125, .0625],
+    [ .125,  .25,  .125],
+    [.0625, .125, .0625],
+])
+PRESSURE_KERNEL = np.array([
     [0.0, .25, 0.0],
     [.25, 0.0, .25],
     [0.0, .25, 0.0],
 ])
-CURL = 1.0
-DISSIPATION = 1.01
-POKE_RADIUS = 2.0
+CURL = 3.0
+POKE_RADIUS = 3.0
+DISSIPATION = .99
+PRESSURE = .1
+PRESSURE_ITERATIONS = 20
 RAINBOW_COLORS = cycle(rainbow_gradient(100))
 
 
@@ -37,7 +44,7 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
 
         h, w, _ = self.texture.shape
 
-        self.dye = np.zeros((3, h, w), dtype=np.uint8)
+        self.dye = np.zeros((3, h, w))
         self.indices = np.indices((h, w))
         self.velocity = np.zeros((2, h, w))
 
@@ -55,14 +62,21 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
         y *= 2
 
         ys, xs = self.indices
+        ry = ys - y
+        rx = xs - x
+        d = ry**2 + rx**2 + .00001
 
-        poke_force = np.e**(-((ys - y)**2 + (xs - x)**2) / POKE_RADIUS)
-        self.velocity += poke_force
+        if mouse_event.button is MouseButton.LEFT:
+            self.velocity[0] += ry / d
+            self.velocity[1] += rx / d
+        else:
+            self.velocity[0] -= ry / d
+            self.velocity[1] -= rx / d
 
-        self.dye += np.moveaxis(
-            (poke_force[..., None] * next(RAINBOW_COLORS)).astype(np.uint8),
-            -1, 0,
-        )
+        poke_force = np.e**(-d / POKE_RADIUS)
+        self.dye += np.moveaxis(poke_force[..., None] * next(RAINBOW_COLORS), -1, 0)
+
+        return True
 
     def on_press(self, key_press_event):
         match key_press_event.key:
@@ -75,46 +89,54 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
 
     def render(self, canvas_view, colors_view, rect):
         vy, vx = velocity = self.velocity
-        dye = self.dye
 
         # Vorticity
         ###########
-        div_y = convolve(vy, DIF_KERNEL[None], mode="wrap")
-        div_x = convolve(vx, DIF_KERNEL[:, None], mode="wrap")
+        div_y = convolve(vy, DIF_KERNEL[None])
+        div_x = convolve(vx, DIF_KERNEL[:, None])
 
         curl = div_y - div_x
 
-        vort_y = convolve(curl, DIF_KERNEL[None], mode="wrap")
-        vort_x = convolve(curl, DIF_KERNEL[:, None], mode="wrap")
+        vort_y = convolve(curl, DIF_KERNEL[None])
+        vort_x = convolve(curl, DIF_KERNEL[:, None])
 
-        vorticity = np.stack((vort_y, vort_x))
+        vorticity = np.stack((-vort_y, vort_x))
         vorticity /= np.linalg.norm(vorticity, axis=0) + .00001
         vorticity *= curl * CURL
-        vorticity[0] *= -1
 
         velocity += vorticity
-        # np.clip(velocity, -100, 100)  # May need to limit velocity.
+
+        # Pressure Solver
+        #################
+        div = .25 * (div_y + div_x)
+        pressure = np.full_like(div_y, PRESSURE)
+        for _ in range(PRESSURE_ITERATIONS):
+            convolve(pressure, PRESSURE_KERNEL, output=pressure)
+            pressure -= div
 
         # Project
         #########
-        vy -= convolve(vy, DIF_KERNEL[None], mode="wrap")
-        vx -= convolve(vx, DIF_KERNEL[:, None], mode="wrap")
+        vy -= convolve(pressure, GRAD_KERNEL[None])
+        vx -= convolve(pressure, GRAD_KERNEL[:, None])
 
         # Advect
         ########
-        advection = self.indices - velocity
+        coords = self.indices - velocity
 
-        map_coordinates(vy, advection, output=vy, mode="wrap")
-        map_coordinates(vx, advection, output=vx, mode="wrap")
+        map_coordinates(vy, coords, output=vy, prefilter=False)
+        map_coordinates(vx, coords, output=vx, prefilter=False)
 
-        map_coordinates(dye[0], advection, output=dye[0], mode="wrap")
-        map_coordinates(dye[1], advection, output=dye[1], mode="wrap")
-        map_coordinates(dye[2], advection, output=dye[2], mode="wrap")
+        # Remove checkboard divergence and diffuse velocity.
+        convolve(vy, GAUSSIAN_KERNEL, output=vy)
+        convolve(vx, GAUSSIAN_KERNEL, output=vx)
 
-        # Reduce checkboard divergence
-        gaussian_filter(velocity[0], 1, output=velocity[0])
-        gaussian_filter(velocity[1], 1, output=velocity[1])
-        # gaussian_filter(dye, 1, output=dye)
+        r, g, b = dye = self.dye
+        map_coordinates(r, coords, output=r)
+        map_coordinates(g, coords, output=g)
+        map_coordinates(b, coords, output=b)
+
+        dye *= DISSIPATION
+        np.clip(dye, 0, 255, out=dye)
 
         self.texture[..., :3] = np.moveaxis(dye, 0, -1)
 
