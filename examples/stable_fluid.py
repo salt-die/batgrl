@@ -109,6 +109,7 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
         # Pressure Solver
         #################
         div = .25 * (div_y + div_x)
+
         pressure = np.full_like(div_y, PRESSURE)
         for _ in range(PRESSURE_ITERATIONS):
             convolve(pressure, PRESSURE_KERNEL, output=pressure)
