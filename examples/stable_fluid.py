@@ -29,8 +29,9 @@ CURL = 3.0
 POKE_RADIUS = 3.0
 DISSIPATION = .99
 PRESSURE = .1
-PRESSURE_ITERATIONS = 20
+PRESSURE_ITERATIONS = 10
 RAINBOW_COLORS = cycle(rainbow_gradient(100))
+EPSILON = np.finfo(float).eps
 
 
 class StableFluid(AutoSizeBehavior, GraphicWidget):
@@ -96,11 +97,11 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
 
         curl = div_y - div_x
 
-        vort_y = convolve(curl, DIF_KERNEL[None])
+        vort_y = convolve(curl, DIF_KERNEL[None, ::-1])
         vort_x = convolve(curl, DIF_KERNEL[:, None])
 
-        vorticity = np.stack((-vort_y, vort_x))
-        vorticity /= np.linalg.norm(vorticity, axis=0) + .00001
+        vorticity = np.stack((vort_y, vort_x))
+        vorticity /= np.linalg.norm(vorticity, axis=0) + EPSILON
         vorticity *= curl * CURL
 
         velocity += vorticity
