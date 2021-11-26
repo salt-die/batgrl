@@ -64,7 +64,7 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
         ys, xs = self.indices
         ry = ys - y
         rx = xs - x
-        d = ry**2 + rx**2 + .00001
+        d = ry**2 + rx**2 + EPSILON
 
         if mouse_event.button is MouseButton.LEFT:
             self.velocity[0] += ry / d
