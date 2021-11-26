@@ -144,10 +144,12 @@ class Vt100Reader:
                     pass
                 case Key.BracketedPaste:
                     self._in_bracketed_paste = True
-                case KeyPressEvent.ESCAPE if len(suffix) >= 1:
+                case KeyPressEvent.ESCAPE if suffix and suffix not in ANSI_ESCAPES:
                     if len(suffix) == 1:  # alt + character (probably)
                         self._events.append(KeyPressEvent(suffix, ALT))
-                    else:  # an unrecognized escape sequence; entire sequence (including escape) added as KeyPressEvent
+                    else:
+                        # Unrecognized escape sequence. It's possible the reader
+                        # was flushed too soon and only has a partial sequence.
                         self._events.append(KeyPressEvent(data, NO_MODS))
                     return ""
                 case key_press:
