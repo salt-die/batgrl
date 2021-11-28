@@ -16,22 +16,20 @@ _MOUSE_RE        = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z
 _MOUSE_PREFIX_RE = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]*|M.{0,2})\Z")
 
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
+FILENO = sys.stdin.fileno()
+SELECT_ARGS = [FILENO], [], [], 0
 
 def read_stdin():
     """
     Read (non-blocking) from stdin and return it decoded.
     """
-    fileno = sys.stdin.fileno()
-
-    if not select.select([fileno], [], [], 0)[0]:
-        return ""
+    if not select.select(*SELECT_ARGS)[0]:
+        return False
 
     try:
-        data = os.read(fileno, 2048)
+        return DECODER.decode(os.read(FILENO, 2048))
     except OSError:
-        data = b""
-
-    return DECODER.decode(data)
+        return False
 
 def _create_mouse_event(data):
     """
