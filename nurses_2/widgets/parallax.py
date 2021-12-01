@@ -34,6 +34,10 @@ class Parallax(GraphicWidget):
         for widget in layers:
             self.add_widget(widget)
 
+    def update_geometry(self):
+        super().update_geometry()
+        self._image_copies = [layer.texture.copy() for layer in self.layers]
+
     @property
     def vertical_offset(self):
         return self._vertical_offset
