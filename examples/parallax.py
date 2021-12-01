@@ -5,31 +5,25 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.tiled_image import TiledImage
 from nurses_2.widgets.parallax import Parallax
 
 IMAGES_DIR = Path("images")
 SIZE = 30, 50
 
-def load_parallax(path):
+def load_layers(path):
     sorted_dir = sorted(path.iterdir(), key=lambda path: path.stem)
 
-    layers = [
+    return [
         Image(size=SIZE, path=path)
         for path in sorted_dir if path.suffix == ".png"
     ]
-
-    nlayers = len(layers)
-    speeds = [1 / (nlayers - i) for i in range(nlayers)]
-
-    return {"layers": layers, "speeds": speeds}
 
 
 class MyApp(App):
     async def on_start(self):
 
-        parallax_00 = Parallax(size=SIZE, **load_parallax(IMAGES_DIR / "parallax_00"))
-        parallax_01 = Parallax(pos=(0, 50), size=SIZE, **load_parallax(IMAGES_DIR / "parallax_01"))
+        parallax_00 = Parallax(size=SIZE, layers=load_layers(IMAGES_DIR / "parallax_00"))
+        parallax_01 = Parallax(pos=(0, 50), size=SIZE, layers=load_layers(IMAGES_DIR / "parallax_01"))
 
         self.root.add_widgets(parallax_00, parallax_01)
 

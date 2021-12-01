@@ -11,23 +11,23 @@ class Parallax(GraphicWidget):
 
     Parameters
     ----------
-    layers: Sequence[GraphicWidget]
+    layers : Sequence[GraphicWidget]
         Individual layers of the parallax in background-to-foreground order.
-    speeds: Sequence[float]
+    speeds : Sequence[float] | None, default: None
         The scrolling speed of each individual layer. A speed of x will scroll a
         layer by `round(x * offset)` where offset is either `vertical_offset` or
-        `horizontal_offset` of the parallax.
+        `horizontal_offset` of the parallax. Default speeds are `1/(N - i)`
+        where `N` is the number of layers and `i` is the index of a layer.
     """
-    def __init__(self, *args, layers: Sequence[GraphicWidget], speeds: Sequence[float], **kwargs):
-        assert len(layers) == len(speeds), f"Inconsistent lengths of layers ({len(layers)}) and speeds ({len(speeds)})"
-
+    def __init__(self, *args, layers: Sequence[GraphicWidget], speeds: Sequence[float] | None=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.layers = layers
 
         self._image_copies = [layer.texture.copy() for layer in layers]
 
-        self.speeds = speeds
+        nlayers = len(layers)
+        self.speeds = speeds or [1 / (nlayers - i) for i in range(nlayers)]
 
         self._vertical_offset = self._horizontal_offset = 0
 
