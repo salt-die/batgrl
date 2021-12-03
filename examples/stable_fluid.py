@@ -25,7 +25,7 @@ PRESSURE_KERNEL = np.array([
     [.25, 0.0, .25],
     [0.0, .25, 0.0],
 ])
-CURL = 3.0
+CURL = 5.0
 POKE_RADIUS = 3.0
 DISSIPATION = .99
 PRESSURE = .1
@@ -97,10 +97,14 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
 
         curl = div_y - div_x
 
-        vort_y = convolve(curl, DIF_KERNEL[None, ::-1])
+        vort_y = convolve(curl, DIF_KERNEL[None])
         vort_x = convolve(curl, DIF_KERNEL[:, None])
 
-        vorticity = np.stack((vort_y, vort_x))
+        vorticity = np.stack((vort_x, vort_y))
+
+        # Negating `vort_y`` and using `vorticity=np.stack((vort_y, vort_x))` creates
+        # a more swirly effect, but there are line artifacts.
+
         vorticity /= np.linalg.norm(vorticity, axis=0) + EPSILON
         vorticity *= curl * CURL
 
