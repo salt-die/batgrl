@@ -152,12 +152,14 @@ class ScrollView(GrabbableBehavior, Widget):
             raise ValueError("ScrollView already has child.")
 
         self._view = widget
+        widget.parent = self
 
     def remove_widget(self, widget):
         if widget is not self._view:
             raise ValueError(f"{widget} not in ScrollView")
 
         self._view = None
+        widget.parent = None
 
     def render(self, canvas_view, colors_view, rect):
         """
