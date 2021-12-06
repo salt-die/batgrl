@@ -1,14 +1,9 @@
 import asyncio
 from pathlib import Path
-from typing import Iterable, Sequence, NamedTuple
+from typing import Iterable, Sequence
 
 from .graphic_widget import GraphicWidget, Interpolation
 from .image import Image
-
-
-class Frame(NamedTuple):
-    image: Image
-    duration: float
 
 
 class Animation(GraphicWidget):
@@ -18,122 +13,111 @@ class Animation(GraphicWidget):
     Parameters
     ----------
     paths : Path | Iterable[Path]
-        Path to folder of images for frames in animation (loaded in lexographical order of
-        filenames) or an iterable of paths to each frame in the animation.
-    frame_duration : float | Sequence[float], default: 1/12
+        Path to folder of images for frames in animation (loaded in lexographical
+        order of filenames) or an iterable of paths to each frame in the animation.
+    frame_duration : float | int | Sequence[float| int], default: 1/12
         Time between updates of frames of the animation in seconds.  If a sequence is
-        provided it must have length equal to number of frames in the animation.
+        provided it should have length equal to number of frames in the animation.
     loop : bool, default: True
         If true, restart animation after last frame.
-    alpha : float, default: 1.0
-        If a frame has an alpha channel, it will be multiplied by `alpha`.
-        Otherwise, `alpha` is default value for a frame's alpha channel.
-    interpolation : Interpolation, default: Interpolation.LINEAR
-        The interpolation used when resizing the animation.
     """
-
     def __init__(
         self,
         *args,
         paths: Path | Iterable[Path],
-        frame_duration: float | Sequence[float]=1/12,
-        loop=True,
+        frame_durations: float | Sequence[float]=1/12,
+        loop: bool=True,
         **kwargs
     ):
-        if isinstance(paths, Path):
-            assert paths.exists(), f"{paths} doesn't exist"
-            assert paths.is_dir(), f"{paths} isn't a directory"
-            paths = sorted((file for file in paths.iterdir() if file.is_file()), key=lambda file: file.name)
-        else:
-            paths = tuple(paths)
-            for path in paths:
-                assert path.exists(), f"{path} doesn't exist"
-                assert path.is_file(), f"{path} isn't a file"
-
-        if isinstance(frame_duration, float):
-            frame_duration = (frame_duration, ) * len(paths)
-        else:
-            assert len(frame_duration) == len(paths), (
-                f"number of frames ({len(paths)}) not equal"
-                f" to length of frame_duration ({len(frame_duration)})"
-            )
-
+        # Setting alpha and interpolation properties will
+        # also update frames. Dummy frames are needed.
         self.frames = ()
 
         super().__init__(*args, **kwargs)
 
-        self.frames = tuple(
-            Frame(
-                Image(
-                    size=self.size,
-                    path=path,
-                    alpha=self.alpha,
-                    interpolation=self.interpolation
-                ),
-                time,
+        if isinstance(paths, Path):
+            paths = sorted(
+                (file for file in paths.iterdir() if file.is_file()),
+                key=lambda file: file.name,
             )
-            for path, time in zip(paths, frame_duration)
-        )
 
-        self._current_frame = 0
-        self.loop = loop
-        self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self.frames = [
+            Image(
+                size=self.size,
+                path=path,
+                interpolation=self.interpolation,
+            )
+            for path in paths
+        ]
 
-        for frame, _ in self.frames:
+        for frame in self.frames:
             frame.parent = self
 
-        self.add_widget(self.frames[0][0])
+        if isinstance(frame_durations, (int, float)):
+            self.frame_durations = [frame_durations] * len(paths)
+        else:
+            self.frame_durations = frame_durations
+
+        self.loop = loop
+
+        self._current_frame = 0
+        self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+        self.add_widget(self.frames[0])
 
     @property
     def alpha(self):
         return self._alpha
 
     @alpha.setter
-    def alpha(self, new_alpha):
-        self._alpha = new_alpha
+    def alpha(self, alpha):
+        self._alpha = alpha
 
-        for frame, _ in self.frames:
-            frame.alpha = new_alpha
+        for frame in self.frames:
+            frame.alpha = alpha
 
     @property
     def interpolation(self):
         return self._interpolation
 
     @interpolation.setter
-    def interpolation(self, new_interpolation):
-        self._interpolation = new_interpolation
+    def interpolation(self, interpolation):
+        self._interpolation = interpolation
 
-        for frame, _ in self.frames:
-            frame.interpolation = new_interpolation
+        for frame in self.frames:
+            frame.interpolation = interpolation
+
+    @property
+    def current_frame_index(self):
+        return self._current_frame
 
     @property
     def current_frame(self):
-        return self.frames[self._current_frame][0]
+        return self.frames[self._current_frame]
 
     def resize(self, size):
-        for frame, _ in self.frames:
+        for frame in self.frames:
             frame.resize(size)
 
         super().resize(size)
 
     async def _play_animation(self):
         frames = self.frames
+        frame_durations = self.frame_durations
         children = self.children
 
         while True:
-            children[0], sleep = frames[self._current_frame]
+            children[0] = frames[self._current_frame]
 
             try:
-                await asyncio.sleep(sleep)
+                await asyncio.sleep(frame_durations[self._current_frame])
             except asyncio.CancelledError:
                 break
 
-            self._current_frame += 1
-            if self._current_frame >= len(frames):
-                self._current_frame = 0
+            if self._current_frame == len(frames) - 1 and not self.loop:
+                break
 
-                if not self.loop:
-                    break
+            self._current_frame = (self._current_frame + 1) % len(frames)
 
     def play(self):
         """
@@ -154,4 +138,4 @@ class Animation(GraphicWidget):
         """
         self.pause()
         self._current_frame = 0
-        self.children[0] = self.frames[0][0]
+        self.children[0] = self.frames[0]

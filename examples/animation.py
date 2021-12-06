@@ -1,10 +1,9 @@
-import asyncio
 from pathlib import Path
 
 from nurses_2.app import App
-from nurses_2.widgets.animation import Animation, Interpolation
+from nurses_2.widgets.animation import Animation
+from nurses_2.widgets.graphic_widget import Interpolation
 from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior, AutoSizeBehavior
-
 
 PATH_TO_FRAMES_DIR = Path("frames") / "caveman"
 
