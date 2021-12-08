@@ -1,7 +1,7 @@
 import numpy as np
 from wcwidth import wcswidth
 
-from ..colors import WHITE_ON_BLACK
+from ..colors import WHITE_ON_BLACK, ColorPair
 from ..data_structures import Point, Size
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import CanvasView, Rect
@@ -33,11 +33,11 @@ class Widget:
         size: Size=Size(10, 10),
         pos: Point=Point(0, 0),
         *,
-        is_transparent=False,
-        is_visible=True,
-        is_enabled=True,
-        default_char=" ",
-        default_color_pair=WHITE_ON_BLACK,
+        is_transparent: bool=False,
+        is_visible: bool=True,
+        is_enabled: bool=True,
+        default_char: str=" ",
+        default_color_pair: ColorPair=WHITE_ON_BLACK,
     ):
         self._size = Size(*size)
         self.pos = pos
@@ -202,6 +202,37 @@ class Widget:
         Vectorized `wcswidth`.
         """
         return wcswidth(char)
+
+    def add_border(self, tl="┌", tr="┐", bl="└", br="┘", v="│", h="─", color_pair: ColorPair=None):
+        """
+        Add a border. Default border characters are light box-drawing characters.
+
+        Parameters
+        ----------
+        tl : str, default: "┌"
+            Top left character.
+        tr : str, default: "┐"
+            Top right character.
+        bl : str, default: "└"
+            Bottom left character.
+        br : str, default: "┘"
+            Bottom right character.
+        v : str, default: "│"
+            Vertical character.
+        h : str, default: "─"
+            Horizontal character.
+        color_pair : ColorPair | None, default: None
+            Border color pair if not None.
+        """
+        canvas = self.canvas
+
+        canvas[(0, 0, -1, -1), (0, -1, 0, -1)] = tl, tr, bl, br
+        canvas[1: -1, [0, -1]] = v
+        canvas[[0, -1], 1: -1] = h
+
+        if color_pair is not None:
+            self.colors[[0, -1]] = color_pair
+            self.colors[:, [0, -1]] = color_pair
 
     def normalize_canvas(self):
         """

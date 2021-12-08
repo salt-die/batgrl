@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from ..clamp import clamp
-from ..colors import BLACK_ON_BLACK, AColor
+from ..colors import BLACK_ON_BLACK, AColor, ColorPair
 from ..data_structures import Point, Size
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Rect
@@ -42,13 +42,13 @@ class GraphicWidget(Widget):
         size: Size=Size(10, 10),
         pos: Point=Point(0, 0),
         *,
-        is_transparent=True,
-        is_visible=True,
-        is_enabled=True,
-        default_char="▀",
-        default_color_pair=BLACK_ON_BLACK,
-        alpha=1.0,
-        interpolation=Interpolation.LINEAR,
+        is_transparent: bool=True,
+        is_visible: bool=True,
+        is_enabled: bool=True,
+        default_char: str="▀",
+        default_color_pair: ColorPair=BLACK_ON_BLACK,
+        alpha: float=1.0,
+        interpolation: Interpolation=Interpolation.LINEAR,
     ):
         self._size = h, w = size
         self.pos = pos
@@ -93,11 +93,14 @@ class GraphicWidget(Widget):
         for child in self.children:
             child.update_geometry()
 
+    def add_border(self, tl=None, tr=None, bl=None, br=None, v=None, h=None, color_pair=None):
+        raise NotImplementedError("`add_border` not implemented for GraphicWidgets")
+
     def normalize_canvas(self):
-        raise NotImplementedError
+        raise NotImplementedError("`normalize_canvas` not implemented for GraphicWidgets")
 
     def get_view(self):
-        raise NotImplementedError
+        raise NotImplementedError("`get_view` not implemented for GraphicWidgets")
 
     def render(self, canvas_view, colors_view, rect: Rect):
         """
