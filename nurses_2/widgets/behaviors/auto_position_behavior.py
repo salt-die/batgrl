@@ -85,7 +85,7 @@ class AutoPositionBehavior:
             case Anchor.TOP_CENTER:
                 offset_top, offset_left = 0, self.center.x
             case Anchor.BOTTOM_CENTER:
-                offset_top, offset_left = self.bottom, self.center.y
+                offset_top, offset_left = self.bottom, self.center.x
             case Anchor.LEFT_CENTER:
                 offset_top, offset_left = self.center.y, 0
             case Anchor.RIGHT_CENTER:
