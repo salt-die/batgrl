@@ -75,21 +75,21 @@ class AutoPositionBehavior:
             case Anchor.TOP_LEFT:
                 offset_top, offset_left = 0, 0
             case Anchor.TOP_RIGHT:
-                offset_top, offset_left = 0, self.right
+                offset_top, offset_left = 0, self.width
             case Anchor.BOTTOM_LEFT:
-                offset_top, offset_left = self.bottom, 0
+                offset_top, offset_left = self.height, 0
             case Anchor.BOTTOM_RIGHT:
-                offset_top, offset_left = self.bottom, self.right
+                offset_top, offset_left = self.height, self.width
             case Anchor.CENTER:
                 offset_top, offset_left = self.center
             case Anchor.TOP_CENTER:
                 offset_top, offset_left = 0, self.center.x
             case Anchor.BOTTOM_CENTER:
-                offset_top, offset_left = self.bottom, self.center.x
+                offset_top, offset_left = self.height, self.center.x
             case Anchor.LEFT_CENTER:
                 offset_top, offset_left = self.center.y, 0
             case Anchor.RIGHT_CENTER:
-                offset_top, offset_left = self.center.y, self.right
+                offset_top, offset_left = self.center.y, self.width
 
         h, w = self.parent.size
         top_hint, left_hint = self.pos_hint
