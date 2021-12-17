@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from ..clamp import clamp
-from ..colors import BLACK_ON_BLACK, AColor, ColorPair
+from ..colors import AColor
 from ..data_structures import Point, Size
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Rect
@@ -31,6 +31,8 @@ class GraphicWidget(Widget):
     ----------
     is_transparent : bool, default: True
         If False the underlying texture's alpha channel is ignored.
+    default_color : AColor, default: AColor(0, 0, 0, 0)
+        Default texture color.
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
         value. (0 <= alpha <= 1.0)
@@ -46,7 +48,7 @@ class GraphicWidget(Widget):
         is_visible: bool=True,
         is_enabled: bool=True,
         default_char: str="▀",
-        default_color_pair: ColorPair=BLACK_ON_BLACK,
+        default_color: AColor=AColor(0, 0, 0, 0),
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,
     ):
@@ -57,7 +59,7 @@ class GraphicWidget(Widget):
         self.is_enabled = is_enabled
 
         self.default_char = default_char
-        self.default_color_pair = default_color_pair
+        self.default_color = default_color
 
         self.interpolation = interpolation
         self.alpha = clamp(alpha, 0, 1.0)
@@ -67,17 +69,17 @@ class GraphicWidget(Widget):
 
         self.texture = np.full(
             (2 * h, w, 4),
-            self.default_bg_color,
+            default_color,
             dtype=np.uint8,
         )
 
     @property
     def default_fg_color(self):
-        return AColor(*self.default_color_pair.fg_color)
+        raise NotImplementedError()
 
     @property
     def default_bg_color(self):
-        return AColor(*self.default_color_pair.bg_color)
+        raise NotImplementedError()
 
     def resize(self, size: Size):
         """
