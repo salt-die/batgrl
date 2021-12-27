@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from nurses_2.colors import color_pair
+from nurses_2.colors import color_pair, ABLACK
 from nurses_2.io import MouseButton
 from nurses_2.data_structures import Size
 from nurses_2.widgets.graphic_widget import GraphicWidget
@@ -24,7 +24,7 @@ class Sandbox(AutoPositionBehavior, GraphicWidget):
     Sandbox widget.
     """
     def __init__(self, size: Size):
-        super().__init__(size=size, anchor=Anchor.CENTER, pos_hint=(.5, .5))
+        super().__init__(size=size, anchor=Anchor.CENTER, pos_hint=(.5, .5), default_color=ABLACK)
 
         # Build array of particles -- Initially all Air
         self.world = world = np.full((2 * self.height, self.width), None, dtype=object)

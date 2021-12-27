@@ -58,7 +58,7 @@ class Fluid(GraphicWidget):
         pressure = solver.state[:, -1]
         alphas = (255 / (1 + np.e**-(.125 * pressure))).astype(int)
 
-        self.texture[:] = self.default_bg_color
+        self.texture[:] = self.default_color
         self.texture[ys, xs, :3] = WATER_COLOR
         self.texture[ys, xs, 3] = alphas
 

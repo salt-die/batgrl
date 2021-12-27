@@ -7,7 +7,7 @@ import numpy as np
 from scipy.ndimage import map_coordinates
 from scipy.ndimage.filters import convolve
 
-from nurses_2.colors import rainbow_gradient
+from nurses_2.colors import rainbow_gradient, ABLACK
 from nurses_2.io import MouseEvent, MouseButton
 from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.graphic_widget import GraphicWidget
@@ -35,8 +35,8 @@ EPSILON = np.finfo(float).eps
 
 
 class StableFluid(AutoSizeBehavior, GraphicWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, default_color=ABLACK, **kwargs):
+        super().__init__(*args, default_color=default_color, **kwargs)
         self.resize(self.size)
 
     def resize(self, size):

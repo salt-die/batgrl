@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from ..clamp import clamp
-from ..colors import AColor
+from ..colors import AColor, TRANSPARENT
 from ..data_structures import Point, Size
 from .widget import Widget, overlapping_region
 from .widget_data_structures import Rect
@@ -48,7 +48,7 @@ class GraphicWidget(Widget):
         is_visible: bool=True,
         is_enabled: bool=True,
         default_char: str="▀",
-        default_color: AColor=AColor(0, 0, 0, 0),
+        default_color: AColor=TRANSPARENT,
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,
     ):

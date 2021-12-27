@@ -2,13 +2,13 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.colors import BLACK, Color, gradient
+from nurses_2.colors import BLACK, Color, gradient, ColorPair
 from nurses_2.widgets import Widget
 from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")
-GRADIENT = gradient((*DARK_PURPLE, *BLACK), (*LIGHT_PURPLE, *BLACK), 9)
+GRADIENT = gradient(ColorPair.from_colors(DARK_PURPLE, BLACK), ColorPair.from_colors(LIGHT_PURPLE, BLACK), 9)
 LINE_GLOW_DURATION = .09
 
 ONE = """

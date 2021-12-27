@@ -2,7 +2,7 @@ import asyncio
 
 import cv2
 
-from nurses_2.colors import WHITE_ON_BLACK
+from nurses_2.colors import AWHITE, AColor
 from nurses_2.data_structures import Size
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
@@ -11,11 +11,12 @@ from .mesh import Mesh
 
 
 class Cloth(GraphicWidget):
-    def __init__(self, *args, mesh_size: Size, scale=5, default_color_pair=WHITE_ON_BLACK, **kwargs):
-        super().__init__(*args, default_color_pair=default_color_pair, **kwargs)
+    def __init__(self, *args, mesh_size: Size, scale=5, mesh_color: AColor=AWHITE, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.mesh = Mesh(mesh_size, nanchors=5)
         self.scale = scale
+        self.mesh_color = mesh_color
 
         self.resize(self.size)  # Creates empty texture where links are drawn.
 
@@ -30,9 +31,9 @@ class Cloth(GraphicWidget):
         Step the mesh and draw a line for each link.
         """
         texture = self.texture
-        texture[:] = self.default_bg_color
+        texture[:] = self.default_color
 
-        color = self.default_fg_color
+        color = self.mesh_color
         mesh = self.mesh
         scale = self.scale
         h_offset = self.h_offset

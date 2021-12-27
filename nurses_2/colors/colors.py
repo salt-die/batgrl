@@ -20,6 +20,7 @@ ABLUE    = AColor(  0,   0, 255)
 AYELLOW  = AColor(255, 255,   0)
 ACYAN    = AColor(  0, 255, 255)
 AMAGENTA = AColor(255,   0, 255)
+TRANSPARENT = AColor(0, 0, 0, 0)
 
 WHITE_ON_BLACK = color_pair(WHITE, BLACK)
 BLACK_ON_BLACK = color_pair(BLACK, BLACK)
