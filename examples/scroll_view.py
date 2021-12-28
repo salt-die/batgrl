@@ -30,7 +30,7 @@ class MyApp(App):
         scroll_view = ScrollView(size=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
         scroll_view.add_widget(big_widget)
 
-        self.root.add_widget(scroll_view)
+        self.add_widget(scroll_view)
 
 
 MyApp().run()

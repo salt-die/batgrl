@@ -29,7 +29,7 @@ class PasteWidget(TextWidget):
 
 class MyApp(App):
     async def on_start(self):
-        self.root.add_widget(PasteWidget(size=(10, 100)))
+        self.add_widget(PasteWidget(size=(10, 100)))
 
 
 MyApp().run()

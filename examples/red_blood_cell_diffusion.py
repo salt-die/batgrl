@@ -110,7 +110,7 @@ class RedBloodCellDiffusion(HalfBlockField):
 class RedBloodCellDiffusionApp(App):
     async def on_start(self):
         simulation = RedBloodCellDiffusion(rng=np.random.default_rng(), size_hint=(1.0, 1.0))
-        self.root.add_widgets(Circle(size_hint=(1.0, 1.0)), simulation)
+        self.add_widgets(Circle(size_hint=(1.0, 1.0)), simulation)
         simulation.run()
 
 

@@ -164,7 +164,7 @@ class MyApp(App):
         for y, row in enumerate(LOGO.splitlines()):
             for x, char in enumerate(row):
                 if char != " ":
-                    self.root.add_widget(
+                    self.add_widget(
                         CodeRain(
                             target_row=y,
                             column=x,

@@ -9,7 +9,7 @@ PATH_TO_BACKGROUND = Path("..") / "frames" / "night"
 
 class RubiksApp(App):
     async def on_start(self):
-        self.root.add_widget(
+        self.add_widget(
             RubiksCube(
                 background_image_path=PATH_TO_BACKGROUND,
                 size_hint=(1.0, 1.0),

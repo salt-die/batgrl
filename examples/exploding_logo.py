@@ -202,7 +202,7 @@ class MyApp(App):
             if char != " "
         )
 
-        self.root.add_widget(field)
+        self.add_widget(field)
 
 
 MyApp().run()

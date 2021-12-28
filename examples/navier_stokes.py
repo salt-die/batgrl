@@ -103,7 +103,7 @@ class Fluid(GraphicWidget):
 
 class FluidApp(App):
     async def on_start(self):
-        self.root.add_widget(Fluid(size_hint=(1.0, 1.0)))
+        self.add_widget(Fluid(size_hint=(1.0, 1.0)))
 
 
 FluidApp().run()

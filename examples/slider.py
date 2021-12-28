@@ -37,7 +37,7 @@ class MyApp(App):
             fill_color=RED,
             default_color_pair=GREEN_ON_BLACK,
         )
-        self.root.add_widgets(display, slider_1, slider_2)
+        self.add_widgets(display, slider_1, slider_2)
 
 
 MyApp().run()

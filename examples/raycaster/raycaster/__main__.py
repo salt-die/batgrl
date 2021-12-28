@@ -73,7 +73,7 @@ class MyApp(App):
             size_hint=(1.0, 1.0),
         )
 
-        self.root.add_widget(raycaster)
+        self.add_widget(raycaster)
 
 
 MyApp().run()

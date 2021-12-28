@@ -25,7 +25,7 @@ class MyApp(App):
             alpha=.8,
         )
 
-        self.root.add_widgets(background, logo_flat, logo_full)
+        self.add_widgets(background, logo_flat, logo_full)
 
 
 MyApp().run()

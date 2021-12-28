@@ -17,7 +17,7 @@ class MyApp(App):
             interpolation=Interpolation.NEAREST,
         )
 
-        self.root.add_widget(animation)
+        self.add_widget(animation)
         animation.play()
 
 

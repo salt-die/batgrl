@@ -24,6 +24,6 @@ class ShowKeyPress(TextWidget):
 
 class MyApp(App):
     async def on_start(self):
-        self.root.add_widget(ShowKeyPress(size_hint=(1.0, 1.0)))
+        self.add_widget(ShowKeyPress(size_hint=(1.0, 1.0)))
 
 MyApp().run()

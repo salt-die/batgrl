@@ -188,7 +188,7 @@ class MyApp(App):
             adjust_SPIKYF,
         )
 
-        self.root.add_widget(container)
+        self.add_widget(container)
 
 
 MyApp().run()

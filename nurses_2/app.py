@@ -121,3 +121,9 @@ class App(ABC):
                     auto_render(),
                     self.on_start(),
                 )
+
+    def add_widget(self, widget):
+        self.root.add_widget(widget)
+
+    def add_widgets(self, *widgets):
+        self.root.add_widgets(widgets)

@@ -3,11 +3,11 @@ import numpy as np
 from ..colors import Color
 from ..data_structures import Point, Size
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
-from .text_widget import TextWidget, intersection
+from ._widget_base import _WidgetBase, intersection
 from .widget_data_structures import Rect
 
 
-class _Root(TextWidget):
+class _Root(_WidgetBase):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
@@ -53,16 +53,16 @@ class _Root(TextWidget):
         return 0
 
     @property
-    def pos(self):
-        return Point(0, 0)
-
-    @property
     def absolute_pos(self):
         return Point(0, 0)
 
     @property
     def is_transparent(self):
         return False
+
+    @property
+    def is_visible(self):
+        return True
 
     @property
     def is_enabled(self):
@@ -146,16 +146,28 @@ class _Root(TextWidget):
         """
         Dispatch key press to descendants until handled.
         """
-        any(widget.dispatch_press(key_press_event) for widget in reversed(self.children) if widget.is_enabled)
+        any(
+            widget.dispatch_press(key_press_event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        )
 
     def dispatch_click(self, mouse_event: MouseEvent):
         """
         Dispatch mouse event to descendents until handled.
         """
-        any(widget.dispatch_click(mouse_event) for widget in reversed(self.children) if widget.is_enabled)
+        any(
+            widget.dispatch_click(mouse_event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        )
 
     def dispatch_paste(self, paste_event: PasteEvent):
         """
         Dispatch paste event to descendents until handled.
         """
-        any(widget.dispatch_paste(paste_event) for widget in reversed(self.children) if widget.is_enabled)
+        any(
+            widget.dispatch_paste(paste_event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        )

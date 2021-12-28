@@ -25,7 +25,7 @@ class MyApp(App):
         parallax_00 = Parallax(size=SIZE, layers=load_layers(IMAGES_DIR / "parallax_00"))
         parallax_01 = Parallax(pos=(0, 50), size=SIZE, layers=load_layers(IMAGES_DIR / "parallax_01"))
 
-        self.root.add_widgets(parallax_00, parallax_01)
+        self.add_widgets(parallax_00, parallax_01)
 
         async def circle_movement():
             angles = np.linspace(0, 2 * np.pi, 400)

@@ -6,7 +6,7 @@ from .minesweeper import MineSweeper
 
 class MineSweeperApp(App):
     async def on_start(self):
-        self.root.add_widget(
+        self.add_widget(
             MineSweeper(pos_hint=(.5, .5), anchor=Anchor.CENTER)
         )
 

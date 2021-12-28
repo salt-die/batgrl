@@ -165,7 +165,7 @@ class MyApp(App):
                         )
                     )
 
-        self.root.add_widgets(background, field)
+        self.add_widgets(background, field)
 
 
 MyApp().run()

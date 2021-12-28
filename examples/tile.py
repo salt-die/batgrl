@@ -16,7 +16,7 @@ class MyApp(App):
 
         tiled_image = TiledImage(size=(25, 50), tile=tile_1)
 
-        self.root.add_widget(tiled_image)
+        self.add_widget(tiled_image)
 
         await asyncio.sleep(5)
 

@@ -93,7 +93,7 @@ class MyApp(App):
         widget_1 = BouncingWidget(size=(20, 20), is_transparent=True)
         widget_2 = BouncingWidget(size=(10, 30), is_transparent=True)
 
-        self.root.add_widgets(widget_1, widget_2, info_display)
+        self.add_widgets(widget_1, widget_2, info_display)
 
         widget_1.start(
             velocity=1 + 1j,

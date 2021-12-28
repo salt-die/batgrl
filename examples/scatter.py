@@ -45,7 +45,7 @@ class MyApp(App):
         draggable_scatter = DraggableScatter(size=(30, 100), default_color_pair=25)
         draggable_scatter.add_widgets(widget_1, widget_2)
 
-        self.root.add_widget(draggable_scatter)
+        self.add_widget(draggable_scatter)
 
 
 MyApp().run()

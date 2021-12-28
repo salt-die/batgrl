@@ -70,7 +70,7 @@ class MyApp(App):
 
         button = MyButton(info_display, pos=(10, 10))
 
-        self.root.add_widgets(button, info_display)
+        self.add_widgets(button, info_display)
 
 
 MyApp().run()

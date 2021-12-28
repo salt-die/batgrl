@@ -15,7 +15,7 @@ class MyApp(App):
     async def on_start(self):
         player = VideoPlayer(source=PATH_TO_VIDEO, size_hint=(1.0, 1.0))
 
-        self.root.add_widget(player)
+        self.add_widget(player)
         player.play()
 
 
