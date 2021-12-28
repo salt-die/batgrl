@@ -126,4 +126,4 @@ class App(ABC):
         self.root.add_widget(widget)
 
     def add_widgets(self, *widgets):
-        self.root.add_widgets(widgets)
+        self.root.add_widgets(*widgets)
