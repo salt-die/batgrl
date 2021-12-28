@@ -3,11 +3,11 @@ import numpy as np
 from ..colors import Color
 from ..data_structures import Point, Size
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
-from .widget import Widget, overlapping_region
+from .text_widget import TextWidget, intersection
 from .widget_data_structures import Rect
 
 
-class _Root(Widget):
+class _Root(TextWidget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
@@ -80,8 +80,8 @@ class _Root(Widget):
     def app(self):
         return self._app
 
-    def absolute_to_relative_coords(self, coord):
-        return coord
+    def to_local(self, point):
+        return point
 
     def render(self):
         """
@@ -106,7 +106,6 @@ class _Root(Widget):
         canvas[:] = self.default_char
         colors[:, :] = self.default_color_pair
 
-        overlap = overlapping_region
         height, width = canvas.shape
         rect = Rect(
             0,
@@ -121,7 +120,7 @@ class _Root(Widget):
             if not child.is_visible or not child.is_enabled:
                 continue
 
-            if region := overlap(rect, child):
+            if region := intersection(rect, child):
                 dest_slice, child_rect = region
                 child.render(canvas[dest_slice], colors[dest_slice], child_rect)
 

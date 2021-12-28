@@ -4,13 +4,13 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import color_pair, gradient, BLUE, WHITE, YELLOW
-from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors import ButtonBehavior
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
 
 WHITE_ON_BLUE = color_pair(WHITE, BLUE)
 WHITE_ON_YELLOW = color_pair(WHITE, YELLOW)
 
-class MyButton(ButtonBehavior, Widget):
+class MyButton(ButtonBehavior, TextWidget):
     GRADIENT = (
         gradient(WHITE_ON_YELLOW, WHITE_ON_BLUE, 10)
         + gradient(WHITE_ON_BLUE, WHITE_ON_YELLOW, 10)
@@ -61,7 +61,7 @@ class MyButton(ButtonBehavior, Widget):
 
 class MyApp(App):
     async def on_start(self):
-        info_display = Widget(size=(5, 50))
+        info_display = TextWidget(size=(5, 50))
         info_display.add_text("Waiting for input:", row=0)
         info_display.add_text("Position:", row=1)
         info_display.add_text("Event:", row=2)

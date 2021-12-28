@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .widget import Widget
+from .text_widget import TextWidget
 
 _TO_BIN = np.array(
     [
@@ -19,7 +19,7 @@ _TO_BIN.flags.writeable = False
 vectorized_chr = np.vectorize(chr)
 
 
-class BrailleImage(Widget):
+class BrailleImage(TextWidget):
     """
     An image painted with braille unicode characters.
 

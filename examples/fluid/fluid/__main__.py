@@ -3,9 +3,8 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import Color, ColorPair, BLACK, BLACK_ON_BLACK, WHITE_ON_BLACK
 from nurses_2.io import MouseButton
-from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors.auto_position_behavior import AutoPositionBehavior, Anchor
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor
 from nurses_2.widgets.slider import Slider
 
 from .sph import SPHSolver
@@ -32,12 +31,12 @@ class Fluid(GraphicWidget):
     def on_click(self, mouse_event):
         if (
             mouse_event.button is MouseButton.NO_BUTTON
-            or not self.collides_coords(mouse_event.position)
+            or not self.collides_point(mouse_event.position)
         ):
             return False
 
         # Apply a force from click to every particle in the solver.
-        my, mx = self.absolute_to_relative_coords(mouse_event.position)
+        my, mx = self.to_local(mouse_event.position)
 
         relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
 
@@ -65,16 +64,13 @@ class Fluid(GraphicWidget):
         return super().render(canvas_view, colors_view, rect)
 
 
-class AutoPositionWidget(AutoPositionBehavior, Widget):
-    ...
-
 
 class MyApp(App):
     async def on_start(self):
         WIDTH = 51
         HWIDTH = WIDTH // 2
 
-        container = AutoPositionWidget(
+        container = TextWidget(
             size=(26, WIDTH),
             pos_hint=(.5, .5),
             anchor=Anchor.CENTER,

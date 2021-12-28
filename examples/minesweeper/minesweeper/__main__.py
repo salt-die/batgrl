@@ -1,17 +1,13 @@
 from nurses_2.app import App
-from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior
+from nurses_2.widgets.widget_data_structures import Anchor
 
 from .minesweeper import MineSweeper
-
-
-class AutoPositionMineSweeper(AutoPositionBehavior, MineSweeper):
-    ...
 
 
 class MineSweeperApp(App):
     async def on_start(self):
         self.root.add_widget(
-            AutoPositionMineSweeper(pos_hint=(.5, .5), anchor=Anchor.CENTER)
+            MineSweeper(pos_hint=(.5, .5), anchor=Anchor.CENTER)
         )
 
 

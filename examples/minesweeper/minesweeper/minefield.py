@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 
 from nurses_2.io import MouseButton, MouseEventType
-from nurses_2.widgets.widget import overlapping_region
+from nurses_2.widgets.text_widget import intersection
 
 from .colors import *
 from .grid import Grid
@@ -48,7 +48,7 @@ class Minefield(Grid):
         if event_type not in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_UP):
             return False
 
-        if not self.collides_coords(position):
+        if not self.collides_point(position):
             if event_type == MouseEventType.MOUSE_UP and self._pressed_cell:
                 self._release()
 
@@ -88,7 +88,7 @@ class Minefield(Grid):
         """
         Return the cell-coordinates cooresponding to given mouse position.
         """
-        y, x = self.absolute_to_relative_coords(mouse_position)
+        y, x = self.to_local(mouse_position)
 
         if y == self.height - 1:
             y -= 1
@@ -229,12 +229,10 @@ class Minefield(Grid):
         canvas_view[visible] = source[visible]
         colors_view[visible] = self.colors[index_rect][visible]
 
-        overlap = overlapping_region
-
         for child in self.children:
             if not child.is_visible or not child.is_enabled:
                 continue
 
-            if region := overlap(rect, child):
+            if region := intersection(rect, child):
                 dest_slice, child_rect = region
                 child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)

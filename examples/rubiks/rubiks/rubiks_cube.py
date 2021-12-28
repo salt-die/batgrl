@@ -5,13 +5,13 @@ from random import randrange
 import numpy as np
 from numpy.linalg import norm
 
+from nurses_2.widgets.animation import Animation
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
 
 from . import rotation
 from .camera import Camera
 from .cube import Cube
-from .background import Background
 
 ROTATION_FRAMES = 15
 ROTATION_FRAME_DURATION = .08
@@ -26,6 +26,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         self,
         *args,
         aspect_ratio=True,
+        background_image_path,
         **kwargs
     ):
         super().__init__(*args, **kwargs)
@@ -43,7 +44,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         self._selected_row = self._selected_axis = 0
         self._select()
 
-        self.background = Background()
+        self.background = Animation(paths=background_image_path, is_enabled=False, size_hint=(1.0, 1.0))
         self.add_widget(self.background)
         self.background.play()
 

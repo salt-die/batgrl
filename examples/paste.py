@@ -4,10 +4,10 @@ Paste into the terminal to test paste dispatching.
 import asyncio
 
 from nurses_2.app import App
-from nurses_2.widgets import Widget
+from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.io import PasteEvent
 
-class PasteWidget(Widget):
+class PasteWidget(TextWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

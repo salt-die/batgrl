@@ -1,11 +1,11 @@
 from ...colors import WHITE_ON_BLACK
 from ...data_structures import Point, Size
 from ...io import MouseEvent, KeyPressEvent
-from ..widget import Widget
+from .._widget_base import _WidgetBase
 from ..widget_data_structures import Rect
 
 
-class ParticleField(Widget):
+class ParticleField(_WidgetBase):
     """
     A widget that only has `Particle` children.
 
@@ -17,27 +17,11 @@ class ParticleField(Widget):
     ------
     TypeError if `add_widget` argument is not an instance of `Particle`.
     """
-    def __init__(self, size=Size(10, 10), pos=Point(0, 0), *, is_visible=True, is_enabled=True):
-        self._size = size
-        self.top, self.left = pos
-        self.is_visible = is_visible
-        self.is_enabled = is_enabled
-
-        self.parent = None
-        self.children = [ ]
-
     def resize(self, size: Size):
         self._size = size
 
         for child in self.children:
             child.update_geometry()
-
-    def add_text(self, text, row=0, column=0):
-        raise NotImplemented
-
-    @property
-    def get_view(self):
-        raise NotImplemented
 
     def add_widget(self, widget):
         if not isinstance(widget, Particle):
@@ -151,11 +135,11 @@ class Particle:
     def right(self):
         return self.left + 1
 
-    def absolute_to_relative_coords(self, coords):
+    def to_local(self, coords):
         """
         Convert absolute coordinates to relative coordinates.
         """
-        y, x = self.parent.absolute_to_relative_coords(coords)
+        y, x = self.parent.to_local(coords)
         return y - self.top, x - self.left
 
     def on_press(self, key_press_event: KeyPressEvent):

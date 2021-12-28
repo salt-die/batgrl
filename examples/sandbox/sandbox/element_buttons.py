@@ -1,19 +1,14 @@
 from nurses_2.colors import color_pair, Color, BLACK
-from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors import ButtonBehavior, AutoPositionBehavior
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
 
 from .particles import Element
 
 MENU_BACKGROUND_COLOR = Color(222, 224, 127)  # Mustard
 
 
-class ElementDisplay(AutoPositionBehavior, Widget):
-    """
-    Display of currently selected element.
-    """
 
-
-class ElementButton(ButtonBehavior, Widget):
+class ElementButton(ButtonBehavior, TextWidget):
     """
     Button which selects an element when pressed and updates the element display.
     """
@@ -46,7 +41,7 @@ class ElementButton(ButtonBehavior, Widget):
         sandbox.display.add_text(f"{element.__name__:^{sandbox.display.width}}")
 
 
-class ButtonContainer(Widget):
+class ButtonContainer(TextWidget):
     """
     Container widget of `ElementButton`s.
     """
@@ -62,4 +57,4 @@ class ButtonContainer(Widget):
             self.add_widget(ElementButton(pos=(3 * i + 1, 2), element=element))
 
     def on_click(self, mouse_event):
-        return self.collides_coords(mouse_event.position)
+        return self.collides_point(mouse_event.position)

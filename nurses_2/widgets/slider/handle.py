@@ -1,10 +1,10 @@
 from ...colors import BLACK, color_pair
 from ...io import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
-from ..widget import Widget
+from ..text_widget import TextWidget
 
 
-class _Handle(GrabbableBehavior, Widget):
+class _Handle(GrabbableBehavior, TextWidget):
     """
     Vertical handle for horizontal slider.
     """
@@ -16,7 +16,7 @@ class _Handle(GrabbableBehavior, Widget):
         self.left = round(slider.proportion * slider.fill_width)
 
     def grab_update(self, mouse_event):
-        _, x = self.absolute_to_relative_coords(mouse_event.position)
+        _, x = self.to_local(mouse_event.position)
         dx = self.mouse_dx
         if dx > 0 and x < 0 or dx < 0 and x > 0:
             return

@@ -4,11 +4,11 @@ from ...clamp import clamp
 from ...colors import Color
 from ...data_structures import Point
 from ...io import MouseEventType
-from ..widget import Widget
+from ..text_widget import TextWidget
 from .handle import _Handle
 
 
-class Slider(Widget):
+class Slider(TextWidget):
     """
     A slider widget.
 
@@ -103,9 +103,9 @@ class Slider(Widget):
     def on_click(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.collides_coords(mouse_event.position)
+            and self.collides_point(mouse_event.position)
         ):
-            x = self.absolute_to_relative_coords(mouse_event.position).x
+            x = self.to_local(mouse_event.position).x
 
             self.proportion = x / self.fill_width
             self.handle.grab(mouse_event)

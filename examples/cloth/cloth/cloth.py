@@ -62,7 +62,7 @@ class Cloth(GraphicWidget):
         if mouse_event.button != MouseButton.LEFT:
             return False
 
-        mouse_pos = complex(*self.absolute_to_relative_coords(mouse_event.position))
+        mouse_pos = complex(*self.to_local(mouse_event.position))
         scale = self.scale
         h_offset = self.h_offset
 

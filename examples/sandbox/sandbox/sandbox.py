@@ -5,10 +5,10 @@ import numpy as np
 from nurses_2.colors import color_pair, ABLACK
 from nurses_2.io import MouseButton
 from nurses_2.data_structures import Size
+from nurses_2.widgets.text_widget import TextWidget, Anchor
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.behaviors import Anchor, AutoPositionBehavior
 
-from .element_buttons import MENU_BACKGROUND_COLOR, ElementDisplay, ButtonContainer
+from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air
 
 @partial(np.vectorize, otypes=[np.uint8, np.uint8, np.uint8])
@@ -19,7 +19,7 @@ def particles_to_colors(particle):
     return particle.COLOR
 
 
-class Sandbox(AutoPositionBehavior, GraphicWidget):
+class Sandbox(GraphicWidget):
     """
     Sandbox widget.
     """
@@ -33,7 +33,7 @@ class Sandbox(AutoPositionBehavior, GraphicWidget):
                 world[y, x] = Air(world, (y, x))
 
         # Add children widgets
-        self.display = ElementDisplay(
+        self.display = TextWidget(
             size=(1, 9),
             pos=(1, 0),
             anchor=Anchor.CENTER,
@@ -53,13 +53,13 @@ class Sandbox(AutoPositionBehavior, GraphicWidget):
     def on_click(self, mouse_event):
         if (
             mouse_event.button != MouseButton.LEFT
-            or not self.collides_coords(mouse_event.position)
+            or not self.collides_point(mouse_event.position)
         ):
             return
 
         world = self.world
         particle_type = self.particle_type
-        y, x = self.absolute_to_relative_coords(mouse_event.position)
+        y, x = self.to_local(mouse_event.position)
 
         world[2 * y, x].replace(particle_type)
         world[2 * y + 1, x].replace(particle_type)

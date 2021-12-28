@@ -1,10 +1,10 @@
 from ..clamp import clamp
 from ..io import MouseEventType
-from .widget import Widget
+from .text_widget import TextWidget
 from .behaviors.grabbable_behavior import GrabbableBehavior
 
 
-class Scatter(GrabbableBehavior, Widget):
+class Scatter(GrabbableBehavior, TextWidget):
     """
     A scatter widget. Any widget added to a Scatter can be translated by
     clicking it and dragging the mouse. Widgets will be brought to front when clicked.
@@ -25,11 +25,11 @@ class Scatter(GrabbableBehavior, Widget):
 
     def grab(self, mouse_event):
         for child in reversed(self.children):
-            if child.collides_coords(mouse_event.position):
+            if child.collides_point(mouse_event.position):
                 self._grabbed_child = child
 
                 if not self.disable_ptf:
-                    self.pull_to_front(child)
+                    child.pull_to_front()
 
                 super().grab(mouse_event)
                 return True

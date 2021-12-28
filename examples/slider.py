@@ -5,7 +5,7 @@ import asyncio
 
 from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, BLACK, RED, color_pair
-from nurses_2.widgets import Widget
+from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.slider import Slider
 
 GREEN_ON_BLACK = color_pair(GREEN, BLACK)
@@ -13,7 +13,7 @@ GREEN_ON_BLACK = color_pair(GREEN, BLACK)
 
 class MyApp(App):
     async def on_start(self):
-        display = Widget(size=(2, 30))
+        display = TextWidget(size=(2, 30))
         display.add_text("Slider 1 Value:", row=0)
         display.add_text("Slider 2 Value:", row=1)
 

@@ -1,10 +1,9 @@
 import asyncio
 
 from nurses_2.app import App
-from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors import AutoSizeBehavior
+from nurses_2.widgets.text_widget import TextWidget
 
-class ShowKeyPress(AutoSizeBehavior, Widget):
+class ShowKeyPress(TextWidget):
     current_row = 0
 
     def on_press(self, key_press_event):
@@ -25,6 +24,6 @@ class ShowKeyPress(AutoSizeBehavior, Widget):
 
 class MyApp(App):
     async def on_start(self):
-        self.root.add_widget(ShowKeyPress())
+        self.root.add_widget(ShowKeyPress(size_hint=(1.0, 1.0)))
 
 MyApp().run()

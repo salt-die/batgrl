@@ -44,7 +44,7 @@ class ButtonBehavior:
         if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
             if (
                 self.state == ButtonStates.NORMAL
-                and self.collides_coords(mouse_event.position)
+                and self.collides_point(mouse_event.position)
             ):
                 self._press()
                 return True
@@ -54,7 +54,7 @@ class ButtonBehavior:
         elif mouse_event.event_type == MouseEventType.MOUSE_UP:
             if (
                 self.state == ButtonStates.DOWN
-                and (self.always_release or self.collides_coords(mouse_event.position))
+                and (self.always_release or self.collides_point(mouse_event.position))
             ):
                 self._release()
                 self.on_release()

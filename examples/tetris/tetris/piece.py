@@ -1,11 +1,11 @@
 import numpy as np
 
-from nurses_2.widgets import Widget
+from nurses_2.widgets.text_widget import TextWidget
 
 from .tetrominoes import Orientation
 
 
-class Piece(Widget):
+class Piece(TextWidget):
     """
     A widget that renders a tetromino.
     """

@@ -18,7 +18,6 @@ from nurses_2.app import App
 from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 
 # Kernels
 CONVECTION = np.array([
@@ -49,7 +48,7 @@ def sigmoid(array):
     return 1 / (1 + np.e**-array)
 
 
-class Fluid(AutoSizeBehavior, GraphicWidget):
+class Fluid(GraphicWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.resize(self.size)
@@ -65,11 +64,11 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
         super().resize(size)
 
     def on_click(self, mouse_event):
-        if not self.collides_coords(mouse_event.position):
+        if not self.collides_point(mouse_event.position):
             return False
 
         if mouse_event.button is not MouseButton.NO_BUTTON:
-            y, x = self.absolute_to_relative_coords(mouse_event.position)
+            y, x = self.to_local(mouse_event.position)
 
             Y = 2 * y + 2
 
@@ -104,7 +103,7 @@ class Fluid(AutoSizeBehavior, GraphicWidget):
 
 class FluidApp(App):
     async def on_start(self):
-        self.root.add_widget(Fluid())
+        self.root.add_widget(Fluid(size_hint=(1.0, 1.0)))
 
 
 FluidApp().run()

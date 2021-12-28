@@ -17,7 +17,7 @@ from nurses_2.colors import (
     WHITE_ON_BLACK,
     BLACK_ON_BLACK,
 )
-from nurses_2.widgets import Widget
+from nurses_2.widgets.text_widget import TextWidget
 
 LOGO = """
                    _.gj8888888lkoz.,_
@@ -74,7 +74,7 @@ def generate_delays():
     return np.sort(random, axis=0)[::-1]
 
 
-class CodeRain(Widget):
+class CodeRain(TextWidget):
     GRADIENT = (
         gradient(BLACK_ON_BLACK, GREEN_ON_BLACK, CODE_RAIN_HEIGHT // 2)
         + gradient(GREEN_ON_BLACK, WHITE_ON_BLACK, CODE_RAIN_HEIGHT // 2)
@@ -123,7 +123,7 @@ class CodeRain(Widget):
         """
         await asyncio.sleep(self.delay)
 
-        self.parent.pull_to_front(self)
+        self.pull_to_front()
 
         for _ in range(self.target_row + 1):
             self.canvas[:-1] = self.canvas[1:]

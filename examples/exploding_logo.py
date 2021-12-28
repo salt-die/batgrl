@@ -13,7 +13,6 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import foreground_rainbow
 from nurses_2.io import MouseButton
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.particle_field import Particle, ParticleField
 
 LOGO = """
@@ -99,7 +98,7 @@ class PokeParticle(Particle):
 
     def on_click(self, mouse_event):
         if mouse_event.button == MouseButton.LEFT:
-            if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
+            if dyx := -complex(*self.to_local(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
 
                 if self._update_task.done():
@@ -186,10 +185,6 @@ class PokeParticle(Particle):
                 return
 
 
-class AutoSizeParticleField(AutoSizeBehavior, ParticleField):
-    pass
-
-
 class MyApp(App):
     async def on_start(self):
         # Create array of starting colors of particles
@@ -197,7 +192,7 @@ class MyApp(App):
         colors[-7:] = colors[-13: -7, -41:] = YELLOW_INDEX
         colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW_INDEX
 
-        field = AutoSizeParticleField()
+        field = ParticleField(size_hint=(1.0, 1.0))
 
         # Create a Particle for each non-space character in the logo
         field.add_widgets(

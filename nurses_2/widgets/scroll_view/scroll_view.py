@@ -2,12 +2,12 @@ from ...clamp import clamp
 from ...colors import Color
 from ...io import KeyPressEvent, MouseEventType, MouseEvent
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
-from ..widget import Widget, overlapping_region
+from ..text_widget import TextWidget, intersection
 from .scrollbars import _HorizontalBar, _VerticalBar
 from .scrollbar_data_structures import ScrollBarSettings
 
 
-class ScrollView(GrabbableBehavior, Widget):
+class ScrollView(GrabbableBehavior, TextWidget):
     """
     A scrollable view widget.
 
@@ -178,23 +178,21 @@ class ScrollView(GrabbableBehavior, Widget):
             canvas_view[:] = self.canvas[index_rect]
             colors_view[:] = self.colors[index_rect]
 
-        overlap = overlapping_region
-
         view = self._view
         if view is not None and view.is_enabled:
             view.top = self.view_top
             view.left = self.view_left
 
-            if region := overlap(rect, view):  # Can this condition can fail?
+            if region := intersection(rect, view):  # Can this condition can fail?
                 dest_slice, view_rect = region
                 view.render(canvas_view[dest_slice], colors_view[dest_slice], view_rect)
 
         vertical_bar, horizontal_bar = self.children
-        if self.show_vertical_bar and (region := overlap(rect, vertical_bar)):
+        if self.show_vertical_bar and (region := intersection(rect, vertical_bar)):
             dest_slice, vertical_bar_rect = region
             vertical_bar.render(canvas_view[dest_slice], colors_view[dest_slice], vertical_bar_rect)
 
-        if self.show_horizontal_bar and (region := overlap(rect, horizontal_bar)):
+        if self.show_horizontal_bar and (region := intersection(rect, horizontal_bar)):
             dest_slice, horizontal_bar_rect = region
             horizontal_bar.render(canvas_view[dest_slice], colors_view[dest_slice], horizontal_bar_rect)
 
@@ -260,7 +258,7 @@ class ScrollView(GrabbableBehavior, Widget):
         return self.on_click(mouse_event)
 
     def on_click(self, mouse_event: MouseEvent):
-        if self.collides_coords(mouse_event.position):
+        if self.collides_point(mouse_event.position):
             match mouse_event.event_type:
                 case MouseEventType.SCROLL_UP:
                     self._scroll_up()

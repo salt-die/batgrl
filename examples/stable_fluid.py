@@ -9,7 +9,6 @@ from scipy.ndimage.filters import convolve
 
 from nurses_2.colors import rainbow_gradient, ABLACK
 from nurses_2.io import MouseEvent, MouseButton
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.app import App
 
@@ -34,7 +33,7 @@ RAINBOW_COLORS = cycle(rainbow_gradient(100))
 EPSILON = np.finfo(float).eps
 
 
-class StableFluid(AutoSizeBehavior, GraphicWidget):
+class StableFluid(GraphicWidget):
     def __init__(self, *args, default_color=ABLACK, **kwargs):
         super().__init__(*args, default_color=default_color, **kwargs)
         self.resize(self.size)
@@ -54,11 +53,11 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
         """
         if (
             mouse_event.button is MouseButton.NO_BUTTON
-            or not self.collides_coords(mouse_event.position)
+            or not self.collides_point(mouse_event.position)
         ):
             return False
 
-        y, x = self.absolute_to_relative_coords(mouse_event.position)
+        y, x = self.to_local(mouse_event.position)
         y *= 2
 
         ys, xs = self.indices
@@ -150,7 +149,7 @@ class StableFluid(AutoSizeBehavior, GraphicWidget):
 
 class StableFluidApp(App):
     async def on_start(self):
-        self.root.add_widget(StableFluid())
+        self.root.add_widget(StableFluid(size_hint=(1.0, 1.0)))
 
 
 StableFluidApp().run()

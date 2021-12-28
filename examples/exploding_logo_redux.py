@@ -12,7 +12,6 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
 from nurses_2.widgets.image import Image
 
@@ -65,7 +64,7 @@ class PokeParticle(HalfBlockParticle):
 
     def on_click(self, mouse_event):
         if mouse_event.button == MouseButton.LEFT:
-            if dyx := -complex(*self.absolute_to_relative_coords(mouse_event.position)):
+            if dyx := -complex(*self.to_local(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
 
                 if self._update_task.done():
@@ -139,21 +138,14 @@ class PokeParticle(HalfBlockParticle):
                 return
 
 
-class AutoSizeHalfBlockField(AutoSizeBehavior, HalfBlockField):
-    pass
-
-
-class AutoSizeImage(AutoSizeBehavior, Image):
-    pass
-
 
 class MyApp(App):
     async def on_start(self):
-        background = AutoSizeImage(path=PATH_TO_BACKGROUND)
+        background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))
 
         logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL)
 
-        field = AutoSizeHalfBlockField()
+        field = HalfBlockField(size_hint=(1.0, 1.0))
 
         for y in range(logo.height):
             for x in range(logo.width):

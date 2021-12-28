@@ -1,11 +1,9 @@
 import asyncio
-from random import random, randrange
-from itertools import cycle
 
 import numpy as np
 
 from nurses_2.widgets.behaviors.effects import Effect
-from nurses_2.widgets import Widget
+from nurses_2.widgets.text_widget import TextWidget
 
 
 class LevelGlowEffect(Effect):
@@ -46,7 +44,7 @@ class LevelGlowEffect(Effect):
         colors_view[..., :3][visible] = (colors_view[..., :3][visible] * (1 - alpha) + alpha * 255).astype(int)
 
 
-class MatrixWidget(LevelGlowEffect, Widget):
+class MatrixWidget(LevelGlowEffect, TextWidget):
     """
     Visual representation of tetromino matrix.
     """

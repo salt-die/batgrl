@@ -8,9 +8,9 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, WHITE, gradient, color_pair
-from nurses_2.widgets import Widget
-from nurses_2.widgets.scatter import Scatter
 from nurses_2.widgets.behaviors.draggable_behavior import DraggableBehavior
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.scatter import Scatter
 
 WHITE_ON_GREEN = color_pair(WHITE, GREEN)
 WHITE_ON_BLUE = color_pair(WHITE, BLUE)
@@ -20,7 +20,7 @@ class DraggableScatter(DraggableBehavior, Scatter):
     ...
 
 
-class PrettyWidget(Widget):
+class PrettyWidget(TextWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         grad = gradient(WHITE_ON_GREEN, WHITE_ON_BLUE, (self.width >> 1) - 2)

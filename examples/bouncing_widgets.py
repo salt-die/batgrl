@@ -8,7 +8,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import gradient, background_rainbow, Color, color_pair
 from nurses_2.io import MouseEventType
-from nurses_2.widgets import Widget
+from nurses_2.widgets.text_widget import TextWidget
 
 ORANGE = Color(255, 140, 66)
 GREY = Color(108, 142, 173)
@@ -21,7 +21,7 @@ ORANGE_TO_TEAL = gradient(start=ORANGE_ON_GREY, end=TEAL_ON_PURPLE, ncolors=10)
 WHITE_ON_RAINBOW = background_rainbow(ncolors=10)
 
 
-class BouncingWidget(Widget):
+class BouncingWidget(TextWidget):
     def start(
         self,
         velocity,
@@ -77,14 +77,14 @@ class BouncingWidget(Widget):
 
     def on_click(self, mouse_event):
         if mouse_event.event_type == MouseEventType.MOUSE_UP:
-            relative_coords = self.absolute_to_relative_coords(mouse_event.position)
-            self.coord_view.add_text("({:<4}, {:<4})".format(*relative_coords))
-            self.collides_view.add_text("yes" if self.collides_coords(mouse_event.position) else "no ")
+            point = self.to_local(mouse_event.position)
+            self.coord_view.add_text("({:<4}, {:<4})".format(*point))
+            self.collides_view.add_text("yes" if self.collides_point(mouse_event.position) else "no ")
 
 
 class MyApp(App):
     async def on_start(self):
-        info_display = Widget(size=(3, 54))
+        info_display = TextWidget(size=(3, 54))
         info_display.add_text("Click relative to widget_1: ", row=0)
         info_display.add_text("Click relative to widget_2: ", row=1)
         info_display.add_text("Collides: ", row=(0, 1), column=41)

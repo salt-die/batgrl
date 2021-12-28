@@ -1,6 +1,6 @@
 from ...colors import BLACK, color_pair
 from ...io import MouseEventType
-from ..widget import Widget
+from ..text_widget import TextWidget
 from .indicators import _VerticalIndicator, _HorizontalIndicator
 from .scrollbar_data_structures import ScrollBarSettings
 
@@ -8,7 +8,7 @@ VBAR_WIDTH = 2
 HBAR_HEIGHT = 1
 
 
-class _VerticalBar(Widget):
+class _VerticalBar(TextWidget):
     def __init__(self, settings: ScrollBarSettings, parent):
         bar_color, *indicator_settings = settings
 
@@ -42,9 +42,9 @@ class _VerticalBar(Widget):
     def on_click(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.collides_coords(mouse_event.position)
+            and self.collides_point(mouse_event.position)
         ):
-            y = self.absolute_to_relative_coords(mouse_event.position).y
+            y = self.to_local(mouse_event.position).y
             sv = self.parent
 
             if not (y >= self.height - HBAR_HEIGHT and sv.show_horizontal_bar):
@@ -54,7 +54,7 @@ class _VerticalBar(Widget):
             return True
 
 
-class _HorizontalBar(Widget):
+class _HorizontalBar(TextWidget):
     def __init__(self, settings: ScrollBarSettings, parent):
         bar_color, *indicator_settings = settings
 
@@ -88,9 +88,9 @@ class _HorizontalBar(Widget):
     def on_click(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.collides_coords(mouse_event.position)
+            and self.collides_point(mouse_event.position)
         ):
-            x = self.absolute_to_relative_coords(mouse_event.position).x
+            x = self.to_local(mouse_event.position).x
             sv = self.parent
 
             if not (x >= self.width - VBAR_WIDTH and sv.show_vertical_bar):

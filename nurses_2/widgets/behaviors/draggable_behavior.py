@@ -43,7 +43,7 @@ class DraggableBehavior(GrabbableBehavior):
             self._is_grabbed = True
 
         if not self.disable_ptf:
-            self.parent.pull_to_front(self)
+            self.pull_to_front()
 
         return True
 

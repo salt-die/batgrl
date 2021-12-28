@@ -3,8 +3,8 @@ import asyncio
 import numpy as np
 import cv2
 
-from nurses_2.widgets import Widget
-from nurses_2.widgets.behaviors import AutoPositionBehavior, Anchor, ButtonBehavior
+from nurses_2.widgets.text_widget import TextWidget, Anchor
+from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
 from nurses_2.data_structures import Point
 
 from .colors import COUNT, FLAG_COLOR, DATA_BAR
@@ -23,11 +23,7 @@ V_SPACING = Grid.V_SPACING
 H_SPACING = Grid.H_SPACING
 
 
-class AutoPositionWidget(AutoPositionBehavior, Widget):
-    ...
-
-
-class ResetButton(ButtonBehavior, AutoPositionBehavior, Widget):
+class ResetButton(ButtonBehavior, TextWidget):
     def update_normal(self):
         self.add_text(HAPPY)
 
@@ -38,7 +34,7 @@ class ResetButton(ButtonBehavior, AutoPositionBehavior, Widget):
         self.parent.reset()
 
 
-class MineSweeper(Widget):
+class MineSweeper(TextWidget):
     def __init__(self, pos=Point(0, 0), **kwargs):
         h, w = SIZE
 
@@ -49,7 +45,7 @@ class MineSweeper(Widget):
             **kwargs
         )
 
-        self.timer = AutoPositionWidget(
+        self.timer = TextWidget(
             size=(1, 20),
             anchor=Anchor.TOP_RIGHT,
             pos_hint=(None, .95),
@@ -58,7 +54,7 @@ class MineSweeper(Widget):
         self.timer.add_text("Time Elapsed:")
         self._elapsed_time = 0
 
-        self.mines_left = AutoPositionWidget(
+        self.mines_left = TextWidget(
             size=(1, 10),
             pos_hint=(None, .05),
             default_color_pair=DATA_BAR,

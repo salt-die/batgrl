@@ -1,5 +1,7 @@
 from typing import NamedTuple
 
+__all__ = "Point", "Size"
+
 
 class Point(NamedTuple):
     y: int

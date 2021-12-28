@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.widgets.raycaster import RayCaster, Sprite
 
 from .animated_texture import AnimatedTexture
@@ -52,16 +51,12 @@ def load_image(path):
     return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
 
 
-class AutoSizeCaster(AutoSizeBehavior, RayCaster):
-    pass
-
-
 class MyApp(App):
     async def on_start(self):
         sources = sorted(FRAMES_DIR.iterdir(), key=lambda file: file.name)
         textures = list(map(load_image, sources))
 
-        raycaster = AutoSizeCaster(
+        raycaster = RayCaster(
             map=MAP,
             camera=Camera(),
             wall_textures=[ AnimatedTexture(textures) ],
@@ -75,6 +70,7 @@ class MyApp(App):
             sprite_textures=[ load_image(SPRITE) ],
             ceiling=load_image(CEILING_PATH),
             floor=load_image(FLOOR_PATH),
+            size_hint=(1.0, 1.0),
         )
 
         self.root.add_widget(raycaster)

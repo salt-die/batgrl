@@ -6,7 +6,8 @@ from random import shuffle
 
 import numpy as np
 
-from nurses_2.widgets import Widget
+from nurses_2.colors import ABLACK
+from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.image import Image
 
 from .color_scheme import CLEAR_LINE_FLASH_COLOR
@@ -52,7 +53,7 @@ def setup_background(widget):
 
 
 class Tetris(Image):
-    def __init__(self, matrix_size=(22, 10), arika=True):
+    def __init__(self, matrix_size=(22, 10), arika=True, **kwargs):
         ##################################################################
         # Tetris Layout includes the matrix (where pieces stack) and two #
         # displays for held piece and next piece. Piece displays have    #
@@ -82,6 +83,7 @@ class Tetris(Image):
         super().__init__(
             size=(h, 4 * SPACING + 2 * bw + 2 * w),
             path=TETRIS_BACKGROUND_PATH,
+            **kwargs,
         )
         self.tetromino_generator = tetromino_generator(ARIKA_TETROMINOS if arika else TETROMINOS)
         self._level = 0
@@ -92,40 +94,40 @@ class Tetris(Image):
         self.is_paused = False
 
         # Setup HELD display
-        ###############################################
-        held_border = Widget(size=bsize, pos=(t, l))  #
-        held_border.add_text(f"{'HOLD':^{bsize[1]}}") #
-        held_space = Widget(**display_geometry)       #
-                                                      #
-        held_border.add_widget(held_space)            #
-        ###############################################
+        ##################################################
+        held_border = TextWidget(size=bsize, pos=(t, l)) #
+        held_border.add_text(f"{'HOLD':^{bsize[1]}}")    #
+        held_space = TextWidget(**display_geometry)      #
+                                                         #
+        held_border.add_widget(held_space)               #
+        ##################################################
 
         # Setup NEXT display
-        ###############################################
-        next_border = Widget(size=bsize, pos=(t, r))  #
-        next_border.add_text(f"{'NEXT':^{bsize[1]}}") #
-        next_space = Widget(**display_geometry)       #
-                                                      #
-        next_border.add_widget(next_space)            #
-        ###############################################
+        ##################################################
+        next_border = TextWidget(size=bsize, pos=(t, r)) #
+        next_border.add_text(f"{'NEXT':^{bsize[1]}}")    #
+        next_space = TextWidget(**display_geometry)      #
+                                                         #
+        next_border.add_widget(next_space)               #
+        ##################################################
 
         # Setup SCORE display
-        #################################################
-        score_border = Widget(size=bsize, pos=(b, l))   #
-        score_border.add_text(f"{'SCORE':^{bsize[1]}}") #
-        self.score_display = Widget(**display_geometry) #
-                                                        #
-        score_border.add_widget(self.score_display)     #
-        #################################################
+        #####################################################
+        score_border = TextWidget(size=bsize, pos=(b, l))   #
+        score_border.add_text(f"{'SCORE':^{bsize[1]}}")     #
+        self.score_display = TextWidget(**display_geometry) #
+                                                            #
+        score_border.add_widget(self.score_display)         #
+        #####################################################
 
         # Setup LEVEL Display
-        #################################################
-        level_border = Widget(size=bsize, pos=(b, r))   #
-        level_border.add_text(f"{'LEVEL':^{bsize[1]}}") #
-        self.level_display = Widget(**display_geometry) #
-                                                        #
-        level_border.add_widget(self.level_display)     #
-        #################################################
+        #####################################################
+        level_border = TextWidget(size=bsize, pos=(b, r))   #
+        level_border.add_text(f"{'LEVEL':^{bsize[1]}}")     #
+        self.level_display = TextWidget(**display_geometry) #
+                                                            #
+        level_border.add_widget(self.level_display)         #
+        #####################################################
 
         self.add_widgets(held_border, next_border, score_border, level_border)
 
@@ -153,13 +155,17 @@ class Tetris(Image):
 
         self.add_widget(self.matrix_widget)
 
-        # Darken background behind matrix.
-        left = self.matrix_widget.left
-        right = self.matrix_widget.right
-        self.texture[:, left: right, :3] //= 3
-
         self.modal_screen = ModalScreen()
         self.add_widget(self.modal_screen)
+
+    def resize(self, size):
+        super().resize(size)
+
+        if hasattr(self, "matrix_widget"):
+            # Darken background behind matrix.
+            left = self.matrix_widget.left
+            right = self.matrix_widget.right
+            self.texture[:, left: right, :3] //= 3
 
     def new_game(self):
         self._game_task.cancel()

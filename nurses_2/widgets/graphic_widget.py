@@ -5,9 +5,9 @@ import numpy as np
 
 from ..clamp import clamp
 from ..colors import AColor, TRANSPARENT
-from ..data_structures import Point, Size
-from .widget import Widget, overlapping_region
-from .widget_data_structures import Rect
+from ..data_structures import *
+from .widget_data_structures import *
+from ._widget_base import _WidgetBase, intersection
 
 
 class Interpolation(IntEnum):
@@ -18,14 +18,12 @@ class Interpolation(IntEnum):
     LANCZOS = cv2.INTER_LANCZOS4
 
 
-class GraphicWidget(Widget):
+class GraphicWidget(_WidgetBase):
     """
     Base for graphic widgets.
 
     Graphic widgets are widgets that are rendered entirely with the upper half block character, "▀".
-    Graphic widgets' color information is stored in a (2 * height, width, 4)-shaped array, `texture`.
-    `texture` can be treated as a uint8 RGBA image texture. Unlike its parent, Widget, GraphicWidget
-    does not have `canvas` or `colors` attributes.
+    Graphic widgets' color information is stored in a unint8 RGBA array, `texture`.
 
     Parameters
     ----------
@@ -41,51 +39,31 @@ class GraphicWidget(Widget):
     """
     def __init__(
         self,
-        size: Size=Size(10, 10),
-        pos: Point=Point(0, 0),
-        *,
-        is_transparent: bool=True,
-        is_visible: bool=True,
-        is_enabled: bool=True,
-        default_char: str="▀",
         default_color: AColor=TRANSPARENT,
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,
+        **kwargs,
     ):
-        self._size = h, w = size
-        self.pos = pos
-        self.is_transparent = is_transparent
-        self.is_visible = is_visible
-        self.is_enabled = is_enabled
+        super().__init__(**kwargs)
 
-        self.default_char = default_char
         self.default_color = default_color
-
         self.interpolation = interpolation
         self.alpha = clamp(alpha, 0, 1.0)
 
-        self.parent = None
-        self.children = [ ]
-
+        h, w = self.size
         self.texture = np.full(
             (2 * h, w, 4),
             default_color,
             dtype=np.uint8,
         )
 
-    @property
-    def default_fg_color(self):
-        raise NotImplementedError()
-
-    @property
-    def default_bg_color(self):
-        raise NotImplementedError()
-
     def resize(self, size: Size):
         """
         Resize widget.
         """
-        self._size = h, w = size
+        h, w = size
+        self._size = Size(h, w)
+
         self.texture = cv2.resize(
             self.texture,
             (w, 2 * h),
@@ -95,22 +73,13 @@ class GraphicWidget(Widget):
         for child in self.children:
             child.update_geometry()
 
-    def add_border(self, tl=None, tr=None, bl=None, br=None, v=None, h=None, color_pair=None):
-        raise NotImplementedError("`add_border` not implemented for GraphicWidgets")
-
-    def normalize_canvas(self):
-        raise NotImplementedError("`normalize_canvas` not implemented for GraphicWidgets")
-
-    def get_view(self):
-        raise NotImplementedError("`get_view` not implemented for GraphicWidgets")
-
     def render(self, canvas_view, colors_view, rect: Rect):
         """
         Paint region given by rect into canvas_view and colors_view.
         """
         t, l, b, r, _, _ = rect
 
-        canvas_view[:] = self.default_char
+        canvas_view[:] = "▀"
 
         alpha = self.alpha
 
@@ -143,6 +112,6 @@ class GraphicWidget(Widget):
             if not child.is_visible or not child.is_enabled:
                 continue
 
-            if region := overlapping_region(rect, child):
+            if region := intersection(rect, child):
                 dest_slice, child_rect = region
                 child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)

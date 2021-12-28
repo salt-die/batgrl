@@ -6,7 +6,6 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
-from nurses_2.widgets.behaviors import AutoSizeBehavior
 from nurses_2.colors import AColor
 
 RED = AColor(255, 0, 0)
@@ -23,7 +22,7 @@ def add_polar_vectors(r1, a1, r2, a2):
     return r, a
 
 
-class Circle(AutoSizeBehavior, GraphicWidget):
+class Circle(GraphicWidget):
     """
     A circle drawn with cv2.
     """
@@ -37,7 +36,7 @@ class Circle(AutoSizeBehavior, GraphicWidget):
         cv2.circle(self.texture, (w // 2, h - h % 2), self.radius, DARK_RED, thickness=-1)
 
 
-class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
+class RedBloodCellDiffusion(HalfBlockField):
     """
     Brownian motion with a barrier.
     """
@@ -110,8 +109,8 @@ class RedBloodCellDiffusion(AutoSizeBehavior, HalfBlockField):
 
 class RedBloodCellDiffusionApp(App):
     async def on_start(self):
-        simulation = RedBloodCellDiffusion(rng=np.random.default_rng())
-        self.root.add_widgets(Circle(), simulation)
+        simulation = RedBloodCellDiffusion(rng=np.random.default_rng(), size_hint=(1.0, 1.0))
+        self.root.add_widgets(Circle(size_hint=(1.0, 1.0)), simulation)
         simulation.run()
 
 
