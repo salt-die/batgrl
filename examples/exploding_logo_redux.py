@@ -12,7 +12,10 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
-from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
+from nurses_2.widgets.particle_field.graphic_field import (
+    GraphicParticleField,
+    GraphicParticle,
+)
 from nurses_2.widgets.image import Image
 
 HEIGHT, WIDTH = 18, 36
@@ -27,9 +30,9 @@ PATH_TO_BACKGROUND = IMAGE_DIR / "background.png"
 PATH_TO_LOGO_FULL = IMAGE_DIR / "python_discord_logo.png"
 
 
-class PokeParticle(HalfBlockParticle):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class PokeParticle(GraphicParticle):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.middle_row = self.middle_column = 0
         self.original_position = self.pos
@@ -145,7 +148,7 @@ class MyApp(App):
 
         logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL)
 
-        field = HalfBlockField(size_hint=(1.0, 1.0))
+        field = GraphicParticleField(size_hint=(1.0, 1.0))
 
         for y in range(logo.height):
             for x in range(logo.width):

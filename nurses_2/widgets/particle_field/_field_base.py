@@ -1,21 +1,11 @@
-from ...colors import WHITE_ON_BLACK
 from ...data_structures import Point, Size
-from ...io import MouseEvent, KeyPressEvent
+from ...io import MouseEvent, KeyPressEvent, PasteEvent
 from .._widget_base import _WidgetBase
-from ..widget_data_structures import Rect
 
 
-class ParticleField(_WidgetBase):
+class _FieldBase(_WidgetBase):
     """
-    A widget that only has `Particle` children.
-
-    Notes
-    -----
-    ParticleFields are an optimized way to render many 1x1 TUI elements.
-
-    Raises
-    ------
-    TypeError if `add_widget` argument is not an instance of `Particle`.
+    A widget that specializes in rendering 1x1 particles.
     """
     def resize(self, size: Size):
         self._size = size
@@ -24,8 +14,10 @@ class ParticleField(_WidgetBase):
             child.update_geometry()
 
     def add_widget(self, widget):
-        if not isinstance(widget, Particle):
-            raise TypeError(f"expected Particle, got {type(widget).__name__}")
+        if not isinstance(widget, self._child_type):
+            raise TypeError(
+                f"expected {self._child_type.__name__}, got {type(widget).__name__}"
+            )
 
         super().add_widget(widget)
 
@@ -41,24 +33,6 @@ class ParticleField(_WidgetBase):
         """
         yield from self.children
 
-    def render(self, canvas_view, colors_view, rect: Rect):
-        """
-        Paint region given by rect into canvas_view and colors_view.
-        """
-        t, l, _, _, h, w = rect
-
-        for child in self.children:
-            pos = top, left = child.top - t, child.left - l
-
-            if (
-                child.is_visible
-                and not (child.is_transparent and child.char == " ")
-                and 0 <= top < h
-                and 0 <= left < w
-            ):
-                canvas_view[pos] = child.char
-                colors_view[pos] = child.color
-
     def dispatch_press(self, key_press_event: KeyPressEvent):
         """
         Dispatch key press to children.
@@ -68,7 +42,9 @@ class ParticleField(_WidgetBase):
             self.on_press(key_press_event)
             or any(
                 particle.on_press(key_press_event)
-                for particle in reversed(self.children) if particle.is_visible)
+                for particle in reversed(self.children)
+                if particle.is_enabled
+            )
         )
 
     def dispatch_click(self, mouse_event: MouseEvent):
@@ -80,31 +56,42 @@ class ParticleField(_WidgetBase):
             self.on_click(mouse_event)
             or any(
                 particle.on_click(mouse_event)
-                for particle in reversed(self.children) if particle.is_visible)
+                for particle in reversed(self.children)
+                if particle.is_enabled
+            )
+        )
+
+    def dispatch_paste(self, paste_event: PasteEvent):
+        # Note this dispatching is in reverse order from widget base.
+        return (
+            self.on_paste(mouse_event)
+            or any(
+                particle.on_paste(mouse_event)
+                for particle in reversed(self.children)
+                if particle.is_enabled
+            )
         )
 
 
-class Particle:
+class _ParticleBase:
     """
-    A 1x1 TUI element that's Widget-like, except it has no render method.
-    Particles require a `ParticleField` parent to be rendered.
+    Base for 1x1 text or graphic elements.
     """
     def __init__(
         self,
-        pos=Point(0, 0),
         *,
-        char=" ",
-        color=WHITE_ON_BLACK,
+        pos=Point(0, 0),
         is_transparent=False,
         is_visible=True,
+        is_enabled=True,
     ):
-        self.char = char
-        self.color = color
+        self.parent = None
 
         self.top, self.left = pos
+
         self.is_transparent = is_transparent
         self.is_visible = is_visible
-        self.parent = None
+        self.is_enabled = is_enabled
 
     def update_geometry(self):
         """
@@ -151,3 +138,6 @@ class Particle:
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
         """
+
+
+_FieldBase._child_type = _ParticleBase

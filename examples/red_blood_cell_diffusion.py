@@ -5,10 +5,12 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.particle_field import HalfBlockField, HalfBlockParticle
-from nurses_2.colors import AColor
+from nurses_2.widgets.particle_field.graphic_field import (
+    GraphicParticleField,
+    GraphicParticle,
+)
+from nurses_2.colors import ARED, AColor
 
-RED = AColor(255, 0, 0)
 DARK_RED = AColor.from_hex("701402")
 
 def add_polar_vectors(r1, a1, r2, a2):
@@ -26,8 +28,8 @@ class Circle(GraphicWidget):
     """
     A circle drawn with cv2.
     """
-    def __init__(self, *args, radius=10, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, radius=10, **kwargs):
+        super().__init__(**kwargs)
         self.radius = radius
 
     def update_geometry(self):
@@ -36,13 +38,12 @@ class Circle(GraphicWidget):
         cv2.circle(self.texture, (w // 2, h - h % 2), self.radius, DARK_RED, thickness=-1)
 
 
-class RedBloodCellDiffusion(HalfBlockField):
+class RedBloodCellDiffusion(GraphicParticleField):
     """
     Brownian motion with a barrier.
     """
     def __init__(
         self,
-        *args,
         rng,
         nparticles=100,
         barrier_radius=10.0,
@@ -50,7 +51,8 @@ class RedBloodCellDiffusion(HalfBlockField):
         step_distance=.2,
         **kwargs,
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
+
         self.rng = rng
 
         self._radii = np.sqrt(rng.uniform(size=nparticles)) * barrier_radius / 5
@@ -61,7 +63,7 @@ class RedBloodCellDiffusion(HalfBlockField):
         self.step_distance = step_distance
 
         for _ in range(nparticles):
-            self.add_widget(HalfBlockParticle(color=RED))
+            self.add_widget(GraphicParticle(color=ARED))
 
     def run(self):
         asyncio.create_task(self.step_forever())
