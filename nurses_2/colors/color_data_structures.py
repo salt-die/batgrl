@@ -22,7 +22,8 @@ class Color(NamedTuple):
     def from_hex(cls, hexcode: str):
         hexcode = hexcode.removeprefix("#")
 
-        assert len(hexcode) == 6, f"{hexcode} has bad length"
+        if len(hexcode) != 6:
+            raise ValueError(f"{hexcode} has bad length")
 
         return cls(
             int(hexcode[:2], 16),
@@ -44,7 +45,8 @@ class AColor(NamedTuple):
     def from_hex(cls, hexcode: str):
         hexcode = hexcode.removeprefix("#")
 
-        assert len(hexcode) in (6, 8), f"{hexcode} has bad length"
+        if len(hexcode) not in (6, 8):
+            raise ValueError(f"{hexcode} has bad length")
 
         if len(hexcode) == 6:
             return cls(
