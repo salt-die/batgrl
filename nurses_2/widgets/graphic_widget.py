@@ -31,6 +31,14 @@ class GraphicWidget(_WidgetBase):
         Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
+    size_hint : SizeHint, default: SizeHint(None, None)
+        Proportion of parent's height and width. Non-None values will have
+        precedent over `size`.
+    pos_hint : PosHint, default: PosHint(None, None)
+        Position as a proportion of parent's height and width. Non-None values
+        will have precedent over `pos`.
+    anchor : Anchor, default: Anchor.TOP_LEFT
+        Specifies which part of the widget is aligned with the `pos_hint`.
     is_transparent : bool, default: True
         If False the underlying texture's alpha channel is ignored.
     is_visible : bool, default: True
