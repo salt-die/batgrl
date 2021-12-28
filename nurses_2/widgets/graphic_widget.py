@@ -23,12 +23,20 @@ class GraphicWidget(_WidgetBase):
     Base for graphic widgets.
 
     Graphic widgets are widgets that are rendered entirely with the upper half block character, "▀".
-    Graphic widgets' color information is stored in a unint8 RGBA array, `texture`.
+    Graphic widgets' color information is stored in a uint8 RGBA array, `texture`.
 
     Parameters
     ----------
+    size : Size, default: Size(10, 10)
+        Size of widget.
+    pos : Point, default: Point(0, 0)
+        Position of upper-left corner in parent.
     is_transparent : bool, default: True
         If False the underlying texture's alpha channel is ignored.
+    is_visible : bool, default: True
+        If false, widget won't be painted, but still dispatched.
+    is_enabled : bool, default: True
+        If false, widget won't be painted or dispatched.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -39,7 +47,7 @@ class GraphicWidget(_WidgetBase):
     """
     def __init__(
         self,
-        is_transparent=True,
+        is_transparent: bool=True,
         default_color: AColor=TRANSPARENT,
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,

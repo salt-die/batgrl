@@ -34,8 +34,8 @@ EPSILON = np.finfo(float).eps
 
 
 class StableFluid(GraphicWidget):
-    def __init__(self, *args, default_color=ABLACK, **kwargs):
-        super().__init__(*args, default_color=default_color, **kwargs)
+    def __init__(self, default_color=ABLACK, **kwargs):
+        super().__init__(default_color=default_color, **kwargs)
         self.resize(self.size)
 
     def resize(self, size):

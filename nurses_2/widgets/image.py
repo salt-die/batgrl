@@ -21,11 +21,11 @@ class Image(GraphicWidget):
     Updating the path immediately reloads the image.
     """
     def __init__(self,
-        *args,
+        *,
         path: Path,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
         self.path = path
 
     @property

@@ -49,8 +49,8 @@ def sigmoid(array):
 
 
 class Fluid(GraphicWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.resize(self.size)
 
     def resize(self, size):

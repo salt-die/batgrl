@@ -16,12 +16,12 @@ class Slider(TextWidget):
     ----------
     width : int
         Width of the slider.
-    pos : Point, default: Point(0, 0)
-        Top-left location of the slider.
     min : float
         Minimum value.
     max : float
         Maximum value.
+    pos : Point, default: Point(0, 0)
+        Top-left location of the slider.
     proportion : float, default: 0.0
         Starting proportion of slider.
     handle_color : Color | None, default: None
@@ -31,16 +31,15 @@ class Slider(TextWidget):
     slider_enabled : bool, default: True
         Allow dragging handle.
     callback : Callable | None, default: None
-        Single argument callable that takes the new value of slider. Called
-        when slider value is updated.
+        Single argument callable called with new value of slider when slider is updated.
     """
     def __init__(
         self,
-        width: int,
-        pos: Point=Point(0, 0),
         *,
-        min,
-        max,
+        width: int,
+        min: float,
+        max: float,
+        pos: Point=Point(0, 0),
         proportion=0.0,
         handle_color: Color | None=None,
         fill_color: Color | None=None,
@@ -51,7 +50,7 @@ class Slider(TextWidget):
         ):
         super().__init__(size=(1, width), pos=pos, default_char=default_char, **kwargs)
 
-        if min < max:
+        if min >= max:
             raise ValueError(f"{min=} >= {max=}")
 
         self.min = min
@@ -63,7 +62,7 @@ class Slider(TextWidget):
 
         self.fill_color = fill_color or self.default_fg_color
 
-        self.handle = _Handle(handle_color or self.default_fg_color)
+        self.handle = _Handle(color=handle_color or self.default_fg_color)
         self.add_widget(self.handle)
         self.proportion = proportion
 

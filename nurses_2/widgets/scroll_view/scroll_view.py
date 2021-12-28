@@ -53,7 +53,6 @@ class ScrollView(GrabbableBehavior, TextWidget):
 
     def __init__(
         self,
-        *args,
         allow_vertical_scroll=True,
         allow_horizontal_scroll=True,
         show_vertical_bar=True,
@@ -66,7 +65,7 @@ class ScrollView(GrabbableBehavior, TextWidget):
         horizontal_scrollbar: ScrollBarSettings=DEFAULT_SCROLLBAR_SETTINGS,
         **kwargs,
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
         self.allow_vertical_scroll = allow_vertical_scroll
         self.allow_horizontal_scroll = allow_horizontal_scroll
         self.is_grabbable = is_grabbable

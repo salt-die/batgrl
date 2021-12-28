@@ -23,8 +23,8 @@ class ButtonBehavior:
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     """
-    def __init__(self, *args, always_release=False, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, always_release=False, **kwargs):
+        super().__init__(**kwargs)
 
         self.always_release = always_release
         self._release()

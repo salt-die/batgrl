@@ -28,8 +28,8 @@ class BrailleImage(TextWidget):
     path : pathlib.Path
         Path to image.
     """
-    def __init__(self, *args, path: Path, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, path: Path, **kwargs):
+        super().__init__(**kwargs)
         self.path = path
 
     @property

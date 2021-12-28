@@ -8,8 +8,8 @@ from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.io import PasteEvent
 
 class PasteWidget(TextWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self._clear_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 

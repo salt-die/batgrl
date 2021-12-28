@@ -9,12 +9,6 @@ class TiledImage(GraphicWidget):
     """
     A tiled image.
 
-    Notes
-    -----
-    Updating the following properties immediately reloads the tiled widget:
-        * tile
-        * allow_partial_tiling
-
     Parameters
     ----------
     tile : Image
@@ -23,19 +17,18 @@ class TiledImage(GraphicWidget):
         If false, `size` will be extended so that there are no partial tiles.
         This forces the widget's height and width to be multiples of the tile's
         height and width.
+
+    Notes
+    -----
+    Updating `tile` or `allow_partial_tiling` immediately reloads the tiled widget.
     """
-    def __init__(self, *args, tile: GraphicWidget, allow_partial_tiling=True, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, tile: GraphicWidget, allow_partial_tiling=True, **kwargs):
+        super().__init__(**kwargs)
 
         self._tile = tile
         self._allow_partial_tiling = allow_partial_tiling
 
         self.resize(self.size)
-
-    def _load_texture(self):
-        """
-        Texture is set in `resize` from tile.
-        """
 
     @property
     def tile(self):

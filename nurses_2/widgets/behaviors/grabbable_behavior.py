@@ -23,8 +23,8 @@ class GrabbableBehavior:
     returns None). False will signal that a grabbable behavior further up the mro can try
     to handle one of these methods.
     """
-    def __init__(self, *args, is_grabbable=True, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, is_grabbable=True, **kwargs):
+        super().__init__(**kwargs)
 
         self.is_grabbable = is_grabbable
         self._is_grabbed = False

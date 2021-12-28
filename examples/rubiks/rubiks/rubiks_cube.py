@@ -24,12 +24,12 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
     """
     def __init__(
         self,
-        *args,
+        *,
         aspect_ratio=True,
         background_image_path,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         self._ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
 

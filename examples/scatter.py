@@ -21,8 +21,8 @@ class DraggableScatter(DraggableBehavior, Scatter):
 
 
 class PrettyWidget(TextWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         grad = gradient(WHITE_ON_GREEN, WHITE_ON_BLUE, (self.width >> 1) - 2)
 
         self.colors[:] = 50

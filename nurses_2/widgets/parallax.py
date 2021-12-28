@@ -19,8 +19,8 @@ class Parallax(GraphicWidget):
         `horizontal_offset` of the parallax. Default speeds are `1/(N - i)`
         where `N` is the number of layers and `i` is the index of a layer.
     """
-    def __init__(self, *args, layers: Sequence[GraphicWidget], speeds: Sequence[float] | None=None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, layers: Sequence[GraphicWidget], speeds: Sequence[float] | None=None, **kwargs):
+        super().__init__(**kwargs)
 
         self.layers = layers
 

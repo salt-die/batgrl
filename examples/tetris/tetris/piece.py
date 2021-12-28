@@ -9,8 +9,8 @@ class Piece(TextWidget):
     """
     A widget that renders a tetromino.
     """
-    def __init__(self, *args, is_transparent=True, is_enabled=False, **kwargs):
-        super().__init__(*args, is_transparent=is_transparent, is_enabled=is_enabled, **kwargs)
+    def __init__(self, *, is_transparent=True, is_enabled=False, **kwargs):
+        super().__init__(is_transparent=is_transparent, is_enabled=is_enabled, **kwargs)
 
     @property
     def tetromino(self):

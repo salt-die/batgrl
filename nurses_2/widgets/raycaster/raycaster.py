@@ -39,7 +39,7 @@ class RayCaster(GraphicWidget):
 
     def __init__(
         self,
-        *args,
+        *,
         map: Map,
         camera: Camera,
         wall_textures: list[Texture] | None,
@@ -52,7 +52,7 @@ class RayCaster(GraphicWidget):
         floor_color: Color=BLACK,
         **kwargs,
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         self.map = map
         self.camera = camera

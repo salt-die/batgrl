@@ -23,7 +23,7 @@ class Animation(GraphicWidget):
     """
     def __init__(
         self,
-        *args,
+        *,
         paths: Path | Iterable[Path],
         frame_durations: float | Sequence[float]=1/12,
         loop: bool=True,
@@ -33,7 +33,7 @@ class Animation(GraphicWidget):
         # also update frames. Dummy frames are needed.
         self.frames = ()
 
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         if isinstance(paths, Path):
             paths = sorted(

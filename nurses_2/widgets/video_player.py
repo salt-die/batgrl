@@ -19,8 +19,8 @@ class VideoPlayer(GraphicWidget):
     source : pathlib.Path | str | int
         A path to video, URL to video stream, or capturing device (by index).
     """
-    def __init__(self, *args, source: Path | str | int, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, source: Path | str | int, **kwargs):
+        super().__init__(**kwargs)
 
         self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task

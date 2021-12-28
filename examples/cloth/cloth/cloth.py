@@ -11,8 +11,8 @@ from .mesh import Mesh
 
 
 class Cloth(GraphicWidget):
-    def __init__(self, *args, mesh_size: Size, scale=5, mesh_color: AColor=AWHITE, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, mesh_size: Size, scale=5, mesh_color: AColor=AWHITE, **kwargs):
+        super().__init__(**kwargs)
 
         self.mesh = Mesh(mesh_size, nanchors=5)
         self.scale = scale

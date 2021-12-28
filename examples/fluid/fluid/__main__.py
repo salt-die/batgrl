@@ -15,8 +15,8 @@ WATER_ON_BLACK = ColorPair.from_colors(WATER_COLOR, BLACK)
 
 
 class Fluid(GraphicWidget):
-    def __init__(self, *args, nparticles=1000, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, nparticles=1000, **kwargs):
+        super().__init__(**kwargs)
         y, x = self.size
         self.sph_solver = SPHSolver((2 * y - 1, x - 1), nparticles)
 

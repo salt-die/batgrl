@@ -16,8 +16,8 @@ class Scatter(GrabbableBehavior, TextWidget):
     disable_ptf : bool, default: False
         If true, widgets won't be pulled-to-front when clicked.
     """
-    def __init__(self, *args, disable_oob=False, disable_ptf=False, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *, disable_oob=False, disable_ptf=False, **kwargs):
+        super().__init__(**kwargs)
         self.disable_oob = disable_oob
         self.disable_ptf = disable_ptf
 

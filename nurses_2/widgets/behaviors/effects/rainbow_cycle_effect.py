@@ -22,14 +22,13 @@ class RainbowCycleEffect(Effect):
     """
     def __init__(
         self,
-        *args,
         ncolors=20,
         cycle_speed=1/12,
         enable_foreground_rainbow=False,
         enable_background_rainbow=True,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         self._rainbow = cycle(rainbow_gradient(ncolors))
         self._current_color = next(self._rainbow)

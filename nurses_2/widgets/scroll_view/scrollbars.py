@@ -9,7 +9,7 @@ HBAR_HEIGHT = 1
 
 
 class _VerticalBar(TextWidget):
-    def __init__(self, settings: ScrollBarSettings, parent):
+    def __init__(self, *, settings: ScrollBarSettings, parent):
         bar_color, *indicator_settings = settings
 
         super().__init__(default_color_pair=color_pair(BLACK, bar_color))
@@ -55,7 +55,7 @@ class _VerticalBar(TextWidget):
 
 
 class _HorizontalBar(TextWidget):
-    def __init__(self, settings: ScrollBarSettings, parent):
+    def __init__(self, *, settings: ScrollBarSettings, parent):
         bar_color, *indicator_settings = settings
 
         super().__init__(default_color_pair=color_pair(BLACK, bar_color))

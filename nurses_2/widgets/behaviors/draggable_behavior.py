@@ -19,14 +19,14 @@ class DraggableBehavior(GrabbableBehavior):
     """
     def __init__(
         self,
-        *args,
+        *,
         disable_oob=False,
         disable_ptf=False,
         allow_vertical=True,
         allow_horizontal=True,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
         self.disable_oob = disable_oob
         self.disable_ptf = disable_ptf
         self.allow_vertical = allow_vertical
