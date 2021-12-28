@@ -1,10 +1,10 @@
-# nurses_2 - terminal graphics
+# nurses_2 - Terminal Graphics
 
-This is a widget and async-centric library for creating graphical applications in the terminal. Support only for vt-100 enabled, truecolor terminals.
+A widget and async-centric library for creating graphical applications in the terminal.
 
 Getting Started
 ---------------
-To create a nurses_2 app, inherit the `App` class and implement the `on_start` asynchronous method. Please see examples in the `/examples/` directory.
+To create a nurses_2 app, inherit the `App` class and implement the `on_start` asynchronous method. See `/examples/` directory.
 
 # /examples/exploding_logo.py
 
