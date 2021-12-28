@@ -39,12 +39,13 @@ class GraphicWidget(_WidgetBase):
     """
     def __init__(
         self,
+        is_transparent=True,
         default_color: AColor=TRANSPARENT,
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(is_transparent=is_transparent, **kwargs)
 
         self.default_color = default_color
         self.interpolation = interpolation
