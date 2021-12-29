@@ -10,20 +10,10 @@ class COORD(Structure):
     Struct in wincon.h
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx
     """
-
     _fields_ = [
-        ("X", c_short),  # Short
-        ("Y", c_short),  # Short
+        ("X", c_short),
+        ("Y", c_short),
     ]
-
-    def __repr__(self):
-        return (
-            f"{self.__class__.__name__,}("
-            f"X={self.X!r}, "
-            f"Y={self.Y!r}, "
-            f"type_x={type(self.X)!r}, "
-            f"type_y={type(self.Y)!r})"
-        )
 
 
 class UNICODE_OR_ASCII(Union):
@@ -38,12 +28,12 @@ class KEY_EVENT_RECORD(Structure):
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx
     """
     _fields_ = [
-        ("KeyDown", c_long),  # bool
-        ("RepeatCount", c_short),  # word
-        ("VirtualKeyCode", c_short),  # word
-        ("VirtualScanCode", c_short),  # word
-        ("uChar", UNICODE_OR_ASCII),  # Unicode or ASCII.
-        ("ControlKeyState", c_long),  # double word
+        ("KeyDown", c_long),
+        ("RepeatCount", c_short),
+        ("VirtualKeyCode", c_short),
+        ("VirtualScanCode", c_short),
+        ("uChar", UNICODE_OR_ASCII),
+        ("ControlKeyState", c_long),
     ]
 
 
@@ -53,9 +43,9 @@ class MOUSE_EVENT_RECORD(Structure):
     """
     _fields_ = [
         ("MousePosition", COORD),
-        ("ButtonState", c_long),  # dword
-        ("ControlKeyState", c_long),  # dword
-        ("EventFlags", c_long),  # dword
+        ("ButtonState", c_long),
+        ("ControlKeyState", c_long),
+        ("EventFlags", c_long),
     ]
 
 
@@ -70,14 +60,14 @@ class MENU_EVENT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx
     """
-    _fields_ = [("CommandId", c_long)]  # uint
+    _fields_ = [("CommandId", c_long)]
 
 
 class FOCUS_EVENT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx
     """
-    _fields_ = [("SetFocus", c_long)]  # bool
+    _fields_ = [("SetFocus", c_long)]
 
 
 class EVENT_RECORD(Union):
@@ -94,7 +84,7 @@ class INPUT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx
     """
-    _fields_ = [("EventType", c_short), ("Event", EVENT_RECORD)]  # word  # Union.
+    _fields_ = [("EventType", c_short), ("Event", EVENT_RECORD)]
 
 
 EventTypes = {
@@ -125,22 +115,6 @@ class CONSOLE_SCREEN_BUFFER_INFO(Structure):
         ("srWindow", SMALL_RECT),
         ("dwMaximumWindowSize", COORD),
     ]
-
-    def __repr__(self) -> str:
-        return (
-            "CONSOLE_SCREEN_BUFFER_INFO("
-            f"{self.dwSize.Y}, "
-            f"{self.dwSize.X}, "
-            f"{self.dwCursorPosition.Y}, "
-            f"{self.dwCursorPosition.X}, "
-            f"{self.wAttributes}, "
-            f"{self.srWindow.Top}, "
-            f"{self.srWindow.Left}, "
-            f"{self.srWindow.Bottom}, "
-            f"{self.srWindow.Right}, "
-            f"{self.dwMaximumWindowSize.Y}, "
-            f"{self.dwMaximumWindowSize.X})"
-        )
 
 
 class SECURITY_ATTRIBUTES(Structure):
