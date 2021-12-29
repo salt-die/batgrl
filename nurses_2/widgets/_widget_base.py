@@ -34,22 +34,118 @@ class _WidgetBase(ABC):
         self.is_enabled = is_enabled
 
     @property
-    def size(self):
+    def size(self) -> Size:
         return self._size
 
     @property
-    def pos(self):
+    def height(self) -> int:
+        return self._size[0]
+
+    rows = height
+
+    @property
+    def width(self) -> int:
+        return self._size[1]
+
+    columns = width
+
+    @property
+    def pos(self) -> Point:
         """
-        Relative position to parent.
+        Position relative to parent.
         """
         return Point(self.top, self.left)
 
+    @pos.setter
+    def pos(self, point: Point):
+        self.top, self.left = point
+
     @property
-    def size_hint(self):
+    def y(self) -> int:
+        """
+        Alias for top.
+        """
+        return self.top
+
+    @y.setter
+    def y(self, value: int):
+        self.top = value
+
+    @property
+    def x(self) -> int:
+        """
+        Alias for left.
+        """
+        return self.left
+
+    @x.setter
+    def x(self, value: int):
+        self.left = value
+
+    @property
+    def bottom(self) -> int:
+        return self.top + self.height
+
+    @bottom.setter
+    def bottom(self, value: int):
+        self.top = value - self.height
+
+    @property
+    def right(self) -> int:
+        return self.left + self.width
+
+    @right.setter
+    def right(self, value: int):
+        self.left = value - self.width
+
+    @property
+    def rect(self) -> Rect:
+        """
+        Bounding box relative to parent.
+        """
+        return Rect(
+            self.top,
+            self.left,
+            self.bottom,
+            self.right,
+            self.height,
+            self.width
+        )
+
+    @property
+    def absolute_pos(self) -> Point:
+        """
+        Absolute position on screen.
+        """
+        y, x = self.parent.absolute_pos
+        return Point(self.top + y, self.left + x)
+
+    @property
+    def absolute_rect(self) -> Rect:
+        """
+        Bounding box on screen.
+        """
+        top, left = self.absolute_pos
+        height, width = self.size
+        return Rect(
+            top,
+            left,
+            top + height,
+            left + width,
+            height,
+            width,
+        )
+
+    @property
+    def center(self) -> Point:
+        return Point(self.height // 2, self.width // 2)
+
+    @property
+    def size_hint(self) -> SizeHint:
         return self._size_hint
 
     @size_hint.setter
-    def size_hint(self, value):
+    def size_hint(self, value: SizeHint):
         h, w = value
 
         if h is not None and h <= 0:
@@ -64,18 +160,14 @@ class _WidgetBase(ABC):
             self.update_geometry()
 
     @property
-    def pos_hint(self):
+    def pos_hint(self) -> PosHint:
         return self._pos_hint
 
     @pos_hint.setter
-    def pos_hint(self, value):
-        self._pos_hint = value
+    def pos_hint(self, value: PosHint):
+        self._pos_hint = PosHint(*value)
         if self.parent:
             self.update_geometry()
-
-    @pos.setter
-    def pos(self, point: Point):
-        self.top, self.left = point
 
     @abstractmethod
     def resize(self, size: Size):
@@ -128,80 +220,6 @@ class _WidgetBase(ABC):
             self.left = round(w * left_hint) - offset_left
 
     @property
-    def absolute_pos(self):
-        """
-        Absolute position on screen.
-        """
-        y, x = self.parent.absolute_pos
-        return Point(self.top + y, self.left + x)
-
-    @property
-    def height(self):
-        return self._size[0]
-
-    rows = height
-
-    @property
-    def width(self):
-        return self._size[1]
-
-    columns = width
-
-    @property
-    def y(self):
-        return self.top
-
-    @property
-    def x(self):
-        return self.left
-
-    @property
-    def bottom(self):
-        return self.top + self.height
-
-    @property
-    def right(self):
-        return self.left + self.width
-
-    @property
-    def rect(self):
-        """
-        `Rect` of bounding box relative to parent.
-
-        Notes
-        -----
-        `rect` of root widget is same as `absolute_rect`.
-        """
-        return Rect(
-            self.top,
-            self.left,
-            self.bottom,
-            self.right,
-            self.height,
-            self.width
-        )
-
-    @property
-    def absolute_rect(self):
-        """
-        `Rect` of bounding box on screen.
-        """
-        top, left = self.absolute_pos
-        height, width = self.size
-        return Rect(
-            top,
-            left,
-            top + height,
-            left + width,
-            height,
-            width,
-        )
-
-    @property
-    def center(self):
-        return Point(self.height // 2, self.width // 2)
-
-    @property
     def root(self):
         """
         The root widget.
@@ -215,7 +233,7 @@ class _WidgetBase(ABC):
         """
         return self.root.app
 
-    def to_local(self, point: Point):
+    def to_local(self, point: Point) -> Point:
         """
         Convert point in absolute coordinates to local coordinates.
         """
@@ -229,7 +247,7 @@ class _WidgetBase(ABC):
         y, x = self.to_local(point)
         return 0 <= y < self.height and 0 <= x < self.width
 
-    def collides_widget(self, widget):
+    def collides_widget(self, widget) -> bool:
         """
         Return True if some part of widget is within bounding box.
         """
@@ -297,7 +315,7 @@ class _WidgetBase(ABC):
     def render(self, canvas_view, colors_view, rect: Rect):
         ...
 
-    def dispatch_press(self, key_press_event: KeyPressEvent):
+    def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
         """
@@ -310,7 +328,7 @@ class _WidgetBase(ABC):
             or self.on_press(key_press_event)
         )
 
-    def dispatch_click(self, mouse_event: MouseEvent):
+    def dispatch_click(self, mouse_event: MouseEvent) -> bool | None:
         """
         Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)
         """
@@ -323,7 +341,7 @@ class _WidgetBase(ABC):
             or self.on_click(mouse_event)
         )
 
-    def dispatch_paste(self, paste_event: PasteEvent):
+    def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
         Dispatch paste event until handled.
         """
@@ -336,23 +354,23 @@ class _WidgetBase(ABC):
             or self.on_paste(paste_event)
         )
 
-    def on_press(self, key_press_event: KeyPressEvent):
+    def on_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Handle key press event. (Handled key presses should return True else False or None).
         """
 
-    def on_click(self, mouse_event: MouseEvent):
+    def on_click(self, mouse_event: MouseEvent) -> bool | None:
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
         """
 
-    def on_paste(self, paste_event: PasteEvent):
+    def on_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Handle paste event.
+        Handle paste event. (Handled paste events should return True else False or None).
         """
 
 
-def intersection(rect: Rect, widget: _WidgetBase):
+def intersection(rect: Rect, widget: _WidgetBase) -> tuple[tuple[slice, slice], Rect]:
     """
     Find the intersection of a rect with a widget.
     """
