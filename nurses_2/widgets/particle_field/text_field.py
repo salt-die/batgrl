@@ -1,8 +1,8 @@
 from ...colors import WHITE_ON_BLACK, ColorPair
-from ._field_base import _FieldBase, _ParticleBase
+from ._field_base import _ParticleFieldBase, _ParticleBase
 
 
-class TextParticleField(_FieldBase):
+class TextParticleField(_ParticleFieldBase):
     """
     A widget that only has `TextParticle` children.
     """
@@ -20,7 +20,7 @@ class TextParticleField(_FieldBase):
                 and 0 <= left < w
             ):
                 canvas_view[pos] = child.char
-                colors_view[pos] = child.default_color_pair
+                colors_view[pos] = child.color_pair
 
 
 class TextParticle(_ParticleBase):
@@ -31,13 +31,13 @@ class TextParticle(_ParticleBase):
         self,
         *,
         char=" ",
-        default_color_pair: ColorPair=WHITE_ON_BLACK,
+        color_pair: ColorPair=WHITE_ON_BLACK,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.char = char
-        self.default_color_pair = default_color_pair
+        self.color_pair = color_pair
 
 
 TextParticleField._child_type = TextParticle

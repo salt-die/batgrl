@@ -1,10 +1,10 @@
 import numpy as np
 
 from ...colors import AColor, TRANSPARENT
-from ._field_base import _FieldBase, _ParticleBase
+from ._field_base import _ParticleFieldBase, _ParticleBase
 
 
-class GraphicParticleField(_FieldBase):
+class GraphicParticleField(_ParticleFieldBase):
     """
     A widget that only has GraphicParticle children.
     """

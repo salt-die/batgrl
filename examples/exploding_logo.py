@@ -66,7 +66,7 @@ class PokeParticle(TextParticle):
     def __init__(self, color_index, **kwargs):
         self.color_index = color_index
 
-        super().__init__(default_color_pair=RAINBOW[color_index], **kwargs)
+        super().__init__(color_pair=RAINBOW[color_index], **kwargs)
 
         self.middle_row = self.middle_column = 0
         self.original_position = self.pos
@@ -117,7 +117,7 @@ class PokeParticle(TextParticle):
         Coroutine that updates color and position due to velocity.
         """
         parent = self.parent
-        color_index = RAINBOW.index(self.default_color_pair)
+        color_index = RAINBOW.index(self.color_pair)
 
         while True:
             velocity = self.velocity
@@ -128,7 +128,7 @@ class PokeParticle(TextParticle):
                 return
 
             color_index = round(color_index + min(speed, MAX_PARTICLE_SPEED) * COLOR_CHANGE_SPEED) % NCOLORS
-            self.default_color_pair = RAINBOW[color_index]
+            self.color_pair = RAINBOW[color_index]
 
             if speed > MAX_PARTICLE_SPEED:
                 velocity *= MAX_PARTICLE_SPEED / speed
@@ -169,7 +169,7 @@ class PokeParticle(TextParticle):
         start_y, start_x = self.pos
         end_y, end_x = self.original_position
 
-        start_color_index = RAINBOW.index(self.default_color_pair)
+        start_color_index = RAINBOW.index(self.color_pair)
         end_color_index = self.color_index
 
         for percent in PERCENTS:
@@ -180,7 +180,7 @@ class PokeParticle(TextParticle):
             self.position = complex(self.top, self.left)
 
             color_index = round(percent_left * start_color_index + percent * end_color_index)
-            self.default_color_pair = RAINBOW[color_index]
+            self.color_pair = RAINBOW[color_index]
 
             try:
                 await asyncio.sleep(0)

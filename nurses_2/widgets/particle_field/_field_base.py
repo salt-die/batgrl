@@ -3,7 +3,7 @@ from ...io import MouseEvent, KeyPressEvent, PasteEvent
 from .._widget_base import _WidgetBase
 
 
-class _FieldBase(_WidgetBase):
+class _ParticleFieldBase(_WidgetBase):
     """
     A widget that specializes in rendering 1x1 particles.
     """
@@ -36,8 +36,12 @@ class _FieldBase(_WidgetBase):
     def dispatch_press(self, key_press_event: KeyPressEvent):
         """
         Dispatch key press to children.
+
+        Notes
+        -----
+        Particle fields, unlike usual widgets, will try to handle events before passing them
+        to their children.
         """
-        # Note this dispatching is in reverse order from widget base.
         return (
             self.on_press(key_press_event)
             or any(
@@ -50,8 +54,12 @@ class _FieldBase(_WidgetBase):
     def dispatch_click(self, mouse_event: MouseEvent):
         """
         Dispatch mouse event to children.
+
+        Notes
+        -----
+        Particle fields, unlike usual widgets, will try to handle events before passing them
+        to their children.
         """
-        # Note this dispatching is in reverse order from widget base.
         return (
             self.on_click(mouse_event)
             or any(
@@ -62,7 +70,14 @@ class _FieldBase(_WidgetBase):
         )
 
     def dispatch_paste(self, paste_event: PasteEvent):
-        # Note this dispatching is in reverse order from widget base.
+        """
+        Dispatch paste event to children.
+
+        Notes
+        -----
+        Particle fields, unlike usual widgets, will try to handle events before passing them
+        to their children.
+        """
         return (
             self.on_paste(mouse_event)
             or any(
@@ -76,6 +91,11 @@ class _FieldBase(_WidgetBase):
 class _ParticleBase:
     """
     Base for 1x1 text or graphic elements.
+
+    Notes
+    -----
+    Particles are widget-like, but they have no `render` method (they are rendered
+    by their parents) and their size is always (1, 1).
     """
     def __init__(
         self,
@@ -139,5 +159,10 @@ class _ParticleBase:
         Handle mouse event. (Handled mouse events should return True else False or None).
         """
 
+    def on_paste(self, paste_event: PasteEvent):
+        """
+        Handle paste event. (Handled paste events should return True else False or None).
+        """
 
-_FieldBase._child_type = _ParticleBase
+
+_ParticleFieldBase._child_type = _ParticleBase
