@@ -2,7 +2,7 @@ from ctypes import byref, pointer, windll
 from ctypes.wintypes import DWORD, HANDLE
 
 from ...data_structures import Size
-from ..environ import is_windows, is_conemu_ansi
+from ..environ import is_conemu_ansi
 from ..win32_types import (
     CONSOLE_SCREEN_BUFFER_INFO,
     STD_INPUT_HANDLE,
