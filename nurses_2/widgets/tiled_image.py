@@ -3,6 +3,7 @@ from math import ceil
 import numpy as np
 
 from .graphic_widget import GraphicWidget
+from ..data_structures import Size
 
 
 class TiledImage(GraphicWidget):
@@ -11,8 +12,8 @@ class TiledImage(GraphicWidget):
 
     Parameters
     ----------
-    tile : Image
-        The image widget that will used to tile.
+    tile : GraphicWidget
+        The graphic widget that will used to tile.
     allow_partial_tiling : bool, default: True
         If false, `size` will be extended so that there are no partial tiles.
         This forces the widget's height and width to be multiples of the tile's
@@ -48,7 +49,7 @@ class TiledImage(GraphicWidget):
         self._allow_partial_tiling = is_allowed
         self.resize(self.size)
 
-    def resize(self, size):
+    def resize(self, size: Size):
         """
         Resize widget.
         """
@@ -61,18 +62,18 @@ class TiledImage(GraphicWidget):
         texture = np.tile(tile.texture, (v_repeat, h_repeat, 1))
 
         if self.allow_partial_tiling:
-            self._size = size
+            self._size = Size(h, w)
 
             vr = h % tile.height
             hr = w % tile.width
 
-            vertical_slice = slice(None, (-tile.height + vr) if vr else None)
-            horizontal_slice = slice(None, (-tile.width + hr) if hr else None)
+            vertical_slice = np.s_[: (-tile.height + vr) if vr else None]
+            horizontal_slice = np.s_[: (-tile.width + hr) if hr else None]
 
             self.texture = texture[vertical_slice, horizontal_slice].copy()
 
         else:
-            self._size = v_repeat * tile.height, h_repeat * tile.width
+            self._size = Size(v_repeat * tile.height, h_repeat * tile.width)
             self.texture = texture
 
         for child in self.children:
