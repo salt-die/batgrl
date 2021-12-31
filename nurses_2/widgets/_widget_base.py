@@ -8,6 +8,9 @@ from .widget_data_structures import *
 
 
 class _WidgetBase(ABC):
+    """
+    Base for TextWidget and GraphicWidget with abstract methods `resize` and `render`.
+    """
     def __init__(
         self,
         *,
@@ -350,12 +353,11 @@ class _WidgetBase(ABC):
     def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
         for child in self.children:
             if child.is_visible and child.is_enabled:
-                self.render_intersection(destination, child, canvas_view, colors_view)
+                child.render_intersection(destination, canvas_view, colors_view)
 
-    @staticmethod
     def render_intersection(
+        self,
         destination: tuple[slice, slice],
-        widget,
         canvas_view,
         colors_view,
     ) -> tuple[tuple[slice, slice], tuple[slice, slice]]:
@@ -368,10 +370,10 @@ class _WidgetBase(ABC):
         l = hori_slice.start
         w = hori_slice.stop - l
 
-        wt = widget.top - t
-        wb = widget.bottom - t
-        wl = widget.left - l
-        wr = widget.right - l
+        wt = self.top - t
+        wb = self.bottom - t
+        wl = self.left - l
+        wr = self.right - l
 
         if (
             wt >= h
@@ -422,7 +424,7 @@ class _WidgetBase(ABC):
                 sb = h + st
                 db = h
             else:
-                sb = widget.height
+                sb = self.height
                 db = wb
         else:
             st =  0
@@ -432,7 +434,7 @@ class _WidgetBase(ABC):
                 sb = h - dt
                 db = h
             else:
-                sb = widget.height
+                sb = self.height
                 db = wb
 
         if wl < 0:
@@ -443,7 +445,7 @@ class _WidgetBase(ABC):
                 sr = w + sl
                 dr = w
             else:
-                sr = widget.width
+                sr = self.width
                 dr = wr
         else:
             sl = 0
@@ -453,8 +455,8 @@ class _WidgetBase(ABC):
                 sr = w - dl
                 dr = w
             else:
-                sr = widget.width
+                sr = self.width
                 dr = wr
 
         dest_slice = np.s_[dt: db, dl : dr]
-        widget.render(canvas_view[dest_slice], colors_view[dest_slice], np.s_[st: sb, sl: sr])
+        self.render(canvas_view[dest_slice], colors_view[dest_slice], np.s_[st: sb, sl: sr])

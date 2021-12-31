@@ -179,14 +179,14 @@ class ScrollView(GrabbableBehavior, TextWidget):
             view.top = self.view_top
             view.left = self.view_left
 
-            self.render_intersection(source_slice, view, canvas_view, colors_view)
+            view.render_intersection(source_slice, canvas_view, colors_view)
 
         vertical_bar, horizontal_bar = self.children
         if self.show_vertical_bar:
-            self.render_intersection(source_slice, vertical_bar, canvas_view, colors_view)
+            vertical_bar.render_intersection(source_slice, canvas_view, colors_view)
 
         if self.show_horizontal_bar:
-            self.render_intersection(source_slice, horizontal_bar, canvas_view, colors_view)
+            horizontal_bar.render_intersection(source_slice, canvas_view, colors_view)
 
     def on_press(self, key_press_event: KeyPressEvent):
         match key_press_event.key:
