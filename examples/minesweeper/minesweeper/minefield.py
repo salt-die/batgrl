@@ -218,11 +218,11 @@ class Minefield(Grid):
         self._is_gameover = True
         self.parent.game_over(win=win)
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
-        source = self.canvas[source_slice]
-        visible = self.hidden[source_slice] != 0
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        source = self.canvas[source]
+        visible = self.hidden[source] != 0
 
         canvas_view[visible] = source[visible]
-        colors_view[visible] = self.colors[source_slice][visible]
+        colors_view[visible] = self.colors[source][visible]
 
-        self.render_children(source_slice, canvas_view, colors_view)
+        self.render_children(source, canvas_view, colors_view)

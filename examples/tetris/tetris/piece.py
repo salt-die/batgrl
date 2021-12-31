@@ -25,25 +25,25 @@ class Piece(TextWidget):
 
 
 class CurrentPiece(Piece):
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         tetromino = self.tetromino
         orientation = self.orientation
 
         self.canvas = tetromino.canvases[orientation]
         self.colors = tetromino.colors[orientation]
 
-        super().render(canvas_view, colors_view, source_slice)
+        super().render(canvas_view, colors_view, source)
 
 
 class GhostPiece(Piece):
     TRANSPARENCY = .33
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         tetromino = self.tetromino
         orientation = self.orientation
 
-        canvas = tetromino.canvases[orientation][source_slice]
-        colors = tetromino.colors[orientation][source_slice]
+        canvas = tetromino.canvases[orientation][source]
+        colors = tetromino.colors[orientation][source]
 
         buffer = np.zeros_like(colors, dtype=np.float16)
 

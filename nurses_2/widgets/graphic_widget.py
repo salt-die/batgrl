@@ -90,11 +90,11 @@ class GraphicWidget(_WidgetBase):
         for child in self.children:
             child.update_geometry()
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
-        Paint region given by source_slice into canvas_view and colors_view.
+        Paint region given by source into canvas_view and colors_view.
         """
-        vert_slice, hori_slice = source_slice
+        vert_slice, hori_slice = source
         t = vert_slice.start
         b = vert_slice.stop
 
@@ -127,4 +127,4 @@ class GraphicWidget(_WidgetBase):
             np.add(even_buffer, foreground, out=foreground, casting="unsafe")
             np.add(odd_buffer, background, out=background, casting="unsafe")
 
-        self.render_children(source_slice, canvas_view, colors_view)
+        self.render_children(source, canvas_view, colors_view)

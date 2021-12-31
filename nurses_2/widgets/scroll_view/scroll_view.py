@@ -160,33 +160,33 @@ class ScrollView(GrabbableBehavior, TextWidget):
         self._view = None
         widget.parent = None
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
-        Paint region given by source_slice into canvas_view and colors_view.
+        Paint region given by source into canvas_view and colors_view.
         """
         if self.is_transparent:
-            source = self.canvas[source_slice]
+            source = self.canvas[source]
             visible = source != " "  # " " isn't painted if transparent.
 
             canvas_view[visible] = source[visible]
-            colors_view[visible] = self.colors[source_slice][visible]
+            colors_view[visible] = self.colors[source][visible]
         else:
-            canvas_view[:] = self.canvas[source_slice]
-            colors_view[:] = self.colors[source_slice]
+            canvas_view[:] = self.canvas[source]
+            colors_view[:] = self.colors[source]
 
         view = self._view
         if view is not None and view.is_enabled:
             view.top = self.view_top
             view.left = self.view_left
 
-            view.render_intersection(source_slice, canvas_view, colors_view)
+            view.render_intersection(source, canvas_view, colors_view)
 
         vertical_bar, horizontal_bar = self.children
         if self.show_vertical_bar:
-            vertical_bar.render_intersection(source_slice, canvas_view, colors_view)
+            vertical_bar.render_intersection(source, canvas_view, colors_view)
 
         if self.show_horizontal_bar:
-            horizontal_bar.render_intersection(source_slice, canvas_view, colors_view)
+            horizontal_bar.render_intersection(source, canvas_view, colors_view)
 
     def on_press(self, key_press_event: KeyPressEvent):
         match key_press_event.key:

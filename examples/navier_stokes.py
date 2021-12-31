@@ -82,7 +82,7 @@ class Fluid(GraphicWidget):
                 self.resize(self.size)  # Reset
                 return True
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         pressure = self.pressure
         momentum = self.momentum
 
@@ -98,7 +98,7 @@ class Fluid(GraphicWidget):
         # Note the alpha channel is affected by `pressure` as well.
         self.texture[:] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
 
-        super().render(canvas_view, colors_view, source_slice)
+        super().render(canvas_view, colors_view, source)
 
 
 class FluidApp(App):

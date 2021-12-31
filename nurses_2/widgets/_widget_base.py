@@ -347,7 +347,7 @@ class _WidgetBase(ABC):
         """
 
     @abstractmethod
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         ...
 
     def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
@@ -355,12 +355,7 @@ class _WidgetBase(ABC):
             if child.is_visible and child.is_enabled:
                 child.render_intersection(destination, canvas_view, colors_view)
 
-    def render_intersection(
-        self,
-        destination: tuple[slice, slice],
-        canvas_view,
-        colors_view,
-    ) -> tuple[tuple[slice, slice], tuple[slice, slice]]:
+    def render_intersection(self, destination: tuple[slice, slice], canvas_view, colors_view):
         """
         Render the intersection of destination with widget.
         """

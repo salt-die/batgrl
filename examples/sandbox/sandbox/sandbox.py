@@ -45,10 +45,10 @@ class Sandbox(GraphicWidget):
         # Press the Stone button setting particle type.
         self.children[1].children[1].on_release()
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         # Color of each particle in `self.world` is written into color array.
         self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
-        super().render(canvas_view, colors_view, source_slice)
+        super().render(canvas_view, colors_view, source)
 
     def on_click(self, mouse_event):
         if (

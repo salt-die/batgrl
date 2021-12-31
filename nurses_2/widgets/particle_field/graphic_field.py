@@ -13,11 +13,11 @@ class GraphicParticleField(_ParticleFieldBase):
 
         self._buffer = np.zeros((3, ), dtype=float)
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         buffer = self._buffer
         subtract, add = np.subtract, np.add
 
-        vert_slice, hori_slice = source_slice
+        vert_slice, hori_slice = source
         t = vert_slice.start
         h = vert_slice.stop - t
         l = hori_slice.start

@@ -184,18 +184,18 @@ class TextWidget(_WidgetBase):
 
     add_text = CanvasView.add_text
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
-        Paint region given by source_slice into canvas_view and colors_view.
+        Paint region given by source into canvas_view and colors_view.
         """
         if self.is_transparent:
-            source_view = self.canvas[source_slice]
+            source_view = self.canvas[source]
             visible = source_view != " "  # " " isn't painted if transparent.
 
             canvas_view[visible] = source_view[visible]
-            colors_view[visible] = self.colors[source_slice][visible]
+            colors_view[visible] = self.colors[source][visible]
         else:
-            canvas_view[:] = self.canvas[source_slice]
-            colors_view[:] = self.colors[source_slice]
+            canvas_view[:] = self.canvas[source]
+            colors_view[:] = self.colors[source]
 
-        self.render_children(source_slice, canvas_view, colors_view)
+        self.render_children(source, canvas_view, colors_view)

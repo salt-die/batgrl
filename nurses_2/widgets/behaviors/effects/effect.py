@@ -11,16 +11,16 @@ class Effect(ABC):
         ```
     applies Effect2 then Effect1.
     """
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
         Render normally then apply canvas and color effects.
         """
-        super().render(canvas_view, colors_view, source_slice)
+        super().render(canvas_view, colors_view, source)
 
-        self.apply_effect(canvas_view, colors_view, source_slice)
+        self.apply_effect(canvas_view, colors_view, source)
 
     @abstractmethod
-    def apply_effect(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def apply_effect(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
         Apply an effect to the rendered views of a widget.
         """

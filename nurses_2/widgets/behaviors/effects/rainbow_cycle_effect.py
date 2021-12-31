@@ -40,7 +40,7 @@ class RainbowCycleEffect(Effect):
 
         self.cycle_task = asyncio.create_task(self.cycle_colors())
 
-    def apply_effect(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def apply_effect(self, canvas_view, colors_view, source: tuple[slice, slice]):
         if self.enable_foreground_rainbow:
             colors_view[..., :3] = colors_view[..., :3] + self._current_color
 

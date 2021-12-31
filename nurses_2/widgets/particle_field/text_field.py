@@ -6,8 +6,8 @@ class TextParticleField(_ParticleFieldBase):
     """
     A widget that only has `TextParticle` children.
     """
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
-        vert_slice, hori_slice = source_slice
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        vert_slice, hori_slice = source
         t = vert_slice.start
         h = vert_slice.stop - t
         l = hori_slice.start

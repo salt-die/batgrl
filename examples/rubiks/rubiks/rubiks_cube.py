@@ -182,7 +182,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         beta = np.pi * self.mouse_dx / self.width
         self.camera.rotate_y(beta)
 
-    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         texture = self.texture
         texture[:] = self.background.current_frame.texture
 
@@ -193,4 +193,4 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         for cube in cubes:
             cam.render_cube(cube, texture, self.aspect_ratio)
 
-        super().render(canvas_view, colors_view, source_slice)
+        super().render(canvas_view, colors_view, source)
