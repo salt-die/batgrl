@@ -86,7 +86,7 @@ class StableFluid(GraphicWidget):
 
         return True
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         vy, vx = velocity = self.velocity
 
         # Vorticity
@@ -144,7 +144,7 @@ class StableFluid(GraphicWidget):
 
         self.texture[..., :3] = np.moveaxis(dye, 0, -1)
 
-        super().render(canvas_view, colors_view, rect)
+        super().render(canvas_view, colors_view, source_slice)
 
 
 class StableFluidApp(App):

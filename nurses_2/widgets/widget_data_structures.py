@@ -1,16 +1,17 @@
 from enum import Enum
 from typing import NamedTuple
 
-__all__ = "Rect", "Anchor", "PosHint", "SizeHint"
+__all__ = "SizeHint", "PosHint", "Anchor"
 
 
-class Rect(NamedTuple):
-    top: int
-    left: int
-    bottom: int
-    right: int
-    height: int
-    width: int
+class SizeHint(NamedTuple):
+    height: float | None
+    width: float | None
+
+
+class PosHint(NamedTuple):
+    y: float | None
+    x: float | None
 
 
 class Anchor(str, Enum):
@@ -23,14 +24,3 @@ class Anchor(str, Enum):
     BOTTOM_LEFT = "BOTTOM_LEFT"
     BOTTOM_CENTER = "BOTTOM_CENTER"
     BOTTOM_RIGHT = "BOTTOM_RIGHT"
-
-
-class PosHint(NamedTuple):
-    y: float | None
-    x: float | None
-
-
-class SizeHint(NamedTuple):
-    height: float | None
-    width: float | None
-

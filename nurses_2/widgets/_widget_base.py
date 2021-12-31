@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from ..data_structures import *
 from .widget_data_structures import *
@@ -99,42 +101,12 @@ class _WidgetBase(ABC):
         self.left = value - self.width
 
     @property
-    def rect(self) -> Rect:
-        """
-        Bounding box relative to parent.
-        """
-        return Rect(
-            self.top,
-            self.left,
-            self.bottom,
-            self.right,
-            self.height,
-            self.width
-        )
-
-    @property
     def absolute_pos(self) -> Point:
         """
         Absolute position on screen.
         """
         y, x = self.parent.absolute_pos
         return Point(self.top + y, self.left + x)
-
-    @property
-    def absolute_rect(self) -> Rect:
-        """
-        Bounding box on screen.
-        """
-        top, left = self.absolute_pos
-        height, width = self.size
-        return Rect(
-            top,
-            left,
-            top + height,
-            left + width,
-            height,
-            width,
-        )
 
     @property
     def center(self) -> Point:
@@ -252,8 +224,13 @@ class _WidgetBase(ABC):
         """
         Return True if some part of widget is within bounding box.
         """
-        self_top, self_left, self_bottom, self_right, _, _ = self.absolute_rect
-        other_top, other_left, other_bottom, other_right, _ , _ = widget.absolute_rect
+        self_top, self_left = self.absolute_pos
+        self_bottom = self_top + self.height
+        self_right = self.left + self.width
+
+        other_top, other_left = other.absolute_pos
+        other_bottom = other_top + other.height
+        other_right = other_left + other.width
 
         return not (
             self_top >= other_bottom
@@ -312,10 +289,6 @@ class _WidgetBase(ABC):
             yield child
             yield from child.walk()
 
-    @abstractmethod
-    def render(self, canvas_view, colors_view, rect: Rect):
-        ...
-
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
@@ -370,102 +343,118 @@ class _WidgetBase(ABC):
         Handle paste event. (Handled paste events should return True else False or None).
         """
 
+    @abstractmethod
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+        ...
 
-def intersection(rect: Rect, widget: _WidgetBase) -> tuple[tuple[slice, slice], Rect]:
-    """
-    Find the intersection of a rect with a widget.
-    """
-    t, l, _, _, h, w = rect  # top, left, height, width
+    def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
+        for child in self.children:
+            if child.is_visible and child.is_enabled:
+                self.render_intersection(destination, child, canvas_view, colors_view)
 
-    wt = widget.top - t
-    wb = widget.bottom - t
-    wl = widget.left - l
-    wr = widget.right - l
+    @staticmethod
+    def render_intersection(
+        destination: tuple[slice, slice],
+        widget,
+        canvas_view,
+        colors_view,
+    ) -> tuple[tuple[slice, slice], tuple[slice, slice]]:
+        """
+        Render the intersection of destination with widget.
+        """
+        vert_slice, hori_slice = destination
+        t = vert_slice.start
+        h = vert_slice.stop - t
+        l = hori_slice.start
+        w = hori_slice.stop - l
 
-    if (
-        wt >= h
-        or wb < 0
-        or wl >= w
-        or wr < 0
-    ):
-        # widget doesn't overlap.
-        return False
+        wt = widget.top - t
+        wb = widget.bottom - t
+        wl = widget.left - l
+        wr = widget.right - l
 
-    ####################################################################
-    # Four cases for top / bottom of widget:                           #
-    #     1) widget top is off-screen and widget bottom is off-screen. #
-    #               +--------+                                         #
-    #            +--| widget |------------+                            #
-    #            |  |        |   dest     |                            #
-    #            +--|        |------------+                            #
-    #               +--------+                                         #
-    #     2) widget top is off-screen and widget bottom is on-screen.  #
-    #               +--------+                                         #
-    #            +--| widget |------------+                            #
-    #            |  +--------+   dest     |                            #
-    #            +------------------------+                            #
-    #                                                                  #
-    #     3) widget top is on-screen and widget bottom is off-screen.  #
-    #            +------------------------+                            #
-    #            |  +--------+   dest     |                            #
-    #            +--| widget |------------+                            #
-    #               +--------+                                         #
-    #                                                                  #
-    #     4) widget top is on-screen and widget bottom is on-screen.   #
-    #            +------------------------+                            #
-    #            |  +--------+            |                            #
-    #            |  | widget |   dest     |                            #
-    #            |  +--------+            |                            #
-    #            +------------------------+                            #
-    #                                                                  #
-    # Similarly, by symmetry, four cases for left / right of widget.   #
-    ####################################################################
+        if (
+            wt >= h
+            or wb < 0
+            or wl >= w
+            or wr < 0
+        ):
+            # widget doesn't intersect.
+            return
 
-    # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
-    # destination_bottom, source_left, destination_left, source_right, destination_right.
-    if wt < 0:
-        st = -wt
-        dt = 0
+        ####################################################################
+        # Four cases for top / bottom of widget:                           #
+        #     1) widget top is off-screen and widget bottom is off-screen. #
+        #               +--------+                                         #
+        #            +--| widget |------------+                            #
+        #            |  |        |   dest     |                            #
+        #            +--|        |------------+                            #
+        #               +--------+                                         #
+        #     2) widget top is off-screen and widget bottom is on-screen.  #
+        #               +--------+                                         #
+        #            +--| widget |------------+                            #
+        #            |  +--------+   dest     |                            #
+        #            +------------------------+                            #
+        #                                                                  #
+        #     3) widget top is on-screen and widget bottom is off-screen.  #
+        #            +------------------------+                            #
+        #            |  +--------+   dest     |                            #
+        #            +--| widget |------------+                            #
+        #               +--------+                                         #
+        #                                                                  #
+        #     4) widget top is on-screen and widget bottom is on-screen.   #
+        #            +------------------------+                            #
+        #            |  +--------+            |                            #
+        #            |  | widget |   dest     |                            #
+        #            |  +--------+            |                            #
+        #            +------------------------+                            #
+        #                                                                  #
+        # Similarly, by symmetry, four cases for left / right of widget.   #
+        ####################################################################
 
-        if wb >= h:
-            sb = h + st
-            db = h
+        # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
+        # destination_bottom, source_left, destination_left, source_right, destination_right.
+        if wt < 0:
+            st = -wt
+            dt = 0
+
+            if wb >= h:
+                sb = h + st
+                db = h
+            else:
+                sb = widget.height
+                db = wb
         else:
-            sb = widget.height
-            db = wb
-    else:
-        st =  0
-        dt = wt
+            st =  0
+            dt = wt
 
-        if wb >= h:
-            sb = h - dt
-            db = h
+            if wb >= h:
+                sb = h - dt
+                db = h
+            else:
+                sb = widget.height
+                db = wb
+
+        if wl < 0:
+            sl = -wl
+            dl = 0
+
+            if wr >= w:
+                sr = w + sl
+                dr = w
+            else:
+                sr = widget.width
+                dr = wr
         else:
-            sb = widget.height
-            db = wb
+            sl = 0
+            dl = wl
 
-    if wl < 0:
-        sl = -wl
-        dl = 0
+            if wr >= w:
+                sr = w - dl
+                dr = w
+            else:
+                sr = widget.width
+                dr = wr
 
-        if wr >= w:
-            sr = w + sl
-            dr = w
-        else:
-            sr = widget.width
-            dr = wr
-    else:
-        sl = 0
-        dl = wl
-
-        if wr >= w:
-            sr = w - dl
-            dr = w
-        else:
-            sr = widget.width
-            dr = wr
-
-    return (
-        (slice(dt, db), slice(dl, dr)),
-        Rect(st, sl, sb, sr, sb - st, sr - sl),
-    )
+        dest_slice = np.s_[dt: db, dl : dr]
+        widget.render(canvas_view[dest_slice], colors_view[dest_slice], np.s_[st: sb, sl: sr])

@@ -3,8 +3,7 @@ import numpy as np
 from ..colors import Color
 from ..data_structures import Point, Size
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
-from ._widget_base import _WidgetBase, intersection
-from .widget_data_structures import Rect
+from ._widget_base import _WidgetBase
 
 
 class _Root(_WidgetBase):
@@ -107,26 +106,11 @@ class _Root(_WidgetBase):
         colors[:, :] = self.default_color_pair
 
         height, width = canvas.shape
-        rect = Rect(
-            0,
-            0,
-            height,
-            width,
-            height,
-            width,
-        )
 
-        for child in self.children:
-            if not child.is_visible or not child.is_enabled:
-                continue
-
-            if region := intersection(rect, child):
-                dest_slice, child_rect = region
-                child.render(canvas[dest_slice], colors[dest_slice], child_rect)
+        self.render_children(np.s_[0: height, 0: width], canvas, colors)
 
         # Find differences between current render and last render:
-        # (This is optimized version of `(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)`
-        # that re-uses buffers instead of creating new arrays.)
+        # (`(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)` with buffers.)
         np.not_equal(self._last_canvas, canvas, out=char_diffs)
         np.not_equal(self._last_colors, colors, out=color_diffs)
         np.any(color_diffs, axis=-1, out=reduced_color_diffs)

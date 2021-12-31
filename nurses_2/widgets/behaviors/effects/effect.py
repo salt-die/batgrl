@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ...widget_data_structures import Rect
-
 
 class Effect(ABC):
     """
@@ -13,16 +11,16 @@ class Effect(ABC):
         ```
     applies Effect2 then Effect1.
     """
-    def render(self, canvas_view, colors_view, rect: Rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         """
         Render normally then apply canvas and color effects.
         """
-        super().render(canvas_view, colors_view, rect)
+        super().render(canvas_view, colors_view, source_slice)
 
-        self.apply_effect(canvas_view, colors_view, rect)
+        self.apply_effect(canvas_view, colors_view, source_slice)
 
     @abstractmethod
-    def apply_effect(self, canvas_view, colors_view, rect: Rect):
+    def apply_effect(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         """
         Apply an effect to the rendered views of a widget.
         """

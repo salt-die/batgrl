@@ -2,7 +2,7 @@ from ...clamp import clamp
 from ...colors import Color
 from ...io import KeyPressEvent, MouseEventType, MouseEvent
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
-from ..text_widget import TextWidget, intersection
+from ..text_widget import TextWidget
 from .scrollbars import _HorizontalBar, _VerticalBar
 from .scrollbar_data_structures import ScrollBarSettings
 
@@ -68,9 +68,9 @@ class ScrollView(GrabbableBehavior, TextWidget):
         super().__init__(**kwargs)
         self.allow_vertical_scroll = allow_vertical_scroll
         self.allow_horizontal_scroll = allow_horizontal_scroll
-        self.is_grabbable = is_grabbable
         self.show_vertical_bar = show_vertical_bar
         self.show_horizontal_bar = show_horizontal_bar
+        self.is_grabbable = is_grabbable
         self.scrollwheel_enabled = scrollwheel_enabled
         self._vertical_proportion = clamp(vertical_proportion, 0, 1)
         self._horizontal_proportion = clamp(horizontal_proportion, 0, 1)
@@ -160,40 +160,33 @@ class ScrollView(GrabbableBehavior, TextWidget):
         self._view = None
         widget.parent = None
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         """
-        Paint region given by rect into canvas_view and colors_view.
+        Paint region given by source_slice into canvas_view and colors_view.
         """
-        t, l, b, r, _, _ = rect
-
-        index_rect = slice(t, b), slice(l, r)
         if self.is_transparent:
-            source = self.canvas[index_rect]
+            source = self.canvas[source_slice]
             visible = source != " "  # " " isn't painted if transparent.
 
             canvas_view[visible] = source[visible]
-            colors_view[visible] = self.colors[index_rect][visible]
+            colors_view[visible] = self.colors[source_slice][visible]
         else:
-            canvas_view[:] = self.canvas[index_rect]
-            colors_view[:] = self.colors[index_rect]
+            canvas_view[:] = self.canvas[source_slice]
+            colors_view[:] = self.colors[source_slice]
 
         view = self._view
         if view is not None and view.is_enabled:
             view.top = self.view_top
             view.left = self.view_left
 
-            if region := intersection(rect, view):  # Can this condition can fail?
-                dest_slice, view_rect = region
-                view.render(canvas_view[dest_slice], colors_view[dest_slice], view_rect)
+            self.render_intersection(source_slice, view, canvas_view, colors_view)
 
         vertical_bar, horizontal_bar = self.children
-        if self.show_vertical_bar and (region := intersection(rect, vertical_bar)):
-            dest_slice, vertical_bar_rect = region
-            vertical_bar.render(canvas_view[dest_slice], colors_view[dest_slice], vertical_bar_rect)
+        if self.show_vertical_bar:
+            self.render_intersection(source_slice, vertical_bar, canvas_view, colors_view)
 
-        if self.show_horizontal_bar and (region := intersection(rect, horizontal_bar)):
-            dest_slice, horizontal_bar_rect = region
-            horizontal_bar.render(canvas_view[dest_slice], colors_view[dest_slice], horizontal_bar_rect)
+        if self.show_horizontal_bar:
+            self.render_intersection(source_slice, horizontal_bar, canvas_view, colors_view)
 
     def on_press(self, key_press_event: KeyPressEvent):
         match key_press_event.key:

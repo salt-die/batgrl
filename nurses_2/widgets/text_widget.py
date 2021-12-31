@@ -5,7 +5,7 @@ from ..colors import WHITE_ON_BLACK, ColorPair
 from ..data_structures import *
 from .widget_data_structures import *
 from ._text_widget_canvas_view import CanvasView
-from ._widget_base import _WidgetBase, intersection
+from ._widget_base import _WidgetBase
 
 
 class TextWidget(_WidgetBase):
@@ -184,27 +184,18 @@ class TextWidget(_WidgetBase):
 
     add_text = CanvasView.add_text
 
-    def render(self, canvas_view, colors_view, rect: Rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         """
-        Paint region given by rect into canvas_view and colors_view.
+        Paint region given by source_slice into canvas_view and colors_view.
         """
-        t, l, b, r, _, _ = rect
-        index_rect = slice(t, b), slice(l, r)
-
         if self.is_transparent:
-            source = self.canvas[index_rect]
-            visible = source != " "  # " " isn't painted if transparent.
+            source_view = self.canvas[source_slice]
+            visible = source_view != " "  # " " isn't painted if transparent.
 
-            canvas_view[visible] = source[visible]
-            colors_view[visible] = self.colors[index_rect][visible]
+            canvas_view[visible] = source_view[visible]
+            colors_view[visible] = self.colors[source_slice][visible]
         else:
-            canvas_view[:] = self.canvas[index_rect]
-            colors_view[:] = self.colors[index_rect]
+            canvas_view[:] = self.canvas[source_slice]
+            colors_view[:] = self.colors[source_slice]
 
-        for child in self.children:
-            if not child.is_visible or not child.is_enabled:
-                continue
-
-            if region := intersection(rect, child):
-                dest_slice, child_rect = region
-                child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
+        self.render_children(source_slice, canvas_view, colors_view)

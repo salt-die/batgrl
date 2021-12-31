@@ -4,7 +4,6 @@ import numpy as np
 import cv2
 
 from nurses_2.io import MouseButton, MouseEventType
-from nurses_2.widgets.text_widget import intersection
 
 from .colors import *
 from .grid import Grid
@@ -219,20 +218,11 @@ class Minefield(Grid):
         self._is_gameover = True
         self.parent.game_over(win=win)
 
-    def render(self, canvas_view, colors_view, rect):
-        t, l, b, r, _, _ = rect
-
-        index_rect = slice(t, b), slice(l, r)
-        source = self.canvas[index_rect]
-        visible = self.hidden[index_rect] != 0
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
+        source = self.canvas[source_slice]
+        visible = self.hidden[source_slice] != 0
 
         canvas_view[visible] = source[visible]
-        colors_view[visible] = self.colors[index_rect][visible]
+        colors_view[visible] = self.colors[source_slice][visible]
 
-        for child in self.children:
-            if not child.is_visible or not child.is_enabled:
-                continue
-
-            if region := intersection(rect, child):
-                dest_slice, child_rect = region
-                child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
+        self.render_children(source_slice, canvas_view, colors_view)

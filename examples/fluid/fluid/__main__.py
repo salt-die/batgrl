@@ -47,7 +47,7 @@ class Fluid(GraphicWidget):
 
         return True
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         solver = self.sph_solver
         solver.step()
 
@@ -61,7 +61,7 @@ class Fluid(GraphicWidget):
         self.texture[ys, xs, :3] = WATER_COLOR
         self.texture[ys, xs, 3] = alphas
 
-        return super().render(canvas_view, colors_view, rect)
+        return super().render(canvas_view, colors_view, source_slice)
 
 
 

@@ -322,7 +322,7 @@ class RayCaster(GraphicWidget):
 
             texture[start_y: end_y, columns, :3] = sprite_rgb
 
-    def render(self, canvas_view, colors_view, rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         # Bring in to locals
         #######################################
         camera = self.camera                  #
@@ -357,4 +357,4 @@ class RayCaster(GraphicWidget):
 
         self.cast_sprites()
 
-        super().render(canvas_view, colors_view, rect)
+        super().render(canvas_view, colors_view, source_slice)

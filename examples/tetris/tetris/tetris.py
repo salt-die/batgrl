@@ -45,7 +45,11 @@ def tetromino_generator(tetrominos):
             yield bag.pop()
 
 def setup_background(widget):
-    t, l, b, r, _, _ = widget.rect
+    t = widget.top
+    l = widget.left
+    b = widget.bottom
+    r = widget.right
+
     if isinstance(widget.parent, Image):
         widget.colors[..., 3:] = widget.parent.texture[2 * t + 1: 2 * b: 2, l: r, :3] // 2
     else:

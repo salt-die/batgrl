@@ -35,11 +35,10 @@ class LevelGlowEffect(Effect):
 
             await asyncio.sleep(sleep)
 
-    def apply_effect(self, canvas_view, colors_view, rect):
+    def apply_effect(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         alpha = self._glow
 
-        t, l, b, r, _, _ = rect
-        visible = self.canvas[t: b, l: r] != " "
+        visible = self.canvas[source_slice] != " "
 
         colors_view[..., :3][visible] = (colors_view[..., :3][visible] * (1 - alpha) + alpha * 255).astype(int)
 

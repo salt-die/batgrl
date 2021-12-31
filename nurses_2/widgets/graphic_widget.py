@@ -7,7 +7,7 @@ from ..clamp import clamp
 from ..colors import AColor, TRANSPARENT
 from ..data_structures import *
 from .widget_data_structures import *
-from ._widget_base import _WidgetBase, intersection
+from ._widget_base import _WidgetBase
 
 
 class Interpolation(IntEnum):
@@ -90,19 +90,21 @@ class GraphicWidget(_WidgetBase):
         for child in self.children:
             child.update_geometry()
 
-    def render(self, canvas_view, colors_view, rect: Rect):
+    def render(self, canvas_view, colors_view, source_slice: tuple[slice, slice]):
         """
-        Paint region given by rect into canvas_view and colors_view.
+        Paint region given by source_slice into canvas_view and colors_view.
         """
-        t, l, b, r, _, _ = rect
+        vert_slice, hori_slice = source_slice
+        t = vert_slice.start
+        b = vert_slice.stop
 
         canvas_view[:] = "▀"
 
         alpha = self.alpha
 
         texture = self.texture
-        even_rows = texture[2 * t: 2 * b: 2, l: r]
-        odd_rows = texture[2 * t + 1: 2 * b: 2, l: r]
+        even_rows = texture[2 * t: 2 * b: 2, hori_slice]
+        odd_rows = texture[2 * t + 1: 2 * b: 2, hori_slice]
 
         foreground = colors_view[..., :3]
         background = colors_view[..., 3:]
@@ -125,10 +127,4 @@ class GraphicWidget(_WidgetBase):
             np.add(even_buffer, foreground, out=foreground, casting="unsafe")
             np.add(odd_buffer, background, out=background, casting="unsafe")
 
-        for child in self.children:
-            if not child.is_visible or not child.is_enabled:
-                continue
-
-            if region := intersection(rect, child):
-                dest_slice, child_rect = region
-                child.render(canvas_view[dest_slice], colors_view[dest_slice], child_rect)
+        self.render_children(source_slice, canvas_view, colors_view)
