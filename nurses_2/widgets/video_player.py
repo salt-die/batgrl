@@ -5,11 +5,11 @@ import time
 
 import cv2
 
-from ..colors import BLACK_ON_BLACK
+from ..colors import ABLACK
 from .graphic_widget import GraphicWidget, Interpolation
 
 
-# Seeking is not implemented yet, but may get added soon™
+# Seeking is not yet implemented
 class VideoPlayer(GraphicWidget):
     """
     A video player.
@@ -19,8 +19,8 @@ class VideoPlayer(GraphicWidget):
     source : pathlib.Path | str | int
         A path to video, URL to video stream, or capturing device (by index).
     """
-    def __init__(self, *, source: Path | str | int, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *, source: Path | str | int, default_color=ABLACK, is_transparent=False, **kwargs):
+        super().__init__(default_color=default_color, is_transparent=is_transparent, **kwargs)
 
         self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
@@ -59,7 +59,7 @@ class VideoPlayer(GraphicWidget):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self.texture[:] = self.default_bg_color
+            self.texture[:] = self.default_color
 
     def resize(self, size):
         super().resize(size)
