@@ -458,5 +458,5 @@ class _WidgetBase(ABC):
                 sr = self.width
                 dr = wr
 
-        dest_slice = np.s_[dt: db, dl : dr]
+        dest_slice = np.s_[dt: db, dl: dr]
         self.render(canvas_view[dest_slice], colors_view[dest_slice], np.s_[st: sb, sl: sr])
