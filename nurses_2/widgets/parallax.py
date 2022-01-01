@@ -69,7 +69,7 @@ class Parallax(GraphicWidget):
         for speed, image, layer in zip(
             self.speeds,
             self._image_copies,
-            self.layers
+            self.layers,
         ):
             rolls = -round(speed * self._vertical_offset), -round(speed * self._horizontal_offset)
             axis = 0, 1
