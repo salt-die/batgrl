@@ -15,20 +15,21 @@ def _formatted_time(twelve_hour=False):
     return chain.from_iterable(divmod(n, 10) for n in (hours, minutes, seconds))
 
 
-class DigitFolder(TextWidget):
+class DigitalClock(TextWidget):
     def __init__(self, pos=(0, 0), twelve_hour=False, default_color_pair=BRIGHT_GREEN_ON_BLACK, **kwargs):
         super().__init__(
-            size=(7, 6 * 7 + 5),
+            size=(7, 47),
             pos=pos,
             default_color_pair=default_color_pair,
             **kwargs,
         )
         self.twelve_hour = twelve_hour
 
+        offsets = (0, 0, 2, 2, 4, 4)
         for i in range(6):
-            self.add_widget(DigitalDisplay(pos=(0, i * 7 + (0 if i < 2 else 2 if i < 4 else 4))))
+            self.add_widget(DigitalDisplay(pos=(0, i * 7 + offsets[i])))
 
-        self.canvas[[2, -2], 14] = self.canvas[[2, -2], 30] = "●"
+        self.canvas[[2, -3], 14] = self.canvas[[2, -3], 30] = "●"
 
         self._update_task = asyncio.create_task(self._update_time())
 
@@ -40,9 +41,9 @@ class DigitFolder(TextWidget):
             await asyncio.sleep(1)
 
 
-class DigitalClock(App):
+class DigitalClockApp(App):
     async def on_start(self):
-        self.add_widget(DigitFolder(twelve_hour=True))
+        self.add_widget(DigitalClock(twelve_hour=True))
 
 
-DigitalClock().run()
+DigitalClockApp().run()
