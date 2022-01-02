@@ -38,21 +38,21 @@ class DigitalDisplay(TextWidget):
     """
     A 7x6 seven-segment display widget.
 
-    Use `show_digit` method display a specific digit or light individual
-    segments by setting a-g to True or False, e.g.,
-    `digital_display.f = True`. The segment labels are assigned according
+    Use `show_digit` method display a specific digit or light/dim
+    individual segments by setting a-g to True or False, e.g.,
+    `digital_display.f = True`. The segments are labeled according
     to the following diagram:
 
     ```
-           a
-         ━━━━
-       b┃    ┃c
-        ┃  d ┃
-         ━━━━
-       e┃    ┃f
-        ┃    ┃
-         ━━━━
-           g
+        a
+      ━━━━
+    b┃    ┃c
+     ┃  d ┃
+      ━━━━
+    e┃    ┃f
+     ┃    ┃
+      ━━━━
+        g
     ```
     """
     def __init__(
