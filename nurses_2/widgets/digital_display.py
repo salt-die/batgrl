@@ -113,9 +113,6 @@ class Segment:
     def __init__(self, slice_):
         self.slice = slice_
 
-    def __set_name__(self, owner, name):
-        self.name = name
-
     def __get__(self, owner, instance):
         return (instance.colors[self.slice] == instance.on_color_pair).all()
 
@@ -160,12 +157,12 @@ class DigitalDisplay(TextWidget):
     f  = Segment(np.s_[1: 3,  0])
     g1 = Segment(np.s_[3, 1: 3])
     g2 = Segment(np.s_[3, 4: 6])
-    h  = Segment(np.s_[(1, 2), (1, 2)])
+    h  = Segment(((1, 2), (1, 2)))
     i  = Segment(np.s_[1: 3, 3])
-    j  = Segment(np.s_[(1, 2), (5, 4)])
-    k  = Segment(np.s_[(4, 5), (2, 1)])
+    j  = Segment(((1, 2), (5, 4)))
+    k  = Segment(((4, 5), (2, 1)))
     l  = Segment(np.s_[4: 6, 3])
-    m  = Segment(np.s_[(4, 5), (4, 5)])
+    m  = Segment(((4, 5), (4, 5)))
     dp = Segment(np.s_[6, 7:8])
 
     def __init__(
