@@ -10,16 +10,6 @@ BRIGHT_GREEN = Color.from_hex("33e860")
 DIM_GREEN_ON_BLACK = ColorPair.from_colors(DIM_GREEN, BLACK)
 BRIGHT_GREEN_ON_BLACK = ColorPair.from_colors(BRIGHT_GREEN, BLACK)
 
-_SEGMENTS = {
- "a": np.s_[ 0, 1: -1],
- "b": np.s_[ 1: 3,  0],
- "c": np.s_[ 1: 3, -1],
- "d": np.s_[ 3, 1: -1],
- "e": np.s_[ 4: 6,  0],
- "f": np.s_[ 4: 6, -1],
- "g": np.s_[-1, 1: -1],
-}
-
 _DIGIT_TO_SEGMENTS = [
     "abcefg",
     "cf",
@@ -34,11 +24,32 @@ _DIGIT_TO_SEGMENTS = [
 ]
 
 
+class Segment:
+    def __init__(self, slice_):
+        self.slice = slice_
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __get__(self, owner, instance):
+        return (instance.colors[self.slice] == instance.on_color_pair).all()
+
+    def __set__(self, instance, value):
+        instance.colors[self.slice] = instance.on_color_pair if value else instance.off_color_pair
+
+
 class DigitalDisplay(TextWidget):
     """
     A 7x6 seven-segment display widget.
 
-    Use `show_digit` method display a specific digit or light/dim
+    Parameters
+    ----------
+    off_color_pair : ColorPair, default: DIM_GREEN_ON_BLACK
+        Color pair of off segments.
+    on_color_pair : ColorPair, default: BRIGHT_GREEN_ON_BLACK
+        Color pair of on segments.
+
+    Use `show_digit` method to display a specific digit or light/dim
     individual segments by setting a-g to True or False, e.g.,
     `digital_display.f = True`. The segments are labeled according
     to the following diagram:
@@ -55,11 +66,19 @@ class DigitalDisplay(TextWidget):
         g
     ```
     """
+    a = Segment(np.s_[ 0, 1: -1])
+    b = Segment(np.s_[ 1: 3,  0])
+    c = Segment(np.s_[ 1: 3, -1])
+    d = Segment(np.s_[ 3, 1: -1])
+    e = Segment(np.s_[ 4: 6,  0])
+    f = Segment(np.s_[ 4: 6, -1])
+    g = Segment(np.s_[-1, 1: -1])
+
     def __init__(
         self,
         *,
-        off_color_pair=DIM_GREEN_ON_BLACK,
-        on_color_pair=BRIGHT_GREEN_ON_BLACK,
+        off_color_pair: ColorPair=DIM_GREEN_ON_BLACK,
+        on_color_pair: ColorPair=BRIGHT_GREEN_ON_BLACK,
         **kwargs,
     ):
         kwargs.pop("size", None)
@@ -77,17 +96,11 @@ class DigitalDisplay(TextWidget):
     def resize(self, size: Size):
         pass
 
-    def show_digit(self, n):
-        if n not in range(10):
-            raise ValueError("n must one of (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)")
+    def show_digit(self, digit: int):
+        if digit not in range(10):
+            raise ValueError(f"not a digit")
 
         self.colors[:] = self.off_color_pair
 
-        for segment in _DIGIT_TO_SEGMENTS[n]:
+        for segment in _DIGIT_TO_SEGMENTS[digit]:
             setattr(self, segment, True)
-
-    def __setattr__(self, attr, value):
-        if attr in _SEGMENTS:
-            self.colors[_SEGMENTS[attr]] = self.on_color_pair if value else self.off_color_pair
-        else:
-            super().__setattr__(attr, value)
