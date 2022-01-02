@@ -131,10 +131,10 @@ class DigitalDisplay(TextWidget):
     on_color_pair : ColorPair, default: BRIGHT_GREEN_ON_BLACK
         Color pair of on segments.
 
-    Use `show_char` method to display a ascii character or turn on/off
+    Use `show_char` method to display an ascii character or turn on/off
     individual segments by setting one of ("a", "b", "c", "d", "e",
-    "f", "g1", "g2", "h", "i", "j", "k", "l", "m", "dp") to True or False, e.g.,
-    `digital_display.f = True`. The segments are labeled according
+    "f", "g1", "g2", "h", "i", "j", "k", "l", "m", "dp") to True or False.
+    E.g., `digital_display.f = True`. The segments are labeled according
     to the following diagram:
 
     ```
