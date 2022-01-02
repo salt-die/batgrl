@@ -1,6 +1,7 @@
 import numpy as np
 
 from nurses_2.colors import Color, ColorPair, BLACK
+from nurses_2.data_structures import Size
 from nurses_2.widgets.text_widget import TextWidget
 
 DIM_GREEN = Color.from_hex("062b0f")
@@ -19,7 +20,7 @@ _SEGMENTS = {
  "g": np.s_[-1, 1: -1],
 }
 
-_DIGITS_TO_SEGMENTS = [
+_DIGIT_TO_SEGMENTS = [
     "abcefg",
     "cf",
     "acdeg",
@@ -35,21 +36,37 @@ _DIGITS_TO_SEGMENTS = [
 
 class DigitalDisplay(TextWidget):
     """
-    A seven-segment display widget.
+    A 7x6 seven-segment display widget.
+
+    Use `show_digit` method display a specific digit or light individual
+    segments by setting a-g to True or False, e.g.,
+    `digital_display.f = True`. The segment labels are assigned according
+    to the following diagram:
+
+    ```
+           a
+         ━━━━
+       b┃    ┃c
+        ┃  d ┃
+         ━━━━
+       e┃    ┃f
+        ┃    ┃
+         ━━━━
+           g
+    ```
     """
     def __init__(
         self,
         *,
-        pos=(0, 0),
         off_color_pair=DIM_GREEN_ON_BLACK,
         on_color_pair=BRIGHT_GREEN_ON_BLACK,
         **kwargs,
     ):
-        super().__init__(
-            size=(7, 6),
-            pos=pos,
-            **kwargs,
-        )
+        kwargs.pop("size", None)
+        kwargs.pop("size_hint", None)
+
+        super().__init__(size=Size(7, 6), **kwargs)
+
         self.colors[:] = self.off_color_pair = off_color_pair
         self.on_color_pair = on_color_pair
 
@@ -57,11 +74,20 @@ class DigitalDisplay(TextWidget):
         canvas[[0, 3, 6], 1: -1] = "━"
         canvas[1: 3,  [0, -1]] = canvas[4: 6, [0, -1]] = "┃"
 
+    def resize(self, size: Size):
+        pass
+
     def show_digit(self, n):
         if n not in range(10):
             raise ValueError("n must one of (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)")
 
         self.colors[:] = self.off_color_pair
 
-        for segment in _DIGITS_TO_SEGMENTS[n]:
-            self.colors[_SEGMENTS[segment]] = self.on_color_pair
+        for segment in _DIGIT_TO_SEGMENTS[n]:
+            setattr(self, segment, True)
+
+    def __setattr__(self, attr, value):
+        if attr in _SEGMENTS:
+            self.colors[_SEGMENTS[attr]] = self.on_color_pair if value else self.off_color_pair
+        else:
+            super().__setattr__(attr, value)
