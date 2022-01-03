@@ -194,7 +194,7 @@ class DigitalDisplay(TextWidget):
         pass
 
     def show_char(self, char: str):
-        if not isinstance(char, str) or len(char) != 1:
+        if char not in _CHAR_TO_SEGMENTS:
             raise ValueError(f"{char} is not a single ascii character")
 
         self.colors[self._where_segments] = self.off_color_pair
