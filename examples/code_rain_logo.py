@@ -13,7 +13,6 @@ from nurses_2.colors import (
     gradient,
     BLACK,
     GREEN,
-    WHITE,
     WHITE_ON_BLACK,
     BLACK_ON_BLACK,
 )
