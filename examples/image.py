@@ -11,7 +11,7 @@ PATH_TO_BACKGROUND = IMAGE_DIR / "background.png"
 
 class MyApp(App):
     async def on_start(self):
-        background = Image(path=PATH_TO_BACKGROUND)
+        background = Image(size_hint=(1.0, 1.0), path=PATH_TO_BACKGROUND)
 
         logo_flat = Image(
             size_hint=(.5, .5),
