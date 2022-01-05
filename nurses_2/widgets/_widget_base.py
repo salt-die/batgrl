@@ -158,8 +158,8 @@ class _WidgetBase(ABC):
         h, w = self.parent.size
         h_hint, w_hint = self.size_hint
 
-        height = self.height if h_hint is None else int(h_hint * h)
-        width = self.width if w_hint is None else int(w_hint * w)
+        height = self.height if h_hint is None else round(h_hint * h)
+        width = self.width if w_hint is None else round(w_hint * w)
 
         self.resize(Size(height, width))
 
