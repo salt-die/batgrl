@@ -1,4 +1,5 @@
 from enum import IntEnum
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -128,3 +129,7 @@ class GraphicWidget(_WidgetBase):
             np.add(odd_buffer, background, out=background, casting="unsafe")
 
         self.render_children(source, canvas_view, colors_view)
+
+    def to_png(self, path: Path):
+        BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
+        cv2.imwrite(str(path.absolute()), BGRA)
