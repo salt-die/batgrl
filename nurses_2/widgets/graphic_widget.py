@@ -1,4 +1,3 @@
-from enum import IntEnum
 from pathlib import Path
 
 import cv2
@@ -7,17 +6,9 @@ import numpy as np
 from ..clamp import clamp
 from ..colors import AColor, TRANSPARENT
 from ..data_structures import *
-from .widget_data_structures import *
 from ._widget_base import _WidgetBase
-
-
-class Interpolation(IntEnum):
-    NEAREST = cv2.INTER_NEAREST
-    LINEAR = cv2.INTER_LINEAR
-    CUBIC = cv2.INTER_CUBIC
-    AREA = cv2.INTER_AREA
-    LANCZOS = cv2.INTER_LANCZOS4
-
+from .graphic_widget_data_structures import *
+from .widget_data_structures import *
 
 class GraphicWidget(_WidgetBase):
     """

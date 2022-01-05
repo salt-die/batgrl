@@ -1,5 +1,7 @@
 from wcwidth import wcswidth
 
+__all__ = "CanvasView",
+
 
 class CanvasView:
     """
