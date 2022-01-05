@@ -3,9 +3,8 @@ import asyncio
 import cv2
 
 from nurses_2.colors import AWHITE, AColor
-from nurses_2.data_structures import Size
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget, Size
 
 from .mesh import Mesh
 

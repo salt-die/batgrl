@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from ..data_structures import *
+from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
 

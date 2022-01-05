@@ -1,7 +1,6 @@
 from nurses_2.app import App
-from nurses_2.widgets.widget_data_structures import Anchor
 
-from .minesweeper import MineSweeper
+from .minesweeper import MineSweeper, Anchor
 
 
 class MineSweeperApp(App):

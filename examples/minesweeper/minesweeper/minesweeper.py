@@ -3,11 +3,10 @@ import asyncio
 import numpy as np
 import cv2
 
-from nurses_2.widgets.text_widget import TextWidget, Anchor
+from nurses_2.widgets.text_widget import TextWidget, Anchor, Point
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.data_structures import Point
 
-from .colors import COUNT, FLAG_COLOR, DATA_BAR
+from .colors import FLAG_COLOR, DATA_BAR
 from .count import Count
 from .grid import Grid
 from .minefield import Minefield

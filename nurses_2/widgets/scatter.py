@@ -1,7 +1,6 @@
 from ..clamp import clamp
-from ..io import MouseEventType
-from .text_widget import TextWidget
 from .behaviors.grabbable_behavior import GrabbableBehavior
+from .text_widget import TextWidget
 
 
 class Scatter(GrabbableBehavior, TextWidget):

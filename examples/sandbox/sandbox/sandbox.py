@@ -4,9 +4,8 @@ import numpy as np
 
 from nurses_2.colors import color_pair, ABLACK
 from nurses_2.io import MouseButton
-from nurses_2.data_structures import Size
-from nurses_2.widgets.text_widget import TextWidget, Anchor
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor, Size
+from nurses_2.widgets.text_widget import TextWidget
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air

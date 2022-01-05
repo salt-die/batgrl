@@ -1,8 +1,7 @@
 import numpy as np
 
-from nurses_2.colors import Color, ColorPair, BLACK
-from nurses_2.data_structures import Size
-from nurses_2.widgets.text_widget import TextWidget
+from ..colors import Color, ColorPair, BLACK
+from .text_widget import TextWidget, Size
 
 DIM_GREEN = Color.from_hex("062b0f")
 BRIGHT_GREEN = Color.from_hex("33e860")

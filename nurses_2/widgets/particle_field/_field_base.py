@@ -1,4 +1,4 @@
-from ...data_structures import Point, Size
+from ...data_structures import *
 from ...io import MouseEvent, KeyPressEvent, PasteEvent
 from .._widget_base import _WidgetBase
 

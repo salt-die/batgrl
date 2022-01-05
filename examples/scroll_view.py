@@ -3,9 +3,8 @@ ScrollView example.
 """
 from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, RED, WHITE, gradient, color_pair
-from nurses_2.widgets.text_widget import TextWidget, Anchor
+from nurses_2.widgets.text_widget import TextWidget, Anchor, Size
 from nurses_2.widgets.scroll_view import ScrollView
-from nurses_2.data_structures import Size
 
 N = 20  # Number of coordinate pairs on each line.
 BIG_WIDGET_SIZE = Size(50, 8 * N + N - 1)

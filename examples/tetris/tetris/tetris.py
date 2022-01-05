@@ -6,7 +6,6 @@ from random import shuffle
 
 import numpy as np
 
-from nurses_2.colors import ABLACK
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.image import Image
 

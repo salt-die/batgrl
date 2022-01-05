@@ -77,11 +77,11 @@ class Animation(GraphicWidget):
             frame.alpha = alpha
 
     @property
-    def interpolation(self):
+    def interpolation(self) -> Interpolation:
         return self._interpolation
 
     @interpolation.setter
-    def interpolation(self, interpolation):
+    def interpolation(self, interpolation: Interpolation):
         self._interpolation = interpolation
 
         for frame in self.frames:

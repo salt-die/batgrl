@@ -3,8 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from ..data_structures import Size
-from .graphic_widget import GraphicWidget
+from .graphic_widget import GraphicWidget, Size
 
 
 class Image(GraphicWidget):

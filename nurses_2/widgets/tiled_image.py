@@ -2,8 +2,7 @@ from math import ceil
 
 import numpy as np
 
-from .graphic_widget import GraphicWidget
-from ..data_structures import Size
+from .graphic_widget import GraphicWidget, Size
 
 
 class TiledImage(GraphicWidget):
