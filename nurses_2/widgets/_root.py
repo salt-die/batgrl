@@ -1,7 +1,7 @@
 import numpy as np
 
-from ..colors import Color
-from ..data_structures import Point, Size
+from ..colors import ColorPair
+from ..data_structures import *
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from ._widget_base import _WidgetBase
 
@@ -10,7 +10,7 @@ class _Root(_WidgetBase):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, app, env_out, default_char, default_color_pair: Color):
+    def __init__(self, app, env_out, default_char, default_color_pair: ColorPair):
         self._app = app
         self.env_out = env_out
         self.default_char = default_char
