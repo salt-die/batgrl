@@ -1,3 +1,11 @@
+.. image:: https://github.com/salt-die/nurses_2/blob/main/preview_images/nurses_2.gif
+    :height: 449
+    :width: 735
+    :alt: nurses_2 preview
+    :align: center
+
+|
+
 ============================
 nurses_2 - Terminal Graphics
 ============================
