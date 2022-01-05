@@ -127,3 +127,7 @@ class App(ABC):
 
     def add_widgets(self, *widgets):
         self.root.add_widgets(*widgets)
+
+    @property
+    def children(self):
+        return self.root.children
