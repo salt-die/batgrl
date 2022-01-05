@@ -48,7 +48,7 @@ class BrailleImage(TextWidget):
     def _load_texture(self):
         h, w = self.size
 
-        img = cv2.imread(str(self.path), cv2.IMREAD_COLOR)
+        img = cv2.imread(str(self.path.absolute()), cv2.IMREAD_COLOR)
         img_bgr = cv2.resize(img, (2 * w, 4 * h))
 
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)

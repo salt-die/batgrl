@@ -38,8 +38,7 @@ class Image(GraphicWidget):
         self._load_texture()
 
     def _load_texture(self):
-        path = str(self.path)
-        image = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+        image = cv2.imread(str(self.path.absolute()), cv2.IMREAD_UNCHANGED)
 
         if image.dtype == np.dtype(np.uint16):
             image = (image // 257).astype(np.uint8)
@@ -60,6 +59,8 @@ class Image(GraphicWidget):
         """
         Resize image.
         """
-        self._size = h, w = size
+        h, w = size
+
+        self._size = Size(h, w)
 
         self.texture = cv2.resize(self._image_texture, (w, 2 * h), interpolation=self.interpolation)
