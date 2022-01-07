@@ -4,7 +4,7 @@ from ...clamp import clamp
 from ...colors import BLACK, Color
 from ...widgets.graphic_widget import GraphicWidget
 from .protocols import Map, Camera, Texture
-from .data_structures import Sprite
+from .sprite import Sprite
 
 
 class RayCaster(GraphicWidget):

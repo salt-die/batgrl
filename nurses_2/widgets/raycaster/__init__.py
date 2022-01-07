@@ -1,2 +1,4 @@
 from .raycaster import RayCaster
-from .data_structures import Sprite
+from .sprite import Sprite
+
+__all__ = "RayCaster", "Sprite"
