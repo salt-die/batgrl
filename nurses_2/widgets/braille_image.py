@@ -3,20 +3,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from ._binary_to_braille import binary_to_braille
 from .text_widget import TextWidget
-
-_TO_BIN = np.array(
-    [
-        [ 1,   8],
-        [ 2,  16],
-        [ 4,  32],
-        [64, 128],
-    ],
-    dtype=np.uint8,
-)
-_TO_BIN.flags.writeable = False
-
-vectorized_chr = np.vectorize(chr)
 
 
 class BrailleImage(TextWidget):
@@ -66,14 +54,7 @@ class BrailleImage(TextWidget):
         average_lightness = np.average(lightness, axis=(2, 3))
         where_dots = lightness > average_lightness[..., None, None]
 
-        # `ords` is an array of braille character ordinals created from `where_dots`.
-        ords = np.sum(
-            where_dots * _TO_BIN,
-            axis=(2, 3),
-            initial=0x2800,  # first braille ord
-            dtype=np.uint16,
-        )
-        self.canvas = vectorized_chr(ords)
+        self.canvas = binary_to_braille(where_dots)
 
         ndots = where_dots.sum(axis=(2, 3))
         ndots_neg = 8 - ndots
