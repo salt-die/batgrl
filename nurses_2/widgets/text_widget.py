@@ -190,7 +190,7 @@ class TextWidget(_WidgetBase):
         """
         if self.is_transparent:
             source_view = self.canvas[source]
-            visible = source_view != " "  # " " isn't painted if transparent.
+            visible = np.isin(source_view, (" ", "⠀"), invert=True)  # Whitespace isn't painted if transparent.
 
             canvas_view[visible] = source_view[visible]
             colors_view[visible] = self.colors[source][visible]
