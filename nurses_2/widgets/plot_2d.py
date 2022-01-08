@@ -18,9 +18,9 @@ class Plot2D(TextWidget):
 
     Parameters
     ----------
-    xs : list[float]
+    xs : list[float] | np.ndarray
         x-values of points to plot.
-    ys : list[float]
+    ys : list[float] | np.ndarray
         y-values of points to plot.
     xmin : float | None, default: None
         Minimum x-value of plot. If None, xmin will be min(xs).
@@ -33,8 +33,8 @@ class Plot2D(TextWidget):
     """
     def __init__(
         self,
-        xs: list[float],
-        ys: list[float],
+        xs: list[float] | np.ndarray,
+        ys: list[float] | np.ndarray,
         *,
         xmin: float | None=None,
         xmax: float | None=None,
