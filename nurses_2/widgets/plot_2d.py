@@ -9,6 +9,7 @@ from .text_widget import TextWidget
 # * Ticks
 # * Labels
 # * Multiple plots (similar functionality can be achieved by setting the plots to be transparent and layering them)
+# * Legend
 # * Embed in scroll view?
 # * Zoomable?
 class Plot2D(TextWidget):
