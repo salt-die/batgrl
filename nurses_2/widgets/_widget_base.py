@@ -231,9 +231,9 @@ class _WidgetBase(ABC):
         self_bottom = self_top + self.height
         self_right = self.left + self.width
 
-        other_top, other_left = other.absolute_pos
-        other_bottom = other_top + other.height
-        other_right = other_left + other.width
+        other_top, other_left = widget.absolute_pos
+        other_bottom = other_top + widget.height
+        other_right = other_left + widget.width
 
         return not (
             self_top >= other_bottom
