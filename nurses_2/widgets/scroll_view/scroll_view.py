@@ -166,7 +166,7 @@ class ScrollView(GrabbableBehavior, TextWidget):
         """
         if self.is_transparent:
             source = self.canvas[source]
-            visible = source != " "  # " " isn't painted if transparent.
+            visible = np.isin(source_view, (" ", "⠀"), invert=True)  # Whitespace isn't painted if transparent.
 
             canvas_view[visible] = source[visible]
             colors_view[visible] = self.colors[source][visible]
@@ -250,7 +250,10 @@ class ScrollView(GrabbableBehavior, TextWidget):
         return self.on_click(mouse_event)
 
     def on_click(self, mouse_event: MouseEvent):
-        if self.collides_point(mouse_event.position):
+        if (
+            self.scrollwheel_enabled
+            and self.collides_point(mouse_event.position)
+        ):
             match mouse_event.event_type:
                 case MouseEventType.SCROLL_UP:
                     self._scroll_up()
