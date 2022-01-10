@@ -209,14 +209,20 @@ class ScrollView(GrabbableBehavior, TextWidget):
 
     def _scroll_left(self, n=1):
         if self._view is not None:
-            self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance, 0, 1)
+            if self.total_horizontal_distance > 0:
+                self.horizontal_proportion = clamp((-self.view_left - n) / self.total_horizontal_distance, 0, 1)
+            else:
+                self.horizontal_proportion = 0
 
     def _scroll_right(self, n=1):
         self._scroll_left(-n)
 
     def _scroll_up(self, n=1):
         if self._view is not None:
-            self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance, 0, 1)
+            if self.total_vertical_distance > 0:
+                self.vertical_proportion = clamp((-self.view_top - n) / self.total_vertical_distance, 0, 1)
+            else:
+                self.vertical_proportion = 0
 
     def _scroll_down(self, n=1):
         self._scroll_up(-n)
