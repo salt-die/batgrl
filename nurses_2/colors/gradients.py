@@ -57,7 +57,7 @@ def gradient(start, end, ncolors):
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
     """
-    if ncolors < 1:
+    if ncolors < 2:
         raise ValueError(f"not enough colors ({ncolors=})")
 
     color_type = type(start)
