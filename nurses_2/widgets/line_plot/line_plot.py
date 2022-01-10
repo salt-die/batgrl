@@ -10,6 +10,8 @@ from ._traces import _Traces, TICK_WIDTH, TICK_HALF
 PLOT_SIZES = [SizeHint(x, x) for x in (1.0, 1.25, 1.75, 2.75, 5.0)]
 
 
+# TODO:
+# * Customize color of labels, ticks, legend text.
 class LinePlot(TextWidget):
     """
     A 2D line plot widget.
