@@ -2,15 +2,42 @@ import numpy as np
 
 from ...colors import Color
 from ...io import MouseEvent, MouseEventType
-from ..text_widget import TextWidget, SizeHint, Anchor
+from ..text_widget import TextWidget, SizeHint, Anchor, Size
 from ..scroll_view import ScrollView
 from ._legend import _Legend
-from ._traces import _Traces
+from ._traces import _Traces, TICK_WIDTH, TICK_HALF
 
 PLOT_SIZES = [SizeHint(x, x) for x in (1.0, 1.25, 1.75, 2.75, 5.0)]
 
 
 class LinePlot(TextWidget):
+    """
+    A 2D line plot widget.
+
+    Parameters
+    ----------
+    *points : list[float] | np.ndarray
+        For a single plot `points` will be `xs, ys` where xs and ys
+        are each a list of floats or a 1-dimensional numpy array.
+        For multiple plots, include additional xs and ys so that
+        points will be `xs_0, ys_0, xs_1, ys_1, ...`.
+    xmin : float | None, default: None
+        Minimum x-value of plot. If None, xmin will be minimum of all xs.
+    xmax : float | None, default: None
+        Maximum x-value of plot. If None, xmax will be maximum of all xs.
+    ymin : float | None, default: None
+        Minimum y-value of plot. If None, ymin will be minimum of all ys.
+    ymax : float | None, default: None
+        Maximum y-value of plot. If None, ymax will be maximum of all ys.
+    xlabel : str | None, default: None
+        Optional label for x-axis.
+    ylabel : str | None, default: None
+        Optional label for y-axis.
+    legend_labels : list[str] | None, default: None
+        If provided, a moveable legend will be added for each plot.
+    line_colors : list[Color] | None, default: None
+        The color of each line plot. A rainbow gradient is used as default.
+    """
     def __init__(
         self,
         *points: list[float] | np.ndarray,
@@ -20,47 +47,108 @@ class LinePlot(TextWidget):
         ymax: float | None=None,
         xlabel: str | None=None,
         ylabel: str | None=None,
-        legend: list[str] | None=None,
-        colors: list[Color] | None=None,
+        legend_labels: list[str] | None=None,
+        line_colors: list[Color] | None=None,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self._trace_size_hint = 0
 
-        self._traces = _Traces(*points, xmin, xmax, ymin, ymax)
+        self._plot = TextWidget()
+
+        self._traces = _Traces(
+            *points,
+            xmin=xmin,
+            xmax=xmax,
+            ymin=ymin,
+            ymax=ymax,
+            line_colors=line_colors,
+        )
 
         self._scrollview = ScrollView(
+            pos=(0, TICK_WIDTH),
             show_vertical_bar=False,
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
         )
-        self._scrollview.add_widget(self._traces) # Scrollview needs to be positioned next to ticks.
-        self.add_widget(self._scrollview)
+        self._scrollview.add_widget(self._traces)
 
-        if xlabel is not None:
-            self.xlabel = TextWidget(size=(1, len(xlabel)), pos_hint=(1.0, .5), anchor=Anchor.BOTTOM_CENTER)
-            self.xlabel.add_text(xlabel)
-            self.add_widget(self.xlabel)
+        self._tick_corner = TextWidget(size=(2, TICK_WIDTH), pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT)
+        self._tick_corner.canvas[0, -1] = "└"
 
-        if ylabel is not None:
-            self.ylabel = TextWidget(size=(len(ylabel), 1), pos_hint=(.5, 0.0), anchor=Anchor.LEFT_CENTER)
-            self.ylabel.get_view[:, 0].add_text(ylabel)
-            self.add_widget(self.ylabel)
-
-        self.add_widgets(
-            self._traces.xticks,
-            self._traces.yticks,
+        self._plot.add_widgets(
+            self._scrollview,
+            self._traces.x_ticks,
+            self._traces.y_ticks,
+            self._tick_corner,
         )
 
-        if legend is not None:
+        self.add_widget(self._plot)
+
+        if xlabel is not None:
+            self.xlabel = TextWidget(size=(1, len(xlabel)))
+            self.xlabel.add_text(xlabel)
+            self.add_widget(self.xlabel)
+        else:
+            self.xlabel = None
+
+        if ylabel is not None:
+            self.ylabel = TextWidget(size=(len(ylabel), 1))
+            self.ylabel.get_view[:, 0].add_text(ylabel)
+            self._plot.left += 1
+            self.add_widget(self.ylabel)
+        else:
+            self.ylabel = None
+
+        if legend_labels is not None:
             self._legend = _Legend(
-                legend,
-                colors,
-                pos_hint=(.9, .9),
-                anchor=Anchor.BOTTOM_RIGHT
+                legend_labels,
+                self._traces.line_colors,
             )
             self.add_widget(self._legend)
+        else:
+            self._legend = None
+
+    def resize(self, size: Size):
+        super().resize(size)
+
+        h, w = size
+
+        xlabel = self.xlabel
+        ylabel = self.ylabel
+
+        has_xlabel = bool(xlabel)
+        has_ylabel = bool(ylabel)
+
+        self._plot.resize(
+            (
+                max(1, h - has_ylabel),
+                max(1, w - has_xlabel),
+            )
+        )
+        self._scrollview.resize(
+            (
+                max(1, h - 2 - has_ylabel),
+                max(1, w - TICK_WIDTH - has_xlabel),
+            )
+        )
+
+        hint_y, hint_x = PLOT_SIZES[self._trace_size_hint]
+        self._traces.resize(
+            (
+                max(1, round(h * hint_y) - 2 - has_ylabel),
+                max(1, round(w * hint_x) - TICK_WIDTH - has_xlabel),
+            )
+        )
+
+        xlabel.pos = h - 1, (w - TICK_WIDTH - has_ylabel) // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel
+        ylabel.top = (h - 2 - has_xlabel) // 2 - ylabel.height // 2
+
+        if self._legend:
+            legend = self._legend
+            legend.top = h - legend.height - 3
+            legend.left = w - legend.width - TICK_HALF
 
     def on_click(self, mouse_event: MouseEvent) -> bool | None:
         if not self.collides_point(mouse_event.position):
@@ -68,7 +156,7 @@ class LinePlot(TextWidget):
 
         match mouse_event.event_type:
             case MouseEventType.SCROLL_UP:
-                self._trace_size_hint = min(self._trace_size_hint + 1, len(PLOT_SIZES))
+                self._trace_size_hint = min(self._trace_size_hint + 1, len(PLOT_SIZES) - 1)
             case MouseEventType.SCROLL_DOWN:
                 self._trace_size_hint = max(0, self._trace_size_hint - 1)
             case _:
