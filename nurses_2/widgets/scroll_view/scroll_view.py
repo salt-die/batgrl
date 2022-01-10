@@ -1,3 +1,5 @@
+import numpy as np
+
 from ...clamp import clamp
 from ...colors import Color
 from ...io import KeyPressEvent, MouseEventType, MouseEvent
@@ -165,10 +167,10 @@ class ScrollView(GrabbableBehavior, TextWidget):
         Paint region given by source into canvas_view and colors_view.
         """
         if self.is_transparent:
-            source = self.canvas[source]
+            source_view = self.canvas[source]
             visible = np.isin(source_view, (" ", "⠀"), invert=True)  # Whitespace isn't painted if transparent.
 
-            canvas_view[visible] = source[visible]
+            canvas_view[visible] = source_view[visible]
             colors_view[visible] = self.colors[source][visible]
         else:
             canvas_view[:] = self.canvas[source]
