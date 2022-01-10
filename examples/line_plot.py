@@ -1,7 +1,11 @@
 import numpy as np
 
 from nurses_2.app import App
+from nurses_2.colors import Color, ColorPair
 from nurses_2.widgets.line_plot import LinePlot
+
+LIGHT_BLUE = Color.from_hex("56a1e2")
+DARK_PURPLE = Color.from_hex("020028")
 
 XS = np.arange(20)
 
@@ -24,6 +28,7 @@ class MyPlots(App):
                 ylabel="Y Values",
                 legend_labels=("Before", "During", "After"),
                 size_hint=(1.0, 1.0),
+                default_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
             )
         )
 

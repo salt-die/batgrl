@@ -6,7 +6,7 @@ from ..text_widget import TextWidget
 class _Legend(DraggableBehavior, TextWidget):
     def __init__(self, labels: list[str], colors: list[Color], **kwargs):
         if len(labels) != len(colors):
-            raise ValueError("Not enough labels provided for legend.")
+            raise ValueError("Length of labels not equal to length of colors.")
 
         height = len(labels) + 2
         width = 6 + max(map(len, labels))

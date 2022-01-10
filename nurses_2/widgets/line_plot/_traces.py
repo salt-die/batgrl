@@ -27,8 +27,8 @@ class _Traces(TextWidget):
         line_colors: list[Color] | None,
         **kwargs,
     ):
-        self.x_ticks = TextWidget(pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT)
-        self.y_ticks = TextWidget()
+        self.x_ticks = TextWidget(pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT, **kwargs)
+        self.y_ticks = TextWidget(**kwargs)
 
         super().__init__(**kwargs)
 
@@ -101,7 +101,7 @@ class _Traces(TextWidget):
         x_ticks.canvas[0] = "─"
 
         for row in range(offset_h - 1, -1, -VERTICAL_SPACING):
-            y_label = lerp(ymax, ymin, row / offset_h)
+            y_label = lerp(ymax, ymin, row / (offset_h - 1))
             y_ticks.add_text(
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
                 row=row
@@ -109,7 +109,7 @@ class _Traces(TextWidget):
         y_ticks.canvas[0, -1] = "┐"
 
         for column in range(0, offset_w, TICK_WIDTH):
-            x_label = lerp(xmin, xmax, column / offset_w)
+            x_label = lerp(xmin, xmax, column / (offset_w - 1))
             x_ticks.add_text("┬", row=0, column=column + TICK_HALF)
             x_ticks.add_text(
                 f"{x_label:^{TICK_WIDTH}.{PRECISION}g}"[:TICK_WIDTH],
@@ -117,7 +117,7 @@ class _Traces(TextWidget):
                 column=column,
             )
 
-        last_tick_column = -TICK_HALF - TICK_WIDTH % 2
+        last_tick_column = -TICK_HALF - 1 - TICK_WIDTH % 2
         x_ticks.add_text("┐", row=0, column=last_tick_column)
         x_ticks.canvas[0, last_tick_column + 1:] = x_ticks.default_char
 

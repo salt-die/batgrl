@@ -10,8 +10,6 @@ from ._traces import _Traces, TICK_WIDTH, TICK_HALF
 PLOT_SIZES = [SizeHint(x, x) for x in (1.0, 1.25, 1.75, 2.75, 5.0)]
 
 
-# TODO:
-# * Customize color of labels, ticks, legend text.
 class LinePlot(TextWidget):
     """
     A 2D line plot widget.
@@ -55,9 +53,17 @@ class LinePlot(TextWidget):
     ):
         super().__init__(**kwargs)
 
+        child_kwargs = dict(
+            is_transparent=self.is_transparent,
+            is_visible=self.is_visible,
+            is_enabled=self.is_enabled,
+            default_char=self.default_char,
+            default_color_pair=self.default_color_pair,
+        )
+
         self._trace_size_hint = 0
 
-        self._plot = TextWidget()
+        self._plot = TextWidget(**child_kwargs)
 
         self._traces = _Traces(
             *points,
@@ -66,6 +72,7 @@ class LinePlot(TextWidget):
             ymin=ymin,
             ymax=ymax,
             line_colors=line_colors,
+            **child_kwargs,
         )
 
         self._scrollview = ScrollView(
@@ -73,10 +80,16 @@ class LinePlot(TextWidget):
             show_vertical_bar=False,
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
+            **child_kwargs,
         )
         self._scrollview.add_widget(self._traces)
 
-        self._tick_corner = TextWidget(size=(2, TICK_WIDTH), pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT)
+        self._tick_corner = TextWidget(
+            size=(2, TICK_WIDTH),
+            pos_hint=(1.0, None),
+            anchor=Anchor.BOTTOM_LEFT,
+            **child_kwargs,
+        )
         self._tick_corner.canvas[0, -1] = "└"
 
         self._plot.add_widgets(
@@ -89,14 +102,14 @@ class LinePlot(TextWidget):
         self.add_widget(self._plot)
 
         if xlabel is not None:
-            self.xlabel = TextWidget(size=(1, len(xlabel)))
+            self.xlabel = TextWidget(size=(1, len(xlabel)), **child_kwargs)
             self.xlabel.add_text(xlabel)
             self.add_widget(self.xlabel)
         else:
             self.xlabel = None
 
         if ylabel is not None:
-            self.ylabel = TextWidget(size=(len(ylabel), 1))
+            self.ylabel = TextWidget(size=(len(ylabel), 1), **child_kwargs)
             self.ylabel.get_view[:, 0].add_text(ylabel)
             self._plot.left += 1
             self.add_widget(self.ylabel)
@@ -104,13 +117,14 @@ class LinePlot(TextWidget):
             self.ylabel = None
 
         if legend_labels is not None:
-            self._legend = _Legend(
+            self.legend = _Legend(
                 legend_labels,
                 self._traces.line_colors,
+                **child_kwargs,
             )
-            self.add_widget(self._legend)
+            self.add_widget(self.legend)
         else:
-            self._legend = None
+            self.legend = None
 
     def resize(self, size: Size):
         super().resize(size)
@@ -147,10 +161,10 @@ class LinePlot(TextWidget):
         xlabel.pos = h - 1, (w - TICK_WIDTH - has_ylabel) // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel
         ylabel.top = (h - 2 - has_xlabel) // 2 - ylabel.height // 2
 
-        if self._legend:
-            legend = self._legend
+        if self.legend:
+            legend = self.legend
             legend.top = h - legend.height - 3
-            legend.left = w - legend.width - TICK_HALF
+            legend.left = w - legend.width - TICK_HALF - TICK_WIDTH % 2
 
     def on_click(self, mouse_event: MouseEvent) -> bool | None:
         if not self.collides_point(mouse_event.position):
