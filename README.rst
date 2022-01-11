@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/salt-die/nurses_2/main/preview_images/nurses_2.gif
+.. image:: https://github.com/salt-die/nurses_2/blob/main/preview_images/nurses_2.gif?raw=true
     :height: 449
     :width: 735
     :alt: nurses_2 preview
