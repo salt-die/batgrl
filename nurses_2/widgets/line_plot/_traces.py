@@ -24,7 +24,7 @@ class _Traces(TextWidget):
         xmax: float | None=None,
         ymin: float | None=None,
         ymax: float | None=None,
-        line_colors: list[Color] | None,
+        line_colors: list[Color] | None=None,
         **kwargs,
     ):
         self.x_ticks = TextWidget(pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT, **kwargs)
