@@ -43,6 +43,8 @@ class _Traces(TextWidget):
         self.ymax = max(ys.max() for ys in self.all_ys) if ymax is None else ymax
 
         self.line_colors = rainbow_gradient(len(self.all_xs)) if line_colors is None else line_colors
+        if len(self.line_colors) != len(self.all_xs):
+            raise ValueError("number of plots inconsistent with number of colors")
 
         self.resize(self.size)
 

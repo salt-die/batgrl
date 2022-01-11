@@ -63,7 +63,7 @@ class LinePlot(TextWidget):
 
         self._trace_size_hint = 0
 
-        self._plot = TextWidget(**child_kwargs)
+        self.plot = TextWidget(**child_kwargs)
 
         self._traces = _Traces(
             *points,
@@ -92,14 +92,14 @@ class LinePlot(TextWidget):
         )
         self._tick_corner.canvas[0, -1] = "└"
 
-        self._plot.add_widgets(
+        self.plot.add_widgets(
             self._scrollview,
             self._traces.x_ticks,
             self._traces.y_ticks,
             self._tick_corner,
         )
 
-        self.add_widget(self._plot)
+        self.add_widget(self.plot)
 
         if xlabel is not None:
             self.xlabel = TextWidget(size=(1, len(xlabel)), **child_kwargs)
@@ -111,12 +111,15 @@ class LinePlot(TextWidget):
         if ylabel is not None:
             self.ylabel = TextWidget(size=(len(ylabel), 1), **child_kwargs)
             self.ylabel.get_view[:, 0].add_text(ylabel)
-            self._plot.left += 1
+            self.plot.left += 1
             self.add_widget(self.ylabel)
         else:
             self.ylabel = None
 
         if legend_labels is not None:
+            if len(legend_labels) != len(self._traces.all_xs):
+                raise ValueError("number of labels inconsistent with number of plots")
+
             self.legend = _Legend(
                 legend_labels,
                 self._traces.line_colors,
@@ -137,29 +140,35 @@ class LinePlot(TextWidget):
         has_xlabel = bool(xlabel)
         has_ylabel = bool(ylabel)
 
-        self._plot.resize(
+        plot = self.plot
+        plot.resize(
             (
-                max(1, h - has_ylabel),
-                max(1, w - has_xlabel),
+                max(1, h - has_xlabel),
+                max(1, w - has_ylabel),
             )
         )
-        self._scrollview.resize(
+
+        scrollview = self._scrollview
+        scrollview.resize(
             (
-                max(1, h - 2 - has_ylabel),
-                max(1, w - TICK_WIDTH - has_xlabel),
+                max(1, plot.height - 2),
+                max(1, plot.width - TICK_WIDTH),
             )
         )
 
         hint_y, hint_x = PLOT_SIZES[self._trace_size_hint]
         self._traces.resize(
             (
-                max(1, round(h * hint_y) - 2 - has_ylabel),
-                max(1, round(w * hint_x) - TICK_WIDTH - has_xlabel),
+                round(scrollview.height * hint_y),
+                round(scrollview.width * hint_x),
             )
         )
 
-        xlabel.pos = h - 1, (w - TICK_WIDTH - has_ylabel) // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel
-        ylabel.top = (h - 2 - has_xlabel) // 2 - ylabel.height // 2
+        if has_xlabel:
+            xlabel.pos = h - 1, scrollview.width // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel
+
+        if has_ylabel:
+            ylabel.top = scrollview.height // 2 - ylabel.height // 2
 
         if self.legend:
             legend = self.legend
