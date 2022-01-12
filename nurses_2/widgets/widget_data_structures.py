@@ -15,15 +15,15 @@ class PosHint(NamedTuple):
 
 
 class Anchor(str, Enum):
-    CENTER = "CENTER"
-    LEFT_CENTER = "LEFT_CENTER"
-    RIGHT_CENTER = "RIGHT_CENTER"
-    TOP_LEFT = "TOP_LEFT"
-    TOP_CENTER = "TOP_CENTER"
-    TOP_RIGHT = "TOP_RIGHT"
-    BOTTOM_LEFT = "BOTTOM_LEFT"
-    BOTTOM_CENTER = "BOTTOM_CENTER"
-    BOTTOM_RIGHT = "BOTTOM_RIGHT"
+    CENTER = "center"
+    LEFT_CENTER = "left_center"
+    RIGHT_CENTER = "right_center"
+    TOP_LEFT = "top_left"
+    TOP_CENTER = "top_center"
+    TOP_RIGHT = "top_right"
+    BOTTOM_LEFT = "bottom_left"
+    BOTTOM_CENTER = "bottom_center"
+    BOTTOM_RIGHT = "bottom_right"
 
 
 class Transition(str, Enum):
