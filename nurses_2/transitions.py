@@ -42,7 +42,7 @@ def linear(p):
     return p
 
 def in_quad(p):
-    return p ** 2
+    return p**2
 
 def out_quad(p):
     return -p * (p - 2)
