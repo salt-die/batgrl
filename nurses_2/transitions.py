@@ -56,7 +56,7 @@ def in_out_quad(p):
     return (1 - p * (p - 2)) / 2
 
 def in_cubic(p):
-    return p ** 3
+    return p**3
 
 def out_cubic(p):
     p -= 1
