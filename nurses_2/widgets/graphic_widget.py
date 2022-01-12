@@ -57,7 +57,7 @@ class GraphicWidget(_WidgetBase):
 
         self.default_color = default_color
         self.interpolation = interpolation
-        self.alpha = clamp(alpha, 0, 1.0)
+        self.alpha = alpha
 
         h, w = self.size
         self.texture = np.full(
@@ -65,6 +65,14 @@ class GraphicWidget(_WidgetBase):
             default_color,
             dtype=np.uint8,
         )
+
+    @property
+    def alpha(self):
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     def resize(self, size: Size):
         """
