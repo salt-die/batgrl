@@ -3,6 +3,7 @@ Functions for creating color gradients.
 """
 import numpy as np
 
+from ..transitions import lerp
 from .color_data_structures import *
 from .colors import BLACK, WHITE, color_pair
 
@@ -46,30 +47,16 @@ def background_rainbow(ncolors=20, fg_color: Color=WHITE):
         for bg_color in rainbow_gradient(ncolors)
     ]
 
-def lerp(start, end, proportion):
-    """
-    Linear interpolation between `start` and `end`.
-    """
-    for a, b in zip(start, end):
-        yield round((1 - proportion) * a + proportion * b)
+def _lerp_color(start: Color | AColor, end: Color | AColor, p: float) -> Color | AColor:
+    return type(start)(
+        *(round(lerp(a, b, p)) for a, b in zip(start, end))
+    )
 
-def gradient(start, end, ncolors):
+def gradient(start: Color | AColor, end: Color | AColor, ncolors: int) -> list[Color | AColor]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
     """
     if ncolors < 2:
         raise ValueError(f"not enough colors ({ncolors=})")
 
-    color_type = type(start)
-
-    grad = [ start ]
-
-    for i in range(ncolors - 2):
-        proportion = (i + 1) / (ncolors - 1)
-        grad.append(
-            color_type(*lerp(start, end, proportion))
-        )
-
-    grad.append(end)
-
-    return grad
+    return [_lerp_color(start, end, i / (ncolors - 1)) for i in range(ncolors)]

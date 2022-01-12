@@ -3,6 +3,7 @@ import numpy as np
 
 from ...colors import Color, rainbow_gradient
 from ...data_structures import Size
+from ...transitions import lerp
 from .._binary_to_braille import binary_to_braille
 from ..text_widget import TextWidget, Anchor
 
@@ -11,9 +12,6 @@ TICK_HALF = TICK_WIDTH // 2
 VERTICAL_SPACING = 5
 VERTICAL_HALF = VERTICAL_SPACING // 2
 PRECISION = 4
-
-def lerp(a, b, p):
-    return (1 - p) * a + p * b
 
 
 class _Traces(TextWidget):
