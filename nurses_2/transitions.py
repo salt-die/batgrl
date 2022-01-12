@@ -53,7 +53,7 @@ def in_out_quad(p):
         return p**2 / 2
 
     p -= 1
-    return -(p * (p - 2) - 1) / 2
+    return (1 - p * (p - 2)) / 2
 
 def in_cubic(p):
     return p ** 3
@@ -75,7 +75,7 @@ def in_quart(p):
 
 def out_quart(p):
     p -= 1
-    return -(p**4 - 1)
+    return 1 - p**4
 
 def in_out_quart(p):
     p *= 2
@@ -83,7 +83,7 @@ def in_out_quart(p):
         return p**4 / 2
 
     p -= 2
-    return -(p**4 - 2) / 2
+    return (2 - p**4) / 2
 
 def in_quint(p):
     return p**5
@@ -107,7 +107,7 @@ def out_sine(p):
     return sin(p * (pi / 2))
 
 def in_out_sine(p):
-    return -(cos(pi * p) - 1) / 2
+    return (1 - cos(pi * p)) / 2
 
 def in_exp(p):
     if p == 0:
@@ -119,7 +119,7 @@ def out_exp(p):
     if p == 1:
         return 1
 
-    return 1 - (2**(-10 * p))
+    return 1 - 2**(-10 * p)
 
 def in_out_exp(p):
     if p == 0:
@@ -134,10 +134,10 @@ def in_out_exp(p):
         return 2**(10 * (p - 1)) / 2
 
     p -= 1
-    return (-2**(-10 * p) + 2) / 2
+    return (2 - 2**(-10 * p)) / 2
 
 def in_circ(p):
-    return -(1 - p**2)**.5 + 1
+    return 1 - (1 - p**2)**.5
 
 def out_circ(p):
     p -= 1
@@ -158,7 +158,7 @@ def in_elastic(p):
         return p
 
     p -= 1
-    return -(2**(10 * p) * sin((p - S / 4) * tau / S))
+    return 2**(10 * p) * -sin((p - S / 4) * tau / S)
 
 def out_elastic(p):
     S = .3
@@ -177,9 +177,9 @@ def in_out_elastic(p):
     p *= 2
     p -= 1
     if p < 0:
-        return -(2**(10 * p) * sin((q - T / 4) * tau / T)) / 2
+        return 2**(10 * p) * -sin((q - T / 4) * tau / T) / 2
 
-    return (2**(-10 * p) * sin(q - T / 4) * tau / T) / 2 + 1
+    return 2**(-10 * p) * sin((q - T / 4) * tau / T) / 2 + 1
 
 def in_back(p):
     S = 1.70158
@@ -197,7 +197,7 @@ def in_out_back(p):
         return (p**2 * ((S + 1) * p - S)) / 2
 
     p -= 2
-    return (p ** 2 * ((S + 1) * p + S) + 2) / 2
+    return (p**2 * ((S + 1) * p + S) + 2) / 2
 
 def out_bounce(p):
     S = 7.5625
@@ -208,14 +208,14 @@ def out_bounce(p):
 
     if p < 2 / T:
         p -= 1.5 / T
-        return S * p ** 2 + .75
+        return S * p**2 + .75
 
     if p < 2.5 / T:
         p -= 2.25 / T
-        return S * p ** 2 + .9375
+        return S * p**2 + .9375
 
     p -= 2.625 / T
-    return S * p ** 2 + .984375
+    return S * p**2 + .984375
 
 def in_bounce(p):
     return 1 - out_bounce(1 - p)
