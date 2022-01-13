@@ -36,193 +36,148 @@ __all__ = (
 )
 
 def lerp(a, b, p):
-    return (1 - p) * a + p * b
+    return (1.0 - p) * a + p * b
 
 def linear(p):
     return p
 
 def in_quad(p):
-    return p**2
+    return p**2.0
 
 def out_quad(p):
-    return -p * (p - 2)
+    return -p * (p - 2.0)
 
 def in_out_quad(p):
-    p *= 2
-    if p < 1:
-        return p**2 / 2
+    if p < .5:
+        return 2.0 * p**2.0
 
-    p -= 1
-    return (1 - p * (p - 2)) / 2
+    return -2.0 * p**2.0 + 4.0 * p - 1.0
 
 def in_cubic(p):
-    return p**3
+    return p**3.0
 
 def out_cubic(p):
-    p -= 1
-    return p**3 + 1
+    return (p - 1.0)**3.0 + 1.0
 
 def in_out_cubic(p):
-    p *= 2
-    if p < 1:
-        return p**3 / 2
+    if p < .5:
+        return 4.0 * p**3.0
 
-    p -= 2
-    return (p**3 + 2) / 2
+    return .5 * (2.0 * p - 2.0)**3.0 + 1.0
 
 def in_quart(p):
-    return p**4
+    return p**4.0
 
 def out_quart(p):
-    p -= 1
-    return 1 - p**4
+    return 1.0 - (p - 1.0)**4.0
 
 def in_out_quart(p):
-    p *= 2
-    if p < 1:
-        return p**4 / 2
+    if p < .5:
+        return 8.0 * p**4.0
 
-    p -= 2
-    return (2 - p**4) / 2
+    return -8.0 * (p - 1.0)**4.0 + 1.0
 
 def in_quint(p):
-    return p**5
+    return p**5.0
 
 def out_quint(p):
-    p -= 1
-    return p**5 + 1
+    return (p - 1.0)**5.0 + 1.0
 
 def in_out_quint(p):
-    p *= 2
-    if p < 1:
-        return p**5 / 2
+    if p < .5:
+        return 16.0 * p**5.0
 
-    p -= 2
-    return (p**5 + 2) / 2
+    return .5 * (2.0 * p - 2.0)**5.0 + 1.0
 
 def in_sine(p):
-    return -cos(p * (pi / 2)) + 1
+    return sin((p - 1.0) * pi * .5) + 1.0
 
 def out_sine(p):
-    return sin(p * (pi / 2))
+    return sin(p * pi * .5)
 
 def in_out_sine(p):
-    return (1 - cos(pi * p)) / 2
+    return .5 * (1.0 - cos(p * pi))
 
 def in_exp(p):
-    if p == 0:
-        return 0
+    if p == 0.0:
+        return 0.0
 
-    return 2**(10 * (p - 1))
+    return 2.0**(10.0 * (p - 1.0))
 
 def out_exp(p):
-    if p == 1:
-        return 1
+    if p == 1.0:
+        return 1.0
 
-    return 1 - 2**(-10 * p)
+    return 1.0 - 2.0**(-10.0 * p)
 
 def in_out_exp(p):
-    if p == 0:
-        return 0
+    if p == 0.0:
+        return 0.0
 
-    if p == 1:
-        return 1
+    if p == 1.0:
+        return 1.0
 
-    p *= 2
+    if p < .5:
+        return .5 * 2.0**(20.0 * p - 10.0)
 
-    if p < 1:
-        return 2**(10 * (p - 1)) / 2
-
-    p -= 1
-    return (2 - 2**(-10 * p)) / 2
+    return -.5 * 2.0**(-20.0 * p + 10.0) + 1.0
 
 def in_circ(p):
-    return 1 - (1 - p**2)**.5
+    return 1.0 - (1.0 - p**2.0)**.5
 
 def out_circ(p):
-    p -= 1
-    return (1 - p**2)**.5
+    return ((2.0 - p) * p)**.5
 
 def in_out_circ(p):
-    p *= 2
-    if p < 1:
-        return -((1 - p**2)**.5 - 1) / 2
+    if p < .5:
+        return .5 * (1.0 - (1.0 - 4.0 * p**2.0)**.5)
 
-    p -= 2
-    return ((1 - p**2)**.5 + 1) / 2
+    return .5 * ((-(2.0 * p - 3.0) * (2.0 * p - 1.0))**.5 + 1.0)
 
 def in_elastic(p):
-    S = .3
-
-    if p == 1:
-        return p
-
-    p -= 1
-    return 2**(10 * p) * -sin((p - S / 4) * tau / S)
+    return sin(6.5 * pi * p) * 2.0**(10.0 * (p - 1.0))
 
 def out_elastic(p):
-    S = .3
-
-    if p == 1:
-        return 1
-
-    return 2**(-10 * p) * sin((p - S / 4) * tau / S) + 1
+    return sin(-6.5 * pi * (p + 1.0)) * 2.0**(-10.0 * p) + 1.0
 
 def in_out_elastic(p):
-    T = .415
+    if p < .5:
+        return .5 * sin(13.0 * pi * p) * 2.0**(20.0 * p - 10.0)
 
-    if p == 1:
-        return 1
-
-    p *= 2
-    p -= 1
-    if p < 0:
-        return 2**(10 * p) * -sin((q - T / 4) * tau / T) / 2
-
-    return 2**(-10 * p) * sin((q - T / 4) * tau / T) / 2 + 1
+    return .5 * (sin(-13.0 * pi * p) * 2.0**(-20.0 * p + 10.0) + 2.0)
 
 def in_back(p):
-    S = 1.70158
-    return p**2 * ((S + 1) * p - S)
+    return p**3.0 - p * sin(p * pi)
 
 def out_back(p):
-    S = 1.70158
-    p -= 1
-    return p**2 * ((S + 1) * p + S) + 1
+    p = 1.0 - p
+    return 1.0 - p**3.0 + p * sin(p * pi)
 
 def in_out_back(p):
-    S = 2.5949095
-    p *= 2
-    if p < 1:
-        return (p**2 * ((S + 1) * p - S)) / 2
+    if p < .5:
+        p *= 2.0
+        return .5 * (p**3.0 - p * sin(p * pi))
 
-    p -= 2
-    return (p**2 * ((S + 1) * p + S) + 2) / 2
+    p = 2.0 * (1.0 - p)
+    return .5 * (1.0 - p**3.0 + p * sin(p * pi)) + .5
 
 def out_bounce(p):
-    S = 7.5625
-    T = 2.75
+    if p < 4.0 / 11.0:
+        return 121.0 * p**2.0 / 16.0
 
-    if p < 1 / T:
-        return S * p**2
+    if p < 8.0 / 11.0:
+        return 363.0 / 40.0 * p**2.0 - 99.0 / 10.0 * p + 17.0 / 5.0
 
-    if p < 2 / T:
-        p -= 1.5 / T
-        return S * p**2 + .75
+    if p < 9.0 / 10.0:
+        return 4356.0 / 361.0 * p**2.0 - 35442.0 / 1805.0 * p + 16061.0 / 1805.0
 
-    if p < 2.5 / T:
-        p -= 2.25 / T
-        return S * p**2 + .9375
-
-    p -= 2.625 / T
-    return S * p**2 + .984375
+    return 54.0 / 5.0 * p**2.0 - 513.0 / 25.0 * p + 268.0 / 25.0
 
 def in_bounce(p):
-    return 1 - out_bounce(1 - p)
+    return 1.0 - out_bounce(1.0 - p)
 
 def in_out_bounce(p):
-    p *= 2
-    if p < 1:
-        return in_bounce(p) / 2
+    if p < .5:
+        return .5 * in_bounce(2.0 * p)
 
-    return (out_bounce(p - 1) + 1) / 2
+    return .5 * out_bounce(2.0 * p - 1.0) + .5
