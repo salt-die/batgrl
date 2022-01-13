@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Sequence
 
 from .graphic_widget import GraphicWidget, Interpolation
 from .image import Image
@@ -12,9 +12,9 @@ class Animation(GraphicWidget):
 
     Parameters
     ----------
-    paths : Path | Iterable[Path]
-        Path to folder of images for frames in animation (loaded in lexographical
-        order of filenames) or an iterable of paths to each frame in the animation.
+    path : Path
+        Path to directory of images for frames in animation (loaded in lexographical
+        order of filenames).
     frame_duration : float | int | Sequence[float| int], default: 1/12
         Time between updates of frames of the animation in seconds.  If a sequence is
         provided it should have length equal to number of frames in the animation.
@@ -24,7 +24,7 @@ class Animation(GraphicWidget):
     def __init__(
         self,
         *,
-        paths: Path | Iterable[Path],
+        path: Path,
         frame_durations: float | Sequence[float]=1/12,
         loop: bool=True,
         **kwargs
@@ -35,23 +35,22 @@ class Animation(GraphicWidget):
 
         super().__init__(**kwargs)
 
-        if isinstance(paths, Path):
-            paths = sorted(
-                (file for file in paths.iterdir() if file.is_file()),
-                key=lambda file: file.name,
-            )
+        paths = sorted(path.iterdir(), key=lambda file: file.name)
 
         self.frames = [
             Image(
-                size=self.size,
+                size_hint=(1.0, 1.0),
                 path=path,
                 interpolation=self.interpolation,
+                alpha=self.alpha,
+                is_visible=False,
             )
             for path in paths
         ]
+        if self.frames:
+            self.frames[0].is_visible = True
 
-        for frame in self.frames:
-            frame.parent = self
+        self.add_widgets(self.frames)
 
         if isinstance(frame_durations, (int, float)):
             self.frame_durations = [frame_durations] * len(paths)
@@ -60,10 +59,15 @@ class Animation(GraphicWidget):
 
         self.loop = loop
 
-        self._current_frame = 0
+        self._i = 0
         self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-        self.add_widget(self.frames[0])
+    @property
+    def current_frame(self):
+        """
+        Current frame of animation.
+        """
+        return self.frames[self._i]
 
     @property
     def alpha(self):
@@ -87,37 +91,23 @@ class Animation(GraphicWidget):
         for frame in self.frames:
             frame.interpolation = interpolation
 
-    @property
-    def current_frame_index(self):
-        return self._current_frame
-
-    @property
-    def current_frame(self):
-        return self.frames[self._current_frame]
-
-    def resize(self, size):
-        for frame in self.frames:
-            frame.resize(size)
-
-        super().resize(size)
-
     async def _play_animation(self):
-        frames = self.frames
-        frame_durations = self.frame_durations
-        children = self.children
-
         while True:
-            children[0] = frames[self._current_frame]
+            self.frames[self._i].is_visible = True
 
             try:
-                await asyncio.sleep(frame_durations[self._current_frame])
+                await asyncio.sleep(self.frame_durations[self._i])
             except asyncio.CancelledError:
                 break
 
-            if self._current_frame == len(frames) - 1 and not self.loop:
-                break
+            self.frames[self._i].is_visible = False
 
-            self._current_frame = (self._current_frame + 1) % len(frames)
+            self._i += 1
+            if self._i >= len(self.frames):
+                self._i = 0
+
+                if not self.loop:
+                    break
 
     def play(self):
         """
@@ -137,5 +127,4 @@ class Animation(GraphicWidget):
         Stop animation.
         """
         self.pause()
-        self._current_frame = 0
-        self.children[0] = self.frames[0]
+        self._i = 0

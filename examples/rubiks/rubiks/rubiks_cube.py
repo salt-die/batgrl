@@ -5,7 +5,6 @@ from random import randrange
 import numpy as np
 from numpy.linalg import norm
 
-from nurses_2.widgets.animation import Animation
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
 
@@ -26,7 +25,6 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         self,
         *,
         aspect_ratio=True,
-        background_image_path,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -43,10 +41,6 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
 
         self._selected_row = self._selected_axis = 0
         self._select()
-
-        self.background = Animation(paths=background_image_path, is_enabled=False, size_hint=(1.0, 1.0))
-        self.add_widget(self.background)
-        self.background.play()
 
         self._rotate_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
@@ -184,7 +178,7 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         texture = self.texture
-        texture[:] = self.background.current_frame.texture
+        texture[:] = 0
 
         cam = self.camera
         cubes = list(self.cubes.flat)
