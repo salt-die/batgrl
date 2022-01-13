@@ -21,6 +21,18 @@ class TextWidget(_WidgetBase):
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
         precedent over `size`.
+    min_height : int | None, default: None
+        Minimum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_height : int | None, default: None
+        Maximum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    min_width : int | None, default: None
+        Minimum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_width : int | None, default: None
+        Maximum width set due to size_hint. Ignored if corresponding size
+        hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over `pos`.

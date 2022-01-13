@@ -1,11 +1,13 @@
-def clamp(value, min, max):
+from numbers import Real
+
+def clamp(value, min: Real | None, max: Real | None):
     """
     Clamp a value between min and max.
     """
-    if value < min:
+    if min is not None and value < min:
         return min
 
-    if value > max:
+    if max is not None and value > max:
         return max
 
     return value

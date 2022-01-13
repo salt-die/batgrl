@@ -26,6 +26,18 @@ class GraphicWidget(_WidgetBase):
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
         precedent over `size`.
+    min_height : int | None, default: None
+        Minimum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_height : int | None, default: None
+        Maximum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    min_width : int | None, default: None
+        Minimum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_width : int | None, default: None
+        Maximum width set due to size_hint. Ignored if corresponding size
+        hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over `pos`.
@@ -81,11 +93,14 @@ class GraphicWidget(_WidgetBase):
         h, w = size
         self._size = Size(h, w)
 
-        self.texture = cv2.resize(
-            self.texture,
-            (w, 2 * h),
-            interpolation=self.interpolation,
-        )
+        if h == 0 or w == 0:
+            self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
+        else:
+            self.texture = cv2.resize(
+                self.texture,
+                (w, 2 * h),
+                interpolation=self.interpolation,
+            )
 
         for child in self.children:
             child.update_geometry()

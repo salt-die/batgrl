@@ -6,6 +6,7 @@ from typing import Callable, Sequence
 import numpy as np
 
 from .. import easings
+from ..clamp import clamp
 from ..data_structures import *
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
@@ -21,6 +22,10 @@ class _WidgetBase(ABC):
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint=SizeHint(None, None),
+        min_width: int | None=None,
+        max_width: int | None=None,
+        min_height: int | None=None,
+        max_height: int | None=None,
         pos_hint: PosHint=PosHint(None, None),
         anchor=Anchor.TOP_LEFT,
         is_transparent: bool=False,
@@ -34,6 +39,10 @@ class _WidgetBase(ABC):
         self.pos = pos
 
         self.size_hint = size_hint
+        self.min_height = min_height
+        self.max_height = max_height
+        self.min_width = min_width
+        self.max_width = max_width
 
         self.pos_hint = pos_hint
         self.anchor = anchor
@@ -136,21 +145,22 @@ class _WidgetBase(ABC):
 
     @property
     def size_hint(self) -> SizeHint:
+        """
+        Widget's size as a proportion of its parent's size.
+        """
         return self._size_hint
 
     @size_hint.setter
     def size_hint(self, size_hint: SizeHint):
+        """
+        Set widget's size as a proportion of its parent's size.
+        Negative size hints will be clamped to 0.
+        """
         h, w = size_hint
 
-        if h is not None and h <= 0:
-            raise ValueError(f"invalid height hint ({h=})")
-
-        if w is not None and w <= 0:
-            raise ValueError(f"invalid width hint ({w=})")
-
         self._size_hint = SizeHint(
-            h if h is None else float(h),
-            w if w is None else float(w),
+            h if h is None else max(float(h), 0.0),
+            w if w is None else max(float(w), 0.0),
         )
 
         if self.parent:
@@ -158,6 +168,9 @@ class _WidgetBase(ABC):
 
     @property
     def height_hint(self) -> float | None:
+        """
+        Widget's height as proportion of its parent's height.
+        """
         return self._size_hint[0]
 
     @height_hint.setter
@@ -166,6 +179,9 @@ class _WidgetBase(ABC):
 
     @property
     def width_hint(self) -> float | None:
+        """
+        Widget's width as proportion of its parent's width.
+        """
         return self._size_hint[1]
 
     @width_hint.setter
@@ -173,7 +189,62 @@ class _WidgetBase(ABC):
         self.size_hint = self.height_hint, width_hint
 
     @property
+    def min_height(self) -> int:
+        """
+        The minimum height of widget set due to `size_hint`.
+        """
+        return self._min_height
+
+    @min_height.setter
+    def min_height(self, min_height: int):
+        self._min_height = min_height
+        if self.parent:
+            self.update_geometry()
+
+    @property
+    def max_height(self) -> int:
+        """
+        The maximum height of widget set due to `size_hint`.
+        """
+        return self._max_height
+
+    @max_height.setter
+    def max_height(self, max_height: int):
+        self._max_height = max_height
+        if self.parent:
+            self.update_geometry()
+
+    @property
+    def min_width(self) -> int:
+        """
+        The minimum width of widget set due to `size_hint`.
+        """
+        return self._min_width
+
+    @min_width.setter
+    def min_width(self, min_width: int):
+        self._min_width = min_width
+        if self.parent:
+            self.update_geometry()
+
+    @property
+    def max_width(self) -> int:
+        """
+        The maximum width of widget set due to `size_hint`.
+        """
+        return self._max_width
+
+    @max_width.setter
+    def max_width(self, max_width: int):
+        self._max_width = max_width
+        if self.parent:
+            self.update_geometry()
+
+    @property
     def pos_hint(self) -> PosHint:
+        """
+        Widget's position as a proportion of its parent's size.
+        """
         return self._pos_hint
 
     @pos_hint.setter
@@ -189,6 +260,9 @@ class _WidgetBase(ABC):
 
     @property
     def y_hint(self) -> float | None:
+        """
+        Vertical position of widget as a proportion of its parent's height.
+        """
         return self._pos_hint[0]
 
     @y_hint.setter
@@ -197,6 +271,9 @@ class _WidgetBase(ABC):
 
     @property
     def x_hint(self) -> float | None:
+        """
+        Horizontal position of widget as proportion of its parent's width.
+        """
         return self._pos_hint[1]
 
     @x_hint.setter
@@ -214,14 +291,23 @@ class _WidgetBase(ABC):
         Update geometry due to a change in parent's size.
         """
         h, w = self.parent.size
+
         h_hint, w_hint = self.size_hint
+        if h_hint is not None or w_hint is not None:
+            if h_hint is None:
+                height = self.height
+            else:
+                height = clamp(round(h_hint * h), self.min_height, self.max_height)
 
-        height = self.height if h_hint is None else round(h_hint * h)
-        width = self.width if w_hint is None else round(w_hint * w)
+            if w_hint is None:
+                width = self.width
+            else:
+                width = clamp(round(w_hint * w), self.min_width, self.max_width)
 
-        self.resize(Size(height, width))
+            self.resize(Size(height, width))
 
-        if self.pos_hint == (None, None):
+        y_hint, x_hint = self.pos_hint
+        if y_hint is None and x_hint is None:
             return
 
         match self.anchor:
@@ -244,14 +330,11 @@ class _WidgetBase(ABC):
             case Anchor.RIGHT_CENTER:
                 offset_top, offset_left = self.center.y, self.width
 
-        h, w = self.parent.size
-        top_hint, left_hint = self.pos_hint
+        if y_hint is not None:
+            self.top = round(h * y_hint) - offset_top
 
-        if top_hint is not None:
-            self.top = round(h * top_hint) - offset_top
-
-        if left_hint is not None:
-            self.left = round(w * left_hint) - offset_left
+        if x_hint is not None:
+            self.left = round(w * x_hint) - offset_left
 
     @property
     def root(self):
@@ -522,7 +605,7 @@ class _WidgetBase(ABC):
         on_start: Callable | None=None,
         on_progress: Callable | None=None,
         on_complete: Callable | None=None,
-        **properties: dict[str, int | float | Sequence[int] | Sequence[float]],
+        **properties: dict[str, int | float | Sequence[int] | Sequence[float | None]],
     ):
         """
         Coroutine that sequentially updates widget properties over a duration (in seconds).
@@ -541,7 +624,7 @@ class _WidgetBase(ABC):
             Called when tween updates.
         on_complete : Callable | None, default: None
             Called when tween completes.
-        **properties : dict[str, int | float | Sequence[int] | Sequence[float]]
+        **properties : dict[str, int | float | Sequence[int] | Sequence[float | None]]
             Widget properties' target values.
 
         Example
@@ -557,6 +640,7 @@ class _WidgetBase(ABC):
         -------
         Running several tweens on the same properties concurrently will probably result in unexpected
         behavior. `tween` won't work for ndarray types such as `canvas`, `colors`, or `texture`.
+        If tweening size or pos hints, make sure the relevant hints aren't `None` to start.
         """
         end_time = monotonic() + duration
         start_values = tuple(getattr(self, attr) for attr in properties)
@@ -577,9 +661,9 @@ class _WidgetBase(ABC):
                         ))
                     case int():
                         value = round(easings.lerp(start_value, target, p))
-                    case (float(), *_):  # Sequence[float]
+                    case (float() | None, *_):  # Sequence[float | None]
                         value = tuple((
-                            easings.lerp(i, j, p)
+                            None if i is None else easings.lerp(i, j, p)
                             for i, j in zip(start_value, target)
                         ))
                     case float():
