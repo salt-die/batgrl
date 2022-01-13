@@ -47,8 +47,8 @@ class Animation(GraphicWidget):
             )
             for path in paths
         ]
-        if self.frames:
-            self.frames[0].is_visible = True
+        if not self.frames:
+            raise ValueError(f"{path} empty")
 
         self.add_widgets(self.frames)
 
@@ -60,6 +60,7 @@ class Animation(GraphicWidget):
         self.loop = loop
 
         self._i = 0
+        self.current_frame.is_visible = True
         self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
     @property
@@ -100,14 +101,14 @@ class Animation(GraphicWidget):
             except asyncio.CancelledError:
                 break
 
-            self.frames[self._i].is_visible = False
-
             self._i += 1
             if self._i >= len(self.frames):
                 self._i = 0
 
                 if not self.loop:
                     break
+
+            self.frames[self._i - 1].is_visible = False
 
     def play(self):
         """
@@ -127,4 +128,7 @@ class Animation(GraphicWidget):
         Stop animation.
         """
         self.pause()
+        self.current_frame.is_visible = False
+
         self._i = 0
+        self.current_frame.is_visible = True
