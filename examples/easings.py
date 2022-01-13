@@ -4,12 +4,12 @@ from itertools import cycle
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.text_widget import TextWidget, Anchor
-from nurses_2.widgets.widget_data_structures import Transition
+from nurses_2.widgets.widget_data_structures import Easing
 
 IMAGE_DIR = Path("images")
 PATH_TO_LOGO = IMAGE_DIR / "logo_solo_flat_256.png"
 
-ALPHAS = cycle((0.0, 1.0))
+ALPHAS = cycle((0.1, 1.0))
 POS_HINTS = cycle(((0.0, 0.0), (.5, .5)))
 SIZE_HINTS = cycle(((.25, .25), (.5, .5)))
 
@@ -25,15 +25,15 @@ class MyApp(App):
 
         self.add_widgets(logo, label)
 
-        for transition in Transition:
-            label.add_text(f"{transition:^20}")
+        for easing in Easing:
+            label.add_text(f"{easing:^20}")
 
-            await logo.transition(
+            await logo.tween(
                 pos_hint=next(POS_HINTS),
                 alpha=next(ALPHAS),
                 size_hint=next(SIZE_HINTS),
-                transition_type=transition,
-                duration=5.0,
+                easing=easing,
+                duration=3.0,
             )
 
         self.exit()

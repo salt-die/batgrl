@@ -3,7 +3,7 @@ import numpy as np
 
 from ...colors import Color, rainbow_gradient
 from ...data_structures import Size
-from ...transitions import lerp
+from ...easings import lerp
 from .._binary_to_braille import binary_to_braille
 from ..text_widget import TextWidget, Anchor
 

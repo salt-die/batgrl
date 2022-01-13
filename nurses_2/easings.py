@@ -1,3 +1,6 @@
+"""
+Easing functions.
+"""
 from math import cos, sin, pi
 
 __all__ = (
@@ -126,13 +129,16 @@ def in_circ(p):
     return 1.0 - (1.0 - p**2.0)**.5
 
 def out_circ(p):
-    return ((2.0 - p) * p)**.5
+    p -= 1.0
+    return (1.0 - p**2.0)**.5
 
 def in_out_circ(p):
-    if p < .5:
-        return .5 * (1.0 - (1.0 - 4.0 * p**2.0)**.5)
+    p *= 2.0
+    if p < 1.0:
+        return -.5 * (1.0 - p**2.0)**.5 + .5
 
-    return .5 * ((-(2.0 * p - 3.0) * (2.0 * p - 1.0))**.5 + 1.0)
+    p -= 2.0
+    return .5 * (1.0 - p**2.0)**.5 + .5
 
 def in_elastic(p):
     return sin(6.5 * pi * p) * 2.0**(10.0 * (p - 1.0))
@@ -147,19 +153,19 @@ def in_out_elastic(p):
     return .5 * (sin(-13.0 * pi * p) * 2.0**(-20.0 * p + 10.0) + 2.0)
 
 def in_back(p):
-    return p**3.0 - p * sin(p * pi)
+    return p**2.0 * (2.70158 * p - 1.70158)
 
 def out_back(p):
-    p = 1.0 - p
-    return 1.0 - p**3.0 + p * sin(p * pi)
+    p -= 1.0
+    return p**2.0 * (2.70158 * p + 1.70158) + 1.0
 
 def in_out_back(p):
-    if p < .5:
-        p *= 2.0
-        return .5 * (p**3.0 - p * sin(p * pi))
+    p *= 2.0
+    if p < 1.0:
+        return .5 * (p**2.0 * (3.5949095 * p - 2.5949095))
 
-    p = 2.0 * (1.0 - p)
-    return .5 * (1.0 - p**3.0 + p * sin(p * pi)) + .5
+    p -= 2.0
+    return .5 * (p**2.0 * (3.5949095 * p + 2.5949095) + 2.0)
 
 def out_bounce(p):
     if p < 4.0 / 11.0:

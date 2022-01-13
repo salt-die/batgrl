@@ -5,7 +5,7 @@ from typing import Callable, Sequence
 
 import numpy as np
 
-from .. import transitions
+from .. import easings
 from ..data_structures import *
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
@@ -514,11 +514,11 @@ class _WidgetBase(ABC):
         dest_slice = np.s_[dt: db, dl: dr]
         self.render(canvas_view[dest_slice], colors_view[dest_slice], np.s_[st: sb, sl: sr])
 
-    async def transition(
+    async def tween(
         self,
         *,
         duration: float=1.0,
-        transition_type: Transition=Transition.LINEAR,
+        easing: Easing=Easing.LINEAR,
         on_start: Callable | None=None,
         on_progress: Callable | None=None,
         on_complete: Callable | None=None,
@@ -526,63 +526,64 @@ class _WidgetBase(ABC):
     ):
         """
         Coroutine that sequentially updates widget properties over a duration (in seconds).
+        Tweening (short for inbetweening) is the process of generating images between
+        keyframes in animation.
 
         Parameters
         ----------
         duration : float, default: 1.0
-            The duration of the transition in seconds.
-        transition_type : Transition, default: Transition.LINEAR
-            The type of transition.
+            The duration of the tween in seconds.
+        easing : Easing, default: Easing.LINEAR
+            The easing used for tweening.
         on_start : Callable | None, default: None
-            Called when transition starts.
+            Called when tween starts.
         on_progress : Callable | None, default: None
-            Called when transition updates.
+            Called when tween updates.
         on_complete : Callable | None, default: None
-            Called when transition completes.
+            Called when tween completes.
         **properties : dict[str, int | float | Sequence[int] | Sequence[float]]
             Widget properties' target values.
 
         Example
         -------
-        To smoothly transition a widget's position to (5, 10) over 2.5 seconds, specify the
+        To smoothly tween a widget's position to (5, 10) over 2.5 seconds, specify the
         `pos` property as a keyword-argument:
 
         ```
-        await widget.transition(pos=(5, 10), duration=2.5, transition_type=Transition.OUT_BOUNCE)
+        await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)
         ```
 
         Warning
         -------
-        Running several transitions on the same properties concurrently will probably result in unexpected
-        behavior. Transitions aren't meant for ndarray types such as `canvas`, `colors`, or `texture`.
+        Running several tweens on the same properties concurrently will probably result in unexpected
+        behavior. `tween` won't work for ndarray types such as `canvas`, `colors`, or `texture`.
         """
-        start_time = monotonic()
-        end_time = start_time + duration
-        start_values = [getattr(self, attr) for attr in properties]
-        transition_function = getattr(transitions, transition_type)
+        end_time = monotonic() + duration
+        start_values = tuple(getattr(self, attr) for attr in properties)
+        easing_function = getattr(easings, easing)
 
         if on_start:
             on_start()
 
         while (current_time := monotonic()) < end_time:
-            p = transition_function(1 - (end_time - current_time) / duration)
+            p = easing_function(1 - (end_time - current_time) / duration)
 
             for start_value, (prop, target) in zip(start_values, properties.items()):
                 match start_value:
                     case (int(), *_):  # Sequence[int]
                         value = tuple((
-                            round(transitions.lerp(i, j, p))
+                            round(easings.lerp(i, j, p))
                             for i, j in zip(start_value, target)
                         ))
                     case int():
-                        value = round(transitions.lerp(start_value, target, p))
+                        value = round(easings.lerp(start_value, target, p))
                     case (float(), *_):  # Sequence[float]
                         value = tuple((
-                            transitions.lerp(i, j, p)
+                            easings.lerp(i, j, p)
                             for i, j in zip(start_value, target)
                         ))
                     case float():
-                        value = transitions.lerp(start_value, target, p)
+                        value = easings.lerp(start_value, target, p)
 
                 setattr(self, prop, value)
 

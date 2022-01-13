@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import NamedTuple
 
-__all__ = "SizeHint", "PosHint", "Anchor", "Transition"
+__all__ = "SizeHint", "PosHint", "Anchor", "Easing"
 
 
 class SizeHint(NamedTuple):
@@ -26,7 +26,7 @@ class Anchor(str, Enum):
     BOTTOM_RIGHT = "bottom_right"
 
 
-class Transition(str, Enum):
+class Easing(str, Enum):
     LINEAR = "linear"
     IN_QUAD = "in_quad"
     OUT_QUAD = "out_quad"

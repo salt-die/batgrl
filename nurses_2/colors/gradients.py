@@ -3,7 +3,7 @@ Functions for creating color gradients.
 """
 import numpy as np
 
-from ..transitions import lerp
+from ..easings import lerp
 from .color_data_structures import *
 from .colors import BLACK, WHITE, color_pair
 
