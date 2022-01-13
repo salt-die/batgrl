@@ -1,4 +1,4 @@
-from math import cos, sin, pi, tau
+from math import cos, sin, pi
 
 __all__ = (
     "lerp",
