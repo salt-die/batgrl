@@ -50,15 +50,9 @@ class ButtonBehavior:
         collides = self.collides_point(mouse_event.position)
 
         if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
-            if self.state is ButtonStates.HOVER:
+            if collides:
                 self._down()
                 return True
-
-            if self.state is ButtonStates.DOWN:
-                self._normal()
-
-                if collides:
-                    self._hover()
 
         elif (
             mouse_event.event_type is MouseEventType.MOUSE_UP
@@ -75,11 +69,10 @@ class ButtonBehavior:
                 self.on_release()
                 return True
 
-        elif mouse_event.button == MouseButton.NO_BUTTON:
-            if collides and self.state is ButtonStates.NORMAL:
-                self._hover()
-            elif not collides and self.state is ButtonStates.HOVER:
-                self._normal()
+        if not collides and self.state is ButtonStates.HOVER:
+            self._normal()
+        elif collides and self.state is ButtonStates.NORMAL:
+            self._hover()
 
     def update_normal(self):
         """
