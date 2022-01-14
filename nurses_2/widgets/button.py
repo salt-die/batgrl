@@ -10,6 +10,7 @@ LIGHTER_PURPLE = Color.from_hex("753ab7")
 YELLOW = Color.from_hex("dbd006")
 YELLOW_ON_PURPLE = ColorPair.from_colors(YELLOW, PURPLE)
 
+
 class Button(ButtonBehavior, TextWidget):
     """
     A button widget.
