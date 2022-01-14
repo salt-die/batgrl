@@ -1,22 +1,24 @@
 from enum import Enum
 
-from ...io import MouseEventType
+from ...io import MouseEventType, MouseButton
 
 
 class ButtonStates(Enum):
-    DOWN = "DOWN"
-    NORMAL = "NORMAL"
+    NORMAL = "normal"
+    HOVER = "hover"
+    DOWN = "down"
 
 
 class ButtonBehavior:
     """
     Button behavior for a widget.
 
-    When a button is pressed, its state changes to `ButtonStates.DOWN`. It then calls
-    `update_down` (a method meant to redraw the button's canvas).
+    A button has three states: 'normal', 'hover', and 'down'.
 
-    When a button is released, its state changes to `ButtonStates.NORMAL`. It then
-    calls `update_normal` (to redraw the canvas) and then `on_release` is called.
+    When a button's state changes one of the following methods are called:
+    'update_normal', 'update_hover', and 'update_down'.
+
+    When a button is released, the `on_release` method is called.
 
     Parameters
     ----------
@@ -27,52 +29,71 @@ class ButtonBehavior:
         super().__init__(**kwargs)
 
         self.always_release = always_release
-        self._release()
+        self._normal()
 
-    def _press(self):
-        self.state = ButtonStates.DOWN
-        self.update_down()
-
-    def _release(self):
+    def _normal(self):
         self.state = ButtonStates.NORMAL
         self.update_normal()
+
+    def _hover(self):
+        self.state = ButtonStates.HOVER
+        self.update_hover()
+
+    def _down(self):
+        self.state = ButtonStates.DOWN
+        self.update_down()
 
     def on_click(self, mouse_event):
         if super().on_click(mouse_event):
             return True
 
-        if mouse_event.event_type == MouseEventType.MOUSE_DOWN:
-            if (
-                self.state == ButtonStates.NORMAL
-                and self.collides_point(mouse_event.position)
-            ):
-                self._press()
+        collides = self.collides_point(mouse_event.position)
+
+        if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
+            if self.state is ButtonStates.HOVER:
+                self._down()
                 return True
 
-            self._release()
+            if self.state is ButtonStates.DOWN:
+                self._normal()
 
-        elif mouse_event.event_type == MouseEventType.MOUSE_UP:
-            if (
-                self.state == ButtonStates.DOWN
-                and (self.always_release or self.collides_point(mouse_event.position))
-            ):
-                self._release()
+                if collides:
+                    self._hover()
+
+        elif (
+            mouse_event.event_type is MouseEventType.MOUSE_UP
+            and self.state is ButtonStates.DOWN
+        ):
+            self._normal()
+
+            if collides:
+                self._hover()
                 self.on_release()
-
                 return True
 
-            self._release()
+            if self.always_release:
+                self.on_release()
+                return True
 
-        return self.state == ButtonStates.DOWN
-
-    def update_down(self):
-        """
-        Paint the DOWN state.
-        """
+        elif mouse_event.button == MouseButton.NO_BUTTON:
+            if collides and self.state is ButtonStates.NORMAL:
+                self._hover()
+            elif not collides and self.state is ButtonStates.HOVER:
+                self._normal()
 
     def update_normal(self):
         """
         Paint the NORMAL state.
+        """
+
+    def update_hover(self):
+        """
+        Paint the HOVER state.
+        """
+
+    def update_down(self):
+        """
+        Paint the DOWN state.
         """
 
     def on_release(self):
