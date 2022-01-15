@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from nurses_2.colors import color_pair, ABLACK
+from nurses_2.colors import ColorPair, ABLACK
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor, Size
 from nurses_2.widgets.text_widget import TextWidget
@@ -37,7 +37,7 @@ class Sandbox(GraphicWidget):
             pos=(1, 0),
             anchor=Anchor.CENTER,
             pos_hint=(None, 0.5),
-            default_color_pair=color_pair(Air.COLOR, MENU_BACKGROUND_COLOR),
+            default_color_pair=ColorPair.from_colors(Air.COLOR, MENU_BACKGROUND_COLOR),
         )
         self.add_widgets(self.display, ButtonContainer())
 

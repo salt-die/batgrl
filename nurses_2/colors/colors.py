@@ -22,5 +22,5 @@ ACYAN    = AColor(  0, 255, 255)
 AMAGENTA = AColor(255,   0, 255)
 TRANSPARENT = AColor(0, 0, 0, 0)
 
-WHITE_ON_BLACK = color_pair(WHITE, BLACK)
-BLACK_ON_BLACK = color_pair(BLACK, BLACK)
+WHITE_ON_BLACK = ColorPair.from_colors(WHITE, BLACK)
+BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)

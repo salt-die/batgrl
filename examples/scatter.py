@@ -7,13 +7,13 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import BLUE, GREEN, WHITE, gradient, color_pair
+from nurses_2.colors import BLUE, GREEN, WHITE, gradient, ColorPair
 from nurses_2.widgets.behaviors.draggable_behavior import DraggableBehavior
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.scatter import Scatter
 
-WHITE_ON_GREEN = color_pair(WHITE, GREEN)
-WHITE_ON_BLUE = color_pair(WHITE, BLUE)
+WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
+WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
 class DraggableScatter(DraggableBehavior, Scatter):

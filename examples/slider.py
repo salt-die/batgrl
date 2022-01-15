@@ -4,11 +4,11 @@ Example slider widget.
 import asyncio
 
 from nurses_2.app import App
-from nurses_2.colors import BLUE, GREEN, BLACK, RED, color_pair
+from nurses_2.colors import BLUE, GREEN, BLACK, RED, ColorPair
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.slider import Slider
 
-GREEN_ON_BLACK = color_pair(GREEN, BLACK)
+GREEN_ON_BLACK = ColorPair.from_colors(GREEN, BLACK)
 
 
 class MyApp(App):

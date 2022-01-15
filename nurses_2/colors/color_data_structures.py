@@ -6,7 +6,6 @@ __all__ = (
     "Color",
     "AColor",
     "ColorPair",
-    "color_pair",
 )
 
 
@@ -101,6 +100,3 @@ class ColorPair(NamedTuple):
     @property
     def bg_color(self):
         return Color(*self[3:])
-
-
-color_pair = ColorPair.from_colors  # Alias

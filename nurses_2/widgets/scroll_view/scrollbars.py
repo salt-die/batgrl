@@ -1,4 +1,4 @@
-from ...colors import BLACK, color_pair
+from ...colors import BLACK, ColorPair
 from ...io import MouseEventType
 from ..text_widget import TextWidget
 from .indicators import _VerticalIndicator, _HorizontalIndicator
@@ -12,7 +12,7 @@ class _VerticalBar(TextWidget):
     def __init__(self, *, settings: ScrollBarSettings, parent):
         bar_color, *indicator_settings = settings
 
-        super().__init__(default_color_pair=color_pair(BLACK, bar_color))
+        super().__init__(default_color_pair=ColorPair.from_colors(BLACK, bar_color))
 
         self.parent = parent
         self.update_geometry()
@@ -58,7 +58,7 @@ class _HorizontalBar(TextWidget):
     def __init__(self, *, settings: ScrollBarSettings, parent):
         bar_color, *indicator_settings = settings
 
-        super().__init__(default_color_pair=color_pair(BLACK, bar_color))
+        super().__init__(default_color_pair=ColorPair.from_colors(BLACK, bar_color))
 
         self.parent = parent
         self.update_geometry()

@@ -9,7 +9,7 @@ from numpy.random import default_rng
 from nurses_2.app import App
 from nurses_2.colors import (
     Color,
-    color_pair,
+    ColorPair,
     gradient,
     BLACK,
     GREEN,
@@ -54,14 +54,14 @@ FALL_TIME = .2          # Seconds until rain falls another row
 RANDOM_CHARACTERS = list("=^74xt2ZI508")
 
 # Colors
-GREEN_ON_BLACK = color_pair(GREEN, BLACK)
+GREEN_ON_BLACK = ColorPair.from_colors(GREEN, BLACK)
 
 BLUE = Color(48, 105, 152)
-BLUE_ON_BLACK = color_pair(BLUE, BLACK)
+BLUE_ON_BLACK = ColorPair.from_colors(BLUE, BLACK)
 WHITE_TO_BLUE = gradient(WHITE_ON_BLACK, BLUE_ON_BLACK, 25)
 
 YELLOW = Color(255, 212, 59)
-YELLOW_ON_BLACK = color_pair(YELLOW, BLACK)
+YELLOW_ON_BLACK = ColorPair.from_colors(YELLOW, BLACK)
 WHITE_TO_YELLOW = gradient(WHITE_ON_BLACK, YELLOW_ON_BLACK, 25)
 
 def generate_delays():

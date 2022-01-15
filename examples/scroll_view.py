@@ -2,16 +2,16 @@
 ScrollView example.
 """
 from nurses_2.app import App
-from nurses_2.colors import BLUE, GREEN, RED, WHITE, gradient, color_pair
+from nurses_2.colors import BLUE, GREEN, RED, WHITE, gradient, ColorPair
 from nurses_2.widgets.text_widget import TextWidget, Anchor, Size
 from nurses_2.widgets.scroll_view import ScrollView
 
 N = 20  # Number of coordinate pairs on each line.
 BIG_WIDGET_SIZE = Size(50, 8 * N + N - 1)
 
-WHITE_ON_RED = color_pair(WHITE, RED)
-WHITE_ON_GREEN = color_pair(WHITE, GREEN)
-WHITE_ON_BLUE = color_pair(WHITE, BLUE)
+WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
+WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
+WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 LEFT_GRADIENT = gradient(WHITE_ON_RED, WHITE_ON_GREEN, BIG_WIDGET_SIZE.rows)
 RIGHT_GRADIENT = gradient(WHITE_ON_GREEN, WHITE_ON_BLUE, BIG_WIDGET_SIZE.rows)

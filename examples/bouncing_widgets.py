@@ -6,7 +6,7 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import gradient, background_rainbow, Color, color_pair
+from nurses_2.colors import gradient, background_rainbow, Color, ColorPair
 from nurses_2.io import MouseEventType
 from nurses_2.widgets.text_widget import TextWidget
 
@@ -14,8 +14,8 @@ ORANGE = Color(255, 140, 66)
 GREY = Color(108, 142, 173)
 TEAL = Color(10, 175, 170)
 PURPLE = Color(87, 10, 175)
-ORANGE_ON_GREY = color_pair(ORANGE, GREY)
-TEAL_ON_PURPLE = color_pair(TEAL, PURPLE)
+ORANGE_ON_GREY = ColorPair.from_colors(ORANGE, GREY)
+TEAL_ON_PURPLE = ColorPair.from_colors(TEAL, PURPLE)
 
 ORANGE_TO_TEAL = gradient(start=ORANGE_ON_GREY, end=TEAL_ON_PURPLE, ncolors=10)
 WHITE_ON_RAINBOW = background_rainbow(ncolors=10)

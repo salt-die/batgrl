@@ -1,4 +1,4 @@
-from nurses_2.colors import color_pair, Color, BLACK
+from nurses_2.colors import ColorPair, Color, BLACK
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
 
@@ -18,11 +18,11 @@ class ElementButton(ButtonBehavior, TextWidget):
         super().__init__(
             size=(2, 4),
             pos=pos,
-            default_color_pair=color_pair(BLACK, element.COLOR),
+            default_color_pair=ColorPair.from_colors(BLACK, element.COLOR),
             always_release=True,
         )
 
-        self.down_color = color_pair(
+        self.down_color = ColorPair.from_colors(
             BLACK,
             Color(*(127 + c // 2 for c in element.COLOR)),
         )
@@ -50,7 +50,7 @@ class ButtonContainer(TextWidget):
 
         super().__init__(
             size=(3 * nelements + 1, 8),
-            default_color_pair=color_pair(BLACK, MENU_BACKGROUND_COLOR),
+            default_color_pair=ColorPair.from_colors(BLACK, MENU_BACKGROUND_COLOR),
         )
 
         for i, element in enumerate(Element.all_elements.values()):

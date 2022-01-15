@@ -1,26 +1,24 @@
-from nurses_2.colors import Color, color_pair
+from nurses_2.colors import Color, ColorPair
 
-from_hex = Color.from_hex
+ZERO            = Color.from_hex("aba1ad")
+ONE             = Color.from_hex("272ae5")
+TWO             = Color.from_hex("25ba0b")
+THREE           = Color.from_hex("8e2222")
+FOUR            = Color.from_hex("0a2b99")
+FIVE            = Color.from_hex("7f1b07")
+SIX             = Color.from_hex("0ba9c1")
+SEVEN           = Color.from_hex("c013db")
+EIGHT           = Color.from_hex("140116")
 
-ZERO            = from_hex("aba1ad")
-ONE             = from_hex("272ae5")
-TWO             = from_hex("25ba0b")
-THREE           = from_hex("8e2222")
-FOUR            = from_hex("0a2b99")
-FIVE            = from_hex("7f1b07")
-SIX             = from_hex("0ba9c1")
-SEVEN           = from_hex("c013db")
-EIGHT           = from_hex("140116")
+BORDER          = Color.from_hex("85698c")
 
-BORDER          = from_hex("85698c")
+HIDDEN_SQUARE   = Color.from_hex("56365e")
+HIDDEN          = ColorPair.from_colors(HIDDEN_SQUARE, BORDER)
+HIDDEN_REVERSED = ColorPair.from_colors(BORDER, HIDDEN_SQUARE)
 
-HIDDEN_SQUARE   = from_hex("56365e")
-HIDDEN          = color_pair(HIDDEN_SQUARE, BORDER)
-HIDDEN_REVERSED = color_pair(BORDER, HIDDEN_SQUARE)
+COUNT_SQUARE    = Color.from_hex("b0d9e5")
+COUNT           = ColorPair.from_colors(BORDER, COUNT_SQUARE)
 
-COUNT_SQUARE    = from_hex("b0d9e5")
-COUNT           = color_pair(BORDER, COUNT_SQUARE)
+DATA_BAR        = ColorPair.from_colors(HIDDEN_SQUARE, COUNT_SQUARE)
 
-DATA_BAR        = color_pair(HIDDEN_SQUARE, COUNT_SQUARE)
-
-FLAG_COLOR      = from_hex("6d1004")
+FLAG_COLOR      = Color.from_hex("6d1004")

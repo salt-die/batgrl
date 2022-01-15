@@ -1,4 +1,4 @@
-from ...colors import BLACK, color_pair
+from ...colors import BLACK, ColorPair
 from ...io import MouseEventType
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
 from ..text_widget import TextWidget
@@ -29,7 +29,7 @@ class _IndicatorBehavior:
 
 class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, TextWidget):
     def __init__(self, inactive_color, hover_color, active_color, length):
-        super().__init__(size=(length, 2), default_color_pair=color_pair(BLACK, inactive_color))
+        super().__init__(size=(length, 2), default_color_pair=ColorPair.from_colors(BLACK, inactive_color))
         self.active_color = active_color
         self.hover_color = hover_color
         self.inactive_color = inactive_color
@@ -53,7 +53,7 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, TextWidget):
 
 class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, TextWidget):
     def __init__(self, inactive_color, hover_color, active_color, length):
-        super().__init__(size=(1, length << 1), default_color_pair=color_pair(BLACK, inactive_color))
+        super().__init__(size=(1, length << 1), default_color_pair=ColorPair.from_colors(BLACK, inactive_color))
         self.active_color = active_color
         self.hover_color = hover_color
         self.inactive_color = inactive_color
