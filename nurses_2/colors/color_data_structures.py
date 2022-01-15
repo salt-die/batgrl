@@ -11,7 +11,7 @@ __all__ = (
 
 class Color(NamedTuple):
     """
-    A tuple representing a 24-bit color.
+    A 24-bit color.
     """
     red:   int
     green: int
@@ -33,7 +33,7 @@ class Color(NamedTuple):
 
 class AColor(NamedTuple):
     """
-    A tuple representing a color with an alpha channel.
+    A 24-bit color with an alpha channel.
     """
     red:   int
     green: int
@@ -47,37 +47,30 @@ class AColor(NamedTuple):
         if len(hexcode) not in (6, 8):
             raise ValueError(f"{hexcode} has bad length")
 
-        if len(hexcode) == 6:
-            return cls(
-                int(hexcode[:2], 16),
-                int(hexcode[2:4], 16),
-                int(hexcode[4:], 16),
-            )
-
         return cls(
             int(hexcode[:2], 16),
             int(hexcode[2:4], 16),
             int(hexcode[4:6], 16),
-            int(hexcode[6:], 16)
+            int(hexcode[6:] or "ff", 16)
         )
 
     def fog(self, distance):
         """
         Return color as if seen through a fog from a distance.
 
-        Color will be multiplied by:
+        Non-alpha channels will be multiplied by:
             `e ** -distance`
         """
         p = e ** -distance
 
-        r, g, b, _ = self
+        r, g, b, a = self
 
-        return type(self)(p * r, p * g, p * b)
+        return type(self)(int(p * r), int(p * g), int(p * b), a)
 
 
 class ColorPair(NamedTuple):
     """
-    A tuple representing a foreground and background color.
+    A foreground and background pair of 24-bit colors.
     """
     fg_red:   int
     fg_green: int
