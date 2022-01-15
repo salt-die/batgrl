@@ -9,6 +9,7 @@ PURPLE = Color.from_hex("462270")
 YELLOW_ON_PURPLE = ColorPair.from_colors(YELLOW, PURPLE)
 WHITE_ON_WHITE = ColorPair.from_colors(WHITE, WHITE)
 
+
 class Button(ButtonBehavior, TextWidget):
     """
     A button widget.
