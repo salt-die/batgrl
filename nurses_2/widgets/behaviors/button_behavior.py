@@ -3,7 +3,7 @@ from enum import Enum
 from ...io import MouseEventType
 
 
-class ButtonStates(Enum):
+class ButtonState(Enum):
     NORMAL = "normal"
     HOVER = "hover"
     DOWN = "down"
@@ -32,15 +32,15 @@ class ButtonBehavior:
         self._normal()
 
     def _normal(self):
-        self.state = ButtonStates.NORMAL
+        self.state = ButtonState.NORMAL
         self.update_normal()
 
     def _hover(self):
-        self.state = ButtonStates.HOVER
+        self.state = ButtonState.HOVER
         self.update_hover()
 
     def _down(self):
-        self.state = ButtonStates.DOWN
+        self.state = ButtonState.DOWN
         self.update_down()
 
     def on_click(self, mouse_event):
@@ -56,7 +56,7 @@ class ButtonBehavior:
 
         elif (
             mouse_event.event_type is MouseEventType.MOUSE_UP
-            and self.state is ButtonStates.DOWN
+            and self.state is ButtonState.DOWN
         ):
             self._normal()
 
@@ -69,9 +69,9 @@ class ButtonBehavior:
                 self.on_release()
                 return True
 
-        if not collides and self.state is ButtonStates.HOVER:
+        if not collides and self.state is ButtonState.HOVER:
             self._normal()
-        elif collides and self.state is ButtonStates.NORMAL:
+        elif collides and self.state is ButtonState.NORMAL:
             self._hover()
 
     def update_normal(self):
