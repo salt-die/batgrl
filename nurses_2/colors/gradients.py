@@ -11,6 +11,7 @@ __all__ = (
     "rainbow_gradient",
     "foreground_rainbow",
     "background_rainbow",
+    "lerp_colors",
     "gradient",
 )
 
@@ -47,16 +48,27 @@ def background_rainbow(ncolors=20, fg_color: Color=WHITE):
         for bg_color in rainbow_gradient(ncolors)
     ]
 
-def _lerp_color(start: Color | AColor, end: Color | AColor, p: float) -> Color | AColor:
+def lerp_colors(
+    start: Color | AColor,
+    end: Color | AColor,
+    p: float
+) -> Color | AColor:
+    """
+    Linear interpolation from `start` to `end` with proportion `p`.
+    """
     return type(start)(
         *(round(lerp(a, b, p)) for a, b in zip(start, end))
     )
 
-def gradient(start: Color | AColor, end: Color | AColor, ncolors: int) -> list[Color | AColor]:
+def gradient(
+    start: Color | AColor | ColorPair,
+    end: Color | AColor | ColorPair,
+    ncolors: int
+) -> list[Color | AColor | ColorPair]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
     """
     if ncolors < 2:
         raise ValueError(f"not enough colors ({ncolors=})")
 
-    return [_lerp_color(start, end, i / (ncolors - 1)) for i in range(ncolors)]
+    return [lerp_colors(start, end, i / (ncolors - 1)) for i in range(ncolors)]
