@@ -1,6 +1,5 @@
-from typing import NamedTuple
-
 from math import e
+from typing import NamedTuple
 
 __all__ = (
     "Color",
