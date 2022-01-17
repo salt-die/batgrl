@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Sequence
 from time import monotonic
-from typing import Callable, Sequence
 
 import numpy as np
 

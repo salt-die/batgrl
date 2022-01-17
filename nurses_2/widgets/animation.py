@@ -1,6 +1,6 @@
 import asyncio
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from .graphic_widget import GraphicWidget, Interpolation
 from .image import Image
