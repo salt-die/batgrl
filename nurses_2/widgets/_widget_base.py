@@ -53,6 +53,9 @@ class _WidgetBase(ABC):
 
     @property
     def size(self) -> Size:
+        """
+        Size of widget.
+        """
         return self._size
 
     @size.setter
@@ -61,6 +64,9 @@ class _WidgetBase(ABC):
 
     @property
     def height(self) -> int:
+        """
+        Height of widget.
+        """
         return self._size[0]
 
     @height.setter
@@ -71,6 +77,9 @@ class _WidgetBase(ABC):
 
     @property
     def width(self) -> int:
+        """
+        Width of widget.
+        """
         return self._size[1]
 
     @width.setter
@@ -114,6 +123,9 @@ class _WidgetBase(ABC):
 
     @property
     def bottom(self) -> int:
+        """
+        Bottom of widget in parent's reference frame.
+        """
         return self.top + self.height
 
     @bottom.setter
@@ -122,6 +134,9 @@ class _WidgetBase(ABC):
 
     @property
     def right(self) -> int:
+        """
+        Right side of widget in parent's reference frame.
+        """
         return self.left + self.width
 
     @right.setter
