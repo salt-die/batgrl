@@ -1,5 +1,6 @@
-from .grabbable_behavior import GrabbableBehavior
+from ...clamp import clamp
 from ...data_structures import Size
+from .grabbable_behavior import GrabbableBehavior
 
 
 class GrabResizeBehavior(GrabbableBehavior):
@@ -14,6 +15,21 @@ class GrabResizeBehavior(GrabbableBehavior):
         Allow vertical resize.
     allow_horizontal_resize : bool, default: True
         Allow horizontal resize.
+    min_height : int, default: 2
+        Minimum height allowed by grab resizing.
+    max_height : int | None, default: None
+        Maximum height allowed by grab resizing.
+    min_width : int, default: 4
+        Minimum width allowed by grab resizing.
+    max_width : int | None, default: None
+        Maximum width allowed by grab resizing.
+
+    Notes
+    -----
+    `min_height`, `max_height`, `min_width`, and `max_width` are repurposed from _WidgetBase for
+    grab resize behavior as size hints are expected to be None for widgets that inherit this behavior.
+    If a widget has a non-None size hint and inherits this behavior, these attributes will still work
+    as expected.
     """
     def __init__(
         self,
@@ -21,9 +37,19 @@ class GrabResizeBehavior(GrabbableBehavior):
         disable_ptf=False,
         allow_vertical_resize=True,
         allow_horizontal_resize=True,
+        min_height=2,
+        max_height=None,
+        min_width=4,
+        max_width=None,
         **kwargs
     ):
-        super().__init__(**kwargs)
+        super().__init__(
+            min_height=min_height,
+            max_height=max_height,
+            min_width=min_width,
+            max_width=max_width,
+            **kwargs,
+        )
         self.disable_ptf = disable_ptf
         self.allow_vertical_resize = allow_vertical_resize
         self.allow_horizontal_resize = allow_horizontal_resize
@@ -60,7 +86,7 @@ class GrabResizeBehavior(GrabbableBehavior):
             self.pull_to_front()
 
     def grab_update(self, mouse_event):
-        if not self._grabbed_edge:
+        if self._grabbed_edge is None:
             return super().grab_update(mouse_event)
 
         y_edge, x_edge = self._grabbed_edge
@@ -74,7 +100,10 @@ class GrabResizeBehavior(GrabbableBehavior):
         h, w = self.size
         dy, dx = self.mouse_dyx
 
-        new_size = Size(h + y_edge * dy, w + x_edge * dx)
+        new_size = Size(
+            clamp(h + y_edge * dy, self.min_height, self.max_height),
+            clamp(w + x_edge * dx, self.min_width, self.max_width),
+        )
 
         if new_size != self.size:
             self.resize(new_size)
