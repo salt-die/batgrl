@@ -11,50 +11,44 @@ class GrabbableBehavior:
 
     To customize grabbable behavior, implement any of `grab`, `grab_update`, or `ungrab` methods.
 
-    For convenience, the change in mouse position is updated while grabbed and made available
-    through the `mouse_dyx`, `mouse_dy`, and `mouse_dx` properties.
+    For convenience, the change in mouse position is available through the `mouse_dyx`, `mouse_dy`,
+    and `mouse_dx` properties.
 
-    Set `is_grabbable` to False to disable this behavior.
-
-    Notes
-    -----
-    Inheriting multiple grabbable behaviors is possible. If a certain behavior has handled
-    `grab`, `grab_update`, or `ungrab` then return True, else False (default implementation
-    returns None). False will signal that a grabbable behavior further up the mro can try
-    to handle one of these methods.
+    Parameters
+    ----------
+    is_grabbable : bool, default: True
+        If False, grabbable behavior is disabled.
+    disable_ptf : bool, default: False
+        If True, widget will not be pulled to front when grabbed.
     """
-    def __init__(self, *, is_grabbable=True, **kwargs):
+    def __init__(self, *, is_grabbable=True, disable_ptf=False, **kwargs):
         super().__init__(**kwargs)
 
         self.is_grabbable = is_grabbable
+        self.disable_ptf = disable_ptf
         self._is_grabbed = False
+
+        self._last_mouse_pos = Point(0, 0)
         self._mouse_dyx = Point(0, 0)
 
     def on_click(self, mouse_event):
-        if super().on_click(mouse_event):
-            return True
+        last_y, last_x = self._last_mouse_pos
+        y, x = self._last_mouse_pos = mouse_event.position
+        self._mouse_dyx = Point(y - last_y, x - last_x)
 
-        if not self.is_grabbable:
-            return False
+        if self.is_grabbable:
+            if self.is_grabbed:
+                if mouse_event.event_type == MouseEventType.MOUSE_UP:
+                    self.ungrab(mouse_event)
+                else:
+                    self.grab_update(mouse_event)
+            elif (
+                self.collides_point(mouse_event.position)
+                and mouse_event.event_type == MouseEventType.MOUSE_DOWN
+            ):
+                self.grab(mouse_event)
 
-        if self.is_grabbed:
-            if mouse_event.event_type == MouseEventType.MOUSE_UP:
-                self.ungrab(mouse_event)
-                return not self.is_grabbed
-
-            last_y, last_x = self._last_mouse_pos
-            y, x = self._last_mouse_pos = mouse_event.position
-            self._mouse_dyx = Point(y - last_y, x - last_x)
-            self.grab_update(mouse_event)
-            return True
-
-        if (
-            self.collides_point(mouse_event.position)
-            and mouse_event.event_type == MouseEventType.MOUSE_DOWN
-        ):
-            self.grab(mouse_event)
-
-            return self.is_grabbed
+        return super().on_click(mouse_event)
 
     @property
     def is_grabbed(self):
@@ -86,18 +80,17 @@ class GrabbableBehavior:
         Grab widget.
         """
         self._is_grabbed = True
-        self._last_mouse_pos = mouse_event.position
-        return None  # Explicitly return None, see `Notes`
+
+        if not self.disable_ptf:
+            self.pull_to_front()
 
     def ungrab(self, mouse_event):
         """
         Ungrab widget.
         """
         self._is_grabbed = False
-        return None  # Explicitly return None, see `Notes`
 
     def grab_update(self, mouse_event):
         """
         Update grabbed widget with incoming mouse event.
         """
-        return None  # Explicitly return None, see `Notes`

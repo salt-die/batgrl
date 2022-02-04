@@ -1,9 +1,9 @@
 from ...colors import Color
-from ..behaviors.draggable_behavior import DraggableBehavior
+from ..behaviors.grab_move_behavior import GrabMoveBehavior
 from ..text_widget import TextWidget
 
 
-class _Legend(DraggableBehavior, TextWidget):
+class _Legend(GrabMoveBehavior, TextWidget):
     def __init__(self, labels: list[str], colors: list[Color], **kwargs):
         height = len(labels) + 2
         width = 6 + max(map(len, labels))
