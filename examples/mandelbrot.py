@@ -76,6 +76,7 @@ class Mandelbrot(GraphicWidget):
             except asyncio.CancelledError:
                 return
 
+
 class MandelbrotApp(App):
     async def on_start(self):
         self.add_widget(Mandelbrot(size_hint=(1.0, 1.0)))
