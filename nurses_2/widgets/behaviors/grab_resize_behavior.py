@@ -29,25 +29,26 @@ class GrabResizeBehavior(GrabbableBehavior):
         self.allow_horizontal_resize = allow_horizontal_resize
 
     def grab(self, mouse_event):
-        self._bottom_edge = self.height - 1
-        self._right_edge = self.width - 1
+        self._b_edge = self.height - 1
+        self._r_edge = self.width - 1
+        self._r_r_edge = self.width - 2
 
         match self.to_local(mouse_event.position):
-            case (0, 0):
+            case (0, 0 | 1):
                 self._grabbed_edge = -1, -1
-            case (0, self._right_edge):
+            case (0, self._r_edge | self._r_r_edge):
                 self._grabbed_edge = -1,  1
-            case (self._bottom_edge, 0):
+            case (self._b_edge, 0 | 1):
                 self._grabbed_edge =  1, -1
-            case (self._bottom_edge, self._right_edge):
+            case (self._b_edge, self._r_edge | self._r_r_edge):
                 self._grabbed_edge =  1,  1
             case (0, _):
                 self._grabbed_edge = -1,  0
-            case (self._bottom_edge, _):
+            case (self._b_edge, _):
                 self._grabbed_edge =  1,  0
-            case (_, 0):
+            case (_, 0 | 1):
                 self._grabbed_edge =  0, -1
-            case (_, self._right_edge):
+            case (_, self._r_edge | self._r_r_edge):
                 self._grabbed_edge =  0,  1
             case _:
                 self._grabbed_edge = None
