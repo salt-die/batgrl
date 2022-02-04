@@ -109,7 +109,7 @@ class GrabResizeBehavior(GrabbableBehavior):
             self.resize(new_size)
 
             if y_edge < 0:
-                self.top += dy
+                self.top += h - new_size.height
 
             if x_edge < 0:
-                self.left += dx
+                self.left += w - new_size.width
