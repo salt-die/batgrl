@@ -134,25 +134,25 @@ class DoomFireApp(App):
 
         update_label()
 
-        def increase_callback():
-            doomfire.fire_strength += 1
-            update_label()
-
-        increase_button = Button(
-            size=(3, 5),
-            label="+",
-            callback=increase_callback,
-        )
-
         def decrease_callback():
             doomfire.fire_strength -= 1
             update_label()
 
         decrease_button = Button(
             size=(3, 5),
-            pos=(0, 27),
             label="-",
             callback=decrease_callback,
+        )
+
+        def increase_callback():
+            doomfire.fire_strength += 1
+            update_label()
+
+        increase_button = Button(
+            size=(3, 5),
+            pos=(0, 27),
+            label="+",
+            callback=increase_callback,
         )
 
         button_container.add_widgets(increase_button, strength_label, decrease_button)
