@@ -14,7 +14,7 @@ widget's texture instead. This can be approximated by taking the difference of c
 import numpy as np
 from cv2 import filter2D
 
-from nurses_2.app import App
+from nurses_2.app import run_widget_as_app
 from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
@@ -101,9 +101,4 @@ class Fluid(GraphicWidget):
         super().render(canvas_view, colors_view, source)
 
 
-class FluidApp(App):
-    async def on_start(self):
-        self.add_widget(Fluid(size_hint=(1.0, 1.0)))
-
-
-FluidApp().run()
+run_widget_as_app(Fluid, size_hint=(1.0, 1.0))

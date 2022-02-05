@@ -1,6 +1,6 @@
 import asyncio
 
-from nurses_2.app import App
+from nurses_2.app import run_widget_as_app
 from nurses_2.widgets.text_widget import TextWidget
 
 class ShowKeyPress(TextWidget):
@@ -22,8 +22,4 @@ class ShowKeyPress(TextWidget):
         self.canvas[row] = " "
 
 
-class MyApp(App):
-    async def on_start(self):
-        self.add_widget(ShowKeyPress(size_hint=(1.0, 1.0)))
-
-MyApp().run()
+run_widget_as_app(ShowKeyPress, size_hint=(1.0, 1.0))

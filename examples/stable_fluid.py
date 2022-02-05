@@ -10,7 +10,7 @@ from scipy.ndimage.filters import convolve
 from nurses_2.colors import rainbow_gradient, ABLACK
 from nurses_2.io import MouseEvent, MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.app import App
+from nurses_2.app import run_widget_as_app
 
 DIF_KERNEL = np.array([-.5, 0.0, .5])
 GRAD_KERNEL = np.array([-1.0, 0.0, 1.0])
@@ -147,9 +147,4 @@ class StableFluid(GraphicWidget):
         super().render(canvas_view, colors_view, source)
 
 
-class StableFluidApp(App):
-    async def on_start(self):
-        self.add_widget(StableFluid(size_hint=(1.0, 1.0)))
-
-
-StableFluidApp().run()
+run_widget_as_app(StableFluid, size_hint=(1.0, 1.0))

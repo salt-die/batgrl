@@ -141,7 +141,6 @@ class PokeParticle(GraphicParticle):
                 return
 
 
-
 class MyApp(App):
     async def on_start(self):
         background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))

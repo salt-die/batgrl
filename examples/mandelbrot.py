@@ -2,7 +2,7 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.app import App
+from nurses_2.app import run_widget_as_app
 from nurses_2.widgets.graphic_widget import GraphicWidget, Size
 
 LEFT, RIGHT = -2.0, 1.0
@@ -77,9 +77,4 @@ class Mandelbrot(GraphicWidget):
                 return
 
 
-class MandelbrotApp(App):
-    async def on_start(self):
-        self.add_widget(Mandelbrot(size_hint=(1.0, 1.0)))
-
-
-MandelbrotApp().run()
+run_widget_as_app(Mandelbrot, size_hint=(1.0, 1.0))

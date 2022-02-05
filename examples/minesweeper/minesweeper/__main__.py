@@ -1,13 +1,5 @@
-from nurses_2.app import App
+from nurses_2.app import run_widget_as_app
 
-from .minesweeper import MineSweeper, Anchor
+from .minesweeper import MineSweeper
 
-
-class MineSweeperApp(App):
-    async def on_start(self):
-        self.add_widget(
-            MineSweeper(pos_hint=(.5, .5), anchor=Anchor.CENTER)
-        )
-
-
-MineSweeperApp(title="MineSweeper").run()
+run_widget_as_app(MineSweeper)

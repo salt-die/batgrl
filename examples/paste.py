@@ -3,7 +3,7 @@ Paste into the terminal to test paste dispatching.
 """
 import asyncio
 
-from nurses_2.app import App
+from nurses_2.app import run_widget_as_app
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.io import PasteEvent
 
@@ -27,9 +27,4 @@ class PasteWidget(TextWidget):
             self._clear_task = asyncio.create_task(self._clear_paste())
 
 
-class MyApp(App):
-    async def on_start(self):
-        self.add_widget(PasteWidget(size=(10, 100)))
-
-
-MyApp().run()
+run_widget_as_app(PasteWidget, size=(10, 100))

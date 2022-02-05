@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from .colors import BLACK_ON_BLACK
 from .io import KeyPressEvent, MouseEvent, PasteEvent, io
 from .widgets._root import _Root
+from .widgets._widget_base import _WidgetBase
 
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
@@ -131,3 +132,33 @@ class App(ABC):
     @property
     def children(self):
         return self.root.children
+
+
+def run_widget_as_app(widget: type[_WidgetBase], *args, **kwargs):
+    """
+    Run a widget as a full-screen app.
+
+    Parameters
+    ----------
+    widget : type[_WidgetBase]
+        Widget type to be instantiated and run as an app.
+
+    *args
+        Positional arguments for widget instantiation.
+
+    **kwargs
+        Keyword arguments for widget instantiation.
+
+    Notes
+    -----
+    This is a convenience function provided to reduce boilerplate
+    for the simplest case of an App. The widget type is provided
+    instead of an instance to cover cases where the widget schedules
+    tasks on instantiation as no event loop exists before the App is
+    created.
+    """
+    class _DefaultApp(App):
+        async def on_start(self):
+            self.add_widget(widget(*args, **kwargs))
+
+    _DefaultApp().run()
