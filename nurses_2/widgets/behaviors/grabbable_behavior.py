@@ -42,11 +42,15 @@ class GrabbableBehavior:
                     self.ungrab(mouse_event)
                 else:
                     self.grab_update(mouse_event)
-            elif (
+
+                return True
+
+            if (
                 self.collides_point(mouse_event.position)
                 and mouse_event.event_type == MouseEventType.MOUSE_DOWN
             ):
                 self.grab(mouse_event)
+                return True
 
         return super().on_click(mouse_event)
 
