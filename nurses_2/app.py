@@ -6,6 +6,8 @@ from .io import KeyPressEvent, MouseEvent, PasteEvent, io
 from .widgets._root import _Root
 from .widgets._widget_base import _WidgetBase
 
+__all__ = "App", "run_widget_as_app"
+
 RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
 RENDER_INTERVAL      = 0     # Seconds between screen renders.
 
