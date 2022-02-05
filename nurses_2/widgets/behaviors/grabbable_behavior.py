@@ -55,27 +55,27 @@ class GrabbableBehavior:
         return super().on_click(mouse_event)
 
     @property
-    def is_grabbed(self):
+    def is_grabbed(self) -> bool:
         return self._is_grabbed
 
     @property
-    def mouse_dyx(self):
+    def mouse_dyx(self) -> Point:
         """
-        Change in mouse position. Only updated while grabbed.
+        Change in mouse position.
         """
         return self._mouse_dyx
 
     @property
-    def mouse_dy(self):
+    def mouse_dy(self) -> int:
         """
-        Vertical change in mouse position. Only updated while grabbed.
+        Vertical change in mouse position.
         """
         return self._mouse_dyx[0]
 
     @property
-    def mouse_dx(self):
+    def mouse_dx(self) -> int:
         """
-        Horizontal change in mouse position. Only updated while grabbed.
+        Horizontal change in mouse position.
         """
         return self._mouse_dyx[1]
 
