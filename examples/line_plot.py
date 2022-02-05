@@ -13,7 +13,6 @@ YS_1 = np.random.randint(0, 100, 20)
 YS_2 = np.random.randint(0, 100, 20)
 YS_3 = np.random.randint(0, 100, 20)
 
-
 run_widget_as_app(
     LinePlot,
     XS,
