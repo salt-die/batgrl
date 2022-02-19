@@ -1,11 +1,11 @@
 import os
-import sys
+import platform
 
 def is_windows():
     """
     Return True on Windows.
     """
-    return sys.platform.startswith("win")
+    return platform.system() == "Windows"
 
 def is_conemu_ansi():
     """
