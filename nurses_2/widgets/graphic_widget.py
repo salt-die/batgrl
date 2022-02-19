@@ -6,11 +6,11 @@ import numpy as np
 from ..clamp import clamp
 from ..colors import AColor, TRANSPARENT
 from ..data_structures import *
-from ._widget_base import _WidgetBase
 from .graphic_widget_data_structures import *
+from .widget_base import WidgetBase
 from .widget_data_structures import *
 
-class GraphicWidget(_WidgetBase):
+class GraphicWidget(WidgetBase):
     """
     Base for graphic widgets.
 

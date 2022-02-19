@@ -3,12 +3,12 @@ from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK, ColorPair
 from ..data_structures import *
-from ._widget_base import _WidgetBase
 from .text_widget_data_structures import *
+from .widget_base import WidgetBase
 from .widget_data_structures import *
 
 
-class TextWidget(_WidgetBase):
+class TextWidget(WidgetBase):
     """
     A generic TUI element.
 

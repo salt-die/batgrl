@@ -1,9 +1,9 @@
 
 from ..colors import Color, ColorPair
-from ._widget_base import _WidgetBase, Size, Anchor
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .text_widget import TextWidget
+from .widget_base import WidgetBase, Size, Anchor
 
 YELLOW = Color.from_hex("dbd006")
 PURPLE = Color.from_hex("462270")
@@ -40,7 +40,7 @@ class _Border(TextWidget):
         self.canvas[[0, -1]] = self.canvas[:, [0, 1, -2, -1]] = "█"
 
 
-class Window(GrabResizeBehavior, _WidgetBase):
+class Window(GrabResizeBehavior, WidgetBase):
     """
     A movable, resizable window widget.
 

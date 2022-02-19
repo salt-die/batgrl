@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from .colors import BLACK_ON_BLACK
 from .io import KeyPressEvent, MouseEvent, PasteEvent, io
 from .widgets._root import _Root
-from .widgets._widget_base import _WidgetBase
+from .widgets.widget_base import WidgetBase
 
 __all__ = "App", "run_widget_as_app"
 
@@ -136,13 +136,13 @@ class App(ABC):
         return self.root.children
 
 
-def run_widget_as_app(widget: type[_WidgetBase], *args, **kwargs):
+def run_widget_as_app(widget: type[WidgetBase], *args, **kwargs):
     """
     Run a widget as a full-screen app.
 
     Parameters
     ----------
-    widget : type[_WidgetBase]
+    widget : type[WidgetBase]
         Widget type to be instantiated and run as an app.
 
     *args

@@ -12,7 +12,7 @@ from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
 
-class _WidgetBase(ABC):
+class WidgetBase(ABC):
     """
     Base for TextWidget and GraphicWidget with abstract methods `resize` and `render`.
     """
@@ -410,7 +410,7 @@ class _WidgetBase(ABC):
         """
         Add multiple child widgets.
         """
-        if len(widgets) == 1 and not isinstance(widgets[0], _WidgetBase):
+        if len(widgets) == 1 and not isinstance(widgets[0], WidgetBase):
             # Assume item is an iterable of widgets.
             widgets = widgets[0]
 
