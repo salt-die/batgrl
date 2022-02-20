@@ -1,20 +1,20 @@
 import asyncio
 from abc import ABC, abstractmethod
+from time import monotonic
 
-from .colors import BLACK_ON_BLACK
-from .io import KeyPressEvent, MouseEvent, PasteEvent, io
+from nurses_2.io.input.events import MouseButton
+
+from .colors import BLACK_ON_BLACK, ColorPair
+from .io import KeyPressEvent, Mods, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
 from .widgets._root import _Root
 from .widgets.widget_base import WidgetBase
 
 __all__ = "App", "run_widget_as_app"
 
-RESIZE_POLL_INTERVAL = 0.5   # Seconds between polling for resize events.
-RENDER_INTERVAL      = 0     # Seconds between screen renders.
-
 
 class App(ABC):
     """
-    Base for creating terminal applications.
+    Basself.resize_poll_interval.
 
     Parameters
     ----------
@@ -26,19 +26,32 @@ class App(ABC):
         Default background color pair for root widget.
     title : str | None, default: None
         Set terminal title (if supported).
+    double_click_timeout : float, default: 0.5
+        Max duration of a double-click. Max duration of a triple-click
+        is double this value.
+    resize_poll_interval : float, default: 0.5
+        Seconds between polling for resize events.
+    render_interval : float, default: 0.0
+        Seconds between screen renders.
     """
     def __init__(
         self,
         *,
-        exit_key=KeyPressEvent.ESCAPE,
-        default_char=" ",
-        default_color_pair=BLACK_ON_BLACK,
-        title=None
+        exit_key: KeyPressEvent | None=KeyPressEvent.ESCAPE,
+        default_char: str=" ",
+        default_color_pair: ColorPair=BLACK_ON_BLACK,
+        title: str | None=None,
+        double_click_timeout: float=0.5,
+        resize_poll_interval: float=0.5,
+        render_interval: float=0.0,
     ):
         self.exit_key = exit_key
         self.default_char = default_char
         self.default_color_pair = default_color_pair
         self.title = title
+        self.double_click_timeout = double_click_timeout
+        self.resize_poll_interval = resize_poll_interval
+        self.render_interval = render_interval
 
     @abstractmethod
     async def on_start(self):
@@ -76,7 +89,33 @@ class App(ABC):
 
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click
+            dispatch_double_click = root.dispatch_double_click
+            dispatch_triple_click = root.dispatch_triple_click
             dispatch_paste = root.dispatch_paste
+
+            last_click_info = MouseEvent(None, None, MouseButton.NO_BUTTON, None), monotonic(), 0  # last key, timestamp, total clicks
+
+            def determine_click_dispatch(key):
+                """
+                Determine if a click is a double-click or a triple-click.
+                """
+                nonlocal last_click_info
+                last_event, timestamp, nclicks = last_click_info
+
+                current_time = monotonic()
+
+                if (
+                    last_event.button is not key.button
+                    or current_time - timestamp > self.double_click_timeout
+                    or nclicks == 0
+                ):
+                    last_click_info = key, current_time, 1
+                elif nclicks == 1:
+                    dispatch_double_click(key)
+                    last_click_info = key, current_time, 2
+                elif nclicks == 2:
+                    dispatch_triple_click(key)
+                    last_click_info = key, current_time, 0  # Reset click count
 
             def read_from_input():
                 """
@@ -88,6 +127,8 @@ class App(ABC):
                             return self.exit()
                         case MouseEvent():
                             dispatch_click(key)
+                            if key.event_type is MouseEventType.MOUSE_DOWN:
+                                determine_click_dispatch(key)
                         case KeyPressEvent():
                             dispatch_press(key)
                         case PasteEvent():
@@ -95,13 +136,13 @@ class App(ABC):
 
             async def poll_size():
                 """
-                Poll terminal size every `RESIZE_POLL_INTERVAL` seconds.
+                Poll terminal size every `resize_poll_interval` seconds.
                 """
                 size = env_out.get_size()
                 resize = root.resize
 
                 while True:
-                    await asyncio.sleep(RESIZE_POLL_INTERVAL)
+                    await asyncio.sleep(self.resize_poll_interval)
 
                     new_size = env_out.get_size()
                     if size != new_size:
@@ -110,12 +151,12 @@ class App(ABC):
 
             async def auto_render():
                 """
-                Render screen every `RENDER_INTERVAL` seconds.
+                Render screen every `render_interval` seconds.
                 """
                 render = root.render
 
                 while True:
-                    await asyncio.sleep(RENDER_INTERVAL)
+                    await asyncio.sleep(self.render_interval)
                     render()
 
             with env_in.raw_mode(), env_in.attach(read_from_input):

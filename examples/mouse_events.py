@@ -22,6 +22,9 @@ class MyButton(ButtonBehavior, TextWidget):
 
         super().__init__(size=(5, 20), **kwargs)
 
+        self._reset_waiting = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._reset_click = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
         self.add_text(f"{'Press Me':^{self.width}}", row=self.height // 2)
 
     def update_down(self):
@@ -44,7 +47,9 @@ class MyButton(ButtonBehavior, TextWidget):
 
     def on_release(self):
         self.info_display.add_text(f"{'Pressed!':<8}", row=0, column=19)
-        asyncio.create_task(self._reset_view())
+
+        self._reset_waiting.cancel()
+        self._reset_waiting = asyncio.create_task(self._reset_view(self.info_display.canvas[0, 18:]))
 
     def on_click(self, mouse_event):
         info = self.info_display
@@ -54,14 +59,30 @@ class MyButton(ButtonBehavior, TextWidget):
         info.add_text(f"{str(mouse_event.mods)[5:-1]:<44}", row=4, column=6)
         return super().on_click(mouse_event)
 
-    async def _reset_view(self):
-        await asyncio.sleep(2)
-        self.info_display.canvas[0, 18:] = " "
+    def on_double_click(self, mouse_event):
+        self.info_display.add_text(f"{'Double-click!':<50}", row=5)
+
+        self._reset_click.cancel()
+        self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
+
+    def on_triple_click(self, mouse_event):
+        self.info_display.add_text(f"{'Triple-click!':<50}", row=5)
+
+        self._reset_click.cancel()
+        self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
+
+    async def _reset_view(self, slice):
+        try:
+            await asyncio.sleep(2)
+        except asyncio.CancelledError:
+            pass
+        else:
+            slice[:] = " "
 
 
 class MyApp(App):
     async def on_start(self):
-        info_display = TextWidget(size=(5, 50))
+        info_display = TextWidget(size=(6, 50))
         info_display.add_text("Waiting for input:", row=0)
         info_display.add_text("Position:", row=1)
         info_display.add_text("Event:", row=2)
