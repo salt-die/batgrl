@@ -5,7 +5,7 @@ from time import monotonic
 from nurses_2.io.input.events import MouseButton
 
 from .colors import BLACK_ON_BLACK, ColorPair
-from .io import KeyPressEvent, Mods, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
+from .io import KeyPressEvent, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
 from .widgets._root import _Root
 from .widgets.widget_base import WidgetBase
 
