@@ -24,12 +24,12 @@ if is_windows():
 
     IS_HIDDEN = FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM
 
-    def is_not_hidden(path: Path):
-        return not GetFileAttributes(str(path.absolute())) & IS_HIDDEN
+    def is_hidden(path: Path):
+        return GetFileAttributes(str(path.absolute())) & IS_HIDDEN
 
 else:
-    def is_not_hidden(path: Path):
-        return not path.stem.startswith(".")
+    def is_hidden(path: Path):
+        return path.stem.startswith(".")
 
 
 class FileViewNode(TreeViewNode):
@@ -96,10 +96,10 @@ class FileView(TreeView):
         it = self.root_node.iter_open_nodes()
 
         if self.directories_only:
-            it = filter(Path.is_dir, it)
+            it = filter(lambda node: node.path.is_dir(), it)
 
         if not self.show_hidden:
-            it = filter(is_not_hidden, it)
+            it = filter(lambda node: not is_hidden(node.path), it)
 
         max_width = -1
         for i, node in enumerate(it):
