@@ -14,7 +14,7 @@ __all__ = "App", "run_widget_as_app"
 
 class App(ABC):
     """
-    Basself.resize_poll_interval.
+    Base for creating terminal applications.
 
     Parameters
     ----------
