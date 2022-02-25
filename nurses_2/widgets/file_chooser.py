@@ -14,9 +14,9 @@ from .tree_view import (
 )
 
 FILE_PREFIX = "  📄 "
-FOLDER_PREFIX = "🞂 📁 "
+FOLDER_PREFIX = "▶ 📁 "
 NESTED_PREFIX = "  "
-OPEN_FOLDER_PREFIX = "🞃 📂 "
+OPEN_FOLDER_PREFIX = "▼ 📂 "
 
 if is_windows():
     from win32api import GetFileAttributes
