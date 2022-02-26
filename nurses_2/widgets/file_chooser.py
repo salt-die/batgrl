@@ -66,11 +66,6 @@ class FileViewNode(TreeViewNode):
             f"{self.path.name}"
         )
 
-    def on_double_click(self, mouse_event):
-        if self.collides_point(mouse_event.position):
-            self.root_node.container.select_callback(self.path)
-            return True
-
 
 class FileView(TreeView):
     def __init__(
@@ -115,6 +110,69 @@ class FileView(TreeView):
 
         self.resize((i + 1, max_width))
 
+    def on_press(self, key_press_event):
+        if not self.children:
+            return False
+
+        match key_press_event.key:
+            case "up":
+                if self.selected_node is None:
+                    self.children[0].select()
+                else:
+                    try:
+                        index = self.children.index(self.selected_node)
+                        if index == 0:
+                            index += 1
+                    except ValueError:
+                        index = 1
+
+                    self.children[index - 1].select()
+            case "down":
+                if self.selected_node is None:
+                    self.children[0].select()
+                else:
+                    try:
+                        index = self.children.index(self.selected_node)
+                        if index == len(self.children) - 1:
+                            index -= 1
+                    except ValueError:
+                        index = -1
+                    self.children[index + 1].select()
+            case "left":
+                if self.selected_node is None:
+                    pass
+                elif self.selected_node.is_open:
+                    self.selected_node.toggle()
+                elif self.selected_node.parent_node is not self.root_node:
+                    self.selected_node.parent_node.select()
+            case "right":
+                if self.selected_node is None or self.selected_node.is_leaf:
+                    pass
+                elif not self.selected_node.is_open:
+                    self.selected_node.toggle()
+                elif self.selected_node.child_nodes:
+                    self.selected_node.child_nodes[0].select()
+            case "enter":
+                if self.selected_node is not None:
+                    self.select_callback(self.selected_node.path)
+            case _:
+                return super().on_press(key_press_event)
+
+        top = self.selected_node.top + self.top + self.parent.top
+        if top < 0:
+            self.parent._scroll_up(-top)
+        elif top >= self.parent.bottom - 1:
+            self.parent._scroll_down(self.parent.bottom - top)
+
+        return True
+
+    def on_double_click(self, mouse_event):
+        if (
+            self.selected_node is not None
+            and self.selected_node.collides_point(mouse_event.position)
+        ):
+            self.select_callback(self.selected_node.path)
+            return True
 
 class FileChooser(ScrollView):
     def __init__(
@@ -129,15 +187,16 @@ class FileChooser(ScrollView):
         hover_selected_color_pair: ColorPair=WHITE_ON_LIGHT_PURPLE,
         **kwargs,
     ):
-        super().__init__(default_color_pair=default_color_pair, **kwargs)
-
-        if root_dir is None:
-            root_dir = Path()
+        super().__init__(
+            default_color_pair=default_color_pair,
+            arrow_keys_enabled=False,
+            **kwargs,
+        )
 
         self.add_widget(
             FileView(
                 root_node=FileViewNode(
-                    path=root_dir,
+                    path=root_dir or Path(),
                     default_color_pair=default_color_pair,
                     hover_color_pair=hover_color_pair,
                     selected_color_pair=selected_color_pair,
@@ -156,6 +215,7 @@ class FileChooser(ScrollView):
     @directories_only.setter
     def directories_only(self, directories_only):
         self._view.directories_only = directories_only
+        self._view.update_tree_layout()
 
     @property
     def show_hidden(self):
@@ -164,3 +224,4 @@ class FileChooser(ScrollView):
     @show_hidden.setter
     def show_hidden(self, show_hidden):
         self._view.show_hidden = show_hidden
+        self._view.updated_tree_layout()
