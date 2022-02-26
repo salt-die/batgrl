@@ -35,25 +35,30 @@ else:
 class FileViewNode(TreeViewNode):
     def __init__(self, path: Path, **kwargs):
         self.path = path
+
         super().__init__(is_leaf=path.is_file(), **kwargs)
 
     def _toggle_update(self):
         if not self.child_nodes:
-            paths = sorted(
-                self.path.iterdir(),
-                key=lambda path: (path.is_file(), path.name)
-            )
             prefix = NESTED_PREFIX * (self.level + 1)
 
+            paths = sorted(
+                self.path.iterdir(),
+                key=lambda path: (path.is_file(), path.name),
+            )
+
+            kwargs = {
+                "default_color_pair": self.default_color_pair,
+                "hover_color_pair": self.hover_color_pair,
+                "selected_color_pair": self.selected_color_pair,
+                "hover_selected_color_pair": self.hover_selected_color_pair,
+            }
+
             for path in paths:
-                file_view_node = FileViewNode(
-                    path=path,
-                    default_color_pair=self.default_color_pair,
-                    hover_color_pair=self.hover_color_pair,
-                    selected_color_pair=self.selected_color_pair,
-                    hover_selected_color_pair=self.hover_selected_color_pair,
-                )
+                file_view_node = FileViewNode(path=path, **kwargs)
+
                 self.add_node(file_view_node)
+
                 file_view_node.label = (
                     f"{prefix}"
                     f"{FOLDER_PREFIX if file_view_node.path.is_dir() else FILE_PREFIX}"
