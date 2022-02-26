@@ -174,6 +174,7 @@ class FileView(TreeView):
             self.select_callback(self.selected_node.path)
             return True
 
+
 class FileChooser(ScrollView):
     def __init__(
         self,
