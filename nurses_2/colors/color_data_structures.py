@@ -107,3 +107,15 @@ class ColorTheme(NamedTuple):
 
     accented_foreground: Color
     accented_background: Color
+
+    @property
+    def primary_color_pair(self):
+        return ColorPair.from_colors(self.primary_foreground, self.primary_background)
+
+    @property
+    def highlighted_color_pair(self):
+        return ColorPair.from_colors(self.highlighted_foreground, self.highlighted_background)
+
+    @property
+    def accented_color_pair(self):
+        return ColorPair.from_colors(self.accented_foreground, self.accented_background)
