@@ -3,6 +3,29 @@ Commonly used colors.
 """
 from .color_data_structures import *
 
+__all__ = (
+    "WHITE",
+    "BLACK",
+    "RED",
+    "GREEN",
+    "BLUE",
+    "YELLOW",
+    "CYAN",
+    "MAGENTA",
+    "AWHITE",
+    "ABLACK",
+    "ARED",
+    "AGREEN",
+    "ABLUE",
+    "AYELLOW",
+    "ACYAN",
+    "AMAGENTA",
+    "TRANSPARENT",
+    "WHITE_ON_BLACK",
+    "BLACK_ON_BLACK",
+    "DEFAULT_COLOR_THEME",
+)
+
 WHITE   = Color(255, 255, 255)
 BLACK   = Color(  0,   0,   0)
 RED     = Color(255,   0,   0)
