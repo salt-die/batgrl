@@ -41,11 +41,11 @@ class Button(Themable, ButtonBehavior, TextWidget):
         self.update_theme()
 
     def update_theme(self):
-        primary_fg, primary_bg, highlighted_fg, highlighted_bg, _, accented_bg = self.color_theme
+        ct = self.color_theme
 
-        self.normal_color_pair = ColorPair.from_colors(primary_fg, primary_bg)
-        self.hover_color_pair = ColorPair.from_colors(highlighted_fg, highlighted_bg)
-        self.down_color_pair = ColorPair.from_colors(primary_fg, accented_bg)
+        self.normal_color_pair = ct.primary_color_pair
+        self.hover_color_pair = ct.highlighted_color_pair
+        self.down_color_pair = ColorPair.from_colors(ct.primary_foreground, ct.accented_background)
 
         match self.state:
             case ButtonState.NORMAL:
