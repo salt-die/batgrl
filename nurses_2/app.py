@@ -62,11 +62,11 @@ class App(ABC):
 
     @property
     def color_theme(self) -> ColorTheme:
-        return self._color_theme
+        return Themable.color_theme
 
     @color_theme.setter
     def color_theme(self, color_theme: ColorTheme):
-        self._color_theme = color_theme
+        Themable.color_theme = color_theme
 
         if self.root is not None:
             for widget in self.root.walk():
