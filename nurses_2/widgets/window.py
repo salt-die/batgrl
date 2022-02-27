@@ -1,26 +1,17 @@
 
-from ..colors import Color, ColorPair
+from ..colors import ColorPair
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
+from .behaviors.themable import Themable
 from .text_widget import TextWidget
 from .widget_base import WidgetBase, Size, Anchor
-
-YELLOW = Color.from_hex("dbd006")
-PURPLE = Color.from_hex("462270")
-DARK_PURPLE = Color.from_hex("20073a")
-YELLOW_ON_PURPLE = ColorPair.from_colors(YELLOW, PURPLE)
 
 
 class _TitleBar(GrabbableBehavior, TextWidget):
     def __init__(self, title="", **kwargs):
         super().__init__(disable_ptf=True, **kwargs)
 
-        self._label = TextWidget(
-            size=(1, len(title)),
-            pos_hint=(None, .5),
-            anchor=Anchor.TOP_CENTER,
-            default_color_pair=self.default_color_pair,
-        )
+        self._label = TextWidget(size=(1, len(title)), pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
         self._label.add_text(title)
         self.add_widget(self._label)
 
@@ -40,7 +31,7 @@ class _Border(TextWidget):
         self.canvas[[0, -1]] = self.canvas[:, [0, 1, -2, -1]] = "█"
 
 
-class Window(GrabResizeBehavior, WidgetBase):
+class Window(Themable, GrabResizeBehavior, WidgetBase):
     """
     A movable, resizable window widget.
 
@@ -48,31 +39,30 @@ class Window(GrabResizeBehavior, WidgetBase):
     ----------
     title : str, default: ""
         Title of window.
-    title_color_pair : ColorPair, default: YELLOW_ON_PURPLE
-        Color pair of title.
-    border_color_pair : Color, default: DARK_PURPLE
-        Color of border.
     """
-    def __init__(
-        self,
-        title="",
-        title_color_pair: ColorPair=YELLOW_ON_PURPLE,
-        border_color: Color=DARK_PURPLE,
-        **kwargs
-    ):
+    def __init__(self, title="", **kwargs):
         super().__init__(**kwargs)
 
-        self._border = _Border(
-            default_color_pair=ColorPair.from_colors(border_color, border_color),
-            is_transparent=True,
-        )
-        self._titlebar = _TitleBar(title=title, default_color_pair=title_color_pair, pos=(1, 2))
+        self._border = _Border(is_transparent=True)
+        self._titlebar = _TitleBar(title=title, pos=(1, 2))
         self._view = TextWidget(pos=(2, 2))
         self._border.parent = self._titlebar.parent = self._view.parent = self
 
         self.children = [self._titlebar, self._view]
 
+        self.update_theme()
         self.resize(self.size)
+
+    def update_theme(self):
+        ct = self.color_theme
+        border_color_pair = ColorPair.from_colors(ct.highlighted_background, ct.highlighted_background)
+        self._border.default_color_pair = border_color_pair
+        self._border.colors[:] = border_color_pair
+
+        self._titlebar.default_color_pair = ct.primary_color_pair
+        self._titlebar.colors[:] = ct.primary_color_pair
+        self._titlebar._label.default_color_pair = ct.primary_color_pair
+        self._titlebar._label.colors[:] = ct.primary_color_pair
 
     def resize(self, size: Size):
         h, w = size
