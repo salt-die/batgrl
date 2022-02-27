@@ -346,10 +346,10 @@ class WidgetBase(ABC):
                 offset_top, offset_left = self.center.y, self.width
 
         if y_hint is not None:
-            self.top = round(h * y_hint) - offset_top
+            self.top = int(h * y_hint) - offset_top
 
         if x_hint is not None:
-            self.left = round(w * x_hint) - offset_left
+            self.left = int(w * x_hint) - offset_left
 
     @property
     def root(self):
