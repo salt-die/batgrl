@@ -20,7 +20,7 @@ class _VerticalBar(Themable, TextWidget):
         self.update_theme()
 
     def update_theme(self):
-        self.default_color_pair = self.color_theme.primary_color_pair
+        self.default_color_pair = self.color_theme.primary_light_color_pair
         self.colors[:] = self.default_color_pair
 
     def update_geometry(self):
@@ -70,7 +70,7 @@ class _HorizontalBar(Themable, TextWidget):
         self.update_theme()
 
     def update_theme(self):
-        self.default_color_pair = self.color_theme.primary_color_pair
+        self.default_color_pair = self.color_theme.primary_light_color_pair
         self.colors[:] = self.default_color_pair
 
     def update_geometry(self):

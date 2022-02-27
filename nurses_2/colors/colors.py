@@ -26,10 +26,15 @@ WHITE_ON_BLACK = ColorPair.from_colors(WHITE, BLACK)
 BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)
 
 DEFAULT_COLOR_THEME = ColorTheme(
-    primary_foreground=Color.from_hex("#9976e0"),  # Bright Purple
-    primary_background=Color.from_hex("#462270"),  # Purple
-    highlighted_foreground=Color.from_hex("#bba4ea"),  # Very Bright Purple
-    highlighted_background=Color.from_hex("#5e2f92"),  # Light Purple
-    accented_foreground=Color.from_hex("#f0eed6"),   # Bright Yellow
-    accented_background=Color.from_hex("#e2d114"),  # Gold
+    primary_fg=Color.from_hex("#d1c4e9"),
+    primary_bg=Color.from_hex("#311b92"),
+
+    primary_fg_dark=Color.from_hex("#b39ddb"),
+    primary_bg_dark=Color.from_hex("#000063"),
+
+    primary_fg_light=Color.from_hex("#ede7f6"),
+    primary_bg_light=Color.from_hex("#6746c3"),
+
+    secondary_fg=Color.from_hex("#212121"),
+    secondary_bg=Color.from_hex("#ffb300"),
 )

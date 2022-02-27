@@ -99,23 +99,30 @@ class ColorTheme(NamedTuple):
     """
     A palette of colors used to paint an app's themable widgets.
     """
-    primary_foreground: Color
-    primary_background: Color
+    primary_fg: Color
+    primary_bg: Color
 
-    highlighted_foreground: Color
-    highlighted_background: Color
+    primary_fg_light: Color
+    primary_bg_light: Color
 
-    accented_foreground: Color
-    accented_background: Color
+    primary_fg_dark: Color
+    primary_bg_dark: Color
+
+    secondary_fg: Color
+    secondary_bg: Color
 
     @property
     def primary_color_pair(self):
-        return ColorPair.from_colors(self.primary_foreground, self.primary_background)
+        return ColorPair.from_colors(self.primary_fg, self.primary_bg)
 
     @property
-    def highlighted_color_pair(self):
-        return ColorPair.from_colors(self.highlighted_foreground, self.highlighted_background)
+    def primary_light_color_pair(self):
+        return ColorPair.from_colors(self.primary_fg_light, self.primary_bg_light)
 
     @property
-    def accented_color_pair(self):
-        return ColorPair.from_colors(self.accented_foreground, self.accented_background)
+    def primary_dark_color_pair(self):
+        return ColorPair.from_colors(self.primary_fg_dark, self.primary_bg_dark)
+
+    @property
+    def secondary_color_pair(self):
+        return ColorPair.from_colors(self.secondary_fg, self.secondary_bg)

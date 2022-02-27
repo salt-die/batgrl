@@ -25,9 +25,9 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         ct = self.color_theme
 
         self.normal_color_pair = ct.primary_color_pair
-        self.hover_color_pair = ct.highlighted_color_pair
-        self.selected_color_pair = ColorPair.from_colors(ct.accented_background, ct.primary_background)
-        self.hover_selected_color_pair = ColorPair.from_colors(ct.accented_background, ct.highlighted_background)
+        self.hover_color_pair = ct.primary_light_color_pair
+        self.selected_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg)
+        self.hover_selected_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg_light)
 
         self.repaint()
 

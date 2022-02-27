@@ -55,14 +55,15 @@ class Window(Themable, GrabResizeBehavior, WidgetBase):
 
     def update_theme(self):
         ct = self.color_theme
-        border_color_pair = ColorPair.from_colors(ct.highlighted_background, ct.highlighted_background)
+        border_color_pair = ColorPair.from_colors(ct.primary_bg, ct.primary_bg)
         self._border.default_color_pair = border_color_pair
         self._border.colors[:] = border_color_pair
 
-        self._titlebar.default_color_pair = ct.primary_color_pair
-        self._titlebar.colors[:] = ct.primary_color_pair
-        self._titlebar._label.default_color_pair = ct.primary_color_pair
-        self._titlebar._label.colors[:] = ct.primary_color_pair
+        title_bar_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg_dark)
+        self._titlebar.default_color_pair = title_bar_color_pair
+        self._titlebar.colors[:] = title_bar_color_pair
+        self._titlebar._label.default_color_pair = title_bar_color_pair
+        self._titlebar._label.colors[:] = title_bar_color_pair
 
     def resize(self, size: Size):
         h, w = size

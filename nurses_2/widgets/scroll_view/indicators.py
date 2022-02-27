@@ -10,9 +10,9 @@ class _IndicatorBehavior(Themable):
     """
     def update_theme(self):
         ct = self.color_theme
-        self.inactive_color = ct.primary_foreground
-        self.hover_color = ct.highlighted_foreground
-        self.active_color = ct.accented_background
+        self.inactive_color = ct.primary_fg_light
+        self.hover_color = ct.primary_bg
+        self.active_color = ct.secondary_bg
 
         if not self.parent:
             self.colors[..., 3:] = self.inactive_color

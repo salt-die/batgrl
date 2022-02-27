@@ -44,8 +44,8 @@ class Button(Themable, ButtonBehavior, TextWidget):
         ct = self.color_theme
 
         self.normal_color_pair = ct.primary_color_pair
-        self.hover_color_pair = ct.highlighted_color_pair
-        self.down_color_pair = ColorPair.from_colors(ct.primary_foreground, ct.accented_background)
+        self.hover_color_pair = ct.primary_light_color_pair
+        self.down_color_pair = ct.secondary_color_pair
 
         match self.state:
             case ButtonState.NORMAL:
