@@ -4,14 +4,7 @@ from typing import Callable
 from ..io.environ import is_windows
 from ..colors import ColorPair
 from .scroll_view import ScrollView
-from .tree_view import (
-    BRIGHT_PURPLE_ON_PURPLE,
-    VERY_BRIGHT_PURPLE_ON_LIGHT_PURPLE,
-    WHITE_ON_LIGHT_PURPLE,
-    WHITE_ON_PURPLE,
-    TreeViewNode,
-    TreeView,
-)
+from .tree_view import TreeViewNode, TreeView
 
 FILE_PREFIX = "  📄 "
 FOLDER_PREFIX = "▶ 📁 "
@@ -47,15 +40,8 @@ class FileViewNode(TreeViewNode):
                 key=lambda path: (path.is_file(), path.name),
             )
 
-            kwargs = {
-                "default_color_pair": self.default_color_pair,
-                "hover_color_pair": self.hover_color_pair,
-                "selected_color_pair": self.selected_color_pair,
-                "hover_selected_color_pair": self.hover_selected_color_pair,
-            }
-
             for path in paths:
-                file_view_node = FileViewNode(path=path, **kwargs)
+                file_view_node = FileViewNode(path=path)
 
                 self.add_node(file_view_node)
 
@@ -111,6 +97,7 @@ class FileView(TreeView):
 
         for node in self.children:
             node.resize((1, max_width))
+            node.repaint()
             node.add_text(f"{node.label:<{max_width}}")
 
         self.resize((i + 1, max_width))
@@ -187,27 +174,14 @@ class FileChooser(ScrollView):
         directories_only: bool=False,
         show_hidden: bool=True,
         select_callback: Callable[[Path], None]=lambda path: None,
-        default_color_pair: ColorPair=BRIGHT_PURPLE_ON_PURPLE,
-        hover_color_pair: ColorPair=VERY_BRIGHT_PURPLE_ON_LIGHT_PURPLE,
-        selected_color_pair: ColorPair=WHITE_ON_PURPLE,
-        hover_selected_color_pair: ColorPair=WHITE_ON_LIGHT_PURPLE,
-        **kwargs,
+        **kwargs
     ):
-        super().__init__(
-            default_color_pair=default_color_pair,
-            arrow_keys_enabled=False,
-            **kwargs,
-        )
+        kwargs.pop("arrow_keys_enabled", None)
+        super().__init__(arrow_keys_enabled=False, **kwargs)
 
         self.add_widget(
             FileView(
-                root_node=FileViewNode(
-                    path=root_dir or Path(),
-                    default_color_pair=default_color_pair,
-                    hover_color_pair=hover_color_pair,
-                    selected_color_pair=selected_color_pair,
-                    hover_selected_color_pair=hover_selected_color_pair,
-                ),
+                root_node=FileViewNode(path=root_dir or Path()),
                 directories_only=directories_only,
                 show_hidden=show_hidden,
                 select_callback=select_callback,

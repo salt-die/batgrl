@@ -1,28 +1,11 @@
-from ..colors import Color, ColorPair, WHITE
+from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
+from .behaviors.themable import Themable
 from .text_widget import TextWidget
 
-PURPLE = Color.from_hex("#462270")
-LIGHT_PURPLE = Color.from_hex("#5e2f92")
-BRIGHT_PURPLE = Color.from_hex("#9976e0")
-VERY_BRIGHT_PURPLE = Color.from_hex("#bba4ea")
 
-BRIGHT_PURPLE_ON_PURPLE = ColorPair.from_colors(BRIGHT_PURPLE, PURPLE)
-VERY_BRIGHT_PURPLE_ON_LIGHT_PURPLE = ColorPair.from_colors(VERY_BRIGHT_PURPLE, LIGHT_PURPLE)
-WHITE_ON_PURPLE = ColorPair.from_colors(WHITE, PURPLE)
-WHITE_ON_LIGHT_PURPLE = ColorPair.from_colors(WHITE, LIGHT_PURPLE)
-
-
-class TreeViewNode(ButtonBehavior, TextWidget):
-    def __init__(
-        self,
-        is_leaf=True,
-        default_color_pair=BRIGHT_PURPLE_ON_PURPLE,
-        hover_color_pair=VERY_BRIGHT_PURPLE_ON_LIGHT_PURPLE,
-        selected_color_pair=WHITE_ON_PURPLE,
-        hover_selected_color_pair=WHITE_ON_LIGHT_PURPLE,
-        **kwargs
-    ):
+class TreeViewNode(Themable, ButtonBehavior, TextWidget):
+    def __init__(self, is_leaf=True, **kwargs):
         self.is_leaf = is_leaf
 
         self.is_open = False
@@ -32,11 +15,27 @@ class TreeViewNode(ButtonBehavior, TextWidget):
         self.child_nodes = [ ]
         self.level = -1
 
-        self.hover_color_pair = hover_color_pair
-        self.selected_color_pair = selected_color_pair
-        self.hover_selected_color_pair= hover_selected_color_pair
+        self.normal_color_pair = (0, ) * 6  # Temporary assignment
 
-        super().__init__(default_color_pair=default_color_pair, **kwargs)
+        super().__init__(**kwargs)
+
+        self.update_theme()
+
+    def update_theme(self):
+        ct = self.color_theme
+
+        self.normal_color_pair = ct.primary_color_pair
+        self.hover_color_pair = ct.highlighted_color_pair
+        self.selected_color_pair = ColorPair.from_colors(ct.accented_background, ct.primary_background)
+        self.hover_selected_color_pair = ColorPair.from_colors(ct.accented_background, ct.highlighted_background)
+
+        self.repaint()
+
+    def repaint(self):
+        if self.state is ButtonState.NORMAL:
+            self.update_normal()
+        else:
+            self.update_hover()
 
     @property
     def root_node(self):
@@ -78,11 +77,7 @@ class TreeViewNode(ButtonBehavior, TextWidget):
     def unselect(self):
         self.is_selected = False
         self.root_node.tree_view.selected_node = None
-
-        if self.state is ButtonState.NORMAL:
-            self.update_normal()
-        else:
-            self.update_hover()
+        self.repaint()
 
     def select(self):
         if self.root_node.tree_view.selected_node is not None:
@@ -90,11 +85,7 @@ class TreeViewNode(ButtonBehavior, TextWidget):
 
         self.is_selected = True
         self.root_node.tree_view.selected_node = self
-
-        if self.state is ButtonState.NORMAL:
-            self.update_normal()
-        else:
-            self.update_hover()
+        self.repaint()
 
     def update_hover(self):
         if self.is_selected:
@@ -106,7 +97,7 @@ class TreeViewNode(ButtonBehavior, TextWidget):
         if self.is_selected:
             self.colors[:] = self.selected_color_pair
         else:
-            self.colors[:] = self.default_color_pair
+            self.colors[:] = self.normal_color_pair
 
     def on_release(self):
         self.select()
