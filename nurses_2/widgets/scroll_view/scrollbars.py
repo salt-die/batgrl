@@ -1,24 +1,27 @@
-from ...colors import BLACK, ColorPair
 from ...io import MouseEventType
 from ..text_widget import TextWidget
+from ..behaviors.themable import Themable
 from .indicators import _VerticalIndicator, _HorizontalIndicator
-from .scrollbar_data_structures import ScrollBarSettings
 
 VBAR_WIDTH = 2
 HBAR_HEIGHT = 1
 
 
-class _VerticalBar(TextWidget):
-    def __init__(self, *, settings: ScrollBarSettings, parent):
-        bar_color, *indicator_settings = settings
-
-        super().__init__(default_color_pair=ColorPair.from_colors(BLACK, bar_color))
+class _VerticalBar(Themable, TextWidget):
+    def __init__(self, parent):
+        super().__init__()
 
         self.parent = parent
         self.update_geometry()
 
-        self.indicator = _VerticalIndicator(*indicator_settings)
+        self.indicator = _VerticalIndicator()
         self.add_widget(self.indicator)
+
+        self.update_theme()
+
+    def update_theme(self):
+        self.default_color_pair = self.color_theme.primary_color_pair
+        self.colors[:] = self.default_color_pair
 
     def update_geometry(self):
         h, w = self.parent.size
@@ -54,17 +57,21 @@ class _VerticalBar(TextWidget):
             return True
 
 
-class _HorizontalBar(TextWidget):
-    def __init__(self, *, settings: ScrollBarSettings, parent):
-        bar_color, *indicator_settings = settings
-
-        super().__init__(default_color_pair=ColorPair.from_colors(BLACK, bar_color))
+class _HorizontalBar(Themable, TextWidget):
+    def __init__(self, parent):
+        super().__init__()
 
         self.parent = parent
         self.update_geometry()
 
-        self.indicator = _HorizontalIndicator(*indicator_settings)
+        self.indicator = _HorizontalIndicator()
         self.add_widget(self.indicator)
+
+        self.update_theme()
+
+    def update_theme(self):
+        self.default_color_pair = self.color_theme.primary_color_pair
+        self.colors[:] = self.default_color_pair
 
     def update_geometry(self):
         h, w = self.parent.size

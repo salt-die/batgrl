@@ -1,12 +1,10 @@
 import numpy as np
 
 from ...clamp import clamp
-from ...colors import Color
 from ...io import KeyPressEvent, MouseEventType, MouseEvent
-from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
+from ..behaviors.grabbable_behavior import GrabbableBehavior
 from ..text_widget import TextWidget
 from .scrollbars import _HorizontalBar, _VerticalBar
-from .scrollbar_data_structures import ScrollBarSettings
 
 
 class ScrollView(GrabbableBehavior, TextWidget):
@@ -33,8 +31,6 @@ class ScrollView(GrabbableBehavior, TextWidget):
         Vertical scroll position as a proportion of total.
     horizontal_proportion : float, default: 0.0
         Horizontal scroll position as a proportion of total.
-    vertical_scrollbar, horizontal_scrollbar : ScrollBarSettings, default: DEFAULT_SCROLLBAR_SETTINGS
-        Settings for scrollbars.
 
     Notes
     -----
@@ -47,14 +43,6 @@ class ScrollView(GrabbableBehavior, TextWidget):
     ValueError
         If `add_widget` is called while already containing a child.
     """
-    DEFAULT_SCROLLBAR_SETTINGS = ScrollBarSettings(
-        bar_color=Color.from_hex("#340744"),
-        indicator_inactive_color=Color.from_hex("#debad6"),
-        indicator_hover_color=Color.from_hex("#741aac"),
-        indicator_active_color=Color.from_hex("#e2d114"),
-        indicator_length=2,
-    )
-
     def __init__(
         self,
         allow_vertical_scroll=True,
@@ -66,8 +54,6 @@ class ScrollView(GrabbableBehavior, TextWidget):
         arrow_keys_enabled=True,
         vertical_proportion=0.0,
         horizontal_proportion=0.0,
-        vertical_scrollbar: ScrollBarSettings=DEFAULT_SCROLLBAR_SETTINGS,
-        horizontal_scrollbar: ScrollBarSettings=DEFAULT_SCROLLBAR_SETTINGS,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -81,11 +67,10 @@ class ScrollView(GrabbableBehavior, TextWidget):
         self._vertical_proportion = clamp(vertical_proportion, 0, 1)
         self._horizontal_proportion = clamp(horizontal_proportion, 0, 1)
         self._view = None
-        self._grabbed = False
 
         self.children = [
-            _VerticalBar(settings=vertical_scrollbar, parent=self),
-            _HorizontalBar(settings=horizontal_scrollbar, parent=self),
+            _VerticalBar(self),
+            _HorizontalBar(self),
         ]
 
     @property
