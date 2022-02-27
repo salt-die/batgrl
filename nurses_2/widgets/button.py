@@ -1,6 +1,5 @@
 from typing import Callable
 
-from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, Anchor
