@@ -5,6 +5,7 @@ __all__ = (
     "Color",
     "AColor",
     "ColorPair",
+    "ColorTheme",
 )
 
 
@@ -92,3 +93,17 @@ class ColorPair(NamedTuple):
     @property
     def bg_color(self):
         return Color(*self[3:])
+
+
+class ColorTheme(NamedTuple):
+    """
+    A palette of colors used to paint an app's themable widgets.
+    """
+    primary_foreground: Color
+    primary_background: Color
+
+    highlighted_foreground: Color
+    highlighted_background: Color
+
+    accented_foreground: Color
+    accented_background: Color

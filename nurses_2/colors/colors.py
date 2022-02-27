@@ -24,3 +24,12 @@ TRANSPARENT = AColor(0, 0, 0, 0)
 
 WHITE_ON_BLACK = ColorPair.from_colors(WHITE, BLACK)
 BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)
+
+DEFAULT_COLOR_THEME = ColorTheme(
+    primary_foreground=Color.from_hex("#9976e0"),  # Bright Purple
+    primary_background=Color.from_hex("#462270"),  # Purple
+    highlighted_foreground=Color.from_hex("#bba4ea"),  # Very Bright Purple
+    highlighted_background=Color.from_hex("#5e2f92"),  # Light Purple
+    accented_foreground=Color.from_hex("#f0eed6"),   # Bright Yellow
+    accented_background=Color.from_hex("#e2d114"),  # Gold
+)

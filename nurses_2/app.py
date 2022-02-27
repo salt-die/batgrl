@@ -4,9 +4,10 @@ from time import monotonic
 
 from nurses_2.io.input.events import MouseButton
 
-from .colors import BLACK_ON_BLACK, ColorPair
+from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import KeyPressEvent, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
 from .widgets._root import _Root
+from .widgets.behaviors.themable import Themable
 from .widgets.widget_base import WidgetBase
 
 __all__ = "App", "run_widget_as_app"
@@ -33,6 +34,8 @@ class App(ABC):
         Seconds between polling for resize events.
     render_interval : float, default: 0.0
         Seconds between screen renders.
+    color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
+        Color theme used for `Themable` widgets.
     """
     def __init__(
         self,
@@ -44,7 +47,10 @@ class App(ABC):
         double_click_timeout: float=0.5,
         resize_poll_interval: float=0.5,
         render_interval: float=0.0,
+        color_theme: ColorTheme=DEFAULT_COLOR_THEME,
     ):
+        self.root = None
+
         self.exit_key = exit_key
         self.default_char = default_char
         self.default_color_pair = default_color_pair
@@ -52,6 +58,20 @@ class App(ABC):
         self.double_click_timeout = double_click_timeout
         self.resize_poll_interval = resize_poll_interval
         self.render_interval = render_interval
+        self.color_theme = color_theme
+
+    @property
+    def color_theme(self) -> ColorTheme:
+        return self._color_theme
+
+    @color_theme.setter
+    def color_theme(self, color_theme: ColorTheme):
+        self._color_theme = color_theme
+
+        if self.root is not None:
+            for widget in self.root.walk():
+                if isinstance(widget, Themable):
+                    widget.update_theme()
 
     @abstractmethod
     async def on_start(self):
