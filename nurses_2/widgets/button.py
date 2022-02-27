@@ -1,16 +1,12 @@
 from typing import Callable
 
-from ..colors import Color, ColorPair, BLACK, WHITE, lerp_colors
+from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
-from .text_widget import TextWidget, Anchor, Size
-
-YELLOW = Color.from_hex("dbd006")
-PURPLE = Color.from_hex("462270")
-YELLOW_ON_PURPLE = ColorPair.from_colors(YELLOW, PURPLE)
-WHITE_ON_WHITE = ColorPair.from_colors(WHITE, WHITE)
+from .behaviors.themable import Themable
+from .text_widget import TextWidget, Anchor
 
 
-class Button(ButtonBehavior, TextWidget):
+class Button(Themable, ButtonBehavior, TextWidget):
     """
     A button widget.
 
@@ -18,68 +14,38 @@ class Button(ButtonBehavior, TextWidget):
     ----------
     label : str, default: ""
         Button label.
-    callback : Callable, default: lambda: None
-        No-argument callable called when button is released.
-    normal_color_pair: ColorPair, default: YELLOW_ON_PURPLE
-        Color pair of button in normal state.
-    hover_color_pair : ColorPair | None, default: None
-        Color pair of button on hover. If None, hover_color_pair
-        will be normal_color_pair, but whitened.
-    down_color_pair : ColorPair | None, default: None
-        Color pair of button in down state. If none, down_color_pair
-        will be normal_color_pair, but whitened (and brighter than
-        default hover_color_pair).
-    background_color : Color, default: BLACK
-        Color of background for the button.
+    callback : Callable[[], None], default: lambda: None
+        Called when button is released.
     """
     def __init__(
         self,
         *,
         label: str="",
-        callback: Callable=lambda: None,
-        normal_color_pair: ColorPair=YELLOW_ON_PURPLE,
-        hover_color_pair: ColorPair | None=None,
-        down_color_pair: ColorPair | None=None,
-        background_color: Color=BLACK,
+        callback: Callable[[], None]=lambda: None,
         **kwargs,
     ):
+        self.normal_color_pair = (0, ) * 6  # Temporary assignment
+
         self._label_widget = TextWidget(
-            size=(1, 1),
-            pos=(1, 0),
-            pos_hint=(None, .5),
-            anchor=Anchor.TOP_CENTER,
+            pos_hint=(.5, .5),
+            anchor=Anchor.CENTER,
         )
-
-        self.callback = callback
-
-        self.normal_color_pair = normal_color_pair
-
-        if hover_color_pair is None:
-            self.hover_color_pair = lerp_colors(normal_color_pair, WHITE_ON_WHITE, .1)
-        else:
-            self.hover_color_pair = hover_color_pair
-
-        if down_color_pair is None:
-            self.down_color_pair = lerp_colors(normal_color_pair, WHITE_ON_WHITE, .25)
-        else:
-            self.down_color_pair = down_color_pair
-
-        self.background_color = background_color
 
         super().__init__(**kwargs)
 
         self.add_widget(self._label_widget)
 
         self.label = label
+        self.callback = callback
 
-        self.resize(self.size)
+        self.update_theme()
 
-    def resize(self, size: Size):
-        super().resize(size)
+    def update_theme(self):
+        primary_fg, primary_bg, highlighted_fg, highlighted_bg, _, accented_bg = self.color_theme
 
-        self.canvas[:] =  self.default_char
-        self.canvas[0] = "▀"
-        self.canvas[-1] = "▄"
+        self.normal_color_pair = ColorPair.from_colors(primary_fg, primary_bg)
+        self.hover_color_pair = ColorPair.from_colors(highlighted_fg, highlighted_bg)
+        self.down_color_pair = ColorPair.from_colors(primary_fg, accented_bg)
 
         match self.state:
             case ButtonState.NORMAL:
@@ -105,12 +71,9 @@ class Button(ButtonBehavior, TextWidget):
 
     def update_hover(self):
         self.colors[:] = self._label_widget.colors[:] = self.hover_color_pair
-        self.colors[0, :, :3] = self.colors[-1, :, :3] = self.background_color
 
     def update_down(self):
         self.colors[:] = self._label_widget.colors[:] = self.down_color_pair
-        self.colors[0, :, :3] = self.colors[-1, :, :3] = self.background_color
 
     def update_normal(self):
         self.colors[:] = self._label_widget.colors[:] = self.normal_color_pair
-        self.colors[0, :, :3] = self.colors[-1, :, :3] = self.background_color
