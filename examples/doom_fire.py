@@ -124,9 +124,9 @@ class DoomFireApp(App):
     async def on_start(self):
         doomfire = DoomFire(size_hint=(1.0, 1.0))
 
-        button_container = TextWidget(size=(3, 32), pos_hint=(1.0, .5), anchor=Anchor.BOTTOM_CENTER)
+        button_container = TextWidget(size=(1, 28), pos_hint=(1.0, .5), anchor=Anchor.BOTTOM_CENTER)
 
-        strength_label = TextWidget(pos=(1, 6), size=(1, 20))
+        strength_label = TextWidget(pos=(0, 4), size=(1, 20))
         strength_label.add_text(f"Current Strength:")
 
         def update_label():
@@ -139,7 +139,7 @@ class DoomFireApp(App):
             update_label()
 
         decrease_button = Button(
-            size=(3, 5),
+            size=(1, 3),
             label="-",
             callback=decrease_callback,
         )
@@ -149,8 +149,8 @@ class DoomFireApp(App):
             update_label()
 
         increase_button = Button(
-            size=(3, 5),
-            pos=(0, 27),
+            size=(1, 3),
+            pos=(0, 25),
             label="+",
             callback=increase_callback,
         )

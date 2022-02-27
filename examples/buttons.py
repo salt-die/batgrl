@@ -12,8 +12,8 @@ class MyApp(App):
             Button(
                 label=f"Button {i + 1}",
                 callback=lambda text=f"Button {i + 1} pressed!": display.add_text(text),
-                size=(3, 10),
-                pos=(3 * i, 0),
+                size=(1, 10),
+                pos=(2 * i, 0),
             )
             for i in range(5)
         )
