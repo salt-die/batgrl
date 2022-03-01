@@ -10,6 +10,7 @@ __all__ = (
     "ToggleButtonBehavior",
 )
 
+
 class ToggleState(str, Enum):
     ON = "on"
     OFF = "off"
