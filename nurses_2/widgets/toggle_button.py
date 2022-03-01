@@ -34,12 +34,13 @@ class ToggleButton(Themable, ToggleButtonBehavior, TextWidget):
 
         self._label_widget = TextWidget(pos_hint=(.5, 0), anchor=Anchor.LEFT_CENTER)
 
+        self.callback = callback  # This must be set before `super().__init__`.
+
         super().__init__(**kwargs)
 
         self.add_widget(self._label_widget)
 
         self.label = label
-        self.callback = callback
 
         self.update_theme()
 
