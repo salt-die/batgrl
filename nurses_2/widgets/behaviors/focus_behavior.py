@@ -60,8 +60,9 @@ class FocusBehavior:
             while (widget := focus_widgets[0]()) is None:
                 focus_widgets.popleft()
 
-        FocusBehavior._focused().on_blur()
+        last_focused = FocusBehavior._focused()
         FocusBehavior._focused = ref(widget)
+        last_focused.on_blur()
 
         if widget.ptf_on_focus:
             widget.pull_to_front()
@@ -70,36 +71,36 @@ class FocusBehavior:
 
         return True
 
-    def on_click(self, mouse_event):
+    def dispatch_click(self, mouse_event):
         if (
-            mouse_event.event_type is not MouseEventType.MOUSE_DOWN
-            or not self.collides_point(mouse_event.position)
-            or self.is_focused
+            mouse_event.event_type is MouseEventType.MOUSE_DOWN
+            and not self.is_focused
+            and self.collides_point(mouse_event.position)
         ):
-            return super().on_click(mouse_event)
+            if (
+                FocusBehavior._focused is not None
+                and FocusBehavior._focused() is not None
+            ):
+                last_focused = FocusBehavior._focused()
+                FocusBehavior._focused = None
+                last_focused.on_blur()
 
-        if (
-            FocusBehavior._focused is not None
-            and FocusBehavior._focused() is not None
-        ):
-            FocusBehavior._focused().on_blur
+            focus_widgets = FocusBehavior._focus_widgets
 
-        focus_widgets = FocusBehavior._focus_widgets
+            while (widget := focus_widgets[0]()) is not self:
+                if widget is None:
+                    focus_widgets.popleft()
+                else:
+                    focus_widgets.rotate(-1)
 
-        while (widget := focus_widgets[0]()) is not self:
-            if widget is None:
-                focus_widgets.popleft()
-            else:
-                focus_widgets.rotate(-1)
+            FocusBehavior._focused = ref(self)
 
-        FocusBehavior._focused = ref(self)
+            if self.ptf_on_focus:
+                self.pull_to_front()
 
-        if self.ptf_on_focus:
-            self.pull_to_front()
+            self.on_focus()
 
-        self.on_focus()
-
-        return True
+        return super().dispatch_click(mouse_event)
 
     def on_focus(self):
         """
