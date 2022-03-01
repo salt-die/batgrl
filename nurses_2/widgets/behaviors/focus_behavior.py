@@ -15,32 +15,32 @@ class FocusBehavior:
     ptf_on_focus : bool, default: True
         Pull widget to front when it gains focus.
     """
-    _focus_widgets: deque[ReferenceType] = deque()
-    _focused = None
+    __focus_widgets: deque[ReferenceType] = deque()
+    __focused = None
 
     def __init__(self, ptf_on_focus=True, **kwargs):
-        FocusBehavior._focus_widgets.append(ref(self))
+        FocusBehavior.__focus_widgets.append(ref(self))
         self.ptf_on_focus = ptf_on_focus
         super().__init__(**kwargs)
 
     @property
     def is_focused(self):
-        return FocusBehavior._focused is not None and FocusBehavior._focused() is self
+        return FocusBehavior.__focused is not None and FocusBehavior.__focused() is self
 
     def on_press(self, key_press_event):
         if key_press_event.key != "tab":
             return super().on_press(key_press_event)
 
-        focus_widgets = FocusBehavior._focus_widgets
+        focus_widgets = FocusBehavior.__focus_widgets
 
         if (
-            FocusBehavior._focused is None
-            or FocusBehavior._focused() is None
+            FocusBehavior.__focused is None
+            or FocusBehavior.__focused() is None
         ):
             while (widget := focus_widgets[0]()) is None:
                 focus_widgets.popleft()
 
-            FocusBehavior._focused = ref(widget)
+            FocusBehavior.__focused = ref(widget)
 
             if widget.ptf_on_focus:
                 widget.pull_to_front()
@@ -60,8 +60,8 @@ class FocusBehavior:
             while (widget := focus_widgets[0]()) is None:
                 focus_widgets.popleft()
 
-        last_focused = FocusBehavior._focused()
-        FocusBehavior._focused = ref(widget)
+        last_focused = FocusBehavior.__focused()
+        FocusBehavior.__focused = ref(widget)
         last_focused.on_blur()
 
         if widget.ptf_on_focus:
@@ -78,14 +78,14 @@ class FocusBehavior:
             and self.collides_point(mouse_event.position)
         ):
             if (
-                FocusBehavior._focused is not None
-                and FocusBehavior._focused() is not None
+                FocusBehavior.__focused is not None
+                and FocusBehavior.__focused() is not None
             ):
-                last_focused = FocusBehavior._focused()
-                FocusBehavior._focused = None
+                last_focused = FocusBehavior.__focused()
+                FocusBehavior.__focused = None
                 last_focused.on_blur()
 
-            focus_widgets = FocusBehavior._focus_widgets
+            focus_widgets = FocusBehavior.__focus_widgets
 
             while (widget := focus_widgets[0]()) is not self:
                 if widget is None:
@@ -93,7 +93,7 @@ class FocusBehavior:
                 else:
                     focus_widgets.rotate(-1)
 
-            FocusBehavior._focused = ref(self)
+            FocusBehavior.__focused = ref(self)
 
             if self.ptf_on_focus:
                 self.pull_to_front()
