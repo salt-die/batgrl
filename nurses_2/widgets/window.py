@@ -1,8 +1,9 @@
 
-from ..colors import ColorPair
+from ..colors import ColorPair, AColor
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .behaviors.themable import Themable
+from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
 from .widget_base import WidgetBase, Size, Anchor
 
@@ -45,7 +46,7 @@ class Window(Themable, GrabResizeBehavior, WidgetBase):
 
         self._border = _Border(is_transparent=True)
         self._titlebar = _TitleBar(title=title, pos=(1, 2))
-        self._view = TextWidget(pos=(2, 2))
+        self._view = GraphicWidget(pos=(2, 2), is_transparent=False)
         self._border.parent = self._titlebar.parent = self._view.parent = self
 
         self.children = [self._titlebar, self._view]
@@ -55,6 +56,10 @@ class Window(Themable, GrabResizeBehavior, WidgetBase):
 
     def update_theme(self):
         ct = self.color_theme
+        view_background = AColor(*ct.primary_bg_light, 255)
+        self._view.default_color = view_background
+        self._view.texture[:] = view_background
+
         border_color_pair = ColorPair.from_colors(ct.primary_bg, ct.primary_bg)
         self._border.default_color_pair = border_color_pair
         self._border.colors[:] = border_color_pair
