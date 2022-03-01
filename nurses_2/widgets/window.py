@@ -1,4 +1,5 @@
 
+from ..clamp import clamp
 from ..colors import ColorPair, AColor
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.grabbable_behavior import GrabbableBehavior
@@ -9,28 +10,16 @@ from .text_widget import TextWidget
 from .widget_base import WidgetBase, Size, Anchor
 
 
-class _TitleBar(GrabbableBehavior, TextWidget):
-    def __init__(self, title="", **kwargs):
+class TitleBar(GrabbableBehavior, TextWidget):
+    def __init__(self, **kwargs):
         super().__init__(disable_ptf=True, **kwargs)
 
-        self._label = TextWidget(size=(1, len(title)), pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
-        self._label.add_text(title)
+        self._label = TextWidget(pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
         self.add_widget(self._label)
-
-    def grab(self, mouse_event):
-        self.parent.pull_to_front()
-        super().grab(mouse_event)
 
     def grab_update(self, mouse_event):
         self.parent.top += self.mouse_dy
         self.parent.left += self.mouse_dx
-
-
-class _Border(TextWidget):
-    def resize(self, size: Size):
-        super().resize(size)
-        self.canvas[:] = " "
-        self.canvas[[0, -1]] = self.canvas[:, [0, 1, -2, -1]] = "█"
 
 
 class Window(Themable, FocusBehavior, GrabResizeBehavior, WidgetBase):
@@ -41,19 +30,44 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, WidgetBase):
     ----------
     title : str, default: ""
         Title of window.
+    alpha : float, default: 1.0
+        Transparency of window background and border.
     """
-    def __init__(self, title="", **kwargs):
+    def __init__(self, title="", alpha=1.0, **kwargs):
         super().__init__(**kwargs)
 
-        self._border = _Border(is_transparent=True)
-        self._titlebar = _TitleBar(title=title, pos=(1, 2))
-        self._view = GraphicWidget(pos=(2, 2), is_transparent=False)
-        self._border.parent = self._titlebar.parent = self._view.parent = self
+        self._border = GraphicWidget()
+        self._titlebar = TitleBar(pos=(1, 2))
+        self._view = GraphicWidget(pos=(2, 2))
 
+        self._titlebar.parent = self._view.parent = self
         self.children = [self._titlebar, self._view]
 
+        self.title = title
+        self.alpha = alpha
+
         self.update_theme()
+
         self.resize(self.size)
+
+    @property
+    def title(sef):
+        return self._title
+
+    @title.setter
+    def title(self, title: str):
+        self._title = title
+        self._titlebar._label.resize((1, len(title)))
+        self._titlebar._label.add_text(title)
+
+    @property
+    def alpha(self) -> float:
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._alpha = clamp(alpha, min=0.0, max=1.0)
+        self._border.alpha = self._view.alpha = self._alpha
 
     def update_theme(self):
         ct = self.color_theme
@@ -63,13 +77,12 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, WidgetBase):
         self._view.texture[:] = view_background
 
         if self.is_focused:
-            bg = self.color_theme.secondary_bg
+            border_color = AColor(*ct.secondary_bg, 255)
         else:
-            bg = self.color_theme.primary_bg
+            border_color = AColor(*ct.primary_bg, 255)
 
-        border_color = ColorPair.from_colors(bg, bg)
-        self._border.default_color_pair = border_color
-        self._border.colors[:] = border_color
+        self._border.default_color = border_color
+        self._border.texture[:] = border_color
 
         title_bar_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg_dark)
         self._titlebar.default_color_pair = title_bar_color_pair
