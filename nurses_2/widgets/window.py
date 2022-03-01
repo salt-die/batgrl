@@ -1,5 +1,6 @@
 
 from ..colors import ColorPair, AColor
+from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .behaviors.themable import Themable
@@ -32,7 +33,7 @@ class _Border(TextWidget):
         self.canvas[[0, -1]] = self.canvas[:, [0, 1, -2, -1]] = "█"
 
 
-class Window(Themable, GrabResizeBehavior, WidgetBase):
+class Window(Themable, FocusBehavior, GrabResizeBehavior, WidgetBase):
     """
     A movable, resizable window widget.
 
@@ -56,19 +57,31 @@ class Window(Themable, GrabResizeBehavior, WidgetBase):
 
     def update_theme(self):
         ct = self.color_theme
+
         view_background = AColor(*ct.primary_bg_light, 255)
         self._view.default_color = view_background
         self._view.texture[:] = view_background
 
-        border_color_pair = ColorPair.from_colors(ct.primary_bg, ct.primary_bg)
-        self._border.default_color_pair = border_color_pair
-        self._border.colors[:] = border_color_pair
+        if self.is_focused:
+            bg = self.color_theme.secondary_bg
+        else:
+            bg = self.color_theme.primary_bg
+
+        border_color = ColorPair.from_colors(bg, bg)
+        self._border.default_color_pair = border_color
+        self._border.colors[:] = border_color
 
         title_bar_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg_dark)
         self._titlebar.default_color_pair = title_bar_color_pair
         self._titlebar.colors[:] = title_bar_color_pair
         self._titlebar._label.default_color_pair = title_bar_color_pair
         self._titlebar._label.colors[:] = title_bar_color_pair
+
+    def on_focus(self):
+        self.update_theme()
+
+    def on_blur(self):
+        self.update_theme()
 
     def resize(self, size: Size):
         h, w = size
