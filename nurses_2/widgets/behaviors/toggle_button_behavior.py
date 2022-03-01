@@ -44,7 +44,7 @@ class ToggleButtonBehavior(ButtonBehavior):
     ):
         self.group = group
         self.allow_no_selection = allow_no_selection
-        self._toggle_state = toggle_state
+        self._toggle_state = ToggleState.OFF
 
         if group is not None:
             button_group = ToggleButtonBehavior.__groups.setdefault(group, [ ])
