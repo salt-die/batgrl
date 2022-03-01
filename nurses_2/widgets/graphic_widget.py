@@ -10,6 +10,7 @@ from .graphic_widget_data_structures import *
 from .widget_base import WidgetBase
 from .widget_data_structures import *
 
+
 class GraphicWidget(WidgetBase):
     """
     Base for graphic widgets.
@@ -113,23 +114,26 @@ class GraphicWidget(WidgetBase):
         t = vert_slice.start
         b = vert_slice.stop
 
-        canvas_view[:] = "▀"
-
-        alpha = self.alpha
-
         texture = self.texture
         even_rows = texture[2 * t: 2 * b: 2, hori_slice]
         odd_rows = texture[2 * t + 1: 2 * b: 2, hori_slice]
 
-        foreground = colors_view[..., :3]
         background = colors_view[..., 3:]
+        foreground = colors_view[..., :3]
 
         if not self.is_transparent:
             foreground[:] = even_rows[..., :3]
             background[:] = odd_rows[..., :3]
         else:
+            # If alpha compositing with a text widget, will look better to replace
+            # foreground colors with background colors in most cases.
+            mask = canvas_view != "▀"
+            foreground[mask] = background[mask]
+
             even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=float)
             odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=float)
+
+            alpha = self.alpha
 
             np.multiply(even_buffer, even_rows[..., 3, None], out=even_buffer)
             np.multiply(even_buffer, alpha, out=even_buffer)
@@ -142,6 +146,7 @@ class GraphicWidget(WidgetBase):
             np.add(even_buffer, foreground, out=foreground, casting="unsafe")
             np.add(odd_buffer, background, out=background, casting="unsafe")
 
+        canvas_view[:] = "▀"
         self.render_children(source, canvas_view, colors_view)
 
     def to_png(self, path: Path):
