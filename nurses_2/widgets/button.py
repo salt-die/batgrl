@@ -25,10 +25,7 @@ class Button(Themable, ButtonBehavior, TextWidget):
     ):
         self.normal_color_pair = (0, ) * 6  # Temporary assignment
 
-        self._label_widget = TextWidget(
-            pos_hint=(.5, .5),
-            anchor=Anchor.CENTER,
-        )
+        self._label_widget = TextWidget(pos_hint=(.5, .5), anchor=Anchor.CENTER)
 
         super().__init__(**kwargs)
 
