@@ -11,6 +11,7 @@ from ..colors import (
     AMAGENTA,
 )
 from .behaviors.grabbable_behavior import GrabbableBehavior
+from .behaviors.themable import Themable
 from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
 
@@ -95,7 +96,7 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
         self.shade_selector.hue = AColor(*self.texture[0, x])
 
 
-class ColorPicker(GraphicWidget):
+class ColorPicker(Themable, GraphicWidget):
     def __init__(self, size=(15, 21), **kwargs):
         super().__init__(size=size, **kwargs)
 
@@ -118,6 +119,8 @@ class ColorPicker(GraphicWidget):
 
         self.add_widgets(self.color_swatch, self.hues, self.shades, self.label)
 
+        self.update_theme()
+
     def resize(self, size):
         h, w = size
 
@@ -128,13 +131,22 @@ class ColorPicker(GraphicWidget):
         hues = self.hues
         label = self.label
 
-        shades.size = max(10, h - 5), max(20, w - 11)
+        shades.size = max(10, h - 4), max(20, w - 11)
 
-        swatch.size = max(6, h - 9), 8
+        swatch.size = max(6, h - 8), 8
         swatch.left = shades.right + 1
 
-        hues.size = 2, shades.width
+        hues.size = 1, shades.width
         hues.top = shades.bottom + 1
 
         label.top = swatch.bottom + 1
         label.left = shades.right + 1
+
+    def update_theme(self):
+        ct = self.color_theme
+
+        self.default_color = AColor(*ct.primary_bg)
+        self.texture[:] = self.default_color
+
+        self.label.default_color_pair = ct.primary_color_pair
+        self.label.colors[:] = ct.primary_color_pair
