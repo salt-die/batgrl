@@ -1,4 +1,7 @@
+from typing import Callable
+
 from ..colors import (
+    Color,
     AColor,
     gradient,
     AWHITE,
@@ -12,7 +15,8 @@ from ..colors import (
 )
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.themable import Themable
-from .graphic_widget import GraphicWidget
+from .button import Button
+from .graphic_widget import GraphicWidget, Anchor
 from .text_widget import TextWidget
 
 GRAD = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
@@ -39,33 +43,33 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
         left_side = gradient(AWHITE, ABLACK, 2 * h)
         right_side = gradient(hue, ABLACK, 2 * h)
 
-        for i, (left, right) in enumerate(zip(left_side, right_side)):
-            self.texture[i] = gradient(left, right, w)
+        for row, left, right in zip(self.texture, left_side, right_side):
+            row[:] = gradient(left, right, w)
 
-        self.update_swatch_label(*self.last_valid_pos)
+        self.update_swatch_label()
 
-    def resize(self, size):
-        super().resize(size)
-        self.hue = self.hue
+    def update_swatch_label(self):
+        y, x = self.last_valid_pos
 
-    def update_swatch_label(self, y, x):
-        self.color_swatch.texture[:] = r, g, b, _ = self.texture[y, x]
+        h, w, _ = self.texture.shape
+        if y * 2 >= h or x >= w:
+            return
 
-        self.label.add_text(f"R: {r:>3}", column=1)
-        self.label.add_text(f"G: {g:>3}", row=1, column=1)
-        self.label.add_text(f"B: {b:>3}", row=2, column=1)
-        self.label.add_text(hex(r * 2**16 + g * 2**8 + b)[2:], row=4, column=1)
+        self.color_swatch.texture[:] = r, g, b, _ = self.texture[y * 2, x]
+
+        self.label.add_text(hex(r * 2**16 + g * 2**8 + b)[2:], row=0, column=1)
+        self.label.add_text(f"R: {r:>3}", row=2, column=1)
+        self.label.add_text(f"G: {g:>3}", row=3, column=1)
+        self.label.add_text(f"B: {b:>3}", row=4, column=1)
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        if not self.collides_point(mouse_event.position):
-            return
-
-        y, x = self.last_valid_pos = self.to_local(mouse_event.position)
-        self.update_swatch_label(y, x)
+        if self.collides_point(mouse_event.position):
+            self.last_valid_pos = self.to_local(mouse_event.position)
+            self.update_swatch_label()
 
 
 class HueSelector(GrabbableBehavior, GraphicWidget):
@@ -89,20 +93,35 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        if not self.collides_point(mouse_event.position):
-            return
-
-        _, x = self.to_local(mouse_event.position)
-        self.shade_selector.hue = AColor(*self.texture[0, x])
+        if self.collides_point(mouse_event.position):
+            _, x = self.to_local(mouse_event.position)
+            self.shade_selector.hue = AColor(*self.texture[0, x])
 
 
 class ColorPicker(Themable, GraphicWidget):
-    def __init__(self, size=(15, 21), **kwargs):
-        super().__init__(size=size, **kwargs)
+    """
+    Color picker widget.
+
+    Parameters
+    ----------
+    ok_callback : Callable[[Color], None], default: lambda color: None
+        Called with currently selected color when "OK" button is released.
+    """
+    def __init__(self, ok_callback: Callable[[Color], None]=lambda color: None, **kwargs):
+        super().__init__(**kwargs)
 
         self.color_swatch = GraphicWidget(pos=(1, 1), default_color=ARED)
 
-        self.label = TextWidget(size=(5, 8))
+        self.label = TextWidget(size=(7, 8))
+        self.label.add_widget(
+            Button(
+                label="OK",
+                size=(1, 6),
+                pos_hint=(1.0, .5),
+                anchor=Anchor.BOTTOM_CENTER,
+                callback=lambda: ok_callback(Color(*self.color_swatch.texture[0, 0, :3]))
+            )
+        )
 
         self.shades = ShadeSelector(
             pos=(1, 1),
@@ -133,7 +152,7 @@ class ColorPicker(Themable, GraphicWidget):
 
         shades.size = max(10, h - 4), max(20, w - 11)
 
-        swatch.size = max(6, h - 8), 8
+        swatch.size = max(4, h - 10), 8
         swatch.left = shades.right + 1
 
         hues.size = 1, shades.width
