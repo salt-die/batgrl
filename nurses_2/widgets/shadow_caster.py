@@ -43,13 +43,11 @@ class ShadowCaster(GraphicWidget):
     Parameters
     ----------
     map : Map
-        A 2-d map. `1`'s are walls, `0`'s floors.
+        A 2-d map. Non-zero values are walls.
+    tile_colors : list[AColor], default: [AGRAY, AWHITE]
+        A value `n` in the map corresponds to `tile_color[n]`.
     origin : Point, default: Point(0, 0)
         Origin of light source.
-    floor_color : AColor, default: AGRAY
-        Color of floor.
-    wall_color : AColor, default: AWHITE
-        Color of walls.
     ambient_light : float, default: 0.0
         Ambient light. Must be between 0 and 1.
     light_decay : Callable[[float], float], default: lambda d: 1 if d == 0 else 1 / d
@@ -66,9 +64,8 @@ class ShadowCaster(GraphicWidget):
     def __init__(
         self,
         map: Map,
+        tile_colors: list[AColor]=[AGRAY, AWHITE],
         origin: Point=Point(0, 0),
-        floor_color: AColor=AGRAY,
-        wall_color: AColor=AWHITE,
         ambient_light: float=0.0,
         light_decay: Callable[[float], float]=lambda d: 1 if d == 0 else 1 / d,
         radius: int=20,
@@ -80,6 +77,7 @@ class ShadowCaster(GraphicWidget):
         super().__init__(**kwargs)
 
         self.map = map
+        self.tile_colors = np.array(tile_colors, dtype=np.uint8)
         self.origin = origin
         self.ambient_light = clamp(ambient_light, 0.0, 1.0)
         self.light_decay = light_decay
@@ -87,23 +85,6 @@ class ShadowCaster(GraphicWidget):
         self.smoothing = clamp(smoothing, 0.0, 1.0)
         self.not_visible_blocks = not_visible_blocks
         self.restrictiveness = restrictiveness
-        self._colors = np.array([floor_color, wall_color], dtype=np.uint8)
-
-    @property
-    def floor_color(self) -> AColor:
-        return self._colors[0]
-
-    @floor_color.setter
-    def floor_color(self, color: AColor):
-        self._colors[0] = color
-
-    @property
-    def wall_color(self) -> AColor:
-        return self._colors[1]
-
-    @wall_color.setter
-    def wall_color(self, color: AColor):
-        self._colors[1] = color
 
     def update_visibility(self):
         h, w, _ = self.texture.shape
@@ -117,8 +98,9 @@ class ShadowCaster(GraphicWidget):
         for quad in QUADS:
             self._visible_points_quad(quad)
 
-        self.texture = (self._colors[self.resized_map] * self.visibility[..., None]).astype(np.uint8)
-        self.texture[..., 3] = 255
+        colored_map = self.tile_colors[self.resized_map]
+        self.texture[..., :3] = colored_map[..., :3] * self.visibility[..., None]
+        self.texture[..., 3] = colored_map[..., 3]
 
     def _visible_points_quad(self, quad):
         visibility = self.visibility

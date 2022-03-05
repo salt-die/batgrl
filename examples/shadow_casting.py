@@ -1,11 +1,12 @@
 import numpy as np
 
 from nurses_2.app import run_widget_as_app
+from nurses_2.colors import rainbow_gradient, AColor
 from nurses_2.io import MouseEventType
-from nurses_2.widgets.shadow_caster import ShadowCaster, Point, Restrictiveness
+from nurses_2.widgets.shadow_caster import ShadowCaster, Point, Restrictiveness, AGRAY
 
-MAP = np.random.random((100, 100))
-MAP = (MAP < .08).astype(np.uint8)
+MAP = np.random.randint(0, 200, (100, 100), dtype=np.uint8)
+MAP[MAP >= 7] = 0
 
 
 class MouseOriginShadowCaster(ShadowCaster):
@@ -26,6 +27,7 @@ run_widget_as_app(
     MouseOriginShadowCaster,
     size_hint=(1.0, 1.0),
     map=MAP,
+    tile_colors=[AGRAY] + rainbow_gradient(7, color_type=AColor),
     ambient_light=.05,
     light_decay=lambda d: 2 if d == 0 else 2 / d,
     radius=40,
