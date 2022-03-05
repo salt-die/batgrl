@@ -16,7 +16,10 @@ AGRAY = AColor(50, 50, 50)
 QUADS = tuple(product((1, -1), (1, -1), (False, True)))
 
 
-class Range(NamedTuple):
+class Interval(NamedTuple):
+    """
+    A continuous interval.
+    """
     start: float
     end: float
 
@@ -144,20 +147,20 @@ class ShadowCaster(GraphicWidget):
                 d = dist(light_source, p)
 
                 if d <= smooth_radius:
-                    range_ = Range(j * theta, (j + 1) * theta)
+                    interval = Interval(j * theta, (j + 1) * theta)
 
-                    if self._point_is_visible(range_, obstructions):
+                    if self._point_is_visible(interval, obstructions):
                         visibility[p] = clamp(light_decay(d) + visibility[p], 0.0, 1.0)
 
                         if map[p] != 0:
-                            self._add_obstruction(obstructions, range_)
+                            self._add_obstruction(obstructions, interval)
 
                     elif self.not_visible_blocks:
-                        self._add_obstruction(obstructions, range_)
+                        self._add_obstruction(obstructions, interval)
 
-    def _point_is_visible(self, range_: Range, obstructions):
+    def _point_is_visible(self, interval: Interval, obstructions):
         start_visible = center_visible = end_visible = True
-        start, end = range_
+        start, end = interval
         center = (start + end) / 2
 
         a = bisect(obstructions, start)
@@ -188,7 +191,7 @@ class ShadowCaster(GraphicWidget):
             case Restrictiveness.RESTRICTIVE:
                 return center_visible and start_visible and end_visible
 
-    def _add_obstruction(self, obstructions, obstruction: Range):
+    def _add_obstruction(self, obstructions, obstruction: Interval):
         start, end = obstruction
 
         a = bisect(obstructions, start)
@@ -205,6 +208,6 @@ class ShadowCaster(GraphicWidget):
             end = obstructions[b - 1].end
 
         if a == b:
-            obstructions.insert(a, Range(start, end))
+            obstructions.insert(a, Interval(start, end))
         else:
-            obstructions[a: b] = [Range(start, end)]
+            obstructions[a: b] = [Interval(start, end)]
