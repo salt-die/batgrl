@@ -89,7 +89,10 @@ class ShadowCaster(GraphicWidget):
         self.not_visible_blocks = not_visible_blocks
         self.restrictiveness = restrictiveness
 
-    def update_visibility(self):
+    def cast_shadows(self):
+        """
+        Update texture by shadow casting all light sources.
+        """
         h, w, _ = self.texture.shape
 
         self.resized_map = cv2.resize(self.map, (w, h))

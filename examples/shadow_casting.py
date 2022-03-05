@@ -14,6 +14,7 @@ class MouseOriginShadowCaster(ShadowCaster):
         super().resize(size)
         h, w = size
         self.light_sources[1] = Point(h // 2, w // 2)
+        self.cast_shadows()
 
     def on_click(self, mouse_event):
         if (
@@ -21,10 +22,7 @@ class MouseOriginShadowCaster(ShadowCaster):
             and self.collides_point(mouse_event.position)
         ):
             self.light_sources[0] = self.to_local(mouse_event.position)
-
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        self.update_visibility()
-        super().render(canvas_view, colors_view, source)
+            self.cast_shadows()
 
 
 run_widget_as_app(
