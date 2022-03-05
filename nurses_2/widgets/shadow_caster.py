@@ -59,8 +59,8 @@ class LightIntensity(NamedTuple):
         return LightIntensity(r / 255, g / 255, b / 255)
 
 
-WHITE_LIGHT = LightIntensity(1.0, 1.0, 1.0)
 NO_LIGHT = LightIntensity(0.0, 0.0, 0.0)
+WHITE_LIGHT = LightIntensity(1.0, 1.0, 1.0)
 
 
 class LightSource(NamedTuple):
