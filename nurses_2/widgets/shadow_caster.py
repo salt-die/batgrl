@@ -108,7 +108,7 @@ class ShadowCaster(GraphicWidget):
         A 2-d map. Non-zero values are walls.
     tile_colors : list[AColor] | None, default: None
         A value `n` in the map will be colored `tile_color[n]`. If `None`,
-        `tile_colors` will be set to [AGRAY, AWHITE].
+        `tile_colors` will be set to `[AGRAY, AWHITE]`.
     light_sources : list[LightSource] | None, default: None
         Position of each light source. If `None`, `light_sources` will be set to an
         empty list.
