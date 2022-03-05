@@ -82,10 +82,10 @@ class FileView(TreeView):
         it = self.root_node.iter_open_nodes()
 
         if self.directories_only:
-            it = (node.path.is_dir() for node in it)
+            it = (node for node in it if node.path.is_dir())
 
         if not self.show_hidden:
-            it = (not is_hidden(node.path) for node in it)
+            it = (node for node in it if not is_hidden(node.path))
 
         max_width = -1
         for i, node in enumerate(it):
