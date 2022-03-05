@@ -46,8 +46,8 @@ class ShadowCaster(GraphicWidget):
         A 2-d map. Non-zero values are walls.
     tile_colors : list[AColor], default: [AGRAY, AWHITE]
         A value `n` in the map corresponds to `tile_color[n]`.
-    origin : Point, default: Point(0, 0)
-        Origin of light source.
+    light_sources : list[Point], default: [Point(0, 0)]
+        Position of each light source.
     ambient_light : float, default: 0.0
         Ambient light. Must be between 0 and 1.
     light_decay : Callable[[float], float], default: lambda d: 1 if d == 0 else 1 / d
@@ -65,7 +65,7 @@ class ShadowCaster(GraphicWidget):
         self,
         map: Map,
         tile_colors: list[AColor]=[AGRAY, AWHITE],
-        origin: Point=Point(0, 0),
+        light_sources: list[Point]=[Point(0, 0)],
         ambient_light: float=0.0,
         light_decay: Callable[[float], float]=lambda d: 1 if d == 0 else 1 / d,
         radius: int=20,
@@ -78,7 +78,7 @@ class ShadowCaster(GraphicWidget):
 
         self.map = map
         self.tile_colors = np.array(tile_colors, dtype=np.uint8)
-        self.origin = origin
+        self.light_sources = light_sources
         self.ambient_light = clamp(ambient_light, 0.0, 1.0)
         self.light_decay = light_decay
         self.radius = radius
@@ -92,24 +92,32 @@ class ShadowCaster(GraphicWidget):
         self.resized_map = cv2.resize(self.map, (w, h))
         self.visibility = np.full((h, w), self.ambient_light, dtype=float)
 
-        oy, ox = self.origin
-        self.visibility[oy: oy + 2, ox] = self.light_decay(0)
+        for light_source in self.light_sources:
+            if not self.collides_point(light_source):
+                continue
 
-        for quad in QUADS:
-            self._visible_points_quad(quad)
+            oy, ox = light_source
+            oy *= 2
+
+            self.visibility[oy: oy + 2, ox] = (
+                np.clip(self.light_decay(0) + self.visibility[oy: oy + 2, ox], 0.0, 1.0)
+            )
+
+            self._visited = np.zeros((h, w), dtype=bool)
+            for quad in QUADS:
+                self._visible_points_quad(quad, Point(oy, ox))
 
         colored_map = self.tile_colors[self.resized_map]
         self.texture[..., :3] = colored_map[..., :3] * self.visibility[..., None]
         self.texture[..., 3] = colored_map[..., 3]
 
-    def _visible_points_quad(self, quad):
+    def _visible_points_quad(self, quad, light_source):
         visibility = self.visibility
         h, w = visibility.shape
-        ambient_light = self.ambient_light
         light_decay = self.light_decay
         smooth_radius = self.radius + self.smoothing
         map = self.resized_map
-        o = oy, ox = self.origin
+        oy, ox = light_source
 
         obstructions = [ ]
         for i in range(1, self.radius):
@@ -129,13 +137,18 @@ class ShadowCaster(GraphicWidget):
                 if not (0 <= py < h and 0 <= px < w):
                     break
 
-                d = dist(o, p)
+                if self._visited[p]:
+                    continue
+                else:
+                    self._visited[p] = True
+
+                d = dist(light_source, p)
 
                 if d <= smooth_radius:
                     range_ = Range(j * theta, (j + 1) * theta)
 
                     if self._point_is_visible(range_, obstructions):
-                        visibility[p] = max(light_decay(d), ambient_light)
+                        visibility[p] = clamp(light_decay(d) + visibility[p], 0.0, 1.0)
 
                         if map[p] != 0:
                             self._add_obstruction(obstructions, range_)
