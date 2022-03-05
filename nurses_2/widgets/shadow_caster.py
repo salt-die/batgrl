@@ -64,7 +64,9 @@ class LightSource:
     Parameters
     ----------
     pos : Point, default: Point(0, 0)
-        Position of light source.
+        Position of light source. Note the position is where the light source
+        is located on the texture, not the widget. (The texture's height is
+        twice the widget's height.)
     intensity : Color | LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)
         Intensity of light source. If a `Color` is given it will
         be converted to an intensity with `LightIntensity.from_color`.
@@ -156,7 +158,7 @@ class ShadowCaster(GraphicWidget):
         """
         h, w, _ = self.texture.shape
 
-        map = cv2.resize(self.map, (w, h))
+        map = cv2.resize(self.map, (w, h), interpolation=cv2.INTER_NEAREST)
         total_light = np.full((h, w, 3), self.ambient_light, dtype=float)
 
         for light_source in self.light_sources:
@@ -172,15 +174,15 @@ class ShadowCaster(GraphicWidget):
         self.texture[..., 3] = colored_map[..., 3]
 
     def _visible_points_quad(self, quad, light_source, intensities, map):
-        oy, ox = light_source.pos
-        oy *= 2
-        origin = oy, ox
+        y, x, vert = quad
 
+        oy, ox = light_source.pos
         intensity = light_source.intensity
-        light_decay = self.light_decay
-        smooth_radius = self.radius + self.smoothing
 
         h, w, _ = intensities.shape
+
+        light_decay = self.light_decay
+        smooth_radius = self.radius + self.smoothing
 
         obstructions = [ ]
         for i in range(self.radius):
@@ -190,8 +192,6 @@ class ShadowCaster(GraphicWidget):
             theta = 1.0 / float(i + 1)
 
             for j in range(i + 1):
-                y, x, vert = quad
-
                 if vert:
                     p = py, px = oy + i * y, ox + j * x
                 else:
@@ -200,7 +200,7 @@ class ShadowCaster(GraphicWidget):
                 if not (0 <= py < h and 0 <= px < w):
                     continue
 
-                if (d := dist(origin, p)) <= smooth_radius:
+                if (d := dist(light_source.pos, p)) <= smooth_radius:
                     interval = Interval(j * theta, (j + 1) * theta)
 
                     if self._point_is_visible(interval, obstructions):
