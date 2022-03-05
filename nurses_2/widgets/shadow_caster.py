@@ -160,16 +160,10 @@ class ShadowCaster(GraphicWidget):
         total_light = np.full((h, w, 3), self.ambient_light, dtype=float)
 
         for light_source in self.light_sources:
-            oy, ox = light_source.pos
-            oy *= 2
-
             intensities = np.zeros_like(total_light)
 
-            if 0 <= oy < h and 0 <= ox < w:
-                intensities[oy: oy + 2, ox] = self.light_decay(0)
-
             for quad in QUADS:
-                self._visible_points_quad(quad, Point(oy, ox), light_source.intensity, intensities, map)
+                self._visible_points_quad(quad, light_source, intensities, map)
 
             total_light += intensities
 
@@ -177,14 +171,19 @@ class ShadowCaster(GraphicWidget):
         self.texture[..., :3] = colored_map[..., :3] * np.clip(total_light, 0.0, 1.0)
         self.texture[..., 3] = colored_map[..., 3]
 
-    def _visible_points_quad(self, quad, origin, intensity, intensities, map):
-        h, w, _ = intensities.shape
+    def _visible_points_quad(self, quad, light_source, intensities, map):
+        oy, ox = light_source.pos
+        oy *= 2
+        origin = oy, ox
+
+        intensity = light_source.intensity
         light_decay = self.light_decay
         smooth_radius = self.radius + self.smoothing
-        oy, ox = origin
+
+        h, w, _ = intensities.shape
 
         obstructions = [ ]
-        for i in range(1, self.radius):
+        for i in range(self.radius):
             if len(obstructions) == 1 and obstructions[0] == (0.0, 1.0):
                 return
 
