@@ -105,7 +105,7 @@ class ShadowCaster(GraphicWidget):
     def __init__(
         self,
         map: Map,
-        tile_colors: list[AColor]=None,
+        tile_colors: list[AColor] | None=None,
         light_sources: list[LightSource] | None=None,
         ambient_light: LightIntensity=NO_LIGHT,
         light_decay: Callable[[float], float]=lambda d: 1 if d == 0 else 1 / d,
