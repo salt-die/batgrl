@@ -11,7 +11,6 @@ from nurses_2.widgets.shadow_caster import (
     LightIntensity,
     LightSource,
     ShadowCaster,
-    NO_LIGHT,
 )
 
 MAP = np.random.randint(0, 200, (100, 100), dtype=np.uint8)
@@ -24,27 +23,18 @@ class MouseOriginShadowCaster(ShadowCaster):
     def resize(self, size):
         super().resize(size)
         h, w = size
-        _, intensity = self.light_sources[1]
-        self.light_sources[1] = LightSource(
-            Point(h // 2, w // 2),
-            intensity,
-        )
+        self.light_sources[1].pos = Point(h // 2, w // 2)
 
     def on_click(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_MOVE
             and self.collides_point(mouse_event.position)
         ):
-            _, intensity = self.light_sources[0]
-            self.light_sources[0] = LightSource(
-                self.to_local(mouse_event.position),
-                intensity,
-            )
+            self.light_sources[0].pos = self.to_local(mouse_event.position)
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        (pos_1, _), (pos_2, _) = self.light_sources
-        self.light_sources[0] = LightSource(pos_1, LightIntensity.from_color(next(WHITE_TO_BLUE)))
-        self.light_sources[1] = LightSource(pos_2, LightIntensity.from_color(next(WHITE_TO_RED)))
+        self.light_sources[0].intensity = LightIntensity.from_color(next(WHITE_TO_BLUE))
+        self.light_sources[1].intensity = LightIntensity.from_color(next(WHITE_TO_RED))
         self.cast_shadows()
 
         super().render(canvas_view, colors_view, source)
@@ -55,7 +45,7 @@ run_widget_as_app(
     size_hint=(1.0, 1.0),
     map=MAP,
     tile_colors=[AGRAY] + rainbow_gradient(7, color_type=AColor),
-    light_sources=[LightSource((0, 0), NO_LIGHT)] * 2,
+    light_sources=[LightSource(), LightSource()],
     ambient_light=.05,
     radius=40,
 )

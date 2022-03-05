@@ -19,8 +19,6 @@ __all__ = (
     "Point",
     "Restrictiveness",
     "ShadowCaster",
-    "WHITE_LIGHT",
-    "NO_LIGHT",
 )
 
 AGRAY = AColor(50, 50, 50)
@@ -59,13 +57,38 @@ class LightIntensity(NamedTuple):
         return LightIntensity(r / 255, g / 255, b / 255)
 
 
-NO_LIGHT = LightIntensity(0.0, 0.0, 0.0)
-WHITE_LIGHT = LightIntensity(1.0, 1.0, 1.0)
+class LightSource:
+    """
+    A light source.
 
+    Parameters
+    ----------
+    pos : Point, default: Point(0, 0)
+        Position of light source.
+    intensity : Color | LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)
+        Intensity of light source. If a `Color` is given it will
+        be converted to an intensity with `LightIntensity.from_color`.
+    """
+    __slots__ = "pos", "_intensity"
 
-class LightSource(NamedTuple):
-    pos: Point
-    intensity: LightIntensity
+    def __init__(
+        self,
+        pos: Point=Point(0, 0),
+        intensity: Color | LightIntensity=LightIntensity(0.0, 0.0, 0.0),
+    ):
+        self.pos = pos
+        self.intensity = intensity
+
+    @property
+    def intensity(self) -> LightIntensity:
+        return self._intensity
+
+    @intensity.setter
+    def intensity(self, intensity: Color | LightIntensity):
+        if isinstance(intensity, Color):
+            self._intensity = LightIntensity.from_color(intensity)
+        else:
+            self._intensity = intensity
 
 
 class Restrictiveness(str, Enum):
@@ -89,7 +112,7 @@ class ShadowCaster(GraphicWidget):
     light_sources : list[LightSource] | None, default: None
         Position of each light source. If `None`, `light_sources` will be set to an
         empty list.
-    ambient_light : Color, default: NO_LIGHT
+    ambient_light : LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)
         Ambient light.
     light_decay : Callable[[float], float], default: lambda d: 1 if d == 0 else 1 / d
         The strength of light as a function of distance from origin.
@@ -107,7 +130,7 @@ class ShadowCaster(GraphicWidget):
         map: Map,
         tile_colors: list[AColor] | None=None,
         light_sources: list[LightSource] | None=None,
-        ambient_light: LightIntensity=NO_LIGHT,
+        ambient_light: LightIntensity=LightIntensity(0.0, 0.0, 0.0),
         light_decay: Callable[[float], float]=lambda d: 1 if d == 0 else 1 / d,
         radius: int=20,
         smoothing: float=1.0/3.0,
@@ -137,15 +160,16 @@ class ShadowCaster(GraphicWidget):
         total_light = np.full((h, w, 3), self.ambient_light, dtype=float)
 
         for light_source in self.light_sources:
-            (oy, ox), intensity = light_source
+            oy, ox = light_source.pos
             oy *= 2
 
             intensities = np.zeros_like(total_light)
+
             if 0 <= oy < h and 0 <= ox < w:
                 intensities[oy: oy + 2, ox] = self.light_decay(0)
 
             for quad in QUADS:
-                self._visible_points_quad(quad, Point(oy, ox), intensity, intensities, map)
+                self._visible_points_quad(quad, Point(oy, ox), light_source.intensity, intensities, map)
 
             total_light += intensities
 
