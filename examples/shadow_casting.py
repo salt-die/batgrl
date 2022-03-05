@@ -3,7 +3,7 @@ from itertools import cycle
 import numpy as np
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.colors import rainbow_gradient, AColor
+from nurses_2.colors import rainbow_gradient, AColor, gradient, WHITE, BLUE, RED
 from nurses_2.io import MouseEventType
 from nurses_2.widgets.shadow_caster import (
     AGRAY,
@@ -16,7 +16,8 @@ from nurses_2.widgets.shadow_caster import (
 
 MAP = np.random.randint(0, 200, (100, 100), dtype=np.uint8)
 MAP[MAP >= 7] = 0
-RAINBOW = cycle(rainbow_gradient(20))
+WHITE_TO_BLUE = cycle(gradient(WHITE, BLUE, 10) + gradient(BLUE, WHITE, 10))
+WHITE_TO_RED = cycle(gradient(WHITE, RED, 15) + gradient(RED, WHITE, 15))
 
 
 class MouseOriginShadowCaster(ShadowCaster):
@@ -41,8 +42,9 @@ class MouseOriginShadowCaster(ShadowCaster):
             )
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        intensity = LightIntensity.from_color(next(RAINBOW))
-        self.light_sources = [LightSource(pos, intensity) for pos, _ in self.light_sources]
+        (pos_1, _), (pos_2, _) = self.light_sources
+        self.light_sources[0] = LightSource(pos_1, LightIntensity.from_color(next(WHITE_TO_BLUE)))
+        self.light_sources[1] = LightSource(pos_2, LightIntensity.from_color(next(WHITE_TO_RED)))
         self.cast_shadows()
 
         super().render(canvas_view, colors_view, source)
