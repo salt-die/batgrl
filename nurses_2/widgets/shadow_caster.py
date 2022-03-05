@@ -93,11 +93,10 @@ class ShadowCaster(GraphicWidget):
         self.visibility = np.full((h, w), self.ambient_light, dtype=float)
 
         for light_source in self.light_sources:
-            if not self.collides_point(light_source):
-                continue
-
             oy, ox = light_source
             oy *= 2
+            if not (0 <= oy < h and 0 <= ox < w):
+                continue
 
             self.visibility[oy: oy + 2, ox] = (
                 np.clip(self.light_decay(0) + self.visibility[oy: oy + 2, ox], 0.0, 1.0)
