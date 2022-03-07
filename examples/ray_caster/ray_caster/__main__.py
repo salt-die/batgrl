@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets.raycaster import RayCaster, Sprite
+from nurses_2.widgets.ray_caster import RayCaster, Sprite
 
 from .animated_texture import AnimatedTexture
 from .camera import Camera
