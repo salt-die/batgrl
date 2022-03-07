@@ -7,6 +7,7 @@ from nurses_2.colors import rainbow_gradient, AColor, gradient, WHITE, BLUE, RED
 from nurses_2.io import MouseEventType
 from nurses_2.widgets.shadow_caster import (
     AGRAY,
+    Camera,
     Point,
     LightIntensity,
     LightSource,
@@ -20,31 +21,25 @@ WHITE_TO_RED = cycle(gradient(WHITE, RED, 15) + gradient(RED, WHITE, 15))
 
 
 class MyShadowCaster(ShadowCaster):
-    def resize(self, size):
-        super().resize(size)
-        h, w = size
-        self.light_sources[1].pos = Point(h, w // 2)
-
     def on_click(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_MOVE
             and self.collides_point(mouse_event.position)
         ):
-            y, x = self.to_local(mouse_event.position)
-            self.light_sources[0].pos = Point(y * 2, x)
+            self.light_sources[0].coords = self.to_map_coords(self.to_local(mouse_event.position))
 
     def on_press(self, key_press_event):
-        y, x = self.light_sources[1].pos
+        y, x = self.camera.pos
 
         match key_press_event.key:
             case "up":
-                self.light_sources[1].pos = Point(y - 1, x)
+                self.camera.pos = Point(y - 1, x)
             case "down":
-                self.light_sources[1].pos = Point(y + 1, x)
+                self.camera.pos = Point(y + 1, x)
             case "left":
-                self.light_sources[1].pos = Point(y, x - 1)
+                self.camera.pos = Point(y, x - 1)
             case "right":
-                self.light_sources[1].pos = Point(y, x + 1)
+                self.camera.pos = Point(y, x + 1)
             case _:
                 return False
 
@@ -62,8 +57,9 @@ run_widget_as_app(
     MyShadowCaster,
     size_hint=(1.0, 1.0),
     map=MAP,
+    camera=Camera((0, 0), (50, 50)),
     tile_colors=[AGRAY] + rainbow_gradient(7, color_type=AColor),
-    light_sources=[LightSource(), LightSource()],
+    light_sources=[LightSource(), LightSource(coords=(50, 50))],
     ambient_light=.05,
     radius=40,
 )
