@@ -1,5 +1,5 @@
 """
-Stable fluid simulation.
+Stable fluid simulation. Requires `scipy`.
 """
 from itertools import cycle
 
