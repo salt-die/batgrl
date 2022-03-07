@@ -212,7 +212,8 @@ class ShadowCaster(GraphicWidget):
 
     def to_map_coords(self, point: Point) -> Coordinates:
         """
-        Convert a point in local coordinates to a point in map coordinates.
+        Convert a point in the widget's local coordinates to a
+        point in the map's coordinates.
 
         Parameters
         ----------
@@ -224,6 +225,5 @@ class ShadowCaster(GraphicWidget):
 
         cy, cx = self.camera.pos
         ch, cw = self.camera.size
-        mh, mw = self.map.shape
 
         return Coordinates(ch / h * y + cy, cw / w * x + cx)
