@@ -15,7 +15,7 @@ class Map(Protocol):
 
     def __getitem__(self, y, x):
         """
-        Supports numpy indexing. Return a non-negative integer.
+        Supports numpy indexing. Returns a non-negative integer.
         """
 
 
@@ -23,11 +23,13 @@ class Camera(Protocol):
     """
     A camera view.
 
+    Notes
+    -----
     The renderer expects both `pos` and `plane` be numpy arrays with dtype
-    `np.float16` and shapes (2,) and (2, 2) respectively.
+    `float` and shapes (2,) and (2, 2) respectively.
     """
-    pos: np.ndarray  # shape: (2,), dtype: np.float16
-    plane: np.ndarray  # shape: (2, 2), dtype: np.float16
+    pos: np.ndarray  # shape: (2,), dtype: float
+    plane: np.ndarray  # shape: (2, 2), dtype: float
 
 
 class Texture(Protocol):
@@ -39,9 +41,9 @@ class Texture(Protocol):
     This protocol is provided to allow for, say, animated textures. The raycaster
     will function as long as `shape` and `__getitem__` work as expected.
     """
-    shape: tuple[int, int, Literal[4]]  # (height, width, channels)
+    shape: tuple[int, int, Literal[4]]  # (height, width, rgba)
 
     def __getitem__(self, key):
         """
-        Supports numpy indexing. Return arrays or views with dtype=np.uint8.
+        Supports numpy indexing. Return arrays or views with dtype `np.uint8`.
         """
