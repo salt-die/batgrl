@@ -117,6 +117,9 @@ class _ParticleFieldBase(Widget):
             )
         )
 
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        raise NotImplementedError("Render method not implemented in base class.")
+
 
 class _ParticleBase:
     """
@@ -136,9 +139,7 @@ class _ParticleBase:
         is_enabled=True,
     ):
         self.parent = None
-
-        self.top, self.left = pos
-
+        self.pos = pos
         self.is_transparent = is_transparent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
@@ -155,6 +156,10 @@ class _ParticleBase:
     @property
     def pos(self):
         return self.top, self.left
+
+    @pos.setter
+    def pos(self, pos):
+        self.top, self.left = pos
 
     @property
     def height(self):
