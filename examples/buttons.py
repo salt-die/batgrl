@@ -2,7 +2,7 @@ import asyncio
 
 from nurses_2.app import App
 from nurses_2.widgets.button import Button
-from nurses_2.widgets.grid_layout import GridLayout
+from nurses_2.widgets.grid_layout import GridLayout, Orientation
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
 
@@ -32,32 +32,42 @@ class MyApp(App):
 
             return callback
 
-        grid_layout = GridLayout(5, 3, pos=(2, 0), size=(5, 36))
+        grid_layout = GridLayout(
+            grid_rows=5,
+            grid_columns=3,
+            pos=(2, 0),
+            orientation=Orientation.BT_LR,
+            top_padding=1,
+            bottom_padding=1,
+            left_padding=1,
+            right_padding=1,
+            horizontal_spacing=1,
+        )
 
         # Buttons
-        buttons = [
-            Button(label=f"Button {i + 1}", callback=button_callback(i))
+        grid_layout.add_widgets(
+            Button(size=(1, 10), label=f"Button {i + 1}", callback=button_callback(i))
             for i in range(5)
-        ]
+        )
 
         # Independent toggle buttons
-        toggles = [
-            ToggleButton(label=f"Button {i + 1}", callback=toggle_button_callback(i))
+        grid_layout.add_widgets(
+            ToggleButton(size=(1, 12), label=f"Button {i + 1}", callback=toggle_button_callback(i))
             for i in range(5, 10)
-        ]
+        )
 
         # Grouped radio buttons
-        radios = [
+        grid_layout.add_widgets(
             ToggleButton(
+                size=(1, 12),
                 group="my_group",
                 label=f"Button {i + 1}",
                 callback=toggle_button_callback(i),
             )
             for i in range(10, 15)
-        ]
+        )
 
-        for button, toggle, radio in zip(buttons, toggles, radios):
-            grid_layout.add_widgets(button, toggle, radio)
+        grid_layout.size = grid_layout.minimum_grid_size
 
         self.add_widgets(display, grid_layout)
 
