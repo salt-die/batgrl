@@ -27,6 +27,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     def __init__(
         self,
         *,
+        background_char=" ",
         label: str="",
         callback: Callable[[ToggleState], None]=lambda: None,
         **kwargs,
@@ -37,7 +38,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
 
         self.callback = callback  # This must be set before `super().__init__`.
 
-        super().__init__(**kwargs)
+        super().__init__(background_char=background_char, **kwargs)
 
         self.add_widget(self._label_widget)
 

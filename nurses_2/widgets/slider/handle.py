@@ -10,7 +10,7 @@ class _Handle(GrabbableBehavior, Widget):
     def __init__(self, *, color):
         super().__init__(
             size=(1, 1),
-            background_char="█",
+            background_char=" ",
             background_color_pair=ColorPair.from_colors(color, color),
         )
 
