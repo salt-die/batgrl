@@ -14,7 +14,46 @@ from .widget_data_structures import *
 
 class Widget:
     """
-    A generic TUI element.
+    Base class for creating widgets.
+
+    Parameters
+    ----------
+    size : Size, default: Size(10, 10)
+        Size of widget.
+    pos : Point, default: Point(0, 0)
+        Position of upper-left corner in parent.
+    size_hint : SizeHint, default: SizeHint(None, None)
+        Proportion of parent's height and width. Non-None values will have
+        precedent over `size`.
+    min_height : int | None, default: None
+        Minimum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_height : int | None, default: None
+        Maximum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    min_width : int | None, default: None
+        Minimum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_width : int | None, default: None
+        Maximum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    pos_hint : PosHint, default: PosHint(None, None)
+        Position as a proportion of parent's height and width. Non-None values
+        will have precedent over `pos`.
+    anchor : Anchor, default: Anchor.TOP_LEFT
+        Specifies which part of the widget is aligned with the `pos_hint`.
+    is_transparent : bool, default: False
+        If true, white-space is "see-through".
+    is_visible : bool, default: True
+        If false, widget won't be painted, but still dispatched.
+    is_enabled : bool, default: True
+        If false, widget won't be painted or dispatched.
+    background_char : str | None, default: None
+        The background character of the widget if not `None` and if the widget
+        is not transparent.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the widget if not `None` and if the
+        widget is not transparent.
     """
     def __init__(
         self,
@@ -28,11 +67,11 @@ class Widget:
         max_height: int | None=None,
         pos_hint: PosHint=PosHint(None, None),
         anchor=Anchor.TOP_LEFT,
-        background_char: str | None=None,
-        background_color_pair: ColorPair | None=None,
         is_transparent: bool=False,
         is_visible: bool=True,
         is_enabled: bool=True,
+        background_char: str | None=None,
+        background_color_pair: ColorPair | None=None,
     ):
         self.parent: Widget | None = None
         self.children: list[Widget] = [ ]
