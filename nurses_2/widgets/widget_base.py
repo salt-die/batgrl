@@ -32,20 +32,20 @@ class WidgetBase(ABC):
         is_visible: bool=True,
         is_enabled: bool=True,
     ):
-        self.parent = None
-        self.children = [ ]
+        self.parent: WidgetBase | None = None
+        self.children: list[WidgetBase] = [ ]
 
         self._size = Size(*size)
         self.pos = pos
 
-        self.size_hint = size_hint
-        self.min_height = min_height
-        self.max_height = max_height
-        self.min_width = min_width
-        self.max_width = max_width
+        self._size_hint = size_hint
+        self._min_height = min_height
+        self._max_height = max_height
+        self._min_width = min_width
+        self._max_width = max_width
 
-        self.pos_hint = pos_hint
-        self.anchor = anchor
+        self._pos_hint = pos_hint
+        self._anchor = anchor
 
         self.is_transparent = is_transparent
         self.is_visible = is_visible
@@ -204,53 +204,53 @@ class WidgetBase(ABC):
         self.size_hint = self.height_hint, width_hint
 
     @property
-    def min_height(self) -> int:
+    def min_height(self) -> int | None:
         """
         The minimum height of widget set due to `size_hint`.
         """
         return self._min_height
 
     @min_height.setter
-    def min_height(self, min_height: int):
+    def min_height(self, min_height: int | None):
         self._min_height = min_height
         if self.parent:
             self.update_geometry()
 
     @property
-    def max_height(self) -> int:
+    def max_height(self) -> int | None:
         """
         The maximum height of widget set due to `size_hint`.
         """
         return self._max_height
 
     @max_height.setter
-    def max_height(self, max_height: int):
+    def max_height(self, max_height: int | None):
         self._max_height = max_height
         if self.parent:
             self.update_geometry()
 
     @property
-    def min_width(self) -> int:
+    def min_width(self) -> int | None:
         """
         The minimum width of widget set due to `size_hint`.
         """
         return self._min_width
 
     @min_width.setter
-    def min_width(self, min_width: int):
+    def min_width(self, min_width: int | None):
         self._min_width = min_width
         if self.parent:
             self.update_geometry()
 
     @property
-    def max_width(self) -> int:
+    def max_width(self) -> int | None:
         """
         The maximum width of widget set due to `size_hint`.
         """
         return self._max_width
 
     @max_width.setter
-    def max_width(self, max_width: int):
+    def max_width(self, max_width: int | None):
         self._max_width = max_width
         if self.parent:
             self.update_geometry()
@@ -294,6 +294,15 @@ class WidgetBase(ABC):
     @x_hint.setter
     def x_hint(self, x_hint: float | None):
         self.pos_hint = self.y_hint, x_hint
+
+    @property
+    def anchor(self) -> Anchor:
+        return self._anchor
+
+    @anchor.setter
+    def anchor(self, anchor: Anchor):
+        self._anchor = Anchor(anchor)
+        self.update_geometry()
 
     @abstractmethod
     def resize(self, size: Size):
