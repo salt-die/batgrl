@@ -25,8 +25,8 @@ class GridLayout(Widget):
         If grid is full and `add_widget` is called.
     """
     def __init__(self, grid_rows: int=1, grid_columns: int=1, **kwargs):
-        self.grid_rows = grid_rows
-        self.grid_columns = grid_columns
+        self._grid_rows = grid_rows
+        self._grid_columns = grid_columns
 
         super().__init__(**kwargs)
 
