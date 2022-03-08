@@ -575,11 +575,12 @@ class Widget:
         """
         Paint widget and its children.
         """
-        if self.background_char is not None:
-            canvas_view[:] = self.background_char
+        if not self.is_transparent:
+            if self.background_char is not None:
+                canvas_view[:] = self.background_char
 
-        if self.background_color_pair is not None:
-            colors_view[:] = self.background_color_pair
+            if self.background_color_pair is not None:
+                colors_view[:] = self.background_color_pair
 
         self.render_children(source, canvas_view, colors_view)
 
