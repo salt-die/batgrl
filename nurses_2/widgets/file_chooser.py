@@ -87,7 +87,7 @@ class FileView(TreeView):
         if not self.show_hidden:
             it = (node for node in it if not is_hidden(node.path))
 
-        max_width = -1
+        max_width = self.parent and self.parent.width or -1
         for i, node in enumerate(it):
             if len(node.label) + 1 > max_width:
                 max_width = len(node.label) + 1
@@ -132,13 +132,15 @@ class FileView(TreeView):
                     self.children[index + 1].select()
             case "left":
                 if self.selected_node is None:
-                    pass
+                    self.children[0].select()
                 elif self.selected_node.is_open:
                     self.selected_node.toggle()
                 elif self.selected_node.parent_node is not self.root_node:
                     self.selected_node.parent_node.select()
             case "right":
-                if self.selected_node is None or self.selected_node.is_leaf:
+                if self.selected_node is None:
+                    self.children[0].select()
+                elif self.selected_node.is_leaf:
                     pass
                 elif not self.selected_node.is_open:
                     self.selected_node.toggle()
@@ -187,6 +189,11 @@ class FileChooser(ScrollView):
                 select_callback=select_callback,
             )
         )
+        self._view.update_tree_layout()
+
+    def resize(self, size):
+        super().resize(size)
+        self._view.update_tree_layout()
 
     @property
     def directories_only(self):
