@@ -10,11 +10,11 @@ class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """
-    def __init__(self, app, env_out, default_char, default_color_pair: ColorPair):
+    def __init__(self, app, env_out, background_char, background_color_pair: ColorPair):
         self._app = app
         self.env_out = env_out
-        self.default_char = default_char
-        self.default_color_pair = default_color_pair
+        self.background_char = background_char
+        self.background_color_pair = background_color_pair
         self.children = [ ]
 
         self.resize(env_out.get_size())
@@ -28,17 +28,17 @@ class _Root(Widget):
 
         self._size = size
 
-        self._last_canvas = np.full(size, self.default_char, dtype=object)
-        self._last_colors = np.full((*size, 6), self.default_color_pair, dtype=np.uint8)
+        self._last_canvas = np.full(size, self.background_char, dtype=object)
+        self._last_colors = np.full((*size, 6), self.background_color_pair, dtype=np.uint8)
 
-        invalidate_char = "a" if "a" != self.default_char else "b"  # A character that guarantees full-screen redraw.
+        invalidate_char = "a" if "a" != self.background_char else "b"  # A character that guarantees full-screen redraw.
         self.canvas = np.full_like(self._last_canvas, invalidate_char)
         self.colors = self._last_colors.copy()
 
         # Buffer arrays to re-use in the `render` method:
-        self._char_diffs = np.zeros_like(self.canvas, dtype=np.bool8)
-        self._color_diffs = np.zeros_like(self.colors, dtype=np.bool8)
-        self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=np.bool8)
+        self._char_diffs = np.zeros_like(self.canvas, dtype=bool)
+        self._color_diffs = np.zeros_like(self.colors, dtype=bool)
+        self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=bool)
 
         for child in self.children:
             child.update_geometry()
@@ -102,8 +102,8 @@ class _Root(Widget):
         write = env_out._buffer.append
 
         # Erase canvas:
-        canvas[:] = self.default_char
-        colors[:, :] = self.default_color_pair
+        canvas[:] = self.background_char
+        colors[:, :] = self.background_color_pair
 
         height, width = canvas.shape
 

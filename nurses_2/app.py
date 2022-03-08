@@ -21,10 +21,10 @@ class App(ABC):
     ----------
     exit_key : KeyPressEvent | None, default: KeyPressEvent.ESCAPE
         Quit the app when this key is pressed.
-    default_char : str, default: " "
-        Default background character for root widget.
-    default_color_pair : ColorPair, default: BLACK_ON_BLACK
-        Default background color pair for root widget.
+    background_char : str, default: " "
+        Background character for root widget.
+    background_color_pair : ColorPair, default: BLACK_ON_BLACK
+        Background color pair for root widget.
     title : str | None, default: None
         Set terminal title (if supported).
     double_click_timeout : float, default: 0.5
@@ -41,8 +41,8 @@ class App(ABC):
         self,
         *,
         exit_key: KeyPressEvent | None=KeyPressEvent.ESCAPE,
-        default_char: str=" ",
-        default_color_pair: ColorPair=BLACK_ON_BLACK,
+        background_char: str=" ",
+        background_color_pair: ColorPair=BLACK_ON_BLACK,
         title: str | None=None,
         double_click_timeout: float=0.5,
         resize_poll_interval: float=0.5,
@@ -52,8 +52,8 @@ class App(ABC):
         self.root = None
 
         self.exit_key = exit_key
-        self.default_char = default_char
-        self.default_color_pair = default_color_pair
+        self.background_char = background_char
+        self.background_color_pair = background_color_pair
         self.title = title
         self.double_click_timeout = double_click_timeout
         self.resize_poll_interval = resize_poll_interval
@@ -100,8 +100,8 @@ class App(ABC):
             self.root = root = _Root(
                 app=self,
                 env_out=env_out,
-                default_char=self.default_char,
-                default_color_pair=self.default_color_pair,
+                background_char=self.background_char,
+                background_color_pair=self.background_color_pair,
             )
 
             if self.title:
