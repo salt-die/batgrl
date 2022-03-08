@@ -1,9 +1,9 @@
 from ...data_structures import *
 from ...io import MouseEvent, KeyPressEvent, PasteEvent
-from ..widget_base import WidgetBase
+from ..widget import Widget
 
 
-class _ParticleFieldBase(WidgetBase):
+class _ParticleFieldBase(Widget):
     """
     A widget that specializes in rendering 1x1 particles.
     """

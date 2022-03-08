@@ -35,7 +35,7 @@ class Camera:
 
         Notes
         -----
-        This is the exact algorithm used by `WidgetBase.render_intersection`.
+        This is the exact algorithm used by `Widget.render_intersection`.
         """
         submap = np.zeros((self.size), dtype=np.uint8)
 

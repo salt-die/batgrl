@@ -1,5 +1,4 @@
 import asyncio
-from abc import ABC, abstractmethod
 from collections.abc import Callable, Sequence
 from time import monotonic
 
@@ -7,14 +6,15 @@ import numpy as np
 
 from .. import easings
 from ..clamp import clamp
+from ..colors import ColorPair
 from ..data_structures import *
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
 
-class WidgetBase(ABC):
+class Widget:
     """
-    Base for TextWidget and GraphicWidget with abstract methods `resize` and `render`.
+    A generic TUI element.
     """
     def __init__(
         self,
@@ -28,12 +28,14 @@ class WidgetBase(ABC):
         max_height: int | None=None,
         pos_hint: PosHint=PosHint(None, None),
         anchor=Anchor.TOP_LEFT,
+        background_char: str | None=None,
+        background_color_pair: ColorPair | None=None,
         is_transparent: bool=False,
         is_visible: bool=True,
         is_enabled: bool=True,
     ):
-        self.parent: WidgetBase | None = None
-        self.children: list[WidgetBase] = [ ]
+        self.parent: Widget | None = None
+        self.children: list[Widget] = [ ]
 
         self._size = Size(*size)
         self.pos = pos
@@ -46,6 +48,9 @@ class WidgetBase(ABC):
 
         self._pos_hint = pos_hint
         self._anchor = anchor
+
+        self.background_color_pair = background_color_pair
+        self.background_char = background_char
 
         self.is_transparent = is_transparent
         self.is_visible = is_visible
@@ -304,11 +309,28 @@ class WidgetBase(ABC):
         self._anchor = Anchor(anchor)
         self.update_geometry()
 
-    @abstractmethod
+    @property
+    def background_char(self) -> str | None:
+        return self._background_char
+
+    @background_char.setter
+    def background_char(self, background_char: str | None):
+        match background_char:
+            case None:
+                self._background_char = background_char
+            case str():
+                self._background_char = background_char[:1]
+            case _:
+                raise ValueError("`background_char` must be `None` or a `str`")
+
     def resize(self, size: Size):
         """
         Resize widget.
         """
+        self._size = size
+
+        for child in self.children:
+            child.update_geometry()
 
     def update_geometry(self):
         """
@@ -407,7 +429,7 @@ class WidgetBase(ABC):
             or other_left >= self_right
         )
 
-    def add_widget(self, widget):
+    def add_widget(self, widget: "Widget"):
         """
         Add a child widget.
         """
@@ -415,11 +437,11 @@ class WidgetBase(ABC):
         widget.parent = self
         widget.update_geometry()
 
-    def add_widgets(self, *widgets):
+    def add_widgets(self, *widgets: "Widget"):
         """
         Add multiple child widgets.
         """
-        if len(widgets) == 1 and not isinstance(widgets[0], WidgetBase):
+        if len(widgets) == 1 and not isinstance(widgets[0], Widget):
             # Assume item is an iterable of widgets.
             widgets = widgets[0]
 
@@ -549,9 +571,17 @@ class WidgetBase(ABC):
         Handle paste event. (Handled paste events should return True else False or None).
         """
 
-    @abstractmethod
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        ...
+        """
+        Paint widget and its children.
+        """
+        if self.background_char is not None:
+            canvas_view[:] = self.background_char
+
+        if self.background_color_pair is not None:
+            colors_view[:] = self.background_color_pair
+
+        self.render_children(source, canvas_view, colors_view)
 
     def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
         for child in self.children:

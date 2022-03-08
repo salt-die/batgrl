@@ -8,7 +8,7 @@ from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import KeyPressEvent, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
 from .widgets._root import _Root
 from .widgets.behaviors.themable import Themable
-from .widgets.widget_base import WidgetBase
+from .widgets.widget import Widget
 
 __all__ = "App", "run_widget_as_app"
 
@@ -197,13 +197,13 @@ class App(ABC):
         return self.root.children
 
 
-def run_widget_as_app(widget: type[WidgetBase], *args, **kwargs):
+def run_widget_as_app(widget: type[Widget], *args, **kwargs):
     """
     Run a widget as a full-screen app.
 
     Parameters
     ----------
-    widget : type[WidgetBase]
+    widget : type[Widget]
         Widget type to be instantiated and run as an app.
 
     *args

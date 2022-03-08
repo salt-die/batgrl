@@ -12,6 +12,7 @@ from nurses_2.widgets.button import Button
 from nurses_2.widgets.graphic_widget import GraphicWidget, Size
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.text_widget import TextWidget, Anchor
+from nurses_2.widgets.widget import Widget
 
 DOOM_PATH = Path("images") / "doom.png"
 
@@ -124,13 +125,13 @@ class DoomFireApp(App):
     async def on_start(self):
         doomfire = DoomFire(size_hint=(1.0, 1.0))
 
-        button_container = TextWidget(size=(1, 28), pos_hint=(1.0, .5), anchor=Anchor.BOTTOM_CENTER)
+        button_container = Widget(size=(1, 28), pos_hint=(1.0, .5), anchor=Anchor.BOTTOM_CENTER)
 
-        strength_label = TextWidget(pos=(0, 4), size=(1, 20))
-        strength_label.add_text(f"Current Strength:")
+        strength_label = TextWidget(pos=(0, 3), size=(1, 22))
+        strength_label.add_text(f"Current Strength:", column=1)
 
         def update_label():
-            strength_label.add_text(f"{doomfire.fire_strength:2d}", column=18)
+            strength_label.add_text(f"{doomfire.fire_strength:2d}", column=19)
 
         update_label()
 

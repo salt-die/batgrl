@@ -3,11 +3,11 @@ import numpy as np
 from ...clamp import clamp
 from ...io import KeyPressEvent, MouseEventType, MouseEvent
 from ..behaviors.grabbable_behavior import GrabbableBehavior
-from ..text_widget import TextWidget
+from ..widget import Widget
 from .scrollbars import _HorizontalBar, _VerticalBar
 
 
-class ScrollView(GrabbableBehavior, TextWidget):
+class ScrollView(GrabbableBehavior, Widget):
     """
     A scrollable view widget.
 
@@ -34,7 +34,7 @@ class ScrollView(GrabbableBehavior, TextWidget):
 
     Notes
     -----
-    ScrollView accepts only one child and applies a scrollable viewport to it.
+    ScrollView accepts only one child and places it in a scrollable viewport.
     ScrollView's child's `top` and `left` is set from `vertical_proportion`
     and `horizontal_proportion`, respectively.
 
@@ -163,16 +163,6 @@ class ScrollView(GrabbableBehavior, TextWidget):
         """
         Paint region given by source into canvas_view and colors_view.
         """
-        if self.is_transparent:
-            source_view = self.canvas[source]
-            visible = np.isin(source_view, (" ", "⠀"), invert=True)  # Whitespace isn't painted if transparent.
-
-            canvas_view[visible] = source_view[visible]
-            colors_view[visible] = self.colors[source][visible]
-        else:
-            canvas_view[:] = self.canvas[source]
-            colors_view[:] = self.colors[source]
-
         view = self._view
         if view is not None and view.is_enabled:
             view.top = self.view_top

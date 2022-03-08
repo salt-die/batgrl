@@ -26,7 +26,7 @@ class GrabResizeBehavior(GrabbableBehavior):
 
     Notes
     -----
-    `min_height`, `max_height`, `min_width`, and `max_width` are repurposed from WidgetBase for
+    `min_height`, `max_height`, `min_width`, and `max_width` are repurposed from Widget for
     grab resize behavior as size hints are expected to be None for widgets that inherit this behavior.
     If a widget has a non-None size hint and inherits this behavior, these attributes will still work
     as expected.

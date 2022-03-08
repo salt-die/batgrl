@@ -7,7 +7,7 @@ from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .behaviors.themable import Themable
 from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
-from .widget_base import WidgetBase, Size, Anchor
+from .widget import Widget, Size, Anchor
 
 
 class TitleBar(GrabbableBehavior, TextWidget):
@@ -22,7 +22,7 @@ class TitleBar(GrabbableBehavior, TextWidget):
         self.parent.left += self.mouse_dx
 
 
-class Window(Themable, FocusBehavior, GrabResizeBehavior, WidgetBase):
+class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     """
     A movable, resizable window widget.
 

@@ -3,10 +3,10 @@ import numpy as np
 from ..colors import ColorPair
 from ..data_structures import *
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
-from .widget_base import WidgetBase
+from .widget import Widget
 
 
-class _Root(WidgetBase):
+class _Root(Widget):
     """
     Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
     """

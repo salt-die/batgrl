@@ -4,11 +4,11 @@ from wcwidth import wcswidth
 from ..colors import WHITE_ON_BLACK, ColorPair
 from ..data_structures import *
 from .text_widget_data_structures import *
-from .widget_base import WidgetBase
+from .widget import Widget
 from .widget_data_structures import *
 
 
-class TextWidget(WidgetBase):
+class TextWidget(Widget):
     """
     A generic TUI element.
 

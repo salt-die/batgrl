@@ -7,11 +7,11 @@ from ..clamp import clamp
 from ..colors import AColor, TRANSPARENT
 from ..data_structures import *
 from .graphic_widget_data_structures import *
-from .widget_base import WidgetBase
+from .widget import Widget
 from .widget_data_structures import *
 
 
-class GraphicWidget(WidgetBase):
+class GraphicWidget(Widget):
     """
     Base for graphic widgets.
 

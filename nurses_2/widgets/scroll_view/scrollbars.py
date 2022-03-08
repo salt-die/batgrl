@@ -1,5 +1,5 @@
 from ...io import MouseEventType
-from ..text_widget import TextWidget
+from ..widget import Widget
 from ..behaviors.themable import Themable
 from .indicators import _VerticalIndicator, _HorizontalIndicator
 
@@ -7,7 +7,7 @@ VBAR_WIDTH = 2
 HBAR_HEIGHT = 1
 
 
-class _VerticalBar(Themable, TextWidget):
+class _VerticalBar(Themable, Widget):
     def __init__(self, parent):
         super().__init__()
 
@@ -17,11 +17,12 @@ class _VerticalBar(Themable, TextWidget):
         self.indicator = _VerticalIndicator()
         self.add_widget(self.indicator)
 
+        self.background_char = " "
+
         self.update_theme()
 
     def update_theme(self):
-        self.default_color_pair = self.color_theme.primary_light_color_pair
-        self.colors[:] = self.default_color_pair
+        self.background_color_pair = self.color_theme.primary_dark_color_pair
 
     def update_geometry(self):
         h, w = self.parent.size
@@ -57,7 +58,7 @@ class _VerticalBar(Themable, TextWidget):
             return True
 
 
-class _HorizontalBar(Themable, TextWidget):
+class _HorizontalBar(Themable, Widget):
     def __init__(self, parent):
         super().__init__()
 
@@ -67,11 +68,12 @@ class _HorizontalBar(Themable, TextWidget):
         self.indicator = _HorizontalIndicator()
         self.add_widget(self.indicator)
 
+        self.background_char = " "
+
         self.update_theme()
 
     def update_theme(self):
-        self.default_color_pair = self.color_theme.primary_light_color_pair
-        self.colors[:] = self.default_color_pair
+        self.background_color_pair = self.color_theme.primary_dark_color_pair
 
     def update_geometry(self):
         h, w = self.parent.size
