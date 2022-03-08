@@ -5,6 +5,11 @@ from ._field_base import _ParticleFieldBase, _ParticleBase
 class TextParticleField(_ParticleFieldBase):
     """
     A widget that only has `TextParticle` children.
+
+    Raises
+    ------
+    TypeError
+        If `add_widget` is called with a non-`TextParticle`.
     """
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         vert_slice, hori_slice = source
@@ -30,6 +35,13 @@ class TextParticleField(_ParticleFieldBase):
 class TextParticle(_ParticleBase):
     """
     A 1x1 TUI element.
+
+    Parameters
+    ----------
+    char : str, default: " ",
+        A one-character string.
+    color_pair: ColorPair, default: WHITE_ON_BLACK
+        Color pair of the particle.
     """
     def __init__(
         self,

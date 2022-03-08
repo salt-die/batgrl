@@ -1,12 +1,17 @@
 import numpy as np
 
-from ...colors import AColor, TRANSPARENT
+from ...colors import AColor, ABLACK
 from ._field_base import _ParticleFieldBase, _ParticleBase
 
 
 class GraphicParticleField(_ParticleFieldBase):
     """
-    A widget that only has GraphicParticle children.
+    A widget that only has `GraphicParticle` children.
+
+    Raises
+    ------
+    TypeError
+        If `add_widget` is called with a non-`GraphicParticle`.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -47,12 +52,17 @@ class GraphicParticle(_ParticleBase):
     """
     A .5x1 TUI element.
 
+    Parameters
+    ----------
+    color : AColor, default: ABLACK
+        Color of particle.
+
     Notes
     -----
     The y-component of `pos` can be a float. The fractional part determines
     whether the half block is upper or lower.
     """
-    def __init__(self, *, color: AColor=TRANSPARENT, is_transparent=True, **kwargs):
+    def __init__(self, *, color: AColor=ABLACK, is_transparent=True, **kwargs):
         super().__init__(is_transparent=is_transparent, **kwargs)
 
         self.color = color

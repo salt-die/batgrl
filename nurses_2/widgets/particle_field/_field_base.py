@@ -7,12 +7,6 @@ class _ParticleFieldBase(Widget):
     """
     A widget that specializes in rendering 1x1 particles.
     """
-    def resize(self, size: Size):
-        self._size = size
-
-        for child in self.children:
-            child.update_geometry()
-
     def add_widget(self, widget):
         if not isinstance(widget, self._child_type):
             raise TypeError(
@@ -33,7 +27,7 @@ class _ParticleFieldBase(Widget):
         """
         yield from self.children
 
-    def dispatch_press(self, key_press_event: KeyPressEvent):
+    def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Dispatch key press to children.
 
@@ -51,7 +45,7 @@ class _ParticleFieldBase(Widget):
             )
         )
 
-    def dispatch_click(self, mouse_event: MouseEvent):
+    def dispatch_click(self, mouse_event: MouseEvent) -> bool | None:
         """
         Dispatch mouse event to children.
 
@@ -69,7 +63,43 @@ class _ParticleFieldBase(Widget):
             )
         )
 
-    def dispatch_paste(self, paste_event: PasteEvent):
+    def dispatch_double_click(self, mouse_event: MouseEvent) -> bool | None:
+        """
+        Dispatch double-click mouse event to children.
+
+        Notes
+        -----
+        Particle fields, unlike usual widgets, will try to handle events before passing them
+        to their children.
+        """
+        return (
+            self.on_double_click(mouse_event)
+            or any(
+                particle.on_double_click(mouse_event)
+                for particle in reversed(self.children)
+                if particle.is_enabled
+            )
+        )
+
+    def dispatch_triple_click(self, mouse_event: MouseEvent) -> bool | None:
+        """
+        Dispatch triple-click mouse event to children.
+
+        Notes
+        -----
+        Particle fields, unlike usual widgets, will try to handle events before passing them
+        to their children.
+        """
+        return (
+            self.on_triple_click(mouse_event)
+            or any(
+                particle.on_triple_click(mouse_event)
+                for particle in reversed(self.children)
+                if particle.is_enabled
+            )
+        )
+
+    def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
         Dispatch paste event to children.
 
@@ -149,17 +179,27 @@ class _ParticleBase:
         y, x = self.parent.to_local(coords)
         return y - self.top, x - self.left
 
-    def on_press(self, key_press_event: KeyPressEvent):
+    def on_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Handle key press event. (Handled key presses should return True else False or None).
         """
 
-    def on_click(self, mouse_event: MouseEvent):
+    def on_click(self, mouse_event: MouseEvent) -> bool | None:
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
         """
 
-    def on_paste(self, paste_event: PasteEvent):
+    def on_double_click(self, mouse_event: MouseEvent) -> bool | None:
+        """
+        Handle double-click mouse event. (Handled mouse events should return True else False or None).
+        """
+
+    def on_triple_click(self, mouse_event: MouseEvent) -> bool | None:
+        """
+        Handle triple-click mouse event. (Handled mouse events should return True else False or None).
+        """
+
+    def on_paste(self, paste_event: PasteEvent) -> bool | None:
         """
         Handle paste event. (Handled paste events should return True else False or None).
         """
