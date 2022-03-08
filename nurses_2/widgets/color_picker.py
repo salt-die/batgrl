@@ -136,8 +136,13 @@ class ColorPicker(Themable, Widget):
     ok_callback : Callable[[Color], None], default: lambda color: None
         Called with currently selected color when "OK" button is released.
     """
-    def __init__(self, ok_callback: Callable[[Color], None]=lambda color: None, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        background_char=" ",
+        ok_callback: Callable[[Color], None]=lambda color: None,
+        **kwargs
+    ):
+        super().__init__(background_char=background_char, **kwargs)
 
         self.color_swatch = Widget(
             pos=(1, 1),
