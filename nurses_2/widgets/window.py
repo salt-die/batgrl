@@ -41,7 +41,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._view = GraphicWidget(pos=(2, 2))
 
         self._titlebar.parent = self._view.parent = self
-        self.children = [self._titlebar, self._view]
+        self.children = [self._view, self._titlebar]
 
         self.title = title
         self.alpha = alpha
