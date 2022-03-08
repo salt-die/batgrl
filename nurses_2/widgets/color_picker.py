@@ -13,22 +13,33 @@ from ..colors import (
     ACYAN,
     ABLUE,
     AMAGENTA,
+    RED,
+    WHITE,
 )
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.themable import Themable
 from .button import Button
-from .graphic_widget import GraphicWidget, Anchor
+from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
 from .widget import Widget
 
 GRAD = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
 GRAD = tuple(zip(GRAD, GRAD[1:]))
+WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
 
 
 class ShadeSelector(GrabbableBehavior, GraphicWidget):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
-        self.last_valid_pos = 0, -1
+
+        self._shade_indicator = TextWidget(
+            size=(1, 1),
+            pos_hint=(0.0, .999),
+            default_color_pair=WHITE_ON_RED,
+        )
+        self._shade_indicator.add_text("○")
+        self.add_widget(self._shade_indicator)
+
         self.color_swatch = color_swatch
         self.label = label
         self.hue = ARED
@@ -51,14 +62,14 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
         self.update_swatch_label()
 
     def update_swatch_label(self):
-        y, x = self.last_valid_pos
-
-        h, w, _ = self.texture.shape
-        if y * 2 >= h or x >= w:
-            return
+        y, x = self._shade_indicator.pos
 
         r, g, b, _ = self.texture[y * 2, x]
-        self.color_swatch.background_color_pair = ColorPair(r, g, b, r, g, b)
+        shade = ColorPair(*WHITE, r, g, b)
+
+        self.color_swatch.background_color_pair = shade
+
+        self._shade_indicator.colors[:] = shade
 
         self.label.add_text(hex(r * 2**16 + g * 2**8 + b)[2:], row=1, column=1)
         self.label.add_text(f"R: {r:>3}", row=3, column=1)
@@ -71,7 +82,9 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
 
     def grab_update(self, mouse_event):
         if self.collides_point(mouse_event.position):
-            self.last_valid_pos = self.to_local(mouse_event.position)
+            y, x = self.to_local(mouse_event.position)
+            h, w = self.size
+            self._shade_indicator.pos_hint = y / h, x / w
             self.update_swatch_label()
 
 
@@ -79,6 +92,15 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
     def __init__(self, shade_selector, **kwargs):
         super().__init__(**kwargs)
         self.shade_selector = shade_selector
+
+        self._hue_indicator = TextWidget(
+            size=(1, 1),
+            pos_hint=(None, 0.0),
+            default_color_pair=WHITE_ON_RED,
+        )
+        self._hue_indicator.add_text("▼")
+
+        self.add_widget(self._hue_indicator)
 
     def resize(self, size):
         super().resize(size)
@@ -98,6 +120,10 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
     def grab_update(self, mouse_event):
         if self.collides_point(mouse_event.position):
             _, x = self.to_local(mouse_event.position)
+
+            self._hue_indicator.x_hint = x / self.width
+            self._hue_indicator.colors[..., 3:] = self.texture[0, x, :3]
+
             self.shade_selector.hue = AColor(*self.texture[0, x])
 
 
@@ -113,7 +139,11 @@ class ColorPicker(Themable, Widget):
     def __init__(self, ok_callback: Callable[[Color], None]=lambda color: None, **kwargs):
         super().__init__(**kwargs)
 
-        self.color_swatch = Widget(pos=(1, 1), background_char=" ", background_color_pair=ARED)
+        self.color_swatch = Widget(
+            pos=(1, 1),
+            background_char=" ",
+            background_color_pair=WHITE_ON_RED,
+        )
 
         self.label = TextWidget(size=(9, 8))
         self.label.add_widget(
