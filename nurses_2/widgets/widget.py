@@ -442,10 +442,16 @@ class Widget:
         y, x = self.parent.to_local(point)
         return Point(y - self.top, x - self.left)
 
-    def collides_point(self, point: Point):
+    def collides_point(self, point: Point) -> bool:
         """
-        Return True if point is within widget's bounding box.
+        Return True if point is within widget's visible bounding box.
         """
+        # These conditions are separated as they both require
+        # recursive calls up the widget tree and we'd like to
+        # escape as early as possible.
+        if not self.parent.collides_point(point):
+            return False
+
         y, x = self.to_local(point)
         return 0 <= y < self.height and 0 <= x < self.width
 

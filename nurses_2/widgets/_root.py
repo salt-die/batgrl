@@ -79,8 +79,11 @@ class _Root(Widget):
     def app(self):
         return self._app
 
-    def to_local(self, point):
+    def to_local(self, point: Point) -> Point:
         return point
+
+    def collides_point(self, point: Point) -> bool:
+        return True
 
     def render(self):
         """
