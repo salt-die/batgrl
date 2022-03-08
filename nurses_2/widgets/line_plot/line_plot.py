@@ -1,16 +1,17 @@
 import numpy as np
 
-from ...colors import Color
+from ...colors import Color, WHITE_ON_BLACK
 from ...io import MouseEvent, MouseEventType
 from ..text_widget import TextWidget, SizeHint, Anchor, Size
 from ..scroll_view import ScrollView
+from ..widget import Widget
 from ._legend import _Legend
 from ._traces import _Traces, TICK_WIDTH, TICK_HALF
 
 PLOT_SIZES = [SizeHint(x, x) for x in (1.0, 1.25, 1.75, 2.75, 5.0)]
 
 
-class LinePlot(TextWidget):
+class LinePlot(Widget):
     """
     A 2D line plot widget.
 
@@ -53,17 +54,19 @@ class LinePlot(TextWidget):
     ):
         super().__init__(**kwargs)
 
-        child_kwargs = dict(
-            is_transparent=self.is_transparent,
-            is_visible=self.is_visible,
-            is_enabled=self.is_enabled,
-            default_char=self.default_char,
-            default_color_pair=self.default_color_pair,
-        )
-
         self._trace_size_hint = 0
 
-        self.plot = TextWidget(**child_kwargs)
+        self.plot = Widget(
+            is_transparent=self.is_transparent,
+            background_char=self.background_char,
+            background_color_pair=self.background_color_pair,
+        )
+
+        text_kwargs = dict(
+            is_transparent=self.is_transparent,
+            default_char=self.background_char or " ",
+            default_color_pair=self.background_color_pair or WHITE_ON_BLACK,
+        )
 
         self._traces = _Traces(
             *points,
@@ -72,7 +75,7 @@ class LinePlot(TextWidget):
             ymin=ymin,
             ymax=ymax,
             line_colors=line_colors,
-            **child_kwargs,
+            **text_kwargs
         )
 
         self._scrollview = ScrollView(
@@ -80,7 +83,6 @@ class LinePlot(TextWidget):
             show_vertical_bar=False,
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
-            **child_kwargs,
         )
         self._scrollview.add_widget(self._traces)
 
@@ -88,7 +90,7 @@ class LinePlot(TextWidget):
             size=(2, TICK_WIDTH),
             pos_hint=(1.0, None),
             anchor=Anchor.BOTTOM_LEFT,
-            **child_kwargs,
+            **text_kwargs
         )
         self._tick_corner.canvas[0, -1] = "└"
 
@@ -102,14 +104,14 @@ class LinePlot(TextWidget):
         self.add_widget(self.plot)
 
         if xlabel is not None:
-            self.xlabel = TextWidget(size=(1, len(xlabel)), **child_kwargs)
+            self.xlabel = TextWidget(size=(1, len(xlabel)), **text_kwargs)
             self.xlabel.add_text(xlabel)
             self.add_widget(self.xlabel)
         else:
             self.xlabel = None
 
         if ylabel is not None:
-            self.ylabel = TextWidget(size=(len(ylabel), 1), **child_kwargs)
+            self.ylabel = TextWidget(size=(len(ylabel), 1), **text_kwargs)
             self.ylabel.get_view[:, 0].add_text(ylabel)
             self.plot.left += 1
             self.add_widget(self.ylabel)
@@ -123,7 +125,7 @@ class LinePlot(TextWidget):
             self.legend = _Legend(
                 legend_labels,
                 self._traces.line_colors,
-                **child_kwargs,
+                **text_kwargs
             )
             self.add_widget(self.legend)
         else:

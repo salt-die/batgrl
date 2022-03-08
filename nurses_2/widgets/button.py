@@ -3,9 +3,10 @@ from typing import Callable
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, Anchor
+from .widget import Widget
 
 
-class Button(Themable, ButtonBehavior, TextWidget):
+class Button(Themable, ButtonBehavior, Widget):
     """
     A button widget.
 
@@ -66,10 +67,10 @@ class Button(Themable, ButtonBehavior, TextWidget):
         self.callback()
 
     def update_hover(self):
-        self.colors[:] = self._label_widget.colors[:] = self.hover_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.hover_color_pair
 
     def update_down(self):
-        self.colors[:] = self._label_widget.colors[:] = self.down_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.down_color_pair
 
     def update_normal(self):
-        self.colors[:] = self._label_widget.colors[:] = self.normal_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.normal_color_pair

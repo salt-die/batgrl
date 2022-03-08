@@ -163,6 +163,13 @@ class ScrollView(GrabbableBehavior, Widget):
         """
         Paint region given by source into canvas_view and colors_view.
         """
+        if not self.is_transparent:
+            if self.background_char is not None:
+                canvas_view[:] = self.background_char
+
+            if self.background_color_pair is not None:
+                colors_view[:] = self.background_color_pair
+
         view = self._view
         if view is not None and view.is_enabled:
             view.top = self.view_top

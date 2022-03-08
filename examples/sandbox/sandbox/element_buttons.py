@@ -1,6 +1,7 @@
 from nurses_2.colors import ColorPair, Color, BLACK
-from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.widget import Widget
 
 from .particles import Element
 
@@ -41,7 +42,7 @@ class ElementButton(ButtonBehavior, TextWidget):
         sandbox.display.add_text(f"{element.__name__:^{sandbox.display.width}}")
 
 
-class ButtonContainer(TextWidget):
+class ButtonContainer(Widget):
     """
     Container widget of `ElementButton`s.
     """
@@ -50,7 +51,7 @@ class ButtonContainer(TextWidget):
 
         super().__init__(
             size=(3 * nelements + 1, 8),
-            default_color_pair=ColorPair.from_colors(BLACK, MENU_BACKGROUND_COLOR),
+            background_color_pair=ColorPair.from_colors(MENU_BACKGROUND_COLOR, MENU_BACKGROUND_COLOR),
         )
 
         for i, element in enumerate(Element.all_elements.values()):

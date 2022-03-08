@@ -3,6 +3,7 @@ from typing import Callable
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ButtonState, ToggleState, ToggleButtonBehavior
 from .text_widget import TextWidget, Anchor
+from .widget import Widget
 
 CHECK_OFF = "□ "
 CHECK_ON = "▣ "
@@ -10,7 +11,7 @@ TOGGLE_OFF = "◯ "
 TOGGLE_ON = "◉ "
 
 
-class ToggleButton(Themable, ToggleButtonBehavior, TextWidget):
+class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     """
     A toggle button widget. Without a group, a toggle button acts like a checkbox.
     With a group it behaves like a radio button (only a single button in a group is
@@ -83,13 +84,13 @@ class ToggleButton(Themable, ToggleButtonBehavior, TextWidget):
         self._label_widget.add_text(prefix + label)
 
     def update_hover(self):
-        self.colors[:] = self._label_widget.colors[:] = self.hover_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.hover_color_pair
 
     def update_down(self):
-        self.colors[:] = self._label_widget.colors[:] = self.down_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.down_color_pair
 
     def update_normal(self):
-        self.colors[:] = self._label_widget.colors[:] = self.normal_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.normal_color_pair
 
     def on_toggle(self):
         if self._label_widget.parent is not None:  # This will be false during initialization.

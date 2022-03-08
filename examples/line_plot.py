@@ -25,5 +25,5 @@ run_widget_as_app(
     ylabel="Y Values",
     legend_labels=("Before", "During", "After"),
     size_hint=(1.0, 1.0),
-    default_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
+    background_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
 )

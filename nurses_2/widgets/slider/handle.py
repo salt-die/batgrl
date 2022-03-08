@@ -1,14 +1,18 @@
-from ...colors import BLACK, ColorPair
+from ...colors import ColorPair
 from ...widgets.behaviors.grabbable_behavior import GrabbableBehavior
-from ..text_widget import TextWidget
+from ..widget import Widget
 
 
-class _Handle(GrabbableBehavior, TextWidget):
+class _Handle(GrabbableBehavior, Widget):
     """
     Vertical handle for horizontal slider.
     """
     def __init__(self, *, color):
-        super().__init__(size=(1, 1), default_color_pair=ColorPair.from_colors(color, BLACK), default_char="█")
+        super().__init__(
+            size=(1, 1),
+            background_char="█",
+            background_color_pair=ColorPair.from_colors(color, color),
+        )
 
     def update_geometry(self):
         slider = self.parent

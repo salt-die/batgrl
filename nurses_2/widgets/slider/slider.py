@@ -83,7 +83,6 @@ class Slider(TextWidget):
             self.colors[:, :handle_x, :3] = self.fill_color
             self.colors[:, handle_x:, :3] = self.default_fg_color
 
-
     @property
     def value(self):
         return self._value

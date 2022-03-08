@@ -3,6 +3,7 @@ import asyncio
 import numpy as np
 import cv2
 
+from nurses_2.widgets.widget import Widget
 from nurses_2.widgets.text_widget import TextWidget, Anchor, Point
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
 
@@ -33,14 +34,14 @@ class ResetButton(ButtonBehavior, TextWidget):
         self.parent.reset()
 
 
-class MineSweeper(TextWidget):
+class MineSweeper(Widget):
     def __init__(self, pos=Point(0, 0), **kwargs):
         h, w = SIZE
 
         super().__init__(
             pos=pos,
             size=(V_SPACING * h + 2, H_SPACING * w + 1),
-            default_color_pair=DATA_BAR,
+            background_color_pair=DATA_BAR,
             **kwargs
         )
 
