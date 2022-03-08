@@ -20,6 +20,7 @@ class Button(Themable, ButtonBehavior, Widget):
     def __init__(
         self,
         *,
+        background_char=" ",
         label: str="",
         callback: Callable[[], None]=lambda: None,
         **kwargs,
@@ -28,7 +29,7 @@ class Button(Themable, ButtonBehavior, Widget):
 
         self._label_widget = TextWidget(pos_hint=(.5, .5), anchor=Anchor.CENTER)
 
-        super().__init__(**kwargs)
+        super().__init__(background_char=background_char, **kwargs)
 
         self.add_widget(self._label_widget)
 
