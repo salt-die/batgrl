@@ -8,6 +8,8 @@ import cv2
 from ..colors import ABLACK
 from .graphic_widget import GraphicWidget, Interpolation
 
+__all__ = "Interpolation", "VideoPlayer"
+
 
 # Seeking is not yet implemented
 class VideoPlayer(GraphicWidget):
