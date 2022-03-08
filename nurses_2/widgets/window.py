@@ -114,3 +114,12 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     def remove_widget(self, widget):
         self._view.remove_widget(widget)
+
+    def dispatch_click(self, mouse_event):
+        return super().dispatch_click(mouse_event) or self.collides_point(mouse_event.position)
+
+    def dispatch_double_click(self, mouse_event):
+        return super().dispatch_double_click(mouse_event) or self.collides_point(mouse_event.position)
+
+    def dispatch_triple_click(self, mouse_event):
+        return super().dispatch_triple_click(mouse_event) or self.collides_point(mouse_event.position)
