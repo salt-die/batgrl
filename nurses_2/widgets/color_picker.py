@@ -2,6 +2,7 @@ from typing import Callable
 
 from ..colors import (
     Color,
+    ColorPair,
     AColor,
     gradient,
     AWHITE,
@@ -18,6 +19,7 @@ from .behaviors.themable import Themable
 from .button import Button
 from .graphic_widget import GraphicWidget, Anchor
 from .text_widget import TextWidget
+from .widget import Widget
 
 GRAD = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
 GRAD = tuple(zip(GRAD, GRAD[1:]))
@@ -55,12 +57,13 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
         if y * 2 >= h or x >= w:
             return
 
-        self.color_swatch.texture[:] = r, g, b, _ = self.texture[y * 2, x]
+        r, g, b, _ = self.texture[y * 2, x]
+        self.color_swatch.background_color_pair = ColorPair(r, g, b, r, g, b)
 
-        self.label.add_text(hex(r * 2**16 + g * 2**8 + b)[2:], row=0, column=1)
-        self.label.add_text(f"R: {r:>3}", row=2, column=1)
-        self.label.add_text(f"G: {g:>3}", row=3, column=1)
-        self.label.add_text(f"B: {b:>3}", row=4, column=1)
+        self.label.add_text(hex(r * 2**16 + g * 2**8 + b)[2:], row=1, column=1)
+        self.label.add_text(f"R: {r:>3}", row=3, column=1)
+        self.label.add_text(f"G: {g:>3}", row=4, column=1)
+        self.label.add_text(f"B: {b:>3}", row=5, column=1)
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
@@ -98,7 +101,7 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
             self.shade_selector.hue = AColor(*self.texture[0, x])
 
 
-class ColorPicker(Themable, GraphicWidget):
+class ColorPicker(Themable, Widget):
     """
     Color picker widget.
 
@@ -110,16 +113,15 @@ class ColorPicker(Themable, GraphicWidget):
     def __init__(self, ok_callback: Callable[[Color], None]=lambda color: None, **kwargs):
         super().__init__(**kwargs)
 
-        self.color_swatch = GraphicWidget(pos=(1, 1), default_color=ARED)
+        self.color_swatch = Widget(pos=(1, 1), background_char=" ", background_color_pair=ARED)
 
-        self.label = TextWidget(size=(7, 8))
+        self.label = TextWidget(size=(9, 8))
         self.label.add_widget(
             Button(
                 label="OK",
                 size=(1, 6),
-                pos_hint=(1.0, .5),
-                anchor=Anchor.BOTTOM_CENTER,
-                callback=lambda: ok_callback(Color(*self.color_swatch.texture[0, 0, :3]))
+                pos=(7, 1),
+                callback=lambda: ok_callback(self.color_swatch.background_color_pair.bg_color),
             )
         )
 
@@ -152,7 +154,7 @@ class ColorPicker(Themable, GraphicWidget):
 
         shades.size = max(10, h - 4), max(20, w - 11)
 
-        swatch.size = max(4, h - 10), 8
+        swatch.size = max(2, h - 12), 8
         swatch.left = shades.right + 1
 
         hues.size = 1, shades.width
@@ -164,8 +166,7 @@ class ColorPicker(Themable, GraphicWidget):
     def update_theme(self):
         ct = self.color_theme
 
-        self.default_color = AColor(*ct.primary_bg)
-        self.texture[:] = self.default_color
+        self.background_color_pair = ct.primary_color_pair
 
-        self.label.default_color_pair = ct.primary_color_pair
-        self.label.colors[:] = ct.primary_color_pair
+        self.label.default_color_pair = ct.primary_dark_color_pair
+        self.label.colors[:] = ct.primary_dark_color_pair
