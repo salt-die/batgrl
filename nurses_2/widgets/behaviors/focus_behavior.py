@@ -27,9 +27,12 @@ class FocusBehavior:
     def is_focused(self):
         return FocusBehavior.__focused is not None and FocusBehavior.__focused() is self
 
-    def on_press(self, key_press_event):
+    def dispatch_press(self, key_press_event):
         if key_press_event.key != "tab":
-            return super().on_press(key_press_event)
+            if self.is_focused:
+                return super().dispatch_press(key_press_event)
+
+            return False
 
         focus_widgets = FocusBehavior.__focus_widgets
 
