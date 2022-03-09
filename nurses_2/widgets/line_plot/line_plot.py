@@ -50,9 +50,10 @@ class LinePlot(Widget):
         ylabel: str | None=None,
         legend_labels: list[str] | None=None,
         line_colors: list[Color] | None=None,
+        background_char=" ",
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(background_char=background_char, **kwargs)
 
         self._trace_size_hint = 0
 
