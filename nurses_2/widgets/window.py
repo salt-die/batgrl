@@ -33,8 +33,11 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     alpha : float, default: 1.0
         Transparency of window background and border.
     """
-    def __init__(self, title="", alpha=1.0, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, title="", alpha=1.0, min_height=3, min_width=None, **kwargs):
+        if min_width is None:
+            min_width = len(title) + 6
+
+        super().__init__(min_height=min_height, min_width=min_width, **kwargs)
 
         self._border = GraphicWidget()
         self._titlebar = TitleBar(pos=(1, 2))
@@ -98,7 +101,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     def resize(self, size: Size):
         h, w = size
-        self._size = Size(h, w)
+        self._size = h, w = Size(clamp(h, 1, None), clamp(w, 1, None))
 
         self._border.resize(size)
         self._titlebar.resize((1, w - 4))
@@ -106,8 +109,14 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         self._border.render_intersection(source, canvas_view, colors_view)
-        self._titlebar.render_intersection(source, canvas_view, colors_view)
-        self._view.render_intersection(source, canvas_view, colors_view)
+
+        h, w = self.size
+
+        if w > 4:
+            if h > 2:
+                self._titlebar.render_intersection(source, canvas_view, colors_view)
+            if h > 3:
+                self._view.render_intersection(source, canvas_view, colors_view)
 
     def add_widget(self, widget):
         self._view.add_widget(widget)

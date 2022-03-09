@@ -68,8 +68,8 @@ class VideoPlayer(GraphicWidget):
 
         # If video is paused, resize current frame.
         if self._video.done() and self._current_frame is not None:
-            size = self.width, 2 * self.height
-            resized_frame = cv2.resize(self._current_frame, size, interpolation=self.interpolation)
+            h, w, _ = self.texture.shape
+            resized_frame = cv2.resize(self._current_frame, (w, h), interpolation=self.interpolation)
             self.texture[..., :3] = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
 
     async def _play_video(self):

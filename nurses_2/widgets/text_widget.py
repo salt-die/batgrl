@@ -71,8 +71,9 @@ class TextWidget(Widget):
         """
         old_h, old_w = self._size
 
-        h, w = size
-        self._size = Size(h, w)
+        super().resize(size)
+
+        h, w = self._size
 
         old_canvas = self.canvas
         old_colors = self.colors
@@ -80,14 +81,11 @@ class TextWidget(Widget):
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full(size, self.default_char, dtype=object)
+        self.canvas = np.full((h, w), self.default_char, dtype=object)
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
         self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]
-
-        for child in self.children:
-            child.update_geometry()
 
     @property
     def default_fg_color(self):

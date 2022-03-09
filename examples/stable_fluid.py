@@ -39,9 +39,12 @@ class StableFluid(GraphicWidget):
         self.resize(self.size)
 
     def resize(self, size):
-        super().resize(size)
+        super(GraphicWidget, self).resize(size)
 
-        h, w, _ = self.texture.shape
+        h, w = self._size
+        h *= 2
+
+        self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
 
         self.dye = np.zeros((3, h, w))
         self.indices = np.indices((h, w))

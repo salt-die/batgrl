@@ -86,15 +86,13 @@ class DoomFire(GraphicWidget):
         )
 
     def resize(self, size: Size):
-        h, w = size
-        self._size = Size(h, w)
+        super(GraphicWidget, self).resize(size)
+
+        h, w = self._size
 
         self._fire_values = np.zeros((2 * h, w), dtype=int)
-        self.fire_strength = self.fire_strength
+        self.fire_strength = self.fire_strength  # Trigger `fire_strength.setter`
         self.texture = FIRE_PALETTE[self._fire_values]
-
-        for child in self.children:
-            child.update_geometry()
 
     def _step_fire(self):
         roll_up = np.roll(self._fire_values, -1, 0)

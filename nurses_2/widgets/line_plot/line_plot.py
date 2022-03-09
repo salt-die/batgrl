@@ -134,7 +134,7 @@ class LinePlot(Widget):
     def resize(self, size: Size):
         super().resize(size)
 
-        h, w = size
+        h, w = self._size
 
         xlabel = self.xlabel
         ylabel = self.ylabel

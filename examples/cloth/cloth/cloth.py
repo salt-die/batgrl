@@ -1,6 +1,7 @@
 import asyncio
 
 import cv2
+import numpy as np
 
 from nurses_2.colors import AWHITE, AColor
 from nurses_2.io import MouseButton
@@ -20,7 +21,11 @@ class Cloth(GraphicWidget):
         self.resize(self.size)  # Creates empty texture where links are drawn.
 
     def resize(self, size):
-        super().resize(size)
+        super(GraphicWidget, self).resize(size)
+
+        h, w = self._size
+
+        self.texture = np.full((h * 2, w, 4), self.default_color, dtype=np.uint8)
 
         # Center the nodes horizontally in the widget with following offset:
         self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j

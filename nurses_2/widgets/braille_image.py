@@ -30,7 +30,13 @@ class BrailleImage(TextWidget):
         self._load_texture()
 
     def resize(self, size):
-        super().resize(size)
+        super(TextWidget, self).resize(size)
+
+        h, w = self._size
+
+        self.canvas = np.full((h, w), self.default_char, dtype=object)
+        self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
+
         self._load_texture()
 
     def _load_texture(self):

@@ -54,14 +54,14 @@ class Fluid(GraphicWidget):
         self.resize(self.size)
 
     def resize(self, size):
-        h, w = size
+        super().resize(size)
+
+        h, w = self._size
 
         size_with_border = 2 * h + 4, w + 4
 
         self.pressure = np.zeros(size_with_border, dtype=float)
         self.momentum = np.zeros(size_with_border, dtype=float)
-
-        super().resize(size)
 
     def on_click(self, mouse_event):
         if not self.collides_point(mouse_event.position):

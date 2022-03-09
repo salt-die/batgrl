@@ -52,8 +52,9 @@ class Mandelbrot(GraphicWidget):
         asyncio.create_task(self._spiral())
 
     def resize(self, size: Size):
-        h, w = size
-        self._size = Size(h, w)
+        super(GraphicWidget, self).resize(size)
+
+        h, w = self._size
 
         ys = np.linspace(TOP, BOTTOM, 2 * h)
         xs = np.linspace(LEFT, RIGHT, w)

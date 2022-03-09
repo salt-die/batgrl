@@ -1,5 +1,7 @@
 from typing import Callable
 
+import numpy as np
+
 from ..colors import (
     Color,
     ColorPair,
@@ -103,9 +105,13 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
         self.add_widget(self._hue_indicator)
 
     def resize(self, size):
-        super().resize(size)
+        super(GraphicWidget, self).resize(size)
 
-        d, r = divmod(self.width, 6)
+        h, w = self._size
+
+        self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
+
+        d, r = divmod(w, 6)
 
         rainbow = []
         for i, (a, b) in enumerate(GRAD):
@@ -178,9 +184,9 @@ class ColorPicker(Themable, Widget):
         self.update_theme()
 
     def resize(self, size):
-        h, w = size
-
         super().resize(size)
+
+        h, w = self._size
 
         shades = self.shades
         swatch = self.color_swatch

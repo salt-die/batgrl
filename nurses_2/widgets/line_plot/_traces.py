@@ -47,8 +47,9 @@ class _Traces(TextWidget):
         self.resize(self.size)
 
     def resize(self, size: Size):
-        h, w = size
-        self._size = Size(h, w)
+        super().resize(size)
+
+        h, w = self._size
 
         offset_h = h - VERTICAL_HALF
         offset_w = w - TICK_HALF * 2 - TICK_WIDTH % 2
@@ -122,9 +123,6 @@ class _Traces(TextWidget):
         x_ticks.canvas[0, last_tick_column + 1:] = x_ticks.default_char
 
         x_ticks.update_geometry()  # Ensure x-ticks are moved to the bottom of plot.
-
-        for child in self.children:
-            child.update_geometry()
 
     @property
     def left(self):

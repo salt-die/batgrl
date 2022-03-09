@@ -91,20 +91,15 @@ class GraphicWidget(Widget):
         """
         Resize widget.
         """
-        h, w = size
-        self._size = Size(h, w)
+        super().resize(size)
 
-        if h == 0 or w == 0:
-            self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
-        else:
-            self.texture = cv2.resize(
-                self.texture,
-                (w, 2 * h),
-                interpolation=self.interpolation,
-            )
+        h, w = self._size
 
-        for child in self.children:
-            child.update_geometry()
+        self.texture = cv2.resize(
+            self.texture,
+            (w, 2 * h),
+            interpolation=self.interpolation,
+        )
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """

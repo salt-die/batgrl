@@ -113,10 +113,10 @@ class Segment:
         self.slice = slice_
 
     def __get__(self, owner, instance):
-        return (instance.colors[self.slice] == instance.on_color_pair).all()
+        return (instance._display.colors[self.slice] == instance.on_color_pair).all()
 
     def __set__(self, instance, value):
-        instance.colors[self.slice] = instance.on_color_pair if value else instance.off_color_pair
+        instance._display.colors[self.slice] = instance.on_color_pair if value else instance.off_color_pair
 
 
 class DigitalDisplay(TextWidget):
@@ -171,15 +171,14 @@ class DigitalDisplay(TextWidget):
         on_color_pair: ColorPair=BRIGHT_GREEN_ON_BLACK,
         **kwargs,
     ):
-        kwargs.pop("size", None)
-        kwargs.pop("size_hint", None)
-
-        super().__init__(size=Size(7, 8), **kwargs)
+        super().__init__(**kwargs)
 
         self.off_color_pair = off_color_pair
         self.on_color_pair = on_color_pair
 
-        canvas = self.canvas
+        self._display = TextWidget(size=(7, 8), default_char=self.default_char)
+        canvas = self._display.canvas
+
         canvas[[0, 6], 1: 6] = canvas[3, 1: 3] = canvas[3, 4: 6] = "━"
         canvas[1: 3,  [0, 3, 6]] = canvas[4: 6, [0, 3, 6]] = "┃"
         canvas[(1, 2, 4, 5), (1, 2, 4, 5)] = "\\"
@@ -187,16 +186,15 @@ class DigitalDisplay(TextWidget):
         canvas[6, 7] = "●"
 
         self._where_segments = canvas != self.default_char
-        self.colors[self._where_segments] = off_color_pair
+        self._display.colors[self._where_segments] = off_color_pair
 
-    def resize(self, size: Size):
-        pass
+        self.add_widget(self._display)
 
     def show_char(self, char: str):
         if char not in _CHAR_TO_SEGMENTS:
             raise ValueError(f"{char} is not an ascii character")
 
-        self.colors[self._where_segments] = self.off_color_pair
+        self._display.colors[self._where_segments] = self.off_color_pair
 
         for segment in _CHAR_TO_SEGMENTS[char]:
             setattr(self, segment, True)

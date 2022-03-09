@@ -23,13 +23,15 @@ class _Root(Widget):
         """
         Resize canvas. Last render is erased.
         """
+        super().resize(size)
+
+        h, w = self._size
+
         self.env_out.erase_screen()
         self.env_out.flush()
 
-        self._size = size
-
-        self._last_canvas = np.full(size, self.background_char, dtype=object)
-        self._last_colors = np.full((*size, 6), self.background_color_pair, dtype=np.uint8)
+        self._last_canvas = np.full((h, w), self.background_char, dtype=object)
+        self._last_colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
 
         invalidate_char = "a" if "a" != self.background_char else "b"  # A character that guarantees full-screen redraw.
         self.canvas = np.full_like(self._last_canvas, invalidate_char)
@@ -39,9 +41,6 @@ class _Root(Widget):
         self._char_diffs = np.zeros_like(self.canvas, dtype=bool)
         self._color_diffs = np.zeros_like(self.colors, dtype=bool)
         self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=bool)
-
-        for child in self.children:
-            child.update_geometry()
 
     @property
     def top(self):

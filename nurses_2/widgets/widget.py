@@ -366,7 +366,8 @@ class Widget:
         """
         Resize widget.
         """
-        self._size = size
+        h, w = size
+        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
 
         for child in self.children:
             child.update_geometry()

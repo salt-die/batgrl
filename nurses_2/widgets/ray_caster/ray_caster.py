@@ -73,28 +73,30 @@ class RayCaster(GraphicWidget):
         self.resize(self.size)
 
     def resize(self, size):
-        super().resize(size)
-        height = self.height
-        width = self.width
+        super(GraphicWidget, self).resize(size)
+
+        h, w = self._size
+
+        self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
 
         # Precalculate angle of rays cast.
-        self._ray_angles = angles = np.ones((width, 2), dtype=float)
-        angles[:, 1] = np.linspace(-1, 1, width)
+        self._ray_angles = angles = np.ones((w, 2), dtype=float)
+        angles[:, 1] = np.linspace(-1, 1, w)
 
         # Precalculate distances for ceiling and floor textures
-        self._distances = distances = np.linspace(.001, height, num=height, endpoint=False, dtype=float)
-        np.divide(height, distances, out=distances, dtype=float)
+        self._distances = distances = np.linspace(1e-10, h, num=h, endpoint=False, dtype=float)
+        np.divide(h, distances, out=distances, dtype=float)
 
         # Buffers
         self._rotated_angles = np.zeros_like(angles)
         self._deltas = np.zeros_like(angles)
         self._sides = np.zeros_like(angles)
         self._steps = np.zeros_like(angles, dtype=int)
-        self._weights = weights = np.zeros((height, 2), dtype=float)
+        self._weights = weights = np.zeros((h, 2), dtype=float)
         self._tex_frac = np.zeros_like(weights)
         self._tex_frac_2 = np.zeros_like(weights)
         self._tex_int = np.zeros_like(weights, dtype=int)
-        self._column_distances = np.zeros((width,), dtype=float)
+        self._column_distances = np.zeros((w,), dtype=float)
 
     def cast_ray(self, column):
         """

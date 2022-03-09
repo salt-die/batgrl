@@ -22,9 +22,5 @@ class MyApp(App):
 
         tiled_image.tile = tile_2
 
-        await asyncio.sleep(4)
-
-        tiled_image.allow_partial_tiling = False
-
 
 MyApp().run()

@@ -58,8 +58,8 @@ class Image(GraphicWidget):
         """
         Resize image.
         """
-        h, w = size
+        super(GraphicWidget, self).resize(size)
 
-        self._size = Size(h, w)
+        h, w = self._size
 
         self.texture = cv2.resize(self._image_texture, (w, 2 * h), interpolation=self.interpolation)
