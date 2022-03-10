@@ -9,8 +9,10 @@ from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
 from .widget import Widget, Size, Anchor
 
+__all__ = "Window",
 
-class TitleBar(GrabbableBehavior, TextWidget):
+
+class _TitleBar(GrabbableBehavior, TextWidget):
     def __init__(self, **kwargs):
         super().__init__(disable_ptf=True, **kwargs)
 
@@ -21,10 +23,28 @@ class TitleBar(GrabbableBehavior, TextWidget):
         self.parent.top += self.mouse_dy
         self.parent.left += self.mouse_dx
 
+    def update_geometry(self):
+        bh, bw = self.parent.border_size
+        self.resize((bh, self.parent.width - 2 * bw))
+
+
+class _View(GraphicWidget):
+    def update_geometry(self):
+        h, w = self.parent.size
+        bh, bw = self.parent.border_size
+        self.resize((h - 1 - 2 * bh, w - 2 * bw))
+        self.is_visible = h > bh * 3
+
 
 class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     """
     A movable, resizable window widget.
+
+    Notes
+    -----
+    If not given or too small, `min_height` and `min_width` will be
+    set large enough so that the border is visible and the titlebar's
+    label is visible.
 
     Parameters
     ----------
@@ -33,28 +53,52 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     alpha : float, default: 1.0
         Transparency of window background and border.
     """
-    def __init__(self, title="", alpha=1.0, min_height=3, min_width=None, **kwargs):
-        if min_width is None:
-            min_width = len(title) + 6
+    def __init__(self, title="", alpha=1.0, **kwargs):
+        self._view = None
 
-        super().__init__(min_height=min_height, min_width=min_width, **kwargs)
+        super().__init__(**kwargs)
 
-        self._border = GraphicWidget()
-        self._titlebar = TitleBar(pos=(1, 2))
-        self._view = GraphicWidget(pos=(2, 2))
+        if self.min_height is None:
+            self.min_height = 1
 
-        self._titlebar.parent = self._view.parent = self
-        self.children = [self._view, self._titlebar]
+        if self.min_width is None:
+            self.min_width = 1
 
-        self.title = title
+        self.add_widgets(_View(), _TitleBar())
+        self.pull_border_to_front()
+        self._view = self.children[0]
+        self._titlebar = self.children[1]
+
         self.alpha = alpha
+        self.title = title
 
         self.update_theme()
 
-        self.resize(self.size)
+        self.border_size = self.border_size  # Reposition titlebar and view
 
     @property
-    def title(sef):
+    def border_size(self) -> Size:
+        return self._border_size
+
+    @border_size.setter
+    def border_size(self, size: Size):
+        h, w = size
+        self._border_size = Size(clamp(h, 1, None), clamp(w, 1, None))
+
+        for border in self._borders:
+            border.update_geometry()
+
+        if self._view is None:  # Still being initialized.
+            return
+
+        self._titlebar.pos = h, w
+        self._view.pos = h * 2, w
+
+        self.min_height = max(h * 3, self.min_height)
+        self.min_width = max(len(self.title) + w * 2 + 2, self.min_width)
+
+    @property
+    def title(self):
         return self._title
 
     @title.setter
@@ -62,6 +106,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._title = title
         self._titlebar._label.resize((1, len(title)))
         self._titlebar._label.add_text(title)
+        self.min_width = max(len(title) + self.border_size.width * 2 + 2, self.min_width)
 
     @property
     def alpha(self) -> float:
@@ -69,8 +114,8 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     @alpha.setter
     def alpha(self, alpha: float):
-        self._alpha = clamp(alpha, min=0.0, max=1.0)
-        self._border.alpha = self._view.alpha = self._alpha
+        self._alpha = clamp(alpha, 0.0, 1.0)
+        self.border_alpha = self._view.alpha = self._alpha
 
     def update_theme(self):
         ct = self.color_theme
@@ -80,12 +125,9 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._view.texture[:] = view_background
 
         if self.is_focused:
-            border_color = AColor(*ct.secondary_bg, 255)
+            self.border_color = AColor(*ct.secondary_bg, 255)
         else:
-            border_color = AColor(*ct.primary_bg, 255)
-
-        self._border.default_color = border_color
-        self._border.texture[:] = border_color
+            self.border_color = AColor(*ct.primary_bg, 255)
 
         title_bar_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg_dark)
         self._titlebar.default_color_pair = title_bar_color_pair
@@ -99,30 +141,17 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     def on_blur(self):
         self.update_theme()
 
-    def resize(self, size: Size):
-        h, w = size
-        self._size = h, w = Size(clamp(h, 1, None), clamp(w, 1, None))
-
-        self._border.resize(size)
-        self._titlebar.resize((1, w - 4))
-        self._view.resize((h - 3, w - 4))
-
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        self._border.render_intersection(source, canvas_view, colors_view)
-
-        h, w = self.size
-
-        if w > 4:
-            if h > 2:
-                self._titlebar.render_intersection(source, canvas_view, colors_view)
-            if h > 3:
-                self._view.render_intersection(source, canvas_view, colors_view)
-
     def add_widget(self, widget):
-        self._view.add_widget(widget)
+        if self._view is None:  # Still being initialized.
+            super().add_widget(widget)
+        else:
+            self._view.add_widget(widget)
 
     def remove_widget(self, widget):
-        self._view.remove_widget(widget)
+        if self._view is None:  # Still being initialized.
+            super().remove_widget(widget)
+        else:
+            self._view.remove_widget(widget)
 
     def dispatch_click(self, mouse_event):
         return super().dispatch_click(mouse_event) or self.collides_point(mouse_event.position)

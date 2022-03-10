@@ -1,115 +1,178 @@
 from ...clamp import clamp
-from ...data_structures import Size
+from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
 from .grabbable_behavior import GrabbableBehavior
 
+__all__ = "GrabResizeBehavior",
 
-class GrabResizeBehavior(GrabbableBehavior):
+
+class _Border(GrabbableBehavior, GraphicWidget):
+    def __init__(self, y_edge, x_edge, disable_ptf=True, **kwargs):
+        super().__init__(disable_ptf=disable_ptf, **kwargs)
+
+        self.y_edge = y_edge
+        self.x_edge = x_edge
+
+    def grab_update(self, mouse_event):
+        parent = self.parent
+        y_edge = parent.allow_vertical_resize and self.y_edge
+        x_edge = parent.allow_horizontal_resize and self.x_edge
+
+        h, w = parent.size
+        dy, dx = self.mouse_dyx
+
+        new_size = Size(
+            clamp(h + y_edge * dy, parent.min_height, None),
+            clamp(w + x_edge * dx, parent.min_width, None),
+        )
+
+        if new_size != self.size:
+            parent.resize(new_size)
+
+            if y_edge < 0:
+                parent.top += h - new_size.height
+
+            if x_edge < 0:
+                parent.left += w - new_size.width
+
+    def update_geometry(self):
+        if self.parent is None:
+            return
+
+        h, w = self.parent.size
+        bh, bw = self.parent.border_size
+        y, x = self.y_edge, self.x_edge
+
+        self.pos = 0 if y <= 0 else h - 1, 0 if x <= 0 else w - 1
+
+        match y:
+            case 0:
+                height = h - 2 * bh
+                top = bh
+            case -1:
+                height = bh
+                top = 0
+            case 1:
+                height = bh
+                top = h - bh
+
+        match x:
+            case 0:
+                width = w - 2 * bw
+                left = bw
+            case -1:
+                width = bw
+                left = 0
+            case 1:
+                width = bw
+                left = w - bw
+
+        self.pos = top, left
+        self.size = height, width
+
+
+class GrabResizeBehavior:
     """
     Draggable resize behavior for a widget. Resize a widget by clicking its border and dragging it.
+    Widget dimensions won't be resized smaller than `min_height` or `min_width`.
+
+    Notes
+    -----
+    Borders are added as child widgets. Children added later may overlap or cover the borders.
+    The method `pull_border_to_front` will correct this.
 
     Parameters
     ----------
-    disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
     allow_vertical_resize : bool, default: True
         Allow vertical resize.
     allow_horizontal_resize : bool, default: True
         Allow horizontal resize.
-    min_height : int, default: 2
-        Minimum height allowed by grab resizing.
-    max_height : int | None, default: None
-        Maximum height allowed by grab resizing.
-    min_width : int, default: 4
-        Minimum width allowed by grab resizing.
-    max_width : int | None, default: None
-        Maximum width allowed by grab resizing.
-
-    Notes
-    -----
-    `min_height`, `max_height`, `min_width`, and `max_width` are repurposed from Widget for
-    grab resize behavior as size hints are expected to be None for widgets that inherit this behavior.
-    If a widget has a non-None size hint and inherits this behavior, these attributes will still work
-    as expected.
+    border_alpha : float, default: 1.0
+        Transparency of border. This value will be clamped between `0.0` and `1.0`.
+    border_color : AColor, default: TRANSPARENT
+        Color of border.
+    border_size : Size, default: Size(1, 2)
+        Height and width of horizontal and vertical borders, respectively.
     """
     def __init__(
         self,
         *,
-        disable_ptf=False,
-        allow_vertical_resize=True,
-        allow_horizontal_resize=True,
-        min_height=2,
-        max_height=None,
-        min_width=4,
-        max_width=None,
+        allow_vertical_resize: bool=True,
+        allow_horizontal_resize: bool=True,
+        border_alpha: float=1.0,
+        border_color: AColor=TRANSPARENT,
+        border_size: Size=Size(1, 2),
         **kwargs
     ):
-        super().__init__(
-            min_height=min_height,
-            max_height=max_height,
-            min_width=min_width,
-            max_width=max_width,
-            **kwargs,
-        )
-        self.disable_ptf = disable_ptf
+        super().__init__(**kwargs)
+
         self.allow_vertical_resize = allow_vertical_resize
         self.allow_horizontal_resize = allow_horizontal_resize
 
-    def grab(self, mouse_event):
-        self._b_edge = self.height - 1
-        self._r_edge = self.width - 1
-        self._r_r_edge = self.width - 2
+        # Sides
+        top = _Border(-1, 0)
+        bottom = _Border(1, 0)
+        left = _Border(0, -1)
+        right = _Border(0, 1)
 
-        match self.to_local(mouse_event.position):
-            case (0, 0 | 1):
-                self._grabbed_edge = -1, -1
-            case (0, self._r_edge | self._r_r_edge):
-                self._grabbed_edge = -1,  1
-            case (self._b_edge, 0 | 1):
-                self._grabbed_edge =  1, -1
-            case (self._b_edge, self._r_edge | self._r_r_edge):
-                self._grabbed_edge =  1,  1
-            case (0, _):
-                self._grabbed_edge = -1,  0
-            case (self._b_edge, _):
-                self._grabbed_edge =  1,  0
-            case (_, 0 | 1):
-                self._grabbed_edge =  0, -1
-            case (_, self._r_edge | self._r_r_edge):
-                self._grabbed_edge =  0,  1
-            case _:
-                self._grabbed_edge = None
-                return super().grab(mouse_event)
+        # Corners
+        top_left = _Border(-1, -1)
+        top_right = _Border(-1, 1)
+        bottom_left = _Border(1, -1)
+        bottom_right = _Border(1, 1)
 
-        self._is_grabbed = True
+        self._borders = top, bottom, left, right, top_left, top_right, bottom_left, bottom_right
 
-        if not self.disable_ptf:
-            self.pull_to_front()
+        self.border_alpha = border_alpha
+        self.border_color = border_color
+        self.border_size = border_size
 
-    def grab_update(self, mouse_event):
-        if self._grabbed_edge is None:
-            return super().grab_update(mouse_event)
+        self.add_widgets(self._borders)
 
-        y_edge, x_edge = self._grabbed_edge
+    @property
+    def border_size(self) -> Size:
+        """
+        Height and width of horizontal and vertical borders, respectively.
+        """
+        return self._border_size
 
-        if not self.allow_vertical_resize:
-            y_edge = 0
+    @border_size.setter
+    def border_size(self, size: Size):
+        h, w = size
+        self._border_size = Size(clamp(h, 1, None), clamp(w, 1, None))
 
-        if not self.allow_horizontal_resize:
-            x_edge = 0
+        for border in self._borders:
+            border.update_geometry()
 
-        h, w = self.size
-        dy, dx = self.mouse_dyx
+    @property
+    def border_alpha(self) -> float:
+        """
+        Background character of the border.
+        """
+        return self._border_alpha
 
-        new_size = Size(
-            clamp(h + y_edge * dy, self.min_height, self.max_height),
-            clamp(w + x_edge * dx, self.min_width, self.max_width),
-        )
+    @border_alpha.setter
+    def border_alpha(self, border_alpha: float):
+        border_alpha = clamp(border_alpha, 0.0, 1.0)
+        for border in self._borders:
+            border.alpha = border_alpha
 
-        if new_size != self.size:
-            self.resize(new_size)
+        self._border_alpha = border_alpha
 
-            if y_edge < 0:
-                self.top += h - new_size.height
+    @property
+    def border_color(self) -> AColor:
+        """
+        Color of border.
+        """
+        return self._border_color
 
-            if x_edge < 0:
-                self.left += w - new_size.width
+    @border_color.setter
+    def border_color(self, border_color: AColor):
+        for border in self._borders:
+            border.default_color = border_color
+            border.texture[:] = border_color
+
+        self._border_color = border_color
+
+    def pull_border_to_front(self):
+        for border in self._borders:
+            border.pull_to_front()
