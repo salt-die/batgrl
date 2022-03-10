@@ -1,5 +1,7 @@
 import numpy as np
 
+from wcwidth import wcswidth
+
 from ...colors import Color, WHITE_ON_BLACK
 from ...io import MouseEvent, MouseEventType
 from ..text_widget import TextWidget, SizeHint, Anchor, Size
@@ -105,14 +107,14 @@ class LinePlot(Widget):
         self.add_widget(self.plot)
 
         if xlabel is not None:
-            self.xlabel = TextWidget(size=(1, len(xlabel)), **text_kwargs)
+            self.xlabel = TextWidget(size=(1, wcswidth(xlabel)), **text_kwargs)
             self.xlabel.add_text(xlabel)
             self.add_widget(self.xlabel)
         else:
             self.xlabel = None
 
         if ylabel is not None:
-            self.ylabel = TextWidget(size=(len(ylabel), 1), **text_kwargs)
+            self.ylabel = TextWidget(size=(wcswidth(ylabel), 1), **text_kwargs)
             self.ylabel.get_view[:, 0].add_text(ylabel)
             self.plot.left += 1
             self.add_widget(self.ylabel)

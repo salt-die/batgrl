@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Callable
 
+from wcwidth import wcswidth
+
 from ..io.environ import is_windows
 from .scroll_view import ScrollView
 from .tree_view import TreeViewNode, TreeView
@@ -88,8 +90,7 @@ class FileView(TreeView):
 
         max_width = self.parent and self.parent.width or -1
         for i, node in enumerate(it):
-            if len(node.label) + 1 > max_width:
-                max_width = len(node.label) + 1
+            max_width = max(max_width, wcswidth(node.label))
 
             node.top = i
             self.add_widget(node)

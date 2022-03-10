@@ -1,3 +1,5 @@
+from wcwidth import wcswidth
+
 from ...colors import Color
 from ..behaviors.grab_move_behavior import GrabMoveBehavior
 from ..text_widget import TextWidget
@@ -6,7 +8,7 @@ from ..text_widget import TextWidget
 class _Legend(GrabMoveBehavior, TextWidget):
     def __init__(self, labels: list[str], colors: list[Color], **kwargs):
         height = len(labels) + 2
-        width = 6 + max(map(len, labels))
+        width = 6 + max(map(wcswidth, labels))
 
         super().__init__(size=(height, width), disable_oob=True, **kwargs)
 

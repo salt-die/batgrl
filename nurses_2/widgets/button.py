@@ -1,5 +1,7 @@
 from typing import Callable
 
+from wcwidth import wcswidth
+
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, Anchor
@@ -60,7 +62,7 @@ class Button(Themable, ButtonBehavior, Widget):
     @label.setter
     def label(self, label: str):
         self._label = label
-        self._label_widget.resize((1, len(label)))
+        self._label_widget.resize((1, wcswidth(label)))
         self._label_widget.update_geometry()
         self._label_widget.add_text(label)
 

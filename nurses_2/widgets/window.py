@@ -1,3 +1,4 @@
+from wcwidth import wcswidth
 
 from ..clamp import clamp
 from ..colors import ColorPair, AColor
@@ -95,7 +96,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._view.pos = h * 2, w
 
         self.min_height = max(h * 3, self.min_height)
-        self.min_width = max(len(self.title) + w * 2 + 2, self.min_width)
+        self.min_width = max(self._titlebar.width + self.border_size.width * 2 + 2, self.min_width)
 
     @property
     def title(self):
@@ -104,9 +105,9 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     @title.setter
     def title(self, title: str):
         self._title = title
-        self._titlebar._label.resize((1, len(title)))
+        self._titlebar._label.resize((1, wcswidth(title)))
         self._titlebar._label.add_text(title)
-        self.min_width = max(len(title) + self.border_size.width * 2 + 2, self.min_width)
+        self.min_width = max(self._titlebar.width + self.border_size.width * 2 + 2, self.min_width)
 
     @property
     def alpha(self) -> float:

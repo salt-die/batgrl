@@ -1,5 +1,7 @@
 from typing import Callable
 
+from wcwidth import wcswidth
+
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ButtonState, ToggleState, ToggleButtonBehavior
 from .text_widget import TextWidget, Anchor
@@ -68,8 +70,6 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     @label.setter
     def label(self, label: str):
         self._label = label
-        self._label_widget.resize((1, 2 + len(label)))
-        self._label_widget.update_geometry()
 
         if self.group is None:
             if self.toggle_state is ToggleState.OFF:
@@ -82,7 +82,12 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
             else:
                 prefix = TOGGLE_ON
 
-        self._label_widget.add_text(prefix + label)
+        self._label = label
+
+        text = prefix + label
+        self._label_widget.resize((1, wcswidth(text)))
+        self._label_widget.update_geometry()
+        self._label_widget.add_text(text)
 
     def update_hover(self):
         self.background_color_pair = self._label_widget.colors[:] = self.hover_color_pair
