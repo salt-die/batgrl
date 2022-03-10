@@ -54,7 +54,7 @@ class _Traces(TextWidget):
         offset_h = h - VERTICAL_HALF
         offset_w = w - TICK_HALF * 2 - TICK_WIDTH % 2
 
-        if offset_h <= 0 or offset_w <= 0:
+        if offset_h <= 1 or offset_w <= 1:
             return
 
         h4 = offset_h * 4
