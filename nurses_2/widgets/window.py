@@ -33,7 +33,7 @@ class _View(GraphicWidget):
         h, w = self.parent.size
         bh, bw = self.parent.border_size
         self.resize((h - 1 - 2 * bh, w - 2 * bw))
-        self.is_visible = h > bh * 3
+        self.is_visible = h > bh * 3 and w > bw * 2
 
 
 class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
