@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Callable
 
 from ..io.environ import is_windows
-from ..colors import ColorPair
 from .scroll_view import ScrollView
 from .tree_view import TreeViewNode, TreeView
 
