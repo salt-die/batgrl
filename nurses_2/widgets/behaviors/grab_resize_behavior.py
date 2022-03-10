@@ -25,14 +25,14 @@ class _Border(GrabbableBehavior, GraphicWidget):
             clamp(w + x_edge * dx, parent.min_width, None),
         )
 
-        if new_size != self.size:
+        if new_size != parent.size:
             parent.resize(new_size)
 
-            if y_edge < 0:
-                parent.top += h - new_size.height
+            if y_edge == -1:
+                parent.top += h - parent.height
 
-            if x_edge < 0:
-                parent.left += w - new_size.width
+            if x_edge == -1:
+                parent.left += w - parent.width
 
     def update_geometry(self):
         if self.parent is None:
