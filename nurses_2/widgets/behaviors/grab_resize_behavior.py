@@ -13,12 +13,22 @@ class _Border(GrabbableBehavior, GraphicWidget):
         self.x_edge = x_edge
 
     def grab_update(self, mouse_event):
+        dy, dx = self.mouse_dyx
+        y, x = self.to_local(mouse_event.position)
+
+        if (
+            dy < 0 and y >= self.height - 1
+            or dy > 0 and y <= 0
+            or dx < 0 and x >= self.width - 1
+            or dx > 0 and x <= 0
+        ):
+            return
+
         parent = self.parent
         y_edge = parent.allow_vertical_resize and self.y_edge
         x_edge = parent.allow_horizontal_resize and self.x_edge
 
         h, w = parent.size
-        dy, dx = self.mouse_dyx
 
         new_size = Size(
             clamp(h + y_edge * dy, parent.min_height, None),
@@ -28,10 +38,10 @@ class _Border(GrabbableBehavior, GraphicWidget):
         if new_size != parent.size:
             parent.resize(new_size)
 
-            if y_edge == -1:
+            if y_edge == - 1:
                 parent.top += h - parent.height
 
-            if x_edge == -1:
+            if x_edge == - 1:
                 parent.left += w - parent.width
 
     def update_geometry(self):
