@@ -96,7 +96,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._view.pos = h * 2, w
 
         self.min_height = max(h * 3, self.min_height)
-        self.min_width = max(self._titlebar.width + self.border_size.width * 2 + 2, self.min_width)
+        self.min_width = max(wcswidth(self._title) + self.border_size.width * 2 + 2, self.min_width)
 
     @property
     def title(self):
@@ -107,7 +107,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._title = title
         self._titlebar._label.resize((1, wcswidth(title)))
         self._titlebar._label.add_text(title)
-        self.min_width = max(self._titlebar.width + self.border_size.width * 2 + 2, self.min_width)
+        self.min_width = max(wcswidth(title) + self.border_size.width * 2 + 2, self.min_width)
 
     @property
     def alpha(self) -> float:
