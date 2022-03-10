@@ -376,6 +376,9 @@ class Widget:
         """
         Update geometry due to a change in parent's size.
         """
+        if self.parent is None:
+            return
+
         h, w = self.parent.size
 
         h_hint, w_hint = self.size_hint
