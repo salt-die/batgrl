@@ -43,7 +43,7 @@ class Widget:
     anchor : Anchor, default: Anchor.TOP_LEFT
         Specifies which part of the widget is aligned with the `pos_hint`.
     is_transparent : bool, default: False
-        If true, white-space is "see-through".
+        If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
