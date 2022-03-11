@@ -34,27 +34,30 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
 
-        self._shade_indicator = TextWidget(
-            size=(1, 1),
-            pos_hint=(0.0, .999),
-            default_color_pair=WHITE_ON_RED,
-        )
+        self._shade_indicator = TextWidget(size=(1, 1), default_color_pair=WHITE_ON_RED)
         self._shade_indicator.add_text("○")
+        self._shade_hint = 0.0, 1.0
         self.add_widget(self._shade_indicator)
 
         self.color_swatch = color_swatch
         self.label = label
-        self.hue = ARED
+        self.update_hue(ARED)
 
-    @property
-    def hue(self):
-        return self._hue
+    def resize(self, size):
+        super(GraphicWidget, self).resize(size)
 
-    @hue.setter
-    def hue(self, hue):
-        self._hue = hue
+        h, w = self._size
+        hh, wh = self._shade_hint
 
-        h, w = self.size
+        self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
+        self._shade_indicator.pos = round((h - 1) * hh), round((w - 1) * wh)
+
+        self.update_hue(self.hue)
+
+    def update_hue(self, hue: AColor):
+        self.hue = hue
+
+        h, w = self._size
         left_side = gradient(AWHITE, ABLACK, 2 * h)
         right_side = gradient(hue, ABLACK, 2 * h)
 
@@ -84,9 +87,12 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
 
     def grab_update(self, mouse_event):
         if self.collides_point(mouse_event.position):
-            y, x = self.to_local(mouse_event.position)
+            y, x = self._shade_indicator.pos = self.to_local(mouse_event.position)
             h, w = self.size
-            self._shade_indicator.pos_hint = y / h, x / w
+            self._shade_hint = (
+                0 if h == 1 else y / (h - 1),
+                0 if w == 1 else x / (w - 1),
+            )
             self.update_swatch_label()
 
 
@@ -95,11 +101,8 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
         super().__init__(**kwargs)
         self.shade_selector = shade_selector
 
-        self._hue_indicator = TextWidget(
-            size=(1, 1),
-            pos_hint=(None, 0.0),
-            default_color_pair=WHITE_ON_RED,
-        )
+        self._hue_hint = 0.0
+        self._hue_indicator = TextWidget(size=(1, 1), default_color_pair=WHITE_ON_RED)
         self._hue_indicator.add_text("▼")
 
         self.add_widget(self._hue_indicator)
@@ -119,18 +122,23 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
 
         self.texture[:] = rainbow
 
+        self._hue_indicator.x = round(self._hue_hint * w)
+        self.update_hue()
+
+    def update_hue(self):
+        x = self._hue_indicator.x
+        self._hue_indicator.colors[..., 3:] = self.texture[0, x, :3]
+        self.shade_selector.update_hue(AColor(*self.texture[0, x]))
+
     def grab(self, mouse_event):
         super().grab(mouse_event)
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
         if self.collides_point(mouse_event.position):
-            _, x = self.to_local(mouse_event.position)
-
-            self._hue_indicator.x_hint = x / self.width
-            self._hue_indicator.colors[..., 3:] = self.texture[0, x, :3]
-
-            self.shade_selector.hue = AColor(*self.texture[0, x])
+            x = self._hue_indicator.x = self.to_local(mouse_event.position).x
+            self._hue_hint = 0 if self.width == 1 else x / (self.width - 1)
+            self.update_hue()
 
 
 class ColorPicker(Themable, Widget):
