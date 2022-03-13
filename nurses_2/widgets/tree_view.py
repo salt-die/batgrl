@@ -2,6 +2,7 @@ from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
+from .widget import Widget
 
 
 class TreeViewNode(Themable, ButtonBehavior, TextWidget):
@@ -104,7 +105,7 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         self.toggle()
 
 
-class TreeView(TextWidget):
+class TreeView(Widget):
     def __init__(self, root_node: TreeViewNode, **kwargs):
         self.selected_node = None
         self.root_node = root_node
