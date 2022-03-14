@@ -7,6 +7,18 @@ from .text_widget_data_structures import *
 from .widget import Widget
 from .widget_data_structures import *
 
+__all__ = (
+    "Anchor",
+    "CanvasView",
+    "ColorPair",
+    "Easing",
+    "Point",
+    "PosHint",
+    "Size",
+    "SizeHint",
+    "TextWidget",
+)
+
 
 class TextWidget(Widget):
     """

@@ -11,6 +11,16 @@ from ..data_structures import *
 from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
+__all__ = (
+    "Anchor",
+    "ColorPair",
+    "Easing",
+    "Point",
+    "PosHint",
+    "Size",
+    "SizeHint",
+    "Widget",
+)
 
 class Widget:
     """

@@ -10,6 +10,18 @@ from .graphic_widget_data_structures import *
 from .widget import Widget
 from .widget_data_structures import *
 
+__all__ = (
+    "AColor",
+    "Anchor",
+    "Easing",
+    "Interpolation",
+    "Point",
+    "PosHint",
+    "Size",
+    "SizeHint",
+    "GraphicWidget",
+)
+
 
 class GraphicWidget(Widget):
     """
