@@ -4,6 +4,7 @@ from .behaviors.themable import Themable
 from .text_widget import TextWidget
 from .widget import Widget
 
+__all__ = "TreeViewNode", "TreeView"
 
 class TreeViewNode(Themable, ButtonBehavior, TextWidget):
     def __init__(self, is_leaf=True, **kwargs):

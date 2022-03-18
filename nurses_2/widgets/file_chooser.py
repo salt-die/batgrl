@@ -7,6 +7,8 @@ from ..io.environ import is_windows
 from .scroll_view import ScrollView
 from .tree_view import TreeViewNode, TreeView
 
+__all__ = "FileChooser",
+
 FILE_PREFIX = "  📄 "
 FOLDER_PREFIX = "▶ 📁 "
 NESTED_PREFIX = "  "
