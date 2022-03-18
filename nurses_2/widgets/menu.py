@@ -80,6 +80,9 @@ class MenuItem(Themable, ButtonBehavior, Widget):
         self._update_color_pair(self.normal_color_pair)
 
     def on_release(self):
+        if self.item_disabled:
+            return
+
         if self.submenu is not None:
             self.submenu.open_menu()
         else:
