@@ -29,7 +29,13 @@ class MyApp(App):
 
         root_menu = self.children[-1]
         root_menu.is_enabled = False
-        self.add_widget(Button(label="File", callback=lambda: root_menu.open_menu(), pos=(1, 0), size=(1, 6)))
+        root_menu.children[1].item_disabled = True
+        root_menu.children[1].update_theme()
+
+        def toggle_root_menu():
+            root_menu.is_enabled = not root_menu.is_enabled
+
+        self.add_widget(Button(label="File", callback=toggle_root_menu, pos=(1, 0), size=(1, 6)))
 
 
 MyApp().run()
