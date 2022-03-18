@@ -9,7 +9,7 @@ from .grid_layout import GridLayout, Orientation
 from .text_widget import TextWidget
 from .widget import Widget, Anchor, Point
 
-__all__ = "Menu",
+__all__ = "Menu", "MenuItem"
 
 MenuDict = dict[tuple[str, str], Callable | "MenuDict"]
 NESTED_SUFFIX = " ▶"
@@ -94,7 +94,15 @@ class MenuItem(Themable, ButtonBehavior, Widget):
 
 class Menu(GridLayout):
     """
-    A menu widget. Create menus quickly with the `from_dict_of_dicts` method.
+    A menu widget.
+
+    The easiest method of creating a menu is with the class method `from_dict_of_dicts`.
+    The keys of the dict should be a tuple of two strings and the values should be either
+    callables or dictionaries.
+
+    See Also
+    --------
+    https://github.com/salt-die/nurses_2/blob/main/examples/menu.py
 
     Parameters
     ----------
