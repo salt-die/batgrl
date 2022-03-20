@@ -30,7 +30,6 @@ class MyApp(App):
         root_menu = self.children[-1]
         root_menu.is_enabled = False
         root_menu.children[1].item_disabled = True
-        root_menu.children[1].update_theme()
 
         def toggle_root_menu():
             root_menu.is_enabled = not root_menu.is_enabled

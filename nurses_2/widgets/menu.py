@@ -27,7 +27,7 @@ class MenuItem(Themable, ButtonBehavior, Widget):
     ):
         self.normal_color_pair = (0, ) * 6  # Temporary assignment
 
-        self.item_disabled = item_disabled
+        self._item_disabled = item_disabled
 
         self.left_label = TextWidget(size=(1, wcswidth(left_label)))
         self.left_label.add_text(left_label)
@@ -47,6 +47,15 @@ class MenuItem(Themable, ButtonBehavior, Widget):
 
         self.item_callback = item_callback
 
+        self.update_theme()
+
+    @property
+    def item_disabled(self) -> bool:
+        return self._item_disabled
+
+    @item_disabled.setter
+    def item_disabled(self, item_disabled: bool):
+        self._item_disabled = item_disabled
         self.update_theme()
 
     def update_theme(self):
