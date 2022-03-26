@@ -80,13 +80,36 @@ class MenuItem(Themable, ButtonBehavior, Widget):
 
     def update_hover(self):
         self._update_color_pair(self.hover_color_pair)
-        self.parent.close_submenus()
+
+        index = self.parent.children.index(self)
+        if self.parent._current_selection not in (-1, index):
+            self.parent.close_submenus()
+            self.parent.children[self.parent._current_selection]._normal()
+
+        self.parent._current_selection = index
 
         if self.submenu is not None:
             self.submenu.open_menu()
 
     def update_normal(self):
+        if self.parent is None:
+            self._update_color_pair(self.normal_color_pair)
+            return
+
+        if self.submenu is None or not self.submenu.is_enabled:
+            pass
+        elif not self.submenu.collides_point(self._last_mouse_pos):
+            self.submenu.close_menu()
+        else:
+            return
+
         self._update_color_pair(self.normal_color_pair)
+        if self.parent._current_selection == self.parent.children.index(self):
+            self.parent._current_selection = -1
+
+    def on_click(self, mouse_event):
+        self._last_mouse_pos = mouse_event.position
+        return super().on_click(mouse_event)
 
     def on_release(self):
         if self.item_disabled:
@@ -105,9 +128,9 @@ class Menu(GridLayout):
     """
     A menu widget.
 
-    The easiest method of creating a menu is with the class method `from_dict_of_dicts`.
-    The keys of the dict should be a tuple of two strings and the values should be either
-    callables or dictionaries.
+    Menus are meant to be constructed with the class method `from_dict_of_dicts`.
+    The each key of the dict should be a tuple of two strings for left and right labels and
+    each value should be either a callable or a dict (for a submenu).
 
     See Also
     --------
@@ -133,18 +156,24 @@ class Menu(GridLayout):
         self.close_on_click = close_on_click
 
         self._parent_menu = None
+        self._current_selection = -1
         self._submenus = [ ]
 
     def open_menu(self):
         self.is_enabled = True
 
-    def close_submenus(self):
-        for menu in self._submenus:
-            menu.is_enabled = False
-
     def close_menu(self):
         self.is_enabled = False
+        self._current_selection = -1
+
+        for child in self.children:
+            child._normal()
+
         self.close_submenus()
+
+    def close_submenus(self):
+        for menu in self._submenus:
+            menu.close_menu()
 
     def close_parents(self):
         if self._parent_menu is not None:
@@ -162,8 +191,91 @@ class Menu(GridLayout):
             )
         ):
             self.close_menu()
+            return False
 
         return super().on_click(mouse_event)
+
+    def on_press(self, key_press_event):
+        for submenu in self._submenus:
+            if submenu.is_enabled:
+                if submenu.on_press(key_press_event):
+                    return True
+                else:
+                    break
+
+        match key_press_event.key:
+            case "up":
+                i = self._current_selection
+
+                if i == -1:
+                    i = len(self.children) - 1
+                else:
+                    i = self._current_selection
+                    self.children[i]._normal()
+                    i = (i - 1) % len(self.children)
+
+                for _ in self.children:
+                    if self.children[i].item_disabled:
+                        i = (i - 1) % len(self.children)
+                    else:
+                        self._current_selection = i
+                        self.children[i]._hover()
+                        self.close_submenus()
+                        return True
+
+                return False
+
+            case "down":
+                i = self._current_selection
+
+                if i == -1:
+                    i = 0
+                else:
+                    self.children[i]._normal()
+                    i = (i + 1) % len(self.children)
+
+                for _ in self.children:
+                    if self.children[i].item_disabled:
+                        i = (i + 1) % len(self.children)
+                    else:
+                        self._current_selection = i
+                        self.children[i]._hover()
+                        self.close_submenus()
+                        return True
+
+                return False
+
+            case "left":
+                if (
+                    self._current_selection != -1
+                    and (
+                        (submenu := self.children[self._current_selection].submenu)
+                        and submenu.is_enabled
+                    )
+                ):
+                        submenu.close_menu()
+                        return True
+
+            case "right":
+                if (
+                    self._current_selection != -1
+                    and (
+                        (submenu := self.children[self._current_selection].submenu)
+                        and not submenu.is_enabled
+                    )
+                ):
+                    submenu.open_menu()
+                    if submenu.children:
+                        submenu.children[0]._hover()
+                        submenu.close_submenus()
+                    return True
+
+            case "enter":
+                if self._current_selection != -1 and not self.children[self._current_selection].submenu:
+                    self.children[self._current_selection].on_release()
+                    return True
+
+        return super().on_press(key_press_event)
 
     @classmethod
     def from_dict_of_dicts(
