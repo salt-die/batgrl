@@ -1,21 +1,33 @@
+from inspect import signature
 from typing import Callable, Optional
 
 from wcwidth import wcswidth
 
 from ..io import MouseEventType
-from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
+from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState, ButtonState
 from .grid_layout import GridLayout, Orientation
 from .text_widget import TextWidget
 from .widget import Widget, Anchor, Point
 
-__all__ = "Menu", "MenuItem"
+__all__ = (
+    "Menu",
+    "MenuItem",
+)
 
-MenuDict = dict[tuple[str, str], Callable | "MenuDict"]
+MenuDict = dict[tuple[str, str], Callable[[], None] | Callable[[ToggleState], None] | "MenuDict"]
 NESTED_SUFFIX = " ▶"
+CHECK_OFF = "□"
+CHECK_ON = "▣"
+
+def nargs(callable: Callable):
+    """
+    Return the number of arguments of `callable`.
+    """
+    return len(signature(callable).parameters)
 
 
-class MenuItem(Themable, ButtonBehavior, Widget):
+class MenuItem(Themable, ToggleButtonBehavior, Widget):
     def __init__(
         self,
         left_label: str="",
@@ -46,7 +58,7 @@ class MenuItem(Themable, ButtonBehavior, Widget):
         self.add_widgets(self.left_label, self.right_label)
 
         self.item_callback = item_callback
-
+        self.update_off()
         self.update_theme()
 
     @property
@@ -118,10 +130,23 @@ class MenuItem(Themable, ButtonBehavior, Widget):
         if self.submenu is not None:
             self.submenu.open_menu()
         else:
-            self.item_callback()
+            if nargs(self.item_callback) == 0:
+                self.item_callback()
 
             if self.parent.close_on_release:
                 self.parent.close_parents()
+
+    def update_off(self):
+        if self.item_callback is not None and nargs(self.item_callback) == 1:
+            self.left_label.canvas[0, 1] = CHECK_OFF
+
+    def update_on(self):
+        if self.item_callback is not None and nargs(self.item_callback) == 1:
+            self.left_label.canvas[0, 1] = CHECK_ON
+
+    def on_toggle(self):
+        if self.item_callback is not None and nargs(self.item_callback) == 1:
+            self.item_callback(self.toggle_state)
 
 
 class Menu(GridLayout):
@@ -130,7 +155,9 @@ class Menu(GridLayout):
 
     Menus are meant to be constructed with the class method `from_dict_of_dicts`.
     The each key of the dict should be a tuple of two strings for left and right labels and
-    each value should be either a callable or a dict (for a submenu).
+    each value should be either a callable with no arguments for a normal menu item, a
+    callable with one argument for a toggle menu item (the argument will be the state of the
+    toggle button, `ToggleState`) or a dict (for a submenu).
 
     See Also
     --------
@@ -166,10 +193,10 @@ class Menu(GridLayout):
         self.is_enabled = False
         self._current_selection = -1
 
+        self.close_submenus()
+
         for child in self.children:
             child._normal()
-
-        self.close_submenus()
 
     def close_submenus(self):
         for menu in self._submenus:
@@ -271,8 +298,11 @@ class Menu(GridLayout):
                     return True
 
             case "enter":
-                if self._current_selection != -1 and not self.children[self._current_selection].submenu:
-                    self.children[self._current_selection].on_release()
+                if self._current_selection != -1 and (child := self.children[self._current_selection]).submenu is None:
+                    if (n := nargs(child.item_callback)) == 0:
+                        child.on_release()
+                    elif n == 1:
+                        child._down()
                     return True
 
         return super().on_press(key_press_event)
@@ -286,7 +316,12 @@ class Menu(GridLayout):
         close_on_click=True,
     ):
         """
-        Create and yield menus from a dict of dicts.
+        Create and yield menus from a dict of dicts. Callables should either have no arguments
+        for a normal menu item, or one argument for a toggle menu item.
+
+        See Also
+        --------
+        https://github.com/salt-die/nurses_2/blob/main/examples/menu.py
 
         Parameters
         ----------
@@ -298,7 +333,7 @@ class Menu(GridLayout):
             (
                 wcswidth(right_label)
                 + wcswidth(left_label)
-                + 5
+                + 7
                 + isinstance(callable_or_dict, dict) * 2
             ) for (right_label, left_label), callable_or_dict in menu.items()
         )
@@ -329,7 +364,7 @@ class Menu(GridLayout):
                 right_label += NESTED_SUFFIX
 
                 menu_item = MenuItem(
-                    left_label=f" {left_label}",
+                    left_label=f"   {left_label}",
                     right_label=f"{right_label} ",
                     submenu=nested,
                     size=(1, width),
@@ -337,7 +372,7 @@ class Menu(GridLayout):
 
             else:
                 menu_item = MenuItem(
-                    left_label=f" {left_label}",
+                    left_label=f"   {left_label}",
                     right_label=f"{right_label} ",
                     item_callback=callable_or_dict,
                     size=(1, width),

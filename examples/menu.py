@@ -12,6 +12,11 @@ class MyApp(App):
                 label.add_text(f"{text:<50}"[:50])
             return inner
 
+        def add_text_toggle(text):
+            def inner(toggle_state):
+                label.add_text(f"{text:<50}"[:50])
+            return inner
+
         # These "keybinds" aren't implemented.
         menu_dict = {
             ("New File", "Ctrl+N"): add_text("New File"),
@@ -21,6 +26,8 @@ class MyApp(App):
             ("Preferences", ""): {
                 ("Settings", "Ctrl+,"): add_text("Settings"),
                 ("Keyboard Shortcuts", "Ctrl+K Ctrl+S"): add_text("Keyboard Shortcuts"),
+                ("Toggle Item 1", ""): add_text_toggle("Toggle Item 1"),
+                ("Toggle Item 2", ""): add_text_toggle("Toggle Item 2"),
             },
         }
 
@@ -32,7 +39,10 @@ class MyApp(App):
         root_menu.children[1].item_disabled = True
 
         def toggle_root_menu():
-            root_menu.is_enabled = not root_menu.is_enabled
+            if root_menu.is_enabled:
+                root_menu.close_menu()
+            else:
+                root_menu.open_menu()
 
         self.add_widget(Button(label="File", callback=toggle_root_menu, pos=(1, 0), size=(1, 6)))
 
