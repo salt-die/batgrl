@@ -14,7 +14,7 @@ class MyApp(App):
 
         def add_text_toggle(text):
             def inner(toggle_state):
-                label.add_text(f"{text:<50}"[:50])
+                label.add_text(f"{f'{text} {toggle_state}':<50}"[:50])
             return inner
 
         # These "keybinds" aren't implemented.
