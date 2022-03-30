@@ -91,7 +91,7 @@ ANSI_ESCAPES = {
     "\x1b[34~": KeyPressEvent(Key.F20, NO_MODS),
     "\x1b[1;2P": KeyPressEvent(Key.F13, NO_MODS),
     "\x1b[1;2Q": KeyPressEvent(Key.F14, NO_MODS),
-    '\x1b[1;2R': KeyPressEvent(Key.F15, NO_MODS),
+    "\x1b[1;2R": KeyPressEvent(Key.F15, NO_MODS),
     "\x1b[1;2S": KeyPressEvent(Key.F16, NO_MODS),
     "\x1b[15;2~": KeyPressEvent(Key.F17, NO_MODS),
     "\x1b[17;2~": KeyPressEvent(Key.F18, NO_MODS),
