@@ -151,6 +151,7 @@ class Tetris(Image):
             pos=(0, 2 * SPACING + bw),
             is_transparent=True,
         )
+        self.resize(self.size)
 
         self.ghost_piece = GhostPiece()
         self.current_piece = CurrentPiece()
