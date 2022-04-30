@@ -75,7 +75,7 @@ class _Traces(TextWidget):
         colors_view = self.colors[:-VERTICAL_HALF, TICK_HALF:-TICK_HALF - TICK_WIDTH % 2, :3]
 
         for xs, ys, color in zip(self.all_xs, self.all_ys, self.line_colors, strict=True):
-            plot = np.zeros((h4, w2), dtype=int)
+            plot = np.zeros((h4, w2), dtype=np.uint8)
 
             scaled_ys = h4 - h4 * (ys - ymin) / y_length
             scaled_xs = w2 * (xs - xmin) / x_length
