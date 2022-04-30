@@ -46,7 +46,7 @@ class Key(str, Enum):
     ScrollUp = "<scroll-up>"
     ScrollDown = "<scroll-down>"
 
-    BracketedPaste = "<bracketed-paste>"
+    Paste = "<paste>"
 
     Ignore = "<ignore>"
 

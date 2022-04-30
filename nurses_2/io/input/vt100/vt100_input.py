@@ -7,15 +7,13 @@ import tty
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
-from .vt100_reader import Vt100Reader
+from .console_input import read_keys
 
 __all__ = (
     "attach",
     "raw_mode",
     "read_keys",
 )
-
-read_keys = Vt100Reader().read_keys
 
 @contextmanager
 def attach(callback):

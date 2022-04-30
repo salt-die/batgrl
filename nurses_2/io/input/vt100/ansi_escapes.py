@@ -127,7 +127,7 @@ ANSI_ESCAPES = {
     "\x1b[24;6~": KeyPressEvent(Key.F24, CONTROL),
     "\x1b[62~": KeyPressEvent(Key.ScrollUp, NO_MODS),
     "\x1b[63~": KeyPressEvent(Key.ScrollDown, NO_MODS),
-    "\x1b[200~": Key.BracketedPaste,
+    "\x1b[200~": Key.Paste,
     "\x1b[E": Key.Ignore,
     "\x1b[G": Key.Ignore,
     "\x1b[3;2~": KeyPressEvent(Key.Delete, SHIFT),
