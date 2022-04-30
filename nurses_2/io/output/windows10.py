@@ -19,9 +19,10 @@ class Windows10_Output(Vt100_Output):
     """
     Windows 10 output.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
         self._hconsole = HANDLE(windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE))
+
+        super().__init__(*args, **kwargs)
 
         if is_conemu_ansi():
             self._original_mode = None
@@ -80,6 +81,8 @@ class Windows10_Output(Vt100_Output):
         """
         Restore console to original mode.
         """
+        super().restore_console()
+
         if self._original_mode is not None:
             windll.kernel32.SetConsoleMode(self._hconsole, self._original_mode)
 

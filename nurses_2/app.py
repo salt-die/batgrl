@@ -1,5 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
+from pathlib import Path
 from time import monotonic
 
 from nurses_2.io.input.events import MouseButton
@@ -36,6 +37,10 @@ class App(ABC):
         Seconds between screen renders.
     color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
         Color theme used for `Themable` widgets.
+    asciicast_path : Path | None, default: None
+        Record the terminal in asciicast v2 file format if a path is provided.
+        Resizing the terminal while recording isn't currently supported by
+        the asciicast format -- doing so will corrupt the recording.
     """
     def __init__(
         self,
@@ -48,6 +53,7 @@ class App(ABC):
         resize_poll_interval: float=0.5,
         render_interval: float=0.0,
         color_theme: ColorTheme=DEFAULT_COLOR_THEME,
+        asciicast_path: Path | None=None,
     ):
         self.root = None
 
@@ -59,6 +65,7 @@ class App(ABC):
         self.resize_poll_interval = resize_poll_interval
         self.render_interval = render_interval
         self.color_theme = color_theme
+        self.asciicast_path = asciicast_path
 
     @property
     def color_theme(self) -> ColorTheme:
@@ -96,7 +103,7 @@ class App(ABC):
         """
         Build environment, create root, and schedule app-specific tasks.
         """
-        with io() as (env_in, env_out):
+        with io(self.asciicast_path) as (env_in, env_out):
             self.root = root = _Root(
                 app=self,
                 env_out=env_out,

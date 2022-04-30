@@ -1,5 +1,6 @@
 import sys
 from contextlib import contextmanager
+from pathlib import Path
 
 from .environ import is_conemu_ansi, is_windows
 from .input.events import (
@@ -23,7 +24,7 @@ __all__ = (
     "io",
 )
 
-def _create_io():
+def _create_io(asciicast_path: Path | None):
     """
     Return platform specific io.
     """
@@ -38,20 +39,20 @@ def _create_io():
 
         from .input.win32 import win32_input
 
-        return win32_input, Windows10_Output()
+        return win32_input, Windows10_Output(asciicast_path)
 
     else:
         from .input.vt100 import vt100_input
         from .output.vt100 import Vt100_Output
 
-        return vt100_input, Vt100_Output()
+        return vt100_input, Vt100_Output(asciicast_path)
 
 @contextmanager
-def io():
+def io(asciicast_path: Path | None):
     """
     Initialize and return input and output.
     """
-    env_in, env_out = _create_io()
+    env_in, env_out = _create_io(asciicast_path)
 
     env_out.enable_mouse_support()
     env_out.enable_bracketed_paste()
