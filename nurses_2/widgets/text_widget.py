@@ -115,7 +115,16 @@ class TextWidget(Widget):
         """
         return wcswidth(char)
 
-    def add_border(self, tl="┌", tr="┐", bl="└", br="┘", v="│", h="─", color_pair: ColorPair=None):
+    def add_border(
+        self,
+        tl: str="┌",
+        tr: str="┐",
+        bl: str="└",
+        br: str="┘",
+        v: str="│",
+        h: str="─",
+        color_pair: ColorPair | None=None,
+    ):
         """
         Add a border. Default border characters are light box-drawing characters.
 
