@@ -124,15 +124,16 @@ class _Root(Widget):
         np.any(color_diffs, axis=-1, out=reduced_color_diffs)
         np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
 
-        write("\x1b[?25l")  # Hide cursor
+        if char_diffs.any():
+            write("\x1b[?25l")  # Hide cursor
 
-        ys, xs = np.nonzero(char_diffs)
-        for y, x, color, char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
-            # The escape codes for moving the cursor and setting the color concatenated:
-            write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y + 1, x + 1, *color, char))
+            ys, xs = np.nonzero(char_diffs)
+            for y, x, color, char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
+                # The escape codes for moving the cursor and setting the color concatenated:
+                write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y + 1, x + 1, *color, char))
 
-        write("\x1b[0m")  # Reset attributes
-        env_out.flush()
+            write("\x1b[0m")  # Reset attributes
+            env_out.flush()
 
     def dispatch_press(self, key_press_event: KeyPressEvent):
         """
