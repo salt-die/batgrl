@@ -58,7 +58,7 @@ def _create_mouse_event(data):
         y -= 1
 
     if mouse_info is not None:
-        return MouseEvent(Point(y, x), *mouse_info)
+        _EVENTS.append(MouseEvent(Point(y, x), *mouse_info))
 
 def _find_longest_match(data):
     """
@@ -69,8 +69,7 @@ def _find_longest_match(data):
         suffix = data[i:]
 
         if MOUSE_RE.match(prefix) is not None:
-            if (mouse_event := _create_mouse_event(prefix)) is not None:
-                _EVENTS.append(mouse_event)
+            _create_mouse_event(prefix)
             return suffix
 
         match ANSI_ESCAPES.get(prefix):
@@ -81,9 +80,8 @@ def _find_longest_match(data):
                 return suffix
 
             case Key.Paste:
-                match suffix.find("\x1b[201~"):  # End Paste Ansi escape
+                match suffix.find("\x1b[201~"):
                     case -1:
-                        # If End Paste isn't found, just add everything to paste event.
                         _EVENTS.append(PasteEvent(suffix))
                         return ""
                     case i:
@@ -105,30 +103,16 @@ def _find_longest_match(data):
     _EVENTS.append(KeyPressEvent(prefix, NO_MODS))
     return suffix
 
-def _parser_generator():
-    """
-    State machine for parsing ansi escape sequences.
-    """
-    data = ""
-
-    while True:
-        match (yield):
-            case None:  # Flush
-                while data:
-                    data = _find_longest_match(data)
-
-            case more_data:
-                data += more_data
-
 _EVENTS = [ ]
-_PARSER = _parser_generator()
-_PARSER.send(None)
 
 def read_keys():
-    while chars := read_stdin():
-        _PARSER.send(chars)
+    data = ""
 
-    _PARSER.send(None)  # Flush
+    while chars := read_stdin():
+        data += chars
+
+    while data:
+        data = _find_longest_match(data)
 
     yield from _EVENTS
 
