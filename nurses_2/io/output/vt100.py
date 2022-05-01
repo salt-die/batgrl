@@ -40,7 +40,7 @@ class Vt100_Output:
 
         self.asciicast_path.write_text(json.dumps(metadata) + "\n")
 
-        self._asciicast_buffer = []
+        self._asciicast_buffer = [ ]
         self._initial_time = time.monotonic()
         self._mem_usage = 0
 
