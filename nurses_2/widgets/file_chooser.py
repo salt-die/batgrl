@@ -1,9 +1,9 @@
+import platform
 from pathlib import Path
 from typing import Callable
 
 from wcwidth import wcswidth
 
-from ..io.environ import is_windows
 from .scroll_view import ScrollView
 from .tree_view import TreeViewNode, TreeView
 
@@ -14,7 +14,7 @@ FOLDER_PREFIX = "▶ 📁 "
 NESTED_PREFIX = "  "
 OPEN_FOLDER_PREFIX = "▼ 📂 "
 
-if is_windows():
+if platform.system() == "Windows":
     from win32api import GetFileAttributes
     from win32con import FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM
 

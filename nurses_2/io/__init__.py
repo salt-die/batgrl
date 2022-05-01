@@ -1,8 +1,9 @@
+import os
+import platform
 import sys
 from contextlib import contextmanager
 from pathlib import Path
 
-from .environ import is_conemu_ansi, is_windows
 from .input.events import (
     Key,
     Mods,
@@ -31,21 +32,23 @@ def _create_io(asciicast_path: Path | None):
     if not sys.stdin.isatty():
         raise RuntimeError("Interactive terminal required.")
 
-    if is_windows():
+    if platform.system() == "Windows":
         from .output.windows10 import is_vt100_enabled, Windows10_Output
 
-        if not is_conemu_ansi() and not is_vt100_enabled():
+        is_conemu_ansi = os.environ.get("ConEmuANSI") == "ON"
+
+        if not is_conemu_ansi and not is_vt100_enabled():
             raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 
         from .input.win32 import win32_input
 
-        return win32_input, Windows10_Output(asciicast_path)
+        return win32_input, Windows10_Output(is_conemu_ansi=is_conemu_ansi, asciicast_path=asciicast_path)
 
     else:
         from .input.vt100 import vt100_input
         from .output.vt100 import Vt100_Output
 
-        return vt100_input, Vt100_Output(asciicast_path)
+        return vt100_input, Vt100_Output(asciicast_path=asciicast_path)
 
 @contextmanager
 def io(asciicast_path: Path | None):
