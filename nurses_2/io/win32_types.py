@@ -1,8 +1,8 @@
-from ctypes import Structure, Union, c_char, c_long, c_short, c_ulong
-from ctypes.wintypes import BOOL, DWORD, LPVOID, WCHAR, WORD
+from ctypes import Structure, Union, c_char, c_long, c_short, c_ulong, windll
+from ctypes.wintypes import BOOL, DWORD, HANDLE, LPVOID, WCHAR, WORD
 
-STD_INPUT_HANDLE = c_ulong(-10)
-STD_OUTPUT_HANDLE = c_ulong(-11)
+STD_INPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(c_ulong(-10)))
+STD_OUTPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(c_ulong(-11)))
 
 
 class COORD(Structure):

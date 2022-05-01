@@ -4,11 +4,11 @@ Win32 Input.
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
-from ctypes import pointer, windll
+from ctypes import byref, windll
 from ctypes.wintypes import BOOL, DWORD, HANDLE
 
-from ...win32_types import SECURITY_ATTRIBUTES
-from .console_input import STDIN_HANDLE, read_keys
+from ...win32_types import STD_INPUT_HANDLE, SECURITY_ATTRIBUTES
+from .console_input import read_keys
 
 __all__ = (
     "attach",
@@ -35,14 +35,14 @@ def attach(callback):
         # Anonymous win32 event.
         REMOVE_EVENT = HANDLE(
             windll.kernel32.CreateEventA(
-                pointer(SECURITY_ATTRIBUTES()),
+                SECURITY_ATTRIBUTES(),
                 BOOL(True),
                 FALSE,
                 None,
             )
         )
 
-        EVENTS = (HANDLE * 2)(REMOVE_EVENT, STDIN_HANDLE)
+        EVENTS = (HANDLE * 2)(REMOVE_EVENT, STD_INPUT_HANDLE)
 
         def ready():
             try:
@@ -66,7 +66,8 @@ def attach(callback):
 @contextmanager
 def raw_mode():
     original_mode = DWORD()
-    windll.kernel32.GetConsoleMode(STDIN_HANDLE, pointer(original_mode))
+
+    windll.kernel32.GetConsoleMode(STD_INPUT_HANDLE, byref(original_mode))
 
     try:
         ENABLE_ECHO_INPUT = 0x0004
@@ -74,7 +75,7 @@ def raw_mode():
         ENABLE_PROCESSED_INPUT = 0x0001
 
         windll.kernel32.SetConsoleMode(
-            STDIN_HANDLE,
+            STD_INPUT_HANDLE,
             original_mode.value
             & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT),
         )
@@ -82,4 +83,4 @@ def raw_mode():
         yield
 
     finally:
-        windll.kernel32.SetConsoleMode(STDIN_HANDLE, original_mode)
+        windll.kernel32.SetConsoleMode(STD_INPUT_HANDLE, original_mode)

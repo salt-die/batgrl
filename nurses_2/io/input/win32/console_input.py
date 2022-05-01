@@ -1,8 +1,8 @@
 """
 Parse and create events for each input record from a win32 console.
 """
-from ctypes.wintypes import DWORD, HANDLE
-from ctypes import pointer, windll
+from ctypes.wintypes import DWORD
+from ctypes import byref, windll
 
 from ....data_structures import Point
 from ...win32_types import (
@@ -30,8 +30,6 @@ LEFT_CTRL_PRESSED = 0x0008
 SHIFT_PRESSED = 0x0010
 CTRL_PRESSED = RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED
 ALT_PRESSED = RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED
-
-STDIN_HANDLE = HANDLE(windll.kernel32.GetStdHandle(STD_INPUT_HANDLE))
 
 def _handle_key(ev: KEY_EVENT_RECORD):
     """
@@ -127,11 +125,10 @@ def read_keys():
 
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
     """
-    ARR_TYPE = INPUT_RECORD * 2048
-    input_records = ARR_TYPE()
+    input_records = (INPUT_RECORD * 2048)()
 
     windll.kernel32.ReadConsoleInputW(
-        STDIN_HANDLE, pointer(input_records), 2048, pointer(DWORD(0))
+        STD_INPUT_HANDLE, input_records, 2048, byref(DWORD(0))
     )
 
     text = [ ]
