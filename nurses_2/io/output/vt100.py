@@ -2,36 +2,68 @@
 Output for vt100 terminals.
 """
 import json
+import os
 import time
+import sys
 from errno import EINTR
-from os import get_terminal_size
 from pathlib import Path
 from sys import stdout
 
 from ...data_structures import Size
-from ..environ import get_term_environment_variable
+
+MAX_MEM_USAGE = 5_000_000
 
 
 class Vt100_Output:
     def __init__(self, asciicast_path: Path | None):
-        self.term = get_term_environment_variable()
+        self.term = os.environ.get("TERM", "")
         self._buffer = [ ]
 
         self.asciicast_path = asciicast_path
+
         if asciicast_path:
-            size = self.get_size()
+            self._init_asciicast()
 
-            self._asciicast = [
-                f'{{"version": 2, "width": {size.width}, '
-                f'"height": {size.height}, "timestamp": {int(time.time())}}}'
-            ]  # Asciicast metadata
-            # TODO: Add `TERM` and `SHELL` metadata
-            # TODO: "env": {"TERM": ..., "SHELL": ...}
+    def _init_asciicast(self):
+        size = self.get_size()
 
-            self._initial_time = time.monotonic()
+        metadata = {
+            "version": 2,
+            "width": size.width,
+            "height": size.height,
+            "timestamp": int(time.time()),
+            "env": {
+                "TERM": self.term,
+                "SHELL": os.environ.get("SHELL", ""),
+            },
+        }
+
+        self.asciicast_path.write_text(json.dumps(metadata) + "\n")
+
+        self._asciicast_buffer = []
+        self._initial_time = time.monotonic()
+        self._mem_usage = 0
+
+    def _create_asciicast_frame(self, data):
+        frame = [time.monotonic() - self._initial_time, "o", data.decode("utf-8")]
+        self._asciicast_buffer.append(json.dumps(frame) + "\n")
+        self._mem_usage += sys.getsizeof(self._asciicast_buffer[-1])
+
+        if self._mem_usage > MAX_MEM_USAGE:
+            self._write_asciicast_buffer()
+
+    def _write_asciicast_buffer(self):
+        """
+        Append frames in asciicast buffer to file.
+        """
+        with self.asciicast_path.open("a") as f:
+            f.writelines(self._asciicast_buffer)
+
+        self._asciicast_buffer.clear()
+        self._mem_usage = 0
 
     def get_size(self) -> Size:
-        cols, rows = get_terminal_size()
+        cols, rows = os.get_terminal_size()
         return Size(rows, cols)
 
     def set_title(self, title):
@@ -41,11 +73,6 @@ class Vt100_Output:
         if self.term not in ("linux", "eterm-color"):
             title = "".join(c for c in title if c not in "\x1b\x07")
             self._buffer.append(f"\x1b]2;{title}\x07")
-
-        if self.asciicast_path:
-            metadata = json.loads(self._asciicast[0])
-            metadata["title"] = title
-            self._asciicast[0] = json.dumps(metadata)
 
     def clear_title(self):
         self.set_title("")
@@ -102,13 +129,7 @@ class Vt100_Output:
         self._buffer.clear()
 
         if self.asciicast_path is not None:
-            # TODO: Check the size of the asciicast and write to disk periodically to
-            # TODO: prevent using too much memory.
-            self._asciicast.append(
-                json.dumps(
-                    [time.monotonic() - self._initial_time, "o", data.decode("utf-8")]
-                )
-            )
+            self._create_asciicast_frame(data)
 
         try:
             stdout.buffer.write(data)
@@ -124,5 +145,4 @@ class Vt100_Output:
         Restore console and finalize asciicast if recording.
         """
         if self.asciicast_path:
-            # ?: Write in append mode?
-            self.asciicast_path.write_text("\n".join(self._asciicast))
+            self._write_asciicast_buffer()
