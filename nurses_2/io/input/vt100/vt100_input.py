@@ -20,55 +20,45 @@ def attach(callback):
     """
     Context manager that makes this input active in the current event loop.
     """
-    fileno = sys.stdin.fileno()
+    stdin = sys.stdin.fileno()
 
     loop = get_event_loop()
-    loop.add_reader(fileno, callback)
+    loop.add_reader(stdin, callback)
 
     try:
         yield
 
     finally:
-        loop.remove_reader(fileno)
+        loop.remove_reader(stdin)
 
 @contextmanager
 def raw_mode():
-    fileno = sys.stdin.fileno()
+    stdin = sys.stdin.fileno()
+    attrs_before = termios.tcgetattr(stdin)
 
     try:
-        attrs_before = termios.tcgetattr(fileno)
-    except termios.error:
-        attrs_before = None
+        attrs_raw = termios.tcgetattr(stdin)
 
-    try:
-        try:
-            newattr = termios.tcgetattr(fileno)
-        except termios.error:
-            pass
-        else:
-            newattr[tty.LFLAG] = newattr[tty.LFLAG] & ~(
-                termios.ECHO
-                | termios.ICANON
-                | termios.IEXTEN
-                | termios.ISIG
-            )
-            newattr[tty.IFLAG] = newattr[tty.IFLAG] & ~(
-                termios.IXON
-                | termios.IXOFF
-                | termios.ICRNL
-                | termios.INLCR
-                | termios.IGNCR
-            )
+        attrs_raw[tty.LFLAG] &= ~(
+            termios.ECHO
+            | termios.ICANON
+            | termios.IEXTEN
+            | termios.ISIG
+        )
 
-            newattr[tty.CC][termios.VMIN] = 1
+        attrs_raw[tty.IFLAG] &= ~(
+            termios.IXON
+            | termios.IXOFF
+            | termios.ICRNL
+            | termios.INLCR
+            | termios.IGNCR
+        )
 
-            termios.tcsetattr(fileno, termios.TCSANOW, newattr)
+        attrs_raw[tty.CC][termios.VMIN] = 1
+
+        termios.tcsetattr(stdin, termios.TCSANOW, attrs_raw)
 
         yield
 
     finally:
-        if attrs_before is not None:
-            try:
-                termios.tcsetattr(fileno, termios.TCSANOW, attrs_before)
-            except termios.error:
-                pass
+        termios.tcsetattr(stdin, termios.TCSANOW, attrs_before)
