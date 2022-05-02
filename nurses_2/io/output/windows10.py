@@ -93,7 +93,8 @@ def is_vt100_enabled():
     try:
         # Try to enable VT100 sequences.
         result = windll.kernel32.SetConsoleMode(
-            STD_OUTPUT_HANDLE, DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+            STD_OUTPUT_HANDLE,
+            DWORD(ENABLE_PROCESSED_INPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING),
         )
 
         return result == 1
