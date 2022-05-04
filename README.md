@@ -2,7 +2,7 @@
 
 # nurses_2 - Terminal Graphics
 
-A widget-ful and async-centric library for creating graphical applications in the terminal.
+A widgetful and async-centric library for creating graphical applications in the terminal.
 
 
 Getting Started: A Pong Tutorial
