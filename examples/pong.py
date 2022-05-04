@@ -60,13 +60,9 @@ class Ball(Widget):
 
     def normalize_speed(self):
         current_speed = (self.y_velocity**2 + self.x_velocity**2)**.5
-        ratio = self.speed / current_speed
-        if ratio < 1:
-            self.x_velocity *= ratio
-            self.y_velocity *= ratio
-        else:
-            self.x_velocity /= ratio
-            self.y_velocity /= ratio
+        if current_speed > self.speed:
+            self.x_velocity *= self.speed / current_speed
+            self.y_velocity *= self.speed / current_speed
 
     async def update(self):
         self.reset()
