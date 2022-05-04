@@ -114,6 +114,13 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
+        divider = Widget(
+            size=(1, 1),
+            size_hint=(1.0, None),
+            pos_hint=(None, .5),
+            background_color_pair=PADDLE_COLOR_PAIR,
+        )
+
         ball = Ball(
             left_paddle,
             right_paddle,
@@ -121,7 +128,7 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
-        game_field.add_widgets(left_paddle, right_paddle, ball)
+        game_field.add_widgets(left_paddle, right_paddle, divider, ball)
         self.add_widget(game_field)
 
 

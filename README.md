@@ -10,7 +10,6 @@ Getting Started: A Pong Tutorial
 
 Create a new file, `pong.py`. Let's just get our app running first:
 ```py
-# pong.py
 from nurses_2.app import App
 
 
@@ -26,7 +25,6 @@ if __name__ == "__main__":
 This should show just a black window.  To exit, press `escape`. Let's add a green play field:
 
 ```py
-# pong.py
 from nurses_2.app import App
 from nurses_2.colors import GREEN, WHITE, ColorPair
 from nurses_2.widgets.widget import Widget
@@ -120,7 +118,30 @@ if __name__ == "__main__":
     Pong().run()
 ```
 
+With size hints and position hints we can easily place a divider in the game field:
+
+```py
+...
+        right_paddle = Paddle(
+            player=2,
+            size=(PADDLE_HEIGHT, PADDLE_WIDTH),
+            pos=(vertical_center, FIELD_WIDTH - 2),
+            background_color_pair=PADDLE_COLOR_PAIR,
+        )
+
+        divider = Widget(
+            size=(1, 1),
+            size_hint=(1.0, None),
+            pos_hint=(None, .5),
+            background_color_pair=PADDLE_COLOR_PAIR,
+        )
+
+        game_field.add_widgets(left_paddle, right_paddle, divider)
+        self.add_widget(game_field)
+```
+
 Finally, we should add a ball. We want the ball to bounce off the top and bottom of the play field and off the paddles:
+
 ```py
 import asyncio
 import random
@@ -238,6 +259,13 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
+        divider = Widget(
+            size=(1, 1),
+            size_hint=(1.0, None),
+            pos_hint=(None, .5),
+            background_color_pair=PADDLE_COLOR_PAIR,
+        )
+
         ball = Ball(
             left_paddle,
             right_paddle,
@@ -245,7 +273,7 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
-        game_field.add_widgets(left_paddle, right_paddle, ball)
+        game_field.add_widgets(left_paddle, right_paddle, divider, ball)
         self.add_widget(game_field)
 
 
