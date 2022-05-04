@@ -5,7 +5,6 @@ import json
 import os
 import time
 import sys
-from errno import EINTR
 from pathlib import Path
 from sys import stdout
 
@@ -79,8 +78,7 @@ class Vt100_Output:
 
     def erase_screen(self):
         """
-        Erases the screen with the background colour and moves the cursor to
-        home.
+        Erase the screen and move cursor to home.
         """
         self._buffer.append("\x1b[2J")
 
@@ -120,7 +118,7 @@ class Vt100_Output:
 
     def flush(self):
         """
-        Write to output stream and flush. If recording, data is saved.
+        Write to output stream and flush. If recording, output is saved.
         """
         if not self._buffer:
             return
@@ -131,14 +129,8 @@ class Vt100_Output:
         if self.asciicast_path is not None:
             self._create_asciicast_frame(data)
 
-        try:
-            stdout.buffer.write(data)
-            stdout.flush()
-            return data
-
-        except IOError as e:
-            if not (e.args and e.args[0] in (0, EINTR)):
-                raise
+        stdout.buffer.write(data)
+        stdout.flush()
 
     def restore_console(self):
         """
