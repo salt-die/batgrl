@@ -192,7 +192,6 @@ class Ball(Widget):
             self.x_velocity /= ratio
             self.y_velocity /= ratio
 
-
     async def update(self):
         self.reset()
 
