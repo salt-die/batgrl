@@ -15,13 +15,17 @@ NESTED_PREFIX = "  "
 OPEN_FOLDER_PREFIX = "▼ 📂 "
 
 if platform.system() == "Windows":
-    from win32api import GetFileAttributes
-    from win32con import FILE_ATTRIBUTE_HIDDEN, FILE_ATTRIBUTE_SYSTEM
+    from ctypes import windll
+
+    # https://docs.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
+    FILE_ATTRIBUTE_HIDDEN = 0x2
+    FILE_ATTRIBUTE_SYSTEM = 0x4
 
     IS_HIDDEN = FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM
 
     def is_hidden(path: Path):
-        return GetFileAttributes(str(path.absolute())) & IS_HIDDEN
+        attrs = windll.kernel32.GetFileAttributesW(str(path.absolute()))
+        return attrs != -1 and bool(attrs & IS_HIDDEN)
 
 else:
     def is_hidden(path: Path):
