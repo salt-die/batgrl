@@ -3,13 +3,11 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from time import monotonic
 
-from nurses_2.io.input.events import MouseButton
-
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import KeyPressEvent, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
 from .widgets._root import _Root
 from .widgets.behaviors.themable import Themable
-from .widgets.widget import Widget
+from .widgets.widget import Widget, Size
 
 __all__ = "App", "run_widget_as_app"
 
@@ -31,8 +29,6 @@ class App(ABC):
     double_click_timeout : float, default: 0.5
         Max duration of a double-click. Max duration of a triple-click
         is double this value.
-    resize_poll_interval : float, default: 0.5
-        Seconds between polling for resize events.
     render_interval : float, default: 0.0
         Seconds between screen renders.
     color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
@@ -50,7 +46,6 @@ class App(ABC):
         background_color_pair: ColorPair=BLACK_ON_BLACK,
         title: str | None=None,
         double_click_timeout: float=0.5,
-        resize_poll_interval: float=0.5,
         render_interval: float=0.0,
         color_theme: ColorTheme=DEFAULT_COLOR_THEME,
         asciicast_path: Path | None=None,
@@ -62,7 +57,6 @@ class App(ABC):
         self.background_color_pair = background_color_pair
         self.title = title
         self.double_click_timeout = double_click_timeout
-        self.resize_poll_interval = resize_poll_interval
         self.render_interval = render_interval
         self.color_theme = color_theme
         self.asciicast_path = asciicast_path
@@ -119,6 +113,7 @@ class App(ABC):
             dispatch_double_click = root.dispatch_double_click
             dispatch_triple_click = root.dispatch_triple_click
             dispatch_paste = root.dispatch_paste
+            resize = root.resize
 
             last_click_info = MouseEvent(None, None, MouseButton.NO_BUTTON, None), monotonic(), 0  # last key, timestamp, total clicks
 
@@ -160,21 +155,8 @@ class App(ABC):
                             dispatch_press(key)
                         case PasteEvent():
                             dispatch_paste(key)
-
-            async def poll_size():
-                """
-                Poll terminal size every `resize_poll_interval` seconds.
-                """
-                size = env_out.get_size()
-                resize = root.resize
-
-                while True:
-                    await asyncio.sleep(self.resize_poll_interval)
-
-                    new_size = env_out.get_size()
-                    if size != new_size:
-                        resize(new_size)
-                        size = new_size
+                        case Size():
+                            resize(key)
 
             async def auto_render():
                 """
@@ -187,11 +169,7 @@ class App(ABC):
                     render()
 
             with env_in.raw_mode(), env_in.attach(read_from_input):
-                await asyncio.gather(
-                    poll_size(),
-                    auto_render(),
-                    self.on_start(),
-                )
+                await asyncio.gather(auto_render(), self.on_start())
 
     def add_widget(self, widget):
         self.root.add_widget(widget)

@@ -4,12 +4,13 @@ Parse and create events for each input record from a win32 console.
 from ctypes.wintypes import DWORD
 from ctypes import byref, windll
 
-from ....data_structures import Point
+from ....data_structures import Point, Size
 from ...win32_types import (
     INPUT_RECORD,
     KEY_EVENT_RECORD,
     MOUSE_EVENT_RECORD,
     STD_INPUT_HANDLE,
+    WINDOW_BUFFER_SIZE_RECORD,
     EventTypes,
 )
 from ..events import (
@@ -99,13 +100,16 @@ def _purge(text: list[str]):
     Merge surrogate pairs, detect any PasteEvents and otherwise, yield Keys from text.
     Text is cleared afterwards.
     """
+    if not text:
+        return
+
     chars = (
         "".join(text)
         .encode("utf-16", "surrogatepass")
         .decode("utf-16")
     )  # Merge surrogate pairs.
 
-    if len(chars) > 2:  # Heuristic for detecting paste event.
+    if len(chars) > 2 or not chars.isascii():  # Heuristic for detecting paste event.
         yield PasteEvent(chars)
 
     else:
@@ -125,10 +129,10 @@ def read_keys():
 
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
     """
-    input_records = (INPUT_RECORD * 2048)()
+    input_records = (INPUT_RECORD * 1024)()
 
     windll.kernel32.ReadConsoleInputW(
-        STD_INPUT_HANDLE, input_records, 2048, byref(DWORD(0))
+        STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0))
     )
 
     text = [ ]
@@ -141,15 +145,17 @@ def read_keys():
                     case KeyPressEvent.ENTER:
                         text.append("\n")
                     case KeyPressEvent(key, (alt, ctrl, _)) as key_press_event if isinstance(key, Key) or alt or ctrl:
-                        if text:
-                            yield from _purge(text)
+                        yield from _purge(text)
                         yield key_press_event
                     case KeyPressEvent(char, _):
                         text.append(char)
 
             case MOUSE_EVENT_RECORD():
-                if text:
-                    yield from _purge(text)
+                yield from _purge(text)
                 yield _handle_mouse(ev)
+
+            case WINDOW_BUFFER_SIZE_RECORD():
+                yield from _purge(text)
+                yield Size(ev.Size.Y, ev.Size.X)
 
     yield from _purge(text)

@@ -25,7 +25,7 @@ def read_stdin():
         return ""
 
     try:
-        return DECODER.decode(os.read(FILENO, 2048))
+        return DECODER.decode(os.read(FILENO, 1024))
     except OSError:
         return ""
 

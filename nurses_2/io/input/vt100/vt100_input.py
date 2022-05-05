@@ -1,13 +1,16 @@
 """
 Vt100 input for Posix systems.
 """
+import asyncio
+import os
+import signal
 import sys
 import termios
 import tty
-from asyncio import get_event_loop
 from contextlib import contextmanager
 
-from .console_input import read_keys
+from ....data_structures import Size
+from .console_input import read_keys, _EVENTS
 
 __all__ = (
     "attach",
@@ -22,14 +25,22 @@ def attach(callback):
     """
     stdin = sys.stdin.fileno()
 
-    loop = get_event_loop()
+    loop = asyncio.get_event_loop()
     loop.add_reader(stdin, callback)
+
+    def on_resize(signum, stack):
+        w, h = os.get_terminal_size()
+        _EVENTS.append(Size(h, w))
+        loop.call_soon(callback)
+
+    signal.signal(signal.SIGWINCH, on_resize)
 
     try:
         yield
 
     finally:
         loop.remove_reader(stdin)
+        signal.signal(signal.SIGWINCH, signal.SIG_DFL)
 
 @contextmanager
 def raw_mode():
