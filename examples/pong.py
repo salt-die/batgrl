@@ -134,8 +134,19 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
-        left_score_label = TextWidget(size=(1, 5), pos=(1, 1), pos_hint=(None, .25))
-        right_score_label = TextWidget(size=(1, 5), pos=(1, 1), pos_hint=(None, .75))
+        left_score_label = TextWidget(
+            size=(1, 5),
+            pos=(1, 1),
+            pos_hint=(None, .25),
+            anchor="center",
+        )
+
+        right_score_label = TextWidget(
+            size=(1, 5),
+            pos=(1, 1),
+            pos_hint=(None, .75),
+            anchor="center",
+        )
 
         ball = Ball(
             left_paddle,

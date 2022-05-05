@@ -22,7 +22,7 @@ if __name__ == "__main__":
     Pong().run()
 ```
 
-This should show just a black window.  To exit, press `escape`. Let's add a green play field:
+This should show just a blank terminal.  To exit, press `escape`. Let's add a green play field:
 
 ```py
 from nurses_2.app import App
@@ -281,7 +281,7 @@ if __name__ == "__main__":
     Pong().run()
 ```
 
-Finally, let's keep track of the players' score. We'll need a `TextWidget`, normal `Widget`s only have at most a single background character:
+Finally, let's keep track of the players' score. To place the scores in the correct place, we can use `pos_hint` again, but we'll also use the `anchor` kwarg to make sure the hint is applied to the center of the widgets and not the default (top-left). We'll also need a `TextWidget` which can contain arbitrary text, as normal `Widget`s only have at most a single background character:
 
 ```py
 import asyncio
@@ -420,8 +420,19 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
-        left_score_label = TextWidget(size=(1, 5), pos=(1, 1), pos_hint=(None, .25))
-        right_score_label = TextWidget(size=(1, 5), pos=(1, 1), pos_hint=(None, .75))
+        left_score_label = TextWidget(
+            size=(1, 5),
+            pos=(1, 1),
+            pos_hint=(None, .25),
+            anchor="center",
+        )
+
+        right_score_label = TextWidget(
+            size=(1, 5),
+            pos=(1, 1),
+            pos_hint=(None, .75),
+            anchor="center",
+        )
 
         ball = Ball(
             left_paddle,
