@@ -12,6 +12,20 @@ GRAD_LEN = 7
 
 
 class ProgressBar(Themable, TextWidget):
+    """
+    A progress bar widget.
+
+    Parameters
+    ----------
+    is_horizontal : bool, default: True
+        If true, the bar will progress to the right, else
+        the bar will progress upwards.
+
+    Notes
+    -----
+    Set the `progress` property to a value between `0.0`
+    and `1.0` to update the bar.
+    """
     def __init__(self, is_horizontal: bool=True, **kwargs):
         super().__init__(**kwargs)
 
