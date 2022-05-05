@@ -368,7 +368,7 @@ class Widget:
             case None:
                 self._background_char = background_char
             case str():
-                self._background_char = background_char[:1]
+                self._background_char = background_char[:1] or None
             case _:
                 raise ValueError("`background_char` must be `None` or a `str`")
 
