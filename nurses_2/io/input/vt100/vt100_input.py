@@ -31,7 +31,7 @@ def attach(callback):
     def on_resize(signum, stack):
         w, h = os.get_terminal_size()
         _EVENTS.append(Size(h, w))
-        loop.call_soon(callback)
+        loop.call_soon_threadsafe(callback)
 
     signal.signal(signal.SIGWINCH, on_resize)
 
