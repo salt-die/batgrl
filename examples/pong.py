@@ -4,6 +4,7 @@ import random
 from nurses_2.app import App
 from nurses_2.colors import GREEN, BLUE, WHITE, ColorPair
 from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.text_widget import TextWidget
 
 FIELD_HEIGHT = 25
 FIELD_WIDTH = 100
@@ -38,10 +39,13 @@ class Paddle(Widget):
 
 
 class Ball(Widget):
-    def __init__(self, left_paddle, right_paddle, *args, **kwargs):
+    def __init__(self, left_paddle, right_paddle, left_label, right_label, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.left_paddle = left_paddle
         self.right_paddle = right_paddle
+        self.left_label = left_label
+        self.right_label = right_label
+        self.left_score = self.right_score = 0
         asyncio.create_task(self.update())
 
     def reset(self):
@@ -66,6 +70,9 @@ class Ball(Widget):
 
     async def update(self):
         self.reset()
+        left_score = right_score = 0
+        self.left_label.add_text(f"{0:^5}")
+        self.right_label.add_text(f"{0:^5}")
 
         while True:
             self.y_pos += self.y_velocity
@@ -80,8 +87,14 @@ class Ball(Widget):
                 self.y_velocity *= -1
                 self.y_pos += 2 * self.y_velocity
 
-            if self.x_pos < 0 or self.x_pos >= FIELD_WIDTH:
+            if self.x_pos < 0:
                 self.reset()
+                right_score += 1
+                self.right_label.add_text(f"{right_score:^5}")
+            elif self.x_pos >= FIELD_WIDTH:
+                self.reset()
+                left_score += 1
+                self.left_label.add_text(f"{left_score:^5}")
 
             self.normalize_speed()
 
@@ -121,14 +134,19 @@ class Pong(App):
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
+        left_score_label = TextWidget(size=(1, 5), pos=(1, 1), pos_hint=(None, .25))
+        right_score_label = TextWidget(size=(1, 5), pos=(1, 1), pos_hint=(None, .75))
+
         ball = Ball(
             left_paddle,
             right_paddle,
+            left_score_label,
+            right_score_label,
             size=(1, 2),
             background_color_pair=PADDLE_COLOR_PAIR,
         )
 
-        game_field.add_widgets(left_paddle, right_paddle, divider, ball)
+        game_field.add_widgets(left_paddle, right_paddle, divider, left_score_label, right_score_label, ball)
         self.add_widget(game_field)
 
 
