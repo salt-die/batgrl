@@ -35,7 +35,8 @@ class _HSplitHandle(GrabbableBehavior, GraphicWidget):
 
 class HSplitLayout(Widget):
     """
-    A horizontal split layout.
+    A horizontal split layout. Add widgets to the `left_pane` or `right_pane`,
+    e.g., `my_hsplit.left_pane.add_widget(my_widget)`.
 
     Parameters
     ----------
@@ -133,7 +134,8 @@ class _VSplitHandle(GrabbableBehavior, GraphicWidget):
 
 class VSplitLayout(Widget):
     """
-    A vertical split layout.
+    A vertical split layout. Add widgets to the `top_pane` or `bottom_pane`,
+    e.g., `my_vsplit.top_pane.add_widget(my_widget)`.
 
     Parameters
     ----------
