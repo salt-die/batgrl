@@ -18,6 +18,13 @@ class WidgetEvent(NamedTuple):
     source: "Widget"
     attr: str
 
+    @property
+    def value(self):
+        """
+        Value of the attribute of interest.
+        """
+        return getattr(self.source, self.attr)
+
 
 class Anchor(str, Enum):
     CENTER = "center"

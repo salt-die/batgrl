@@ -11,7 +11,7 @@ class MyApp(App):
 
         def report(event, i):
             label.add_text(f"{event}", row=i)
-            label.add_text(f"{getattr(event.source, event.attr)}", row=i + 1)
+            label.add_text(f"{event.value}", row=i + 1)
 
         label.subscribe(window, "pos", report, 0)
         label.subscribe(window, "size", report, 2)

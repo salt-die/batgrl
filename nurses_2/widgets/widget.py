@@ -98,7 +98,7 @@ class Widget:
     ):
         self.parent: Widget | None = None
         self.children: list[Widget] = [ ]
-        self._watched_events = { }
+        self._subscribed_events = { }
 
         self._size = Size(*size)
         self._pos = Point(*pos)
@@ -582,22 +582,20 @@ class Widget:
         """
         Handle widget event. (A widget event is handled if a handler returns True.)
         """
-        if event in self._watched_events:
-            action, args, kwargs = self._watched_events[event]
+        if event in self._subscribed_events:
+            action, args, kwargs = self._subscribed_events[event]
             return action(event, *args, **kwargs)
 
     def subscribe(
         self,
-        /,
         source: "Widget",
         attr: str,
-        action: Callable,
+        action: Callable[[WidgetEvent], bool | None],
         *args,
         **kwargs
     ):
         """
-        Subscribe to a widget event. `action` will be called with positional arguments
-        `args` and keyword arguments `kwargs` whenever subscribed events are emitted.
+        Subscribe to a widget event.
 
         Parameters
         ----------
@@ -605,18 +603,21 @@ class Widget:
             The source of the widget event.
         attr : str
             The cause of the widget event.
-        action : Callable
-            Called when a subscribed event is emitted.
+        action : Callable[[WidgetEvent], bool | None]
+            When the subscribed event is emitted, action will be called with the event
+            as the first argument, `args` as the other positional arguments and `kwargs`
+            as the keyword arguments.
         """
         event = WidgetEvent(source, attr)
-        self._watched_events[event] = action, args, kwargs
+        self._subscribed_events[event] = action, args, kwargs
 
-    def unsubscribe(self, source: "Widget", attr: str):
+    def unsubscribe(self, source: "Widget", attr: str) -> Callable[[WidgetEvent], bool | None] | None:
         """
-        Unsubscribe to a widget event.
+        Unsubscribe to a widget event and return the callable that was used to subscribe
+        to the event or `None` if subscription isn't found.
         """
         event = WidgetEvent(source, attr)
-        return self._watched_events.pop(event, None)
+        return self._subscribed_events.pop(event, None)
 
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """

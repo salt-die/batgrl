@@ -18,7 +18,7 @@ class _Root(Widget):
         background_color_pair: ColorPair,
     ):
         self._app = app
-        self._watched_events = { }
+        self._subscribed_events = { }
         self.children = [ ]
         self.env_out = env_out
         self.background_char = background_char
