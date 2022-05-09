@@ -6,14 +6,12 @@ from .widget import Widget
 
 __all__ = "HSplitLayout", "VSplitLayout",
 
-AGRAY = AColor(127, 127, 127, 255)
+AGRAY = AColor(127, 127, 127, 127)
 
 
 class _Handle(GrabbableBehavior, GraphicWidget):
     def __init__(self, size_hint):
         super().__init__(
-            alpha=.5,
-            default_color=AGRAY,
             size=(1, 1),
             size_hint=size_hint,
             is_visible=False,
@@ -60,12 +58,15 @@ class HSplitLayout(Widget):
     split_resizable : bool, default: True
         If true, the split will be resizable with a grabbable
         handle.
+    handle_color : AColor, default: AGRAY
+        Color of the resize handle.
     """
     def __init__(
         self,
         split_col: int=1,
         anchor_left_pane: bool=True,
         split_resizable: bool=True,
+        handle_color: AColor=AGRAY,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -73,17 +74,28 @@ class HSplitLayout(Widget):
         self.left_pane = Widget(size_hint=(1.0, None))
         self.right_pane = Widget(size_hint=(1.0, None))
 
-        self._handle = _HSplitHandle((1.0, None))
-        def adjust(event):
-            self.right_pane.left = self._handle.left = event.source.right
-        self._handle.subscribe(self.left_pane, "size", adjust)
+        self.handle = _HSplitHandle((1.0, None))
+        self.handle_color = handle_color
 
-        self.add_widgets(self.left_pane, self.right_pane, self._handle)
+        def adjust(event):
+            self.right_pane.left = self.handle.left = event.source.right
+        self.handle.subscribe(self.left_pane, "size", adjust)
+
+        self.add_widgets(self.left_pane, self.right_pane, self.handle)
 
         self.split_resizable = split_resizable
         self.anchor_left_pane = anchor_left_pane
 
         self.split_col = split_col
+
+    @property
+    def handle_color(self) -> AColor:
+        return self.handle.default_color
+
+    @handle_color.setter
+    def handle_color(self, handle_color: AColor):
+        self.handle.default_color = handle_color
+        self.handle.texture[:] = handle_color
 
     @property
     def split_col(self) -> int:
@@ -96,11 +108,11 @@ class HSplitLayout(Widget):
 
     @property
     def split_resizable(self) -> bool:
-        return self._handle.is_grabbable
+        return self.handle.is_grabbable
 
     @split_resizable.setter
     def split_resizable(self, split_resizable: bool):
-        self._handle.is_grabbable = split_resizable
+        self.handle.is_grabbable = split_resizable
 
     def on_size(self):
         if self.anchor_left_pane:
@@ -135,12 +147,15 @@ class VSplitLayout(Widget):
     split_resizable : bool, default: True
         If true, the split will be resizable with a grabbable
         handle.
+    handle_color : AColor, default: AGRAY
+        Color of the resize handle.
     """
     def __init__(
         self,
         split_row: int=1,
         anchor_top_pane: bool=True,
         split_resizable: bool=True,
+        handle_color: AColor=AGRAY,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -148,17 +163,28 @@ class VSplitLayout(Widget):
         self.top_pane = Widget(size_hint=(None, 1.0))
         self.bottom_pane = Widget(size_hint=(None, 1.0))
 
-        self._handle = _VSplitHandle((None, 1.0))
-        def adjust(event):
-            self.bottom_pane.top = self._handle.top = event.source.bottom
-        self._handle.subscribe(self.top_pane, "size", adjust)
+        self.handle = _VSplitHandle((None, 1.0))
+        self.handle_color = handle_color
 
-        self.add_widgets(self.top_pane, self.bottom_pane, self._handle)
+        def adjust(event):
+            self.bottom_pane.top = self.handle.top = event.source.bottom
+        self.handle.subscribe(self.top_pane, "size", adjust)
+
+        self.add_widgets(self.top_pane, self.bottom_pane, self.handle)
 
         self.split_resizable = split_resizable
         self.anchor_top_pane = anchor_top_pane
 
         self.split_row = split_row
+
+    @property
+    def handle_color(self) -> AColor:
+        return self.handle.default_color
+
+    @handle_color.setter
+    def handle_color(self, handle_color: AColor):
+        self.handle.default_color = handle_color
+        self.handle.texture[:] = handle_color
 
     @property
     def split_row(self) -> int:
@@ -171,11 +197,11 @@ class VSplitLayout(Widget):
 
     @property
     def split_resizable(self) -> bool:
-        return self._handle.is_grabbable
+        return self.handle.is_grabbable
 
     @split_resizable.setter
     def split_resizable(self, split_resizable: bool):
-        self._handle.is_grabbable = split_resizable
+        self.handle.is_grabbable = split_resizable
 
     def on_size(self):
         if self.anchor_top_pane:
