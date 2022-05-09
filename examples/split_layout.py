@@ -8,6 +8,7 @@ IMAGE_DIR = Path("images")
 PATH_TO_LOGO_FLAT = IMAGE_DIR / "logo_solo_flat_256.png"
 PATH_TO_LOGO_FULL = IMAGE_DIR / "python_discord_logo.png"
 
+
 class MyApp(App):
     async def on_start(self):
         image_tl = Image(path=PATH_TO_LOGO_FLAT, size_hint=(1.0, 1.0))
