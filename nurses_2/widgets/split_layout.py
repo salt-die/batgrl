@@ -9,13 +9,13 @@ __all__ = "HSplitLayout", "VSplitLayout",
 AGRAY = AColor(127, 127, 127, 255)
 
 
-class _HSplitHandle(GrabbableBehavior, GraphicWidget):
-    def __init__(self):
+class _Handle(GrabbableBehavior, GraphicWidget):
+    def __init__(self, size_hint):
         super().__init__(
             alpha=.5,
             default_color=AGRAY,
             size=(1, 1),
-            size_hint=(1.0, None),
+            size_hint=size_hint,
             is_visible=False,
         )
 
@@ -26,11 +26,21 @@ class _HSplitHandle(GrabbableBehavior, GraphicWidget):
         )
         return super().on_click(mouse_event)
 
+
+class _HSplitHandle(_Handle):
     def grab_update(self, mouse_event):
         if self.parent.anchor_left_pane:
             self.parent.split_col += self.mouse_dx
         else:
             self.parent.split_col -= self.mouse_dx
+
+
+class _VSplitHandle(_Handle):
+    def grab_update(self, mouse_event):
+        if self.parent.anchor_top_pane:
+            self.parent.split_row += self.mouse_dy
+        else:
+            self.parent.split_row -= self.mouse_dy
 
 
 class HSplitLayout(Widget):
@@ -63,7 +73,7 @@ class HSplitLayout(Widget):
         self.left_pane = Widget(size_hint=(1.0, None))
         self.right_pane = Widget(size_hint=(1.0, None))
 
-        self._handle = _HSplitHandle()
+        self._handle = _HSplitHandle((1.0, None))
         def adjust(event):
             self.right_pane.left = self._handle.left = event.source.right
         self._handle.subscribe(self.left_pane, "size", adjust)
@@ -108,30 +118,6 @@ class HSplitLayout(Widget):
             not_anchored.width = 1
 
 
-class _VSplitHandle(GrabbableBehavior, GraphicWidget):
-    def __init__(self):
-        super().__init__(
-            alpha=.5,
-            default_color=AGRAY,
-            size=(1, 1),
-            size_hint=(None, 1.0),
-            is_visible=False,
-        )
-
-    def on_click(self, mouse_event):
-        self.is_visible = (
-            self.is_grabbable
-            and self.is_grabbed or self.collides_point(mouse_event.position)
-        )
-        return super().on_click(mouse_event)
-
-    def grab_update(self, mouse_event):
-        if self.parent.anchor_top_pane:
-            self.parent.split_row += self.mouse_dy
-        else:
-            self.parent.split_row -= self.mouse_dy
-
-
 class VSplitLayout(Widget):
     """
     A vertical split layout. Add widgets to the `top_pane` or `bottom_pane`,
@@ -162,7 +148,7 @@ class VSplitLayout(Widget):
         self.top_pane = Widget(size_hint=(None, 1.0))
         self.bottom_pane = Widget(size_hint=(None, 1.0))
 
-        self._handle = _VSplitHandle()
+        self._handle = _VSplitHandle((None, 1.0))
         def adjust(event):
             self.bottom_pane.top = self._handle.top = event.source.bottom
         self._handle.subscribe(self.top_pane, "size", adjust)
