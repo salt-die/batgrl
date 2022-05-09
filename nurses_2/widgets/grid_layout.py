@@ -47,7 +47,8 @@ class GridLayout(Widget):
     -----
     Re-ordering children (such as through `pull_to_front`) and calling `_reposition_children`
     will change the positions of the children in the grid. The read-only `minimum_grid_size`
-    property can be used to set the size of the grid layout.
+    property can be used to set the size of the grid layout, e.g.,
+    `my_grid.size = my_grid.minimum_grid_size`.
 
     Parameters
     ----------
