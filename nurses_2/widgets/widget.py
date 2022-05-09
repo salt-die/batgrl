@@ -147,7 +147,7 @@ class Widget:
 
     @height.setter
     def height(self, height: int):
-        self.resize((height, self.width))
+        self.size = height, self.width
 
     rows = height
 
@@ -160,7 +160,7 @@ class Widget:
 
     @width.setter
     def width(self, width: int):
-        self.resize((self.height, width))
+        self.size = self.height, width
 
     columns = width
 
