@@ -1,5 +1,6 @@
 import asyncio
 from collections.abc import Callable, Sequence
+from functools import wraps
 from time import monotonic
 
 import numpy as np
@@ -21,6 +22,18 @@ __all__ = (
     "SizeHint",
     "Widget",
 )
+
+def emitter(method):
+    """
+    Emit a widget event whenever `method` is called.
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        method(self, *args, **kwargs)
+        self.emit(WidgetEvent(self, method.__name__))
+
+    return wrapper
+
 
 class Widget:
     """
@@ -85,9 +98,10 @@ class Widget:
     ):
         self.parent: Widget | None = None
         self.children: list[Widget] = [ ]
+        self._watched_events = { }
 
         self._size = Size(*size)
-        self.pos = pos
+        self._pos = Point(*pos)
 
         self._size_hint = size_hint
         self._min_height = min_height
@@ -113,8 +127,15 @@ class Widget:
         return self._size
 
     @size.setter
+    @emitter
     def size(self, size: Size):
-        self.resize(size)
+        h, w = size
+        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
+
+        self.on_size()
+
+        for child in self.children:
+            child.update_geometry()
 
     @property
     def height(self) -> int:
@@ -147,33 +168,32 @@ class Widget:
         """
         Position relative to parent.
         """
-        return Point(self.top, self.left)
+        return self._pos
 
     @pos.setter
+    @emitter
     def pos(self, point: Point):
-        self.top, self.left = point
+        self._pos = Point(*point)
 
     @property
-    def y(self) -> int:
-        """
-        Alias for top.
-        """
-        return self.top
+    def top(self) -> int:
+        return self._pos[0]
 
-    @y.setter
-    def y(self, y: int):
-        self.top = y
+    @top.setter
+    def top(self, top: int):
+        self.pos = top, self.left
+
+    y = top
 
     @property
-    def x(self) -> int:
-        """
-        Alias for left.
-        """
-        return self.left
+    def left(self) -> int:
+        return self._pos[1]
 
-    @x.setter
-    def x(self, x: int):
-        self.left = x
+    @left.setter
+    def left(self, left: int):
+        self.pos = self.top, left
+
+    x = left
 
     @property
     def bottom(self) -> int:
@@ -220,6 +240,7 @@ class Widget:
         return self._size_hint
 
     @size_hint.setter
+    @emitter
     def size_hint(self, size_hint: SizeHint):
         """
         Set widget's size as a proportion of its parent's size.
@@ -265,6 +286,7 @@ class Widget:
         return self._min_height
 
     @min_height.setter
+    @emitter
     def min_height(self, min_height: int | None):
         self._min_height = min_height
         if self.parent:
@@ -278,6 +300,7 @@ class Widget:
         return self._max_height
 
     @max_height.setter
+    @emitter
     def max_height(self, max_height: int | None):
         self._max_height = max_height
         if self.parent:
@@ -291,6 +314,7 @@ class Widget:
         return self._min_width
 
     @min_width.setter
+    @emitter
     def min_width(self, min_width: int | None):
         self._min_width = min_width
         if self.parent:
@@ -304,6 +328,7 @@ class Widget:
         return self._max_width
 
     @max_width.setter
+    @emitter
     def max_width(self, max_width: int | None):
         self._max_width = max_width
         if self.parent:
@@ -317,6 +342,7 @@ class Widget:
         return self._pos_hint
 
     @pos_hint.setter
+    @emitter
     def pos_hint(self, pos_hint: PosHint):
         h, w = pos_hint
         self._pos_hint = PosHint(
@@ -354,6 +380,7 @@ class Widget:
         return self._anchor
 
     @anchor.setter
+    @emitter
     def anchor(self, anchor: Anchor):
         self._anchor = Anchor(anchor)
         self.update_geometry()
@@ -363,6 +390,7 @@ class Widget:
         return self._background_char
 
     @background_char.setter
+    @emitter
     def background_char(self, background_char: str | None):
         match background_char:
             case None:
@@ -372,15 +400,10 @@ class Widget:
             case _:
                 raise ValueError("`background_char` must be `None` or a `str`")
 
-    def resize(self, size: Size):
+    def on_size(self):
         """
-        Resize widget.
+        Called when widget is resized.
         """
-        h, w = size
-        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
-
-        for child in self.children:
-            child.update_geometry()
 
     def update_geometry(self):
         """
@@ -403,7 +426,7 @@ class Widget:
             else:
                 width = clamp(round(w_hint * w), self.min_width, self.max_width)
 
-            self.resize(Size(height, width))
+            self.size = height, width
 
         y_hint, x_hint = self.pos_hint
         if y_hint is None and x_hint is None:
@@ -438,9 +461,9 @@ class Widget:
     @property
     def root(self):
         """
-        The root widget.
+        Return the root widget if connected to widget tree.
         """
-        return self.parent.root
+        return self.parent and self.parent.root
 
     @property
     def app(self):
@@ -537,6 +560,63 @@ class Widget:
         for child in self.children:
             yield child
             yield from child.walk()
+
+    def emit(self, event: WidgetEvent):
+        """
+        Dispatch a widget event from the root.
+        """
+        if self.root:
+            self.root.dispatch_widget_event(event)
+
+    def dispatch_widget_event(self, event: WidgetEvent) -> bool | None:
+        """
+        Dispatch a widget event.
+        """
+        return any(
+            widget.dispatch_widget_event(event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        ) or self.on_widget_event(event)
+
+    def on_widget_event(self, event: WidgetEvent):
+        """
+        Handle widget event. (A widget event is handled if a handler returns True.)
+        """
+        if event in self._watched_events:
+            action, args, kwargs = self._watched_events[event]
+            return action(event, *args, **kwargs)
+
+    def subscribe(
+        self,
+        /,
+        source: "Widget",
+        attr: str,
+        action: Callable,
+        *args,
+        **kwargs
+    ):
+        """
+        Subscribe to a widget event. `action` will be called with positional arguments
+        `args` and keyword arguments `kwargs` whenever subscribed events are emitted.
+
+        Parameters
+        ----------
+        source : Widget
+            The source of the widget event.
+        attr : str
+            The cause of the widget event.
+        action : Callable
+            Called when a subscribed event is emitted.
+        """
+        event = WidgetEvent(source, attr)
+        self._watched_events[event] = action, args, kwargs
+
+    def unsubscribe(self, source: "Widget", attr: str):
+        """
+        Unsubscribe to a widget event.
+        """
+        event = WidgetEvent(source, attr)
+        return self._watched_events.pop(event, None)
 
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
