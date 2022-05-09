@@ -13,6 +13,7 @@ from ..io import KeyPressEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
 __all__ = (
+    "emitter",
     "Anchor",
     "ColorPair",
     "Easing",
