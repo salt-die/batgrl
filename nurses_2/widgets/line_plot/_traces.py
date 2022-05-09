@@ -44,11 +44,9 @@ class _Traces(TextWidget):
         if len(self.line_colors) != len(self.all_xs):
             raise ValueError("number of plots inconsistent with number of colors")
 
-        self.resize(self.size)
+        self.on_size()
 
-    def resize(self, size: Size):
-        super().resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         offset_h = h - VERTICAL_HALF
@@ -68,7 +66,7 @@ class _Traces(TextWidget):
         ymax = self.ymax
         y_length = ymax - ymin
 
-        self.canvas = np.full(size, self.default_char, dtype=object)
+        self.canvas = np.full((h, w), self.default_char, dtype=object)
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         canvas_view = self.canvas[:-VERTICAL_HALF, TICK_HALF:-TICK_HALF - TICK_WIDTH % 2]
@@ -92,12 +90,12 @@ class _Traces(TextWidget):
 
         # Regenerate Ticks
         y_ticks = self.y_ticks
-        y_ticks.resize((h, TICK_WIDTH))
+        y_ticks.size = h, TICK_WIDTH
         y_ticks.canvas[:] = y_ticks.default_char
         y_ticks.canvas[:, -1] = "│"
 
         x_ticks = self.x_ticks
-        x_ticks.resize((2, w))
+        x_ticks.size = 2, w
         x_ticks.canvas[:] = x_ticks.default_char
         x_ticks.canvas[0] = "─"
 

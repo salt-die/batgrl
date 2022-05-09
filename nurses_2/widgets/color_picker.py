@@ -43,9 +43,7 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
         self.label = label
         self.update_hue(ARED)
 
-    def resize(self, size):
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
         hh, wh = self._shade_hint
 
@@ -107,9 +105,7 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
 
         self.add_widget(self._hue_indicator)
 
-    def resize(self, size):
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
@@ -191,9 +187,7 @@ class ColorPicker(Themable, Widget):
 
         self.update_theme()
 
-    def resize(self, size):
-        super().resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         shades = self.shades

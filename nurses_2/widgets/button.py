@@ -62,7 +62,7 @@ class Button(Themable, ButtonBehavior, Widget):
     @label.setter
     def label(self, label: str):
         self._label = label
-        self._label_widget.resize((1, wcswidth(label)))
+        self._label_widget.size = 1, wcswidth(label)
         self._label_widget.update_geometry()
         self._label_widget.add_text(label)
 

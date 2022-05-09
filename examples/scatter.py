@@ -24,11 +24,10 @@ class Window(GrabResizeBehavior, ScatterBehavior, GrabMoveBehavior, TextWidget):
         super().__init__(**kwargs)
 
         self._border_widget = TextWidget(default_color_pair=GREY_ON_GREY, is_transparent=True)
-        self.resize(self.size)
+        self.on_size()
 
-    def resize(self, size: Size):
-        super().resize(size)
-        self._border_widget.resize(size)
+    def on_size(self):
+        self._border_widget.size = self.size
 
         border_canvas = self._border_widget.canvas
         border_canvas[:] = " "

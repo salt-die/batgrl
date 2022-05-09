@@ -48,12 +48,10 @@ class Mandelbrot(GraphicWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._index = 0
-        self.resize(self.size)
+        self.on_size()
         asyncio.create_task(self._spiral())
 
-    def resize(self, size: Size):
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         ys = np.linspace(TOP, BOTTOM, 2 * h)

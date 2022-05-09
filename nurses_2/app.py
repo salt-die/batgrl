@@ -113,7 +113,6 @@ class App(ABC):
             dispatch_double_click = root.dispatch_double_click
             dispatch_triple_click = root.dispatch_triple_click
             dispatch_paste = root.dispatch_paste
-            resize = root.resize
 
             last_click_info = MouseEvent(None, None, MouseButton.NO_BUTTON, None), monotonic(), 0  # last key, timestamp, total clicks
 
@@ -156,7 +155,7 @@ class App(ABC):
                         case PasteEvent():
                             dispatch_paste(key)
                         case Size():
-                            resize(key)
+                            root.size = key
 
             async def auto_render():
                 """

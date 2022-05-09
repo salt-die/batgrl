@@ -21,7 +21,7 @@ class Piece(TextWidget):
         self.is_enabled = True
         self._tetromino = new_tetromino
         self.orientation = Orientation.UP
-        self.resize(new_tetromino.canvases[Orientation.UP].shape)
+        self.size = new_tetromino.canvases[Orientation.UP].shape
 
 
 class CurrentPiece(Piece):
@@ -62,7 +62,6 @@ class CenteredPiece(CurrentPiece):
     """
     A Piece that centers itself inside a 4x8 area when resized.
     """
-    def resize(self, size):
-        super().resize(size)
+    def on_size(self):
         self.top = 2 - self.height // 2
         self.left = 4 - self.width // 2

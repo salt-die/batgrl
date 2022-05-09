@@ -18,11 +18,9 @@ class Cloth(GraphicWidget):
         self.scale = scale
         self.mesh_color = mesh_color
 
-        self.resize(self.size)  # Creates empty texture where links are drawn.
+        self.on_size()
 
-    def resize(self, size):
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         self.texture = np.full((h * 2, w, 4), self.default_color, dtype=np.uint8)

@@ -55,16 +55,16 @@ class VideoPlayer(GraphicWidget):
             self._resource.release()
 
             # `cv2` may write warnings to stdout on Windows when releasing cameras.
-            # We force a screen regeneration by calling resize on the root widget.
-            self.root.resize(self.root.size)
+            # We force a screen regeneration by resizing the root widget.
+            self.root.size = self.root.size
 
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
             self.texture[:] = self.default_color
 
-    def resize(self, size):
-        super().resize(size)
+    def on_size(self):
+        super().on_size()
 
         # If video is paused, resize current frame.
         if self._video.done() and self._current_frame is not None:

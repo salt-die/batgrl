@@ -1,5 +1,6 @@
 from ...data_structures import *
 from ...io import MouseEvent, KeyPressEvent, PasteEvent
+from ..widget_data_structures import WidgetEvent
 from ..widget import Widget
 
 
@@ -26,6 +27,13 @@ class _ParticleFieldBase(Widget):
         Yield all descendents.
         """
         yield from self.children
+
+    def dispatch_widget_event(self, event: WidgetEvent) -> bool | None:
+        """
+        Handle widget event. Particle fields do not dispatch widget events to
+        their children.
+        """
+        return self.on_widget_event(event)
 
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """

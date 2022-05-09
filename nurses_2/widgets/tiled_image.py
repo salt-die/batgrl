@@ -21,7 +21,7 @@ class TiledImage(GraphicWidget):
     def __init__(self, *, tile: GraphicWidget, **kwargs):
         super().__init__(**kwargs)
         self._tile = tile
-        self.resize(self.size)
+        self.on_size()
 
     @property
     def tile(self):
@@ -30,14 +30,12 @@ class TiledImage(GraphicWidget):
     @tile.setter
     def tile(self, new_tile):
         self._tile = new_tile
-        self.resize(self.size)
+        self.on_size()
 
-    def resize(self, size: Size):
+    def on_size(self):
         """
         Resize widget.
         """
-        super(GraphicWidget, self).resize(size)
-
         h, w = self._size
         tile = self.tile
 

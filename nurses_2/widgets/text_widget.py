@@ -77,13 +77,11 @@ class TextWidget(Widget):
         self.default_char = default_char
         self.default_color_pair = default_color_pair
 
-    def resize(self, size: Size):
+    def on_size(self):
         """
-        Resize widget. Content is preserved as much as possible.
+        Preserved content as much as possible.
         """
-        old_h, old_w = self._size
-
-        super().resize(size)
+        old_h, old_w = self.canvas.shape
 
         h, w = self._size
 

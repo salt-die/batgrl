@@ -26,14 +26,14 @@ class _TitleBar(GrabbableBehavior, TextWidget):
 
     def update_geometry(self):
         bh, bw = self.parent.border_size
-        self.resize((bh, self.parent.width - 2 * bw))
+        self.size = bh, self.parent.width - 2 * bw
 
 
 class _View(GraphicWidget):
     def update_geometry(self):
         h, w = self.parent.size
         bh, bw = self.parent.border_size
-        self.resize((h - 1 - 2 * bh, w - 2 * bw))
+        self.size = h - 1 - 2 * bh, w - 2 * bw
         self.is_visible = h > bh * 3 and w > bw * 2
 
 
@@ -105,7 +105,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     @title.setter
     def title(self, title: str):
         self._title = title
-        self._titlebar._label.resize((1, wcswidth(title)))
+        self._titlebar._label.size = 1, wcswidth(title)
         self._titlebar._label.add_text(title)
         self.min_width = max(wcswidth(title) + self.border_size.width * 2 + 2, self.min_width)
 

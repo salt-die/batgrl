@@ -99,12 +99,7 @@ class GraphicWidget(Widget):
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
-    def resize(self, size: Size):
-        """
-        Resize widget.
-        """
-        super().resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         self.texture = cv2.resize(

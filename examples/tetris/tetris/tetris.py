@@ -151,7 +151,7 @@ class Tetris(Image):
             pos=(0, 2 * SPACING + bw),
             is_transparent=True,
         )
-        self.resize(self.size)
+        self.on_size()
 
         self.ghost_piece = GhostPiece()
         self.current_piece = CurrentPiece()
@@ -162,9 +162,8 @@ class Tetris(Image):
         self.modal_screen = ModalScreen()
         self.add_widget(self.modal_screen)
 
-    def resize(self, size):
-        super().resize(size)
-
+    def on_size(self):
+        super().on_size()
         if hasattr(self, "matrix_widget"):
             # Darken background behind matrix.
             left = self.matrix_widget.left

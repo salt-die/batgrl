@@ -70,11 +70,9 @@ class RayCaster(GraphicWidget):
         self._pos_frac = np.zeros((2,), dtype=float)
         self._floor_pos = np.zeros((2,), dtype=float)
 
-        self.resize(self.size)
+        self.on_size()
 
-    def resize(self, size):
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)

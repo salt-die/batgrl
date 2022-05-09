@@ -102,11 +102,11 @@ class FileView(TreeView):
             self.add_widget(node)
 
         for node in self.children:
-            node.resize((1, max_width))
+            node.size = 1, max_width
             node.repaint()
             node.add_text(f"{node.label:<{max_width}}")
 
-        self.resize((i + 1, max_width))
+        self.size = i + 1, max_width
 
     def on_press(self, key_press_event):
         if not self.children:
@@ -197,8 +197,7 @@ class FileChooser(ScrollView):
         )
         self._view.update_tree_layout()
 
-    def resize(self, size):
-        super().resize(size)
+    def on_size(self):
         self._view.update_tree_layout()
 
     @property

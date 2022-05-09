@@ -28,7 +28,7 @@ class _VerticalBar(Themable, Widget):
         h, w = self.parent.size
 
         self.left = w - VBAR_WIDTH
-        self.resize((h, VBAR_WIDTH))
+        self.size = h, VBAR_WIDTH
 
         super().update_geometry()
 
@@ -79,7 +79,7 @@ class _HorizontalBar(Themable, Widget):
         h, w = self.parent.size
 
         self.top = h - HBAR_HEIGHT
-        self.resize((HBAR_HEIGHT, w))
+        self.size = HBAR_HEIGHT, w
 
         super().update_geometry()
 

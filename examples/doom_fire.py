@@ -85,11 +85,8 @@ class DoomFire(GraphicWidget):
             out=self._fire_values[-1],
         )
 
-    def resize(self, size: Size):
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
-
         self._fire_values = np.zeros((2 * h, w), dtype=int)
         self.fire_strength = self.fire_strength  # Trigger `fire_strength.setter`
         self.texture = FIRE_PALETTE[self._fire_values]

@@ -3,7 +3,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .graphic_widget import GraphicWidget, Size
+from .graphic_widget import GraphicWidget
 
 
 class Image(GraphicWidget):
@@ -19,11 +19,7 @@ class Image(GraphicWidget):
     -----
     Updating the path immediately reloads the image.
     """
-    def __init__(self,
-        *,
-        path: Path,
-        **kwargs
-    ):
+    def __init__(self, *, path: Path, **kwargs):
         super().__init__(**kwargs)
         self.path = path
 
@@ -52,14 +48,8 @@ class Image(GraphicWidget):
 
         self._image_texture = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
 
-        self.resize(self.size)
+        self.on_size()
 
-    def resize(self, size: Size):
-        """
-        Resize image.
-        """
-        super(GraphicWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
-
         self.texture = cv2.resize(self._image_texture, (w, 2 * h), interpolation=self.interpolation)

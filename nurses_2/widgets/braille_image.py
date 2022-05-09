@@ -29,9 +29,7 @@ class BrailleImage(TextWidget):
         self._path = value
         self._load_texture()
 
-    def resize(self, size):
-        super(TextWidget, self).resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         self.canvas = np.full((h, w), self.default_char, dtype=object)

@@ -18,19 +18,18 @@ class _Root(Widget):
         background_color_pair: ColorPair,
     ):
         self._app = app
+        self._watched_events = { }
+        self.children = [ ]
         self.env_out = env_out
         self.background_char = background_char
         self.background_color_pair = background_color_pair
-        self.children = [ ]
 
-        self.resize(env_out.get_size())
+        self.size = env_out.get_size()
 
-    def resize(self, size: Size):
+    def on_size(self):
         """
-        Resize canvas. Last render is erased.
+        Erase last render and re-make buffers.
         """
-        super().resize(size)
-
         h, w = self._size
 
         self.env_out.erase_screen()

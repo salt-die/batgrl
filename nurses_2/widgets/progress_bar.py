@@ -52,8 +52,7 @@ class ProgressBar(Themable, TextWidget):
         self._is_horizontal = is_horizontal
         self._update_canvas()
 
-    def resize(self, size):
-        super().resize(size)
+    def on_size(self):
         self._update_canvas()
 
     def update_theme(self):

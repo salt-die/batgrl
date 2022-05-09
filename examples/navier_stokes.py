@@ -51,15 +51,14 @@ def sigmoid(array):
 class Fluid(GraphicWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.resize(self.size)
+        self.on_size()
 
-    def resize(self, size):
-        super().resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         size_with_border = 2 * h + 4, w + 4
 
+        self.texture = np.zeros((2 * h, w, 4), dtype=int)
         self.pressure = np.zeros(size_with_border, dtype=float)
         self.momentum = np.zeros(size_with_border, dtype=float)
 
@@ -79,7 +78,7 @@ class Fluid(GraphicWidget):
     def on_press(self, key_press_event):
         match key_press_event.key:
             case "r" | "R":
-                self.resize(self.size)  # Reset
+                self.on_size()  # Reset
                 return True
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):

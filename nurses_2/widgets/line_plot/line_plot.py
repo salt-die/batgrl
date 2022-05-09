@@ -134,9 +134,7 @@ class LinePlot(Widget):
         else:
             self.legend = None
 
-    def resize(self, size: Size):
-        super().resize(size)
-
+    def on_size(self):
         h, w = self._size
 
         xlabel = self.xlabel
@@ -146,28 +144,13 @@ class LinePlot(Widget):
         has_ylabel = bool(ylabel)
 
         plot = self.plot
-        plot.resize(
-            (
-                max(1, h - has_xlabel),
-                max(1, w - has_ylabel),
-            )
-        )
+        plot.size = max(1, h - has_xlabel), max(1, w - has_ylabel)
 
         scrollview = self._scrollview
-        scrollview.resize(
-            (
-                max(1, plot.height - 2),
-                max(1, plot.width - TICK_WIDTH),
-            )
-        )
+        scrollview.size = max(1, plot.height - 2), max(1, plot.width - TICK_WIDTH)
 
         hint_y, hint_x = PLOT_SIZES[self._trace_size_hint]
-        self._traces.resize(
-            (
-                round(scrollview.height * hint_y),
-                round(scrollview.width * hint_x),
-            )
-        )
+        self._traces.size = round(scrollview.height * hint_y), round(scrollview.width * hint_x)
 
         if has_xlabel:
             xlabel.pos = h - 1, scrollview.width // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel

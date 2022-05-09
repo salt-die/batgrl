@@ -83,7 +83,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
                 prefix = TOGGLE_ON
 
         text = prefix + label
-        self._label_widget.resize((1, wcswidth(text)))
+        self._label_widget.size = 1, wcswidth(text)
         self._label_widget.update_geometry()
         self._label_widget.add_text(text)
 

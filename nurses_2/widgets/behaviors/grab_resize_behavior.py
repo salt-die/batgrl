@@ -36,7 +36,7 @@ class _Border(GrabbableBehavior, GraphicWidget):
         )
 
         if new_size != parent.size:
-            parent.resize(new_size)
+            parent.size = new_size
 
             if y_edge == - 1:
                 parent.top += h - parent.height

@@ -62,11 +62,9 @@ class Animation(Widget):
         self._i = 0
         self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-    def resize(self, size):
-        super().resize(size)
-
+    def on_size(self):
         for frame in self.frames:
-            frame.resize(self.size)
+            frame.size = self.size
 
     @property
     def current_frame(self) -> Image:
