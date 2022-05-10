@@ -19,6 +19,7 @@ class _Root(Widget):
     ):
         self._app = app
         self._subscribed_events = { }
+        self.no_emit = set()
         self.children = [ ]
         self.env_out = env_out
         self.background_char = background_char
@@ -48,12 +49,8 @@ class _Root(Widget):
         self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=bool)
 
     @property
-    def top(self):
-        return 0
-
-    @property
-    def left(self):
-        return 0
+    def pos(self):
+        return Point(0, 0)
 
     @property
     def absolute_pos(self):

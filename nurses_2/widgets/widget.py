@@ -29,10 +29,14 @@ def emitter(method):
     """
     Emit a widget event whenever `method` is called.
     """
+    attr = method.__name__
+
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         method(self, *args, **kwargs)
-        self.emit(WidgetEvent(self, method.__name__))
+
+        if attr not in self.no_emit:
+            self.emit(WidgetEvent(self, attr))
 
     return wrapper
 
@@ -79,6 +83,8 @@ class Widget:
     background_color_pair : ColorPair | None, default: None
         The background color pair of the widget if not `None` and if the
         widget is not transparent.
+    no_emit : set[str] | None, default: None
+        Widget will not emit widget events for any attribute in `no_emit`.
     """
     def __init__(
         self,
@@ -97,10 +103,12 @@ class Widget:
         is_enabled: bool=True,
         background_char: str | None=None,
         background_color_pair: ColorPair | None=None,
+        no_emit: set[str] | None=None,
     ):
         self.parent: Widget | None = None
         self.children: list[Widget] = [ ]
         self._subscribed_events = { }
+        self.no_emit = set() if no_emit is None else set(no_emit)
 
         self._size = Size(*size)
         self._pos = Point(*pos)
