@@ -208,4 +208,4 @@ def run_widget_as_app(widget: type[Widget], *args, **kwargs):
         async def on_start(self):
             self.add_widget(widget(*args, **kwargs))
 
-    _DefaultApp().run()
+    _DefaultApp(title=widget.__name__).run()
