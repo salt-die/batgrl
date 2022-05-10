@@ -155,4 +155,4 @@ class DoomFireApp(App):
         self.add_widgets(Image(path=DOOM_PATH, size_hint=(1.0, 1.0)), doomfire, button_container)
 
 
-DoomFireApp().run()
+DoomFireApp(title="Doom Fire Example").run()

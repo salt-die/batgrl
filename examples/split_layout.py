@@ -32,4 +32,4 @@ class MyApp(App):
         self.add_widget(split_layout)
 
 
-MyApp().run()
+MyApp(title="Split Layout Example").run()

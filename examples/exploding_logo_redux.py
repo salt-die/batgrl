@@ -170,4 +170,4 @@ class MyApp(App):
         self.add_widgets(background, field)
 
 
-MyApp().run()
+MyApp(title="Exploding Logo Redux Example").run()

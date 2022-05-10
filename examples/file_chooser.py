@@ -11,4 +11,4 @@ class FileApp(App):
         self.add_widgets(label, FileChooser(size=(20, 25), size_hint=(1.0, None), select_callback=select_callback))
 
 
-FileApp().run()
+FileApp(title="File Chooser Example").run()

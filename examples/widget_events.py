@@ -20,4 +20,4 @@ class MyApp(App):
         self.add_widget(window)
 
 
-MyApp().run()
+MyApp(title="Widget Events Example").run()

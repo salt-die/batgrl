@@ -208,4 +208,4 @@ class MyApp(App):
         self.add_widget(field)
 
 
-MyApp().run()
+MyApp(title="Exploding Logo Example").run()

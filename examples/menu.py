@@ -47,4 +47,4 @@ class MyApp(App):
         self.add_widget(Button(label="File", callback=toggle_root_menu, pos=(1, 0), size=(1, 6)))
 
 
-MyApp().run()
+MyApp(title="Menu Example").run()

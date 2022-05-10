@@ -76,4 +76,4 @@ class MyApp(App):
         self.add_widget(raycaster)
 
 
-MyApp().run()
+MyApp(title="Raycaster Example").run()

@@ -21,4 +21,4 @@ class MyApp(App):
         animation.play()
 
 
-MyApp().run()
+MyApp(title="Animation Example").run()

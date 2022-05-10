@@ -72,4 +72,4 @@ class MyApp(App):
         self.add_widgets(display, grid_layout)
 
 
-MyApp().run()
+MyApp(title="Buttons Example").run()

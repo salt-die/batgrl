@@ -50,4 +50,4 @@ class MyApp(App):
         self.add_widgets(window_1, window_2, window_3, window_4)
 
 
-MyApp().run()
+MyApp(title="Windows Example").run()

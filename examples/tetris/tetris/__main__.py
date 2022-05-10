@@ -13,4 +13,4 @@ class TetrisApp(App):
         tetris.modal_screen.enable(callback=tetris.new_game, is_game_over=True)
 
 
-TetrisApp().run()
+TetrisApp(title="Tetris").run()

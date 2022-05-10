@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 from itertools import cycle
 
@@ -39,4 +40,4 @@ class MyApp(App):
         self.exit()
 
 
-MyApp().run()
+MyApp(title="Easings Example").run()

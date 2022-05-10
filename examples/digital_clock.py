@@ -58,4 +58,4 @@ class DigitalClockApp(App):
         self.add_widgets(DigitalClock(twelve_hour=True), TestDisplay(pos=(10, 0)))
 
 
-DigitalClockApp().run()
+DigitalClockApp(title="Digital Clock Example").run()

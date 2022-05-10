@@ -183,4 +183,4 @@ class MyApp(App):
             asyncio.create_task(code_rain.fade())
 
 
-MyApp().run()
+MyApp(title="Code Rain Example").run()

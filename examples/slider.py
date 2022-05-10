@@ -40,4 +40,4 @@ class MyApp(App):
         self.add_widgets(display, slider_1, slider_2)
 
 
-MyApp().run()
+MyApp(title="Slider Example").run()

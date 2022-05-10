@@ -32,4 +32,4 @@ class MyApp(App):
         self.add_widget(scroll_view)
 
 
-MyApp().run()
+MyApp(title="Scroll View Example").run()

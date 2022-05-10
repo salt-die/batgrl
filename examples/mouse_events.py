@@ -94,4 +94,4 @@ class MyApp(App):
         self.add_widgets(button, info_display)
 
 
-MyApp().run()
+MyApp(title="Mouse Events Example").run()

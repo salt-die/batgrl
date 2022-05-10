@@ -45,4 +45,4 @@ class MyApp(App):
         asyncio.create_task(horizontal_movement())
 
 
-MyApp().run()
+MyApp(title="Parallax Example").run()

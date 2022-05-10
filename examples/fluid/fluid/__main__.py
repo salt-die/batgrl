@@ -191,4 +191,4 @@ class MyApp(App):
         self.add_widget(container)
 
 
-MyApp().run()
+MyApp(title="Smooth Particle Hydrodynamics Example").run()

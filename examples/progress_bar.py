@@ -17,4 +17,4 @@ class MyApp(App):
             await asyncio.sleep(.1)
 
 
-MyApp().run()
+MyApp(title="Progress Bar Example").run()

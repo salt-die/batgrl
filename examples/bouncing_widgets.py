@@ -118,4 +118,4 @@ class MyApp(App):
             await asyncio.sleep(.5)
 
 
-MyApp().run()
+MyApp(title="Bouncing Widgets").run()

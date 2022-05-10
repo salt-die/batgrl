@@ -11,7 +11,7 @@ from nurses_2.colors import BLUE, GREEN, WHITE, gradient, ColorPair
 from nurses_2.widgets.behaviors.grab_move_behavior import GrabMoveBehavior
 from nurses_2.widgets.behaviors.grab_resize_behavior import GrabResizeBehavior
 from nurses_2.widgets.behaviors.scatter_behavior import ScatterBehavior
-from nurses_2.widgets.text_widget import TextWidget, Size
+from nurses_2.widgets.text_widget import TextWidget
 
 WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
 WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
@@ -66,4 +66,4 @@ class MyApp(App):
         self.add_widget(draggable_scatter)
 
 
-MyApp().run()
+MyApp(title="Scatter Example").run()

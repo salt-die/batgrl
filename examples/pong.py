@@ -162,4 +162,4 @@ class Pong(App):
 
 
 if __name__ == "__main__":
-    Pong().run()
+    Pong(title="Pong").run()

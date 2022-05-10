@@ -1,14 +1,12 @@
 """
-How to play videos with nurses.
-
-Requires opencv-python.
+An example of how to play videos with nurses.
 """
 import pathlib
 
 from nurses_2.app import App
 from nurses_2.widgets.video_player import VideoPlayer
 
-PATH_TO_VIDEO: pathlib.Path = pathlib.Path("path") / "to" / "video.mp4"
+PATH_TO_VIDEO = pathlib.Path("path") / "to" / "video.mp4"
 
 
 class MyApp(App):
@@ -19,4 +17,4 @@ class MyApp(App):
         player.play()
 
 
-MyApp().run()
+MyApp(title="Video Example").run()

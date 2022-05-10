@@ -23,4 +23,4 @@ class MyApp(App):
         tiled_image.tile = tile_2
 
 
-MyApp().run()
+MyApp(title="Tile Example").run()

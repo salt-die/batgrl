@@ -28,4 +28,4 @@ class MyApp(App):
         self.add_widgets(background, logo_flat, logo_full)
 
 
-MyApp().run()
+MyApp(title="Image Example").run()

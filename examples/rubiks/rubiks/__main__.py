@@ -19,4 +19,4 @@ class RubiksApp(App):
 
         background.play()
 
-RubiksApp().run()
+RubiksApp(title="Rubiks 3D").run()
