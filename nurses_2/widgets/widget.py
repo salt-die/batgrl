@@ -909,10 +909,7 @@ class Widget:
             if on_progress:
                 on_progress()
 
-            try:
-                await asyncio.sleep(0)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(0)
 
         for prop, target in properties.items():
             setattr(self, prop, target)
