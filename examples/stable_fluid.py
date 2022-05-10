@@ -4,8 +4,7 @@ Stable fluid simulation. Requires `scipy`.
 from itertools import cycle
 
 import numpy as np
-from scipy.ndimage import map_coordinates
-from scipy.ndimage.filters import convolve
+from scipy.ndimage import map_coordinates, convolve
 
 from nurses_2.colors import rainbow_gradient, ABLACK
 from nurses_2.io import MouseEvent, MouseButton
