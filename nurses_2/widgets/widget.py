@@ -33,8 +33,8 @@ def emitter(method):
     subscribers = WeakKeyDictionary()
 
     @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        method(self, *args, **kwargs)
+    def wrapper(*args, **kwargs):
+        method(*args, **kwargs)
 
         for action in subscribers.values():
             action()
