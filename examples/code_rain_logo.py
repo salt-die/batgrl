@@ -170,7 +170,6 @@ class MyApp(App):
                             character=char,
                             gradient=WHITE_TO_BLUE if colors[y, x] else WHITE_TO_YELLOW,
                             delay=delays[y, x],
-                            no_emit={"pos"},
                         )
                     )
 
