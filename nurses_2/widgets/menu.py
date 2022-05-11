@@ -129,9 +129,8 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
         if self.submenu is not None:
             self.submenu.open_menu()
-        else:
-            if nargs(self.item_callback) == 0:
-                self.item_callback()
+        elif nargs(self.item_callback) == 0:
+            self.item_callback()
 
             if self.parent.close_on_release:
                 self.parent.close_parents()
