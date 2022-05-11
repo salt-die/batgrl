@@ -52,6 +52,8 @@ class HSplitLayout(Widget):
         The column to split the layout. If `anchor_left_pane`
         is true, then split will be `split_col` from the left,
         else from the right.
+    min_split_width : int, default: 1
+        Minimum width of either pane.
     anchor_left_pane : bool, default: True
         If true, `split_col` will be calculated from the left,
         else from the right.
@@ -64,6 +66,7 @@ class HSplitLayout(Widget):
     def __init__(
         self,
         split_col: int=1,
+        min_split_width: int=1,
         anchor_left_pane: bool=True,
         split_resizable: bool=True,
         handle_color: AColor=AGRAY,
@@ -77,8 +80,8 @@ class HSplitLayout(Widget):
         self.handle = _HSplitHandle((1.0, None))
         self.handle_color = handle_color
 
-        def adjust(event):
-            self.right_pane.left = self.handle.left = event.source.right
+        def adjust():
+            self.right_pane.left = self.handle.left = self.left_pane.right
         self.handle.subscribe(self.left_pane, "size", adjust)
 
         self.add_widgets(self.left_pane, self.right_pane, self.handle)
@@ -86,6 +89,7 @@ class HSplitLayout(Widget):
         self.split_resizable = split_resizable
         self.anchor_left_pane = anchor_left_pane
 
+        self._min_split_width = min_split_width
         self.split_col = split_col
 
     @property
@@ -98,12 +102,26 @@ class HSplitLayout(Widget):
         self.handle.texture[:] = handle_color
 
     @property
+    def min_split_width(self) -> int:
+        return self._min_split_width
+
+    @min_split_width.setter
+    def min_split_width(self, min_split_width: int):
+        self._min_split_width = clamp(min_split_width, 1, None)
+        self.split_col = self.split_col
+
+    @property
     def split_col(self) -> int:
         return self._split_row
 
     @split_col.setter
     def split_col(self, split_col: int):
-        self._split_row = clamp(split_col, 1, self.width - 1)
+        min_width = self.min_split_width
+        self._split_row = clamp(
+            split_col,
+            min_width,
+            max(self.width - min_width, min_width),
+        )
         self.on_size()
 
     @property
@@ -122,12 +140,8 @@ class HSplitLayout(Widget):
             anchored = self.right_pane
             not_anchored = self.left_pane
 
-        if self.split_col < self.width:
-            anchored.width = self.split_col
-            not_anchored.width = self.width - self.split_col
-        else:
-            anchored.width = self.width - 1
-            not_anchored.width = 1
+        anchored.width = self.split_col
+        not_anchored.width = self.width - self.split_col
 
 
 class VSplitLayout(Widget):
@@ -141,6 +155,8 @@ class VSplitLayout(Widget):
         The row to split the layout. If `anchor_top_pane`
         is true, then split will be `split_row` from the top,
         else from the bottom.
+    min_split_height : int, default: 1
+        Minimum height of either pane.
     anchor_top_pane : bool, default: True
         If true, `split_row` will be calculated from the top,
         else from the bottom.
@@ -153,6 +169,7 @@ class VSplitLayout(Widget):
     def __init__(
         self,
         split_row: int=1,
+        min_split_height: int=1,
         anchor_top_pane: bool=True,
         split_resizable: bool=True,
         handle_color: AColor=AGRAY,
@@ -166,8 +183,8 @@ class VSplitLayout(Widget):
         self.handle = _VSplitHandle((None, 1.0))
         self.handle_color = handle_color
 
-        def adjust(event):
-            self.bottom_pane.top = self.handle.top = event.source.bottom
+        def adjust():
+            self.bottom_pane.top = self.handle.top = self.top_pane.bottom
         self.handle.subscribe(self.top_pane, "size", adjust)
 
         self.add_widgets(self.top_pane, self.bottom_pane, self.handle)
@@ -175,6 +192,7 @@ class VSplitLayout(Widget):
         self.split_resizable = split_resizable
         self.anchor_top_pane = anchor_top_pane
 
+        self._min_split_height = min_split_height
         self.split_row = split_row
 
     @property
@@ -187,12 +205,26 @@ class VSplitLayout(Widget):
         self.handle.texture[:] = handle_color
 
     @property
+    def min_split_height(self) -> int:
+        return self._min_split_height
+
+    @min_split_height.setter
+    def min_split_height(self, min_split_height: int):
+        self._min_split_height = clamp(min_split_height, 1, None)
+        self.split_row = self.split_row  # Clamp split and call `on_size`
+
+    @property
     def split_row(self) -> int:
         return self._split_col
 
     @split_row.setter
     def split_row(self, split_row: int):
-        self._split_col = clamp(split_row, 1, self.height - 1)
+        min_height = self.min_split_height
+        self._split_col = clamp(
+            split_row,
+            min_height,
+            max(self.height - min_height, min_height),
+        )
         self.on_size()
 
     @property
@@ -211,9 +243,5 @@ class VSplitLayout(Widget):
             anchored = self.bottom_pane
             not_anchored = self.top_pane
 
-        if self.split_row < self.height:
-            anchored.height = self.split_row
-            not_anchored.height = self.height - self.split_row
-        else:
-            anchored.height = self.height - 1
-            not_anchored.height = 1
+        anchored.height = self.split_row
+        not_anchored.height = self.height - self.split_row
