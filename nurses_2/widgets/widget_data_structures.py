@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import NamedTuple
 
-__all__ = "SizeHint", "PosHint", "WidgetEvent", "Anchor", "Easing"
+__all__ = "SizeHint", "PosHint", "Anchor", "Easing"
 
 
 class SizeHint(NamedTuple):
@@ -12,18 +12,6 @@ class SizeHint(NamedTuple):
 class PosHint(NamedTuple):
     y: float | None
     x: float | None
-
-
-class WidgetEvent(NamedTuple):
-    source: "Widget"
-    attr: str
-
-    @property
-    def value(self):
-        """
-        Value of the attribute of interest.
-        """
-        return getattr(self.source, self.attr)
 
 
 class Anchor(str, Enum):

@@ -7,7 +7,7 @@ from ..clamp import clamp
 from ..colors import AColor, TRANSPARENT
 from ..data_structures import *
 from .graphic_widget_data_structures import *
-from .widget import Widget
+from .widget import Widget, emitter
 from .widget_data_structures import *
 
 __all__ = (
@@ -19,7 +19,6 @@ __all__ = (
     "PosHint",
     "Size",
     "SizeHint",
-    "WidgetEvent",
     "GraphicWidget",
 )
 
@@ -98,6 +97,7 @@ class GraphicWidget(Widget):
         return self._alpha
 
     @alpha.setter
+    @emitter
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 

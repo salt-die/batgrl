@@ -1,6 +1,5 @@
 from ...data_structures import *
 from ...io import MouseEvent, KeyPressEvent, PasteEvent
-from ..widget_data_structures import WidgetEvent
 from ..widget import Widget
 
 
@@ -27,13 +26,6 @@ class _ParticleFieldBase(Widget):
         Yield all descendents.
         """
         yield from self.children
-
-    def dispatch_widget_event(self, event: WidgetEvent) -> bool | None:
-        """
-        Handle widget event. Particle fields do not dispatch widget events to
-        their children.
-        """
-        return self.on_widget_event(event)
 
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
@@ -158,39 +150,55 @@ class _ParticleBase:
         """
 
     @property
-    def size(self):
-        return 1, 1
+    def size(self) -> Size:
+        return Size(1, 1)
 
     @property
-    def pos(self):
-        return self.top, self.left
+    def pos(self) -> Point:
+        return self._pos
 
     @pos.setter
-    def pos(self, pos):
-        self.top, self.left = pos
+    def pos(self, pos: Point):
+        self._pos = Point(*pos)
 
     @property
-    def height(self):
+    def top(self) -> int:
+        return self._pos[0]
+
+    @top.setter
+    def top(self, top: int):
+        self.pos = top, self.left
+
+    @property
+    def left(self) -> int:
+        return self._pos[1]
+
+    @left.setter
+    def left(self, left: int):
+        self.pos = self.top, left
+
+    @property
+    def height(self) -> int:
         return 1
 
     @property
-    def width(self):
+    def width(self) -> int:
         return 1
 
     @property
-    def bottom(self):
+    def bottom(self) -> int:
         return self.top + 1
 
     @property
-    def right(self):
+    def right(self) -> int:
         return self.left + 1
 
-    def to_local(self, coords):
+    def to_local(self, coords) -> Point:
         """
         Convert absolute coordinates to relative coordinates.
         """
         y, x = self.parent.to_local(coords)
-        return y - self.top, x - self.left
+        return Point(y - self.top, x - self.left)
 
     def on_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """

@@ -2,6 +2,7 @@ import asyncio
 from collections.abc import Callable, Sequence
 from functools import wraps
 from time import monotonic
+from weakref import WeakKeyDictionary
 
 import numpy as np
 
@@ -21,22 +22,24 @@ __all__ = (
     "PosHint",
     "Size",
     "SizeHint",
-    "WidgetEvent",
     "Widget",
 )
 
 def emitter(method):
     """
-    Emit a widget event whenever `method` is called.
+    A decorator for widget property setters that will
+    notify subscribers when the property is updated.
     """
-    attr = method.__name__
+    subscribers = WeakKeyDictionary()
 
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         method(self, *args, **kwargs)
 
-        if attr not in self.no_emit:
-            self.emit(WidgetEvent(self, attr))
+        for action in subscribers.values():
+            action()
+
+    wrapper.subscribers = subscribers
 
     return wrapper
 
@@ -83,8 +86,6 @@ class Widget:
     background_color_pair : ColorPair | None, default: None
         The background color pair of the widget if not `None` and if the
         widget is not transparent.
-    no_emit : set[str] | None, default: None
-        Widget will not emit widget events for any attribute in `no_emit`.
     """
     def __init__(
         self,
@@ -103,12 +104,9 @@ class Widget:
         is_enabled: bool=True,
         background_char: str | None=None,
         background_color_pair: ColorPair | None=None,
-        no_emit: set[str] | None=None,
     ):
         self.parent: Widget | None = None
         self.children: list[Widget] = [ ]
-        self._subscribed_events = { }
-        self.no_emit = set() if no_emit is None else set(no_emit)
 
         self._size = Size(*size)
         self._pos = Point(*pos)
@@ -571,63 +569,34 @@ class Widget:
             yield child
             yield from child.walk()
 
-    def emit(self, event: WidgetEvent):
-        """
-        Dispatch a widget event from the root.
-        """
-        if self.root:
-            self.root.dispatch_widget_event(event)
-
-    def dispatch_widget_event(self, event: WidgetEvent) -> bool | None:
-        """
-        Dispatch a widget event.
-        """
-        return any(
-            widget.dispatch_widget_event(event)
-            for widget in reversed(self.children)
-            if widget.is_enabled
-        ) or self.on_widget_event(event)
-
-    def on_widget_event(self, event: WidgetEvent):
-        """
-        Handle widget event. (A widget event is handled if a handler returns True.)
-        """
-        if event in self._subscribed_events:
-            action, args, kwargs = self._subscribed_events[event]
-            return action(event, *args, **kwargs)
-
     def subscribe(
         self,
         source: "Widget",
         attr: str,
-        action: Callable[[WidgetEvent], bool | None],
-        *args,
-        **kwargs
+        action: Callable[[], None],
     ):
         """
-        Subscribe to a widget event.
+        Subscribe to a widget property.
 
         Parameters
         ----------
         source : Widget
-            The source of the widget event.
+            The source of the widget property.
         attr : str
-            The cause of the widget event.
-        action : Callable[[WidgetEvent], bool | None]
-            When the subscribed event is emitted, action will be called with the event
-            as the first argument, `args` as the other positional arguments and `kwargs`
-            as the keyword arguments.
+            The name of the widget property.
+        action : Callable[[], None]
+            Called when the property is updated.
         """
-        event = WidgetEvent(source, attr)
-        self._subscribed_events[event] = action, args, kwargs
+        if prop := getattr(type(source), attr):
+            prop.fset.subscribers[self] = action
 
-    def unsubscribe(self, source: "Widget", attr: str) -> Callable[[WidgetEvent], bool | None] | None:
+    def unsubscribe(self, source: "Widget", attr: str) -> Callable[[], None] | None:
         """
-        Unsubscribe to a widget event and return the callable that was used to subscribe
+        Unsubscribe to a widget event and return the callable that was subscribed
         to the event or `None` if subscription isn't found.
         """
-        event = WidgetEvent(source, attr)
-        return self._subscribed_events.pop(event, None)
+        if prop := getattr(type(source), attr):
+            return prop.fset.subscribers.pop(self)
 
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """

@@ -16,7 +16,6 @@ __all__ = (
     "PosHint",
     "Size",
     "SizeHint",
-    "WidgetEvent",
     "TextWidget",
 )
 
