@@ -7,14 +7,10 @@ class MyApp(App):
     async def on_start(self):
         window = Window()
 
-        label = TextWidget(size=(4, 100))
+        label = TextWidget(size=(2, 100))
 
-        def report(event, i):
-            label.add_text(f"{event}", row=i)
-            label.add_text(f"{event.value}", row=i + 1)
-
-        label.subscribe(window, "pos", report, 0)
-        label.subscribe(window, "size", report, 2)
+        label.subscribe(window, "pos", lambda: label.add_text(f"{window.pos}"))
+        label.subscribe(window, "size", lambda: label.add_text(f"{window.size}", row=1))
 
         window.add_widget(label)
         self.add_widget(window)
