@@ -30,16 +30,17 @@ def emitter(method):
     A decorator for widget property setters that will
     notify subscribers when the property is updated.
     """
-    subscribers = WeakKeyDictionary()
+    instances = WeakKeyDictionary()
 
     @wraps(method)
-    def wrapper(*args, **kwargs):
-        method(*args, **kwargs)
+    def wrapper(self, *args, **kwargs):
+        method(self, *args, **kwargs)
 
-        for action in subscribers.values():
-            action()
+        if subscribers := instances.get(self):
+            for action in subscribers.values():
+                action()
 
-    wrapper.subscribers = subscribers
+    wrapper.instances = instances
 
     return wrapper
 
@@ -587,16 +588,16 @@ class Widget:
         action : Callable[[], None]
             Called when the property is updated.
         """
-        if prop := getattr(type(source), attr):
-            prop.fset.subscribers[self] = action
+        setter = getattr(type(source), attr).fset
+        setter.instances.setdefault(source, WeakKeyDictionary())[self] = action
 
     def unsubscribe(self, source: "Widget", attr: str) -> Callable[[], None] | None:
         """
         Unsubscribe to a widget event and return the callable that was subscribed
         to the event or `None` if subscription isn't found.
         """
-        if prop := getattr(type(source), attr):
-            return prop.fset.subscribers.pop(self)
+        setter = getattr(type(source), attr).fset
+        return setter.instances[source].pop(self, None)
 
     def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
