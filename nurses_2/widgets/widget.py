@@ -589,7 +589,8 @@ class Widget:
             Called when the property is updated.
         """
         setter = getattr(type(source), attr).fset
-        setter.instances.setdefault(source, WeakKeyDictionary())[self] = action
+        subscribers = setter.instances.setdefault(source, WeakKeyDictionary())
+        subscribers[self] = action
 
     def unsubscribe(self, source: "Widget", attr: str) -> Callable[[], None] | None:
         """
