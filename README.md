@@ -4,15 +4,15 @@ A widgetful and async-centric library for creating graphical applications in the
 
 Create games:
 
-![Tetris](/preview_images/tetris.png)
+![Tetris](https://raw.githubusercontent.com/salt-die/nurses_2/main/preview_images/tetris.png)
 
 Simulations:
 
-![Cloth](/preview_images/cloth.png)
+![Cloth](https://raw.githubusercontent.com/salt-die/nurses_2/main/preview_images/cloth.png)
 
 Or entire feature-filled applications:
 
-![Windows](/preview_images/windows.png)
+![Windows](https://raw.githubusercontent.com/salt-die/nurses_2/main/preview_images/windows.png)
 
 See it in action: [Video Preview](https://youtu.be/LLI6ANQ6MH4).
 
