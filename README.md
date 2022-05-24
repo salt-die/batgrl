@@ -35,7 +35,7 @@ if __name__ == "__main__":
 ```
 
 This should show just a blank terminal.  To exit, press `escape`. We can create a green play field
-by adding a new widget with a background color pair with green background. (`ColorPairs` include a foreground color and a background color. In this case the foreground color is not used.)
+by adding a new widget with a background color pair with green background. (`ColorPairs` include a foreground color and a background color. In this case, the foreground color is not used.)
 
 ```py
 from nurses_2.app import App
@@ -44,14 +44,14 @@ from nurses_2.widgets.widget import Widget
 
 FIELD_HEIGHT = 25
 FIELD_WIDTH = 100
-FIELD_COLOR_PAIR = ColorPair.from_colors(WHITE, GREEN)
+WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
 
 
 class Pong(App):
     async def on_start(self):
         game_field = Widget(
             size=(FIELD_HEIGHT, FIELD_WIDTH),
-            background_color_pair=FIELD_COLOR_PAIR,
+            background_color_pair=WHITE_ON_GREEN,
         )
 
         self.add_widget(game_field)
@@ -70,11 +70,11 @@ from nurses_2.widgets.widget import Widget
 
 FIELD_HEIGHT = 25
 FIELD_WIDTH = 100
-FIELD_COLOR_PAIR = ColorPair.from_colors(WHITE, GREEN)
+WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
 
 PADDLE_HEIGHT = 5
 PADDLE_WIDTH = 1
-PADDLE_COLOR_PAIR = ColorPair.from_colors(WHITE, BLUE)
+WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
 class Paddle(Widget):
@@ -104,7 +104,7 @@ class Pong(App):
     async def on_start(self):
         game_field = Widget(
             size=(FIELD_HEIGHT, FIELD_WIDTH),
-            background_color_pair=FIELD_COLOR_PAIR,
+            background_color_pair=WHITE_ON_GREEN,
         )
 
         vertical_center = FIELD_HEIGHT // 2 - PADDLE_HEIGHT // 2
@@ -113,14 +113,14 @@ class Pong(App):
             player=1,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, 1),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         right_paddle = Paddle(
             player=2,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, FIELD_WIDTH - 2),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         game_field.add_widgets(left_paddle, right_paddle)
@@ -139,14 +139,14 @@ With size hints and position hints we can easily place a divider in the game fie
             player=2,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, FIELD_WIDTH - 2),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         divider = Widget(
             size=(1, 1),
             size_hint=(1.0, None),
             pos_hint=(None, .5),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         game_field.add_widgets(left_paddle, right_paddle, divider)
@@ -165,11 +165,11 @@ from nurses_2.widgets.widget import Widget
 
 FIELD_HEIGHT = 25
 FIELD_WIDTH = 100
-FIELD_COLOR_PAIR = ColorPair.from_colors(WHITE, GREEN)
+WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
 
 PADDLE_HEIGHT = 5
 PADDLE_WIDTH = 1
-PADDLE_COLOR_PAIR = ColorPair.from_colors(WHITE, BLUE)
+WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
 class Paddle(Widget):
@@ -253,7 +253,7 @@ class Pong(App):
     async def on_start(self):
         game_field = Widget(
             size=(FIELD_HEIGHT, FIELD_WIDTH),
-            background_color_pair=FIELD_COLOR_PAIR,
+            background_color_pair=WHITE_ON_GREEN,
         )
 
         vertical_center = FIELD_HEIGHT // 2 - PADDLE_HEIGHT // 2
@@ -262,28 +262,28 @@ class Pong(App):
             player=1,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, 1),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         right_paddle = Paddle(
             player=2,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, FIELD_WIDTH - 2),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         divider = Widget(
             size=(1, 1),
             size_hint=(1.0, None),
             pos_hint=(None, .5),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         ball = Ball(
             left_paddle,
             right_paddle,
             size=(1, 2),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         game_field.add_widgets(left_paddle, right_paddle, divider, ball)
@@ -307,11 +307,11 @@ from nurses_2.widgets.text_widget import TextWidget
 
 FIELD_HEIGHT = 25
 FIELD_WIDTH = 100
-FIELD_COLOR_PAIR = ColorPair.from_colors(WHITE, GREEN)
+WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
 
 PADDLE_HEIGHT = 5
 PADDLE_WIDTH = 1
-PADDLE_COLOR_PAIR = ColorPair.from_colors(WHITE, BLUE)
+WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
 class Paddle(Widget):
@@ -407,7 +407,7 @@ class Pong(App):
     async def on_start(self):
         game_field = Widget(
             size=(FIELD_HEIGHT, FIELD_WIDTH),
-            background_color_pair=FIELD_COLOR_PAIR,
+            background_color_pair=WHITE_ON_GREEN,
         )
 
         vertical_center = FIELD_HEIGHT // 2 - PADDLE_HEIGHT // 2
@@ -416,21 +416,21 @@ class Pong(App):
             player=1,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, 1),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         right_paddle = Paddle(
             player=2,
             size=(PADDLE_HEIGHT, PADDLE_WIDTH),
             pos=(vertical_center, FIELD_WIDTH - 2),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         divider = Widget(
             size=(1, 1),
             size_hint=(1.0, None),
             pos_hint=(None, .5),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         left_score_label = TextWidget(
@@ -453,7 +453,7 @@ class Pong(App):
             left_score_label,
             right_score_label,
             size=(1, 2),
-            background_color_pair=PADDLE_COLOR_PAIR,
+            background_color_pair=WHITE_ON_BLUE,
         )
 
         game_field.add_widgets(left_paddle, right_paddle, divider, left_score_label, right_score_label, ball)
