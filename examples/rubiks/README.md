@@ -15,6 +15,3 @@ Controls
 `s` to scramble the cube
 
 Drag mouse to rotate entire cube.
-
-# Preview
-![Rubik's Cube Demonstration](../../preview_images/rubiks_demonstration.gif)

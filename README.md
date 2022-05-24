@@ -1,8 +1,20 @@
-![nurses_2 preview](/preview_images/nurses_2.gif)
-
 # nurses_2 - Terminal Graphics
 
 A widgetful and async-centric library for creating graphical applications in the terminal.
+
+Create games:
+
+![Tetris](/preview_images/tetris.png)
+
+Simulations:
+
+![Cloth](/preview_images/cloth.png)
+
+Or entire feature-filled applications:
+
+![Windows](/preview_images/windows.png)
+
+Here's a video of `nurses_2` in action: [nurses_2 Video Preview](https://youtu.be/LLI6ANQ6MH4)
 
 
 Getting Started: A Pong Tutorial
@@ -22,7 +34,8 @@ if __name__ == "__main__":
     Pong().run()
 ```
 
-This should show just a blank terminal.  To exit, press `escape`. Let's add a green play field:
+This should show just a blank terminal.  To exit, press `escape`. We can create a green play field
+by adding a new widget with a background color pair with green background. (`ColorPairs` include a foreground color and a background color. In this case the foreground color is not used.)
 
 ```py
 from nurses_2.app import App
@@ -48,7 +61,7 @@ if __name__ == "__main__":
     Pong().run()
 ```
 
-Next, let's add paddles for each player. Player 1's paddle can be moved up and down with `w` and `s` and Player 2's paddle can be moved up and down with `up` and `down`:
+Next, let's add paddles for each player. We can respond to key presses by implementing a widget's `on_press` method. Player 1's paddle can be moved up and down with `w` and `s` and Player 2's paddle can be moved up and down with `up` and `down`:
 
 ```py
 from nurses_2.app import App
