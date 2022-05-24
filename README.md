@@ -35,7 +35,7 @@ if __name__ == "__main__":
 ```
 
 This should show just a blank terminal.  To exit, press `escape`. We can create a green play field
-by adding a new widget with a background color pair with green background. (`ColorPairs` include a foreground color and a background color. In this case, the foreground color is not used.)
+by adding a new widget with a background color pair with green background. (`ColorPair`s include a foreground color and a background color. In this case, the foreground color is not used.)
 
 ```py
 from nurses_2.app import App
