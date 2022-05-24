@@ -14,7 +14,7 @@ Or entire feature-filled applications:
 
 ![Windows](/preview_images/windows.png)
 
-Here's a video of `nurses_2` in action: [nurses_2 Video Preview](https://youtu.be/LLI6ANQ6MH4)
+See it in action: [Video Preview](https://youtu.be/LLI6ANQ6MH4).
 
 
 Getting Started: A Pong Tutorial
