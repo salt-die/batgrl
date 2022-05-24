@@ -78,9 +78,7 @@ class TextWidget(Widget):
         self.default_color_pair = default_color_pair
 
     def on_size(self):
-        """
-        Preserved content as much as possible.
-        """
+        # Preserve content as much as possible.
         old_h, old_w = self.canvas.shape
 
         h, w = self._size
