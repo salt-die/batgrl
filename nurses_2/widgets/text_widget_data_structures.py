@@ -2,6 +2,13 @@ from wcwidth import wcswidth
 
 __all__ = "CanvasView",
 
+RESET = "\x1b[0m"
+BOLD = "\x1b[1m"
+ITALIC = "\x1b[3m"
+UNDERLINE = "\x1b[4m"
+STRIKETHROUGH = "\x1b[9m"
+STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH
+
 
 class CanvasView:
     """
@@ -30,19 +37,37 @@ class CanvasView:
     def __setitem__(self, key, value):
         self.canvas[key] = value
 
-    def add_text(self, text, row=0, column=0):
+    def add_text(
+        self,
+        text,
+        row=0,
+        column=0,
+        *,
+        bold=False,
+        italic=False,
+        underline=False,
+        strikethrough=False,
+    ):
         """
         Add text to the canvas.
 
         Parameters
         ----------
-        text: str
+        text : str
             Text to add to canvas.
-        row: int | tuple[int, ...] | slice
+        row : int | tuple[int, ...] | slice, default: 0
             Row or rows to which text is added. This will be passed as-is as the first argument
             to `numpy`'s `ndarray.__getitem__`.
-        column: int
+        column : int, default: 0
             The first column to which text is added.
+        bold : bool, default: False
+            Whether text is bold.
+        italic : bool, default: False
+            Whether text is italic.
+        underline : bool, default: False
+            Whether text is underlined.
+        strikethrough : bool, default: False
+            Whether text is strikethrough.
 
         Notes
         -----
@@ -51,6 +76,10 @@ class CanvasView:
         """
         canvas = self.canvas
         columns = canvas.shape[1]
+
+        is_style = bold, italic, underline, strikethrough
+        PREPEND = "".join(ansi for style, ansi in zip(is_style, STYLE_ANSI) if style)
+        POSTPEND = RESET if PREPEND else ""
 
         if column < 0:
             column += columns
@@ -64,10 +93,10 @@ class CanvasView:
                 case 0:
                     continue
                 case 1:
-                    canvas[row, column + i] = letter
+                    canvas[row, column + i] = f"{PREPEND}{letter}{POSTPEND}"
                     i += 1
                 case 2:
-                    canvas[row, column + i] = letter
+                    canvas[row, column + i] = f"{PREPEND}{letter}{POSTPEND}"
                     if column + i + 1 < columns:
                         canvas[row, column + i + 1] = chr(0x200B)  # Zero-width space
                     i += 2
