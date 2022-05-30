@@ -15,10 +15,3 @@ Welcome to nurses_2's documentation!
    :recursive:
 
    nurses_2
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
