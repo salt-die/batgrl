@@ -123,81 +123,11 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FocusBehavior</span></code></a>([ptf_on_focus])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FocusBehavior</span></code>([ptf_on_focus])</p></td>
 <td><p>Focusable widgets can be given &quot;focus&quot; by pressing tab or shift + tab or by clicking on them.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.focus_behavior.</span></span><span class="sig-name descname"><span class="pre">FocusBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptf_on_focus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Focusable widgets can be given “focus” by pressing tab or shift + tab
-or by clicking on them. When a widget gains focus the <cite>on_focus</cite> method
-is called. When a widget loses focus the <cite>on_blur</cite> method is called.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ptf_on_focus</strong><span class="classifier">bool, default: True</span></dt><dd><p>Pull widget to front when it gains focus.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>is_focused</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_blur</span></code></a>()</p></td>
-<td><p>Called when widget loses focus.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_focus</span></code></a>()</p></td>
-<td><p>Called when widget gains focus.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><strong>dispatch_click</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>dispatch_press</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.dispatch_click">
-<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.dispatch_click" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.dispatch_press">
-<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.dispatch_press" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.is_focused">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_focused</span></span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.is_focused" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur">
-<span class="sig-name descname"><span class="pre">on_blur</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when widget loses focus.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus">
-<span class="sig-name descname"><span class="pre">on_focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called when widget gains focus.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 

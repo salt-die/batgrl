@@ -123,66 +123,17 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.ray_caster.protocols.Camera" title="nurses_2.widgets.ray_caster.protocols.Camera"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Camera</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Camera</span></code>(*args, **kwargs)</p></td>
 <td><p>A camera view.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.ray_caster.protocols.Map" title="nurses_2.widgets.ray_caster.protocols.Map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Map</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Map</span></code>(*args, **kwargs)</p></td>
 <td><p>Map with non-zero entries indicating walls.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.ray_caster.protocols.Texture" title="nurses_2.widgets.ray_caster.protocols.Texture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Texture</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Texture</span></code>(*args, **kwargs)</p></td>
 <td><p>A texture.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Camera">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.ray_caster.protocols.</span></span><span class="sig-name descname"><span class="pre">Camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
-<p>A camera view.</p>
-<p class="rubric">Notes</p>
-<p>The renderer expects both <cite>pos</cite> and <cite>plane</cite> be numpy arrays with dtype
-<cite>float</cite> and shapes (2,) and (2, 2) respectively.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Camera.plane">
-<span class="sig-name descname"><span class="pre">plane</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Camera.plane" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Camera.pos">
-<span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Camera.pos" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Map">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.ray_caster.protocols.</span></span><span class="sig-name descname"><span class="pre">Map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
-<p>Map with non-zero entries indicating walls.</p>
-<p class="rubric">Notes</p>
-<p>Wall value <cite>n</cite> will have nth texture in raycaster’s texture array, e.g., <cite>wall_textures[n - 1]</cite>.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Map.ndim">
-<span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">2</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Map.ndim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Texture">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.ray_caster.protocols.</span></span><span class="sig-name descname"><span class="pre">Texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Texture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
-<p>A texture. Typically a np.ndarray.</p>
-<p class="rubric">Notes</p>
-<p>This protocol is provided to allow for, say, animated textures. The raycaster
-will function as long as <cite>shape</cite> and <cite>__getitem__</cite> work as expected.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.ray_caster.protocols.Texture.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.ray_caster.protocols.Texture.shape" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </section>
 
 

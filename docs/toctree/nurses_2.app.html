@@ -123,7 +123,7 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.run_widget_as_app" title="nurses_2.app.run_widget_as_app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_widget_as_app</span></code></a>(widget, *args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_widget_as_app</span></code>(widget, *args, **kwargs)</p></td>
 <td><p>Run a widget as a full-screen app.</p></td>
 </tr>
 </tbody>
@@ -131,134 +131,11 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.App" title="nurses_2.app.App"><code class="xref py py-obj docutils literal notranslate"><span class="pre">App</span></code></a>(*, exit_key, background_char, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">App</span></code>(*, exit_key, background_char, ...[, ...])</p></td>
 <td><p>Base for creating terminal applications.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.app.App">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.app.</span></span><span class="sig-name descname"><span class="pre">App</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_key:</span> <span class="pre">nurses_2.io.input.events.KeyPressEvent</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">KeyPressEvent(key=&lt;Key.Escape:</span> <span class="pre">'escape'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mods=Mods(alt=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift=False))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_char:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_color_pair:</span> <span class="pre">~nurses_2.colors.color_data_structures.ColorPair</span> <span class="pre">=</span> <span class="pre">ColorPair(fg_red=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_green=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_blue=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_red=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_green=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_blue=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double_click_timeout:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_interval:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_theme:</span> <span class="pre">~nurses_2.colors.color_data_structures.ColorTheme</span> <span class="pre">=</span> <span class="pre">ColorTheme(primary_fg=Color(red=209</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=196</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=233)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg=Color(red=49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=27</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=146)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_fg_light=Color(red=237</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=231</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=246)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg_light=Color(red=103</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=70</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=195)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_fg_dark=Color(red=179</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=157</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=219)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg_dark=Color(red=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=99)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_fg=Color(red=33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=33)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_bg=Color(red=255</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=179</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=0))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asciicast_path:</span> <span class="pre">~typing.Optional[~pathlib.Path]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Base for creating terminal applications.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>exit_key</strong><span class="classifier">KeyPressEvent | None, default: KeyPressEvent.ESCAPE</span></dt><dd><p>Quit the app when this key is pressed.</p>
-</dd>
-<dt><strong>background_char</strong><span class="classifier">str, default: ” “</span></dt><dd><p>Background character for root widget.</p>
-</dd>
-<dt><strong>background_color_pair</strong><span class="classifier">ColorPair, default: BLACK_ON_BLACK</span></dt><dd><p>Background color pair for root widget.</p>
-</dd>
-<dt><strong>title</strong><span class="classifier">str | None, default: None</span></dt><dd><p>Set terminal title (if supported).</p>
-</dd>
-<dt><strong>double_click_timeout</strong><span class="classifier">float, default: 0.5</span></dt><dd><p>Max duration of a double-click. Max duration of a triple-click
-is double this value.</p>
-</dd>
-<dt><strong>render_interval</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Seconds between screen renders.</p>
-</dd>
-<dt><strong>color_theme</strong><span class="classifier">ColorTheme, default: DEFAULT_COLOR_THEME</span></dt><dd><p>Color theme used for <cite>Themable</cite> widgets.</p>
-</dd>
-<dt><strong>asciicast_path</strong><span class="classifier">Path | None, default: None</span></dt><dd><p>Record the terminal in asciicast v2 file format if a path is provided.
-Resizing the terminal while recording isn’t currently supported by
-the asciicast format – doing so will corrupt the recording.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>children</strong></dt><dd></dd>
-<dt><strong>color_theme</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.App.on_start" title="nurses_2.app.App.on_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_start</span></code></a>()</p></td>
-<td><p>Coroutine scheduled when app is run.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.app.App.run" title="nurses_2.app.App.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</p></td>
-<td><p>Run the app.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><strong>add_widget</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>add_widgets</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>exit</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.app.App.add_widget">
-<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.add_widget" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.app.App.add_widgets">
-<span class="sig-name descname"><span class="pre">add_widgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.add_widgets" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.app.App.children">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#nurses_2.app.App.children" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.app.App.color_theme">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.ColorTheme" title="nurses_2.colors.color_data_structures.ColorTheme"><span class="pre">ColorTheme</span></a></em><a class="headerlink" href="#nurses_2.app.App.color_theme" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.app.App.exit">
-<span class="sig-name descname"><span class="pre">exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.exit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.app.App.on_start">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.on_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Coroutine scheduled when app is run.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.app.App.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the app.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nurses_2.app.run_widget_as_app">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.app.</span></span><span class="sig-name descname"><span class="pre">run_widget_as_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.run_widget_as_app" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run a widget as a full-screen app.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>widget</strong><span class="classifier">type[Widget]</span></dt><dd><p>Widget type to be instantiated and run as an app.</p>
-</dd>
-<dt><strong>*args</strong></dt><dd><p>Positional arguments for widget instantiation.</p>
-</dd>
-<dt><strong>**kwargs</strong></dt><dd><p>Keyword arguments for widget instantiation.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This is a convenience function provided to reduce boilerplate
-for the simplest case of an App. The widget type is provided
-instead of an instance to cover cases where the widget schedules
-tasks on instantiation as no event loop exists before the App is
-created.</p>
-</dd></dl>
-
 </section>
 
 

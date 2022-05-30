@@ -123,72 +123,11 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanvasView</span></code></a>(canvas)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanvasView</span></code>(canvas)</p></td>
 <td><p>A wrapper around a <cite>numpy</cite> <cite>ndarray</cite> with a convenient <cite>add_text</cite> method.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.text_widget_data_structures.CanvasView">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.text_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">CanvasView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_widget_data_structures.CanvasView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A wrapper around a <cite>numpy</cite> <cite>ndarray</cite> with a convenient <cite>add_text</cite> method.</p>
-<p class="rubric">Notes</p>
-<p>One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
-the <cite>add_text</cite> <cite>row</cite> and <cite>column</cite> parameters make sense.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>canvas</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.text_widget_data_structures.CanvasView.add_text" title="nurses_2.widgets.text_widget_data_structures.CanvasView.add_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_text</span></code></a>(text[, row, column, bold, italic, ...])</p></td>
-<td><p>Add text to the canvas.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.text_widget_data_structures.CanvasView.add_text">
-<span class="sig-name descname"><span class="pre">add_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_widget_data_structures.CanvasView.add_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add text to the canvas.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
-</dd>
-<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added. This will be passed as-is as the first argument
-to <cite>numpy</cite>’s <cite>ndarray.__getitem__</cite>.</p>
-</dd>
-<dt><strong>column</strong><span class="classifier">int, default: 0</span></dt><dd><p>The first column to which text is added.</p>
-</dd>
-<dt><strong>bold</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is bold.</p>
-</dd>
-<dt><strong>italic</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is italic.</p>
-</dd>
-<dt><strong>underline</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is underlined.</p>
-</dd>
-<dt><strong>strikethrough</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is strikethrough.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Text is meant to be a single line of text. Text is not wrapped if it is too long, instead
-index error is raised.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.text_widget_data_structures.CanvasView.canvas">
-<span class="sig-name descname"><span class="pre">canvas</span></span><a class="headerlink" href="#nurses_2.widgets.text_widget_data_structures.CanvasView.canvas" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </section>
 
 

@@ -123,51 +123,11 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect" title="nurses_2.widgets.behaviors.effects.effect.Effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect</span></code>()</p></td>
 <td><p>Effects are behaviors that modify how a widget and its children are rendered. Effects should be inherited in the reverse order that they are applied, e.g.,     <code class="docutils literal notranslate"><span class="pre">`</span>&#160;&#160;&#160;&#160; <span class="pre">class</span> <span class="pre">MyEffectWidget(Effect1,</span> <span class="pre">Effect2,</span> <span class="pre">TextWidget):</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">`</span></code> applies Effect2 then Effect1.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.effect.Effect">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.effects.effect.</span></span><span class="sig-name descname"><span class="pre">Effect</span></span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.effect.Effect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Effects are behaviors that modify how a widget and its children are rendered.
-Effects should be inherited in the reverse order that they are applied, e.g.,</p>
-<blockquote>
-<div><p><a href="#id1"><span class="problematic" id="id2">``</span></a>`
-class MyEffectWidget(Effect1, Effect2, TextWidget):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
-</div></blockquote>
-<p>applies Effect2 then Effect1.</p>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect" title="nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_effect</span></code></a>(canvas_view, colors_view, source)</p></td>
-<td><p>Apply an effect to the rendered views of a widget.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect.render" title="nurses_2.widgets.behaviors.effects.effect.Effect.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
-<td><p>Render normally then apply canvas and color effects.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_effect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply an effect to the rendered views of a widget.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.effect.Effect.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.effect.Effect.render" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render normally then apply canvas and color effects.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 

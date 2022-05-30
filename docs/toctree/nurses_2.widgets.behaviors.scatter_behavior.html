@@ -123,78 +123,11 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior" title="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScatterBehavior</span></code></a>(*[, disable_child_oob, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScatterBehavior</span></code>(*[, disable_child_oob, ...])</p></td>
 <td><p>Scatter behavior allows a widget's children to be translated by dragging them.</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.scatter_behavior.</span></span><span class="sig-name descname"><span class="pre">ScatterBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_child_oob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_child_ptf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrabbableBehavior</span></code></a></p>
-<p>Scatter behavior allows a widget’s children to be translated by dragging them.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>disable_child_oob</strong><span class="classifier">bool, default: False</span></dt><dd><p>Disallow child widgets from being translated out-of-bounds if true.</p>
-</dd>
-<dt><strong>disable_child_ptf</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, child widgets won’t be pulled-to-front when clicked.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>is_grabbed</strong></dt><dd></dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dx</span></code></dt><dd><p>Horizontal change in mouse position.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dy</span></code></dt><dd><p>Vertical change in mouse position.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dyx</span></code></dt><dd><p>Change in mouse position.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab" title="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab</span></code></a>(mouse_event)</p></td>
-<td><p>Grab widget.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab_update" title="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab_update</span></code></a>(mouse_event)</p></td>
-<td><p>Update grabbed widget with incoming mouse event.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.ungrab" title="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.ungrab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ungrab</span></code></a>(mouse_event)</p></td>
-<td><p>Ungrab widget.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><strong>on_click</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab">
-<span class="sig-name descname"><span class="pre">grab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Grab widget.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab_update">
-<span class="sig-name descname"><span class="pre">grab_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.grab_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update grabbed widget with incoming mouse event.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.ungrab">
-<span class="sig-name descname"><span class="pre">ungrab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.scatter_behavior.ScatterBehavior.ungrab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ungrab widget.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
