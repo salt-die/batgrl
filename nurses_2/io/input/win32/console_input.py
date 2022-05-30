@@ -1,18 +1,21 @@
 """
 Parse and create events for each input record from a win32 console.
 """
-from ctypes.wintypes import DWORD
-from ctypes import byref, windll
-
+try:
+    from ctypes.wintypes import DWORD
+    from ctypes import byref, windll
+    from ...win32_types import (
+        INPUT_RECORD,
+        KEY_EVENT_RECORD,
+        MOUSE_EVENT_RECORD,
+        STD_INPUT_HANDLE,
+        WINDOW_BUFFER_SIZE_RECORD,
+        EventTypes,
+    )
+except ModuleNotFoundError:
+    # This file needs to be importable on linux for auto-documentation.
+    pass
 from ....data_structures import Point, Size
-from ...win32_types import (
-    INPUT_RECORD,
-    KEY_EVENT_RECORD,
-    MOUSE_EVENT_RECORD,
-    STD_INPUT_HANDLE,
-    WINDOW_BUFFER_SIZE_RECORD,
-    EventTypes,
-)
 from ..events import (
     Key,
     Mods,
