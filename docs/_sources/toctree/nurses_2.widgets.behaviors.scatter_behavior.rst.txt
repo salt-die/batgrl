@@ -1,0 +1,29 @@
+nurses\_2.widgets.behaviors.scatter\_behavior
+=============================================
+
+.. automodule:: nurses_2.widgets.behaviors.scatter_behavior
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ScatterBehavior
+   
+   
+
+   
+   
+   
+
+
+

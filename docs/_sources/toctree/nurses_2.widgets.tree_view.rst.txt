@@ -1,0 +1,30 @@
+nurses\_2.widgets.tree\_view
+============================
+
+.. automodule:: nurses_2.widgets.tree_view
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TreeView
+      TreeViewNode
+   
+   
+
+   
+   
+   
+
+
+

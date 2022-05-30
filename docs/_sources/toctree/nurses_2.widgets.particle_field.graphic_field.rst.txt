@@ -1,0 +1,30 @@
+nurses\_2.widgets.particle\_field.graphic\_field
+================================================
+
+.. automodule:: nurses_2.widgets.particle_field.graphic_field
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GraphicParticle
+      GraphicParticleField
+   
+   
+
+   
+   
+   
+
+
+

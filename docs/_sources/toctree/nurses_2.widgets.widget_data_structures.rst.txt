@@ -1,0 +1,32 @@
+nurses\_2.widgets.widget\_data\_structures
+==========================================
+
+.. automodule:: nurses_2.widgets.widget_data_structures
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Anchor
+      Easing
+      PosHint
+      SizeHint
+   
+   
+
+   
+   
+   
+
+
+

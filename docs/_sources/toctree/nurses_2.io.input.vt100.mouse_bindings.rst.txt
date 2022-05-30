@@ -1,0 +1,23 @@
+nurses\_2.io.input.vt100.mouse\_bindings
+========================================
+
+.. automodule:: nurses_2.io.input.vt100.mouse_bindings
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

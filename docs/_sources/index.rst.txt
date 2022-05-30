@@ -11,7 +11,7 @@ Welcome to nurses_2's documentation!
    :caption: Contents:
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree: toctree
    :recursive:
 
    nurses_2

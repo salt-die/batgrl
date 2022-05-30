@@ -1,0 +1,60 @@
+nurses\_2.widgets
+=================
+
+.. automodule:: nurses_2.widgets
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   nurses_2.widgets.animation
+   nurses_2.widgets.behaviors
+   nurses_2.widgets.braille_image
+   nurses_2.widgets.button
+   nurses_2.widgets.color_picker
+   nurses_2.widgets.digital_display
+   nurses_2.widgets.file_chooser
+   nurses_2.widgets.graphic_widget
+   nurses_2.widgets.graphic_widget_data_structures
+   nurses_2.widgets.grid_layout
+   nurses_2.widgets.image
+   nurses_2.widgets.line_plot
+   nurses_2.widgets.menu
+   nurses_2.widgets.parallax
+   nurses_2.widgets.particle_field
+   nurses_2.widgets.progress_bar
+   nurses_2.widgets.ray_caster
+   nurses_2.widgets.scroll_view
+   nurses_2.widgets.shadow_caster
+   nurses_2.widgets.slider
+   nurses_2.widgets.split_layout
+   nurses_2.widgets.text_widget
+   nurses_2.widgets.text_widget_data_structures
+   nurses_2.widgets.tiled_image
+   nurses_2.widgets.toggle_button
+   nurses_2.widgets.tree_view
+   nurses_2.widgets.video_player
+   nurses_2.widgets.widget
+   nurses_2.widgets.widget_data_structures
+   nurses_2.widgets.window
+

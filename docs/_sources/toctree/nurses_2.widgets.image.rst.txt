@@ -1,0 +1,29 @@
+nurses\_2.widgets.image
+=======================
+
+.. automodule:: nurses_2.widgets.image
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Image
+   
+   
+
+   
+   
+   
+
+
+
