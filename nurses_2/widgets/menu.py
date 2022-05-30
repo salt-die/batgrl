@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from inspect import signature
-from typing import Callable, Optional
+from typing import Callable as CallableT, Optional
 
 from wcwidth import wcswidth
 
@@ -15,7 +16,7 @@ __all__ = (
     "MenuItem",
 )
 
-MenuDict = dict[tuple[str, str], Callable[[], None] | Callable[[ToggleState], None] | "MenuDict"]
+MenuDict = dict[tuple[str, str], CallableT[[], None] | CallableT[[ToggleState], None] | "MenuDict"]
 NESTED_SUFFIX = " ▶"
 CHECK_OFF = "□"
 CHECK_ON = "▣"
@@ -153,10 +154,10 @@ class Menu(GridLayout):
     A menu widget.
 
     Menus are meant to be constructed with the class method `from_dict_of_dicts`.
-    The each key of the dict should be a tuple of two strings for left and right labels and
+    Each key of the dict should be a tuple of two strings for left and right labels and
     each value should be either a callable with no arguments for a normal menu item, a
     callable with one argument for a toggle menu item (the argument will be the state of the
-    toggle button, `ToggleState`) or a dict (for a submenu).
+    toggle button, `ToggleState`), or a dict (for a submenu).
 
     See Also
     --------
@@ -347,35 +348,35 @@ class Menu(GridLayout):
 
         y, x = pos
         for i, ((left_label, right_label), callable_or_dict) in enumerate(menu.items()):
-            if not isinstance(callable_or_dict, Callable):
-                for nested in Menu.from_dict_of_dicts(
-                    callable_or_dict,
-                    pos=(y + i, x + width),
-                    close_on_release=close_on_release,
-                    close_on_click=close_on_click,
-                ):
-                    nested._parent_menu = menu_widget
-                    nested.is_enabled = False
-                    menu_widget._submenus.append(nested)
+            match callable_or_dict:
+                case Callable():
+                    menu_item = MenuItem(
+                        left_label=f"   {left_label}",
+                        right_label=f"{right_label} ",
+                        item_callback=callable_or_dict,
+                        size=(1, width),
+                    )
+                case dict():
+                    for nested in Menu.from_dict_of_dicts(
+                        callable_or_dict,
+                        pos=(y + i, x + width),
+                        close_on_release=close_on_release,
+                        close_on_click=close_on_click,
+                    ):
+                        nested._parent_menu = menu_widget
+                        nested.is_enabled = False
+                        menu_widget._submenus.append(nested)
 
-                    yield nested
+                        yield nested
 
-                right_label += NESTED_SUFFIX
-
-                menu_item = MenuItem(
-                    left_label=f"   {left_label}",
-                    right_label=f"{right_label} ",
-                    submenu=nested,
-                    size=(1, width),
-                )
-
-            else:
-                menu_item = MenuItem(
-                    left_label=f"   {left_label}",
-                    right_label=f"{right_label} ",
-                    item_callback=callable_or_dict,
-                    size=(1, width),
-                )
+                    menu_item = MenuItem(
+                        left_label=f"   {left_label}",
+                        right_label=f"{right_label}{NESTED_SUFFIX} ",
+                        submenu=nested,
+                        size=(1, width),
+                    )
+                case _:
+                    raise TypeError(f"expected Callable or dict, got {type(callable_or_dict)}")
 
             menu_widget.add_widget(menu_item)
 
