@@ -1,39 +1,123 @@
 
-<!DOCTYPE html>
 
-<html lang="en">
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>nurses_2.widgets.behaviors.toggle_button_behavior &#8212; nurses_2 0.9.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="nurses_2.widgets.braille_image" href="nurses_2.widgets.braille_image.html" />
-    <link rel="prev" title="nurses_2.widgets.behaviors.themable" href="nurses_2.widgets.behaviors.themable.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
+  <title>nurses_2.widgets.behaviors.toggle_button_behavior &mdash; nurses_2 0.9.3 documentation</title>
   
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  
+
+  
+
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
+
+  
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/darker.css" type="text/css" />
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="nurses_2 0.9.3 documentation" href="../index.html"/>
+        <link rel="up" title="nurses_2.widgets.behaviors" href="nurses_2.widgets.behaviors.html"/>
+        <link rel="next" title="nurses_2.widgets.braille_image" href="nurses_2.widgets.braille_image.html"/>
+        <link rel="prev" title="nurses_2.widgets.behaviors.themable" href="nurses_2.widgets.behaviors.themable.html"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="cache-control" content="public" />
+    <meta name="robots" content="follow, all" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add jQuery library -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+  </head>
+
+  <body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../index.html" class="fa fa-home"> nurses_2 </a>
+        <div role="search">
+	  <form id ="rtd-search-form" class="wy-form"
+		action="../search.html" method="get">
+	    <input type="text" name="q" placeholder="Search docs" />
+	    <input type="hidden" name="check_keywords" value="yes" />
+	    <input type="hidden" name="area" value="default" />
+	  </form>
+	</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	
           
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.app.html">nurses_2.app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.colors.html">nurses_2.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.data_structures.html">nurses_2.data_structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.easings.html">nurses_2.easings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a></li>
+</ul>
+</li>
+</ul>
 
-          <div class="body" role="main">
-            
+          
+        
+
+      </div>
+      &nbsp;
+    </nav>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">Porão do Juca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+	<div class="fundo-claro">
+	</div>
+	<div class="fundo-escuro">
+	</div>
+
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+	    
+	    <!-- <ul class="wy-breadcrumbs"> -->
+	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
+
+	    <!--   <li>Features</li> -->
+	    <!--   <li class="wy-breadcrumbs-aside"> -->
+
+	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
+
+	    <!--   </li> -->
+	    <!-- </ul> -->
+	    <!-- <hr/> -->
+	  </div>
+
+          <div role="main" class="">
+
+	    <div id="content" class="hfeed entry-container hentry">
   <section id="module-nurses_2.widgets.behaviors.toggle_button_behavior">
 <span id="nurses-2-widgets-behaviors-toggle-button-behavior"></span><h1>nurses_2.widgets.behaviors.toggle_button_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.toggle_button_behavior" title="Permalink to this heading">¶</a></h1>
 <p class="rubric">Classes</p>
@@ -202,129 +286,75 @@ is <cite>False</cite> this value will be ignored if all buttons would be “off�
 </section>
 
 
-          </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">nurses_2</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.app.html">nurses_2.app</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.colors.html">nurses_2.colors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.data_structures.html">nurses_2.data_structures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.easings.html">nurses_2.easings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.animation.html">nurses_2.widgets.animation</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="nurses_2.widgets.behaviors.html">nurses_2.widgets.behaviors</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.button_behavior.html">nurses_2.widgets.behaviors.button_behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.effects.html">nurses_2.widgets.behaviors.effects</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html">nurses_2.widgets.behaviors.focus_behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.grab_move_behavior.html">nurses_2.widgets.behaviors.grab_move_behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html">nurses_2.widgets.behaviors.grab_resize_behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html">nurses_2.widgets.behaviors.grabbable_behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.scatter_behavior.html">nurses_2.widgets.behaviors.scatter_behavior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="nurses_2.widgets.behaviors.themable.html">nurses_2.widgets.behaviors.themable</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">nurses_2.widgets.behaviors.toggle_button_behavior</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.braille_image.html">nurses_2.widgets.braille_image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.button.html">nurses_2.widgets.button</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.color_picker.html">nurses_2.widgets.color_picker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.digital_display.html">nurses_2.widgets.digital_display</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.file_chooser.html">nurses_2.widgets.file_chooser</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.graphic_widget.html">nurses_2.widgets.graphic_widget</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html">nurses_2.widgets.graphic_widget_data_structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.grid_layout.html">nurses_2.widgets.grid_layout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.image.html">nurses_2.widgets.image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.line_plot.html">nurses_2.widgets.line_plot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.menu.html">nurses_2.widgets.menu</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.parallax.html">nurses_2.widgets.parallax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.particle_field.html">nurses_2.widgets.particle_field</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.progress_bar.html">nurses_2.widgets.progress_bar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.ray_caster.html">nurses_2.widgets.ray_caster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.scroll_view.html">nurses_2.widgets.scroll_view</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.shadow_caster.html">nurses_2.widgets.shadow_caster</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.slider.html">nurses_2.widgets.slider</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.split_layout.html">nurses_2.widgets.split_layout</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.text_widget.html">nurses_2.widgets.text_widget</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html">nurses_2.widgets.text_widget_data_structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.tiled_image.html">nurses_2.widgets.tiled_image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.toggle_button.html">nurses_2.widgets.toggle_button</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.tree_view.html">nurses_2.widgets.tree_view</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.video_player.html">nurses_2.widgets.video_player</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.widget.html">nurses_2.widgets.widget</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html">nurses_2.widgets.widget_data_structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.window.html">nurses_2.widgets.window</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="nurses_2.html">nurses_2</a><ul>
-  <li><a href="nurses_2.widgets.html">nurses_2.widgets</a><ul>
-  <li><a href="nurses_2.widgets.behaviors.html">nurses_2.widgets.behaviors</a><ul>
-      <li>Previous: <a href="nurses_2.widgets.behaviors.themable.html" title="previous chapter">nurses_2.widgets.behaviors.themable</a></li>
-      <li>Next: <a href="nurses_2.widgets.braille_image.html" title="next chapter">nurses_2.widgets.braille_image</a></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2022, salt-die.
+	    </div>
+            <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+        <a href="nurses_2.widgets.braille_image.html" class="btn btn-neutral float-right" title="nurses_2.widgets.braille_image">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      |
-      <a href="../_sources/toctree/nurses_2.widgets.behaviors.toggle_button_behavior.rst.txt"
-          rel="nofollow">Page source</a>
+      
+        <a href="nurses_2.widgets.behaviors.themable.html" class="btn btn-neutral" title="nurses_2.widgets.behaviors.themable"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
-    
+  <hr/>
 
-    
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, salt-die.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
+
+</footer>
+	</div>
+	</div>
+	  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.9.3',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+    <script type="text/javascript" src="../_static/documentation_options.js">
+
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js">
+
+    </script>
+    <script type="text/javascript" src="../_static/underscore.js">
+
+    </script>
+    <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js">
+
+    </script>
+    <script type="text/javascript" src="../_static/doctools.js">
+
+    </script>
+
+  
+
+   <script type="text/javascript"
+           src="../_static/js/theme.js"></script>
+
+   <script type="text/javascript"
+           src="../_static/js/pdj.js"></script>
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
   </body>
 </html>
