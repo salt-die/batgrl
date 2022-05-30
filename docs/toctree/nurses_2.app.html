@@ -1,73 +1,200 @@
 
+<!DOCTYPE html>
 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+    <title>nurses_2.app &#8212; nurses_2 0.9.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="nurses_2.clamp" href="nurses_2.clamp.html" />
+    <link rel="prev" title="nurses_2" href="nurses_2.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <title>nurses_2.app &mdash; nurses_2 0.9.3 documentation</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
   
 
-  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
 
-  
+          <div class="body" role="main">
+            
+  <section id="module-nurses_2.app">
+<span id="nurses-2-app"></span><h1>nurses_2.app<a class="headerlink" href="#module-nurses_2.app" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.run_widget_as_app" title="nurses_2.app.run_widget_as_app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_widget_as_app</span></code></a>(widget, *args, **kwargs)</p></td>
+<td><p>Run a widget as a full-screen app.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.App" title="nurses_2.app.App"><code class="xref py py-obj docutils literal notranslate"><span class="pre">App</span></code></a>(*, exit_key, background_char, ...[, ...])</p></td>
+<td><p>Base for creating terminal applications.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.app.App">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.app.</span></span><span class="sig-name descname"><span class="pre">App</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_key:</span> <span class="pre">nurses_2.io.input.events.KeyPressEvent</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">KeyPressEvent(key=&lt;Key.Escape:</span> <span class="pre">'escape'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mods=Mods(alt=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift=False))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_char:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_color_pair:</span> <span class="pre">~nurses_2.colors.color_data_structures.ColorPair</span> <span class="pre">=</span> <span class="pre">ColorPair(fg_red=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_green=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_blue=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_red=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_green=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_blue=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title:</span> <span class="pre">~typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double_click_timeout:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_interval:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_theme:</span> <span class="pre">~nurses_2.colors.color_data_structures.ColorTheme</span> <span class="pre">=</span> <span class="pre">ColorTheme(primary_fg=Color(red=209</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=196</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=233)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg=Color(red=49</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=27</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=146)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_fg_light=Color(red=237</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=231</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=246)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg_light=Color(red=103</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=70</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=195)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_fg_dark=Color(red=179</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=157</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=219)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg_dark=Color(red=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=99)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_fg=Color(red=33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=33</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=33)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_bg=Color(red=255</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green=179</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue=0))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asciicast_path:</span> <span class="pre">~typing.Optional[~pathlib.Path]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base for creating terminal applications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>exit_key</strong><span class="classifier">KeyPressEvent | None, default: KeyPressEvent.ESCAPE</span></dt><dd><p>Quit the app when this key is pressed.</p>
+</dd>
+<dt><strong>background_char</strong><span class="classifier">str, default: ” “</span></dt><dd><p>Background character for root widget.</p>
+</dd>
+<dt><strong>background_color_pair</strong><span class="classifier">ColorPair, default: BLACK_ON_BLACK</span></dt><dd><p>Background color pair for root widget.</p>
+</dd>
+<dt><strong>title</strong><span class="classifier">str | None, default: None</span></dt><dd><p>Set terminal title (if supported).</p>
+</dd>
+<dt><strong>double_click_timeout</strong><span class="classifier">float, default: 0.5</span></dt><dd><p>Max duration of a double-click. Max duration of a triple-click
+is double this value.</p>
+</dd>
+<dt><strong>render_interval</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Seconds between screen renders.</p>
+</dd>
+<dt><strong>color_theme</strong><span class="classifier">ColorTheme, default: DEFAULT_COLOR_THEME</span></dt><dd><p>Color theme used for <cite>Themable</cite> widgets.</p>
+</dd>
+<dt><strong>asciicast_path</strong><span class="classifier">Path | None, default: None</span></dt><dd><p>Record the terminal in asciicast v2 file format if a path is provided.
+Resizing the terminal while recording isn’t currently supported by
+the asciicast format – doing so will corrupt the recording.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>children</strong></dt><dd></dd>
+<dt><strong>color_theme</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.App.on_start" title="nurses_2.app.App.on_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_start</span></code></a>()</p></td>
+<td><p>Coroutine scheduled when app is run.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.app.App.run" title="nurses_2.app.App.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</p></td>
+<td><p>Run the app.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>add_widget</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>add_widgets</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>exit</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.app.App.add_widget">
+<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.app.App.add_widgets">
+<span class="sig-name descname"><span class="pre">add_widgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.add_widgets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
-  
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.app.App.children">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#nurses_2.app.App.children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-  
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.app.App.color_theme">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.ColorTheme" title="nurses_2.colors.color_data_structures.ColorTheme"><span class="pre">ColorTheme</span></a></em><a class="headerlink" href="#nurses_2.app.App.color_theme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-  
-    <link rel="stylesheet" href="../_static/css/darker.css" type="text/css" />
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="nurses_2 0.9.3 documentation" href="../index.html"/>
-        <link rel="up" title="nurses_2" href="nurses_2.html"/>
-        <link rel="next" title="nurses_2.clamp" href="nurses_2.clamp.html"/>
-        <link rel="prev" title="nurses_2" href="nurses_2.html"/>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.app.App.exit">
+<span class="sig-name descname"><span class="pre">exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="cache-control" content="public" />
-    <meta name="robots" content="follow, all" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Add jQuery library -->
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.app.App.on_start">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.on_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coroutine scheduled when app is run.</p>
+</dd></dl>
 
-  </head>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.app.App.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the app.</p>
+</dd></dl>
 
-  <body class="wy-body-for-nav" role="document">
+</dd></dl>
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        <a href="../index.html" class="fa fa-home"> nurses_2 </a>
-        <div role="search">
-	  <form id ="rtd-search-form" class="wy-form"
-		action="../search.html" method="get">
-	    <input type="text" name="q" placeholder="Search docs" />
-	    <input type="hidden" name="check_keywords" value="yes" />
-	    <input type="hidden" name="area" value="default" />
-	  </form>
-	</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="nurses_2.app.run_widget_as_app">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.app.</span></span><span class="sig-name descname"><span class="pre">run_widget_as_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.run_widget_as_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a widget as a full-screen app.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>widget</strong><span class="classifier">type[Widget]</span></dt><dd><p>Widget type to be instantiated and run as an app.</p>
+</dd>
+<dt><strong>*args</strong></dt><dd><p>Positional arguments for widget instantiation.</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><p>Keyword arguments for widget instantiation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is a convenience function provided to reduce boilerplate
+for the simplest case of an App. The widget type is provided
+instead of an instance to cover cases where the widget schedules
+tasks on instantiation as no event loop exists before the App is
+created.</p>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">nurses_2</a></h1>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	
-          
-          
-              <ul class="current">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">nurses_2.app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
@@ -80,134 +207,53 @@
 </li>
 </ul>
 
-          
-        
-
-      </div>
-      &nbsp;
-    </nav>
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">Porão do Juca</a>
-      </nav>
-
-      <div class="wy-nav-content">
-	<div class="fundo-claro">
-	</div>
-	<div class="fundo-escuro">
-	</div>
-
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-	    
-	    <!-- <ul class="wy-breadcrumbs"> -->
-	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
-
-	    <!--   <li>Features</li> -->
-	    <!--   <li class="wy-breadcrumbs-aside"> -->
-
-	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
-
-	    <!--   </li> -->
-	    <!-- </ul> -->
-	    <!-- <hr/> -->
-	  </div>
-
-          <div role="main" class="">
-
-	    <div id="content" class="hfeed entry-container hentry">
-  <section id="module-nurses_2.app">
-<span id="nurses-2-app"></span><h1>nurses_2.app<a class="headerlink" href="#module-nurses_2.app" title="Permalink to this heading">¶</a></h1>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_widget_as_app</span></code>(widget, *args, **kwargs)</p></td>
-<td><p>Run a widget as a full-screen app.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">App</span></code>(*, exit_key, background_char, ...[, ...])</p></td>
-<td><p>Base for creating terminal applications.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-
-
-	    </div>
-            <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="nurses_2.clamp.html" class="btn btn-neutral float-right" title="nurses_2.clamp">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="nurses_2.html" class="btn btn-neutral" title="nurses_2"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="nurses_2.html">nurses_2</a><ul>
+      <li>Previous: <a href="nurses_2.html" title="previous chapter">nurses_2</a></li>
+      <li>Next: <a href="nurses_2.clamp.html" title="next chapter">nurses_2.clamp</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
-  <hr/>
 
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, salt-die.
-    </p>
-  </div>
 
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
 
-</footer>
-	</div>
-	</div>
-	  
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.9.3',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-    <script type="text/javascript" src="../_static/documentation_options.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/underscore.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js">
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, salt-die.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/toctree/nurses_2.app.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </script>
-    <script type="text/javascript" src="../_static/doctools.js">
+    
 
-    </script>
-
-  
-
-   <script type="text/javascript"
-           src="../_static/js/theme.js"></script>
-
-   <script type="text/javascript"
-           src="../_static/js/pdj.js"></script>
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
+    
   </body>
 </html>

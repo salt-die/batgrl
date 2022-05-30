@@ -1,123 +1,39 @@
 
+<!DOCTYPE html>
 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+    <title>nurses_2.widgets.file_chooser &#8212; nurses_2 0.9.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="nurses_2.widgets.graphic_widget" href="nurses_2.widgets.graphic_widget.html" />
+    <link rel="prev" title="nurses_2.widgets.digital_display" href="nurses_2.widgets.digital_display.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <title>nurses_2.widgets.file_chooser &mdash; nurses_2 0.9.3 documentation</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
   
 
-  
-
-  
-
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
-
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="stylesheet" href="../_static/css/darker.css" type="text/css" />
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="nurses_2 0.9.3 documentation" href="../index.html"/>
-        <link rel="up" title="nurses_2.widgets" href="nurses_2.widgets.html"/>
-        <link rel="next" title="nurses_2.widgets.graphic_widget" href="nurses_2.widgets.graphic_widget.html"/>
-        <link rel="prev" title="nurses_2.widgets.digital_display" href="nurses_2.widgets.digital_display.html"/>
-
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="cache-control" content="public" />
-    <meta name="robots" content="follow, all" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Add jQuery library -->
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-  </head>
-
-  <body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        <a href="../index.html" class="fa fa-home"> nurses_2 </a>
-        <div role="search">
-	  <form id ="rtd-search-form" class="wy-form"
-		action="../search.html" method="get">
-	    <input type="text" name="q" placeholder="Search docs" />
-	    <input type="hidden" name="check_keywords" value="yes" />
-	    <input type="hidden" name="area" value="default" />
-	  </form>
-	</div>
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
           
-          
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.app.html">nurses_2.app</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.colors.html">nurses_2.colors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.data_structures.html">nurses_2.data_structures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.easings.html">nurses_2.easings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a></li>
-</ul>
-</li>
-</ul>
 
-          
-        
-
-      </div>
-      &nbsp;
-    </nav>
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">Porão do Juca</a>
-      </nav>
-
-      <div class="wy-nav-content">
-	<div class="fundo-claro">
-	</div>
-	<div class="fundo-escuro">
-	</div>
-
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-	    
-	    <!-- <ul class="wy-breadcrumbs"> -->
-	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
-
-	    <!--   <li>Features</li> -->
-	    <!--   <li class="wy-breadcrumbs-aside"> -->
-
-	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
-
-	    <!--   </li> -->
-	    <!-- </ul> -->
-	    <!-- <hr/> -->
-	  </div>
-
-          <div role="main" class="">
-
-	    <div id="content" class="hfeed entry-container hentry">
+          <div class="body" role="main">
+            
   <section id="module-nurses_2.widgets.file_chooser">
 <span id="nurses-2-widgets-file-chooser"></span><h1>nurses_2.widgets.file_chooser<a class="headerlink" href="#module-nurses_2.widgets.file_chooser" title="Permalink to this heading">¶</a></h1>
 <p class="rubric">Functions</p>
@@ -131,7 +47,7 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileChooser</span></code>(root_dir, directories_only, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.file_chooser.FileChooser" title="nurses_2.widgets.file_chooser.FileChooser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileChooser</span></code></a>(root_dir, directories_only, ...)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
@@ -154,78 +70,315 @@
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.file_chooser.</span></span><span class="sig-name descname"><span class="pre">FileChooser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">root_dir:</span> <span class="pre">~typing.Optional[~pathlib.Path]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directories_only:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">show_hidden:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">select_callback:</span> <span class="pre">~typing.Callable[[~pathlib.Path],</span> <span class="pre">None]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">FileChooser.&lt;lambda&gt;&gt;,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="nurses_2.widgets.scroll_view.scroll_view.ScrollView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScrollView</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></dt><dd><p>Absolute position on screen.</p>
+</dd>
+<dt><strong>anchor</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></dt><dd><p>The running app.</p>
+</dd>
+<dt><strong>background_char</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">bottom</span></code></dt><dd><p>Bottom of widget in parent’s reference frame.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">center</span></code></dt><dd><p>The center of the widget in local coordinates.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">columns</span></code></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><strong>directories_only</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">height_hint</span></code></dt><dd><p>Widget’s height as proportion of its parent’s height.</p>
+</dd>
+<dt><strong>horizontal_proportion</strong></dt><dd></dd>
+<dt><strong>is_grabbed</strong></dt><dd></dd>
+<dt><strong>left</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_height</span></code></dt><dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_width</span></code></dt><dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_height</span></code></dt><dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_width</span></code></dt><dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dx</span></code></dt><dd><p>Horizontal change in mouse position.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dy</span></code></dt><dd><p>Vertical change in mouse position.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dyx</span></code></dt><dd><p>Change in mouse position.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos</span></code></dt><dd><p>Position relative to parent.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_hint</span></code></dt><dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">right</span></code></dt><dd><p>Right side of widget in parent’s reference frame.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></dt><dd><p>Return the root widget if connected to widget tree.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><strong>show_hidden</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Size of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_hint</span></code></dt><dd><p>Widget’s size as a proportion of its parent’s size.</p>
+</dd>
+<dt><strong>top</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_horizontal_distance</span></code></dt><dd><p>Return difference between child width and scrollview width.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">total_vertical_distance</span></code></dt><dd><p>Return difference between child height and scrollview height.</p>
+</dd>
+<dt><strong>vertical_proportion</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">view_left</span></code></dt><dd><p>The current left-coordinate of child due to <cite>horizontal_proportion</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">view_top</span></code></dt><dd><p>The current top-coordinate of child due to <cite>vertical_proportion</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">width</span></code></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">width_hint</span></code></dt><dd><p>Widget’s width as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>x</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_hint</span></code></dt><dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>y</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_hint</span></code></dt><dd><p>Vertical position of widget as a proportion of its parent’s height.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code>(widget)</p></td>
+<td><p>Add a child widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widgets</span></code>(*widgets)</p></td>
+<td><p>Add multiple child widgets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_point</span></code>(point)</p></td>
+<td><p>Return True if point is within widget's visible bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_widget</span></code>(widget)</p></td>
+<td><p>Return True if some part of widget is within bounding box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_click</span></code>(mouse_event)</p></td>
+<td><p>Dispatch mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_double_click</span></code>(mouse_event)</p></td>
+<td><p>Dispatch double-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_paste</span></code>(paste_event)</p></td>
+<td><p>Dispatch paste event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_press</span></code>(key_press_event)</p></td>
+<td><p>Dispatch key press until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_triple_click</span></code>(mouse_event)</p></td>
+<td><p>Dispatch triple-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab</span></code>(mouse_event)</p></td>
+<td><p>Grab widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab_update</span></code>(mouse_event)</p></td>
+<td><p>Update grabbed widget with incoming mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_click</span></code>(mouse_event)</p></td>
+<td><p>Handle mouse event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_double_click</span></code>(mouse_event)</p></td>
+<td><p>Handle double-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_paste</span></code>(paste_event)</p></td>
+<td><p>Handle paste event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_press</span></code>(key_press_event)</p></td>
+<td><p>Handle key press event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.file_chooser.FileChooser.on_size" title="nurses_2.widgets.file_chooser.FileChooser.on_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_size</span></code></a>()</p></td>
+<td><p>Called when widget is resized.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_triple_click</span></code>(mouse_event)</p></td>
+<td><p>Handle triple-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pull_to_front</span></code>()</p></td>
+<td><p>Move widget to end of widget stack so that it is drawn last.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_widget</span></code>(widget)</p></td>
+<td><p>Remove widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(canvas_view, colors_view, source)</p></td>
+<td><p>Paint region given by source into canvas_view and colors_view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_intersection</span></code>(destination, ...)</p></td>
+<td><p>Render the intersection of destination with widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">subscribe</span></code>(source, attr, action)</p></td>
+<td><p>Subscribe to a widget property.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_local</span></code>(point)</p></td>
+<td><p>Convert point in absolute coordinates to local coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tween</span></code>(*[, duration, easing, on_start, ...])</p></td>
+<td><p>Coroutine that sequentially updates widget properties over a duration (in seconds).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ungrab</span></code>(mouse_event)</p></td>
+<td><p>Ungrab widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsubscribe</span></code>(source, attr)</p></td>
+<td><p>Unsubscribe to a widget event and return the callable that was subscribed to the event or <cite>None</cite> if subscription isn't found.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_geometry</span></code>()</p></td>
+<td><p>Update geometry due to a change in parent's size.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk</span></code>()</p></td>
+<td><p>Yield all descendents.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk_from_root</span></code>()</p></td>
+<td><p>Yield all descendents of the root widget.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>render_children</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.directories_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">directories_only</span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.directories_only" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.on_size">
+<span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.on_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when widget is resized.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.show_hidden">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_hidden</span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.show_hidden" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
-	    </div>
-            <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="nurses_2.widgets.graphic_widget.html" class="btn btn-neutral float-right" title="nurses_2.widgets.graphic_widget">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="nurses_2.widgets.digital_display.html" class="btn btn-neutral" title="nurses_2.widgets.digital_display"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">nurses_2</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.app.html">nurses_2.app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.colors.html">nurses_2.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.data_structures.html">nurses_2.data_structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.easings.html">nurses_2.easings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.animation.html">nurses_2.widgets.animation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.behaviors.html">nurses_2.widgets.behaviors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.braille_image.html">nurses_2.widgets.braille_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.button.html">nurses_2.widgets.button</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.color_picker.html">nurses_2.widgets.color_picker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.digital_display.html">nurses_2.widgets.digital_display</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nurses_2.widgets.file_chooser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.graphic_widget.html">nurses_2.widgets.graphic_widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html">nurses_2.widgets.graphic_widget_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.grid_layout.html">nurses_2.widgets.grid_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.image.html">nurses_2.widgets.image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.line_plot.html">nurses_2.widgets.line_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.menu.html">nurses_2.widgets.menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.parallax.html">nurses_2.widgets.parallax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.particle_field.html">nurses_2.widgets.particle_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.progress_bar.html">nurses_2.widgets.progress_bar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.ray_caster.html">nurses_2.widgets.ray_caster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.scroll_view.html">nurses_2.widgets.scroll_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.shadow_caster.html">nurses_2.widgets.shadow_caster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.slider.html">nurses_2.widgets.slider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.split_layout.html">nurses_2.widgets.split_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.text_widget.html">nurses_2.widgets.text_widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html">nurses_2.widgets.text_widget_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.tiled_image.html">nurses_2.widgets.tiled_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.toggle_button.html">nurses_2.widgets.toggle_button</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.tree_view.html">nurses_2.widgets.tree_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.video_player.html">nurses_2.widgets.video_player</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.widget.html">nurses_2.widgets.widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html">nurses_2.widgets.widget_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.window.html">nurses_2.widgets.window</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="nurses_2.html">nurses_2</a><ul>
+  <li><a href="nurses_2.widgets.html">nurses_2.widgets</a><ul>
+      <li>Previous: <a href="nurses_2.widgets.digital_display.html" title="previous chapter">nurses_2.widgets.digital_display</a></li>
+      <li>Next: <a href="nurses_2.widgets.graphic_widget.html" title="next chapter">nurses_2.widgets.graphic_widget</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
-  <hr/>
 
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, salt-die.
-    </p>
-  </div>
 
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
 
-</footer>
-	</div>
-	</div>
-	  
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.9.3',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-    <script type="text/javascript" src="../_static/documentation_options.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/underscore.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js">
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, salt-die.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/toctree/nurses_2.widgets.file_chooser.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </script>
-    <script type="text/javascript" src="../_static/doctools.js">
+    
 
-    </script>
-
-  
-
-   <script type="text/javascript"
-           src="../_static/js/theme.js"></script>
-
-   <script type="text/javascript"
-           src="../_static/js/pdj.js"></script>
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
+    
   </body>
 </html>

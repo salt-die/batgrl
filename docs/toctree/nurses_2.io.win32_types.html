@@ -1,246 +1,583 @@
 
+<!DOCTYPE html>
 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+    <title>nurses_2.io.win32_types &#8212; nurses_2 0.9.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="nurses_2.widgets" href="nurses_2.widgets.html" />
+    <link rel="prev" title="nurses_2.io.output.windows10" href="nurses_2.io.output.windows10.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <title>nurses_2.io.win32_types &mdash; nurses_2 0.9.3 documentation</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
   
 
-  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
 
-  
+          <div class="body" role="main">
+            
+  <section id="module-nurses_2.io.win32_types">
+<span id="nurses-2-io-win32-types"></span><h1>nurses_2.io.win32_types<a class="headerlink" href="#module-nurses_2.io.win32_types" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO" title="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONSOLE_SCREEN_BUFFER_INFO</span></code></a></p></td>
+<td><p>struct in wincon.h.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.COORD" title="nurses_2.io.win32_types.COORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COORD</span></code></a></p></td>
+<td><p>Struct in wincon.h <a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.EVENT_RECORD" title="nurses_2.io.win32_types.EVENT_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EVENT_RECORD</span></code></a></p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.FOCUS_EVENT_RECORD" title="nurses_2.io.win32_types.FOCUS_EVENT_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FOCUS_EVENT_RECORD</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.INPUT_RECORD" title="nurses_2.io.win32_types.INPUT_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INPUT_RECORD</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD" title="nurses_2.io.win32_types.KEY_EVENT_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KEY_EVENT_RECORD</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.MENU_EVENT_RECORD" title="nurses_2.io.win32_types.MENU_EVENT_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MENU_EVENT_RECORD</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.MOUSE_EVENT_RECORD" title="nurses_2.io.win32_types.MOUSE_EVENT_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOUSE_EVENT_RECORD</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.SECURITY_ATTRIBUTES" title="nurses_2.io.win32_types.SECURITY_ATTRIBUTES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SECURITY_ATTRIBUTES</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.SMALL_RECT" title="nurses_2.io.win32_types.SMALL_RECT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SMALL_RECT</span></code></a></p></td>
+<td><p>struct in wincon.h.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.UNICODE_OR_ASCII" title="nurses_2.io.win32_types.UNICODE_OR_ASCII"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNICODE_OR_ASCII</span></code></a></p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.win32_types.WINDOW_BUFFER_SIZE_RECORD" title="nurses_2.io.win32_types.WINDOW_BUFFER_SIZE_RECORD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WINDOW_BUFFER_SIZE_RECORD</span></code></a></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx</a></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">CONSOLE_SCREEN_BUFFER_INFO</span></span><a class="headerlink" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>struct in wincon.h.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dwCursorPosition</strong></dt><dd></dd>
+<dt><strong>dwMaximumWindowSize</strong></dt><dd></dd>
+<dt><strong>dwSize</strong></dt><dd></dd>
+<dt><strong>srWindow</strong></dt><dd></dd>
+<dt><strong>wAttributes</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.dwCursorPosition">
+<span class="sig-name descname"><span class="pre">dwCursorPosition</span></span><a class="headerlink" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.dwCursorPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.dwMaximumWindowSize">
+<span class="sig-name descname"><span class="pre">dwMaximumWindowSize</span></span><a class="headerlink" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.dwMaximumWindowSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
-  
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.dwSize">
+<span class="sig-name descname"><span class="pre">dwSize</span></span><a class="headerlink" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.dwSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-  
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.srWindow">
+<span class="sig-name descname"><span class="pre">srWindow</span></span><a class="headerlink" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.srWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-  
-    <link rel="stylesheet" href="../_static/css/darker.css" type="text/css" />
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="nurses_2 0.9.3 documentation" href="../index.html"/>
-        <link rel="up" title="nurses_2.io" href="nurses_2.io.html"/>
-        <link rel="next" title="nurses_2.widgets" href="nurses_2.widgets.html"/>
-        <link rel="prev" title="nurses_2.io.output.windows10" href="nurses_2.io.output.windows10.html"/>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.wAttributes">
+<span class="sig-name descname"><span class="pre">wAttributes</span></span><a class="headerlink" href="#nurses_2.io.win32_types.CONSOLE_SCREEN_BUFFER_INFO.wAttributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="cache-control" content="public" />
-    <meta name="robots" content="follow, all" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Add jQuery library -->
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</dd></dl>
 
-  </head>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.COORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">COORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.COORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>Struct in wincon.h
+<a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong></dt><dd></dd>
+<dt><strong>Y</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.COORD.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#nurses_2.io.win32_types.COORD.X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-  <body class="wy-body-for-nav" role="document">
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.COORD.Y">
+<span class="sig-name descname"><span class="pre">Y</span></span><a class="headerlink" href="#nurses_2.io.win32_types.COORD.Y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        <a href="../index.html" class="fa fa-home"> nurses_2 </a>
-        <div role="search">
-	  <form id ="rtd-search-form" class="wy-form"
-		action="../search.html" method="get">
-	    <input type="text" name="q" placeholder="Search docs" />
-	    <input type="hidden" name="check_keywords" value="yes" />
-	    <input type="hidden" name="area" value="default" />
-	  </form>
-	</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.EVENT_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">EVENT_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.EVENT_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Union</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>FocusEvent</strong></dt><dd></dd>
+<dt><strong>KeyEvent</strong></dt><dd></dd>
+<dt><strong>MenuEvent</strong></dt><dd></dd>
+<dt><strong>MouseEvent</strong></dt><dd></dd>
+<dt><strong>WindowBufferSizeEvent</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.EVENT_RECORD.FocusEvent">
+<span class="sig-name descname"><span class="pre">FocusEvent</span></span><a class="headerlink" href="#nurses_2.io.win32_types.EVENT_RECORD.FocusEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.EVENT_RECORD.KeyEvent">
+<span class="sig-name descname"><span class="pre">KeyEvent</span></span><a class="headerlink" href="#nurses_2.io.win32_types.EVENT_RECORD.KeyEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.EVENT_RECORD.MenuEvent">
+<span class="sig-name descname"><span class="pre">MenuEvent</span></span><a class="headerlink" href="#nurses_2.io.win32_types.EVENT_RECORD.MenuEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.EVENT_RECORD.MouseEvent">
+<span class="sig-name descname"><span class="pre">MouseEvent</span></span><a class="headerlink" href="#nurses_2.io.win32_types.EVENT_RECORD.MouseEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.EVENT_RECORD.WindowBufferSizeEvent">
+<span class="sig-name descname"><span class="pre">WindowBufferSizeEvent</span></span><a class="headerlink" href="#nurses_2.io.win32_types.EVENT_RECORD.WindowBufferSizeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.FOCUS_EVENT_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">FOCUS_EVENT_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.FOCUS_EVENT_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>SetFocus</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.FOCUS_EVENT_RECORD.SetFocus">
+<span class="sig-name descname"><span class="pre">SetFocus</span></span><a class="headerlink" href="#nurses_2.io.win32_types.FOCUS_EVENT_RECORD.SetFocus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.INPUT_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">INPUT_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.INPUT_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Event</strong></dt><dd></dd>
+<dt><strong>EventType</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.INPUT_RECORD.Event">
+<span class="sig-name descname"><span class="pre">Event</span></span><a class="headerlink" href="#nurses_2.io.win32_types.INPUT_RECORD.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.INPUT_RECORD.EventType">
+<span class="sig-name descname"><span class="pre">EventType</span></span><a class="headerlink" href="#nurses_2.io.win32_types.INPUT_RECORD.EventType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">KEY_EVENT_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ControlKeyState</strong></dt><dd></dd>
+<dt><strong>KeyDown</strong></dt><dd></dd>
+<dt><strong>RepeatCount</strong></dt><dd></dd>
+<dt><strong>VirtualKeyCode</strong></dt><dd></dd>
+<dt><strong>VirtualScanCode</strong></dt><dd></dd>
+<dt><strong>uChar</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD.ControlKeyState">
+<span class="sig-name descname"><span class="pre">ControlKeyState</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD.ControlKeyState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD.KeyDown">
+<span class="sig-name descname"><span class="pre">KeyDown</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD.KeyDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD.RepeatCount">
+<span class="sig-name descname"><span class="pre">RepeatCount</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD.RepeatCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD.VirtualKeyCode">
+<span class="sig-name descname"><span class="pre">VirtualKeyCode</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD.VirtualKeyCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD.VirtualScanCode">
+<span class="sig-name descname"><span class="pre">VirtualScanCode</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD.VirtualScanCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.KEY_EVENT_RECORD.uChar">
+<span class="sig-name descname"><span class="pre">uChar</span></span><a class="headerlink" href="#nurses_2.io.win32_types.KEY_EVENT_RECORD.uChar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MENU_EVENT_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">MENU_EVENT_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MENU_EVENT_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>CommandId</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MENU_EVENT_RECORD.CommandId">
+<span class="sig-name descname"><span class="pre">CommandId</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MENU_EVENT_RECORD.CommandId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MOUSE_EVENT_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">MOUSE_EVENT_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MOUSE_EVENT_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ButtonState</strong></dt><dd></dd>
+<dt><strong>ControlKeyState</strong></dt><dd></dd>
+<dt><strong>EventFlags</strong></dt><dd></dd>
+<dt><strong>MousePosition</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MOUSE_EVENT_RECORD.ButtonState">
+<span class="sig-name descname"><span class="pre">ButtonState</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MOUSE_EVENT_RECORD.ButtonState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MOUSE_EVENT_RECORD.ControlKeyState">
+<span class="sig-name descname"><span class="pre">ControlKeyState</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MOUSE_EVENT_RECORD.ControlKeyState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MOUSE_EVENT_RECORD.EventFlags">
+<span class="sig-name descname"><span class="pre">EventFlags</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MOUSE_EVENT_RECORD.EventFlags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.MOUSE_EVENT_RECORD.MousePosition">
+<span class="sig-name descname"><span class="pre">MousePosition</span></span><a class="headerlink" href="#nurses_2.io.win32_types.MOUSE_EVENT_RECORD.MousePosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SECURITY_ATTRIBUTES">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">SECURITY_ATTRIBUTES</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SECURITY_ATTRIBUTES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bInheritHandle</strong></dt><dd></dd>
+<dt><strong>lpSecurityDescriptor</strong></dt><dd></dd>
+<dt><strong>nLength</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SECURITY_ATTRIBUTES.bInheritHandle">
+<span class="sig-name descname"><span class="pre">bInheritHandle</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SECURITY_ATTRIBUTES.bInheritHandle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SECURITY_ATTRIBUTES.lpSecurityDescriptor">
+<span class="sig-name descname"><span class="pre">lpSecurityDescriptor</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SECURITY_ATTRIBUTES.lpSecurityDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SECURITY_ATTRIBUTES.nLength">
+<span class="sig-name descname"><span class="pre">nLength</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SECURITY_ATTRIBUTES.nLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SMALL_RECT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">SMALL_RECT</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SMALL_RECT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>struct in wincon.h.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Bottom</strong></dt><dd></dd>
+<dt><strong>Left</strong></dt><dd></dd>
+<dt><strong>Right</strong></dt><dd></dd>
+<dt><strong>Top</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SMALL_RECT.Bottom">
+<span class="sig-name descname"><span class="pre">Bottom</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SMALL_RECT.Bottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SMALL_RECT.Left">
+<span class="sig-name descname"><span class="pre">Left</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SMALL_RECT.Left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SMALL_RECT.Right">
+<span class="sig-name descname"><span class="pre">Right</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SMALL_RECT.Right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.SMALL_RECT.Top">
+<span class="sig-name descname"><span class="pre">Top</span></span><a class="headerlink" href="#nurses_2.io.win32_types.SMALL_RECT.Top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.UNICODE_OR_ASCII">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">UNICODE_OR_ASCII</span></span><a class="headerlink" href="#nurses_2.io.win32_types.UNICODE_OR_ASCII" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Union</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>AsciiChar</strong></dt><dd></dd>
+<dt><strong>UnicodeChar</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.UNICODE_OR_ASCII.AsciiChar">
+<span class="sig-name descname"><span class="pre">AsciiChar</span></span><a class="headerlink" href="#nurses_2.io.win32_types.UNICODE_OR_ASCII.AsciiChar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.UNICODE_OR_ASCII.UnicodeChar">
+<span class="sig-name descname"><span class="pre">UnicodeChar</span></span><a class="headerlink" href="#nurses_2.io.win32_types.UNICODE_OR_ASCII.UnicodeChar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.WINDOW_BUFFER_SIZE_RECORD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.win32_types.</span></span><span class="sig-name descname"><span class="pre">WINDOW_BUFFER_SIZE_RECORD</span></span><a class="headerlink" href="#nurses_2.io.win32_types.WINDOW_BUFFER_SIZE_RECORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>Size</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.win32_types.WINDOW_BUFFER_SIZE_RECORD.Size">
+<span class="sig-name descname"><span class="pre">Size</span></span><a class="headerlink" href="#nurses_2.io.win32_types.WINDOW_BUFFER_SIZE_RECORD.Size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">nurses_2</a></h1>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	
-          
-          
-              <ul class="current">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.app.html">nurses_2.app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.colors.html">nurses_2.colors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.data_structures.html">nurses_2.data_structures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.easings.html">nurses_2.easings</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.io.input.html">nurses_2.io.input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.io.output.html">nurses_2.io.output</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nurses_2.io.win32_types</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a></li>
 </ul>
 </li>
 </ul>
 
-          
-        
-
-      </div>
-      &nbsp;
-    </nav>
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">Porão do Juca</a>
-      </nav>
-
-      <div class="wy-nav-content">
-	<div class="fundo-claro">
-	</div>
-	<div class="fundo-escuro">
-	</div>
-
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-	    
-	    <!-- <ul class="wy-breadcrumbs"> -->
-	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
-
-	    <!--   <li>Features</li> -->
-	    <!--   <li class="wy-breadcrumbs-aside"> -->
-
-	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
-
-	    <!--   </li> -->
-	    <!-- </ul> -->
-	    <!-- <hr/> -->
-	  </div>
-
-          <div role="main" class="">
-
-	    <div id="content" class="hfeed entry-container hentry">
-  <section id="module-nurses_2.io.win32_types">
-<span id="nurses-2-io-win32-types"></span><h1>nurses_2.io.win32_types<a class="headerlink" href="#module-nurses_2.io.win32_types" title="Permalink to this heading">¶</a></h1>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONSOLE_SCREEN_BUFFER_INFO</span></code></p></td>
-<td><p>struct in wincon.h.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">COORD</span></code></p></td>
-<td><p>Struct in wincon.h <a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">EVENT_RECORD</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">FOCUS_EVENT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">INPUT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">KEY_EVENT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MENU_EVENT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOUSE_EVENT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SECURITY_ATTRIBUTES</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SMALL_RECT</span></code></p></td>
-<td><p>struct in wincon.h.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNICODE_OR_ASCII</span></code></p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">WINDOW_BUFFER_SIZE_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx</a></p></td>
-</tr>
-</tbody>
-</table>
-</section>
-
-
-	    </div>
-            <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="nurses_2.widgets.html" class="btn btn-neutral float-right" title="nurses_2.widgets">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="nurses_2.io.output.windows10.html" class="btn btn-neutral" title="nurses_2.io.output.windows10"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="nurses_2.html">nurses_2</a><ul>
+  <li><a href="nurses_2.io.html">nurses_2.io</a><ul>
+      <li>Previous: <a href="nurses_2.io.output.windows10.html" title="previous chapter">nurses_2.io.output.windows10</a></li>
+      <li>Next: <a href="nurses_2.widgets.html" title="next chapter">nurses_2.widgets</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
-  <hr/>
 
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, salt-die.
-    </p>
-  </div>
 
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
 
-</footer>
-	</div>
-	</div>
-	  
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.9.3',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-    <script type="text/javascript" src="../_static/documentation_options.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/underscore.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js">
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, salt-die.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/toctree/nurses_2.io.win32_types.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </script>
-    <script type="text/javascript" src="../_static/doctools.js">
+    
 
-    </script>
-
-  
-
-   <script type="text/javascript"
-           src="../_static/js/theme.js"></script>
-
-   <script type="text/javascript"
-           src="../_static/js/pdj.js"></script>
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
+    
   </body>
 </html>

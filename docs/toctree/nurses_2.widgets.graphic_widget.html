@@ -1,73 +1,787 @@
 
+<!DOCTYPE html>
 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xml:lang="" lang="" version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
+    <title>nurses_2.widgets.graphic_widget &#8212; nurses_2 0.9.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="nurses_2.widgets.graphic_widget_data_structures" href="nurses_2.widgets.graphic_widget_data_structures.html" />
+    <link rel="prev" title="nurses_2.widgets.file_chooser" href="nurses_2.widgets.file_chooser.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  <title>nurses_2.widgets.graphic_widget &mdash; nurses_2 0.9.3 documentation</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
   
 
-  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
 
-  
+          <div class="body" role="main">
+            
+  <section id="module-nurses_2.widgets.graphic_widget">
+<span id="nurses-2-widgets-graphic-widget"></span><h1>nurses_2.widgets.graphic_widget<a class="headerlink" href="#module-nurses_2.widgets.graphic_widget" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicWidget</span></code></a>([is_transparent, ...])</p></td>
+<td><p>Base for graphic widgets.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">AColor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">red</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">255</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>A 24-bit color with an alpha channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>alpha</strong></dt><dd><p>Alias for field number 3</p>
+</dd>
+<dt><strong>blue</strong></dt><dd><p>Alias for field number 2</p>
+</dd>
+<dt><strong>green</strong></dt><dd><p>Alias for field number 1</p>
+</dd>
+<dt><strong>red</strong></dt><dd><p>Alias for field number 0</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget.AColor.fog" title="nurses_2.widgets.graphic_widget.AColor.fog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fog</span></code></a>(distance)</p></td>
+<td><p>Return color as if seen through a fog from a distance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>from_hex</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor.alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
 
-    <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'/>
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor.blue">
+<span class="sig-name descname"><span class="pre">blue</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor.blue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
 
-  
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  
-    <link rel="stylesheet" href="../_static/css/pdj.css" type="text/css" />
-  
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor.fog">
+<span class="sig-name descname"><span class="pre">fog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor.fog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return color as if seen through a fog from a distance.</p>
+<dl class="simple">
+<dt>Non-alpha channels will be multiplied by:</dt><dd><p><cite>e ** -distance</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
-  
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor.from_hex">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexcode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor.from_hex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-  
-    <link rel="stylesheet" href="../_static/css/darker.css" type="text/css" />
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="nurses_2 0.9.3 documentation" href="../index.html"/>
-        <link rel="up" title="nurses_2.widgets" href="nurses_2.widgets.html"/>
-        <link rel="next" title="nurses_2.widgets.graphic_widget_data_structures" href="nurses_2.widgets.graphic_widget_data_structures.html"/>
-        <link rel="prev" title="nurses_2.widgets.file_chooser" href="nurses_2.widgets.file_chooser.html"/>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor.green">
+<span class="sig-name descname"><span class="pre">green</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor.green" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="cache-control" content="public" />
-    <meta name="robots" content="follow, all" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Add jQuery library -->
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.AColor.red">
+<span class="sig-name descname"><span class="pre">red</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.AColor.red" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
 
-  </head>
+</dd></dl>
 
-  <body class="wy-body-for-nav" role="document">
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">Anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.BOTTOM_CENTER">
+<span class="sig-name descname"><span class="pre">BOTTOM_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bottom_center'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.BOTTOM_CENTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        <a href="../index.html" class="fa fa-home"> nurses_2 </a>
-        <div role="search">
-	  <form id ="rtd-search-form" class="wy-form"
-		action="../search.html" method="get">
-	    <input type="text" name="q" placeholder="Search docs" />
-	    <input type="hidden" name="check_keywords" value="yes" />
-	    <input type="hidden" name="area" value="default" />
-	  </form>
-	</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.BOTTOM_LEFT">
+<span class="sig-name descname"><span class="pre">BOTTOM_LEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bottom_left'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.BOTTOM_LEFT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.BOTTOM_RIGHT">
+<span class="sig-name descname"><span class="pre">BOTTOM_RIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bottom_right'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.BOTTOM_RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.CENTER">
+<span class="sig-name descname"><span class="pre">CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'center'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.CENTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.LEFT_CENTER">
+<span class="sig-name descname"><span class="pre">LEFT_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'left_center'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.LEFT_CENTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.RIGHT_CENTER">
+<span class="sig-name descname"><span class="pre">RIGHT_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right_center'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.RIGHT_CENTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.TOP_CENTER">
+<span class="sig-name descname"><span class="pre">TOP_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'top_center'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.TOP_CENTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.TOP_LEFT">
+<span class="sig-name descname"><span class="pre">TOP_LEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'top_left'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.TOP_LEFT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Anchor.TOP_RIGHT">
+<span class="sig-name descname"><span class="pre">TOP_RIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'top_right'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Anchor.TOP_RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">Easing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_BACK">
+<span class="sig-name descname"><span class="pre">IN_BACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_back'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_BACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_BOUNCE">
+<span class="sig-name descname"><span class="pre">IN_BOUNCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_bounce'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_BOUNCE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_CIRC">
+<span class="sig-name descname"><span class="pre">IN_CIRC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_circ'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_CIRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_CUBIC">
+<span class="sig-name descname"><span class="pre">IN_CUBIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_cubic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_CUBIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_ELASTIC">
+<span class="sig-name descname"><span class="pre">IN_ELASTIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_elastic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_ELASTIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_EXP">
+<span class="sig-name descname"><span class="pre">IN_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_exp'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_EXP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_BACK">
+<span class="sig-name descname"><span class="pre">IN_OUT_BACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_back'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_BACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_BOUNCE">
+<span class="sig-name descname"><span class="pre">IN_OUT_BOUNCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_bounce'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_BOUNCE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_CIRC">
+<span class="sig-name descname"><span class="pre">IN_OUT_CIRC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_circ'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_CIRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_CUBIC">
+<span class="sig-name descname"><span class="pre">IN_OUT_CUBIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_cubic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_CUBIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_ELASTIC">
+<span class="sig-name descname"><span class="pre">IN_OUT_ELASTIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_elastic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_ELASTIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_EXP">
+<span class="sig-name descname"><span class="pre">IN_OUT_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_exp'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_EXP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_QUAD">
+<span class="sig-name descname"><span class="pre">IN_OUT_QUAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_quad'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_QUAD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_QUART">
+<span class="sig-name descname"><span class="pre">IN_OUT_QUART</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_quart'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_QUART" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_QUINT">
+<span class="sig-name descname"><span class="pre">IN_OUT_QUINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_quint'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_QUINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_OUT_SINE">
+<span class="sig-name descname"><span class="pre">IN_OUT_SINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_out_sine'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_OUT_SINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_QUAD">
+<span class="sig-name descname"><span class="pre">IN_QUAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_quad'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_QUAD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_QUART">
+<span class="sig-name descname"><span class="pre">IN_QUART</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_quart'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_QUART" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_QUINT">
+<span class="sig-name descname"><span class="pre">IN_QUINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_quint'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_QUINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.IN_SINE">
+<span class="sig-name descname"><span class="pre">IN_SINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_sine'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.IN_SINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.LINEAR">
+<span class="sig-name descname"><span class="pre">LINEAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'linear'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.LINEAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_BACK">
+<span class="sig-name descname"><span class="pre">OUT_BACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_back'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_BACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_BOUNCE">
+<span class="sig-name descname"><span class="pre">OUT_BOUNCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_bounce'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_BOUNCE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_CIRC">
+<span class="sig-name descname"><span class="pre">OUT_CIRC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_circ'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_CIRC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_CUBIC">
+<span class="sig-name descname"><span class="pre">OUT_CUBIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_cubic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_CUBIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_ELASTIC">
+<span class="sig-name descname"><span class="pre">OUT_ELASTIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_elastic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_ELASTIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_EXP">
+<span class="sig-name descname"><span class="pre">OUT_EXP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_exp'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_EXP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_QUAD">
+<span class="sig-name descname"><span class="pre">OUT_QUAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_quad'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_QUAD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_QUART">
+<span class="sig-name descname"><span class="pre">OUT_QUART</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_quart'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_QUART" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_QUINT">
+<span class="sig-name descname"><span class="pre">OUT_QUINT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_quint'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_QUINT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Easing.OUT_SINE">
+<span class="sig-name descname"><span class="pre">OUT_SINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'out_sine'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Easing.OUT_SINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.GraphicWidget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">GraphicWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_transparent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">AColor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">AColor(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0,</span> <span class="pre">alpha=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.GraphicWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Widget</span></code></a></p>
+<p>Base for graphic widgets.</p>
+<p>Graphic widgets are widgets that are rendered entirely with the upper half block character, “▀”.
+Graphic widgets’ color information is stored in a uint8 RGBA array, <cite>texture</cite>. Note that the
+height of the texture array is twice the height of the widget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>size</strong><span class="classifier">Size, default: Size(10, 10)</span></dt><dd><p>Size of widget.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">Point, default: Point(0, 0)</span></dt><dd><p>Position of upper-left corner in parent.</p>
+</dd>
+<dt><strong>size_hint</strong><span class="classifier">SizeHint, default: SizeHint(None, None)</span></dt><dd><p>Proportion of parent’s height and width. Non-None values will have
+precedent over <cite>size</cite>.</p>
+</dd>
+<dt><strong>min_height</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum height set due to size_hint. Ignored if corresponding size
+hint is None.</p>
+</dd>
+<dt><strong>max_height</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Maximum height set due to size_hint. Ignored if corresponding size
+hint is None.</p>
+</dd>
+<dt><strong>min_width</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum width set due to size_hint. Ignored if corresponding size
+hint is None.</p>
+</dd>
+<dt><strong>max_width</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Maximum width set due to size_hint. Ignored if corresponding size
+hint is None.</p>
+</dd>
+<dt><strong>pos_hint</strong><span class="classifier">PosHint, default: PosHint(None, None)</span></dt><dd><p>Position as a proportion of parent’s height and width. Non-None values
+will have precedent over <cite>pos</cite>.</p>
+</dd>
+<dt><strong>anchor</strong><span class="classifier">Anchor, default: Anchor.TOP_LEFT</span></dt><dd><p>Specifies which part of the widget is aligned with the <cite>pos_hint</cite>.</p>
+</dd>
+<dt><strong>is_transparent</strong><span class="classifier">bool, default: True</span></dt><dd><p>If False the underlying texture’s alpha channel is ignored.</p>
+</dd>
+<dt><strong>is_visible</strong><span class="classifier">bool, default: True</span></dt><dd><p>If false, widget won’t be painted, but still dispatched.</p>
+</dd>
+<dt><strong>is_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>If false, widget won’t be painted or dispatched.</p>
+</dd>
+<dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
+value. (0 &lt;= alpha &lt;= 1.0)</p>
+</dd>
+<dt><strong>interpolation</strong><span class="classifier">Interpolation, default: Interpolation.LINEAR</span></dt><dd><p>The interpolation used when resizing the GraphicWidget.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></dt><dd><p>Absolute position on screen.</p>
+</dd>
+<dt><strong>alpha</strong></dt><dd></dd>
+<dt><strong>anchor</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></dt><dd><p>The running app.</p>
+</dd>
+<dt><strong>background_char</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">bottom</span></code></dt><dd><p>Bottom of widget in parent’s reference frame.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">center</span></code></dt><dd><p>The center of the widget in local coordinates.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">columns</span></code></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">height_hint</span></code></dt><dd><p>Widget’s height as proportion of its parent’s height.</p>
+</dd>
+<dt><strong>left</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_height</span></code></dt><dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_width</span></code></dt><dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_height</span></code></dt><dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_width</span></code></dt><dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos</span></code></dt><dd><p>Position relative to parent.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_hint</span></code></dt><dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">right</span></code></dt><dd><p>Right side of widget in parent’s reference frame.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></dt><dd><p>Return the root widget if connected to widget tree.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></dt><dd><p>Size of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_hint</span></code></dt><dd><p>Widget’s size as a proportion of its parent’s size.</p>
+</dd>
+<dt><strong>top</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">width</span></code></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">width_hint</span></code></dt><dd><p>Widget’s width as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>x</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_hint</span></code></dt><dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>y</strong></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_hint</span></code></dt><dd><p>Vertical position of widget as a proportion of its parent’s height.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code>(widget)</p></td>
+<td><p>Add a child widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widgets</span></code>(*widgets)</p></td>
+<td><p>Add multiple child widgets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_point</span></code>(point)</p></td>
+<td><p>Return True if point is within widget's visible bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_widget</span></code>(widget)</p></td>
+<td><p>Return True if some part of widget is within bounding box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_click</span></code>(mouse_event)</p></td>
+<td><p>Dispatch mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_double_click</span></code>(mouse_event)</p></td>
+<td><p>Dispatch double-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_paste</span></code>(paste_event)</p></td>
+<td><p>Dispatch paste event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_press</span></code>(key_press_event)</p></td>
+<td><p>Dispatch key press until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_triple_click</span></code>(mouse_event)</p></td>
+<td><p>Dispatch triple-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_click</span></code>(mouse_event)</p></td>
+<td><p>Handle mouse event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_double_click</span></code>(mouse_event)</p></td>
+<td><p>Handle double-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_paste</span></code>(paste_event)</p></td>
+<td><p>Handle paste event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_press</span></code>(key_press_event)</p></td>
+<td><p>Handle key press event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget.GraphicWidget.on_size" title="nurses_2.widgets.graphic_widget.GraphicWidget.on_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_size</span></code></a>()</p></td>
+<td><p>Called when widget is resized.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_triple_click</span></code>(mouse_event)</p></td>
+<td><p>Handle triple-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pull_to_front</span></code>()</p></td>
+<td><p>Move widget to end of widget stack so that it is drawn last.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_widget</span></code>(widget)</p></td>
+<td><p>Remove widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget.GraphicWidget.render" title="nurses_2.widgets.graphic_widget.GraphicWidget.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
+<td><p>Paint region given by source into canvas_view and colors_view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_intersection</span></code>(destination, ...)</p></td>
+<td><p>Render the intersection of destination with widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">subscribe</span></code>(source, attr, action)</p></td>
+<td><p>Subscribe to a widget property.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_local</span></code>(point)</p></td>
+<td><p>Convert point in absolute coordinates to local coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tween</span></code>(*[, duration, easing, on_start, ...])</p></td>
+<td><p>Coroutine that sequentially updates widget properties over a duration (in seconds).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsubscribe</span></code>(source, attr)</p></td>
+<td><p>Unsubscribe to a widget event and return the callable that was subscribed to the event or <cite>None</cite> if subscription isn't found.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_geometry</span></code>()</p></td>
+<td><p>Update geometry due to a change in parent's size.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk</span></code>()</p></td>
+<td><p>Yield all descendents.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk_from_root</span></code>()</p></td>
+<td><p>Yield all descendents of the root widget.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>render_children</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>to_png</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.GraphicWidget.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.GraphicWidget.alpha" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.GraphicWidget.on_size">
+<span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.GraphicWidget.on_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when widget is resized.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.GraphicWidget.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.GraphicWidget.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint region given by source into canvas_view and colors_view.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.GraphicWidget.to_png">
+<span class="sig-name descname"><span class="pre">to_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.GraphicWidget.to_png" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Interpolation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">Interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Interpolation.AREA">
+<span class="sig-name descname"><span class="pre">AREA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Interpolation.AREA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Interpolation.CUBIC">
+<span class="sig-name descname"><span class="pre">CUBIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Interpolation.CUBIC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Interpolation.LANCZOS">
+<span class="sig-name descname"><span class="pre">LANCZOS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Interpolation.LANCZOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Interpolation.LINEAR">
+<span class="sig-name descname"><span class="pre">LINEAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Interpolation.LINEAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Interpolation.NEAREST">
+<span class="sig-name descname"><span class="pre">NEAREST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Interpolation.NEAREST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Point">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">Point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong></dt><dd><p>Alias for field number 1</p>
+</dd>
+<dt><strong>y</strong></dt><dd><p>Alias for field number 0</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Point.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Point.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Point.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Point.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.PosHint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">PosHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.PosHint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong></dt><dd><p>Alias for field number 1</p>
+</dd>
+<dt><strong>y</strong></dt><dd><p>Alias for field number 0</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.PosHint.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.PosHint.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.PosHint.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.PosHint.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Size">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">Size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>columns</strong></dt><dd></dd>
+<dt><strong>height</strong></dt><dd><p>Alias for field number 0</p>
+</dd>
+<dt><strong>rows</strong></dt><dd></dd>
+<dt><strong>width</strong></dt><dd><p>Alias for field number 1</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Size.columns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Size.columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Size.height">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Size.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Size.rows">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Size.rows" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.Size.width">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.Size.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.SizeHint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget.</span></span><span class="sig-name descname"><span class="pre">SizeHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget.SizeHint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>height</strong></dt><dd><p>Alias for field number 0</p>
+</dd>
+<dt><strong>width</strong></dt><dd><p>Alias for field number 1</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.SizeHint.height">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.SizeHint.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget.SizeHint.width">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget.SizeHint.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
       </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">nurses_2</a></h1>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	
-          
-          
-              <ul class="current">
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="nurses_2.html">nurses_2</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.app.html">nurses_2.app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.clamp.html">nurses_2.clamp</a></li>
@@ -75,131 +789,92 @@
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.data_structures.html">nurses_2.data_structures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.easings.html">nurses_2.easings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nurses_2.io.html">nurses_2.io</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="nurses_2.widgets.html">nurses_2.widgets</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.animation.html">nurses_2.widgets.animation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.behaviors.html">nurses_2.widgets.behaviors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.braille_image.html">nurses_2.widgets.braille_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.button.html">nurses_2.widgets.button</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.color_picker.html">nurses_2.widgets.color_picker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.digital_display.html">nurses_2.widgets.digital_display</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.file_chooser.html">nurses_2.widgets.file_chooser</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nurses_2.widgets.graphic_widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html">nurses_2.widgets.graphic_widget_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.grid_layout.html">nurses_2.widgets.grid_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.image.html">nurses_2.widgets.image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.line_plot.html">nurses_2.widgets.line_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.menu.html">nurses_2.widgets.menu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.parallax.html">nurses_2.widgets.parallax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.particle_field.html">nurses_2.widgets.particle_field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.progress_bar.html">nurses_2.widgets.progress_bar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.ray_caster.html">nurses_2.widgets.ray_caster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.scroll_view.html">nurses_2.widgets.scroll_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.shadow_caster.html">nurses_2.widgets.shadow_caster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.slider.html">nurses_2.widgets.slider</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.split_layout.html">nurses_2.widgets.split_layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.text_widget.html">nurses_2.widgets.text_widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html">nurses_2.widgets.text_widget_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.tiled_image.html">nurses_2.widgets.tiled_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.toggle_button.html">nurses_2.widgets.toggle_button</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.tree_view.html">nurses_2.widgets.tree_view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.video_player.html">nurses_2.widgets.video_player</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.widget.html">nurses_2.widgets.widget</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html">nurses_2.widgets.widget_data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nurses_2.widgets.window.html">nurses_2.widgets.window</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
-          
-        
-
-      </div>
-      &nbsp;
-    </nav>
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      <nav class="wy-nav-top" id="barra-mobile" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">Porão do Juca</a>
-      </nav>
-
-      <div class="wy-nav-content">
-	<div class="fundo-claro">
-	</div>
-	<div class="fundo-escuro">
-	</div>
-
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-	    
-	    <!-- <ul class="wy-breadcrumbs"> -->
-	    <!--   <li><a href="#">Docs</a> &raquo;</li> -->
-
-	    <!--   <li>Features</li> -->
-	    <!--   <li class="wy-breadcrumbs-aside"> -->
-
-	    <!-- 	<a href="_sources/index.txt" rel="nofollow"> View page source</a> -->
-
-	    <!--   </li> -->
-	    <!-- </ul> -->
-	    <!-- <hr/> -->
-	  </div>
-
-          <div role="main" class="">
-
-	    <div id="content" class="hfeed entry-container hentry">
-  <section id="module-nurses_2.widgets.graphic_widget">
-<span id="nurses-2-widgets-graphic-widget"></span><h1>nurses_2.widgets.graphic_widget<a class="headerlink" href="#module-nurses_2.widgets.graphic_widget" title="Permalink to this heading">¶</a></h1>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicWidget</span></code>([is_transparent, ...])</p></td>
-<td><p>Base for graphic widgets.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
-
-
-	    </div>
-            <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="nurses_2.widgets.graphic_widget_data_structures.html" class="btn btn-neutral float-right" title="nurses_2.widgets.graphic_widget_data_structures">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="nurses_2.widgets.file_chooser.html" class="btn btn-neutral" title="nurses_2.widgets.file_chooser"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="nurses_2.html">nurses_2</a><ul>
+  <li><a href="nurses_2.widgets.html">nurses_2.widgets</a><ul>
+      <li>Previous: <a href="nurses_2.widgets.file_chooser.html" title="previous chapter">nurses_2.widgets.file_chooser</a></li>
+      <li>Next: <a href="nurses_2.widgets.graphic_widget_data_structures.html" title="next chapter">nurses_2.widgets.graphic_widget_data_structures</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
     </div>
-  
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
-  <hr/>
 
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, salt-die.
-    </p>
-  </div>
 
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/jucacrispim/sphinx_pdj_theme">theme</a> provided by <a href="http://poraodojuca.net">Porão do Juca</a>.
 
-</footer>
-	</div>
-	</div>
-	  
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.9.3',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-    <script type="text/javascript" src="../_static/documentation_options.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/underscore.js">
 
-    </script>
-    <script type="text/javascript" src="../_static/_sphinx_javascript_frameworks_compat.js">
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, salt-die.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/toctree/nurses_2.widgets.graphic_widget.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-    </script>
-    <script type="text/javascript" src="../_static/doctools.js">
+    
 
-    </script>
-
-  
-
-   <script type="text/javascript"
-           src="../_static/js/theme.js"></script>
-
-   <script type="text/javascript"
-           src="../_static/js/pdj.js"></script>
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
+    
   </body>
 </html>
