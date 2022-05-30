@@ -1,4 +1,4 @@
-nurses\_2.widgets.progress\_bar
+﻿nurses\_2.widgets.progress\_bar
 ===============================
 
 .. automodule:: nurses_2.widgets.progress_bar
@@ -9,6 +9,13 @@ nurses\_2.widgets.progress\_bar
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+      gradient
+   
    
 
    
@@ -17,7 +24,10 @@ nurses\_2.widgets.progress\_bar
 
    .. autosummary::
    
+      ColorPair
       ProgressBar
+      TextWidget
+      Themable
    
    
 

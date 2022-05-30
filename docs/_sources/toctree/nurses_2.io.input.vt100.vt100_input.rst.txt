@@ -1,4 +1,4 @@
-nurses\_2.io.input.vt100.vt100\_input
+﻿nurses\_2.io.input.vt100.vt100\_input
 =====================================
 
 .. automodule:: nurses_2.io.input.vt100.vt100_input
@@ -14,11 +14,19 @@ nurses\_2.io.input.vt100.vt100\_input
    .. autosummary::
    
       attach
+      contextmanager
       raw_mode
+      read_keys
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Size
    
    
 

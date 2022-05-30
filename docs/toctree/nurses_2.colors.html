@@ -36,6 +36,43 @@
             
   <section id="module-nurses_2.colors">
 <span id="nurses-2-colors"></span><h1>nurses_2.colors<a class="headerlink" href="#module-nurses_2.colors" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">background_rainbow</span></code>([ncolors, fg_color])</p></td>
+<td><p>Return a rainbow gradient of <cite>ncolors</cite> <a href="#id1"><span class="problematic" id="id2">`</span></a>ColorPair`s with a given foreground color.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">foreground_rainbow</span></code>([ncolors, bg_color])</p></td>
+<td><p>A rainbow gradient of <cite>ncolors</cite> <a href="#id3"><span class="problematic" id="id4">`</span></a>ColorPair`s with a given background color.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code>(start, end, ncolors)</p></td>
+<td><p>Return a gradient from <cite>start</cite> to <cite>end</cite> with <cite>ncolors</cite> (&gt; 1) colors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lerp_colors</span></code>(start, end, p)</p></td>
+<td><p>Linear interpolation from <cite>start</cite> to <cite>end</cite> with proportion <cite>p</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rainbow_gradient</span></code>(n, *[, color_type])</p></td>
+<td><p>Return a rainbow gradient of n colors.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AColor</span></code>(red, green, blue[, alpha])</p></td>
+<td><p>A 24-bit color with an alpha channel.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Color</span></code>(red, green, blue)</p></td>
+<td><p>A 24-bit color.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPair</span></code>(fg_red, fg_green, fg_blue, bg_red, ...)</p></td>
+<td><p>A foreground and background pair of 24-bit colors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorTheme</span></code>(primary_fg, primary_bg, ...)</p></td>
+<td><p>A palette of colors used to paint an app's themable widgets.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Modules</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>

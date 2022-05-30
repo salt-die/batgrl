@@ -1,4 +1,4 @@
-nurses\_2.widgets.behaviors.focus\_behavior
+﻿nurses\_2.widgets.behaviors.focus\_behavior
 ===========================================
 
 .. automodule:: nurses_2.widgets.behaviors.focus_behavior
@@ -18,6 +18,10 @@ nurses\_2.widgets.behaviors.focus\_behavior
    .. autosummary::
    
       FocusBehavior
+      MouseEventType
+      ReferenceType
+      deque
+      ref
    
    
 

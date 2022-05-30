@@ -1,4 +1,4 @@
-nurses\_2.widgets.text\_widget
+﻿nurses\_2.widgets.text\_widget
 ==============================
 
 .. automodule:: nurses_2.widgets.text_widget
@@ -9,6 +9,12 @@ nurses\_2.widgets.text\_widget
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      wcswidth
+   
    
 
    
@@ -17,7 +23,16 @@ nurses\_2.widgets.text\_widget
 
    .. autosummary::
    
+      Anchor
+      CanvasView
+      ColorPair
+      Easing
+      Point
+      PosHint
+      Size
+      SizeHint
       TextWidget
+      Widget
    
    
 

@@ -1,4 +1,4 @@
-nurses\_2.widgets.parallax
+﻿nurses\_2.widgets.parallax
 ==========================
 
 .. automodule:: nurses_2.widgets.parallax
@@ -17,7 +17,9 @@ nurses\_2.widgets.parallax
 
    .. autosummary::
    
+      GraphicWidget
       Parallax
+      Sequence
    
    
 

@@ -1,4 +1,4 @@
-nurses\_2.widgets.window
+﻿nurses\_2.widgets.window
 ========================
 
 .. automodule:: nurses_2.widgets.window
@@ -9,6 +9,13 @@ nurses\_2.widgets.window
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+      wcswidth
+   
    
 
    
@@ -17,6 +24,17 @@ nurses\_2.widgets.window
 
    .. autosummary::
    
+      AColor
+      Anchor
+      ColorPair
+      FocusBehavior
+      GrabResizeBehavior
+      GrabbableBehavior
+      GraphicWidget
+      Size
+      TextWidget
+      Themable
+      Widget
       Window
    
    

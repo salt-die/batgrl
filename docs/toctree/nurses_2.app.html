@@ -39,7 +39,16 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_widget_as_app</span></code>(widget, *args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">abstractmethod</span></code>(funcobj)</p></td>
+<td><p>A decorator indicating abstract methods.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">io</span></code>(asciicast_path)</p></td>
+<td><p>Initialize and return input and output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">monotonic</span></code>()</p></td>
+<td><p>Monotonic clock, cannot go backward.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_widget_as_app</span></code>(widget, *args, **kwargs)</p></td>
 <td><p>Run a widget as a full-screen app.</p></td>
 </tr>
 </tbody>
@@ -47,8 +56,60 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">App</span></code>(*, exit_key, background_char, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ABC</span></code>()</p></td>
+<td><p>Helper class that provides a standard way to create an ABC using inheritance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">App</span></code>(*, exit_key, background_char, ...[, ...])</p></td>
 <td><p>Base for creating terminal applications.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPair</span></code>(fg_red, fg_green, fg_blue, bg_red, ...)</p></td>
+<td><p>A foreground and background pair of 24-bit colors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorTheme</span></code>(primary_fg, primary_bg, ...)</p></td>
+<td><p>A palette of colors used to paint an app's themable widgets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyPressEvent</span></code>(*args, **kwargs)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseButton</span></code>(value)</p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseEvent</span></code>(position, event_type, button, mods)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseEventType</span></code>(value)</p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PasteEvent</span></code>(paste)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code>(*args, **kwargs)</p></td>
+<td><p>PurePath subclass that can make system calls.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Size</span></code>(height, width)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Themable</span></code>()</p></td>
+<td><p>Themable widgets share a color theme.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Widget</span></code>(*[, size, pos, size_hint, min_width, ...])</p></td>
+<td><p>Base class for creating widgets.</p></td>
 </tr>
 </tbody>
 </table>

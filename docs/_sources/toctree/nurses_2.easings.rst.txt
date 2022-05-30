@@ -1,4 +1,4 @@
-nurses\_2.easings
+﻿nurses\_2.easings
 =================
 
 .. automodule:: nurses_2.easings
@@ -13,6 +13,7 @@ nurses\_2.easings
 
    .. autosummary::
    
+      cos
       in_back
       in_bounce
       in_circ
@@ -45,6 +46,7 @@ nurses\_2.easings
       out_quart
       out_quint
       out_sine
+      sin
    
    
 

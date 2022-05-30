@@ -1,4 +1,4 @@
-nurses\_2.widgets.menu
+﻿nurses\_2.widgets.menu
 ======================
 
 .. automodule:: nurses_2.widgets.menu
@@ -14,6 +14,8 @@ nurses\_2.widgets.menu
    .. autosummary::
    
       nargs
+      signature
+      wcswidth
    
    
 
@@ -23,8 +25,21 @@ nurses\_2.widgets.menu
 
    .. autosummary::
    
+      Anchor
+      ButtonState
+      Callable
+      GridLayout
       Menu
+      MenuDict
       MenuItem
+      MouseEventType
+      Orientation
+      Point
+      TextWidget
+      Themable
+      ToggleButtonBehavior
+      ToggleState
+      Widget
    
    
 

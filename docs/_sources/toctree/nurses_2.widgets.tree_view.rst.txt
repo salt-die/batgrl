@@ -1,4 +1,4 @@
-nurses\_2.widgets.tree\_view
+﻿nurses\_2.widgets.tree\_view
 ============================
 
 .. automodule:: nurses_2.widgets.tree_view
@@ -17,8 +17,14 @@ nurses\_2.widgets.tree\_view
 
    .. autosummary::
    
+      ButtonBehavior
+      ButtonState
+      ColorPair
+      TextWidget
+      Themable
       TreeView
       TreeViewNode
+      Widget
    
    
 

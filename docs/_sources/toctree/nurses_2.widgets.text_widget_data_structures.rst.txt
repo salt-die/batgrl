@@ -1,4 +1,4 @@
-nurses\_2.widgets.text\_widget\_data\_structures
+﻿nurses\_2.widgets.text\_widget\_data\_structures
 ================================================
 
 .. automodule:: nurses_2.widgets.text_widget_data_structures
@@ -8,6 +8,12 @@ nurses\_2.widgets.text\_widget\_data\_structures
    
 
    
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      wcswidth
    
    
 

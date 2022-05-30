@@ -1,4 +1,4 @@
-nurses\_2.widgets.digital\_display
+﻿nurses\_2.widgets.digital\_display
 ==================================
 
 .. automodule:: nurses_2.widgets.digital_display
@@ -17,8 +17,12 @@ nurses\_2.widgets.digital\_display
 
    .. autosummary::
    
+      Color
+      ColorPair
       DigitalDisplay
       Segment
+      Size
+      TextWidget
    
    
 

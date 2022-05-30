@@ -9,6 +9,14 @@ nurses\_2.widgets.shadow\_caster.shadow\_caster
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      bisect
+      clamp
+      dist
+   
    
 
    
@@ -17,7 +25,17 @@ nurses\_2.widgets.shadow\_caster.shadow\_caster
 
    .. autosummary::
    
+      AColor
+      Camera
+      Coordinates
+      GraphicWidget
+      Interval
+      LightIntensity
+      LightSource
+      Point
+      Restrictiveness
       ShadowCaster
+      product
    
    
 

@@ -9,6 +9,12 @@ nurses\_2.widgets.behaviors.effects.effect
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      abstractmethod
+   
    
 
    
@@ -17,6 +23,7 @@ nurses\_2.widgets.behaviors.effects.effect
 
    .. autosummary::
    
+      ABC
       Effect
    
    

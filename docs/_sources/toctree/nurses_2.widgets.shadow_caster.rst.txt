@@ -1,4 +1,4 @@
-nurses\_2.widgets.shadow\_caster
+﻿nurses\_2.widgets.shadow\_caster
 ================================
 
 .. automodule:: nurses_2.widgets.shadow_caster
@@ -12,6 +12,18 @@ nurses\_2.widgets.shadow\_caster
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Camera
+      Coordinates
+      LightIntensity
+      LightSource
+      Point
+      Restrictiveness
+      ShadowCaster
    
    
 

@@ -43,8 +43,37 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>(callback)</p></td>
 <td><p>Context manager that makes this input active in the current event loop.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw_mode</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byref</span></code>(C instance[[, offset])</p></td>
+<td><p>Return a pointer lookalike to a C instance, only usable as function argument</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextmanager</span></code>(func)</p></td>
+<td><p>&#64;contextmanager decorator.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_event_loop</span></code>(/)</p></td>
+<td><p>Return an asyncio event loop.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw_mode</span></code>()</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_keys</span></code>()</p></td>
+<td><p>Yield input events.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">BOOL</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">c_long</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DWORD</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">c_ulong</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HANDLE</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">c_void_p</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SECURITY_ATTRIBUTES</span></code></p></td>
+<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx</a></p></td>
 </tr>
 </tbody>
 </table>

@@ -1,4 +1,4 @@
-nurses\_2.widgets.widget
+﻿nurses\_2.widgets.widget
 ========================
 
 .. automodule:: nurses_2.widgets.widget
@@ -13,7 +13,10 @@ nurses\_2.widgets.widget
 
    .. autosummary::
    
+      clamp
       emitter
+      monotonic
+      wraps
    
    
 
@@ -23,6 +26,19 @@ nurses\_2.widgets.widget
 
    .. autosummary::
    
+      Anchor
+      Callable
+      ColorPair
+      Easing
+      KeyPressEvent
+      MouseEvent
+      PasteEvent
+      Point
+      PosHint
+      Sequence
+      Size
+      SizeHint
+      WeakKeyDictionary
       Widget
    
    

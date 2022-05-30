@@ -9,6 +9,12 @@ nurses\_2.widgets.ray\_caster.ray\_caster
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+   
    
 
    
@@ -17,7 +23,13 @@ nurses\_2.widgets.ray\_caster.ray\_caster
 
    .. autosummary::
    
+      Camera
+      Color
+      GraphicWidget
+      Map
       RayCaster
+      Sprite
+      Texture
    
    
 

@@ -36,11 +36,25 @@
             
   <section id="module-nurses_2.widgets.behaviors.effects.rainbow_cycle_effect">
 <span id="nurses-2-widgets-behaviors-effects-rainbow-cycle-effect"></span><h1>nurses_2.widgets.behaviors.effects.rainbow_cycle_effect<a class="headerlink" href="#module-nurses_2.widgets.behaviors.effects.rainbow_cycle_effect" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rainbow_gradient</span></code>(n, *[, color_type])</p></td>
+<td><p>Return a rainbow gradient of n colors.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainbowCycleEffect</span></code>([ncolors, cycle_speed, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect</span></code>()</p></td>
+<td><p>Effects are behaviors that modify how a widget and its children are rendered. Effects should be inherited in the reverse order that they are applied, e.g.,     <code class="docutils literal notranslate"><span class="pre">`</span>&#160;&#160;&#160;&#160; <span class="pre">class</span> <span class="pre">MyEffectWidget(Effect1,</span> <span class="pre">Effect2,</span> <span class="pre">TextWidget):</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">`</span></code> applies Effect2 then Effect1.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainbowCycleEffect</span></code>([ncolors, cycle_speed, ...])</p></td>
 <td><p>An effect that adds colors from a rainbow gradient.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cycle</span></code>(iterable, /)</p></td>
+<td><p>Return elements from the iterable until it is exhausted.</p></td>
 </tr>
 </tbody>
 </table>

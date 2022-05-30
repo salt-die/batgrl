@@ -36,11 +36,37 @@
             
   <section id="module-nurses_2.widgets.color_picker">
 <span id="nurses-2-widgets-color-picker"></span><h1>nurses_2.widgets.color_picker<a class="headerlink" href="#module-nurses_2.widgets.color_picker" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code>(start, end, ncolors)</p></td>
+<td><p>Return a gradient from <cite>start</cite> to <cite>end</cite> with <cite>ncolors</cite> (&gt; 1) colors.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AColor</span></code>(red, green, blue[, alpha])</p></td>
+<td><p>A 24-bit color with an alpha channel.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Button</span></code>(*[, background_char])</p></td>
+<td><p>A button widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Color</span></code>(red, green, blue)</p></td>
+<td><p>A 24-bit color.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPair</span></code>(fg_red, fg_green, fg_blue, bg_red, ...)</p></td>
+<td><p>A foreground and background pair of 24-bit colors.</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPicker</span></code>([background_char])</p></td>
 <td><p>Color picker widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabbableBehavior</span></code>(*[, is_grabbable, disable_ptf])</p></td>
+<td><p>Grabbable behavior for a widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicWidget</span></code>([is_transparent, ...])</p></td>
+<td><p>Base for graphic widgets.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">HueSelector</span></code>(shade_selector, **kwargs)</p></td>
 <td><p><dl class="field-list simple">
@@ -55,6 +81,15 @@
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextWidget</span></code>([default_char, default_color_pair])</p></td>
+<td><p>A generic TUI element.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Themable</span></code>()</p></td>
+<td><p>Themable widgets share a color theme.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Widget</span></code>(*[, size, pos, size_hint, min_width, ...])</p></td>
+<td><p>Base class for creating widgets.</p></td>
 </tr>
 </tbody>
 </table>

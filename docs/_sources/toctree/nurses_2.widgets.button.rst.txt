@@ -1,4 +1,4 @@
-nurses\_2.widgets.button
+﻿nurses\_2.widgets.button
 ========================
 
 .. automodule:: nurses_2.widgets.button
@@ -9,6 +9,12 @@ nurses\_2.widgets.button
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      wcswidth
+   
    
 
    
@@ -17,7 +23,13 @@ nurses\_2.widgets.button
 
    .. autosummary::
    
+      Anchor
       Button
+      ButtonBehavior
+      ButtonState
+      TextWidget
+      Themable
+      Widget
    
    
 

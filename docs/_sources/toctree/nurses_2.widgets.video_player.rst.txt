@@ -1,4 +1,4 @@
-nurses\_2.widgets.video\_player
+﻿nurses\_2.widgets.video\_player
 ===============================
 
 .. automodule:: nurses_2.widgets.video_player
@@ -17,6 +17,9 @@ nurses\_2.widgets.video\_player
 
    .. autosummary::
    
+      GraphicWidget
+      Interpolation
+      Path
       VideoPlayer
    
    

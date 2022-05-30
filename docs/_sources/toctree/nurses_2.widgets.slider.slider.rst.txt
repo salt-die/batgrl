@@ -9,6 +9,12 @@ nurses\_2.widgets.slider.slider
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+   
    
 
    
@@ -17,7 +23,11 @@ nurses\_2.widgets.slider.slider
 
    .. autosummary::
    
+      Color
+      MouseEventType
+      Point
       Slider
+      TextWidget
    
    
 

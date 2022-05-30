@@ -1,4 +1,4 @@
-nurses\_2.widgets.behaviors.scatter\_behavior
+﻿nurses\_2.widgets.behaviors.scatter\_behavior
 =============================================
 
 .. automodule:: nurses_2.widgets.behaviors.scatter_behavior
@@ -9,6 +9,12 @@ nurses\_2.widgets.behaviors.scatter\_behavior
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+   
    
 
    
@@ -17,6 +23,7 @@ nurses\_2.widgets.behaviors.scatter\_behavior
 
    .. autosummary::
    
+      GrabbableBehavior
       ScatterBehavior
    
    

@@ -1,4 +1,4 @@
-nurses\_2.widgets.image
+﻿nurses\_2.widgets.image
 =======================
 
 .. automodule:: nurses_2.widgets.image
@@ -17,7 +17,9 @@ nurses\_2.widgets.image
 
    .. autosummary::
    
+      GraphicWidget
       Image
+      Path
    
    
 

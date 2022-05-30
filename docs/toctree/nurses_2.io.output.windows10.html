@@ -39,7 +39,10 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_vt100_enabled</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byref</span></code>(C instance[[, offset])</p></td>
+<td><p>Return a pointer lookalike to a C instance, only usable as function argument</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_vt100_enabled</span></code>()</p></td>
 <td><p>Return True if VT100 escape sequences are supported.</p></td>
 </tr>
 </tbody>
@@ -47,6 +50,23 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONSOLE_SCREEN_BUFFER_INFO</span></code></p></td>
+<td><p>struct in wincon.h.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DWORD</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">c_ulong</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Size</span></code>(height, width)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vt100_Output</span></code>(asciicast_path)</p></td>
+<td><p><p class="rubric">Methods</p>
+</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Windows10_Output</span></code>(is_conemu_ansi, *args, **kwargs)</p></td>
 <td><p>Windows 10 output.</p></td>
 </tr>

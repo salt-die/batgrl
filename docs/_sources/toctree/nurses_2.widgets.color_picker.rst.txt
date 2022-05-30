@@ -1,4 +1,4 @@
-nurses\_2.widgets.color\_picker
+﻿nurses\_2.widgets.color\_picker
 ===============================
 
 .. automodule:: nurses_2.widgets.color_picker
@@ -9,6 +9,12 @@ nurses\_2.widgets.color\_picker
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      gradient
+   
    
 
    
@@ -17,9 +23,18 @@ nurses\_2.widgets.color\_picker
 
    .. autosummary::
    
+      AColor
+      Button
+      Color
+      ColorPair
       ColorPicker
+      GrabbableBehavior
+      GraphicWidget
       HueSelector
       ShadeSelector
+      TextWidget
+      Themable
+      Widget
    
    
 

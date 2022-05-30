@@ -1,4 +1,4 @@
-nurses\_2.widgets.tiled\_image
+﻿nurses\_2.widgets.tiled\_image
 ==============================
 
 .. automodule:: nurses_2.widgets.tiled_image
@@ -9,6 +9,12 @@ nurses\_2.widgets.tiled\_image
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      ceil
+   
    
 
    
@@ -17,6 +23,8 @@ nurses\_2.widgets.tiled\_image
 
    .. autosummary::
    
+      GraphicWidget
+      Size
       TiledImage
    
    

@@ -1,4 +1,4 @@
-nurses\_2.clamp
+﻿nurses\_2.clamp
 ===============
 
 .. automodule:: nurses_2.clamp
@@ -18,6 +18,12 @@ nurses\_2.clamp
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Real
    
    
 

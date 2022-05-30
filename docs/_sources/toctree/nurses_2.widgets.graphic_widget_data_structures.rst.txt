@@ -1,4 +1,4 @@
-nurses\_2.widgets.graphic\_widget\_data\_structures
+﻿nurses\_2.widgets.graphic\_widget\_data\_structures
 ===================================================
 
 .. automodule:: nurses_2.widgets.graphic_widget_data_structures
@@ -17,6 +17,7 @@ nurses\_2.widgets.graphic\_widget\_data\_structures
 
    .. autosummary::
    
+      IntEnum
       Interpolation
    
    

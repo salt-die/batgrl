@@ -1,4 +1,4 @@
-nurses\_2.widgets.toggle\_button
+﻿nurses\_2.widgets.toggle\_button
 ================================
 
 .. automodule:: nurses_2.widgets.toggle_button
@@ -9,6 +9,12 @@ nurses\_2.widgets.toggle\_button
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      wcswidth
+   
    
 
    
@@ -17,7 +23,14 @@ nurses\_2.widgets.toggle\_button
 
    .. autosummary::
    
+      Anchor
+      ButtonState
+      TextWidget
+      Themable
       ToggleButton
+      ToggleButtonBehavior
+      ToggleState
+      Widget
    
    
 

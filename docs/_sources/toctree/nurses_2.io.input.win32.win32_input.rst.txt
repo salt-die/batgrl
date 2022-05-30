@@ -1,4 +1,4 @@
-nurses\_2.io.input.win32.win32\_input
+﻿nurses\_2.io.input.win32.win32\_input
 =====================================
 
 .. automodule:: nurses_2.io.input.win32.win32_input
@@ -14,11 +14,24 @@ nurses\_2.io.input.win32.win32\_input
    .. autosummary::
    
       attach
+      byref
+      contextmanager
+      get_event_loop
       raw_mode
+      read_keys
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BOOL
+      DWORD
+      HANDLE
+      SECURITY_ATTRIBUTES
    
    
 

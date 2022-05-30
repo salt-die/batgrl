@@ -9,6 +9,12 @@ nurses\_2.widgets.shadow\_caster.shadow\_caster\_data\_structures
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      NamedTuple
+   
    
 
    
@@ -18,11 +24,15 @@ nurses\_2.widgets.shadow\_caster.shadow\_caster\_data\_structures
    .. autosummary::
    
       Camera
+      Color
       Coordinates
+      Enum
       Interval
       LightIntensity
       LightSource
+      Point
       Restrictiveness
+      Size
    
    
 

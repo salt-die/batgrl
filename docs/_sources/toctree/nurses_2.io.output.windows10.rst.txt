@@ -1,4 +1,4 @@
-nurses\_2.io.output.windows10
+﻿nurses\_2.io.output.windows10
 =============================
 
 .. automodule:: nurses_2.io.output.windows10
@@ -13,6 +13,7 @@ nurses\_2.io.output.windows10
 
    .. autosummary::
    
+      byref
       is_vt100_enabled
    
    
@@ -23,6 +24,10 @@ nurses\_2.io.output.windows10
 
    .. autosummary::
    
+      CONSOLE_SCREEN_BUFFER_INFO
+      DWORD
+      Size
+      Vt100_Output
       Windows10_Output
    
    

@@ -1,4 +1,4 @@
-nurses\_2.io
+﻿nurses\_2.io
 ============
 
 .. automodule:: nurses_2.io
@@ -13,11 +13,25 @@ nurses\_2.io
 
    .. autosummary::
    
+      contextmanager
       io
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Key
+      KeyPressEvent
+      Mods
+      MouseButton
+      MouseEvent
+      MouseEventType
+      PasteEvent
+      Path
    
    
 

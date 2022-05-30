@@ -1,4 +1,4 @@
-nurses\_2.widgets.scroll\_view
+﻿nurses\_2.widgets.scroll\_view
 ==============================
 
 .. automodule:: nurses_2.widgets.scroll_view
@@ -12,6 +12,12 @@ nurses\_2.widgets.scroll\_view
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ScrollView
    
    
 

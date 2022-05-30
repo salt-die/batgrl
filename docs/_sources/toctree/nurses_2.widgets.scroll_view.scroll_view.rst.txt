@@ -9,6 +9,12 @@ nurses\_2.widgets.scroll\_view.scroll\_view
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+   
    
 
    
@@ -17,7 +23,12 @@ nurses\_2.widgets.scroll\_view.scroll\_view
 
    .. autosummary::
    
+      GrabbableBehavior
+      KeyPressEvent
+      MouseEvent
+      MouseEventType
       ScrollView
+      Widget
    
    
 

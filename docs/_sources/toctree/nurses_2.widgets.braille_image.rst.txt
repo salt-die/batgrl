@@ -1,4 +1,4 @@
-nurses\_2.widgets.braille\_image
+﻿nurses\_2.widgets.braille\_image
 ================================
 
 .. automodule:: nurses_2.widgets.braille_image
@@ -9,6 +9,12 @@ nurses\_2.widgets.braille\_image
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      binary_to_braille
+   
    
 
    
@@ -18,6 +24,8 @@ nurses\_2.widgets.braille\_image
    .. autosummary::
    
       BrailleImage
+      Path
+      TextWidget
    
    
 

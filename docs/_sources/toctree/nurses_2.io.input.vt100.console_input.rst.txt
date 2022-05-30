@@ -1,4 +1,4 @@
-nurses\_2.io.input.vt100.console\_input
+﻿nurses\_2.io.input.vt100.console\_input
 =======================================
 
 .. automodule:: nurses_2.io.input.vt100.console_input
@@ -13,12 +13,23 @@ nurses\_2.io.input.vt100.console\_input
 
    .. autosummary::
    
+      getincrementaldecoder
       read_keys
       read_stdin
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Key
+      KeyPressEvent
+      MouseEvent
+      PasteEvent
+      Point
    
    
 

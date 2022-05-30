@@ -1,4 +1,4 @@
-nurses\_2.io.input.win32.console\_input
+﻿nurses\_2.io.input.win32.console\_input
 =======================================
 
 .. automodule:: nurses_2.io.input.win32.console_input
@@ -13,11 +13,31 @@ nurses\_2.io.input.win32.console\_input
 
    .. autosummary::
    
+      byref
       read_keys
    
    
 
    
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DWORD
+      INPUT_RECORD
+      KEY_EVENT_RECORD
+      Key
+      KeyPressEvent
+      MOUSE_EVENT_RECORD
+      Mods
+      MouseButton
+      MouseEvent
+      MouseEventType
+      PasteEvent
+      Point
+      Size
+      WINDOW_BUFFER_SIZE_RECORD
    
    
 

@@ -1,4 +1,4 @@
-nurses\_2.widgets.graphic\_widget
+﻿nurses\_2.widgets.graphic\_widget
 =================================
 
 .. automodule:: nurses_2.widgets.graphic_widget
@@ -9,6 +9,13 @@ nurses\_2.widgets.graphic\_widget
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+      emitter
+   
    
 
    
@@ -17,7 +24,17 @@ nurses\_2.widgets.graphic\_widget
 
    .. autosummary::
    
+      AColor
+      Anchor
+      Easing
       GraphicWidget
+      Interpolation
+      Path
+      Point
+      PosHint
+      Size
+      SizeHint
+      Widget
    
    
 

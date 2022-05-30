@@ -1,4 +1,4 @@
-nurses\_2.widgets.split\_layout
+﻿nurses\_2.widgets.split\_layout
 ===============================
 
 .. automodule:: nurses_2.widgets.split_layout
@@ -9,6 +9,12 @@ nurses\_2.widgets.split\_layout
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+   
    
 
    
@@ -17,8 +23,12 @@ nurses\_2.widgets.split\_layout
 
    .. autosummary::
    
+      AColor
+      GrabbableBehavior
+      GraphicWidget
       HSplitLayout
       VSplitLayout
+      Widget
    
    
 

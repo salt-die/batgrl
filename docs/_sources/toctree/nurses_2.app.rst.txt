@@ -1,4 +1,4 @@
-nurses\_2.app
+﻿nurses\_2.app
 =============
 
 .. automodule:: nurses_2.app
@@ -13,6 +13,9 @@ nurses\_2.app
 
    .. autosummary::
    
+      abstractmethod
+      io
+      monotonic
       run_widget_as_app
    
    
@@ -23,7 +26,19 @@ nurses\_2.app
 
    .. autosummary::
    
+      ABC
       App
+      ColorPair
+      ColorTheme
+      KeyPressEvent
+      MouseButton
+      MouseEvent
+      MouseEventType
+      PasteEvent
+      Path
+      Size
+      Themable
+      Widget
    
    
 

@@ -1,4 +1,4 @@
-nurses\_2.io.input.events
+﻿nurses\_2.io.input.events
 =========================
 
 .. automodule:: nurses_2.io.input.events
@@ -9,6 +9,14 @@ nurses\_2.io.input.events
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      NamedTuple
+      cache
+      namedtuple
+   
    
 
    
@@ -17,12 +25,15 @@ nurses\_2.io.input.events
 
    .. autosummary::
    
+      Enum
+      Key
       KeyPressEvent
       Mods
       MouseButton
       MouseEvent
       MouseEventType
       PasteEvent
+      Point
    
    
 

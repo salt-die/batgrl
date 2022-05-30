@@ -1,4 +1,4 @@
-nurses\_2.widgets.behaviors.themable
+﻿nurses\_2.widgets.behaviors.themable
 ====================================
 
 .. automodule:: nurses_2.widgets.behaviors.themable
@@ -9,6 +9,12 @@ nurses\_2.widgets.behaviors.themable
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      abstractmethod
+   
    
 
    
@@ -17,6 +23,7 @@ nurses\_2.widgets.behaviors.themable
 
    .. autosummary::
    
+      ABC
       Themable
    
    

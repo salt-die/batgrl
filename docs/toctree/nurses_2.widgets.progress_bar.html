@@ -36,11 +36,31 @@
             
   <section id="module-nurses_2.widgets.progress_bar">
 <span id="nurses-2-widgets-progress-bar"></span><h1>nurses_2.widgets.progress_bar<a class="headerlink" href="#module-nurses_2.widgets.progress_bar" title="Permalink to this heading">¶</a></h1>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clamp</span></code>(value, min, max)</p></td>
+<td><p>Clamp a value between min and max.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code>(start, end, ncolors)</p></td>
+<td><p>Return a gradient from <cite>start</cite> to <cite>end</cite> with <cite>ncolors</cite> (&gt; 1) colors.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProgressBar</span></code>([is_horizontal])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPair</span></code>(fg_red, fg_green, fg_blue, bg_red, ...)</p></td>
+<td><p>A foreground and background pair of 24-bit colors.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProgressBar</span></code>([is_horizontal])</p></td>
 <td><p>A progress bar widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextWidget</span></code>([default_char, default_color_pair])</p></td>
+<td><p>A generic TUI element.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Themable</span></code>()</p></td>
+<td><p>Themable widgets share a color theme.</p></td>
 </tr>
 </tbody>
 </table>

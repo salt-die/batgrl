@@ -1,4 +1,4 @@
-nurses\_2.io.output.vt100
+﻿nurses\_2.io.output.vt100
 =========================
 
 .. automodule:: nurses_2.io.output.vt100
@@ -17,6 +17,8 @@ nurses\_2.io.output.vt100
 
    .. autosummary::
    
+      Path
+      Size
       Vt100_Output
    
    
