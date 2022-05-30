@@ -1,0 +1,32 @@
+nurses\_2.widgets.slider
+========================
+
+.. automodule:: nurses_2.widgets.slider
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   nurses_2.widgets.slider.handle
+   nurses_2.widgets.slider.slider
+

@@ -1,0 +1,29 @@
+nurses\_2.widgets.behaviors.focus\_behavior
+===========================================
+
+.. automodule:: nurses_2.widgets.behaviors.focus_behavior
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FocusBehavior
+   
+   
+
+   
+   
+   
+
+
+

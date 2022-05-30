@@ -5,8 +5,14 @@ import asyncio
 import os
 import signal
 import sys
-import termios
-import tty
+
+try:
+    import termios
+    import tty
+except ModuleNotFoundError:
+    # This file needs to be importable on windows for auto-documentation.
+    pass
+
 from contextlib import contextmanager
 
 from ....data_structures import Size

@@ -159,10 +159,6 @@ class Menu(GridLayout):
     callable with one argument for a toggle menu item (the argument will be the state of the
     toggle button, `ToggleState`), or a dict (for a submenu).
 
-    See Also
-    --------
-    https://github.com/salt-die/nurses_2/blob/main/examples/menu.py
-
     Parameters
     ----------
     close_on_release : bool, default: True
@@ -318,10 +314,6 @@ class Menu(GridLayout):
         """
         Create and yield menus from a dict of dicts. Callables should either have no arguments
         for a normal menu item, or one argument for a toggle menu item.
-
-        See Also
-        --------
-        https://github.com/salt-die/nurses_2/blob/main/examples/menu.py
 
         Parameters
         ----------

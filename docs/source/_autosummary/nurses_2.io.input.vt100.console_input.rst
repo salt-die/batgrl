@@ -1,0 +1,30 @@
+nurses\_2.io.input.vt100.console\_input
+=======================================
+
+.. automodule:: nurses_2.io.input.vt100.console_input
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      read_keys
+      read_stdin
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

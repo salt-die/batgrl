@@ -1,0 +1,30 @@
+nurses\_2.data\_structures
+==========================
+
+.. automodule:: nurses_2.data_structures
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Point
+      Size
+   
+   
+
+   
+   
+   
+
+
+

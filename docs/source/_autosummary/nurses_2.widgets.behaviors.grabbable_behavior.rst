@@ -1,0 +1,29 @@
+nurses\_2.widgets.behaviors.grabbable\_behavior
+===============================================
+
+.. automodule:: nurses_2.widgets.behaviors.grabbable_behavior
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GrabbableBehavior
+   
+   
+
+   
+   
+   
+
+
+

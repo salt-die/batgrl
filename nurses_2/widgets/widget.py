@@ -839,19 +839,12 @@ class Widget:
         on_complete : Callable | None, default: None
             Called when tween completes.
         **properties : dict[str, int | float | Sequence[int] | Sequence[float | None]]
-            Widget properties' target values.
+            Widget properties' target values. E.g., to smoothly tween a widget's position
+            to (5, 10) over 2.5 seconds, specify the `pos` property as a keyword-argument:
+            `await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)`
 
-        Example
-        -------
-        To smoothly tween a widget's position to (5, 10) over 2.5 seconds, specify the
-        `pos` property as a keyword-argument:
-
-        ```
-        await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)
-        ```
-
-        Warning
-        -------
+        Warnings
+        --------
         Running several tweens on the same properties concurrently will probably result in unexpected
         behavior. `tween` won't work for ndarray types such as `canvas`, `colors`, or `texture`.
         If tweening size or pos hints, make sure the relevant hints aren't `None` to start.

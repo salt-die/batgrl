@@ -1,0 +1,29 @@
+nurses\_2.widgets.text\_widget\_data\_structures
+================================================
+
+.. automodule:: nurses_2.widgets.text_widget_data_structures
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CanvasView
+   
+   
+
+   
+   
+   
+
+
+

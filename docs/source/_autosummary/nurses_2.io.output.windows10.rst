@@ -1,0 +1,35 @@
+nurses\_2.io.output.windows10
+=============================
+
+.. automodule:: nurses_2.io.output.windows10
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      is_vt100_enabled
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Windows10_Output
+   
+   
+
+   
+   
+   
+
+
+

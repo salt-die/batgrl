@@ -1,0 +1,33 @@
+nurses\_2.colors.gradients
+==========================
+
+.. automodule:: nurses_2.colors.gradients
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      background_rainbow
+      foreground_rainbow
+      gradient
+      lerp_colors
+      rainbow_gradient
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

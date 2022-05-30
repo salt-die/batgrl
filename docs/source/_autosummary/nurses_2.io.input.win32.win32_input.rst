@@ -1,0 +1,30 @@
+nurses\_2.io.input.win32.win32\_input
+=====================================
+
+.. automodule:: nurses_2.io.input.win32.win32_input
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      attach
+      raw_mode
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

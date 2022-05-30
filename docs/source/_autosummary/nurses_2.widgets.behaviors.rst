@@ -1,0 +1,39 @@
+nurses\_2.widgets.behaviors
+===========================
+
+.. automodule:: nurses_2.widgets.behaviors
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   nurses_2.widgets.behaviors.button_behavior
+   nurses_2.widgets.behaviors.effects
+   nurses_2.widgets.behaviors.focus_behavior
+   nurses_2.widgets.behaviors.grab_move_behavior
+   nurses_2.widgets.behaviors.grab_resize_behavior
+   nurses_2.widgets.behaviors.grabbable_behavior
+   nurses_2.widgets.behaviors.scatter_behavior
+   nurses_2.widgets.behaviors.themable
+   nurses_2.widgets.behaviors.toggle_button_behavior
+

@@ -17,7 +17,7 @@ __all__ = (
 
 def rainbow_gradient(n, *, color_type=Color):
     """
-    Return a rainbow gradient of `n` `Color`s.
+    Return a rainbow gradient of n colors.
     """
     TAU = 2 * np.pi
     OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
