@@ -9,13 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-      emitter
-   
    
 
    
@@ -24,17 +17,7 @@
 
    .. autosummary::
    
-      AColor
-      Anchor
-      Easing
       GraphicWidget
-      Interpolation
-      Path
-      Point
-      PosHint
-      Size
-      SizeHint
-      Widget
    
    
 

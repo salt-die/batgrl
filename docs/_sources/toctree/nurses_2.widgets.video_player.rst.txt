@@ -17,9 +17,6 @@
 
    .. autosummary::
    
-      GraphicWidget
-      Interpolation
-      Path
       VideoPlayer
    
    

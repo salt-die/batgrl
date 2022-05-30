@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      abstractmethod
-   
    
 
    
@@ -23,7 +17,6 @@
 
    .. autosummary::
    
-      ABC
       Themable
    
    

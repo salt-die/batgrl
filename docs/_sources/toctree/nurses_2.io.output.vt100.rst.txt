@@ -17,8 +17,6 @@
 
    .. autosummary::
    
-      Path
-      Size
       Vt100_Output
    
    

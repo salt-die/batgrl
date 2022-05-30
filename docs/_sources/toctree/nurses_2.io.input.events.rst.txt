@@ -9,14 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      NamedTuple
-      cache
-      namedtuple
-   
    
 
    
@@ -25,15 +17,12 @@
 
    .. autosummary::
    
-      Enum
-      Key
       KeyPressEvent
       Mods
       MouseButton
       MouseEvent
       MouseEventType
       PasteEvent
-      Point
    
    
 

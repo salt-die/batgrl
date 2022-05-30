@@ -36,38 +36,84 @@
             
   <section id="module-nurses_2.widgets.behaviors.grab_resize_behavior">
 <span id="nurses-2-widgets-behaviors-grab-resize-behavior"></span><h1>nurses_2.widgets.behaviors.grab_resize_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.grab_resize_behavior" title="Permalink to this heading">¶</a></h1>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clamp</span></code>(value, min, max)</p></td>
-<td><p>Clamp a value between min and max.</p></td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AColor</span></code>(red, green, blue[, alpha])</p></td>
-<td><p>A 24-bit color with an alpha channel.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabResizeBehavior</span></code>(*[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabResizeBehavior</span></code></a>(*[, ...])</p></td>
 <td><p>Draggable resize behavior for a widget.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabbableBehavior</span></code>(*[, is_grabbable, disable_ptf])</p></td>
-<td><p>Grabbable behavior for a widget.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicWidget</span></code>([is_transparent, ...])</p></td>
-<td><p>Base for graphic widgets.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Size</span></code>(height, width)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grab_resize_behavior.</span></span><span class="sig-name descname"><span class="pre">GrabResizeBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_vertical_resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_horizontal_resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">AColor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">AColor(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0,</span> <span class="pre">alpha=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">Size</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Size(height=1,</span> <span class="pre">width=2)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Draggable resize behavior for a widget. Resize a widget by clicking its border and dragging it.
+Widget dimensions won’t be resized smaller than <cite>min_height</cite> or <cite>min_width</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>allow_vertical_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow vertical resize.</p>
+</dd>
+<dt><strong>allow_horizontal_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow horizontal resize.</p>
+</dd>
+<dt><strong>border_alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of border. This value will be clamped between <cite>0.0</cite> and <cite>1.0</cite>.</p>
+</dd>
+<dt><strong>border_color</strong><span class="classifier">AColor, default: TRANSPARENT</span></dt><dd><p>Color of border.</p>
+</dd>
+<dt><strong>border_size</strong><span class="classifier">Size, default: Size(1, 2)</span></dt><dd><p>Height and width of horizontal and vertical borders, respectively.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Borders are added as child widgets. Children added later may overlap or cover the borders.
+The method <cite>pull_border_to_front</cite> will correct this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_alpha" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_alpha</span></code></a></dt><dd><p>Background character of the border.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_color" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_color</span></code></a></dt><dd><p>Color of border.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_size" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_size</span></code></a></dt><dd><p>Height and width of horizontal and vertical borders, respectively.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>pull_border_to_front</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border_alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Background character of the border.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">AColor</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color of border.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Height and width of horizontal and vertical borders, respectively.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.pull_border_to_front">
+<span class="sig-name descname"><span class="pre">pull_border_to_front</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.pull_border_to_front" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

@@ -40,85 +40,18 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byref</span></code>(C instance[[, offset])</p></td>
-<td><p>Return a pointer lookalike to a C instance, only usable as function argument</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_keys</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.win32.console_input.read_keys" title="nurses_2.io.input.win32.console_input.read_keys"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_keys</span></code></a>()</p></td>
 <td><p>Yield input events.</p></td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DWORD</span></code></p></td>
-<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">c_ulong</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">INPUT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">KEY_EVENT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Key</span></code>(value)</p></td>
-<td><p>Special keys.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyPressEvent</span></code>(*args, **kwargs)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOUSE_EVENT_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx</a></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mods</span></code>(*args, **kwargs)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseButton</span></code>(value)</p></td>
-<td><p>An enumeration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseEvent</span></code>(position, event_type, button, mods)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseEventType</span></code>(value)</p></td>
-<td><p>An enumeration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PasteEvent</span></code>(paste)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Point</span></code>(y, x)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Size</span></code>(height, width)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">WINDOW_BUFFER_SIZE_RECORD</span></code></p></td>
-<td><p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx</a></p></td>
-</tr>
-</tbody>
-</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="nurses_2.io.input.win32.console_input.read_keys">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.win32.console_input.</span></span><span class="sig-name descname"><span class="pre">read_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.win32.console_input.read_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield input events.</p>
+<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx</a></p>
+</dd></dl>
+
 </section>
 
 

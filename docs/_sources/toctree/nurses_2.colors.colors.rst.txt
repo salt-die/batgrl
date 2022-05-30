@@ -13,15 +13,6 @@ nurses\_2.colors.colors
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      AColor
-      Color
-      ColorPair
-      ColorTheme
-   
    
 
    

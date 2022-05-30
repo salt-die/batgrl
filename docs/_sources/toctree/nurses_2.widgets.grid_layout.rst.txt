@@ -17,14 +17,9 @@
 
    .. autosummary::
    
-      Enum
       GridLayout
       Orientation
       RepositionProperty
-      Size
-      Widget
-      accumulate
-      product
    
    
 

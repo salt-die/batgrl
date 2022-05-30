@@ -17,30 +17,18 @@ nurses\_2.io.win32\_types
 
    .. autosummary::
    
-      BOOL
       CONSOLE_SCREEN_BUFFER_INFO
       COORD
-      DWORD
       EVENT_RECORD
       FOCUS_EVENT_RECORD
-      HANDLE
       INPUT_RECORD
       KEY_EVENT_RECORD
-      LPVOID
       MENU_EVENT_RECORD
       MOUSE_EVENT_RECORD
       SECURITY_ATTRIBUTES
       SMALL_RECT
-      Structure
       UNICODE_OR_ASCII
-      Union
-      WCHAR
       WINDOW_BUFFER_SIZE_RECORD
-      WORD
-      c_char
-      c_long
-      c_short
-      c_ulong
    
    
 

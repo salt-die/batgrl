@@ -9,13 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-      wcswidth
-   
    
 
    
@@ -24,17 +17,6 @@
 
    .. autosummary::
    
-      AColor
-      Anchor
-      ColorPair
-      FocusBehavior
-      GrabResizeBehavior
-      GrabbableBehavior
-      GraphicWidget
-      Size
-      TextWidget
-      Themable
-      Widget
       Window
    
    

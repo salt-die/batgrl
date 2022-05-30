@@ -13,14 +13,6 @@ nurses\_2.widgets.scroll\_view.scrollbars
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      MouseEventType
-      Themable
-      Widget
-   
    
 
    

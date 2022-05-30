@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-   
    
 
    
@@ -23,12 +17,8 @@
 
    .. autosummary::
    
-      AColor
-      GrabbableBehavior
-      GraphicWidget
       HSplitLayout
       VSplitLayout
-      Widget
    
    
 

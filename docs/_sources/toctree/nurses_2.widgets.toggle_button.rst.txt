@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      wcswidth
-   
    
 
    
@@ -23,14 +17,7 @@
 
    .. autosummary::
    
-      Anchor
-      ButtonState
-      TextWidget
-      Themable
       ToggleButton
-      ToggleButtonBehavior
-      ToggleState
-      Widget
    
    
 

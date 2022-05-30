@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      wcswidth
-   
    
 
    

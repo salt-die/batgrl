@@ -14,19 +14,11 @@
    .. autosummary::
    
       attach
-      contextmanager
       raw_mode
-      read_keys
    
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Size
    
    
 

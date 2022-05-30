@@ -17,12 +17,8 @@
 
    .. autosummary::
    
-      ButtonBehavior
-      ButtonState
-      Enum
       ToggleButtonBehavior
       ToggleState
-      ref
    
    
 

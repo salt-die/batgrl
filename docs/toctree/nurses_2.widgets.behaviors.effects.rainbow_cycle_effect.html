@@ -36,28 +36,70 @@
             
   <section id="module-nurses_2.widgets.behaviors.effects.rainbow_cycle_effect">
 <span id="nurses-2-widgets-behaviors-effects-rainbow-cycle-effect"></span><h1>nurses_2.widgets.behaviors.effects.rainbow_cycle_effect<a class="headerlink" href="#module-nurses_2.widgets.behaviors.effects.rainbow_cycle_effect" title="Permalink to this heading">¶</a></h1>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rainbow_gradient</span></code>(n, *[, color_type])</p></td>
-<td><p>Return a rainbow gradient of n colors.</p></td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect</span></code>()</p></td>
-<td><p>Effects are behaviors that modify how a widget and its children are rendered. Effects should be inherited in the reverse order that they are applied, e.g.,     <code class="docutils literal notranslate"><span class="pre">`</span>&#160;&#160;&#160;&#160; <span class="pre">class</span> <span class="pre">MyEffectWidget(Effect1,</span> <span class="pre">Effect2,</span> <span class="pre">TextWidget):</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">`</span></code> applies Effect2 then Effect1.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainbowCycleEffect</span></code>([ncolors, cycle_speed, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect" title="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RainbowCycleEffect</span></code></a>([ncolors, cycle_speed, ...])</p></td>
 <td><p>An effect that adds colors from a rainbow gradient.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cycle</span></code>(iterable, /)</p></td>
-<td><p>Return elements from the iterable until it is exhausted.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.</span></span><span class="sig-name descname"><span class="pre">RainbowCycleEffect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncolors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycle_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.08333333333333333</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_foreground_rainbow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_background_rainbow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.effects.effect.html#nurses_2.widgets.behaviors.effects.effect.Effect" title="nurses_2.widgets.behaviors.effects.effect.Effect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Effect</span></code></a></p>
+<p>An effect that adds colors from a rainbow gradient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ncolors</strong><span class="classifier">int, default: 20</span></dt><dd><p>Number of colors in the rainbow gradient.</p>
+</dd>
+<dt><strong>cycle_speed</strong><span class="classifier">float, default: 1/12</span></dt><dd><p>Seconds between updates.</p>
+</dd>
+<dt><strong>enable_foreground_rainbow</strong><span class="classifier">bool, default: False</span></dt><dd><p>Add colors to foreground.</p>
+</dd>
+<dt><strong>enable_background_rainbow</strong><span class="classifier">bool, default: True</span></dt><dd><p>Add colors to background.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.apply_effect" title="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.apply_effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_effect</span></code></a>(canvas_view, colors_view, source)</p></td>
+<td><p>Apply an effect to the rendered views of a widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render" title="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
+<td><p>Render normally then apply canvas and color effects.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>cycle_colors</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.apply_effect">
+<span class="sig-name descname"><span class="pre">apply_effect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.apply_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply an effect to the rendered views of a widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.cycle_colors">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cycle_colors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.cycle_colors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render normally then apply canvas and color effects.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

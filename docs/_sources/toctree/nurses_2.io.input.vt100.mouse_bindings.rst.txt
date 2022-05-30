@@ -13,14 +13,6 @@
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Mods
-      MouseButton
-      MouseEventType
-   
    
 
    

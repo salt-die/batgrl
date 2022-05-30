@@ -13,18 +13,6 @@
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Camera
-      Coordinates
-      LightIntensity
-      LightSource
-      Point
-      Restrictiveness
-      ShadowCaster
-   
    
 
    

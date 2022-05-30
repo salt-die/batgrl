@@ -13,15 +13,6 @@ nurses\_2.widgets.scroll\_view.indicators
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      GrabbableBehavior
-      MouseEventType
-      Themable
-      Widget
-   
    
 
    

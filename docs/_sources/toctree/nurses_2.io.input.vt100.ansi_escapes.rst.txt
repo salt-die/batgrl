@@ -13,14 +13,6 @@
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Key
-      KeyPressEvent
-      Mods
-   
    
 
    

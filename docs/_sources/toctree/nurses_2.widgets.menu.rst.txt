@@ -14,8 +14,6 @@
    .. autosummary::
    
       nargs
-      signature
-      wcswidth
    
    
 
@@ -25,21 +23,8 @@
 
    .. autosummary::
    
-      Anchor
-      ButtonState
-      Callable
-      GridLayout
       Menu
-      MenuDict
       MenuItem
-      MouseEventType
-      Orientation
-      Point
-      TextWidget
-      Themable
-      ToggleButtonBehavior
-      ToggleState
-      Widget
    
    
 

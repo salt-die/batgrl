@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-   
    
 
    
@@ -24,7 +18,6 @@
    .. autosummary::
    
       GrabMoveBehavior
-      GrabbableBehavior
    
    
 

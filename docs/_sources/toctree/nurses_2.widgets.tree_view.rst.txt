@@ -17,14 +17,8 @@
 
    .. autosummary::
    
-      ButtonBehavior
-      ButtonState
-      ColorPair
-      TextWidget
-      Themable
       TreeView
       TreeViewNode
-      Widget
    
    
 

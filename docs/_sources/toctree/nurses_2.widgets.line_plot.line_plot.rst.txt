@@ -9,12 +9,6 @@ nurses\_2.widgets.line\_plot.line\_plot
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      wcswidth
-   
    
 
    
@@ -23,16 +17,7 @@ nurses\_2.widgets.line\_plot.line\_plot
 
    .. autosummary::
    
-      Anchor
-      Color
       LinePlot
-      MouseEvent
-      MouseEventType
-      ScrollView
-      Size
-      SizeHint
-      TextWidget
-      Widget
    
    
 

@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      ceil
-   
    
 
    
@@ -23,8 +17,6 @@
 
    .. autosummary::
    
-      GraphicWidget
-      Size
       TiledImage
    
    

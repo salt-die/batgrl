@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      gradient
-   
    
 
    
@@ -23,18 +17,9 @@
 
    .. autosummary::
    
-      AColor
-      Button
-      Color
-      ColorPair
       ColorPicker
-      GrabbableBehavior
-      GraphicWidget
       HueSelector
       ShadeSelector
-      TextWidget
-      Themable
-      Widget
    
    
 

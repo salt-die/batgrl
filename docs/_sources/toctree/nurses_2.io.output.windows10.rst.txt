@@ -13,7 +13,6 @@
 
    .. autosummary::
    
-      byref
       is_vt100_enabled
    
    
@@ -24,10 +23,6 @@
 
    .. autosummary::
    
-      CONSOLE_SCREEN_BUFFER_INFO
-      DWORD
-      Size
-      Vt100_Output
       Windows10_Output
    
    

@@ -9,12 +9,6 @@ nurses\_2.colors.color\_data\_structures
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      NamedTuple
-   
    
 
    

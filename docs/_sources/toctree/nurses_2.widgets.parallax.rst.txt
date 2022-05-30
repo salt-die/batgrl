@@ -17,9 +17,7 @@
 
    .. autosummary::
    
-      GraphicWidget
       Parallax
-      Sequence
    
    
 

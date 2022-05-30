@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      NamedTuple
-   
    
 
    
@@ -25,7 +19,6 @@
    
       Anchor
       Easing
-      Enum
       PosHint
       SizeHint
    

@@ -13,25 +13,11 @@
 
    .. autosummary::
    
-      contextmanager
       io
    
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Key
-      KeyPressEvent
-      Mods
-      MouseButton
-      MouseEvent
-      MouseEventType
-      PasteEvent
-      Path
    
    
 

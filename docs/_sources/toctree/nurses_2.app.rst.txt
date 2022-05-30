@@ -13,9 +13,6 @@
 
    .. autosummary::
    
-      abstractmethod
-      io
-      monotonic
       run_widget_as_app
    
    
@@ -26,19 +23,7 @@
 
    .. autosummary::
    
-      ABC
       App
-      ColorPair
-      ColorTheme
-      KeyPressEvent
-      MouseButton
-      MouseEvent
-      MouseEventType
-      PasteEvent
-      Path
-      Size
-      Themable
-      Widget
    
    
 

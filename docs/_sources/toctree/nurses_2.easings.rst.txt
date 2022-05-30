@@ -13,7 +13,6 @@
 
    .. autosummary::
    
-      cos
       in_back
       in_bounce
       in_circ
@@ -46,7 +45,6 @@
       out_quart
       out_quint
       out_sine
-      sin
    
    
 

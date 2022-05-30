@@ -9,12 +9,6 @@ nurses\_2.widgets.behaviors.effects.rainbow\_cycle\_effect
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      rainbow_gradient
-   
    
 
    
@@ -23,9 +17,7 @@ nurses\_2.widgets.behaviors.effects.rainbow\_cycle\_effect
 
    .. autosummary::
    
-      Effect
       RainbowCycleEffect
-      cycle
    
    
 

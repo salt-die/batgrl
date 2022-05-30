@@ -18,10 +18,6 @@
    .. autosummary::
    
       FocusBehavior
-      MouseEventType
-      ReferenceType
-      deque
-      ref
    
    
 

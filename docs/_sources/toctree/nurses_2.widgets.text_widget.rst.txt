@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      wcswidth
-   
    
 
    
@@ -23,16 +17,7 @@
 
    .. autosummary::
    
-      Anchor
-      CanvasView
-      ColorPair
-      Easing
-      Point
-      PosHint
-      Size
-      SizeHint
       TextWidget
-      Widget
    
    
 

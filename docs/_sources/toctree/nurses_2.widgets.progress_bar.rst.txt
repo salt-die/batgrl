@@ -9,13 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-      gradient
-   
    
 
    
@@ -24,10 +17,7 @@
 
    .. autosummary::
    
-      ColorPair
       ProgressBar
-      TextWidget
-      Themable
    
    
 

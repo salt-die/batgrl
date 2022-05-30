@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-   
    
 
    
@@ -23,7 +17,6 @@
 
    .. autosummary::
    
-      GrabbableBehavior
       ScatterBehavior
    
    

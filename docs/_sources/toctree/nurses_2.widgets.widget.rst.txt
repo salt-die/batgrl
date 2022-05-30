@@ -13,10 +13,7 @@
 
    .. autosummary::
    
-      clamp
       emitter
-      monotonic
-      wraps
    
    
 
@@ -26,19 +23,6 @@
 
    .. autosummary::
    
-      Anchor
-      Callable
-      ColorPair
-      Easing
-      KeyPressEvent
-      MouseEvent
-      PasteEvent
-      Point
-      PosHint
-      Sequence
-      Size
-      SizeHint
-      WeakKeyDictionary
       Widget
    
    

@@ -19,7 +19,6 @@ nurses\_2.widgets.ray\_caster.protocols
    
       Camera
       Map
-      Protocol
       Texture
    
    

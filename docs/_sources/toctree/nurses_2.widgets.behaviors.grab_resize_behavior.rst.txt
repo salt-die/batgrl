@@ -9,12 +9,6 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      clamp
-   
    
 
    
@@ -23,11 +17,7 @@
 
    .. autosummary::
    
-      AColor
       GrabResizeBehavior
-      GrabbableBehavior
-      GraphicWidget
-      Size
    
    
 

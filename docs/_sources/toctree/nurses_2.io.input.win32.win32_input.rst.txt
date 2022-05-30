@@ -14,24 +14,11 @@
    .. autosummary::
    
       attach
-      byref
-      contextmanager
-      get_event_loop
       raw_mode
-      read_keys
    
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      BOOL
-      DWORD
-      HANDLE
-      SECURITY_ATTRIBUTES
    
    
 

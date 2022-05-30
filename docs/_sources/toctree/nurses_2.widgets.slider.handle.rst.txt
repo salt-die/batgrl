@@ -13,14 +13,6 @@ nurses\_2.widgets.slider.handle
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      ColorPair
-      GrabbableBehavior
-      Widget
-   
    
 
    

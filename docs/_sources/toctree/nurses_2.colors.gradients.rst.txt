@@ -16,22 +16,12 @@ nurses\_2.colors.gradients
       background_rainbow
       foreground_rainbow
       gradient
-      lerp
       lerp_colors
       rainbow_gradient
    
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      AColor
-      Color
-      ColorPair
-      ColorTheme
    
    
 

@@ -13,13 +13,6 @@
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      RayCaster
-      Sprite
-   
    
 
    

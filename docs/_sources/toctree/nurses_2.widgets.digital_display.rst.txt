@@ -17,12 +17,8 @@
 
    .. autosummary::
    
-      Color
-      ColorPair
       DigitalDisplay
       Segment
-      Size
-      TextWidget
    
    
 

@@ -39,40 +39,1320 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ButtonBehavior</span></code>(*[, always_release])</p></td>
-<td><p>Button behavior for a widget.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ButtonState</span></code>(value)</p></td>
-<td><p>An enumeration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPair</span></code>(fg_red, fg_green, fg_blue, bg_red, ...)</p></td>
-<td><p>A foreground and background pair of 24-bit colors.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextWidget</span></code>([default_char, default_color_pair])</p></td>
-<td><p>A generic TUI element.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Themable</span></code>()</p></td>
-<td><p>Themable widgets share a color theme.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TreeView</span></code>(root_node, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView" title="nurses_2.widgets.tree_view.TreeView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TreeView</span></code></a>(root_node, **kwargs)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TreeViewNode</span></code>([is_leaf])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode" title="nurses_2.widgets.tree_view.TreeViewNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TreeViewNode</span></code></a>([is_leaf])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 </p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Widget</span></code>(*[, size, pos, size_hint, min_width, ...])</p></td>
-<td><p>Base class for creating widgets.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.tree_view.</span></span><span class="sig-name descname"><span class="pre">TreeView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode" title="nurses_2.widgets.tree_view.TreeViewNode"><span class="pre">TreeViewNode</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Widget</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.absolute_pos" title="nurses_2.widgets.tree_view.TreeView.absolute_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></a></dt><dd><p>Absolute position on screen.</p>
+</dd>
+<dt><strong>anchor</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.app" title="nurses_2.widgets.tree_view.TreeView.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></dt><dd><p>The running app.</p>
+</dd>
+<dt><strong>background_char</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.bottom" title="nurses_2.widgets.tree_view.TreeView.bottom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bottom</span></code></a></dt><dd><p>Bottom of widget in parent’s reference frame.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.center" title="nurses_2.widgets.tree_view.TreeView.center"><code class="xref py py-obj docutils literal notranslate"><span class="pre">center</span></code></a></dt><dd><p>The center of the widget in local coordinates.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.columns" title="nurses_2.widgets.tree_view.TreeView.columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">columns</span></code></a></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.height" title="nurses_2.widgets.tree_view.TreeView.height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></a></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.height_hint" title="nurses_2.widgets.tree_view.TreeView.height_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height_hint</span></code></a></dt><dd><p>Widget’s height as proportion of its parent’s height.</p>
+</dd>
+<dt><strong>left</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.max_height" title="nurses_2.widgets.tree_view.TreeView.max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_height</span></code></a></dt><dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.max_width" title="nurses_2.widgets.tree_view.TreeView.max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_width</span></code></a></dt><dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.min_height" title="nurses_2.widgets.tree_view.TreeView.min_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_height</span></code></a></dt><dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.min_width" title="nurses_2.widgets.tree_view.TreeView.min_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_width</span></code></a></dt><dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.pos" title="nurses_2.widgets.tree_view.TreeView.pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos</span></code></a></dt><dd><p>Position relative to parent.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.pos_hint" title="nurses_2.widgets.tree_view.TreeView.pos_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_hint</span></code></a></dt><dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.right" title="nurses_2.widgets.tree_view.TreeView.right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right</span></code></a></dt><dd><p>Right side of widget in parent’s reference frame.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.root" title="nurses_2.widgets.tree_view.TreeView.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a></dt><dd><p>Return the root widget if connected to widget tree.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.rows" title="nurses_2.widgets.tree_view.TreeView.rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></a></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.size" title="nurses_2.widgets.tree_view.TreeView.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></dt><dd><p>Size of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.size_hint" title="nurses_2.widgets.tree_view.TreeView.size_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_hint</span></code></a></dt><dd><p>Widget’s size as a proportion of its parent’s size.</p>
+</dd>
+<dt><strong>top</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.width" title="nurses_2.widgets.tree_view.TreeView.width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width</span></code></a></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.width_hint" title="nurses_2.widgets.tree_view.TreeView.width_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width_hint</span></code></a></dt><dd><p>Widget’s width as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>x</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.x_hint" title="nurses_2.widgets.tree_view.TreeView.x_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_hint</span></code></a></dt><dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>y</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.y_hint" title="nurses_2.widgets.tree_view.TreeView.y_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_hint</span></code></a></dt><dd><p>Vertical position of widget as a proportion of its parent’s height.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.add_widget" title="nurses_2.widgets.tree_view.TreeView.add_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code></a>(widget)</p></td>
+<td><p>Add a child widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.add_widgets" title="nurses_2.widgets.tree_view.TreeView.add_widgets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widgets</span></code></a>(*widgets)</p></td>
+<td><p>Add multiple child widgets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.collides_point" title="nurses_2.widgets.tree_view.TreeView.collides_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_point</span></code></a>(point)</p></td>
+<td><p>Return True if point is within widget's visible bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.collides_widget" title="nurses_2.widgets.tree_view.TreeView.collides_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_widget</span></code></a>(widget)</p></td>
+<td><p>Return True if some part of widget is within bounding box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.dispatch_click" title="nurses_2.widgets.tree_view.TreeView.dispatch_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_click</span></code></a>(mouse_event)</p></td>
+<td><p>Dispatch mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.dispatch_double_click" title="nurses_2.widgets.tree_view.TreeView.dispatch_double_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_double_click</span></code></a>(mouse_event)</p></td>
+<td><p>Dispatch double-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.dispatch_paste" title="nurses_2.widgets.tree_view.TreeView.dispatch_paste"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_paste</span></code></a>(paste_event)</p></td>
+<td><p>Dispatch paste event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.dispatch_press" title="nurses_2.widgets.tree_view.TreeView.dispatch_press"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_press</span></code></a>(key_press_event)</p></td>
+<td><p>Dispatch key press until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.dispatch_triple_click" title="nurses_2.widgets.tree_view.TreeView.dispatch_triple_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_triple_click</span></code></a>(mouse_event)</p></td>
+<td><p>Dispatch triple-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.on_click" title="nurses_2.widgets.tree_view.TreeView.on_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_click</span></code></a>(mouse_event)</p></td>
+<td><p>Handle mouse event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.on_double_click" title="nurses_2.widgets.tree_view.TreeView.on_double_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_double_click</span></code></a>(mouse_event)</p></td>
+<td><p>Handle double-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.on_paste" title="nurses_2.widgets.tree_view.TreeView.on_paste"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_paste</span></code></a>(paste_event)</p></td>
+<td><p>Handle paste event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.on_press" title="nurses_2.widgets.tree_view.TreeView.on_press"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_press</span></code></a>(key_press_event)</p></td>
+<td><p>Handle key press event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.on_size" title="nurses_2.widgets.tree_view.TreeView.on_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_size</span></code></a>()</p></td>
+<td><p>Called when widget is resized.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.on_triple_click" title="nurses_2.widgets.tree_view.TreeView.on_triple_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_triple_click</span></code></a>(mouse_event)</p></td>
+<td><p>Handle triple-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.pull_to_front" title="nurses_2.widgets.tree_view.TreeView.pull_to_front"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pull_to_front</span></code></a>()</p></td>
+<td><p>Move widget to end of widget stack so that it is drawn last.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.remove_widget" title="nurses_2.widgets.tree_view.TreeView.remove_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_widget</span></code></a>(widget)</p></td>
+<td><p>Remove widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.render" title="nurses_2.widgets.tree_view.TreeView.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
+<td><p>Paint widget and its children.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.render_intersection" title="nurses_2.widgets.tree_view.TreeView.render_intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_intersection</span></code></a>(destination, ...)</p></td>
+<td><p>Render the intersection of destination with widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.subscribe" title="nurses_2.widgets.tree_view.TreeView.subscribe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subscribe</span></code></a>(source, attr, action)</p></td>
+<td><p>Subscribe to a widget property.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.to_local" title="nurses_2.widgets.tree_view.TreeView.to_local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_local</span></code></a>(point)</p></td>
+<td><p>Convert point in absolute coordinates to local coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.tween" title="nurses_2.widgets.tree_view.TreeView.tween"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tween</span></code></a>(*[, duration, easing, on_start, ...])</p></td>
+<td><p>Coroutine that sequentially updates widget properties over a duration (in seconds).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.unsubscribe" title="nurses_2.widgets.tree_view.TreeView.unsubscribe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsubscribe</span></code></a>(source, attr)</p></td>
+<td><p>Unsubscribe to a widget event and return the callable that was subscribed to the event or <cite>None</cite> if subscription isn't found.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.update_geometry" title="nurses_2.widgets.tree_view.TreeView.update_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_geometry</span></code></a>()</p></td>
+<td><p>Update geometry due to a change in parent's size.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.update_tree_layout" title="nurses_2.widgets.tree_view.TreeView.update_tree_layout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_tree_layout</span></code></a>()</p></td>
+<td><p>Update tree layout after a child node is opened or closed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.walk" title="nurses_2.widgets.tree_view.TreeView.walk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk</span></code></a>()</p></td>
+<td><p>Yield all descendents.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeView.walk_from_root" title="nurses_2.widgets.tree_view.TreeView.walk_from_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk_from_root</span></code></a>()</p></td>
+<td><p>Yield all descendents of the root widget.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>render_children</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.absolute_pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">absolute_pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.absolute_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute position on screen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.add_widget">
+<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a child widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.add_widgets">
+<span class="sig-name descname"><span class="pre">add_widgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.add_widgets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple child widgets.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.anchor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">anchor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Anchor" title="nurses_2.widgets.widget_data_structures.Anchor"><span class="pre">Anchor</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.anchor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.app">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.app" title="Permalink to this definition">¶</a></dt>
+<dd><p>The running app.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.background_char">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">background_char</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.background_char" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.bottom">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.bottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bottom of widget in parent’s reference frame.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center of the widget in local coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.collides_point">
+<span class="sig-name descname"><span class="pre">collides_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.collides_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if point is within widget’s visible bounding box.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.collides_widget">
+<span class="sig-name descname"><span class="pre">collides_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.collides_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if some part of widget is within bounding box.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.columns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Width of widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.dispatch_click">
+<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.dispatch_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.dispatch_double_click">
+<span class="sig-name descname"><span class="pre">dispatch_double_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.dispatch_double_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch double-click mouse event until handled. (A mouse event is handled if a handler
+returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.dispatch_paste">
+<span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.dispatch_paste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.dispatch_press">
+<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.dispatch_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.dispatch_triple_click">
+<span class="sig-name descname"><span class="pre">dispatch_triple_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.dispatch_triple_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch triple-click mouse event until handled. (A mouse event is handled if a handler
+returns True.)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Height of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.height_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.height_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s height as proportion of its parent’s height.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.left">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.left" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.max_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.max_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.max_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.max_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.min_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.min_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.min_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.min_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.on_click">
+<span class="sig-name descname"><span class="pre">on_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.on_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle mouse event. (Handled mouse events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.on_double_click">
+<span class="sig-name descname"><span class="pre">on_double_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.on_double_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle double-click mouse event. (Handled mouse events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.on_paste">
+<span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.on_paste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.on_press">
+<span class="sig-name descname"><span class="pre">on_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.on_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.on_size">
+<span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.on_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when widget is resized.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.on_triple_click">
+<span class="sig-name descname"><span class="pre">on_triple_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.on_triple_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle triple-click mouse event. (Handled mouse events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position relative to parent.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.pos_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.PosHint" title="nurses_2.widgets.widget_data_structures.PosHint"><span class="pre">PosHint</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.pos_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.pull_to_front">
+<span class="sig-name descname"><span class="pre">pull_to_front</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.pull_to_front" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move widget to end of widget stack so that it is drawn last.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.remove_widget">
+<span class="sig-name descname"><span class="pre">remove_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.remove_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint widget and its children.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.render_children">
+<span class="sig-name descname"><span class="pre">render_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.render_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.render_intersection">
+<span class="sig-name descname"><span class="pre">render_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.render_intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the intersection of destination with widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.right">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right side of widget in parent’s reference frame.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the root widget if connected to widget tree.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.rows">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Height of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.size_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.SizeHint" title="nurses_2.widgets.widget_data_structures.SizeHint"><span class="pre">SizeHint</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.size_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s size as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.subscribe">
+<span class="sig-name descname"><span class="pre">subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to a widget property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>source</strong><span class="classifier">Widget</span></dt><dd><p>The source of the widget property.</p>
+</dd>
+<dt><strong>attr</strong><span class="classifier">str</span></dt><dd><p>The name of the widget property.</p>
+</dd>
+<dt><strong>action</strong><span class="classifier">Callable[[], None]</span></dt><dd><p>Called when the property is updated.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.to_local">
+<span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.to_local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert point in absolute coordinates to local coordinates.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.top">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.tween">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tween</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">easing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Easing" title="nurses_2.widgets.widget_data_structures.Easing"><span class="pre">Easing</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Easing.LINEAR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_complete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.tween" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coroutine that sequentially updates widget properties over a duration (in seconds).
+Tweening (short for inbetweening) is the process of generating images between
+keyframes in animation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>duration</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>The duration of the tween in seconds.</p>
+</dd>
+<dt><strong>easing</strong><span class="classifier">Easing, default: Easing.LINEAR</span></dt><dd><p>The easing used for tweening.</p>
+</dd>
+<dt><strong>on_start</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween starts.</p>
+</dd>
+<dt><strong>on_progress</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween updates.</p>
+</dd>
+<dt><strong>on_complete</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween completes.</p>
+</dd>
+<dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
+to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
+<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Running several tweens on the same properties concurrently will probably result in unexpected
+behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
+If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.unsubscribe">
+<span class="sig-name descname"><span class="pre">unsubscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribe to a widget event and return the callable that was subscribed
+to the event or <cite>None</cite> if subscription isn’t found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.update_geometry">
+<span class="sig-name descname"><span class="pre">update_geometry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.update_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update geometry due to a change in parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.update_tree_layout">
+<span class="sig-name descname"><span class="pre">update_tree_layout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.update_tree_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update tree layout after a child node is opened or closed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield all descendents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.walk_from_root">
+<span class="sig-name descname"><span class="pre">walk_from_root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.walk_from_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield all descendents of the root widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Width of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.width_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.width_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s width as proportion of its parent’s width.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.x_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.x_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeView.y_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeView.y_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vertical position of widget as a proportion of its parent’s height.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.tree_view.</span></span><span class="sig-name descname"><span class="pre">TreeViewNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_leaf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.button_behavior.html#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">ButtonBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.text_widget.html#nurses_2.widgets.text_widget.TextWidget" title="nurses_2.widgets.text_widget.TextWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextWidget</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.absolute_pos" title="nurses_2.widgets.tree_view.TreeViewNode.absolute_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></a></dt><dd><p>Absolute position on screen.</p>
+</dd>
+<dt><strong>anchor</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.app" title="nurses_2.widgets.tree_view.TreeViewNode.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></dt><dd><p>The running app.</p>
+</dd>
+<dt><strong>background_char</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.bottom" title="nurses_2.widgets.tree_view.TreeViewNode.bottom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bottom</span></code></a></dt><dd><p>Bottom of widget in parent’s reference frame.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.center" title="nurses_2.widgets.tree_view.TreeViewNode.center"><code class="xref py py-obj docutils literal notranslate"><span class="pre">center</span></code></a></dt><dd><p>The center of the widget in local coordinates.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.columns" title="nurses_2.widgets.tree_view.TreeViewNode.columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">columns</span></code></a></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><strong>default_bg_color</strong></dt><dd></dd>
+<dt><strong>default_fg_color</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.get_view" title="nurses_2.widgets.tree_view.TreeViewNode.get_view"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_view</span></code></a></dt><dd><p>A wrapper around the canvas with an <cite>add_text</cite> method.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.height" title="nurses_2.widgets.tree_view.TreeViewNode.height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></a></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.height_hint" title="nurses_2.widgets.tree_view.TreeViewNode.height_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height_hint</span></code></a></dt><dd><p>Widget’s height as proportion of its parent’s height.</p>
+</dd>
+<dt><strong>left</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.max_height" title="nurses_2.widgets.tree_view.TreeViewNode.max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_height</span></code></a></dt><dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.max_width" title="nurses_2.widgets.tree_view.TreeViewNode.max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_width</span></code></a></dt><dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.min_height" title="nurses_2.widgets.tree_view.TreeViewNode.min_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_height</span></code></a></dt><dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.min_width" title="nurses_2.widgets.tree_view.TreeViewNode.min_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_width</span></code></a></dt><dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.pos" title="nurses_2.widgets.tree_view.TreeViewNode.pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos</span></code></a></dt><dd><p>Position relative to parent.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.pos_hint" title="nurses_2.widgets.tree_view.TreeViewNode.pos_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_hint</span></code></a></dt><dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.right" title="nurses_2.widgets.tree_view.TreeViewNode.right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right</span></code></a></dt><dd><p>Right side of widget in parent’s reference frame.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.root" title="nurses_2.widgets.tree_view.TreeViewNode.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a></dt><dd><p>Return the root widget if connected to widget tree.</p>
+</dd>
+<dt><strong>root_node</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.rows" title="nurses_2.widgets.tree_view.TreeViewNode.rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></a></dt><dd><p>Height of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.size" title="nurses_2.widgets.tree_view.TreeViewNode.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a></dt><dd><p>Size of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.size_hint" title="nurses_2.widgets.tree_view.TreeViewNode.size_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_hint</span></code></a></dt><dd><p>Widget’s size as a proportion of its parent’s size.</p>
+</dd>
+<dt><strong>top</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.width" title="nurses_2.widgets.tree_view.TreeViewNode.width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width</span></code></a></dt><dd><p>Width of widget.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.width_hint" title="nurses_2.widgets.tree_view.TreeViewNode.width_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width_hint</span></code></a></dt><dd><p>Widget’s width as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>x</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.x_hint" title="nurses_2.widgets.tree_view.TreeViewNode.x_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_hint</span></code></a></dt><dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
+</dd>
+<dt><strong>y</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.y_hint" title="nurses_2.widgets.tree_view.TreeViewNode.y_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_hint</span></code></a></dt><dd><p>Vertical position of widget as a proportion of its parent’s height.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.add_border" title="nurses_2.widgets.tree_view.TreeViewNode.add_border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_border</span></code></a>([tl, tr, bl, br, v, h, color_pair])</p></td>
+<td><p>Add a border.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.add_text" title="nurses_2.widgets.tree_view.TreeViewNode.add_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_text</span></code></a>(text[, row, column, bold, italic, ...])</p></td>
+<td><p>Add text to the canvas.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.add_widget" title="nurses_2.widgets.tree_view.TreeViewNode.add_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code></a>(widget)</p></td>
+<td><p>Add a child widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.add_widgets" title="nurses_2.widgets.tree_view.TreeViewNode.add_widgets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widgets</span></code></a>(*widgets)</p></td>
+<td><p>Add multiple child widgets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.character_width" title="nurses_2.widgets.tree_view.TreeViewNode.character_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">character_width</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.collides_point" title="nurses_2.widgets.tree_view.TreeViewNode.collides_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_point</span></code></a>(point)</p></td>
+<td><p>Return True if point is within widget's visible bounding box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.collides_widget" title="nurses_2.widgets.tree_view.TreeViewNode.collides_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_widget</span></code></a>(widget)</p></td>
+<td><p>Return True if some part of widget is within bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_click" title="nurses_2.widgets.tree_view.TreeViewNode.dispatch_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_click</span></code></a>(mouse_event)</p></td>
+<td><p>Dispatch mouse event until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_double_click" title="nurses_2.widgets.tree_view.TreeViewNode.dispatch_double_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_double_click</span></code></a>(mouse_event)</p></td>
+<td><p>Dispatch double-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_paste" title="nurses_2.widgets.tree_view.TreeViewNode.dispatch_paste"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_paste</span></code></a>(paste_event)</p></td>
+<td><p>Dispatch paste event until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_press" title="nurses_2.widgets.tree_view.TreeViewNode.dispatch_press"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_press</span></code></a>(key_press_event)</p></td>
+<td><p>Dispatch key press until handled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_triple_click" title="nurses_2.widgets.tree_view.TreeViewNode.dispatch_triple_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dispatch_triple_click</span></code></a>(mouse_event)</p></td>
+<td><p>Dispatch triple-click mouse event until handled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.normalize_canvas" title="nurses_2.widgets.tree_view.TreeViewNode.normalize_canvas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_canvas</span></code></a>()</p></td>
+<td><p>Add zero-width characters after each full-width character.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.on_double_click" title="nurses_2.widgets.tree_view.TreeViewNode.on_double_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_double_click</span></code></a>(mouse_event)</p></td>
+<td><p>Handle double-click mouse event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.on_paste" title="nurses_2.widgets.tree_view.TreeViewNode.on_paste"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_paste</span></code></a>(paste_event)</p></td>
+<td><p>Handle paste event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.on_press" title="nurses_2.widgets.tree_view.TreeViewNode.on_press"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_press</span></code></a>(key_press_event)</p></td>
+<td><p>Handle key press event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.on_release" title="nurses_2.widgets.tree_view.TreeViewNode.on_release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_release</span></code></a>()</p></td>
+<td><p>Triggered when button is released.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.on_size" title="nurses_2.widgets.tree_view.TreeViewNode.on_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_size</span></code></a>()</p></td>
+<td><p>Called when widget is resized.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.on_triple_click" title="nurses_2.widgets.tree_view.TreeViewNode.on_triple_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_triple_click</span></code></a>(mouse_event)</p></td>
+<td><p>Handle triple-click mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.pull_to_front" title="nurses_2.widgets.tree_view.TreeViewNode.pull_to_front"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pull_to_front</span></code></a>()</p></td>
+<td><p>Move widget to end of widget stack so that it is drawn last.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.remove_widget" title="nurses_2.widgets.tree_view.TreeViewNode.remove_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_widget</span></code></a>(widget)</p></td>
+<td><p>Remove widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.render" title="nurses_2.widgets.tree_view.TreeViewNode.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
+<td><p>Paint region given by source into canvas_view and colors_view.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.render_intersection" title="nurses_2.widgets.tree_view.TreeViewNode.render_intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_intersection</span></code></a>(destination, ...)</p></td>
+<td><p>Render the intersection of destination with widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.subscribe" title="nurses_2.widgets.tree_view.TreeViewNode.subscribe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subscribe</span></code></a>(source, attr, action)</p></td>
+<td><p>Subscribe to a widget property.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.to_local" title="nurses_2.widgets.tree_view.TreeViewNode.to_local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_local</span></code></a>(point)</p></td>
+<td><p>Convert point in absolute coordinates to local coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.tween" title="nurses_2.widgets.tree_view.TreeViewNode.tween"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tween</span></code></a>(*[, duration, easing, on_start, ...])</p></td>
+<td><p>Coroutine that sequentially updates widget properties over a duration (in seconds).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.unsubscribe" title="nurses_2.widgets.tree_view.TreeViewNode.unsubscribe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsubscribe</span></code></a>(source, attr)</p></td>
+<td><p>Unsubscribe to a widget event and return the callable that was subscribed to the event or <cite>None</cite> if subscription isn't found.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.update_down" title="nurses_2.widgets.tree_view.TreeViewNode.update_down"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_down</span></code></a>()</p></td>
+<td><p>Paint the DOWN state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.update_geometry" title="nurses_2.widgets.tree_view.TreeViewNode.update_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_geometry</span></code></a>()</p></td>
+<td><p>Update geometry due to a change in parent's size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.update_hover" title="nurses_2.widgets.tree_view.TreeViewNode.update_hover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hover</span></code></a>()</p></td>
+<td><p>Paint the HOVER state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.update_normal" title="nurses_2.widgets.tree_view.TreeViewNode.update_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_normal</span></code></a>()</p></td>
+<td><p>Paint the NORMAL state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.update_theme" title="nurses_2.widgets.tree_view.TreeViewNode.update_theme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_theme</span></code></a>()</p></td>
+<td><p>Repaint the widget with a new theme.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.walk" title="nurses_2.widgets.tree_view.TreeViewNode.walk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk</span></code></a>()</p></td>
+<td><p>Yield all descendents.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.tree_view.TreeViewNode.walk_from_root" title="nurses_2.widgets.tree_view.TreeViewNode.walk_from_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk_from_root</span></code></a>()</p></td>
+<td><p>Yield all descendents of the root widget.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>add_node</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>iter_open_nodes</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_click</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>remove_node</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>render_children</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>repaint</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>select</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>toggle</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>unselect</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.absolute_pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">absolute_pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.absolute_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute position on screen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.add_border">
+<span class="sig-name descname"><span class="pre">add_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'┌'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'┐'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'└'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">br</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'┘'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'│'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'─'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">ColorPair</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.add_border" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a border. Default border characters are light box-drawing characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>tl</strong><span class="classifier">str, default: “┌”</span></dt><dd><p>Top left character.</p>
+</dd>
+<dt><strong>tr</strong><span class="classifier">str, default: “┐”</span></dt><dd><p>Top right character.</p>
+</dd>
+<dt><strong>bl</strong><span class="classifier">str, default: “└”</span></dt><dd><p>Bottom left character.</p>
+</dd>
+<dt><strong>br</strong><span class="classifier">str, default: “┘”</span></dt><dd><p>Bottom right character.</p>
+</dd>
+<dt><strong>v</strong><span class="classifier">str, default: “│”</span></dt><dd><p>Vertical character.</p>
+</dd>
+<dt><strong>h</strong><span class="classifier">str, default: “─”</span></dt><dd><p>Horizontal character.</p>
+</dd>
+<dt><strong>color_pair</strong><span class="classifier">ColorPair | None, default: None</span></dt><dd><p>Border color pair if not None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.add_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.add_text">
+<span class="sig-name descname"><span class="pre">add_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.add_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add text to the canvas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
+</dd>
+<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added. This will be passed as-is as the first argument
+to <cite>numpy</cite>’s <cite>ndarray.__getitem__</cite>.</p>
+</dd>
+<dt><strong>column</strong><span class="classifier">int, default: 0</span></dt><dd><p>The first column to which text is added.</p>
+</dd>
+<dt><strong>bold</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is bold.</p>
+</dd>
+<dt><strong>italic</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is italic.</p>
+</dd>
+<dt><strong>underline</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is underlined.</p>
+</dd>
+<dt><strong>strikethrough</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is strikethrough.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Text is meant to be a single line of text. Text is not wrapped if it is too long, instead
+index error is raised.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.add_widget">
+<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a child widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.add_widgets">
+<span class="sig-name descname"><span class="pre">add_widgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.add_widgets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple child widgets.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.anchor">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">anchor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Anchor" title="nurses_2.widgets.widget_data_structures.Anchor"><span class="pre">Anchor</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.anchor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.app">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.app" title="Permalink to this definition">¶</a></dt>
+<dd><p>The running app.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.background_char">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">background_char</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.background_char" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.bottom">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.bottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bottom of widget in parent’s reference frame.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The center of the widget in local coordinates.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.character_width">
+<span class="sig-name descname"><span class="pre">character_width</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;numpy.vectorize</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.character_width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.children">
+<span class="sig-name descname"><span class="pre">children</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.collides_point">
+<span class="sig-name descname"><span class="pre">collides_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.collides_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if point is within widget’s visible bounding box.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.collides_widget">
+<span class="sig-name descname"><span class="pre">collides_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.collides_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if some part of widget is within bounding box.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.color_theme">
+<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=99),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.color_theme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.columns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Width of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.default_bg_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_bg_color</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.default_bg_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.default_fg_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_fg_color</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.default_fg_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.dispatch_click">
+<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.dispatch_double_click">
+<span class="sig-name descname"><span class="pre">dispatch_double_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_double_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch double-click mouse event until handled. (A mouse event is handled if a handler
+returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.dispatch_paste">
+<span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_paste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.dispatch_press">
+<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.dispatch_triple_click">
+<span class="sig-name descname"><span class="pre">dispatch_triple_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.dispatch_triple_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch triple-click mouse event until handled. (A mouse event is handled if a handler
+returns True.)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.get_view">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><span class="pre">CanvasView</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.get_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper around the canvas with an <cite>add_text</cite> method. This is to
+simplify adding text to views of the underlying canvas.</p>
+<p class="rubric">Notes</p>
+<p>One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
+E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
+the <cite>add_text</cite> <cite>row</cite> and <cite>column</cite> parameters make sense.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Height of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.height_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.height_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s height as proportion of its parent’s height.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.iter_open_nodes">
+<span class="sig-name descname"><span class="pre">iter_open_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.iter_open_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.left">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.left" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.max_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.max_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.max_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.max_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.min_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.min_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.min_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.min_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.normalize_canvas">
+<span class="sig-name descname"><span class="pre">normalize_canvas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.normalize_canvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add zero-width characters after each full-width character.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If full-width character is followed by non-default character.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In some cases, even with normalized canvases, widgets with full-width characters
+could cause display issues.</p>
+<dl>
+<dt>Imagine the following arrangement of widgets:</dt><dd><blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">fw  ____|___</div>
+<div class="line">fw | fw  ___|__</div>
+<div class="line">fw | fw | fw  _|__</div>
+<div class="line">fw | fw | fw | fw |</div>
+</div>
+<p><a href="#id1"><span class="problematic" id="id2">|____|____|____|____|</span></a></p>
+</dd>
+</dl>
+<p><cite>fw</cite> represents a full-width character and each widget is offset from the next by one.
+One can end up with an entire row of full-width characters which will likely ruin the
+display. If <cite>normalize_canvas</cite> and <cite>add_text</cite> aren’t sufficient for the user, a custom
+render method will likely need to be implemented.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_click">
+<span class="sig-name descname"><span class="pre">on_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle mouse event. (Handled mouse events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_double_click">
+<span class="sig-name descname"><span class="pre">on_double_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_double_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle double-click mouse event. (Handled mouse events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_paste">
+<span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_paste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_press">
+<span class="sig-name descname"><span class="pre">on_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_press" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_release">
+<span class="sig-name descname"><span class="pre">on_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggered when button is released.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_size">
+<span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when widget is resized.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.on_triple_click">
+<span class="sig-name descname"><span class="pre">on_triple_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.on_triple_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle triple-click mouse event. (Handled mouse events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.parent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Position relative to parent.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.pos_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.PosHint" title="nurses_2.widgets.widget_data_structures.PosHint"><span class="pre">PosHint</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.pos_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.pull_to_front">
+<span class="sig-name descname"><span class="pre">pull_to_front</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.pull_to_front" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move widget to end of widget stack so that it is drawn last.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.remove_node">
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.remove_widget">
+<span class="sig-name descname"><span class="pre">remove_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.remove_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint region given by source into canvas_view and colors_view.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.render_children">
+<span class="sig-name descname"><span class="pre">render_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.render_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.render_intersection">
+<span class="sig-name descname"><span class="pre">render_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.render_intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the intersection of destination with widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.repaint">
+<span class="sig-name descname"><span class="pre">repaint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.repaint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.right">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right side of widget in parent’s reference frame.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the root widget if connected to widget tree.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.root_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root_node</span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.root_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.rows">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Height of widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.select" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.size_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.SizeHint" title="nurses_2.widgets.widget_data_structures.SizeHint"><span class="pre">SizeHint</span></a></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.size_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s size as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.subscribe">
+<span class="sig-name descname"><span class="pre">subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to a widget property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>source</strong><span class="classifier">Widget</span></dt><dd><p>The source of the widget property.</p>
+</dd>
+<dt><strong>attr</strong><span class="classifier">str</span></dt><dd><p>The name of the widget property.</p>
+</dd>
+<dt><strong>action</strong><span class="classifier">Callable[[], None]</span></dt><dd><p>Called when the property is updated.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.to_local">
+<span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.to_local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert point in absolute coordinates to local coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.toggle">
+<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.toggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.top">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.top" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.tween">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tween</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">easing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Easing" title="nurses_2.widgets.widget_data_structures.Easing"><span class="pre">Easing</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Easing.LINEAR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_complete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.tween" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coroutine that sequentially updates widget properties over a duration (in seconds).
+Tweening (short for inbetweening) is the process of generating images between
+keyframes in animation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>duration</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>The duration of the tween in seconds.</p>
+</dd>
+<dt><strong>easing</strong><span class="classifier">Easing, default: Easing.LINEAR</span></dt><dd><p>The easing used for tweening.</p>
+</dd>
+<dt><strong>on_start</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween starts.</p>
+</dd>
+<dt><strong>on_progress</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween updates.</p>
+</dd>
+<dt><strong>on_complete</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween completes.</p>
+</dd>
+<dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
+to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
+<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Running several tweens on the same properties concurrently will probably result in unexpected
+behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
+If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.unselect">
+<span class="sig-name descname"><span class="pre">unselect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.unselect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.unsubscribe">
+<span class="sig-name descname"><span class="pre">unsubscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">Widget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribe to a widget event and return the callable that was subscribed
+to the event or <cite>None</cite> if subscription isn’t found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.update_down">
+<span class="sig-name descname"><span class="pre">update_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.update_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint the DOWN state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.update_geometry">
+<span class="sig-name descname"><span class="pre">update_geometry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.update_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update geometry due to a change in parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.update_hover">
+<span class="sig-name descname"><span class="pre">update_hover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.update_hover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint the HOVER state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.update_normal">
+<span class="sig-name descname"><span class="pre">update_normal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.update_normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint the NORMAL state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.update_theme">
+<span class="sig-name descname"><span class="pre">update_theme</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.update_theme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repaint the widget with a new theme.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield all descendents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.walk_from_root">
+<span class="sig-name descname"><span class="pre">walk_from_root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.walk_from_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield all descendents of the root widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Width of widget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.width_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.width_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Widget’s width as proportion of its parent’s width.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.x_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.x_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.y_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.y_hint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vertical position of widget as a proportion of its parent’s height.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

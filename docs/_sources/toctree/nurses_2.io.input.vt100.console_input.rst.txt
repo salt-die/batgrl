@@ -13,23 +13,12 @@
 
    .. autosummary::
    
-      getincrementaldecoder
       read_keys
       read_stdin
    
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Key
-      KeyPressEvent
-      MouseEvent
-      PasteEvent
-      Point
    
    
 

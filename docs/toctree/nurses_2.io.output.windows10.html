@@ -39,10 +39,7 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">byref</span></code>(C instance[[, offset])</p></td>
-<td><p>Return a pointer lookalike to a C instance, only usable as function argument</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_vt100_enabled</span></code>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.output.windows10.is_vt100_enabled" title="nurses_2.io.output.windows10.is_vt100_enabled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_vt100_enabled</span></code></a>()</p></td>
 <td><p>Return True if VT100 escape sequences are supported.</p></td>
 </tr>
 </tbody>
@@ -50,28 +47,149 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONSOLE_SCREEN_BUFFER_INFO</span></code></p></td>
-<td><p>struct in wincon.h.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DWORD</span></code></p></td>
-<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">c_ulong</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Size</span></code>(height, width)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vt100_Output</span></code>(asciicast_path)</p></td>
-<td><p><p class="rubric">Methods</p>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Windows10_Output</span></code>(is_conemu_ansi, *args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.output.windows10.Windows10_Output" title="nurses_2.io.output.windows10.Windows10_Output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Windows10_Output</span></code></a>(is_conemu_ansi, *args, **kwargs)</p></td>
 <td><p>Windows 10 output.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.output.windows10.</span></span><span class="sig-name descname"><span class="pre">Windows10_Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_conemu_ansi</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.io.output.vt100.html#nurses_2.io.output.vt100.Vt100_Output" title="nurses_2.io.output.vt100.Vt100_Output"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vt100_Output</span></code></a></p>
+<p>Windows 10 output.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.output.windows10.Windows10_Output.erase_screen" title="nurses_2.io.output.windows10.Windows10_Output.erase_screen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">erase_screen</span></code></a>()</p></td>
+<td><p>Erase the screen and move cursor to home.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.output.windows10.Windows10_Output.flush" title="nurses_2.io.output.windows10.Windows10_Output.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
+<td><p>Write to output stream and flush.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.output.windows10.Windows10_Output.restore_console" title="nurses_2.io.output.windows10.Windows10_Output.restore_console"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore_console</span></code></a>()</p></td>
+<td><p>Restore console to original mode.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.output.windows10.Windows10_Output.set_title" title="nurses_2.io.output.windows10.Windows10_Output.set_title"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_title</span></code></a>(title)</p></td>
+<td><p>Set terminal title.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>clear_title</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>disable_bracketed_paste</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>disable_mouse_support</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>enable_bracketed_paste</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>enable_mouse_support</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>enter_alternate_screen</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>get_size</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>quit_alternate_screen</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>reset_attributes</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>show_cursor</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.clear_title">
+<span class="sig-name descname"><span class="pre">clear_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.clear_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.disable_bracketed_paste">
+<span class="sig-name descname"><span class="pre">disable_bracketed_paste</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.disable_bracketed_paste" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.disable_mouse_support">
+<span class="sig-name descname"><span class="pre">disable_mouse_support</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.disable_mouse_support" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.enable_bracketed_paste">
+<span class="sig-name descname"><span class="pre">enable_bracketed_paste</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.enable_bracketed_paste" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.enable_mouse_support">
+<span class="sig-name descname"><span class="pre">enable_mouse_support</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.enable_mouse_support" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.enter_alternate_screen">
+<span class="sig-name descname"><span class="pre">enter_alternate_screen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.enter_alternate_screen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.erase_screen">
+<span class="sig-name descname"><span class="pre">erase_screen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.erase_screen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Erase the screen and move cursor to home.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write to output stream and flush. If recording, output is saved.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.get_size">
+<span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">Size</span></a></span></span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.get_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.quit_alternate_screen">
+<span class="sig-name descname"><span class="pre">quit_alternate_screen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.quit_alternate_screen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.reset_attributes">
+<span class="sig-name descname"><span class="pre">reset_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.reset_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.restore_console">
+<span class="sig-name descname"><span class="pre">restore_console</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.restore_console" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore console to original mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.set_title">
+<span class="sig-name descname"><span class="pre">set_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.set_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set terminal title.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.Windows10_Output.show_cursor">
+<span class="sig-name descname"><span class="pre">show_cursor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.Windows10_Output.show_cursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nurses_2.io.output.windows10.is_vt100_enabled">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.io.output.windows10.</span></span><span class="sig-name descname"><span class="pre">is_vt100_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.output.windows10.is_vt100_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if VT100 escape sequences are supported.</p>
+</dd></dl>
+
 </section>
 
 
