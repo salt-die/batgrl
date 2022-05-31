@@ -16,7 +16,7 @@ Or entire feature-filled applications:
 
 See it in action: [Video Preview](https://youtu.be/LLI6ANQ6MH4).
 
-[Read the docs](https://salt-die.github.io/nurses_2/index.html) (Work in progress.)
+[Read the docs](https://salt-die.github.io/nurses_2/index.html) (*work in progress*)
 
 Getting Started: A Pong Tutorial
 --------------------------------
