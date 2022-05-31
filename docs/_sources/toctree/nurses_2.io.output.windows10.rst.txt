@@ -1,4 +1,4 @@
-﻿nurses\_2.io.output.windows10
+nurses\_2.io.output.windows10
 =============================
 
 .. automodule:: nurses_2.io.output.windows10

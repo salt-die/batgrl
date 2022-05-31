@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.menu
+nurses\_2.widgets.menu
 ======================
 
 .. automodule:: nurses_2.widgets.menu

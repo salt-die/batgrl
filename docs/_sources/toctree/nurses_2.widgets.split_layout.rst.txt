@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.split\_layout
+nurses\_2.widgets.split\_layout
 ===============================
 
 .. automodule:: nurses_2.widgets.split_layout

@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.ray\_caster
+nurses\_2.widgets.ray\_caster
 =============================
 
 .. automodule:: nurses_2.widgets.ray_caster

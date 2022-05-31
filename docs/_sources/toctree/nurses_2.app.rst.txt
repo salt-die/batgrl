@@ -1,4 +1,4 @@
-﻿nurses\_2.app
+nurses\_2.app
 =============
 
 .. automodule:: nurses_2.app

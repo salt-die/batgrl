@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.file\_chooser
+nurses\_2.widgets.file\_chooser
 ===============================
 
 .. automodule:: nurses_2.widgets.file_chooser

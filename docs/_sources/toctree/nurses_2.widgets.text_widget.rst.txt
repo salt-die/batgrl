@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.text\_widget
+nurses\_2.widgets.text\_widget
 ==============================
 
 .. automodule:: nurses_2.widgets.text_widget

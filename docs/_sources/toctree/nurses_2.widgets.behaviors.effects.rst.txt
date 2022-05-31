@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.behaviors.effects
+nurses\_2.widgets.behaviors.effects
 ===================================
 
 .. automodule:: nurses_2.widgets.behaviors.effects

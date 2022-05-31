@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.progress\_bar
+nurses\_2.widgets.progress\_bar
 ===============================
 
 .. automodule:: nurses_2.widgets.progress_bar

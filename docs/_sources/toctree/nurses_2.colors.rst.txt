@@ -1,4 +1,4 @@
-﻿nurses\_2.colors
+nurses\_2.colors
 ================
 
 .. automodule:: nurses_2.colors

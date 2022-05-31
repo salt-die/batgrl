@@ -1,4 +1,4 @@
-﻿nurses\_2.widgets.shadow\_caster
+nurses\_2.widgets.shadow\_caster
 ================================
 
 .. automodule:: nurses_2.widgets.shadow_caster
