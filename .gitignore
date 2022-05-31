@@ -2,4 +2,9 @@
 *.egg-info
 dist/
 TODO.md
-docsrc/
+
+# Documentation source is built in docsrc.
+docsrc/*
+!docsrc/conf.py
+!docsrc/index.rst
+!docsrc/regen_docs.py
