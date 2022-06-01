@@ -1,5 +1,5 @@
 """
-TiledImage widget will tile any graphic widget to fill it's dimensions.
+A tiled image widget.
 """
 from math import ceil
 
