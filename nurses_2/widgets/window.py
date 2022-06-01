@@ -1,5 +1,5 @@
 """
-Movable, resizable window widgets.
+A movable, resizable window widget.
 """
 from wcwidth import wcswidth
 
