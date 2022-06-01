@@ -1,3 +1,6 @@
+"""
+A progress bar widget.
+"""
 import numpy as np
 
 from ..clamp import clamp
@@ -21,10 +24,14 @@ class ProgressBar(Themable, TextWidget):
         If true, the bar will progress to the right, else
         the bar will progress upwards.
 
-    Notes
-    -----
-    Set the `progress` property to a value between `0.0`
-    and `1.0` to update the bar.
+    Attributes
+    ----------
+    progress : float
+        Current progress as a value between `0.0` and `1.0`.
+
+    is_horizontal : bool
+        If true, the bar will progress to the right, else
+        the bar will progress upwards.
     """
     def __init__(self, is_horizontal: bool=True, **kwargs):
         super().__init__(**kwargs)

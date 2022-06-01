@@ -1,3 +1,6 @@
+"""
+A scatter layout behavior for widgets.
+"""
 from ...clamp import clamp
 from .grabbable_behavior import GrabbableBehavior
 
@@ -11,6 +14,13 @@ class ScatterBehavior(GrabbableBehavior):
     disable_child_oob : bool, default: False
         Disallow child widgets from being translated out-of-bounds if true.
     disable_child_ptf : bool, default: False
+        If true, child widgets won't be pulled-to-front when clicked.
+
+    Attributes
+    ----------
+    disable_child_oob : bool
+        Disallow child widgets from being translated out-of-bounds if true.
+    disable_child_ptf : bool
         If true, child widgets won't be pulled-to-front when clicked.
     """
     def __init__(self, *, disable_child_oob=False, disable_child_ptf=False, **kwargs):

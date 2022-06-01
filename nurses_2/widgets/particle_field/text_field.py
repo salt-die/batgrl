@@ -1,3 +1,7 @@
+"""
+A text particle field. A particle field specializes in handling many
+single "pixel" children.
+"""
 from ...colors import WHITE_ON_BLACK, ColorPair
 from ._field_base import _ParticleFieldBase, _ParticleBase
 
@@ -38,10 +42,62 @@ class TextParticle(_ParticleBase):
 
     Parameters
     ----------
+    pos : Point, default: Point(0, 0)
+        Position of particle.
+    is_transparent : bool, default: False
+        If true, particle is transparent.
+    is_visible : bool, default: True
+        If true, particle is visible.
+    is_enabled : bool, default: True
+        If true, particle is enabled.
     char : str, default: " ",
         A one-character string.
     color_pair: ColorPair, default: WHITE_ON_BLACK
         Color pair of the particle.
+
+    Attributes
+    ----------
+    pos : Point
+        Position of particle.
+    is_transparent : bool
+        If true, particle is transparent.
+    is_visible : bool
+        If true, particle is visible.
+    is_enabled : bool
+        If true, particle is enabled.
+    char : str
+        A one-character string.
+    color_pair : ColorPair
+        Color pair of particle.
+    size : Size
+        Size of particle. Always `Size(1, 1)`.
+    top : int
+        Y-coordinate of particle.
+    left : int
+        X-coordinate of particle.
+    height : Literal[1]
+        Height of particle.
+    width : Literal[1]
+        Width of particle
+    bottom : int
+        `top` + 1
+    right : int
+        `left` + 1
+
+    Methods
+    -------
+    to_local
+        Convert absolute coordinates to relative coordinates.
+    on_press
+        Handle key press event.
+    on_click
+        Handle mouse event.
+    on_double_click
+        Handle double-click mouse event.
+    on_triple-click
+        Handle triple-click mouse event.
+    on_paste
+        Handle paste event.
     """
     def __init__(
         self,

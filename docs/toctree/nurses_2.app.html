@@ -179,6 +179,7 @@
                 
   <section id="module-nurses_2.app">
 <span id="nurses-2-app"></span><h1>nurses_2.app<a class="headerlink" href="#module-nurses_2.app" title="Permalink to this headline">#</a></h1>
+<p>Base for creating terminal applications.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -234,8 +235,27 @@ the asciicast format – doing so will corrupt the recording.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>children</strong></dt><dd></dd>
-<dt><strong>color_theme</strong></dt><dd></dd>
+<dt><strong>exit_key</strong><span class="classifier">KeyPressEvent | None</span></dt><dd><p>Quit the app when this key is pressed.</p>
+</dd>
+<dt><strong>background_char</strong><span class="classifier">str</span></dt><dd><p>Background character for root widget.</p>
+</dd>
+<dt><strong>background_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Background color pair for root widget.</p>
+</dd>
+<dt><strong>title</strong><span class="classifier">str | None</span></dt><dd><p>Set terminal title (if supported).</p>
+</dd>
+<dt><strong>double_click_timeout</strong><span class="classifier">float</span></dt><dd><p>Max duration of a double-click. Max duration of a triple-click
+is double this value.</p>
+</dd>
+<dt><strong>render_interval</strong><span class="classifier">float</span></dt><dd><p>Seconds between screen renders.</p>
+</dd>
+<dt><strong>color_theme</strong><span class="classifier">ColorTheme</span></dt><dd><p>Color theme used for <cite>Themable</cite> widgets.</p>
+</dd>
+<dt><strong>asciicast_path</strong><span class="classifier">Path | None</span></dt><dd><p>Record the terminal in asciicast v2 file format if a path is provided.
+Resizing the terminal while recording isn’t currently supported by
+the asciicast format – doing so will corrupt the recording.</p>
+</dd>
+<dt><strong>children</strong><span class="classifier">list[Widget]</span></dt><dd><p>Alias for <cite>self.root.children</cite>.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -252,22 +272,22 @@ the asciicast format – doing so will corrupt the recording.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.app.App.run" title="nurses_2.app.App.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</p></td>
 <td><p>Run the app.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.app.App.exit" title="nurses_2.app.App.exit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exit</span></code></a>()</p></td>
+<td><p>Exit the app.</p></td>
+</tr>
 </tbody>
 </table>
 <table class="table">
 <colgroup>
-<col style="width: 60%" />
-<col style="width: 40%" />
+<col style="width: 31%" />
+<col style="width: 69%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>add_widget</strong></p></td>
-<td></td>
+<td><p>Alias for <cite>self.root.add_widget</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>add_widgets</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>exit</strong></p></td>
-<td></td>
+<td><p>Alias for <cite>self.root.add_widgets</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -294,7 +314,8 @@ the asciicast format – doing so will corrupt the recording.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.app.App.exit">
 <span class="sig-name descname"><span class="pre">exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.exit" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Exit the app.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.app.App.on_start">
@@ -314,6 +335,11 @@ the asciicast format – doing so will corrupt the recording.</p>
 <dt class="sig sig-object py" id="nurses_2.app.run_widget_as_app">
 <span class="sig-prename descclassname"><span class="pre">nurses_2.app.</span></span><span class="sig-name descname"><span class="pre">run_widget_as_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.run_widget_as_app" title="Permalink to this definition">#</a></dt>
 <dd><p>Run a widget as a full-screen app.</p>
+<p>This is a convenience function provided to reduce boilerplate
+for the simplest case of an App. The widget type is provided
+instead of an instance to cover cases where the widget schedules
+tasks on instantiation as no event loop exists before the App is
+created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -326,12 +352,6 @@ the asciicast format – doing so will corrupt the recording.</p>
 </dl>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This is a convenience function provided to reduce boilerplate
-for the simplest case of an App. The widget type is provided
-instead of an instance to cover cases where the widget schedules
-tasks on instantiation as no event loop exists before the App is
-created.</p>
 </dd></dl>
 
 </section>

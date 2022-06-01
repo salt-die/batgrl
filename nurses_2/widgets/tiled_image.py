@@ -1,3 +1,6 @@
+"""
+TiledImage widget will tile any graphic widget to fill it's dimensions.
+"""
 from math import ceil
 
 import numpy as np
@@ -12,11 +15,14 @@ class TiledImage(GraphicWidget):
     Parameters
     ----------
     tile : GraphicWidget
-        The graphic widget that will used to tile.
+        The widget to tile.
 
-    Notes
-    -----
-    Setting `tile` immediately updates the texture.
+    Attributes
+    ----------
+    tile : GraphicWidget
+        The widget to tile. Setting this attribute updates the
+        texture immediately.
+
     """
     def __init__(self, *, tile: GraphicWidget, **kwargs):
         super().__init__(**kwargs)

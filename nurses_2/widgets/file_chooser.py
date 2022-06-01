@@ -1,3 +1,6 @@
+"""
+A file chooser widget.
+"""
 import platform
 from pathlib import Path
 from typing import Callable
@@ -33,6 +36,9 @@ else:
 
 
 class FileViewNode(TreeViewNode):
+    """
+    Node for FileView.
+    """
     def __init__(self, path: Path, **kwargs):
         self.path = path
 
@@ -66,6 +72,29 @@ class FileViewNode(TreeViewNode):
 
 
 class FileView(TreeView):
+    """
+    A tree view of a file structure.
+
+    Parameters
+    ----------
+    directories_only : bool, default: False
+        If true, show only directories in the file view.
+    show_hidden : bool, default: True
+        If False, hidden files won't be rendered.
+    select_callback : Callable[[Path], None], default: lambda path: None
+        Called with path of selected node when node is double-clicked
+        or `enter` is pressed.
+
+    Attributes
+    ----------
+    directories_only : bool
+        If true, show only directories in the file view.
+    show_hidden : bool
+        If False, hidden files won't be rendered.
+    select_callback : Callable[[Path], None]
+        Called with path of selected node when node is double-clicked
+        or `enter` is pressed.
+    """
     def __init__(
         self,
         root_node: FileViewNode,
@@ -176,6 +205,29 @@ class FileView(TreeView):
 
 
 class FileChooser(ScrollView):
+    """
+    A file chooser widget.
+
+    Parameters
+    ----------
+    directories_only : bool, default: False
+        If true, show only directories in the file view.
+    show_hidden : bool, default: True
+        If False, hidden files won't be rendered.
+    select_callback : Callable[[Path], None], default: lambda path: None
+        Called with path of selected node when node is double-clicked
+        or `enter` is pressed.
+
+    Attributes
+    ----------
+    directories_only : bool
+        If true, show only directories in the file view.
+    show_hidden : bool
+        If False, hidden files won't be rendered.
+    select_callback : Callable[[Path], None]
+        Called with path of selected node when node is double-clicked
+        or `enter` is pressed.
+    """
     def __init__(
         self,
         root_dir: Path | None=None,
@@ -198,6 +250,7 @@ class FileChooser(ScrollView):
         self._view.update_tree_layout()
 
     def on_size(self):
+        super().on_size()
         self._view.update_tree_layout()
 
     @property

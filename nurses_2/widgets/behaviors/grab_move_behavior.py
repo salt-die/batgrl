@@ -1,3 +1,6 @@
+"""
+Draggable behavior for a widget.
+"""
 from ...clamp import clamp
 from .grabbable_behavior import GrabbableBehavior
 
@@ -13,6 +16,15 @@ class GrabMoveBehavior(GrabbableBehavior):
     allow_vertical_translation : bool, default: True
         Allow vertical translation.
     allow_horizontal_translation : bool, default: True
+        Allow horizontal translation.
+
+    Attributes
+    ----------
+    disable_oob : bool
+        If true, widget won't be translated outside of its parent's bounding box.
+    allow_vertical_translation : bool
+        Allow vertical translation.
+    allow_horizontal_translation : bool
         Allow horizontal translation.
     """
     def __init__(

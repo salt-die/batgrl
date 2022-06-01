@@ -1,3 +1,6 @@
+"""
+Button behavior for a widget.
+"""
 from enum import Enum
 
 from ...io import MouseEventType
@@ -5,6 +8,9 @@ from ...io import MouseEventType
 __all__ = "ButtonState", "ButtonBehavior"
 
 class ButtonState(Enum):
+    """
+    State of a button widget.
+    """
     NORMAL = "normal"
     HOVER = "hover"
     DOWN = "down"
@@ -25,6 +31,24 @@ class ButtonBehavior:
     ----------
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
+
+    Attributes
+    ----------
+    always_release : bool
+        Whether a mouse up event outside the button will trigger it.
+    state : ButtonState
+        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+
+    Methods
+    -------
+    update_normal
+        Paint the normal state.
+    update_hover
+        Paint the hover state.
+    update_down
+        Paint the down state.
+    on_release
+        Triggered when a button is released.
     """
     def __init__(self, *, always_release=False, **kwargs):
         super().__init__(**kwargs)

@@ -1,3 +1,6 @@
+"""
+A raycaster widget.
+"""
 from .ray_caster import RayCaster
 from .sprite import Sprite
 

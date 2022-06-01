@@ -1,3 +1,6 @@
+"""
+A sprite class for `RayCaster`.
+"""
 import numpy as np
 
 

@@ -1,3 +1,7 @@
+"""
+A graphic particle field. A particle field specializes in handling many
+single "pixel" children.
+"""
 import numpy as np
 
 from ...colors import AColor, ABLACK
@@ -54,8 +58,58 @@ class GraphicParticle(_ParticleBase):
 
     Parameters
     ----------
+    pos : Point, default: Point(0, 0)
+        Position of particle.
+    is_transparent : bool, default: False
+        If true, particle is transparent.
+    is_visible : bool, default: True
+        If true, particle is visible.
+    is_enabled : bool, default: True
+        If true, particle is enabled.
     color : AColor, default: ABLACK
         Color of particle.
+
+    Attributes
+    ----------
+    pos : Point
+        Position of particle.
+    is_transparent : bool
+        If true, particle is transparent.
+    is_visible : bool
+        If true, particle is visible.
+    is_enabled : bool
+        If true, particle is enabled.
+    color : AColor
+        Color of particle.
+    size : Size
+        Size of particle. Always `Size(1, 1)`.
+    top : int
+        Y-coordinate of particle.
+    left : int
+        X-coordinate of particle.
+    height : Literal[1]
+        Height of particle.
+    width : Literal[1]
+        Width of particle
+    bottom : int
+        `top` + 1
+    right : int
+        `left` + 1
+
+    Methods
+    -------
+    to_local
+        Convert absolute coordinates to relative coordinates.
+    on_press
+        Handle key press event.
+    on_click
+        Handle mouse event.
+    on_double_click
+        Handle double-click mouse event.
+    on_triple-click
+        Handle triple-click mouse event.
+    on_paste
+        Handle paste event.
 
     Notes
     -----

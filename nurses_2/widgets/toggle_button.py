@@ -1,3 +1,6 @@
+"""
+A toggle button widget.
+"""
 from typing import Callable
 
 from wcwidth import wcswidth
@@ -25,6 +28,13 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         Toggle button label.
     callback : Callable[[ToggleState], None], default: lambda: None
         Called when toggle state changes. The new state is provided as first argument.
+
+    Attributes
+    ----------
+    label : str
+        Toggle button label.
+    callback : Callable[[ToggleState], None]
+        Button callback when toggled.
     """
     def __init__(
         self,

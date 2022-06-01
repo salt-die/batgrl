@@ -1,3 +1,0 @@
-# Behaviors
-
-Inheritable widget behaviors.

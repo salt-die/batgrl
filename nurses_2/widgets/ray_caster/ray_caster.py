@@ -1,3 +1,6 @@
+"""
+A raycaster widget.
+"""
 import numpy as np
 
 from ...clamp import clamp
@@ -9,7 +12,7 @@ from .sprite import Sprite
 
 class RayCaster(GraphicWidget):
     """
-    A raycaster for nurses_2.
+    A raycaster widget.
 
     Parameters
     ----------
@@ -33,6 +36,29 @@ class RayCaster(GraphicWidget):
     floor : Texture | None, default: None
         Floor texture.
     floor_color : Color, default: BLACK
+        Color of floor if no floor texture.
+
+    Attributes
+    ----------
+    map : Map
+        An array-like with non-zero entries n indicating walls with texture `wall_textures[n - 1]`.
+    camera : Camera
+        A view in the map.
+    wall_textures : List[Texture]
+        East/west-faced walls' textures.
+    light_wall_textures : list[Texture]
+        North/south-faced walls' textures.
+    sprites : list[Sprite]
+        List of Sprites.
+    sprite_textures : list[Texture]
+        Textures for sprites.
+    ceiling : Texture | None
+        Ceiling texture.
+    ceiling_color : Color
+        Color of ceiling if no ceiling texture.
+    floor : Texture
+        Floor texture.
+    floor_color : Color
         Color of floor if no floor texture.
     """
     HOPS = 20  # How far rays are cast.

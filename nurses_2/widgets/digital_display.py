@@ -1,3 +1,6 @@
+"""
+A 7x8 14-segment (plus decimal point) display widget.
+"""
 import numpy as np
 
 from ..colors import Color, ColorPair, BLACK
@@ -108,7 +111,7 @@ _CHAR_TO_SEGMENTS = {
 }
 
 
-class Segment:
+class _Segment:
     def __init__(self, slice_):
         self.slice = slice_
 
@@ -121,20 +124,8 @@ class Segment:
 
 class DigitalDisplay(TextWidget):
     r"""
-    A 7x8 14-segment (plus decimal point) display widget.
-
-    Parameters
-    ----------
-    off_color_pair : ColorPair, default: DIM_GREEN_ON_BLACK
-        Color pair of off segments.
-    on_color_pair : ColorPair, default: BRIGHT_GREEN_ON_BLACK
-        Color pair of on segments.
-
-    Use `show_char` method to display an ascii character or turn on/off
-    individual segments by setting one of ("a", "b", "c", "d", "e",
-    "f", "g1", "g2", "h", "i", "j", "k", "l", "m", "dp") to True or False.
-    E.g., `digital_display.f = True`. The segments are labeled according
-    to the following diagram:
+    A 7x8 14-segment (plus decimal point) display widget. Segments
+    are labeled according to the following diagram:
 
     ```
         a
@@ -147,22 +138,72 @@ class DigitalDisplay(TextWidget):
       ━━━━━ ● dp
         d
     ```
+
+    Parameters
+    ----------
+    off_color_pair : ColorPair, default: DIM_GREEN_ON_BLACK
+        Color pair of off segments.
+    on_color_pair : ColorPair, default: BRIGHT_GREEN_ON_BLACK
+        Color pair of on segments.
+
+    Attributes
+    ----------
+    off_color_pair : ColorPair
+        Color pair of off segments.
+    on_color_pair : ColorPair
+        Color pair of on segments.
+    a : bool
+        If `a` segment of digital display is on.
+    b : bool
+        If `b` segment of digital display is on.
+    c : bool
+        If `c` segment of digital display is on.
+    d : bool
+        If `d` segment of digital display is on.
+    e : bool
+        If `e` segment of digital display is on.
+    f : bool
+        If `f` segment of digital display is on.
+    g1 : bool
+        If `g1` segment of digital display is on.
+    g2 : bool
+        If `g2` segment of digital display is on.
+    h : bool
+        If `h` segment of digital display is on.
+    i : bool
+        If `i` segment of digital display is on.
+    j : bool
+        If `j` segment of digital display is on.
+    k : bool
+        If `k` segment of digital display is on.
+    l : bool
+        If `l` segment of digital display is on.
+    m : bool
+        If `m` segment of digital display is on.
+    dp : bool
+        If `dp` segment of digital display is on.
+
+
+    Methods
+    -------
+    show_char
+        Display an ascii character.
     """
-    a  = Segment(np.s_[0, 1: 6])
-    b  = Segment(np.s_[1: 3, 6])
-    c  = Segment(np.s_[4: 6, 6])
-    d  = Segment(np.s_[6, 1: 6])
-    e  = Segment(np.s_[4: 6,  0])
-    f  = Segment(np.s_[1: 3,  0])
-    g1 = Segment(np.s_[3, 1: 3])
-    g2 = Segment(np.s_[3, 4: 6])
-    h  = Segment(((1, 2), (1, 2)))
-    i  = Segment(np.s_[1: 3, 3])
-    j  = Segment(((1, 2), (5, 4)))
-    k  = Segment(((4, 5), (2, 1)))
-    l  = Segment(np.s_[4: 6, 3])
-    m  = Segment(((4, 5), (4, 5)))
-    dp = Segment(np.s_[6, 7:8])
+    a  = _Segment(np.s_[0, 1: 6])
+    b  = _Segment(np.s_[1: 3, 6])
+    c  = _Segment(np.s_[4: 6, 6])
+    d  = _Segment(np.s_[6, 1: 6])
+    e  = _Segment(np.s_[4: 6,  0])
+    f  = _Segment(np.s_[1: 3,  0])
+    g1 = _Segment(np.s_[3, 1: 3])
+    g2 = _Segment(np.s_[3, 4: 6])
+    h  = _Segment(((1, 2), (1, 2)))
+    i  = _Segment(np.s_[1: 3, 3])
+    j  = _Segment(((1, 2), (5, 4)))
+    k  = _Segment(((4, 5), (2, 1)))
+    l  = _Segment(np.s_[4: 6, 3])
+    m  = _Segment(((4, 5), (4, 5)))
+    dp = _Segment(np.s_[6, 7:8])
 
     def __init__(
         self,

@@ -1,3 +1,6 @@
+"""
+An effect that adds colors from a rainbow gradient. Provided as an example effect.
+"""
 import asyncio
 from itertools import cycle
 
@@ -19,6 +22,19 @@ class RainbowCycleEffect(Effect):
         Add colors to foreground.
     enable_background_rainbow : bool, default: True
         Add colors to background.
+
+    Attributes
+    ----------
+    ncolors : int
+        Number of colors in the rainbow gradient.
+    cycle_speed : float
+        Seconds between updates.
+    enable_foreground_rainbow : bool
+        Add colors to foreground.
+    enable_background_rainbow : bool
+        Add colors to background.
+    cycle_task : asyncio.Task
+        Coroutine that updates current color to use from gradient.
     """
     def __init__(
         self,

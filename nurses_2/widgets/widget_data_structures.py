@@ -1,3 +1,6 @@
+"""
+Data structures for widgets.
+"""
 from enum import Enum
 from typing import NamedTuple
 
@@ -5,16 +8,27 @@ __all__ = "SizeHint", "PosHint", "Anchor", "Easing"
 
 
 class SizeHint(NamedTuple):
+    """
+    A size hint. Sets a widget's size as a proportion
+    of parent's size.
+    """
     height: float | None
     width: float | None
 
 
 class PosHint(NamedTuple):
+    """
+    A position hint. Sets a widget's position as a proportion
+    of parent's size.
+    """
     y: float | None
     x: float | None
 
 
 class Anchor(str, Enum):
+    """
+    Point of widget attached to `pos_hint`.
+    """
     CENTER = "center"
     LEFT_CENTER = "left_center"
     RIGHT_CENTER = "right_center"
@@ -27,6 +41,9 @@ class Anchor(str, Enum):
 
 
 class Easing(str, Enum):
+    """
+    Easings for `Widget.tween`.
+    """
     LINEAR = "linear"
     IN_QUAD = "in_quad"
     OUT_QUAD = "out_quad"

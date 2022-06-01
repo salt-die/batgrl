@@ -196,6 +196,7 @@
                 
   <section id="module-nurses_2.colors.color_data_structures">
 <span id="nurses-2-colors-color-data-structures"></span><h1>nurses_2.colors.color_data_structures<a class="headerlink" href="#module-nurses_2.colors.color_data_structures" title="Permalink to this headline">#</a></h1>
+<p>Color data structures.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -225,13 +226,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>alpha</strong></dt><dd><p>Alias for field number 3</p>
+<dt><strong>red</strong><span class="classifier">int</span></dt><dd><p>The red component.</p>
 </dd>
-<dt><strong>blue</strong></dt><dd><p>Alias for field number 2</p>
+<dt><strong>green</strong><span class="classifier">int</span></dt><dd><p>The green component.</p>
 </dd>
-<dt><strong>green</strong></dt><dd><p>Alias for field number 1</p>
+<dt><strong>blue</strong><span class="classifier">int</span></dt><dd><p>The blue component.</p>
 </dd>
-<dt><strong>red</strong></dt><dd><p>Alias for field number 0</p>
+<dt><strong>alpha</strong><span class="classifier">int</span></dt><dd><p>The alpha component.</p>
 </dd>
 </dl>
 </dd>
@@ -243,25 +244,11 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
-<td><p>Return number of occurrences of value.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor.from_hex" title="nurses_2.colors.color_data_structures.AColor.from_hex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hex</span></code></a>(hexcode)</p></td>
+<td><p>Create an <cite>AColor</cite> from a hex code.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor.fog" title="nurses_2.colors.color_data_structures.AColor.fog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fog</span></code></a>(distance)</p></td>
 <td><p>Return color as if seen through a fog from a distance.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
-<td><p>Return first index of value.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 55%" />
-<col style="width: 45%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>from_hex</strong></p></td>
-<td></td>
 </tr>
 </tbody>
 </table>
@@ -278,6 +265,12 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.AColor.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.AColor.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.AColor.fog">
 <span class="sig-name descname"><span class="pre">fog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.AColor.fog" title="Permalink to this definition">#</a></dt>
 <dd><p>Return color as if seen through a fog from a distance.</p>
@@ -290,12 +283,28 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.AColor.from_hex">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexcode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.AColor.from_hex" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Create an <cite>AColor</cite> from a hex code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>hexcode</strong><span class="classifier">str</span></dt><dd><p>A color hex code.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.AColor.green">
 <span class="sig-name descname"><span class="pre">green</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.AColor.green" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.AColor.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.AColor.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -314,11 +323,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>blue</strong></dt><dd><p>Alias for field number 2</p>
+<dt><strong>red</strong><span class="classifier">int</span></dt><dd><p>The red component.</p>
 </dd>
-<dt><strong>green</strong></dt><dd><p>Alias for field number 1</p>
+<dt><strong>green</strong><span class="classifier">int</span></dt><dd><p>The green component.</p>
 </dd>
-<dt><strong>red</strong></dt><dd><p>Alias for field number 0</p>
+<dt><strong>blue</strong><span class="classifier">int</span></dt><dd><p>The blue component.</p>
 </dd>
 </dl>
 </dd>
@@ -330,22 +339,8 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
-<td><p>Return number of occurrences of value.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
-<td><p>Return first index of value.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 55%" />
-<col style="width: 45%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>from_hex</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color.from_hex" title="nurses_2.colors.color_data_structures.Color.from_hex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hex</span></code></a>(hexcode)</p></td>
+<td><p>Create a <cite>Color</cite> from a hex code.</p></td>
 </tr>
 </tbody>
 </table>
@@ -356,14 +351,36 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.Color.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.Color.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.Color.from_hex">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexcode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.Color.from_hex" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Create a <cite>Color</cite> from a hex code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>hexcode</strong><span class="classifier">str</span></dt><dd><p>A color hex code.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.Color.green">
 <span class="sig-name descname"><span class="pre">green</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.Color.green" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.Color.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.Color.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -382,19 +399,21 @@
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bg_blue</strong></dt><dd><p>Alias for field number 5</p>
+<dt><strong>fg_red</strong><span class="classifier">int</span></dt><dd><p>Foreground red component.</p>
 </dd>
-<dt><strong>bg_color</strong></dt><dd></dd>
-<dt><strong>bg_green</strong></dt><dd><p>Alias for field number 4</p>
+<dt><strong>fg_green</strong><span class="classifier">int</span></dt><dd><p>Foreground green component.</p>
 </dd>
-<dt><strong>bg_red</strong></dt><dd><p>Alias for field number 3</p>
+<dt><strong>fg_blue</strong><span class="classifier">int</span></dt><dd><p>Foreground blue component.</p>
 </dd>
-<dt><strong>fg_blue</strong></dt><dd><p>Alias for field number 2</p>
+<dt><strong>bg_red</strong><span class="classifier">int</span></dt><dd><p>Background red component.</p>
 </dd>
-<dt><strong>fg_color</strong></dt><dd></dd>
-<dt><strong>fg_green</strong></dt><dd><p>Alias for field number 1</p>
+<dt><strong>bg_green</strong><span class="classifier">int</span></dt><dd><p>Background green component.</p>
 </dd>
-<dt><strong>fg_red</strong></dt><dd><p>Alias for field number 0</p>
+<dt><strong>bg_blue</strong><span class="classifier">int</span></dt><dd><p>Background blue component.</p>
+</dd>
+<dt><strong>fg_color</strong><span class="classifier">Color</span></dt><dd><p>The foreground color.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color</span></dt><dd><p>The background color.</p>
 </dd>
 </dl>
 </dd>
@@ -406,14 +425,8 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
-<td><p>Return number of occurrences of value.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair.from_colors" title="nurses_2.colors.color_data_structures.ColorPair.from_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_colors</span></code></a>(fg_color, bg_color)</p></td>
-<td><p>Return a <cite>ColorPair</cite> from two <a href="#id1"><span class="problematic" id="id2">`</span></a>Color`s.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
-<td><p>Return first index of value.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair.from_colors" title="nurses_2.colors.color_data_structures.ColorPair.from_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_colors</span></code></a>(fg_color, bg_color)</p></td>
+<td><p>Create a <cite>ColorPair</cite> from two <a href="#id1"><span class="problematic" id="id2">`</span></a>Color`s.</p></td>
 </tr>
 </tbody>
 </table>
@@ -438,6 +451,12 @@
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorPair.bg_red">
 <span class="sig-name descname"><span class="pre">bg_red</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorPair.bg_red" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorPair.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorPair.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -466,7 +485,24 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorPair.from_colors">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorPair.from_colors" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a <cite>ColorPair</cite> from two <a href="#id3"><span class="problematic" id="id4">`</span></a>Color`s.</p>
+<dd><p>Create a <cite>ColorPair</cite> from two <a href="#id3"><span class="problematic" id="id4">`</span></a>Color`s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fg_color</strong><span class="classifier">Color | AColor</span></dt><dd><p>Foreground color.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color | AColor</span></dt><dd><p>Background color.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorPair.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorPair.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 </dd></dl>
@@ -479,25 +515,29 @@
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>primary_bg</strong></dt><dd><p>Alias for field number 1</p>
+<dt><strong>primary_fg</strong><span class="classifier">Color</span></dt><dd><p>Primary foreground color.</p>
 </dd>
-<dt><strong>primary_bg_dark</strong></dt><dd><p>Alias for field number 5</p>
+<dt><strong>primary_bg</strong><span class="classifier">Color</span></dt><dd><p>Primary background color.</p>
 </dd>
-<dt><strong>primary_bg_light</strong></dt><dd><p>Alias for field number 3</p>
+<dt><strong>primary_fg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light foreground color.</p>
 </dd>
-<dt><strong>primary_color_pair</strong></dt><dd></dd>
-<dt><strong>primary_dark_color_pair</strong></dt><dd></dd>
-<dt><strong>primary_fg</strong></dt><dd><p>Alias for field number 0</p>
+<dt><strong>primary_bg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light background color.</p>
 </dd>
-<dt><strong>primary_fg_dark</strong></dt><dd><p>Alias for field number 4</p>
+<dt><strong>primary_fg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark foreground color.</p>
 </dd>
-<dt><strong>primary_fg_light</strong></dt><dd><p>Alias for field number 2</p>
+<dt><strong>primary_bg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark background color.</p>
 </dd>
-<dt><strong>primary_light_color_pair</strong></dt><dd></dd>
-<dt><strong>secondary_bg</strong></dt><dd><p>Alias for field number 7</p>
+<dt><strong>secondary_fg</strong><span class="classifier">Color</span></dt><dd><p>Secondary foreground color.</p>
 </dd>
-<dt><strong>secondary_color_pair</strong></dt><dd></dd>
-<dt><strong>secondary_fg</strong></dt><dd><p>Alias for field number 6</p>
+<dt><strong>secondary_bg</strong><span class="classifier">Color</span></dt><dd><p>Secondary background color.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Primary color pair.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_light_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Primary light color pair.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_dark_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Primary dark color pair.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">secondary_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Secondary color pair.</p>
 </dd>
 </dl>
 </dd>
@@ -509,14 +549,27 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.count" title="nurses_2.colors.color_data_structures.ColorTheme.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.index" title="nurses_2.colors.color_data_structures.ColorTheme.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_bg">
 <span class="sig-name descname"><span class="pre">primary_bg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_bg" title="Permalink to this definition">#</a></dt>
@@ -538,12 +591,14 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">primary_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Primary color pair.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">primary_dark_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Primary dark color pair.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_fg">
@@ -566,7 +621,8 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">primary_light_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Primary light color pair.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.secondary_bg">
@@ -577,7 +633,8 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">secondary_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Secondary color pair.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.secondary_fg">

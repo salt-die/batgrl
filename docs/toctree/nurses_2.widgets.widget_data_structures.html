@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.widget_data_structures">
 <span id="nurses-2-widgets-widget-data-structures"></span><h1>nurses_2.widgets.widget_data_structures<a class="headerlink" href="#module-nurses_2.widgets.widget_data_structures" title="Permalink to this headline">#</a></h1>
+<p>Data structures for widgets.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -515,24 +516,16 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.Anchor" title="nurses_2.widgets.widget_data_structures.Anchor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Anchor</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Point of widget attached to <cite>pos_hint</cite>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.Easing" title="nurses_2.widgets.widget_data_structures.Easing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Easing</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Easings for <cite>Widget.tween</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.PosHint" title="nurses_2.widgets.widget_data_structures.PosHint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PosHint</span></code></a>(y, x)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
+<td><p>A position hint.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint" title="nurses_2.widgets.widget_data_structures.SizeHint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SizeHint</span></code></a>(height, width)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-</p></td>
+<td><p>A size hint.</p></td>
 </tr>
 </tbody>
 </table>
@@ -540,7 +533,7 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Anchor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Anchor" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Point of widget attached to <cite>pos_hint</cite>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Anchor.BOTTOM_CENTER">
 <span class="sig-name descname"><span class="pre">BOTTOM_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bottom_center'</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Anchor.BOTTOM_CENTER" title="Permalink to this definition">#</a></dt>
@@ -592,7 +585,7 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Easing">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Easing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Easing" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Easings for <cite>Widget.tween</cite>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Easing.IN_BACK">
 <span class="sig-name descname"><span class="pre">IN_BACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'in_back'</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Easing.IN_BACK" title="Permalink to this definition">#</a></dt>
@@ -752,8 +745,10 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.PosHint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">PosHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">PosHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>A position hint. Sets a widget’s position as a proportion
+of parent’s size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -771,14 +766,27 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.PosHint.count" title="nurses_2.widgets.widget_data_structures.PosHint.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.PosHint.index" title="nurses_2.widgets.widget_data_structures.PosHint.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.PosHint.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.PosHint.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.PosHint.x">
 <span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint.x" title="Permalink to this definition">#</a></dt>
@@ -795,8 +803,10 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.SizeHint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">SizeHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.SizeHint" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">SizeHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.SizeHint" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>A size hint. Sets a widget’s size as a proportion
+of parent’s size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -814,18 +824,31 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint.count" title="nurses_2.widgets.widget_data_structures.SizeHint.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint.index" title="nurses_2.widgets.widget_data_structures.SizeHint.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.SizeHint.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.SizeHint.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.SizeHint.height">
 <span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.SizeHint.height" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.SizeHint.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.SizeHint.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 <dl class="py attribute">

@@ -1,3 +1,6 @@
+"""
+An image widget.
+"""
 from pathlib import Path
 
 import cv2
@@ -15,9 +18,10 @@ class Image(GraphicWidget):
     path : pathlib.Path
         Path to image.
 
-    Notes
-    -----
-    Updating the path immediately reloads the image.
+    Attributes
+    ----------
+    path : pathlib.Path
+        Path to image. Setting the path immediately reloads the image.
     """
     def __init__(self, *, path: Path, **kwargs):
         super().__init__(**kwargs)

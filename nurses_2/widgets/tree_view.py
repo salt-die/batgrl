@@ -1,3 +1,8 @@
+"""
+A base for creating tree-like views. TreeViews are composed of `TreeViewNodes` that
+can be selected and toggled open or closed. Open nodes will yield their children
+with `TreeViewNode.iter_open_nodes`.
+"""
 from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
@@ -7,6 +12,45 @@ from .widget import Widget
 __all__ = "TreeViewNode", "TreeView"
 
 class TreeViewNode(Themable, ButtonBehavior, TextWidget):
+    """
+    A node of a `TreeView`.
+
+    Parameters
+    ----------
+    is_leaf : bool, default: True
+        True if node is a leaf node.
+
+    Attributes
+    ----------
+    is_leaf : bool
+        True if node is a leaf node.
+    is_open : bool
+        True if node is open.
+    is_selected : bool
+        True if node is selected.
+    parent_node : TreeViewNode | None
+        Parent node.
+    child_nodes : list[TreeViewNode]
+        Children nodes.
+    level : int
+        Depth of node in tree.
+
+    Methods
+    -------
+    iter_open_nodes
+        Yield child nodes. If a child node, `child` is open yield
+        from `child.iter_open_nodes()`.
+    add_node
+        Add a child node.
+    remove_node
+        Remove a child node.
+    toggle
+        Close node if node is open else open node.
+    select
+        Select this node.
+    unselect
+        Unselect this node.
+    """
     def __init__(self, is_leaf=True, **kwargs):
         self.is_leaf = is_leaf
 
@@ -47,6 +91,10 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         return self.parent_node.root_node
 
     def iter_open_nodes(self):
+        """
+        Yield all child nodes and recursively yield from
+        all open child nodes.
+        """
         for child in self.child_nodes:
             yield child
 
@@ -54,12 +102,18 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
                 yield from child.iter_open_nodes()
 
     def add_node(self, node):
+        """
+        Add a child node.
+        """
         self.child_nodes.append(node)
 
         node.level = self.level + 1
         node.parent_node = self
 
     def remove_node(self, node):
+        """
+        Remove a child node.
+        """
         self.child_nodes.remove(node)
 
         node.level = -1
@@ -71,17 +125,26 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         """
 
     def toggle(self):
+        """
+        Toggle node open or closed.
+        """
         if not self.is_leaf:
             self.is_open = not self.is_open
             self._toggle_update()
             self.root_node.tree_view.update_tree_layout()
 
     def unselect(self):
+        """
+        Unselect node.
+        """
         self.is_selected = False
         self.root_node.tree_view.selected_node = None
         self.repaint()
 
     def select(self):
+        """
+        Select node.
+        """
         if self.root_node.tree_view.selected_node is not None:
             self.root_node.tree_view.selected_node.unselect()
 
@@ -107,6 +170,24 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
 
 
 class TreeView(Widget):
+    """
+    Base for creating tree-like views.
+
+    Parameters
+    ----------
+    root_node : TreeViewNode
+        Root node of tree view.
+
+    Attributes
+    ----------
+    root_node : TreeViewNode
+        Root node of tree view
+
+    Methods
+    -------
+    update_tree_layout
+        Update tree layout after a child node is toggled open or closed.
+    """
     def __init__(self, root_node: TreeViewNode, **kwargs):
         self.selected_node = None
         self.root_node = root_node

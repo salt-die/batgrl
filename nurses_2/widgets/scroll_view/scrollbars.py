@@ -1,3 +1,6 @@
+"""
+Scrollbars for a scroll view.
+"""
 from ...io import MouseEventType
 from ..widget import Widget
 from ..behaviors.themable import Themable

@@ -1,3 +1,6 @@
+"""
+Grabbable behavior for a widget.
+"""
 from ...data_structures import Point
 from ...io import MouseEventType
 
@@ -20,6 +23,30 @@ class GrabbableBehavior:
         If False, grabbable behavior is disabled.
     disable_ptf : bool, default: False
         If True, widget will not be pulled to front when grabbed.
+
+    Attributes
+    ----------
+    is_grabbable : bool
+        If False, grabbable behavior is disabled.
+    disable_ptf : bool
+        If True, widget will not be pulled to front when grabbed.
+    is_grabbed : bool
+        True if widget is grabbed.
+    mouse_dyx : Point
+        Last change in mouse position.
+    mouse_dy : int
+        Last vertical change in mouse position.
+    mouse_dx : int
+        Last horizontal change in mouse position.
+
+    Methods
+    -------
+    grab
+        Grab the widget.
+    ungrab
+        Ungrab the widget.
+    grab_update
+        Update widget with incoming mouse events while grabbed.
     """
     def __init__(self, *, is_grabbable=True, disable_ptf=False, **kwargs):
         super().__init__(**kwargs)
@@ -61,7 +88,7 @@ class GrabbableBehavior:
     @property
     def mouse_dyx(self) -> Point:
         """
-        Change in mouse position.
+        Last change in mouse position.
         """
         return self._mouse_dyx
 

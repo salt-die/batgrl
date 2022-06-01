@@ -1,3 +1,6 @@
+"""
+A video player widget.
+"""
 import asyncio
 import atexit
 from pathlib import Path
@@ -20,9 +23,36 @@ class VideoPlayer(GraphicWidget):
     ----------
     source : pathlib.Path | str | int
         A path to video, URL to video stream, or capturing device (by index).
+
+    Attributes
+    ----------
+        video : asyncio.Task
+            The task updating the widget's texture.
+        source : Path | str | int
+            Source of video.
+
+    Methods
+    -------
+        play
+            Play the video.
+        pause
+            Pause the video.
+        stop
+            Stop the video.
     """
-    def __init__(self, *, source: Path | str | int, default_color=ABLACK, is_transparent=False, **kwargs):
-        super().__init__(default_color=default_color, is_transparent=is_transparent, **kwargs)
+    def __init__(
+        self,
+        *,
+        source: Path | str | int,
+        default_color=ABLACK,
+        is_transparent=False,
+        **kwargs
+    ):
+        super().__init__(
+            default_color=default_color,
+            is_transparent=is_transparent,
+            **kwargs
+        )
 
         self._resource = None
         self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
@@ -30,11 +60,11 @@ class VideoPlayer(GraphicWidget):
         self.source = source
 
     @property
-    def video(self):
+    def video(self) -> asyncio.Task:
         return self._video
 
     @property
-    def source(self):
+    def source(self) -> Path | str | int:
         return self._source
 
     @source.setter

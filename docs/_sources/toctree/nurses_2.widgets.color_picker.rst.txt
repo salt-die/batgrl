@@ -18,8 +18,6 @@ nurses\_2.widgets.color\_picker
    .. autosummary::
    
       ColorPicker
-      HueSelector
-      ShadeSelector
    
    
 

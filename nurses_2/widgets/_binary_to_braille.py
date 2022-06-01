@@ -1,3 +1,7 @@
+"""
+Convert a (h, w, 4, 2)-shaped binary array into (h, w) array of
+braille unicode characters.
+"""
 import numpy as np
 
 _TO_DECIMAL = np.array(

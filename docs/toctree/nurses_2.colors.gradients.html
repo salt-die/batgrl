@@ -217,38 +217,92 @@
 <td><p>Linear interpolation from <cite>start</cite> to <cite>end</cite> with proportion <cite>p</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.gradients.rainbow_gradient" title="nurses_2.colors.gradients.rainbow_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rainbow_gradient</span></code></a>(n, *[, color_type])</p></td>
-<td><p>Return a rainbow gradient of n colors.</p></td>
+<td><p>Return a rainbow gradient of <code class="docutils literal notranslate"><span class="pre">n</span></code> colors.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.colors.gradients.background_rainbow">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">background_rainbow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncolors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Color(red=255,</span> <span class="pre">green=255,</span> <span class="pre">blue=255)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.gradients.background_rainbow" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">background_rainbow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncolors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Color(red=255,</span> <span class="pre">green=255,</span> <span class="pre">blue=255)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.gradients.background_rainbow" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a rainbow gradient of <cite>ncolors</cite> <a href="#id5"><span class="problematic" id="id6">`</span></a>ColorPair`s with a given foreground color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ncolors</strong><span class="classifier">int, default: 20</span></dt><dd><p>Number of colors in gradient.</p>
+</dd>
+<dt><strong>fg_color</strong><span class="classifier">Color, default: BLACK</span></dt><dd><p>Foreground color used for gradient.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.colors.gradients.foreground_rainbow">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">foreground_rainbow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncolors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.gradients.foreground_rainbow" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">foreground_rainbow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncolors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.gradients.foreground_rainbow" title="Permalink to this definition">#</a></dt>
 <dd><p>A rainbow gradient of <cite>ncolors</cite> <a href="#id7"><span class="problematic" id="id8">`</span></a>ColorPair`s with a given background color.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ncolors</strong><span class="classifier">int, default: 20</span></dt><dd><p>Number of colors in gradient.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color, default: BLACK</span></dt><dd><p>Background color used for gradient.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.colors.gradients.gradient">
 <span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncolors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nurses_2.colors.gradients.gradient" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a gradient from <cite>start</cite> to <cite>end</cite> with <cite>ncolors</cite> (&gt; 1) colors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>start</strong><span class="classifier">Color | AColor | ColorPair</span></dt><dd><p>Start color or colorpair.</p>
+</dd>
+<dt><strong>end</strong><span class="classifier">Color | AColor | ColorPair</span></dt><dd><p>End color of colorpair.</p>
+</dd>
+<dt><strong>ncolors</strong><span class="classifier">int</span></dt><dd><p>Number of colors in gradient.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.colors.gradients.lerp_colors">
 <span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">lerp_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></span><a class="headerlink" href="#nurses_2.colors.gradients.lerp_colors" title="Permalink to this definition">#</a></dt>
 <dd><p>Linear interpolation from <cite>start</cite> to <cite>end</cite> with proportion <cite>p</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>start</strong><span class="classifier">Color | AColor</span></dt><dd><p>Start color.</p>
+</dd>
+<dt><strong>end</strong><span class="classifier">Color | AColor</span></dt><dd><p>End Color</p>
+</dd>
+<dt><strong>p</strong><span class="classifier">float</span></dt><dd><p>Proportion from start to end.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.colors.gradients.rainbow_gradient">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">rainbow_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_type=&lt;class</span> <span class="pre">'nurses_2.colors.color_data_structures.Color'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.gradients.rainbow_gradient" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a rainbow gradient of n colors.</p>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.colors.gradients.</span></span><span class="sig-name descname"><span class="pre">rainbow_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_type:</span> <span class="pre">nurses_2.colors.color_data_structures.Color</span> <span class="pre">|</span> <span class="pre">nurses_2.colors.color_data_structures.AColor</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'nurses_2.colors.color_data_structures.Color'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.gradients.rainbow_gradient" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a rainbow gradient of <code class="docutils literal notranslate"><span class="pre">n</span></code> colors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n</strong><span class="classifier">int</span></dt><dd><p>Number of colors in gradient.</p>
+</dd>
+<dt><strong>color_type</strong><span class="classifier">Color | AColor, default: Color</span></dt><dd><p>Type of color gradient to make</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

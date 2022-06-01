@@ -1,3 +1,6 @@
+"""
+A parallax widget.
+"""
 from collections.abc import Sequence
 
 import numpy as np
@@ -18,6 +21,16 @@ class Parallax(GraphicWidget):
         layer by `round(x * offset)` where offset is either `vertical_offset` or
         `horizontal_offset` of the parallax. Default speeds are `1/(N - i)`
         where `N` is the number of layers and `i` is the index of a layer.
+
+    Attributes
+    ----------
+    offset : tuple[float, float]
+        Vertical and horizontal offset of first layer of the parallax. Other layers will
+        be adjusted automatically.
+    vertical_offset : float
+        Vertical offset of first layer of the parallax.
+    horizontal_offset : float
+        Horizontal offset of first layer of the parallax
     """
     def __init__(self, *, layers: Sequence[GraphicWidget], speeds: Sequence[float] | None=None, **kwargs):
         super().__init__(**kwargs)
@@ -29,7 +42,7 @@ class Parallax(GraphicWidget):
         nlayers = len(layers)
         self.speeds = speeds or [1 / (nlayers - i) for i in range(nlayers)]
 
-        self._vertical_offset = self._horizontal_offset = 0
+        self._vertical_offset = self._horizontal_offset = 0.0
 
         for widget in layers:
             self.add_widget(widget)
@@ -39,29 +52,29 @@ class Parallax(GraphicWidget):
         self._image_copies = [layer.texture.copy() for layer in self.layers]
 
     @property
-    def vertical_offset(self):
+    def vertical_offset(self) -> float:
         return self._vertical_offset
 
     @vertical_offset.setter
-    def vertical_offset(self, offset):
+    def vertical_offset(self, offset: float):
         self._vertical_offset = offset
         self._adjust()
 
     @property
-    def horizontal_offset(self):
+    def horizontal_offset(self) -> float:
         return self._horizontal_offset
 
     @horizontal_offset.setter
-    def horizontal_offset(self, offset):
+    def horizontal_offset(self, offset: float):
         self._horizontal_offset = offset
         self._adjust()
 
     @property
-    def offset(self):
+    def offset(self) -> tuple[float, float]:
         return self._vertical_offset, self._horizontal_offset
 
     @offset.setter
-    def offset(self, offset):
+    def offset(self, offset: tuple[float, float]):
         self._vertical_offset, self._horizontal_offset = offset
         self._adjust()
 

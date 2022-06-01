@@ -1,3 +1,6 @@
+"""
+Base for creating terminal applications.
+"""
 import asyncio
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -37,6 +40,44 @@ class App(ABC):
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
         the asciicast format -- doing so will corrupt the recording.
+
+    Attributes
+    ----------
+    exit_key : KeyPressEvent | None
+        Quit the app when this key is pressed.
+    background_char : str
+        Background character for root widget.
+    background_color_pair : ColorPair
+        Background color pair for root widget.
+    title : str | None
+        Set terminal title (if supported).
+    double_click_timeout : float
+        Max duration of a double-click. Max duration of a triple-click
+        is double this value.
+    render_interval : float
+        Seconds between screen renders.
+    color_theme : ColorTheme
+        Color theme used for `Themable` widgets.
+    asciicast_path : Path | None
+        Record the terminal in asciicast v2 file format if a path is provided.
+        Resizing the terminal while recording isn't currently supported by
+        the asciicast format -- doing so will corrupt the recording.
+    children : list[Widget]
+        Alias for `self.root.children`.
+
+    Methods
+    -------
+    on_start
+        Coroutine scheduled when app is run.
+    run
+        Run the app.
+    exit
+        Exit the app.
+    add_widget
+        Alias for `self.root.add_widget`.
+    add_widgets
+        Alias for `self.root.add_widgets`.
+
     """
     def __init__(
         self,
@@ -90,6 +131,9 @@ class App(ABC):
             pass
 
     def exit(self):
+        """
+        Exit the app.
+        """
         for task in asyncio.all_tasks():
             task.cancel()
 
@@ -185,6 +229,12 @@ def run_widget_as_app(widget: type[Widget], *args, **kwargs):
     """
     Run a widget as a full-screen app.
 
+    This is a convenience function provided to reduce boilerplate
+    for the simplest case of an App. The widget type is provided
+    instead of an instance to cover cases where the widget schedules
+    tasks on instantiation as no event loop exists before the App is
+    created.
+
     Parameters
     ----------
     widget : type[Widget]
@@ -196,13 +246,7 @@ def run_widget_as_app(widget: type[Widget], *args, **kwargs):
     **kwargs
         Keyword arguments for widget instantiation.
 
-    Notes
-    -----
-    This is a convenience function provided to reduce boilerplate
-    for the simplest case of an App. The widget type is provided
-    instead of an instance to cover cases where the widget schedules
-    tasks on instantiation as no event loop exists before the App is
-    created.
+
     """
     class _DefaultApp(App):
         async def on_start(self):

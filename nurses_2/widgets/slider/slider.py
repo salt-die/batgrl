@@ -1,3 +1,6 @@
+"""
+A slider widget.
+"""
 from typing import Callable
 
 from ...clamp import clamp
@@ -20,8 +23,6 @@ class Slider(TextWidget):
         Minimum value.
     max : float
         Maximum value.
-    pos : Point, default: Point(0, 0)
-        Top-left location of the slider.
     proportion : float, default: 0.0
         Starting proportion of slider.
     handle_color : Color | None, default: None
@@ -32,6 +33,27 @@ class Slider(TextWidget):
         Allow dragging handle.
     callback : Callable | None, default: None
         Single argument callable called with new value of slider when slider is updated.
+
+    Attributes
+    ----------
+    width : int
+        Width of the slider.
+    min : float
+        Minimum value.
+    max : float
+        Maximum value.
+    proportion : float
+        Starting proportion of slider.
+    handle_color : Color
+        Color of slider handle.
+    fill_color: Color
+        Color of "filled" portion of slider.
+    slider_enabled : bool
+        Allow dragging handle.
+    callback : Callable
+        Single argument callable called with new value of slider when slider is updated.
+    value : float
+        Current value of slider.
     """
     def __init__(
         self,
@@ -39,7 +61,6 @@ class Slider(TextWidget):
         width: int,
         min: float,
         max: float,
-        pos: Point=Point(0, 0),
         proportion=0.0,
         handle_color: Color | None=None,
         fill_color: Color | None=None,
@@ -48,7 +69,7 @@ class Slider(TextWidget):
         default_char="▬",
         **kwargs,
         ):
-        super().__init__(size=(1, width), pos=pos, default_char=default_char, **kwargs)
+        super().__init__(size=(1, width), default_char=default_char, **kwargs)
 
         if min >= max:
             raise ValueError(f"{min=} >= {max=}")
@@ -76,7 +97,9 @@ class Slider(TextWidget):
             self._proportion = clamp(value, 0, 1)
 
             min, max = self.min, self.max
-            self.value = (max - min) * self._proportion + min
+            self._value = (max - min) * self._proportion + min
+            if self.callback is not None:
+                self.callback(self._value)
 
             self.handle.update_geometry()
             handle_x = self.handle.x
@@ -86,12 +109,6 @@ class Slider(TextWidget):
     @property
     def value(self):
         return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-        if self.callback is not None:
-            self.callback(value)
 
     @property
     def fill_width(self):

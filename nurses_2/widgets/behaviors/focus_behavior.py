@@ -1,3 +1,6 @@
+"""
+Focus behavior fo a widget.
+"""
 from collections import deque
 from weakref import ref, ReferenceType
 
@@ -14,6 +17,20 @@ class FocusBehavior:
     ----------
     ptf_on_focus : bool, default: True
         Pull widget to front when it gains focus.
+
+    Attributes
+    ----------
+    ptf_on_focus : bool
+        Pull widget to front when it gains focus.
+    is_focused : bool
+        True if widget has focus.
+
+    Methods
+    -------
+    on_focus
+        Called when widget is focused.
+    on_blur
+        Called when widget loses focus.
     """
     __focus_widgets: deque[ReferenceType] = deque()
     __focused = None
@@ -24,7 +41,7 @@ class FocusBehavior:
         super().__init__(**kwargs)
 
     @property
-    def is_focused(self):
+    def is_focused(self) -> bool:
         return FocusBehavior.__focused is not None and FocusBehavior.__focused() is self
 
     def dispatch_press(self, key_press_event):

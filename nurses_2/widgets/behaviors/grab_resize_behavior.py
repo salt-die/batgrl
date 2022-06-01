@@ -1,3 +1,6 @@
+"""
+Draggable resize behavior for a widget.
+"""
 from ...clamp import clamp
 from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
 from .grabbable_behavior import GrabbableBehavior
@@ -82,13 +85,9 @@ class _Border(GrabbableBehavior, GraphicWidget):
 
 class GrabResizeBehavior:
     """
-    Draggable resize behavior for a widget. Resize a widget by clicking its border and dragging it.
-    Widget dimensions won't be resized smaller than `min_height` or `min_width`.
-
-    Notes
-    -----
-    Borders are added as child widgets. Children added later may overlap or cover the borders.
-    The method `pull_border_to_front` will correct this.
+    Draggable resize behavior for a widget. Resize a widget by clicking its border
+    and dragging it. Widget dimensions won't be resized smaller than `min_height`
+    or `min_width`.
 
     Parameters
     ----------
@@ -102,6 +101,29 @@ class GrabResizeBehavior:
         Color of border.
     border_size : Size, default: Size(1, 2)
         Height and width of horizontal and vertical borders, respectively.
+
+    Attributes
+    ----------
+    allow_vertical_resize : bool
+        Allow vertical resize.
+    allow_horizontal_resize : bool
+        Allow horizontal resize.
+    border_alpha : float
+        Transparency of border. This value will be clamped between `0.0` and `1.0`.
+    border_color : AColor
+        Color of border.
+    border_size : Size
+        Height and width of horizontal and vertical borders, respectively.
+
+    Methods
+    -------
+    pull_border_to_front
+        Pull borders to the front.
+
+    Notes
+    -----
+    Borders are added as child widgets. Children added later may overlap or cover the borders.
+    The method `pull_border_to_front` will correct this.
     """
     def __init__(
         self,

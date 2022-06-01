@@ -1,3 +1,6 @@
+"""
+An image painted with braille unicode characters.
+"""
 from pathlib import Path
 
 import cv2
@@ -12,6 +15,11 @@ class BrailleImage(TextWidget):
     An image painted with braille unicode characters.
 
     Parameters
+    ----------
+    path : pathlib.Path
+        Path to image.
+
+    Attributes
     ----------
     path : pathlib.Path
         Path to image.

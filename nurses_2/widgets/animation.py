@@ -1,3 +1,6 @@
+"""
+An animation widget.
+"""
 import asyncio
 from collections.abc import Sequence
 from pathlib import Path
@@ -28,6 +31,31 @@ class Animation(Widget):
         equal to the number of frames.
     loop : bool, default: True
         If true, restart animation after last frame.
+
+    Attributes
+    ----------
+    path : Path
+        Path to directory of images for frames in the animation (loaded
+        in lexographical order of filenames).
+    alpha : float
+        Transparency of the animation.
+    interpolation : Interpolation
+        Interpolation used when resizing the animation.
+    frame_duration : Sequence[float| int]
+        Time between updates of frames of the animation in seconds.
+    loop : bool
+        If true, restart animation after last frame.
+    current_frame : Image
+        Current frame of the animation.
+
+    Methods
+    -------
+    play
+        Play the animation.
+    pause
+        Pause the animation
+    stop
+        Stop the animation.
     """
     def __init__(
         self,
@@ -74,11 +102,11 @@ class Animation(Widget):
         return self.frames[self._i]
 
     @property
-    def alpha(self):
+    def alpha(self) -> float:
         return self._alpha
 
     @alpha.setter
-    def alpha(self, alpha):
+    def alpha(self, alpha: float):
         self._alpha = alpha
 
         for frame in self.frames:

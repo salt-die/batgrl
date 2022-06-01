@@ -1,3 +1,6 @@
+"""
+Movable, resizable window widgets.
+"""
 from wcwidth import wcswidth
 
 from ..clamp import clamp
@@ -41,18 +44,18 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     """
     A movable, resizable window widget.
 
-    Notes
-    -----
-    If not given or too small, `min_height` and `min_width` will be
-    set large enough so that the border is visible and the titlebar's
-    label is visible.
-
     Parameters
     ----------
     title : str, default: ""
         Title of window.
     alpha : float, default: 1.0
         Transparency of window background and border.
+
+    Notes
+    -----
+    If not given or too small, `min_height` and `min_width` will be
+    set large enough so that the border is visible and the titlebar's
+    label is visible.
     """
     def __init__(self, title="", alpha=1.0, **kwargs):
         self._view = None

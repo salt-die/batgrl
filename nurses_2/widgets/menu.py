@@ -1,3 +1,6 @@
+"""
+A menu widget.
+"""
 from collections.abc import Callable
 from inspect import signature
 from typing import Callable as CallableT, Optional
@@ -29,6 +32,36 @@ def nargs(callable: Callable):
 
 
 class MenuItem(Themable, ToggleButtonBehavior, Widget):
+    """
+    A single item in a menu widget. This shouldn't have to be
+    instantiated manually. Instead, use `Menu.from_dict_of_dicts`.
+
+    Parameters
+    ----------
+    left_label : str, default: ""
+        Left label of menu item.
+    right_label : str, default: ""
+        Right label of menu item.
+    item_disabled : bool, default: False
+        If true, item will not be selectable in menu.
+    item_callback : CallableT[[], None] | CallableT[[ToggleState], None], default: lambda: None
+        Callback when item is selected. For toggle items, the callable should have a
+        single argument that will be the current state of the item.
+
+    Attributes
+    ----------
+    left_label : str, default: ""
+        Left label of menu item.
+    right_label : str, default: ""
+        Right label of menu item.
+    item_disabled : bool, default: False
+        If true, item will not be selectable in menu.
+    item_callback : CallableT[[], None] | CallableT[[ToggleState], None], default: lambda: None
+        Callback when item is selected. For toggle items, the callable should have a
+        single argument that will be the current state of the item.
+    submenu: Menu | None
+        If provided, menu item will open submenu on hover.
+    """
     def __init__(
         self,
         left_label: str="",
@@ -159,12 +192,31 @@ class Menu(GridLayout):
     callable with one argument for a toggle menu item (the argument will be the state of the
     toggle button, `ToggleState`), or a dict (for a submenu).
 
+    Once opened, a menu can be navigated with the mouse or with arrow keys.
+
     Parameters
     ----------
     close_on_release : bool, default: True
         If true, close the menu when an item is selected.
     close_on_click : bool, default: True
         If true, close the menu when a click doesn't collide with it.
+
+    Attributes
+    ----------
+    close_on_release : bool, default: True
+        If true, close the menu when an item is selected.
+    close_on_click : bool, default: True
+        If true, close the menu when a click doesn't collide with it.
+
+    Methods
+    -------
+    open_menu
+        Open menu.
+    close_menu
+        Close menu.
+    from_dict_of_dicts
+        Constructor to create a menu from a dict of dicts. This should be
+        default way of constructing menus.
     """
     def __init__(
         self,
@@ -183,9 +235,15 @@ class Menu(GridLayout):
         self._submenus = [ ]
 
     def open_menu(self):
+        """
+        Open the menu.
+        """
         self.is_enabled = True
 
     def close_menu(self):
+        """
+        Close the menu.
+        """
         self.is_enabled = False
         self._current_selection = -1
 

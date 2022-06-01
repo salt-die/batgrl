@@ -1,7 +1,10 @@
+"""
+A text widget.
+"""
 import numpy as np
 from wcwidth import wcswidth
 
-from ..colors import WHITE_ON_BLACK, ColorPair
+from ..colors import WHITE_ON_BLACK, ColorPair, Color
 from ..data_structures import *
 from .text_widget_data_structures import *
 from .widget import Widget
@@ -22,44 +25,41 @@ __all__ = (
 
 class TextWidget(Widget):
     """
-    A generic TUI element.
+    A text widget. Displays arbitrary text data.
 
     Parameters
     ----------
-    size : Size, default: Size(10, 10)
-        Size of widget.
-    pos : Point, default: Point(0, 0)
-        Position of upper-left corner in parent.
-    size_hint : SizeHint, default: SizeHint(None, None)
-        Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
-    min_height : int | None, default: None
-        Minimum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_height : int | None, default: None
-        Maximum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    min_width : int | None, default: None
-        Minimum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_width : int | None, default: None
-        Maximum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    pos_hint : PosHint, default: PosHint(None, None)
-        Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
-        Specifies which part of the widget is aligned with the `pos_hint`.
-    is_transparent : bool, default: False
-        If true, white-space is "see-through".
-    is_visible : bool, default: True
-        If false, widget won't be painted, but still dispatched.
-    is_enabled : bool, default: True
-        If false, widget won't be painted or dispatched.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
+
+    Attributes
+    ----------
+    canvas : numpy.ndarray
+        The array of characters for the widget.
+    colors : numpy.ndarray
+        The array of color pairs for each character in `canvas`.
+    default_char : str, default: " "
+        Default background character.
+    default_color_pair : ColorPair, default: WHITE_ON_BLACK
+        Default color pair of widget.
+    default_fg_color: Color
+        The default foreground color.
+    default_bg_color: Color
+        The default background color.
+    get_view: CanvasView
+        A `CanvasView` of the underlying canvas. A `CanvasView` simplifies adding
+        text to the canvas with the `add_text` method.
+
+    Methods
+    -------
+    add_border
+        Add a border to the widget.
+    normalize_canvas
+        Add zero-width characters after each full-width character.
+    add_text
+        Add text to the canvas.
     """
     def __init__(
         self,
@@ -96,11 +96,14 @@ class TextWidget(Widget):
         self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]
 
     @property
-    def default_fg_color(self):
+    def default_fg_color(self) -> Color:
+        """
+        The default foreground color.
+        """
         return self.default_color_pair.fg_color
 
     @property
-    def default_bg_color(self):
+    def default_bg_color(self) -> Color:
         return self.default_color_pair.bg_color
 
     @staticmethod
@@ -166,12 +169,14 @@ class TextWidget(Widget):
         could cause display issues.
 
         Imagine the following arrangement of widgets:
+        ```
                       _________
                      | fw  ____|___
                      | fw | fw  ___|__
                      | fw | fw | fw  _|__
                      | fw | fw | fw | fw |
                      |____|____|____|____|
+        ```
 
         `fw` represents a full-width character and each widget is offset from the next by one.
         One can end up with an entire row of full-width characters which will likely ruin the

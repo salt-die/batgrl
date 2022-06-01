@@ -1,3 +1,6 @@
+"""
+Protocols for `RayCaster`.
+"""
 from typing import Protocol, Literal
 
 import numpy as np

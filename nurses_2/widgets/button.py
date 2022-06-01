@@ -1,3 +1,6 @@
+"""
+A button widget.
+"""
 from typing import Callable
 
 from wcwidth import wcswidth
@@ -13,6 +16,13 @@ class Button(Themable, ButtonBehavior, Widget):
     A button widget.
 
     Parameters
+    ----------
+    label : str, default: ""
+        Button label.
+    callback : Callable[[], None], default: lambda: None
+        Called when button is released.
+
+    Attributes
     ----------
     label : str, default: ""
         Button label.

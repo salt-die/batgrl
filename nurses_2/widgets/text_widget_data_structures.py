@@ -1,3 +1,6 @@
+"""
+Data structures for text widgets.
+"""
 from wcwidth import wcswidth
 
 __all__ = "CanvasView",
@@ -14,11 +17,14 @@ class CanvasView:
     """
     A wrapper around a `numpy` `ndarray` with a convenient `add_text` method.
 
-    Notes
-    -----
     One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
     E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
     the `add_text` `row` and `column` parameters make sense.
+
+    Methods
+    -------
+    add_text
+        Add text to the underlying canvas.
     """
     __slots__ = "canvas",
 

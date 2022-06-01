@@ -1,3 +1,6 @@
+"""
+Legend for `LinePlot`.
+"""
 from wcwidth import wcswidth
 
 from ...colors import Color

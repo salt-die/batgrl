@@ -1,3 +1,6 @@
+"""
+Toggle button behavior for a widget.
+"""
 from enum import Enum
 from typing import Hashable
 from weakref import ref
@@ -12,6 +15,9 @@ __all__ = (
 
 
 class ToggleState(str, Enum):
+    """
+    Toggle button states.
+    """
     ON = "on"
     OFF = "off"
 
@@ -32,6 +38,24 @@ class ToggleButtonBehavior(ButtonBehavior):
     toggle_state : ToggleState, default: ToggleState.OFF
         Initial toggle state of button. If button is in a group and `allow_no_selection`
         is `False` this value will be ignored if all buttons would be "off".
+
+    Attributes
+    ----------
+    group : None | Hashable
+        If a group is provided, only one button in a group can be in the "on" state.
+    allow_no_selection : bool
+        If true and button is in a group, every button can be in the "off" state.
+    toggle_state : ToggleState
+        Toggle state of button.
+
+    Methods
+    -------
+    update_off
+        Paint the "off" state.
+    update_on
+        Paint the "on" state.
+    on_toggle
+        Called when the toggle state changes.
     """
     __groups = { }
 

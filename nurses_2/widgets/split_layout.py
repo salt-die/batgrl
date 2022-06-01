@@ -1,3 +1,6 @@
+"""
+Draggable horizontal and vertical split layouts.
+"""
 from ..clamp import clamp
 from ..colors import AColor
 from .behaviors.grabbable_behavior import GrabbableBehavior
@@ -49,9 +52,8 @@ class HSplitLayout(Widget):
     Parameters
     ----------
     split_col : int, default: 1
-        The column to split the layout. If `anchor_left_pane`
-        is true, then split will be `split_col` from the left,
-        else from the right.
+        Width of left pane if `anchor_left_pane` is true, else
+        width of right pane.
     min_split_width : int, default: 1
         Minimum width of either pane.
     anchor_left_pane : bool, default: True
@@ -62,6 +64,24 @@ class HSplitLayout(Widget):
         handle.
     handle_color : AColor, default: AGRAY
         Color of the resize handle.
+
+    Attributes
+    ----------
+    left_pane : Widget
+        Container widget for left side of split.
+    right_pane : Widget
+        Container widget for right side of split.
+    handle_color : AColor
+        Color of the resize handle.
+    split_resizable : bool
+        True if split is resizable with a grabbable handle.
+    anchor_left_pane : bool
+        If true, `split_col` is calculated from the left.
+    split_col : int
+        Width of left pane if `anchor_left_pane` is true, else
+        width of right pane.
+    min_split_width : int
+        Minimum width of either pane.
     """
     def __init__(
         self,
@@ -152,9 +172,8 @@ class VSplitLayout(Widget):
     Parameters
     ----------
     split_row : int, default: 1
-        The row to split the layout. If `anchor_top_pane`
-        is true, then split will be `split_row` from the top,
-        else from the bottom.
+        Height of top pane if `anchor_top_pane` is true, else
+        height of right pane.
     min_split_height : int, default: 1
         Minimum height of either pane.
     anchor_top_pane : bool, default: True
@@ -165,6 +184,24 @@ class VSplitLayout(Widget):
         handle.
     handle_color : AColor, default: AGRAY
         Color of the resize handle.
+
+    Attributes
+    ----------
+    top_pane : Widget
+        Container widget for top side of split.
+    bottom_pane : Widget
+        Container widget for bottom side of split.
+    handle_color : AColor
+        Color of the resize handle.
+    split_resizable : bool
+        True if split is resizable with a grabbable handle.
+    anchor_top_pane : bool
+        If true, `split_row` is calculated from the top.
+    split_row : int
+        Height of top pane if `anchor_top_pane` is true, else
+        height of right pane.
+    min_split_height : int
+        Minimum height of either pane.
     """
     def __init__(
         self,

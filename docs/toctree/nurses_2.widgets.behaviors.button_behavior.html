@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.behaviors.button_behavior">
 <span id="nurses-2-widgets-behaviors-button-behavior"></span><h1>nurses_2.widgets.behaviors.button_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.button_behavior" title="Permalink to this headline">#</a></h1>
+<p>Button behavior for a widget.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -518,7 +519,7 @@
 <td><p>Button behavior for a widget.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonState" title="nurses_2.widgets.behaviors.button_behavior.ButtonState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ButtonState</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>State of a button widget.</p></td>
 </tr>
 </tbody>
 </table>
@@ -538,6 +539,14 @@
 </dd>
 </dl>
 </dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>always_release</strong><span class="classifier">bool</span></dt><dd><p>Whether a mouse up event outside the button will trigger it.</p>
+</dd>
+<dt><strong>state</strong><span class="classifier">ButtonState</span></dt><dd><p>Current button state. One of <cite>NORMAL</cite>, <cite>HOVER</cite>, <cite>DOWN</cite>.</p>
+</dd>
+</dl>
+</dd>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
@@ -546,28 +555,17 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.on_release" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.on_release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_release</span></code></a>()</p></td>
-<td><p>Triggered when button is released.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_down" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_down"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_down</span></code></a>()</p></td>
-<td><p>Paint the DOWN state.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_hover" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_hover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hover</span></code></a>()</p></td>
-<td><p>Paint the HOVER state.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_normal" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_normal</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_normal" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_normal</span></code></a>()</p></td>
 <td><p>Paint the NORMAL state.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 55%" />
-<col style="width: 45%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>on_click</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_hover" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_hover"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hover</span></code></a>()</p></td>
+<td><p>Paint the HOVER state.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_down" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.update_down"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_down</span></code></a>()</p></td>
+<td><p>Paint the DOWN state.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.on_release" title="nurses_2.widgets.behaviors.button_behavior.ButtonBehavior.on_release"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_release</span></code></a>()</p></td>
+<td><p>Triggered when button is released.</p></td>
 </tr>
 </tbody>
 </table>
@@ -606,7 +604,7 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.button_behavior.ButtonState">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.button_behavior.</span></span><span class="sig-name descname"><span class="pre">ButtonState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.button_behavior.ButtonState" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>State of a button widget.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.button_behavior.ButtonState.DOWN">
 <span class="sig-name descname"><span class="pre">DOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'down'</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.button_behavior.ButtonState.DOWN" title="Permalink to this definition">#</a></dt>

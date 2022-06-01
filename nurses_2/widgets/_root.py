@@ -1,3 +1,6 @@
+"""
+Root widget.
+"""
 import numpy as np
 
 from ..colors import ColorPair

@@ -1,7 +1,11 @@
+"""
+Base class for all widgets.
+"""
 import asyncio
 from collections.abc import Callable, Sequence
 from functools import wraps
 from time import monotonic
+from typing import Optional
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -25,16 +29,16 @@ __all__ = (
     "Widget",
 )
 
-def emitter(method):
+def emitter(setter):
     """
     A decorator for widget property setters that will
     notify subscribers when the property is updated.
     """
     instances = WeakKeyDictionary()
 
-    @wraps(method)
+    @wraps(setter)
     def wrapper(self, *args, **kwargs):
-        method(self, *args, **kwargs)
+        setter(self, *args, **kwargs)
 
         if subscribers := instances.get(self):
             for action in subscribers.values():
@@ -87,6 +91,118 @@ class Widget:
     background_color_pair : ColorPair | None, default: None
         The background color pair of the widget if not `None` and if the
         widget is not transparent.
+
+    Attributes
+    ----------
+    size : Size
+        Size of widget.
+    height : int
+        Height of widget.
+    rows : int
+        Alias for `height`.
+    width : int
+        Width of widget.
+    columns : int
+        Alias for `width`.
+    pos : Point
+        Position relative to parent.
+    top : int
+        Y-coordinate of position.
+    y : int
+        Y-coordinate of position.
+    left : int
+        X-coordinate of position.
+    x : int
+        X-coordinate of position.
+    bottom : int
+        `top` + widget's height.
+    right : int
+        `left` + widget's width.
+    absolute_pos : Point
+        Absolute position on screen.
+    center : Point
+        Center of widget in local coordinates.
+    size_hint : SizeHint
+        Size as a proportion of parent's size.
+    height_hint : float | None
+        Height as a proportion of parent's height.
+    width_hint : float | None
+        Width as a proportion of parent's width.
+    min_height : int
+        Minimum height allowed when using `size_hint`.
+    max_height : int
+        Maximum height allowed when using `size_hint`.
+    min_width : int
+        Minimum width allowed when using `size_hint`.
+    max_width : int
+        Maximum width allowed when using `size_hint`.
+    pos_hint : PosHint
+        Position as a proportion of parent's size.
+    y_hint : float | None
+        Vertical position as a proportion of parent's size.
+    x_hint : float | None
+        Horizontal position as a proportion of parent's size.
+    anchor : Anchor
+        Determines which point is attached to `pos_hint`.
+    background_char : str | None
+        Background character.
+    background_color_pair : ColorPair | None
+        Background color pair.
+    parent : Widget | None
+        Parent widget.
+    children : list[Widget]
+        Children widgets.
+    is_transparent : bool
+        True if widget is transparent.
+    is_visible : bool
+        True if widget is visible.
+    is_enabled : bool
+        True if widget is enabled.
+    root : Widget | None
+        If widget is in widget tree, return the root widget.
+    app : App
+        The running app.
+
+    Methods
+    -------
+    on_size
+        Called when widget is resized.
+    update_geometry
+        Called when parent is resized. Applies size and pos hints.
+    to_local
+        Convert point in absolute coordinates to local coordinates.
+    collides_point
+        True if point is within widget's bounding box.
+    collides_widget
+        True if other is within widget's bounding box.
+    add_widget
+        Add a child widget.
+    add_widgets
+        Add multiple child widgets.
+    remove_widget
+        Remove a child widget.
+    pull_to_front
+        Move to end of widget stack (`children`) so widget is drawn last.
+    walk_from_root
+        Yield all descendents of root widget.
+    walk
+        Yield all descendents.
+    subscribe
+        Subscribe to a widget property.
+    unsubscribe
+        Unsubscribe to a widget property.
+    on_press
+        Handle key press event.
+    on_click
+        Handle mouse event.
+    on_double_click
+        Handle double-click mouse event.
+    on_triple_click
+        Handle triple-click mouse event.
+    on_paste
+        Handle paste event.
+    tween
+        Sequentially update a widget property over time.
     """
     def __init__(
         self,
@@ -409,6 +525,20 @@ class Widget:
             case _:
                 raise ValueError("`background_char` must be `None` or a `str`")
 
+    @property
+    def root(self) -> Optional["Widget"]:
+        """
+        Return the root widget if connected to widget tree.
+        """
+        return self.parent and self.parent.root
+
+    @property
+    def app(self):
+        """
+        The running app.
+        """
+        return self.root.app
+
     def on_size(self):
         """
         Called when widget is resized.
@@ -467,20 +597,6 @@ class Widget:
         if x_hint is not None:
             self.left = int(w * x_hint) - offset_left
 
-    @property
-    def root(self):
-        """
-        Return the root widget if connected to widget tree.
-        """
-        return self.parent and self.parent.root
-
-    @property
-    def app(self):
-        """
-        The running app.
-        """
-        return self.root.app
-
     def to_local(self, point: Point) -> Point:
         """
         Convert point in absolute coordinates to local coordinates.
@@ -490,7 +606,7 @@ class Widget:
 
     def collides_point(self, point: Point) -> bool:
         """
-        Return True if point is within widget's visible bounding box.
+        Return True if point is within widget's bounding box.
         """
         # These conditions are separated as they both require
         # recursive calls up the widget tree and we'd like to
@@ -501,17 +617,17 @@ class Widget:
         y, x = self.to_local(point)
         return 0 <= y < self.height and 0 <= x < self.width
 
-    def collides_widget(self, widget) -> bool:
+    def collides_widget(self, other: "Widget") -> bool:
         """
-        Return True if some part of widget is within bounding box.
+        Return True if some part of `other` is within bounding box.
         """
         self_top, self_left = self.absolute_pos
         self_bottom = self_top + self.height
         self_right = self.left + self.width
 
-        other_top, other_left = widget.absolute_pos
-        other_bottom = other_top + widget.height
-        other_right = other_left + widget.width
+        other_top, other_left = other.absolute_pos
+        other_bottom = other_top + other.height
+        other_right = other_left + other.width
 
         return not (
             self_top >= other_bottom
@@ -539,9 +655,9 @@ class Widget:
         for widget in widgets:
             self.add_widget(widget)
 
-    def remove_widget(self, widget):
+    def remove_widget(self, widget: "Widget"):
         """
-        Remove widget.
+        Remove a child widget.
         """
         self.children.remove(widget)
         widget.parent = None
@@ -577,7 +693,7 @@ class Widget:
         action: Callable[[], None],
     ):
         """
-        Subscribe to a widget property.
+        Subscribe to a widget property. When property is modified, `action` will be called.
 
         Parameters
         ----------
@@ -823,8 +939,6 @@ class Widget:
     ):
         """
         Coroutine that sequentially updates widget properties over a duration (in seconds).
-        Tweening (short for inbetweening) is the process of generating images between
-        keyframes in animation.
 
         Parameters
         ----------

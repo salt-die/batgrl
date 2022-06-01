@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.behaviors.effects.rainbow_cycle_effect">
 <span id="nurses-2-widgets-behaviors-effects-rainbow-cycle-effect"></span><h1>nurses_2.widgets.behaviors.effects.rainbow_cycle_effect<a class="headerlink" href="#module-nurses_2.widgets.behaviors.effects.rainbow_cycle_effect" title="Permalink to this headline">#</a></h1>
+<p>An effect that adds colors from a rainbow gradient. Provided as an example effect.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -537,6 +538,20 @@
 </dd>
 </dl>
 </dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>ncolors</strong><span class="classifier">int</span></dt><dd><p>Number of colors in the rainbow gradient.</p>
+</dd>
+<dt><strong>cycle_speed</strong><span class="classifier">float</span></dt><dd><p>Seconds between updates.</p>
+</dd>
+<dt><strong>enable_foreground_rainbow</strong><span class="classifier">bool</span></dt><dd><p>Add colors to foreground.</p>
+</dd>
+<dt><strong>enable_background_rainbow</strong><span class="classifier">bool</span></dt><dd><p>Add colors to background.</p>
+</dd>
+<dt><strong>cycle_task</strong><span class="classifier">asyncio.Task</span></dt><dd><p>Coroutine that updates current color to use from gradient.</p>
+</dd>
+</dl>
+</dd>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
@@ -548,7 +563,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.apply_effect" title="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.apply_effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_effect</span></code></a>(canvas_view, colors_view, source)</p></td>
 <td><p>Apply an effect to the rendered views of a widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(canvas_view, colors_view, source)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render" title="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
 <td><p>Render normally then apply canvas and color effects.</p></td>
 </tr>
 </tbody>
@@ -574,6 +589,12 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.cycle_colors">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cycle_colors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.cycle_colors" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.RainbowCycleEffect.render" title="Permalink to this definition">#</a></dt>
+<dd><p>Render normally then apply canvas and color effects.</p>
+</dd></dl>
 
 </dd></dl>
 

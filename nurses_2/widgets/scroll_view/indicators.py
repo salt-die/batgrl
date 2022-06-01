@@ -1,3 +1,6 @@
+"""
+Indicators for scroll view scrollbars.
+"""
 from ...io import MouseEventType
 from ..behaviors.grabbable_behavior import GrabbableBehavior
 from ..behaviors.themable import Themable

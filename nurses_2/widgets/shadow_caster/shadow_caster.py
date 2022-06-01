@@ -51,7 +51,38 @@ class ShadowCaster(GraphicWidget):
     not_visible_blocks : bool, default: True
         If `True`, all not-visible cells will be treated as opaque.
     restrictiveness : Restrictiveness, default: Restrictiveness.MODERATE
-        Restrictiveness modifies the visibility of points.
+        Restrictiveness of casting algorithm.
+
+    Attributes
+    ----------
+    map : np.ndarray
+        A 2-d map. Non-zero values are walls.
+    camera : Camera
+        A camera that determines the visible portion of the map.
+    tile_colors : list[AColor]
+        A value `n` in the map will be colored `tile_color[n]`.
+    light_sources : list[LightSource]
+        Position of each light source.
+    ambient_light : LightIntensity
+        Ambient light.
+    light_decay : Callable[[float], float]
+        The strength of light as a function of distance from origin.
+    radius : int
+        Max visible radius.
+    smoothing : float
+        Smoothness of shadow edges.
+    not_visible_blocks : bool
+        If `True`, all not-visible cells will be treated as opaque.
+    restrictiveness : Restrictiveness
+        Restrictiveness of casting algorithm.
+
+    Methods
+    -------
+    cast_shadows
+        Update texture by shadow casting all light sources.
+    to_map_coords
+        Convert a point in the widget's local coordinates to a
+        point in the map's coordinates.
     """
     def __init__(
         self,

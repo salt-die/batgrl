@@ -1,3 +1,6 @@
+"""
+Data structures for `ShadowCaster`.
+"""
 from enum import Enum
 from typing import NamedTuple
 
@@ -134,12 +137,9 @@ class LightIntensity(NamedTuple):
 
 class Coordinates(NamedTuple):
     """
-    Two-dimensional coordinates.
-
-    Notes
-    -----
-    This differs from `Point` as it expects arbitrary floats
-    (as opposed to ints) for each coordinate.
+    Two-dimensional coordinates. This differs from `Point`
+    as it expects arbitrary floats (as opposed to ints)
+    for each coordinate.
     """
     y: float
     x: float
@@ -155,6 +155,14 @@ class LightSource:
         Coordinates of light source on map.
     intensity : Color | LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)
         Intensity of light source. If a `Color` is given it will
+        be converted to an intensity with `LightIntensity.from_color`.
+
+    Attributes
+    ----------
+    coords : Coordinates
+        Coordinates of light source on map.
+    intensity : LightIntensity
+        Intensity of light source. If set with a `Color`, it will
         be converted to an intensity with `LightIntensity.from_color`.
     """
     __slots__ = "coords", "_intensity"
@@ -180,6 +188,13 @@ class LightSource:
 
 
 class Restrictiveness(str, Enum):
+    """
+    The restrictiveness of the shadow caster. For
+    permissive, any interval is visible as long as
+    any of it's start, center, or end points are visible.
+    For moderate, the center and either end must be visible.
+    For restrictive, all points in the interval must be visible.
+    """
     PERMISSIVE = "permissive"
     MODERATE = "moderate"
     RESTRICTIVE = "restrictive"

@@ -1,3 +1,6 @@
+"""
+Base for graphic widgets.
+"""
 from pathlib import Path
 
 import cv2
@@ -33,43 +36,29 @@ class GraphicWidget(Widget):
 
     Parameters
     ----------
-    size : Size, default: Size(10, 10)
-        Size of widget.
-    pos : Point, default: Point(0, 0)
-        Position of upper-left corner in parent.
-    size_hint : SizeHint, default: SizeHint(None, None)
-        Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
-    min_height : int | None, default: None
-        Minimum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_height : int | None, default: None
-        Maximum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    min_width : int | None, default: None
-        Minimum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_width : int | None, default: None
-        Maximum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    pos_hint : PosHint, default: PosHint(None, None)
-        Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
-        Specifies which part of the widget is aligned with the `pos_hint`.
-    is_transparent : bool, default: True
-        If False the underlying texture's alpha channel is ignored.
-    is_visible : bool, default: True
-        If false, widget won't be painted, but still dispatched.
-    is_enabled : bool, default: True
-        If false, widget won't be painted or dispatched.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
         value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
-        The interpolation used when resizing the GraphicWidget.
+        Interpolation used when widget is resized.
+
+    Attributes
+    ----------
+    texture : numpy.ndarray
+        uint8 RGBA color array.
+    default_color : AColor
+        Default texture color.
+    alpha : float
+        Transparency of widget if `is_transparent` is true.
+    interpolation : Interpolation
+        Interpolation used when widget is resized.
+
+    Methods
+    -------
+    to_png
+        Write `texture` to provided path as a png image.
     """
     def __init__(
         self,

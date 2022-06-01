@@ -1,3 +1,6 @@
+"""
+A grid layout widget.
+"""
 from enum import Enum
 from itertools import product, accumulate
 
@@ -8,8 +11,8 @@ __all__ = "GridLayout", "Orientation"
 
 class Orientation(str, Enum):
     """
-    Describes the orientation of the grid. `L` is for left,
-    `R` for right, `T` for top, and `B` for bottom.
+    Orientation of the grid. For instance, `LR_TB`
+    means left-to-right, then top-to-bottom.
     """
     LR_TB = "lr-tb"
     LR_BT = "lr-bt"
@@ -21,7 +24,7 @@ class Orientation(str, Enum):
     BT_RL = "bt-rl"
 
 
-class RepositionProperty:
+class _RepositionProperty:
     def __set_name__(self, owner, name):
         self.name = "_" + name
 
@@ -57,7 +60,7 @@ class GridLayout(Widget):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: Orientation.LR_BT
-        The orientation of the grid describes how the grid fills as children are added. The
+        The orientation of the grid. Describes how the grid fills as children are added. The
         default is left-to-right then top-to-bottom.
     left_padding : int, default: 0
         Padding on left side of grid.
@@ -72,28 +75,49 @@ class GridLayout(Widget):
     vertical_spacing : int, default: 0
         Vertical spacing between children.
 
+    Attributes
+    ----------
+    grid_rows : int
+        Number of rows.
+    grid_columns : int
+        Number of columns.
+    orientation : Orientation
+        The orientation of the grid.
+    left_padding : int
+        Padding on left side of grid.
+    right_padding : int
+        Padding on right side of grid.
+    top_padding : int
+        Padding at the top of grid.
+    bottom_padding : int
+        Padding at the bottom of grid.
+    horizontal_spacing : int
+        Horizontal spacing between children.
+    vertical_spacing : int
+        Vertical spacing between children.
+
     Raises
     ------
     ValueError
         If grid is full and `add_widget` is called.
     """
-    grid_rows: int = RepositionProperty()
+    grid_rows: int = _RepositionProperty()
 
-    grid_columns: int = RepositionProperty()
+    grid_columns: int = _RepositionProperty()
 
-    orientation: Orientation = RepositionProperty()
+    orientation: Orientation = _RepositionProperty()
 
-    left_padding: int = RepositionProperty()
+    left_padding: int = _RepositionProperty()
 
-    right_padding: int = RepositionProperty()
+    right_padding: int = _RepositionProperty()
 
-    top_padding: int = RepositionProperty()
+    top_padding: int = _RepositionProperty()
 
-    bottom_padding: int = RepositionProperty()
+    bottom_padding: int = _RepositionProperty()
 
-    horizontal_spacing: int = RepositionProperty()
+    horizontal_spacing: int = _RepositionProperty()
 
-    vertical_spacing: int = RepositionProperty()
+    vertical_spacing: int = _RepositionProperty()
 
     def __init__(
         self,

@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.behaviors.focus_behavior">
 <span id="nurses-2-widgets-behaviors-focus-behavior"></span><h1>nurses_2.widgets.behaviors.focus_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.focus_behavior" title="Permalink to this headline">#</a></h1>
+<p>Focus behavior fo a widget.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -535,7 +536,10 @@ is called. When a widget loses focus the <cite>on_blur</cite> method is called.<
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>is_focused</strong></dt><dd></dd>
+<dt><strong>ptf_on_focus</strong><span class="classifier">bool</span></dt><dd><p>Pull widget to front when it gains focus.</p>
+</dd>
+<dt><strong>is_focused</strong><span class="classifier">bool</span></dt><dd><p>True if widget has focus.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -546,25 +550,11 @@ is called. When a widget loses focus the <cite>on_blur</cite> method is called.<
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_blur</span></code></a>()</p></td>
-<td><p>Called when widget loses focus.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_focus</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_focus</span></code></a>()</p></td>
 <td><p>Called when widget gains focus.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 64%" />
-<col style="width: 36%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>dispatch_click</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>dispatch_press</strong></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_blur</span></code></a>()</p></td>
+<td><p>Called when widget loses focus.</p></td>
 </tr>
 </tbody>
 </table>
@@ -580,7 +570,7 @@ is called. When a widget loses focus the <cite>on_blur</cite> method is called.<
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.is_focused">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_focused</span></span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.is_focused" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_focused</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.is_focused" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

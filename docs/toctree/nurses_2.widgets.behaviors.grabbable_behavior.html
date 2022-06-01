@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.behaviors.grabbable_behavior">
 <span id="nurses-2-widgets-behaviors-grabbable-behavior"></span><h1>nurses_2.widgets.behaviors.grabbable_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.grabbable_behavior" title="Permalink to this headline">#</a></h1>
+<p>Grabbable behavior for a widget.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -541,12 +542,17 @@ and <cite>mouse_dx</cite> properties.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>is_grabbed</strong></dt><dd></dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dx</span></code></a></dt><dd><p>Horizontal change in mouse position.</p>
+<dt><strong>is_grabbable</strong><span class="classifier">bool</span></dt><dd><p>If False, grabbable behavior is disabled.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dy</span></code></a></dt><dd><p>Vertical change in mouse position.</p>
+<dt><strong>disable_ptf</strong><span class="classifier">bool</span></dt><dd><p>If True, widget will not be pulled to front when grabbed.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dyx</span></code></a></dt><dd><p>Change in mouse position.</p>
+<dt><strong>is_grabbed</strong><span class="classifier">bool</span></dt><dd><p>True if widget is grabbed.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dyx</span></code></a><span class="classifier">Point</span></dt><dd><p>Last change in mouse position.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dy</span></code></a><span class="classifier">int</span></dt><dd><p>Vertical change in mouse position.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dx</span></code></a><span class="classifier">int</span></dt><dd><p>Horizontal change in mouse position.</p>
 </dd>
 </dl>
 </dd>
@@ -561,22 +567,11 @@ and <cite>mouse_dx</cite> properties.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab</span></code></a>(mouse_event)</p></td>
 <td><p>Grab widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab_update</span></code></a>(mouse_event)</p></td>
-<td><p>Update grabbed widget with incoming mouse event.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ungrab</span></code></a>(mouse_event)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ungrab</span></code></a>(mouse_event)</p></td>
 <td><p>Ungrab widget.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 55%" />
-<col style="width: 45%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>on_click</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab_update</span></code></a>(mouse_event)</p></td>
+<td><p>Update grabbed widget with incoming mouse event.</p></td>
 </tr>
 </tbody>
 </table>
@@ -612,7 +607,7 @@ and <cite>mouse_dx</cite> properties.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dyx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx" title="Permalink to this definition">#</a></dt>
-<dd><p>Change in mouse position.</p>
+<dd><p>Last change in mouse position.</p>
 </dd></dl>
 
 <dl class="py method">

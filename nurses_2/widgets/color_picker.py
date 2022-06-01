@@ -1,3 +1,6 @@
+"""
+A color picker widget.
+"""
 from typing import Callable
 
 import numpy as np
@@ -25,12 +28,14 @@ from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
 from .widget import Widget
 
+__all__ = "ColorPicker",
+
 GRAD = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
 GRAD = tuple(zip(GRAD, GRAD[1:]))
 WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
 
 
-class ShadeSelector(GrabbableBehavior, GraphicWidget):
+class _ShadeSelector(GrabbableBehavior, GraphicWidget):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
 
@@ -94,7 +99,7 @@ class ShadeSelector(GrabbableBehavior, GraphicWidget):
             self.update_swatch_label()
 
 
-class HueSelector(GrabbableBehavior, GraphicWidget):
+class _HueSelector(GrabbableBehavior, GraphicWidget):
     def __init__(self, shade_selector, **kwargs):
         super().__init__(**kwargs)
         self.shade_selector = shade_selector
@@ -139,11 +144,16 @@ class HueSelector(GrabbableBehavior, GraphicWidget):
 
 class ColorPicker(Themable, Widget):
     """
-    Color picker widget.
+    A color picker widget.
 
     Parameters
     ----------
     ok_callback : Callable[[Color], None], default: lambda color: None
+        Called with currently selected color when "OK" button is released.
+
+    Attributes
+    ----------
+    ok_callback : Callable[[Color], None]
         Called with currently selected color when "OK" button is released.
     """
     def __init__(
@@ -170,14 +180,14 @@ class ColorPicker(Themable, Widget):
             )
         )
 
-        self.shades = ShadeSelector(
+        self.shades = _ShadeSelector(
             pos=(1, 1),
             color_swatch=self.color_swatch,
             label=self.label,
             disable_ptf=True,
         )
 
-        self.hues = HueSelector(
+        self.hues = _HueSelector(
             pos=(1, 1),
             shade_selector=self.shades,
             disable_ptf=True,

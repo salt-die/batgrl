@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.behaviors.toggle_button_behavior">
 <span id="nurses-2-widgets-behaviors-toggle-button-behavior"></span><h1>nurses_2.widgets.behaviors.toggle_button_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.toggle_button_behavior" title="Permalink to this headline">#</a></h1>
+<p>Toggle button behavior for a widget.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -518,7 +519,7 @@
 <td><p>Toggle button behavior for widgets.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToggleState</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>Toggle button states.</p></td>
 </tr>
 </tbody>
 </table>
@@ -544,7 +545,12 @@ is <cite>False</cite> this value will be ignored if all buttons would be “off�
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>toggle_state</strong></dt><dd></dd>
+<dt><strong>group</strong><span class="classifier">None | Hashable</span></dt><dd><p>If a group is provided, only one button in a group can be in the “on” state.</p>
+</dd>
+<dt><strong>allow_no_selection</strong><span class="classifier">bool</span></dt><dd><p>If true and button is in a group, every button can be in the “off” state.</p>
+</dd>
+<dt><strong>toggle_state</strong><span class="classifier">ToggleState</span></dt><dd><p>Toggle state of button.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -555,40 +561,28 @@ is <cite>False</cite> this value will be ignored if all buttons would be “off�
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_release</span></code>()</p></td>
-<td><p>Triggered when button is released.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_toggle" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_toggle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_toggle</span></code></a>()</p></td>
-<td><p>Called when the toggle state changes.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_down</span></code>()</p></td>
-<td><p>Paint the DOWN state.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_hover</span></code>()</p></td>
-<td><p>Paint the HOVER state.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_normal</span></code>()</p></td>
-<td><p>Paint the NORMAL state.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_off" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_off"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_off</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_off" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_off"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_off</span></code></a>()</p></td>
 <td><p>Paint the off state.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_on" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_on</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_on" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_on</span></code></a>()</p></td>
 <td><p>Paint the on state.</p></td>
 </tr>
-</tbody>
-</table>
-<table class="table">
-<colgroup>
-<col style="width: 55%" />
-<col style="width: 45%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>on_click</strong></p></td>
-<td></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_toggle" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_toggle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_toggle</span></code></a>()</p></td>
+<td><p>Called when the toggle state changes.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_click">
+<span class="sig-name descname"><span class="pre">on_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_click" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_release">
+<span class="sig-name descname"><span class="pre">on_release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_release" title="Permalink to this definition">#</a></dt>
+<dd><p>Triggered when button is released.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_toggle">
 <span class="sig-name descname"><span class="pre">on_toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.on_toggle" title="Permalink to this definition">#</a></dt>
@@ -599,6 +593,24 @@ is <cite>False</cite> this value will be ignored if all buttons would be “off�
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.toggle_state">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">toggle_state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState"><span class="pre">nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.toggle_state" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_down">
+<span class="sig-name descname"><span class="pre">update_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_down" title="Permalink to this definition">#</a></dt>
+<dd><p>Paint the DOWN state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_hover">
+<span class="sig-name descname"><span class="pre">update_hover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_hover" title="Permalink to this definition">#</a></dt>
+<dd><p>Paint the HOVER state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_normal">
+<span class="sig-name descname"><span class="pre">update_normal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_normal" title="Permalink to this definition">#</a></dt>
+<dd><p>Paint the NORMAL state.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.update_off">
@@ -618,7 +630,7 @@ is <cite>False</cite> this value will be ignored if all buttons would be “off�
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.toggle_button_behavior.</span></span><span class="sig-name descname"><span class="pre">ToggleState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>Toggle button states.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState.OFF">
 <span class="sig-name descname"><span class="pre">OFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'off'</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState.OFF" title="Permalink to this definition">#</a></dt>

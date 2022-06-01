@@ -1,3 +1,7 @@
+"""
+`_Traces` handles rendering a line plot in braille unicode characters
+for `LinePlot`.
+"""
 import cv2
 import numpy as np
 

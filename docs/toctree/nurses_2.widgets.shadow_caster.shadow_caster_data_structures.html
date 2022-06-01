@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.shadow_caster.shadow_caster_data_structures">
 <span id="nurses-2-widgets-shadow-caster-shadow-caster-data-structures"></span><h1>nurses_2.widgets.shadow_caster.shadow_caster_data_structures<a class="headerlink" href="#module-nurses_2.widgets.shadow_caster.shadow_caster_data_structures" title="Permalink to this headline">#</a></h1>
+<p>Data structures for <cite>ShadowCaster</cite>.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -530,7 +531,7 @@
 <td><p>A light source.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Restrictiveness</span></code></a>(value)</p></td>
-<td><p>An enumeration.</p></td>
+<td><p>The restrictiveness of the shadow caster.</p></td>
 </tr>
 </tbody>
 </table>
@@ -596,10 +597,9 @@ will be zero.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.</span></span><span class="sig-name descname"><span class="pre">Coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
-<p>Two-dimensional coordinates.</p>
-<p class="rubric">Notes</p>
-<p>This differs from <cite>Point</cite> as it expects arbitrary floats
-(as opposed to ints) for each coordinate.</p>
+<p>Two-dimensional coordinates. This differs from <cite>Point</cite>
+as it expects arbitrary floats (as opposed to ints)
+for each coordinate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -617,14 +617,27 @@ will be zero.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.count" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.index" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.x">
 <span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates.x" title="Permalink to this definition">#</a></dt>
@@ -661,18 +674,31 @@ will be zero.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.count" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.index" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.end">
 <span class="sig-name descname"><span class="pre">end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.end" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Interval.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -708,10 +734,10 @@ Each value should be between <cite>0</cite> and <cite>1</cite>.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code>(value, /)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.count" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.index" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
@@ -734,6 +760,12 @@ Each value should be between <cite>0</cite> and <cite>1</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.from_color">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.from_color" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -742,6 +774,13 @@ Each value should be between <cite>0</cite> and <cite>1</cite>.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.g">
 <span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.g" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -769,8 +808,11 @@ be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>coords</strong></dt><dd></dd>
-<dt><strong>intensity</strong></dt><dd></dd>
+<dt><strong>coords</strong><span class="classifier">Coordinates</span></dt><dd><p>Coordinates of light source on map.</p>
+</dd>
+<dt><strong>intensity</strong><span class="classifier">LightIntensity</span></dt><dd><p>Intensity of light source. If set with a <cite>Color</cite>, it will
+be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -790,7 +832,11 @@ be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.</span></span><span class="sig-name descname"><span class="pre">Restrictiveness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
+<p>The restrictiveness of the shadow caster. For
+permissive, any interval is visible as long as
+any of it’s start, center, or end points are visible.
+For moderate, the center and either end must be visible.
+For restrictive, all points in the interval must be visible.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness.MODERATE">
 <span class="sig-name descname"><span class="pre">MODERATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'moderate'</span></em><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness.MODERATE" title="Permalink to this definition">#</a></dt>

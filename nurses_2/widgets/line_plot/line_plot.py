@@ -1,3 +1,6 @@
+"""
+A 2D line plot widget.
+"""
 import numpy as np
 
 from wcwidth import wcswidth

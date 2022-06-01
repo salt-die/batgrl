@@ -1,3 +1,8 @@
+"""
+Base for particle fields.
+"""
+from typing import Literal
+
 from ...data_structures import *
 from ...io import MouseEvent, KeyPressEvent, PasteEvent
 from ..widget import Widget
@@ -178,11 +183,11 @@ class _ParticleBase:
         self.pos = self.top, left
 
     @property
-    def height(self) -> int:
+    def height(self) -> Literal[1]:
         return 1
 
     @property
-    def width(self) -> int:
+    def width(self) -> Literal[1]:
         return 1
 
     @property

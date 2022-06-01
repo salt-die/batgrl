@@ -507,6 +507,7 @@
                 
   <section id="module-nurses_2.widgets.behaviors.effects.effect">
 <span id="nurses-2-widgets-behaviors-effects-effect"></span><h1>nurses_2.widgets.behaviors.effects.effect<a class="headerlink" href="#module-nurses_2.widgets.behaviors.effects.effect" title="Permalink to this headline">#</a></h1>
+<p>Effects are behaviors that modify how a widget and its children are rendered.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -515,7 +516,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect" title="nurses_2.widgets.behaviors.effects.effect.Effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect</span></code></a>()</p></td>
-<td><p>Effects are behaviors that modify how a widget and its children are rendered. Effects should be inherited in the reverse order that they are applied, e.g.,     <code class="docutils literal notranslate"><span class="pre">`</span>&#160;&#160;&#160;&#160; <span class="pre">class</span> <span class="pre">MyEffectWidget(Effect1,</span> <span class="pre">Effect2,</span> <span class="pre">TextWidget):</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">`</span></code> applies Effect2 then Effect1.</p></td>
+<td><p>Effects are behaviors that modify how a widget and its children are rendered. Effects should be inherited in the reverse order that they are applied, e.g., <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">class</span> <span class="pre">MyEffectWidget(Effect1,</span> <span class="pre">Effect2,</span> <span class="pre">TextWidget):</span>&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">`</span></code> applies Effect2 then Effect1.</p></td>
 </tr>
 </tbody>
 </table>
@@ -524,16 +525,14 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.effects.effect.</span></span><span class="sig-name descname"><span class="pre">Effect</span></span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.effect.Effect" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Effects are behaviors that modify how a widget and its children are rendered.
-Effects should be inherited in the reverse order that they are applied, e.g.,</p>
-<blockquote>
-<div><p><a href="#id1"><span class="problematic" id="id2">``</span></a>`
+Effects should be inherited in the reverse order that they are applied, e.g.,
+<a href="#id1"><span class="problematic" id="id2">``</span></a>`
 class MyEffectWidget(Effect1, Effect2, TextWidget):</p>
 <blockquote>
 <div><p>…</p>
 </div></blockquote>
-<p><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
-</div></blockquote>
-<p>applies Effect2 then Effect1.</p>
+<p><a href="#id3"><span class="problematic" id="id4">``</span></a>`
+applies Effect2 then Effect1.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -543,9 +542,6 @@ class MyEffectWidget(Effect1, Effect2, TextWidget):</p>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect" title="nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_effect</span></code></a>(canvas_view, colors_view, source)</p></td>
 <td><p>Apply an effect to the rendered views of a widget.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect.render" title="nurses_2.widgets.behaviors.effects.effect.Effect.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(canvas_view, colors_view, source)</p></td>
-<td><p>Render normally then apply canvas and color effects.</p></td>
 </tr>
 </tbody>
 </table>
