@@ -1,4 +1,4 @@
-nurses\_2.easings
+﻿nurses\_2.easings
 =================
 
 .. automodule:: nurses_2.easings

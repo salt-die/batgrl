@@ -1,57 +1,518 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>nurses_2.widgets.toggle_button &#8212; nurses_2 0.9.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
     
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
-    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="nurses_2.widgets.tree_view" href="nurses_2.widgets.tree_view.html" />
-    <link rel="prev" title="nurses_2.widgets.tiled_image" href="nurses_2.widgets.tiled_image.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.tree_view.html" title="nurses_2.widgets.tree_view"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.tiled_image.html" title="nurses_2.widgets.tiled_image"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">nurses_2 0.9.3 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="nurses_2.html" >nurses_2</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="nurses_2.widgets.html" accesskey="U">nurses_2.widgets</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">nurses_2.widgets.toggle_button</a></li> 
-      </ul>
-    </div>  
+    <link rel="prev" title="nurses_2.widgets.tiled_image" href="nurses_2.widgets.tiled_image.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">nurses_2</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.colors.html">
+  nurses_2.colors
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.io.html">
+  nurses_2.io
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="nurses_2.widgets.html">
+  nurses_2.widgets
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.app.html">
+  nurses_2.app
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.clamp.html">
+  nurses_2.clamp
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.data_structures.html">
+  nurses_2.data_structures
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.easings.html">
+  nurses_2.easings
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
             
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.animation.html">
+   nurses_2.widgets.animation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.behaviors.html">
+   nurses_2.widgets.behaviors
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.button_behavior.html">
+     nurses_2.widgets.behaviors.button_behavior
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.effects.html">
+     nurses_2.widgets.behaviors.effects
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.effects.effect.html">
+       nurses_2.widgets.behaviors.effects.effect
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.html">
+       nurses_2.widgets.behaviors.effects.rainbow_cycle_effect
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html">
+     nurses_2.widgets.behaviors.focus_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.grab_move_behavior.html">
+     nurses_2.widgets.behaviors.grab_move_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html">
+     nurses_2.widgets.behaviors.grab_resize_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html">
+     nurses_2.widgets.behaviors.grabbable_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.scatter_behavior.html">
+     nurses_2.widgets.behaviors.scatter_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html">
+     nurses_2.widgets.behaviors.themable
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.toggle_button_behavior.html">
+     nurses_2.widgets.behaviors.toggle_button_behavior
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.braille_image.html">
+   nurses_2.widgets.braille_image
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.button.html">
+   nurses_2.widgets.button
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.color_picker.html">
+   nurses_2.widgets.color_picker
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.digital_display.html">
+   nurses_2.widgets.digital_display
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.file_chooser.html">
+   nurses_2.widgets.file_chooser
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.graphic_widget.html">
+   nurses_2.widgets.graphic_widget
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html">
+   nurses_2.widgets.graphic_widget_data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.grid_layout.html">
+   nurses_2.widgets.grid_layout
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.image.html">
+   nurses_2.widgets.image
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.line_plot.html">
+   nurses_2.widgets.line_plot
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.line_plot.line_plot.html">
+     nurses_2.widgets.line_plot.line_plot
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.menu.html">
+   nurses_2.widgets.menu
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.parallax.html">
+   nurses_2.widgets.parallax
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.particle_field.html">
+   nurses_2.widgets.particle_field
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.particle_field.graphic_field.html">
+     nurses_2.widgets.particle_field.graphic_field
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.particle_field.text_field.html">
+     nurses_2.widgets.particle_field.text_field
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.progress_bar.html">
+   nurses_2.widgets.progress_bar
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.ray_caster.html">
+   nurses_2.widgets.ray_caster
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.ray_caster.protocols.html">
+     nurses_2.widgets.ray_caster.protocols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.ray_caster.ray_caster.html">
+     nurses_2.widgets.ray_caster.ray_caster
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.ray_caster.sprite.html">
+     nurses_2.widgets.ray_caster.sprite
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.scroll_view.html">
+   nurses_2.widgets.scroll_view
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.indicators.html">
+     nurses_2.widgets.scroll_view.indicators
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html">
+     nurses_2.widgets.scroll_view.scroll_view
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.scrollbars.html">
+     nurses_2.widgets.scroll_view.scrollbars
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
+   nurses_2.widgets.shadow_caster
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster.html">
+     nurses_2.widgets.shadow_caster.shadow_caster
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
+     nurses_2.widgets.shadow_caster.shadow_caster_data_structures
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.slider.html">
+   nurses_2.widgets.slider
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.slider.handle.html">
+     nurses_2.widgets.slider.handle
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.slider.slider.html">
+     nurses_2.widgets.slider.slider
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.split_layout.html">
+   nurses_2.widgets.split_layout
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.text_widget.html">
+   nurses_2.widgets.text_widget
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html">
+   nurses_2.widgets.text_widget_data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.tiled_image.html">
+   nurses_2.widgets.tiled_image
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   nurses_2.widgets.toggle_button
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.tree_view.html">
+   nurses_2.widgets.tree_view
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.video_player.html">
+   nurses_2.widgets.video_player
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.widget.html">
+   nurses_2.widgets.widget
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.widget_data_structures.html">
+   nurses_2.widgets.widget_data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.window.html">
+   nurses_2.widgets.window
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <section id="module-nurses_2.widgets.toggle_button">
-<span id="nurses-2-widgets-toggle-button"></span><h1>nurses_2.widgets.toggle_button<a class="headerlink" href="#module-nurses_2.widgets.toggle_button" title="Permalink to this heading">¶</a></h1>
+<span id="nurses-2-widgets-toggle-button"></span><h1>nurses_2.widgets.toggle_button<a class="headerlink" href="#module-nurses_2.widgets.toggle_button" title="Permalink to this headline">#</a></h1>
 <p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.toggle_button.ToggleButton" title="nurses_2.widgets.toggle_button.ToggleButton"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToggleButton</span></code></a>(*[, background_char])</p></td>
 <td><p>A toggle button widget.</p></td>
@@ -60,13 +521,13 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.toggle_button.</span></span><span class="sig-name descname"><span class="pre">ToggleButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*,</span> <span class="pre">background_char='</span> <span class="pre">',</span> <span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">callback:</span> <span class="pre">~typing.Callable[[~nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState],</span> <span class="pre">None]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToggleButton.&lt;lambda&gt;&gt;,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.toggle_button_behavior.html#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToggleButtonBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Widget</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.toggle_button.</span></span><span class="sig-name descname"><span class="pre">ToggleButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*,</span> <span class="pre">background_char='</span> <span class="pre">',</span> <span class="pre">label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">callback:</span> <span class="pre">typing.Callable[[nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState],</span> <span class="pre">None]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ToggleButton.&lt;lambda&gt;&gt;,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.toggle_button_behavior.html#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
 <p>A toggle button widget. Without a group, a toggle button acts like a checkbox.
 With a group it behaves like a radio button (only a single button in a group is
 allowed to be in the “on” state).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>label</strong><span class="classifier">str, default: “”</span></dt><dd><p>Toggle button label.</p>
 </dd>
@@ -74,7 +535,7 @@ allowed to be in the “on” state).</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></dt><dd><p>Absolute position on screen.</p>
 </dd>
@@ -132,7 +593,11 @@ allowed to be in the “on” state).</p>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code>(widget)</p></td>
 <td><p>Add a child widget.</p></td>
@@ -235,7 +700,11 @@ allowed to be in the “on” state).</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default">
+<table class="table">
+<colgroup>
+<col style="width: 66%" />
+<col style="width: 34%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>on_click</strong></p></td>
 <td></td>
@@ -247,36 +716,36 @@ allowed to be in the “on” state).</p>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton.label">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.label" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.label" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton.on_toggle">
-<span class="sig-name descname"><span class="pre">on_toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.on_toggle" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">on_toggle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.on_toggle" title="Permalink to this definition">#</a></dt>
 <dd><p>Called when the toggle state changes.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton.update_down">
-<span class="sig-name descname"><span class="pre">update_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_down" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_down" title="Permalink to this definition">#</a></dt>
 <dd><p>Paint the DOWN state.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton.update_hover">
-<span class="sig-name descname"><span class="pre">update_hover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_hover" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_hover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_hover" title="Permalink to this definition">#</a></dt>
 <dd><p>Paint the HOVER state.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton.update_normal">
-<span class="sig-name descname"><span class="pre">update_normal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_normal" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_normal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_normal" title="Permalink to this definition">#</a></dt>
 <dd><p>Paint the NORMAL state.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.toggle_button.ToggleButton.update_theme">
-<span class="sig-name descname"><span class="pre">update_theme</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_theme" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_theme</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.toggle_button.ToggleButton.update_theme" title="Permalink to this definition">#</a></dt>
 <dd><p>Repaint the widget with a new theme.</p>
 </dd></dl>
 
@@ -285,67 +754,51 @@ allowed to be in the “on” state).</p>
 </section>
 
 
-            <div class="clearer"></div>
-          </div>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="nurses_2.widgets.tiled_image.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">nurses_2.widgets.tiled_image</p>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="nurses_2.widgets.tiled_image.html"
-                          title="previous chapter">nurses_2.widgets.tiled_image</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="nurses_2.widgets.tree_view.html"
-                          title="next chapter">nurses_2.widgets.tree_view</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/toctree/nurses_2.widgets.toggle_button.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+    </a>
+    <a class='right-next' id="next-link" href="nurses_2.widgets.tree_view.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">nurses_2.widgets.tree_view</p>
     </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
+              
+          </main>
+          
+
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.tree_view.html" title="nurses_2.widgets.tree_view"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.tiled_image.html" title="nurses_2.widgets.tiled_image"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">nurses_2 0.9.3 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="nurses_2.html" >nurses_2</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="nurses_2.widgets.html" >nurses_2.widgets</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">nurses_2.widgets.toggle_button</a></li> 
-      </ul>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, salt-die.<br>
+</p>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, salt-die.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
     </div>
+    
+  </div>
+</footer>
   </body>
 </html>

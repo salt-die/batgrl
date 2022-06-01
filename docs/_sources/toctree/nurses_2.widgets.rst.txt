@@ -1,4 +1,4 @@
-nurses\_2.widgets
+﻿nurses\_2.widgets
 =================
 
 .. automodule:: nurses_2.widgets

@@ -1,58 +1,518 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>nurses_2.widgets.shadow_caster.shadow_caster &#8212; nurses_2 0.9.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
     
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
-    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html" />
-    <link rel="prev" title="nurses_2.widgets.shadow_caster" href="nurses_2.widgets.shadow_caster.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.shadow_caster.html" title="nurses_2.widgets.shadow_caster"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">nurses_2 0.9.3 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="nurses_2.html" >nurses_2</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="nurses_2.widgets.html" >nurses_2.widgets</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="nurses_2.widgets.shadow_caster.html" accesskey="U">nurses_2.widgets.shadow_caster</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">nurses_2.widgets.shadow_caster.shadow_caster</a></li> 
-      </ul>
-    </div>  
+    <link rel="prev" title="nurses_2.widgets.shadow_caster" href="nurses_2.widgets.shadow_caster.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">nurses_2</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.colors.html">
+  nurses_2.colors
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.io.html">
+  nurses_2.io
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="nurses_2.widgets.html">
+  nurses_2.widgets
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.app.html">
+  nurses_2.app
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.clamp.html">
+  nurses_2.clamp
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.data_structures.html">
+  nurses_2.data_structures
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.easings.html">
+  nurses_2.easings
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
             
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.animation.html">
+   nurses_2.widgets.animation
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.behaviors.html">
+   nurses_2.widgets.behaviors
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.button_behavior.html">
+     nurses_2.widgets.behaviors.button_behavior
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.effects.html">
+     nurses_2.widgets.behaviors.effects
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.effects.effect.html">
+       nurses_2.widgets.behaviors.effects.effect
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.effects.rainbow_cycle_effect.html">
+       nurses_2.widgets.behaviors.effects.rainbow_cycle_effect
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html">
+     nurses_2.widgets.behaviors.focus_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.grab_move_behavior.html">
+     nurses_2.widgets.behaviors.grab_move_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html">
+     nurses_2.widgets.behaviors.grab_resize_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html">
+     nurses_2.widgets.behaviors.grabbable_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.scatter_behavior.html">
+     nurses_2.widgets.behaviors.scatter_behavior
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html">
+     nurses_2.widgets.behaviors.themable
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.toggle_button_behavior.html">
+     nurses_2.widgets.behaviors.toggle_button_behavior
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.braille_image.html">
+   nurses_2.widgets.braille_image
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.button.html">
+   nurses_2.widgets.button
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.color_picker.html">
+   nurses_2.widgets.color_picker
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.digital_display.html">
+   nurses_2.widgets.digital_display
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.file_chooser.html">
+   nurses_2.widgets.file_chooser
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.graphic_widget.html">
+   nurses_2.widgets.graphic_widget
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html">
+   nurses_2.widgets.graphic_widget_data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.grid_layout.html">
+   nurses_2.widgets.grid_layout
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.image.html">
+   nurses_2.widgets.image
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.line_plot.html">
+   nurses_2.widgets.line_plot
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.line_plot.line_plot.html">
+     nurses_2.widgets.line_plot.line_plot
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.menu.html">
+   nurses_2.widgets.menu
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.parallax.html">
+   nurses_2.widgets.parallax
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.particle_field.html">
+   nurses_2.widgets.particle_field
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.particle_field.graphic_field.html">
+     nurses_2.widgets.particle_field.graphic_field
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.particle_field.text_field.html">
+     nurses_2.widgets.particle_field.text_field
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.progress_bar.html">
+   nurses_2.widgets.progress_bar
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.ray_caster.html">
+   nurses_2.widgets.ray_caster
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.ray_caster.protocols.html">
+     nurses_2.widgets.ray_caster.protocols
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.ray_caster.ray_caster.html">
+     nurses_2.widgets.ray_caster.ray_caster
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.ray_caster.sprite.html">
+     nurses_2.widgets.ray_caster.sprite
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.scroll_view.html">
+   nurses_2.widgets.scroll_view
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.indicators.html">
+     nurses_2.widgets.scroll_view.indicators
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html">
+     nurses_2.widgets.scroll_view.scroll_view
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.scrollbars.html">
+     nurses_2.widgets.scroll_view.scrollbars
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
+   nurses_2.widgets.shadow_caster
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     nurses_2.widgets.shadow_caster.shadow_caster
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
+     nurses_2.widgets.shadow_caster.shadow_caster_data_structures
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.widgets.slider.html">
+   nurses_2.widgets.slider
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.slider.handle.html">
+     nurses_2.widgets.slider.handle
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.slider.slider.html">
+     nurses_2.widgets.slider.slider
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.split_layout.html">
+   nurses_2.widgets.split_layout
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.text_widget.html">
+   nurses_2.widgets.text_widget
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html">
+   nurses_2.widgets.text_widget_data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.tiled_image.html">
+   nurses_2.widgets.tiled_image
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.toggle_button.html">
+   nurses_2.widgets.toggle_button
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.tree_view.html">
+   nurses_2.widgets.tree_view
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.video_player.html">
+   nurses_2.widgets.video_player
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.widget.html">
+   nurses_2.widgets.widget
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.widget_data_structures.html">
+   nurses_2.widgets.widget_data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.widgets.window.html">
+   nurses_2.widgets.window
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <section id="module-nurses_2.widgets.shadow_caster.shadow_caster">
-<span id="nurses-2-widgets-shadow-caster-shadow-caster"></span><h1>nurses_2.widgets.shadow_caster.shadow_caster<a class="headerlink" href="#module-nurses_2.widgets.shadow_caster.shadow_caster" title="Permalink to this heading">¶</a></h1>
+<span id="nurses-2-widgets-shadow-caster-shadow-caster"></span><h1>nurses_2.widgets.shadow_caster.shadow_caster<a class="headerlink" href="#module-nurses_2.widgets.shadow_caster.shadow_caster" title="Permalink to this headline">#</a></h1>
 <p class="rubric">Classes</p>
-<table class="autosummary longtable docutils align-default">
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster" title="nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShadowCaster</span></code></a>(map, camera, tile_colors, ...)</p></td>
 <td><p>A restrictive precise angle shadowcaster.</p></td>
@@ -61,12 +521,12 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.shadow_caster.</span></span><span class="sig-name descname"><span class="pre">ShadowCaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">map:</span> <span class="pre">~numpy.ndarray,</span> <span class="pre">camera:</span> <span class="pre">~nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Camera,</span> <span class="pre">tile_colors:</span> <span class="pre">~typing.Optional[list[nurses_2.colors.color_data_structures.AColor]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">light_sources:</span> <span class="pre">~typing.Optional[list[nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightSource]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ambient_light:</span> <span class="pre">~nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity</span> <span class="pre">=</span> <span class="pre">LightIntensity(r=0.0,</span> <span class="pre">g=0.0,</span> <span class="pre">b=0.0),</span> <span class="pre">light_decay:</span> <span class="pre">~typing.Callable[[float],</span> <span class="pre">float]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ShadowCaster.&lt;lambda&gt;&gt;,</span> <span class="pre">radius:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20,</span> <span class="pre">smoothing:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.3333333333333333,</span> <span class="pre">not_visible_blocks:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">restrictiveness:</span> <span class="pre">~nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness</span> <span class="pre">=</span> <span class="pre">Restrictiveness.MODERATE,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicWidget</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.shadow_caster.</span></span><span class="sig-name descname"><span class="pre">ShadowCaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">map:</span> <span class="pre">numpy.ndarray,</span> <span class="pre">camera:</span> <span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Camera,</span> <span class="pre">tile_colors:</span> <span class="pre">typing.Optional[list[nurses_2.colors.color_data_structures.AColor]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">light_sources:</span> <span class="pre">typing.Optional[list[nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightSource]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ambient_light:</span> <span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity</span> <span class="pre">=</span> <span class="pre">LightIntensity(r=0.0,</span> <span class="pre">g=0.0,</span> <span class="pre">b=0.0),</span> <span class="pre">light_decay:</span> <span class="pre">typing.Callable[[float],</span> <span class="pre">float]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ShadowCaster.&lt;lambda&gt;&gt;,</span> <span class="pre">radius:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20,</span> <span class="pre">smoothing:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.3333333333333333,</span> <span class="pre">not_visible_blocks:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">restrictiveness:</span> <span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness</span> <span class="pre">=</span> <span class="pre">Restrictiveness.MODERATE,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
 <p>A restrictive precise angle shadowcaster. <cite>cast_shadows</cite> must be
 called to generate or update texture.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>map</strong><span class="classifier">np.ndarray</span></dt><dd><p>A 2-d map. Non-zero values are walls.</p>
 </dd>
@@ -92,7 +552,7 @@ empty list.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></dt><dd><p>Absolute position on screen.</p>
 </dd>
@@ -149,7 +609,11 @@ empty list.</p>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code>(widget)</p></td>
 <td><p>Add a child widget.</p></td>
@@ -237,7 +701,11 @@ empty list.</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default">
+<table class="table">
+<colgroup>
+<col style="width: 66%" />
+<col style="width: 34%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>render_children</strong></p></td>
 <td></td>
@@ -249,17 +717,17 @@ empty list.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster.cast_shadows">
-<span class="sig-name descname"><span class="pre">cast_shadows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster.cast_shadows" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">cast_shadows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster.cast_shadows" title="Permalink to this definition">#</a></dt>
 <dd><p>Update texture by shadow casting all light sources.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster.to_map_coords">
-<span class="sig-name descname"><span class="pre">to_map_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates"><span class="pre">Coordinates</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster.to_map_coords" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_map_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates"><span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Coordinates</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster.ShadowCaster.to_map_coords" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert a point in the widget’s local coordinates to a
 point in the map’s coordinates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>point</strong><span class="classifier">Point</span></dt><dd><p>Point in local coordinates.</p>
 </dd>
@@ -273,68 +741,51 @@ point in the map’s coordinates.</p>
 </section>
 
 
-            <div class="clearer"></div>
-          </div>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="nurses_2.widgets.shadow_caster.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">nurses_2.widgets.shadow_caster</p>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="nurses_2.widgets.shadow_caster.html"
-                          title="previous chapter">nurses_2.widgets.shadow_caster</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html"
-                          title="next chapter">nurses_2.widgets.shadow_caster.shadow_caster_data_structures</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/toctree/nurses_2.widgets.shadow_caster.shadow_caster.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+    </a>
+    <a class='right-next' id="next-link" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">nurses_2.widgets.shadow_caster.shadow_caster_data_structures</p>
     </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
+              
+          </main>
+          
+
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.widgets.shadow_caster.html" title="nurses_2.widgets.shadow_caster"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">nurses_2 0.9.3 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="nurses_2.html" >nurses_2</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="nurses_2.widgets.html" >nurses_2.widgets</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="nurses_2.widgets.shadow_caster.html" >nurses_2.widgets.shadow_caster</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">nurses_2.widgets.shadow_caster.shadow_caster</a></li> 
-      </ul>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, salt-die.<br>
+</p>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, salt-die.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
     </div>
+    
+  </div>
+</footer>
   </body>
 </html>

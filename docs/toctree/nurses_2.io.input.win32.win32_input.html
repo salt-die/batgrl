@@ -1,148 +1,369 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>nurses_2.io.input.win32.win32_input &#8212; nurses_2 0.9.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
     
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
-    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="nurses_2.io.output" href="nurses_2.io.output.html" />
-    <link rel="prev" title="nurses_2.io.input.win32.key_codes" href="nurses_2.io.input.win32.key_codes.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.io.output.html" title="nurses_2.io.output"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.io.input.win32.key_codes.html" title="nurses_2.io.input.win32.key_codes"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">nurses_2 0.9.3 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="nurses_2.html" >nurses_2</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="nurses_2.io.html" >nurses_2.io</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="nurses_2.io.input.html" >nurses_2.io.input</a> &#187;</li>
-          <li class="nav-item nav-item-4"><a href="nurses_2.io.input.win32.html" accesskey="U">nurses_2.io.input.win32</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">nurses_2.io.input.win32.win32_input</a></li> 
-      </ul>
-    </div>  
+    <link rel="prev" title="nurses_2.io.input.win32.key_codes" href="nurses_2.io.input.win32.key_codes.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">nurses_2</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.colors.html">
+  nurses_2.colors
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="nurses_2.io.html">
+  nurses_2.io
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.widgets.html">
+  nurses_2.widgets
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.app.html">
+  nurses_2.app
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.clamp.html">
+  nurses_2.clamp
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.data_structures.html">
+  nurses_2.data_structures
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.easings.html">
+  nurses_2.easings
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
             
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="nurses_2.io.input.html">
+   nurses_2.io.input
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.io.input.events.html">
+     nurses_2.io.input.events
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.io.input.keys.html">
+     nurses_2.io.input.keys
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.io.input.vt100.html">
+     nurses_2.io.input.vt100
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.io.input.vt100.ansi_escapes.html">
+       nurses_2.io.input.vt100.ansi_escapes
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.io.input.vt100.console_input.html">
+       nurses_2.io.input.vt100.console_input
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.io.input.vt100.mouse_bindings.html">
+       nurses_2.io.input.vt100.mouse_bindings
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.io.input.vt100.vt100_input.html">
+       nurses_2.io.input.vt100.vt100_input
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 current active has-children">
+    <a class="reference internal" href="nurses_2.io.input.win32.html">
+     nurses_2.io.input.win32
+    </a>
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.io.input.win32.console_input.html">
+       nurses_2.io.input.win32.console_input
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.io.input.win32.key_codes.html">
+       nurses_2.io.input.win32.key_codes
+      </a>
+     </li>
+     <li class="toctree-l3 current active">
+      <a class="current reference internal" href="#">
+       nurses_2.io.input.win32.win32_input
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.io.output.html">
+   nurses_2.io.output
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.io.output.vt100.html">
+     nurses_2.io.output.vt100
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.io.output.windows10.html">
+     nurses_2.io.output.windows10
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.io.win32_types.html">
+   nurses_2.io.win32_types
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <section id="module-nurses_2.io.input.win32.win32_input">
-<span id="nurses-2-io-input-win32-win32-input"></span><h1>nurses_2.io.input.win32.win32_input<a class="headerlink" href="#module-nurses_2.io.input.win32.win32_input" title="Permalink to this heading">¶</a></h1>
+<span id="nurses-2-io-input-win32-win32-input"></span><h1>nurses_2.io.input.win32.win32_input<a class="headerlink" href="#module-nurses_2.io.input.win32.win32_input" title="Permalink to this headline">#</a></h1>
 <p>Win32 Input.</p>
 <p class="rubric">Functions</p>
-<table class="autosummary longtable docutils align-default">
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.win32.win32_input.attach" title="nurses_2.io.input.win32.win32_input.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>(callback)</p></td>
 <td><p>Context manager that makes this input active in the current event loop.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw_mode</span></code>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.input.win32.win32_input.raw_mode" title="nurses_2.io.input.win32.win32_input.raw_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw_mode</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.io.input.win32.win32_input.attach">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.win32.win32_input.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.win32.win32_input.attach" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.win32.win32_input.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.win32.win32_input.attach" title="Permalink to this definition">#</a></dt>
 <dd><p>Context manager that makes this input active in the current event loop.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="nurses_2.io.input.win32.win32_input.read_keys">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.win32.win32_input.</span></span><span class="sig-name descname"><span class="pre">read_keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.win32.win32_input.read_keys" title="Permalink to this definition">¶</a></dt>
-<dd><p>Yield input events.</p>
-<p><a class="reference external" href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx</a></p>
-</dd></dl>
+<dt class="sig sig-object py" id="nurses_2.io.input.win32.win32_input.raw_mode">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.win32.win32_input.</span></span><span class="sig-name descname"><span class="pre">raw_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.win32.win32_input.raw_mode" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 </section>
 
 
-            <div class="clearer"></div>
-          </div>
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="nurses_2.io.input.win32.key_codes.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">nurses_2.io.input.win32.key_codes</p>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="nurses_2.io.input.win32.key_codes.html"
-                          title="previous chapter">nurses_2.io.input.win32.key_codes</a></p>
-  </div>
-  <div>
-    <h4>Next topic</h4>
-    <p class="topless"><a href="nurses_2.io.output.html"
-                          title="next chapter">nurses_2.io.output</a></p>
-  </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/toctree/nurses_2.io.input.win32.win32_input.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+    </a>
+    <a class='right-next' id="next-link" href="nurses_2.io.output.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">nurses_2.io.output</p>
     </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
+              
+          </main>
+          
+
       </div>
-      <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.io.output.html" title="nurses_2.io.output"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="nurses_2.io.input.win32.key_codes.html" title="nurses_2.io.input.win32.key_codes"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">nurses_2 0.9.3 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="nurses_2.html" >nurses_2</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="nurses_2.io.html" >nurses_2.io</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="nurses_2.io.input.html" >nurses_2.io.input</a> &#187;</li>
-          <li class="nav-item nav-item-4"><a href="nurses_2.io.input.win32.html" >nurses_2.io.input.win32</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">nurses_2.io.input.win32.win32_input</a></li> 
-      </ul>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, salt-die.<br>
+</p>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2022, salt-die.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
     </div>
+    
+  </div>
+</footer>
   </body>
 </html>
