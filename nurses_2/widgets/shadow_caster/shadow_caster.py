@@ -1,7 +1,7 @@
 from bisect import bisect
+from collections.abc import Callable
 from itertools import product
 from math import dist
-from typing import Callable
 
 import cv2
 import numpy as np

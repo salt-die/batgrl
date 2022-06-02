@@ -2,7 +2,7 @@
 Toggle button behavior for a widget.
 """
 from enum import Enum
-from typing import Hashable
+from collections.abc import Hashable
 from weakref import ref
 
 from .button_behavior import ButtonBehavior, ButtonState

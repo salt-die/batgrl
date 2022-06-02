@@ -3,7 +3,7 @@ A menu widget.
 """
 from collections.abc import Callable
 from inspect import signature
-from typing import Callable as CallableT, Optional
+from typing import Optional, Union
 
 from wcwidth import wcswidth
 
@@ -19,7 +19,7 @@ __all__ = (
     "MenuItem",
 )
 
-MenuDict = dict[tuple[str, str], CallableT[[], None] | CallableT[[ToggleState], None] | "MenuDict"]
+MenuDict = dict[tuple[str, str], Union[Callable[[], None], Callable[[ToggleState], None], "MenuDict"]]
 NESTED_SUFFIX = " ▶"
 CHECK_OFF = "□"
 CHECK_ON = "▣"
@@ -44,7 +44,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         Right label of menu item.
     item_disabled : bool, default: False
         If true, item will not be selectable in menu.
-    item_callback : CallableT[[], None] | CallableT[[ToggleState], None], default: lambda: None
+    item_callback : Callable[[], None] | Callable[[ToggleState], None], default: lambda: None
         Callback when item is selected. For toggle items, the callable should have a
         single argument that will be the current state of the item.
 
@@ -56,7 +56,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         Right label of menu item.
     item_disabled : bool, default: False
         If true, item will not be selectable in menu.
-    item_callback : CallableT[[], None] | CallableT[[ToggleState], None], default: lambda: None
+    item_callback : Callable[[], None] | Callable[[ToggleState], None], default: lambda: None
         Callback when item is selected. For toggle items, the callable should have a
         single argument that will be the current state of the item.
     submenu: Menu | None

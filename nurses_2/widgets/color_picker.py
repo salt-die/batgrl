@@ -1,7 +1,7 @@
 """
 A color picker widget.
 """
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 

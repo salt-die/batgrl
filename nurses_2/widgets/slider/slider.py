@@ -1,7 +1,7 @@
 """
 A slider widget.
 """
-from typing import Callable
+from collections.abc import Callable
 
 from ...clamp import clamp
 from ...colors import Color

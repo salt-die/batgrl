@@ -1,7 +1,7 @@
 """
 A toggle button widget.
 """
-from typing import Callable
+from collections.abc import Callable
 
 from wcwidth import wcswidth
 
