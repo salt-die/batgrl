@@ -2,7 +2,6 @@ from datetime import datetime
 
 from nurses_2 import __version__
 
-project = "nurses_2"
 copyright = f"{datetime.now().year}, salt-die"
 author = "salt-die"
 release = __version__
