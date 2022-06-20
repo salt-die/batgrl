@@ -18,12 +18,12 @@ EXCLUDED_FILES = (
     DOC_SRC / "conf.py",
     DOC_SRC / "index.rst",
     DOC_SRC / "regen_docs.py",
+    DOC_SRC / "requirements.txt",
 )
 
 SPHINX_BUILD = "sphinx-build"
 SOURCE_DIR = "."
 BUILD_DIR = "_build"
-SPHINX_OPTIONS = ""
 SPHINX_COMMAND = [SPHINX_BUILD, "-M", "html", SOURCE_DIR, BUILD_DIR]
 
 if __name__ == "__main__":

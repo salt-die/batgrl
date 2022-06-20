@@ -1,8 +1,9 @@
+from nurses_2 import __version__
+
 project = "nurses_2"
 copyright = "2022, salt-die"
 author = "salt-die"
-
-release = "0.9.3"
+release = __version__
 
 extensions = [
     "sphinx.ext.autodoc",
