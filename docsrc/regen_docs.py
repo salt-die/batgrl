@@ -14,12 +14,12 @@ from pathlib import Path
 DOC_SRC = Path(__file__).absolute().parent
 DOCS = DOC_SRC.parent / "docs"
 
-EXCLUDED_FILES = (
+EXCLUDED_FILES = {
     DOC_SRC / "conf.py",
     DOC_SRC / "index.rst",
     DOC_SRC / "regen_docs.py",
     DOC_SRC / "requirements.txt",
-)
+}
 
 SPHINX_BUILD = "sphinx-build"
 SOURCE_DIR = "."
