@@ -2,8 +2,8 @@ from datetime import datetime
 
 from nurses_2 import __version__
 
-copyright = f"{datetime.now().year}, salt-die"
 author = "salt-die"
+copyright = f"{datetime.now().year}, {author}"
 release = __version__
 
 extensions = [
