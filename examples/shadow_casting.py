@@ -1,3 +1,4 @@
+import asyncio
 from itertools import cycle
 
 import numpy as np
@@ -16,11 +17,28 @@ from nurses_2.widgets.shadow_caster import (
 
 MAP = np.random.randint(0, 150, (100, 100), dtype=np.uint8)
 MAP[MAP >= 7] = 0
-WHITE_TO_BLUE = cycle(gradient(WHITE, BLUE, 10) + gradient(BLUE, WHITE, 10))
-WHITE_TO_RED = cycle(gradient(WHITE, RED, 15) + gradient(RED, WHITE, 15))
+WHITE_TO_BLUE = cycle(map(
+    LightIntensity.from_color,
+    gradient(WHITE, BLUE, 10) + gradient(BLUE, WHITE, 10),
+))
+WHITE_TO_RED = cycle(map(
+    LightIntensity.from_color,
+    gradient(WHITE, RED, 15) + gradient(RED, WHITE, 15),
+))
 
 
 class MyShadowCaster(ShadowCaster):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._update_task = asyncio.create_task(self._update())
+
+    async def _update(self):
+        while True:
+            self.light_sources[0].intensity = next(WHITE_TO_BLUE)
+            self.light_sources[1].intensity = next(WHITE_TO_RED)
+            self.cast_shadows()
+            await asyncio.sleep(0)
+
     def on_click(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_MOVE
@@ -44,13 +62,6 @@ class MyShadowCaster(ShadowCaster):
                 return False
 
         return True
-
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        self.light_sources[0].intensity = LightIntensity.from_color(next(WHITE_TO_BLUE))
-        self.light_sources[1].intensity = LightIntensity.from_color(next(WHITE_TO_RED))
-        self.cast_shadows()
-
-        super().render(canvas_view, colors_view, source)
 
 
 run_widget_as_app(

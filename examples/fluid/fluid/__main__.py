@@ -1,3 +1,5 @@
+import asyncio
+
 import numpy as np
 
 from nurses_2.app import App
@@ -19,6 +21,7 @@ class Fluid(GraphicWidget):
         super().__init__(**kwargs)
         y, x = self.size
         self.sph_solver = SPHSolver((2 * y - 1, x - 1), nparticles)
+        self._update_task = asyncio.create_task(self._update())
 
     def on_press(self, key_press_event):
         match key_press_event.key:
@@ -47,22 +50,22 @@ class Fluid(GraphicWidget):
 
         return True
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        solver = self.sph_solver
-        solver.step()
+    async def _update(self):
+        while True:
+            solver = self.sph_solver
+            solver.step()
 
-        positions = solver.state[:, :2]
-        ys, xs = positions.astype(int).T
+            positions = solver.state[:, :2]
+            ys, xs = positions.astype(int).T
 
-        pressure = solver.state[:, -1]
-        alphas = (255 / (1 + np.e**-(.125 * pressure))).astype(int)
+            pressure = solver.state[:, -1]
+            alphas = (255 / (1 + np.e**-(.125 * pressure))).astype(int)
 
-        self.texture[:] = self.default_color
-        self.texture[ys, xs, :3] = WATER_COLOR
-        self.texture[ys, xs, 3] = alphas
+            self.texture[:] = self.default_color
+            self.texture[ys, xs, :3] = WATER_COLOR
+            self.texture[ys, xs, 3] = alphas
 
-        return super().render(canvas_view, colors_view, source)
-
+            await asyncio.sleep(0)
 
 
 class MyApp(App):

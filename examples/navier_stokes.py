@@ -11,6 +11,8 @@ POISSON kernel (for the convolutions that used POISSON) will achieve almost iden
 An alternative (read: *possibly better*) visualization is to copy the derivative of the pressure array into the
 widget's texture instead. This can be approximated by taking the difference of current pressure and previous pressure.
 """
+import asyncio
+
 import numpy as np
 from cv2 import filter2D
 
@@ -52,6 +54,7 @@ class Fluid(GraphicWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.on_size()
+        self._update_task = asyncio.create_task(self._update())
 
     def on_size(self):
         h, w = self._size
@@ -81,23 +84,24 @@ class Fluid(GraphicWidget):
                 self.on_size()  # Reset
                 return True
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        pressure = self.pressure
-        momentum = self.momentum
+    async def _update(self):
+        while True:
+            pressure = self.pressure
+            momentum = self.momentum
 
-        wrap_border(momentum)
-        wrap_border(pressure)
+            wrap_border(momentum)
+            wrap_border(pressure)
 
-        self.momentum = filter2D(momentum, -1, DIFFUSION) + filter2D(pressure, -1, CONVECTION)
+            self.momentum = filter2D(momentum, -1, DIFFUSION) + filter2D(pressure, -1, CONVECTION)
 
-        delta = filter2D(self.momentum, -1, POISSON)
+            delta = filter2D(self.momentum, -1, POISSON)
 
-        self.pressure = filter2D(pressure, -1, POISSON) + .5 * (delta - delta**2)
+            self.pressure = filter2D(pressure, -1, POISSON) + .5 * (delta - delta**2)
 
-        # Note the alpha channel is affected by `pressure` as well.
-        self.texture[:] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
+            # Note the alpha channel is affected by `pressure` as well.
+            self.texture[:] = (sigmoid(self.pressure[2: -2, 2: -2, None]) * WATER_COLOR).astype(int)
 
-        super().render(canvas_view, colors_view, source)
+            await asyncio.sleep(0)
 
 
 run_widget_as_app(Fluid, size_hint=(1.0, 1.0))

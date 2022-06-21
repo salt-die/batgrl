@@ -1,6 +1,7 @@
 """
 Stable fluid simulation. Requires `scipy`.
 """
+import asyncio
 from itertools import cycle
 
 import numpy as np
@@ -36,6 +37,7 @@ class StableFluid(GraphicWidget):
     def __init__(self, default_color=ABLACK, **kwargs):
         super().__init__(default_color=default_color, **kwargs)
         self.on_size()
+        self._update_task = asyncio.create_task(self._update())
 
     def on_size(self):
         h, w = self._size
@@ -85,65 +87,66 @@ class StableFluid(GraphicWidget):
 
         return True
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        vy, vx = velocity = self.velocity
+    async def _update(self):
+        while True:
+            vy, vx = velocity = self.velocity
 
-        # Vorticity
-        ###########
-        div_y = convolve(vy, DIF_KERNEL[None])
-        div_x = convolve(vx, DIF_KERNEL[:, None])
+            # Vorticity
+            ###########
+            div_y = convolve(vy, DIF_KERNEL[None])
+            div_x = convolve(vx, DIF_KERNEL[:, None])
 
-        curl = div_y - div_x
+            curl = div_y - div_x
 
-        vort_y = convolve(curl, DIF_KERNEL[None])
-        vort_x = convolve(curl, DIF_KERNEL[:, None])
+            vort_y = convolve(curl, DIF_KERNEL[None])
+            vort_x = convolve(curl, DIF_KERNEL[:, None])
 
-        vorticity = np.stack((vort_x, vort_y))
+            vorticity = np.stack((vort_x, vort_y))
 
-        # Negating `vort_y`` and using `vorticity=np.stack((vort_y, vort_x))` creates
-        # a more swirly effect, but there are line artifacts.
+            # Negating `vort_y`` and using `vorticity=np.stack((vort_y, vort_x))` creates
+            # a more swirly effect, but there are line artifacts.
 
-        vorticity /= np.linalg.norm(vorticity, axis=0) + EPSILON
-        vorticity *= curl * CURL
+            vorticity /= np.linalg.norm(vorticity, axis=0) + EPSILON
+            vorticity *= curl * CURL
 
-        velocity += vorticity
+            velocity += vorticity
 
-        # Pressure Solver
-        #################
-        div = .25 * (div_y + div_x)
+            # Pressure Solver
+            #################
+            div = .25 * (div_y + div_x)
 
-        pressure = np.full_like(div_y, PRESSURE)
-        for _ in range(PRESSURE_ITERATIONS):
-            convolve(pressure, PRESSURE_KERNEL, output=pressure)
-            pressure -= div
+            pressure = np.full_like(div_y, PRESSURE)
+            for _ in range(PRESSURE_ITERATIONS):
+                convolve(pressure, PRESSURE_KERNEL, output=pressure)
+                pressure -= div
 
-        # Project
-        #########
-        vy -= convolve(pressure, GRAD_KERNEL[None])
-        vx -= convolve(pressure, GRAD_KERNEL[:, None])
+            # Project
+            #########
+            vy -= convolve(pressure, GRAD_KERNEL[None])
+            vx -= convolve(pressure, GRAD_KERNEL[:, None])
 
-        # Advect
-        ########
-        coords = self.indices - velocity
+            # Advect
+            ########
+            coords = self.indices - velocity
 
-        map_coordinates(vy, coords, output=vy, prefilter=False)
-        map_coordinates(vx, coords, output=vx, prefilter=False)
+            map_coordinates(vy, coords, output=vy, prefilter=False)
+            map_coordinates(vx, coords, output=vx, prefilter=False)
 
-        # Remove checkboard divergence and diffuse velocity.
-        convolve(vy, GAUSSIAN_KERNEL, output=vy)
-        convolve(vx, GAUSSIAN_KERNEL, output=vx)
+            # Remove checkboard divergence and diffuse velocity.
+            convolve(vy, GAUSSIAN_KERNEL, output=vy)
+            convolve(vx, GAUSSIAN_KERNEL, output=vx)
 
-        r, g, b = dye = self.dye
-        map_coordinates(r, coords, output=r)
-        map_coordinates(g, coords, output=g)
-        map_coordinates(b, coords, output=b)
+            r, g, b = dye = self.dye
+            map_coordinates(r, coords, output=r)
+            map_coordinates(g, coords, output=g)
+            map_coordinates(b, coords, output=b)
 
-        dye *= DISSIPATION
-        np.clip(dye, 0, 255, out=dye)
+            dye *= DISSIPATION
+            np.clip(dye, 0, 255, out=dye)
 
-        self.texture[..., :3] = np.moveaxis(dye, 0, -1)
+            self.texture[..., :3] = np.moveaxis(dye, 0, -1)
 
-        super().render(canvas_view, colors_view, source)
+            await asyncio.sleep(0)
 
 
 run_widget_as_app(StableFluid, size_hint=(1.0, 1.0))
