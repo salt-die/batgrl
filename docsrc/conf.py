@@ -24,4 +24,16 @@ autodoc_default_options = {
 
 html_theme = "pydata_sphinx_theme"
 
+html_theme_options = {
+  "show_prev_next": False,
+}
+
+html_show_sphinx = False
+
+html_show_sourcelink = True
+
+html_sidebars = {
+    "**": ["globaltoc.html", "sourcelink.html", "searchbox.html"],
+}
+
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

@@ -13,7 +13,6 @@ nurses_2 documentation
    :recursive:
 
    nurses_2.colors
-   nurses_2.io
    nurses_2.widgets
    nurses_2.app
    nurses_2.clamp
