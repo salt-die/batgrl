@@ -24,16 +24,15 @@ autodoc_default_options = {
 
 html_theme = "pydata_sphinx_theme"
 
-html_theme_options = {
-  "show_prev_next": False,
+html_sidebars = {
+    "**": ["search-field", "sidebar-nav-bs"]
 }
 
-html_show_sphinx = False
-
-html_show_sourcelink = True
-
-html_sidebars = {
-    "**": ["globaltoc.html", "sourcelink.html", "searchbox.html"],
+html_theme_options = {
+    "show_prev_next": False,
+    "left_sidebar_end": [],
+    "page_sidebar_items": ["page-toc"],
+    "footer_items": [],
 }
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
