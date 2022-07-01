@@ -15,7 +15,7 @@ __all__ = (
     "gradient",
 )
 
-def rainbow_gradient(n: int, *, color_type: Color | AColor=Color):
+def rainbow_gradient(n: int, *, color_type: type[Color] | type[AColor]=Color) -> list[Color | AColor]:
     """
     Return a rainbow gradient of ``n`` colors.
 
@@ -37,9 +37,9 @@ def rainbow_gradient(n: int, *, color_type: Color | AColor=Color):
         for i in range(n)
     ]
 
-def foreground_rainbow(ncolors: int=20, bg_color: Color=BLACK):
+def foreground_rainbow(ncolors: int=20, bg_color: Color=BLACK) -> list[ColorPair]:
     """
-    A rainbow gradient of `ncolors` `ColorPair`s with a given background color.
+    A rainbow gradient of ``ncolors`` color pairs with a given background color.
 
     Parameters
     ----------
@@ -53,9 +53,9 @@ def foreground_rainbow(ncolors: int=20, bg_color: Color=BLACK):
         for fg_color in rainbow_gradient(ncolors)
     ]
 
-def background_rainbow(ncolors: int=20, fg_color: Color=WHITE):
+def background_rainbow(ncolors: int=20, fg_color: Color=WHITE) -> list[ColorPair]:
     """
-    Return a rainbow gradient of `ncolors` `ColorPair`s with a given foreground color.
+    Return a rainbow gradient of ``ncolors`` color pairs with a given foreground color.
 
     Parameters
     ----------
@@ -70,12 +70,12 @@ def background_rainbow(ncolors: int=20, fg_color: Color=WHITE):
     ]
 
 def lerp_colors(
-    start: Color | AColor,
-    end: Color | AColor,
+    start: Color | AColor | ColorPair,
+    end: Color | AColor | ColorPair,
     p: float
-) -> Color | AColor:
+) -> Color | AColor | ColorPair:
     """
-    Linear interpolation from `start` to `end` with proportion `p`.
+    Linear interpolation from ``start`` to ``end`` with proportion ``p``.
 
     Parameters
     ----------
@@ -96,7 +96,7 @@ def gradient(
     ncolors: int
 ) -> list[Color | AColor | ColorPair]:
     """
-    Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
+    Return a gradient from ``start`` to ``end`` with ``ncolors`` (> 1) colors.
 
     Parameters
     ----------
