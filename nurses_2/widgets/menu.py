@@ -33,8 +33,8 @@ def nargs(callable: Callable):
 
 class MenuItem(Themable, ToggleButtonBehavior, Widget):
     """
-    A single item in a menu widget. This shouldn't have to be
-    instantiated manually. Instead, use `Menu.from_dict_of_dicts`.
+    A single item in a menu widget. This should normally only be
+    instantiated by `Menu.from_dict_of_dicts`.
 
     Parameters
     ----------
@@ -190,9 +190,9 @@ class Menu(GridLayout):
     Each key of the dict should be a tuple of two strings for left and right labels and
     each value should be either a callable with no arguments for a normal menu item, a
     callable with one argument for a toggle menu item (the argument will be the state of the
-    toggle button, `ToggleState`), or a dict (for a submenu).
+    toggle button as returned by `toggle_state`), or a dict (for a submenu).
 
-    Once opened, a menu can be navigated with the mouse or with arrow keys.
+    Once opened, a menu can be navigated with the mouse or arrow keys.
 
     Parameters
     ----------

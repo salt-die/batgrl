@@ -516,9 +516,8 @@
                 
   <section id="module-nurses_2.widgets.tree_view">
 <span id="nurses-2-widgets-tree-view"></span><h1>nurses_2.widgets.tree_view<a class="headerlink" href="#module-nurses_2.widgets.tree_view" title="Permalink to this headline">#</a></h1>
-<p>A base for creating tree-like views. TreeViews are composed of <cite>TreeViewNodes</cite> that
-can be selected and toggled open or closed. Open nodes will yield their children
-with <cite>TreeViewNode.iter_open_nodes</cite>.</p>
+<p>A base for creating tree-like views. Tree views are composed of nodes that
+can be selected and toggled open or closed.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -857,7 +856,7 @@ returns True.)</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -865,8 +864,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 
@@ -1040,8 +1039,7 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
 </dd>
-<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added. This will be passed as-is as the first argument
-to <cite>numpy</cite>’s <cite>ndarray.__getitem__</cite>.</p>
+<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added.</p>
 </dd>
 <dt><strong>column</strong><span class="classifier">int, default: 0</span></dt><dd><p>The first column to which text is added.</p>
 </dd>
@@ -1184,8 +1182,8 @@ returns True.)</p>
 simplify adding text to views of the underlying canvas.</p>
 <p class="rubric">Notes</p>
 <p>One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
-the <cite>add_text</cite> <cite>row</cite> and <cite>column</cite> parameters make sense.</p>
+E.g., a view with shape <cite>(m,)</cite> will be re-shaped to <cite>(1, m)</cite> so that
+the <cite>row</cite> and <cite>column</cite> parameters of <cite>add_text</cite> make sense.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1248,27 +1246,6 @@ all open child nodes.</p>
 </dl>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>In some cases, even with normalized canvases, widgets with full-width characters
-could cause display issues.</p>
-<p>Imagine the following arrangement of widgets:
-<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></p>
-<blockquote>
-<div><blockquote>
-<div></div></blockquote>
-<div class="line-block">
-<div class="line">fw  ____|___</div>
-<div class="line">fw | fw  ___|__</div>
-<div class="line">fw | fw | fw  _|__</div>
-<div class="line">fw | fw | fw | fw |</div>
-</div>
-<p><a href="#id9"><span class="problematic" id="id10">|____|____|____|____|</span></a></p>
-</div></blockquote>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
-<p><cite>fw</cite> represents a full-width character and each widget is offset from the next by one.
-One can end up with an entire row of full-width characters which will likely ruin the
-display. If <cite>normalize_canvas</cite> and <cite>add_text</cite> aren’t sufficient for the user, a custom
-render method will likely need to be implemented.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1465,7 +1442,7 @@ render method will likely need to be implemented.</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -1473,8 +1450,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 

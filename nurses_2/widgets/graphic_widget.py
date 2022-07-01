@@ -32,7 +32,7 @@ class GraphicWidget(Widget):
 
     Graphic widgets are widgets that are rendered entirely with the upper half block character, "▀".
     Graphic widgets' color information is stored in a uint8 RGBA array, `texture`. Note that the
-    height of the texture array is twice the height of the widget.
+    height of `texture` is twice the height of the widget.
 
     Parameters
     ----------

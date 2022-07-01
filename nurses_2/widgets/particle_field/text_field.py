@@ -9,11 +9,6 @@ from ._field_base import _ParticleFieldBase, _ParticleBase
 class TextParticleField(_ParticleFieldBase):
     """
     A widget that only has `TextParticle` children.
-
-    Raises
-    ------
-    TypeError
-        If `add_widget` is called with a non-`TextParticle`.
     """
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         vert_slice, hori_slice = source
@@ -70,7 +65,7 @@ class TextParticle(_ParticleBase):
     color_pair : ColorPair
         Color pair of particle.
     size : Size
-        Size of particle. Always `Size(1, 1)`.
+        Size of particle.
     top : int
         Y-coordinate of particle.
     left : int

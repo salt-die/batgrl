@@ -525,7 +525,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanvasView</span></code></a>(canvas)</p></td>
-<td><p>A wrapper around a <cite>numpy</cite> <cite>ndarray</cite> with a convenient <cite>add_text</cite> method.</p></td>
+<td><p>A wrapper around a <cite>numpy.ndarray</cite> with a convenient <cite>add_text</cite> method.</p></td>
 </tr>
 </tbody>
 </table>
@@ -533,10 +533,10 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.text_widget_data_structures.CanvasView">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.text_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">CanvasView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_widget_data_structures.CanvasView" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A wrapper around a <cite>numpy</cite> <cite>ndarray</cite> with a convenient <cite>add_text</cite> method.</p>
+<p>A wrapper around a <cite>numpy.ndarray</cite> with a convenient <cite>add_text</cite> method.</p>
 <p>One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
-the <cite>add_text</cite> <cite>row</cite> and <cite>column</cite> parameters make sense.</p>
+E.g., a view with shape <cite>(m,)</cite> will be re-shaped to <cite>(1, m)</cite> so that
+the <cite>row</cite> and <cite>column</cite> parameters of <cite>add_text</cite> make sense.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -565,8 +565,7 @@ the <cite>add_text</cite> <cite>row</cite> and <cite>column</cite> parameters ma
 <dd class="field-odd"><dl class="simple">
 <dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
 </dd>
-<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added. This will be passed as-is as the first argument
-to <cite>numpy</cite>’s <cite>ndarray.__getitem__</cite>.</p>
+<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added.</p>
 </dd>
 <dt><strong>column</strong><span class="classifier">int, default: 0</span></dt><dd><p>The first column to which text is added.</p>
 </dd>

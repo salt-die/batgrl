@@ -571,8 +571,8 @@ default is left-to-right then top-to-bottom.</p>
 <p class="rubric">Notes</p>
 <p>Re-ordering children (such as through <cite>pull_to_front</cite>) and calling <cite>_reposition_children</cite>
 will change the positions of the children in the grid. The read-only <cite>minimum_grid_size</cite>
-property can be used to set the size of the grid layout, e.g.,
-<cite>my_grid.size = my_grid.minimum_grid_size</cite>.</p>
+property keeps track of the minimum size the grid can be to show all children and can be used
+to set the size of the grid layout, e.g., <code class="docutils literal notranslate"><span class="pre">my_grid.size</span> <span class="pre">=</span> <span class="pre">my_grid.minimum_grid_size</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1033,7 +1033,7 @@ returns True.)</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -1041,8 +1041,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 

@@ -125,19 +125,17 @@ class _Segment:
 class DigitalDisplay(TextWidget):
     r"""
     A 7x8 14-segment (plus decimal point) display widget. Segments
-    are labeled according to the following diagram:
+    are labeled according to the following diagram::
 
-    ```
-        a
-      ━━━━━
-    f┃  ┃i ┃b     h \   / j
-     ┃  ┃  ┃         \ /
-                 g1 ━━ ━━ g2
-    e┃  ┃l ┃c        / \
-     ┃  ┃  ┃      k /   \ m
-      ━━━━━ ● dp
-        d
-    ```
+            a
+          ━━━━━
+        f┃  ┃i ┃b     h \   / j
+         ┃  ┃  ┃         \ /
+                     g1 ━━ ━━ g2
+        e┃  ┃l ┃c        / \
+         ┃  ┃  ┃      k /   \ m
+          ━━━━━ ● dp
+            d
 
     Parameters
     ----------

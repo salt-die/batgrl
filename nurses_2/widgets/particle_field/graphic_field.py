@@ -11,11 +11,6 @@ from ._field_base import _ParticleFieldBase, _ParticleBase
 class GraphicParticleField(_ParticleFieldBase):
     """
     A widget that only has `GraphicParticle` children.
-
-    Raises
-    ------
-    TypeError
-        If `add_widget` is called with a non-`GraphicParticle`.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -82,7 +77,7 @@ class GraphicParticle(_ParticleBase):
     color : AColor
         Color of particle.
     size : Size
-        Size of particle. Always `Size(1, 1)`.
+        Size of particle.
     top : int
         Y-coordinate of particle.
     left : int

@@ -23,10 +23,8 @@ class LinePlot(Widget):
     Parameters
     ----------
     *points : list[float] | np.ndarray
-        For a single plot `points` will be `xs, ys` where xs and ys
-        are each a list of floats or a 1-dimensional numpy array.
-        For multiple plots, include additional xs and ys so that
-        points will be `xs_0, ys_0, xs_1, ys_1, ...`.
+        The horizontal / vertical coordinates of the data points.
+        For `n` plots, there should be `2 * n` 1D arrays.
     xmin : float | None, default: None
         Minimum x-value of plot. If None, xmin will be minimum of all xs.
     xmax : float | None, default: None

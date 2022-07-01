@@ -553,8 +553,8 @@
 Each key of the dict should be a tuple of two strings for left and right labels and
 each value should be either a callable with no arguments for a normal menu item, a
 callable with one argument for a toggle menu item (the argument will be the state of the
-toggle button, <cite>ToggleState</cite>), or a dict (for a submenu).</p>
-<p>Once opened, a menu can be navigated with the mouse or with arrow keys.</p>
+toggle button as returned by <cite>toggle_state</cite>), or a dict (for a submenu).</p>
+<p>Once opened, a menu can be navigated with the mouse or arrow keys.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -976,7 +976,7 @@ for a normal menu item, or one argument for a toggle menu item.</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -984,8 +984,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 
@@ -1059,8 +1059,8 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuItem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.menu.</span></span><span class="sig-name descname"><span class="pre">MenuItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left_label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_label:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_disabled:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_callback:</span> <span class="pre">collections.abc.Callable[[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">None]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">MenuItem.&lt;lambda&gt;&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submenu:</span> <span class="pre">typing.Optional[nurses_2.widgets.menu.Menu]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.menu.MenuItem" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.toggle_button_behavior.html#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
-<p>A single item in a menu widget. This shouldn’t have to be
-instantiated manually. Instead, use <cite>Menu.from_dict_of_dicts</cite>.</p>
+<p>A single item in a menu widget. This should normally only be
+instantiated by <cite>Menu.from_dict_of_dicts</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1532,7 +1532,7 @@ returns True.)</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -1540,8 +1540,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 

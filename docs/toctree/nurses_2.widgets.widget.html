@@ -571,7 +571,7 @@ hint is None.</p>
 <dt><strong>pos_hint</strong><span class="classifier">PosHint, default: PosHint(None, None)</span></dt><dd><p>Position as a proportion of parent’s height and width. Non-None values
 will have precedent over <cite>pos</cite>.</p>
 </dd>
-<dt><strong>anchor</strong><span class="classifier">Anchor, default: Anchor.TOP_LEFT</span></dt><dd><p>Specifies which part of the widget is aligned with the <cite>pos_hint</cite>.</p>
+<dt><strong>anchor</strong><span class="classifier">Anchor, default: Anchor.TOP_LEFT</span></dt><dd><p>The point of the widget attached to <cite>pos_hint</cite>.</p>
 </dd>
 <dt><strong>is_transparent</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, background_char and background_color_pair won’t be painted.</p>
 </dd>
@@ -1018,7 +1018,7 @@ returns True.)</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -1026,8 +1026,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 

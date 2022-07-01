@@ -78,7 +78,7 @@ class Widget:
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over `pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        Specifies which part of the widget is aligned with the `pos_hint`.
+        The point of the widget attached to `pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -115,9 +115,9 @@ class Widget:
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + widget's height.
+        `top` + `height`.
     right : int
-        `left` + widget's width.
+        `left` + `width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -182,7 +182,7 @@ class Widget:
     remove_widget
         Remove a child widget.
     pull_to_front
-        Move to end of widget stack (`children`) so widget is drawn last.
+        Move to end of widget stack so widget is drawn last.
     walk_from_root
         Yield all descendents of root widget.
     walk
@@ -523,7 +523,7 @@ class Widget:
             case str():
                 self._background_char = background_char[:1] or None
             case _:
-                raise ValueError("`background_char` must be `None` or a `str`")
+                raise ValueError("invalid background character")
 
     @property
     def root(self) -> Optional["Widget"]:
@@ -955,13 +955,13 @@ class Widget:
         **properties : dict[str, int | float | Sequence[int] | Sequence[float | None]]
             Widget properties' target values. E.g., to smoothly tween a widget's position
             to (5, 10) over 2.5 seconds, specify the `pos` property as a keyword-argument:
-            `await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)`
+            ``await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)``
 
         Warnings
         --------
         Running several tweens on the same properties concurrently will probably result in unexpected
-        behavior. `tween` won't work for ndarray types such as `canvas`, `colors`, or `texture`.
-        If tweening size or pos hints, make sure the relevant hints aren't `None` to start.
+        behavior. `tween` won't work for ndarray types. If tweening size or pos hints, make sure the
+        relevant hints aren't `None` to start.
         """
         end_time = monotonic() + duration
         start_values = tuple(getattr(self, attr) for attr in properties)

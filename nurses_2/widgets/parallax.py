@@ -17,9 +17,7 @@ class Parallax(GraphicWidget):
     layers : Sequence[GraphicWidget]
         Individual layers of the parallax in background-to-foreground order.
     speeds : Sequence[float] | None, default: None
-        The scrolling speed of each individual layer. A speed of x will scroll a
-        layer by `round(x * offset)` where offset is either `vertical_offset` or
-        `horizontal_offset` of the parallax. Default speeds are `1/(N - i)`
+        The scrolling speed of each layer. Default speeds are `1/(N - i)`
         where `N` is the number of layers and `i` is the index of a layer.
 
     Attributes

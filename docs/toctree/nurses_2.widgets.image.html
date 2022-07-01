@@ -956,7 +956,7 @@ returns True.)</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -964,8 +964,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 

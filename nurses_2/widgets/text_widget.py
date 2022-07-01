@@ -162,26 +162,6 @@ class TextWidget(Widget):
         ------
         ValueError
             If full-width character is followed by non-default character.
-
-        Notes
-        -----
-        In some cases, even with normalized canvases, widgets with full-width characters
-        could cause display issues.
-
-        Imagine the following arrangement of widgets:
-        ```
-                      _________
-                     | fw  ____|___
-                     | fw | fw  ___|__
-                     | fw | fw | fw  _|__
-                     | fw | fw | fw | fw |
-                     |____|____|____|____|
-        ```
-
-        `fw` represents a full-width character and each widget is offset from the next by one.
-        One can end up with an entire row of full-width characters which will likely ruin the
-        display. If `normalize_canvas` and `add_text` aren't sufficient for the user, a custom
-        render method will likely need to be implemented.
         """
         canvas = self.canvas
         default_char = self.default_char
@@ -209,8 +189,8 @@ class TextWidget(Widget):
         Notes
         -----
         One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-        E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
-        the `add_text` `row` and `column` parameters make sense.
+        E.g., a view with shape `(m,)` will be re-shaped to `(1, m)` so that
+        the `row` and `column` parameters of `add_text` make sense.
         """
         return CanvasView(self.canvas)
 

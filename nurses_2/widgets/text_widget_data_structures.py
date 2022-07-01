@@ -15,11 +15,11 @@ STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH
 
 class CanvasView:
     """
-    A wrapper around a `numpy` `ndarray` with a convenient `add_text` method.
+    A wrapper around a `numpy.ndarray` with a convenient `add_text` method.
 
     One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-    E.g., rows and columns with shape (m,) will be re-shaped to (1, m) so that
-    the `add_text` `row` and `column` parameters make sense.
+    E.g., a view with shape `(m,)` will be re-shaped to `(1, m)` so that
+    the `row` and `column` parameters of `add_text` make sense.
 
     Methods
     -------
@@ -62,8 +62,7 @@ class CanvasView:
         text : str
             Text to add to canvas.
         row : int | tuple[int, ...] | slice, default: 0
-            Row or rows to which text is added. This will be passed as-is as the first argument
-            to `numpy`'s `ndarray.__getitem__`.
+            Row or rows to which text is added.
         column : int, default: 0
             The first column to which text is added.
         bold : bool, default: False

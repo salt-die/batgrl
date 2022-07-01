@@ -108,9 +108,6 @@ class AColor(NamedTuple):
     def fog(self, distance):
         """
         Return color as if seen through a fog from a distance.
-
-        Non-alpha channels will be multiplied by:
-            `e ** -distance`
         """
         p = e ** -distance
 
@@ -145,7 +142,7 @@ class ColorPair(NamedTuple):
     Methods
     -------
     from_colors
-        Create a `ColorPair` from two `Color`s.
+        Create a `ColorPair` from two colors.
     """
     fg_red:   int
     fg_green: int
@@ -157,7 +154,7 @@ class ColorPair(NamedTuple):
     @classmethod
     def from_colors(cls, fg_color: Color | AColor, bg_color: Color | AColor):
         """
-        Create a `ColorPair` from two `Color`s.
+        Create a `ColorPair` from two colors.
 
         Parameters
         ----------

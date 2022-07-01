@@ -1,7 +1,6 @@
 """
-A base for creating tree-like views. TreeViews are composed of `TreeViewNodes` that
-can be selected and toggled open or closed. Open nodes will yield their children
-with `TreeViewNode.iter_open_nodes`.
+A base for creating tree-like views. Tree views are composed of nodes that
+can be selected and toggled open or closed.
 """
 from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
@@ -38,8 +37,8 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
     Methods
     -------
     iter_open_nodes
-        Yield child nodes. If a child node, `child` is open yield
-        from `child.iter_open_nodes()`.
+        Yield all child nodes and recursively yield from
+        all open child nodes.
     add_node
         Add a child node.
     remove_node

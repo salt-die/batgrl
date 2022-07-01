@@ -570,7 +570,7 @@ whether the half block is upper or lower.</p>
 </dd>
 <dt><strong>color</strong><span class="classifier">AColor</span></dt><dd><p>Color of particle.</p>
 </dd>
-<dt><strong>size</strong><span class="classifier">Size</span></dt><dd><p>Size of particle. Always <cite>Size(1, 1)</cite>.</p>
+<dt><strong>size</strong><span class="classifier">Size</span></dt><dd><p>Size of particle.</p>
 </dd>
 <dt><strong>top</strong><span class="classifier">int</span></dt><dd><p>Y-coordinate of particle.</p>
 </dd>
@@ -712,14 +712,8 @@ whether the half block is upper or lower.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.particle_field._field_base._ParticleFieldBase</span></code></p>
 <p>A widget that only has <cite>GraphicParticle</cite> children.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>TypeError</dt><dd><p>If <cite>add_widget</cite> is called with a non-<cite>GraphicParticle</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Attributes</dt>
-<dd class="field-even"><dl class="simple">
 <dt><a class="reference internal" href="#nurses_2.widgets.particle_field.graphic_field.GraphicParticleField.absolute_pos" title="nurses_2.widgets.particle_field.graphic_field.GraphicParticleField.absolute_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></a></dt><dd><p>Absolute position on screen.</p>
 </dd>
 <dt><strong>anchor</strong></dt><dd></dd>
@@ -1185,7 +1179,7 @@ to their children.</p>
 </dd>
 <dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
 to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
-<cite>await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)</cite></p>
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
 </dd>
@@ -1193,8 +1187,8 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types such as <cite>canvas</cite>, <cite>colors</cite>, or <cite>texture</cite>.
-If tweening size or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
+behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
+relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 
