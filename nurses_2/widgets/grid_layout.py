@@ -49,9 +49,11 @@ class GridLayout(Widget):
     Notes
     -----
     Re-ordering children (such as through `pull_to_front`) and calling `_reposition_children`
-    will change the positions of the children in the grid. The read-only `minimum_grid_size`
-    property keeps track of the minimum size the grid can be to show all children and can be used
-    to set the size of the grid layout, e.g., ``my_grid.size = my_grid.minimum_grid_size``.
+    will change the positions of the children in the grid.
+
+    The read-only attribute `minimum_grid_size` is the minimum size the grid must be to show all
+    children. This can be used to set the size of the grid layout, e.g.,
+    ``my_grid.size = my_grid.minimum_grid_size``.
 
     Parameters
     ----------
@@ -200,7 +202,7 @@ class GridLayout(Widget):
     @property
     def minimum_grid_size(self) -> Size:
         """
-        Return the minimum grid size to contain all children.
+        Return the minimum grid size to show all children.
         """
         return self._minimum_grid_size
 

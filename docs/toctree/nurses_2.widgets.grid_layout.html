@@ -570,9 +570,10 @@ default is left-to-right then top-to-bottom.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>Re-ordering children (such as through <cite>pull_to_front</cite>) and calling <cite>_reposition_children</cite>
-will change the positions of the children in the grid. The read-only <cite>minimum_grid_size</cite>
-property keeps track of the minimum size the grid can be to show all children and can be used
-to set the size of the grid layout, e.g., <code class="docutils literal notranslate"><span class="pre">my_grid.size</span> <span class="pre">=</span> <span class="pre">my_grid.minimum_grid_size</span></code>.</p>
+will change the positions of the children in the grid.</p>
+<p>The read-only attribute <cite>minimum_grid_size</cite> is the minimum size the grid must be to show all
+children. This can be used to set the size of the grid layout, e.g.,
+<code class="docutils literal notranslate"><span class="pre">my_grid.size</span> <span class="pre">=</span> <span class="pre">my_grid.minimum_grid_size</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -860,7 +861,7 @@ returns True.)</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.grid_layout.GridLayout.minimum_grid_size">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minimum_grid_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.grid_layout.GridLayout.minimum_grid_size" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the minimum grid size to contain all children.</p>
+<dd><p>Return the minimum grid size to show all children.</p>
 </dd></dl>
 
 <dl class="py method">
