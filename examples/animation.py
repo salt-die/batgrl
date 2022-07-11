@@ -4,7 +4,8 @@ from nurses_2.app import App
 from nurses_2.widgets.widget_data_structures import Anchor
 from nurses_2.widgets.animation import Animation, Interpolation
 
-PATH_TO_FRAMES_DIR = Path("frames") / "caveman"
+THIS_DIR = Path(__file__).parent
+PATH_TO_FRAMES_DIR = THIS_DIR / Path("frames") / "caveman"
 
 
 class MyApp(App):

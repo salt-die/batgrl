@@ -20,7 +20,8 @@ FLASH_DELAY = .1
 LOCK_DOWN_DELAY = .5
 MOVE_RESET = 15
 QUEUE_ID = count()
-TETRIS_BACKGROUND_PATH = Path("..") / "images" / "background_2.png"
+ROOT_DIR = Path(__file__).parent.parent
+TETRIS_BACKGROUND_PATH = ROOT_DIR / Path("..") / "images" / "background_2.png"
 
 def gravity(level):
     """

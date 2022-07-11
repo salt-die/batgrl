@@ -6,7 +6,8 @@ from nurses_2.widgets.image import Image
 from nurses_2.widgets.text_widget import TextWidget, Anchor
 from nurses_2.widgets.widget_data_structures import Easing
 
-IMAGE_DIR = Path("images")
+THIS_DIR = Path(__file__).parent
+IMAGE_DIR = THIS_DIR / Path("images")
 PATH_TO_LOGO = IMAGE_DIR / "logo_solo_flat_256.png"
 
 ALPHAS = cycle((0.1, 1.0))

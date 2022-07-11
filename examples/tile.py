@@ -5,8 +5,9 @@ from nurses_2.app import App
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.tiled_image import TiledImage
 
-LOGO_PATH = Path("images") / "python_discord_logo.png"
-LOGO_FLAT = Path("images") / "logo_solo_flat_256.png"
+THIS_DIR = Path(__file__).parent
+LOGO_PATH = THIS_DIR / Path("images") / "python_discord_logo.png"
+LOGO_FLAT = THIS_DIR / Path("images") / "logo_solo_flat_256.png"
 
 
 class MyApp(App):

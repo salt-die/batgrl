@@ -14,7 +14,8 @@ from nurses_2.colors import AColor, ARED, AWHITE, gradient, rainbow_gradient
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.animation import Animation
 
-PATH_TO_PRIDE = Path("frames") / "pride"
+THIS_DIR = Path(__file__).parent
+PATH_TO_PRIDE = THIS_DIR / Path("frames") / "pride"
 HEIGHT, WIDTH = 20, 20
 SNAKE_START = HEIGHT // 2, WIDTH // 2
 TICK_DURATION = .12

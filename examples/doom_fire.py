@@ -14,7 +14,8 @@ from nurses_2.widgets.image import Image
 from nurses_2.widgets.text_widget import TextWidget, Anchor
 from nurses_2.widgets.widget import Widget
 
-DOOM_PATH = Path("images") / "doom.png"
+THIS_DIR = Path(__file__).parent
+DOOM_PATH = THIS_DIR / Path("images") / "doom.png"
 
 FIRE_PALETTE = np.array([
     [  0,   0,   0,   0],

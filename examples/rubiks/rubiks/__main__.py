@@ -5,7 +5,8 @@ from nurses_2.widgets.animation import Animation
 
 from .rubiks_cube import RubiksCube
 
-PATH_TO_BACKGROUND = Path("..") / "frames" / "night"
+ROOT_DIR = Path(__file__).parent.parent
+PATH_TO_BACKGROUND = ROOT_DIR / Path("..") / "frames" / "night"
 
 
 class RubiksApp(App):
