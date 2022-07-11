@@ -130,10 +130,14 @@ class _Root(Widget):
         write("\x1b[?25l")  # Hide cursor
 
         for y, x, (fr, fg, fb, br, bg, bb), char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
-            # The escape codes for moving the cursor and setting the color concatenated:
-            write(f"\x1b[{y + 1};{x + 1}H\x1b[0;38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m{char}")
+            write(
+                f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
+                f"\x1b[0;38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
+                f"{char}"
+            )
 
         write("\x1b[0m")  # Reset attributes
+
         env_out.flush()
 
     def dispatch_press(self, key_press_event: KeyPressEvent):
