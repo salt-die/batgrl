@@ -26,7 +26,7 @@ class _Root(Widget):
         self.background_char = background_char
         self.background_color_pair = background_color_pair
 
-        self.size = env_out.get_size()
+        self.size = env_out.get_size()  # Setting this property implicitly calls `on_size` to initialize canvas and colors.
 
     def on_size(self):
         """
@@ -40,9 +40,10 @@ class _Root(Widget):
         self._last_canvas = np.full((h, w), self.background_char, dtype=object)
         self._last_colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
 
-        invalidate_char = "a" if "a" != self.background_char else "b"  # A character that guarantees full-screen redraw.
-        self.canvas = np.full_like(self._last_canvas, invalidate_char)
+        self.canvas = self._last_canvas.copy()
         self.colors = self._last_colors.copy()
+
+        self._redraw_all = True
 
         # Buffer arrays to re-use in the `render` method:
         self._char_diffs = np.zeros_like(self.canvas, dtype=bool)
@@ -95,13 +96,8 @@ class _Root(Widget):
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
         self.colors, self._last_colors = self._last_colors, self.colors
 
-        # Bring arrays into locals:
         canvas = self.canvas
         colors = self.colors
-
-        char_diffs = self._char_diffs
-        color_diffs = self._color_diffs
-        reduced_color_diffs = self._reduced_color_diffs
 
         env_out = self.env_out
         write = env_out._buffer.append
@@ -114,23 +110,31 @@ class _Root(Widget):
 
         self.render_children(np.s_[0: height, 0: width], canvas, colors)
 
-        # Find differences between current render and last render:
-        # (`(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)` with buffers.)
-        np.not_equal(self._last_canvas, canvas, out=char_diffs)
-        np.not_equal(self._last_colors, colors, out=color_diffs)
-        np.any(color_diffs, axis=-1, out=reduced_color_diffs)
-        np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
+        if self._redraw_all:
+            ys, xs = np.indices((height, width)).reshape(2, height * width)
+            self._redraw_all = False
+        else:
+            char_diffs = self._char_diffs
+            color_diffs = self._color_diffs
+            reduced_color_diffs = self._reduced_color_diffs
 
-        if char_diffs.any():
-            write("\x1b[?25l")  # Hide cursor
+            # Find differences between current render and last render:
+            # (`(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)` with buffers.)
+            np.not_equal(self._last_canvas, canvas, out=char_diffs)
+            np.not_equal(self._last_colors, colors, out=color_diffs)
+            np.any(color_diffs, axis=-1, out=reduced_color_diffs)
+            np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
 
             ys, xs = np.nonzero(char_diffs)
-            for y, x, color, char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
-                # The escape codes for moving the cursor and setting the color concatenated:
-                write("\x1b[{};{}H\x1b[0;38;2;{};{};{};48;2;{};{};{}m{}".format(y + 1, x + 1, *color, char))
 
-            write("\x1b[0m")  # Reset attributes
-            env_out.flush()
+        write("\x1b[?25l")  # Hide cursor
+
+        for y, x, (fr, fg, fb, br, bg, bb), char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
+            # The escape codes for moving the cursor and setting the color concatenated:
+            write(f"\x1b[{y + 1};{x + 1}H\x1b[0;38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m{char}")
+
+        write("\x1b[0m")  # Reset attributes
+        env_out.flush()
 
     def dispatch_press(self, key_press_event: KeyPressEvent):
         """
