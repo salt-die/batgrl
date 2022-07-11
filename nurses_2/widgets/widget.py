@@ -666,9 +666,9 @@ class Widget:
         """
         Move widget to end of widget stack so that it is drawn last.
         """
-        parent = self.parent
-        parent.remove_widget(self)
-        parent.add_widget(self)
+        if (parent := self.parent) is not None:
+            parent.remove_widget(self)
+            parent.add_widget(self)
 
     def walk_from_root(self):
         """
