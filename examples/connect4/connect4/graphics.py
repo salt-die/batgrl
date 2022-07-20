@@ -60,10 +60,11 @@ class Checker(GraphicWidget):
         self._flash_task.cancel()
 
     async def _flash(self):
-        flash_gradient = cycle(gradient(self._color, AWHITE, 20) + gradient(AWHITE, self._color, 10))
-        texture = self.texture
-
-        for texture[:] in flash_gradient:
+        flash_gradient = cycle(
+            gradient(self._color, AWHITE, 20)
+            + gradient(AWHITE, self._color, 10)
+        )
+        for self.texture[:] in flash_gradient:
             try:
                 await asyncio.sleep(.05)
             except asyncio.CancelledError:
