@@ -148,6 +148,9 @@ class GridLayout(Widget):
 
         super().__init__(**kwargs)
 
+    def on_size(self):
+        self._reposition_children()
+
     def _index_at(self, row: int, col: int) -> int:
         """
         Return the index of the child at a given row and column in the grid.
