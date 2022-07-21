@@ -215,25 +215,28 @@ class App(ABC):
                 await asyncio.gather(auto_render(), self.on_start())
 
     def add_widget(self, widget):
+        """
+        Alias for `self.root.add_widget`.
+        """
         self.root.add_widget(widget)
 
     def add_widgets(self, *widgets):
+        """
+        Alias for `self.root.add_widgets`.
+        """
         self.root.add_widgets(*widgets)
 
     @property
     def children(self):
+        """
+        Alias for `self.root.children`.
+        """
         return self.root.children
 
 
 def run_widget_as_app(widget: type[Widget], *args, **kwargs):
     """
     Run a widget as a full-screen app.
-
-    This is a convenience function provided to reduce boilerplate
-    for the simplest case of an App. The widget type is provided
-    instead of an instance to cover cases where the widget schedules
-    tasks on instantiation as no event loop exists before the App is
-    created.
 
     Parameters
     ----------
@@ -245,8 +248,6 @@ def run_widget_as_app(widget: type[Widget], *args, **kwargs):
 
     **kwargs
         Keyword arguments for widget instantiation.
-
-
     """
     class _DefaultApp(App):
         async def on_start(self):

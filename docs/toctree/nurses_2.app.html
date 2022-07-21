@@ -263,7 +263,7 @@ is double this value.</p>
 Resizing the terminal while recording isn’t currently supported by
 the asciicast format – doing so will corrupt the recording.</p>
 </dd>
-<dt><strong>children</strong><span class="classifier">list[Widget]</span></dt><dd><p>Alias for <cite>self.root.children</cite>.</p>
+<dt><a class="reference internal" href="#nurses_2.app.App.children" title="nurses_2.app.App.children"><code class="xref py py-obj docutils literal notranslate"><span class="pre">children</span></code></a><span class="classifier">list[Widget]</span></dt><dd><p>Alias for <cite>self.root.children</cite>.</p>
 </dd>
 </dl>
 </dd>
@@ -295,17 +295,20 @@ the asciicast format – doing so will corrupt the recording.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.app.App.add_widget">
 <span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.add_widget" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Alias for <cite>self.root.add_widget</cite>.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.app.App.add_widgets">
 <span class="sig-name descname"><span class="pre">add_widgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.App.add_widgets" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Alias for <cite>self.root.add_widgets</cite>.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.app.App.children">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#nurses_2.app.App.children" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Alias for <cite>self.root.children</cite>.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.app.App.color_theme">
@@ -336,11 +339,6 @@ the asciicast format – doing so will corrupt the recording.</p>
 <dt class="sig sig-object py" id="nurses_2.app.run_widget_as_app">
 <span class="sig-prename descclassname"><span class="pre">nurses_2.app.</span></span><span class="sig-name descname"><span class="pre">run_widget_as_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.app.run_widget_as_app" title="Permalink to this definition">#</a></dt>
 <dd><p>Run a widget as a full-screen app.</p>
-<p>This is a convenience function provided to reduce boilerplate
-for the simplest case of an App. The widget type is provided
-instead of an instance to cover cases where the widget schedules
-tasks on instantiation as no event loop exists before the App is
-created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
