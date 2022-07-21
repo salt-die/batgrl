@@ -29,10 +29,11 @@ html_sidebars = {
 }
 
 html_theme_options = {
+    "github_url": "https://github.com/salt-die/nurses_2",
     "show_prev_next": False,
     "left_sidebar_end": [],
     "page_sidebar_items": ["page-toc"],
-    "footer_items": [],
+    "footer_items": ["copyright"],
 }
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

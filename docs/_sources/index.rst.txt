@@ -4,7 +4,7 @@
 nurses_2 documentation
 **********************
 
-Welcome to nurses_2 documentation. This is currently a work in progress.
+Welcome to nurses_2 documentation. Work in progress.
 
 .. toctree::
    :maxdepth: 1
