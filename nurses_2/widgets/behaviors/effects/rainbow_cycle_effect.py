@@ -34,7 +34,12 @@ class RainbowCycleEffect(Effect):
     enable_background_rainbow : bool
         Add colors to background.
     cycle_task : asyncio.Task
-        Coroutine that updates current color to use from gradient.
+        Coroutine that updates current color from gradient.
+
+    Methods
+    -------
+    apply_effect:
+        Apply an effect to the rendered views of a widget.
     """
     def __init__(
         self,

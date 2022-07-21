@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.behaviors.effects.effect &#8212; Python 0.9.4 documentation</title>
+    <title>nurses_2.widgets.behaviors.effects.effect &#8212; Python 0.9.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.9.4 documentation</p>
+    <p class="title logo__title">Python 0.9.5 documentation</p>
   
 </a>
     
@@ -525,7 +525,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect" title="nurses_2.widgets.behaviors.effects.effect.Effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Effect</span></code></a>()</p></td>
-<td><p>Effects are behaviors that modify how a widget and its children are rendered. Effects should be inherited in the reverse order that they are applied, e.g., <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">class</span> <span class="pre">MyEffectWidget(Effect1,</span> <span class="pre">Effect2,</span> <span class="pre">TextWidget):</span>&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">`</span></code> applies Effect2 then Effect1.</p></td>
+<td><p>Effects are behaviors that modify how a widget and its children are rendered.</p></td>
 </tr>
 </tbody>
 </table>
@@ -534,22 +534,20 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.effects.effect.</span></span><span class="sig-name descname"><span class="pre">Effect</span></span><a class="headerlink" href="#nurses_2.widgets.behaviors.effects.effect.Effect" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Effects are behaviors that modify how a widget and its children are rendered.
-Effects should be inherited in the reverse order that they are applied, e.g.,
-<a href="#id1"><span class="problematic" id="id2">``</span></a>`
-class MyEffectWidget(Effect1, Effect2, TextWidget):</p>
-<blockquote>
-<div><p>…</p>
-</div></blockquote>
-<p><a href="#id3"><span class="problematic" id="id4">``</span></a>`
-applies Effect2 then Effect1.</p>
+Effects should be inherited in the reverse order that they are applied, e.g.,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyEffectWidget</span><span class="p">(</span><span class="n">Effect1</span><span class="p">,</span> <span class="n">Effect2</span><span class="p">,</span> <span class="n">TextWidget</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>applies Effect2 then Effect1.</p>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 25%" />
+<col style="width: 75%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect" title="nurses_2.widgets.behaviors.effects.effect.Effect.apply_effect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_effect</span></code></a>(canvas_view, colors_view, source)</p></td>
+<tr class="row-odd"><td><p><strong>apply_effect:</strong></p></td>
 <td><p>Apply an effect to the rendered views of a widget.</p></td>
 </tr>
 </tbody>

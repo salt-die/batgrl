@@ -16,6 +16,15 @@ class Color(NamedTuple):
     """
     A 24-bit color.
 
+    Parameters
+    ----------
+    red : int
+        The red component.
+    green : int
+        The green component.
+    blue : int
+        The blue component.
+
     Attributes
     ----------
     red : int
@@ -27,8 +36,12 @@ class Color(NamedTuple):
 
     Methods
     -------
-    from_hex
+    from_hex:
         Create a `Color` from a hex code.
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     red:   int
     green: int
@@ -60,6 +73,17 @@ class AColor(NamedTuple):
     """
     A 24-bit color with an alpha channel.
 
+    Parameters
+    ----------
+    red : int
+        The red component.
+    green : int
+        The green component.
+    blue : int
+        The blue component.
+    alpha : int
+        The alpha component.
+
     Attributes
     ----------
     red : int
@@ -73,10 +97,14 @@ class AColor(NamedTuple):
 
     Methods
     -------
-    from_hex
+    from_hex:
         Create an `AColor` from a hex code.
-    fog
+    fog:
         Return color as if seen through a fog from a distance.
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     red:   int
     green: int
@@ -120,6 +148,25 @@ class ColorPair(NamedTuple):
     """
     A foreground and background pair of 24-bit colors.
 
+    Parameters
+    ----------
+    fg_red : int
+        Foreground red component.
+    fg_green : int
+        Foreground green component.
+    fg_blue : int
+        Foreground blue component.
+    bg_red : int
+        Background red component.
+    bg_green : int
+        Background green component.
+    bg_blue : int
+        Background blue component.
+    fg_color : Color
+        The foreground color.
+    bg_color : Color
+        The background color.
+
     Attributes
     ----------
     fg_red : int
@@ -141,8 +188,12 @@ class ColorPair(NamedTuple):
 
     Methods
     -------
-    from_colors
+    from_colors:
         Create a `ColorPair` from two colors.
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     fg_red:   int
     fg_green: int
@@ -178,6 +229,33 @@ class ColorTheme(NamedTuple):
     """
     A palette of colors used to paint an app's themable widgets.
 
+    Parameters
+    ----------
+    primary_fg : Color
+        Primary foreground color.
+    primary_bg : Color
+        Primary background color.
+    primary_fg_light : Color
+        Primary light foreground color.
+    primary_bg_light : Color
+        Primary light background color.
+    primary_fg_dark : Color
+        Primary dark foreground color.
+    primary_bg_dark : Color
+        Primary dark background color.
+    secondary_fg : Color
+        Secondary foreground color.
+    secondary_bg : Color
+        Secondary background color.
+    primary_color_pair : ColorPair
+        Primary color pair.
+    primary_light_color_pair :  ColorPair
+        Primary light color pair.
+    primary_dark_color_pair : ColorPair
+        Primary dark color pair.
+    secondary_color_pair : ColorPair
+        Secondary color pair.
+
     Attributes
     ----------
     primary_fg : Color
@@ -204,6 +282,13 @@ class ColorTheme(NamedTuple):
         Primary dark color pair.
     secondary_color_pair : ColorPair
         Secondary color pair.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     primary_fg: Color
     primary_bg: Color

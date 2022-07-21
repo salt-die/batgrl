@@ -41,11 +41,11 @@ class GrabbableBehavior:
 
     Methods
     -------
-    grab
+    grab:
         Grab the widget.
-    ungrab
+    ungrab:
         Ungrab the widget.
-    grab_update
+    grab_update:
         Update widget with incoming mouse events while grabbed.
     """
     def __init__(self, *, is_grabbable=True, disable_ptf=False, **kwargs):

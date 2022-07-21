@@ -14,8 +14,8 @@ class Themable(ABC):
 
     Methods
     -------
-    update_theme
-        Repaint the widget with a new theme. This should be called at
+    update_theme:
+        Repaint the widget with a new theme. This should be called at:
         least once when a widget is initialized.
     """
     color_theme = DEFAULT_COLOR_THEME

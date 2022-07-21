@@ -21,6 +21,11 @@ class Camera:
     size : Size
         Size of the camera.
 
+    Methods
+    -------
+    get_submap:
+        Get the section of the map visible by the camera.
+
     Notes
     -----
     Submap values for areas of the camera that are out-of-bounds of the map
@@ -106,6 +111,27 @@ class Camera:
 class Interval(NamedTuple):
     """
     A continuous interval.
+
+    Parameters
+    ----------
+    start : float
+        Start of interval.
+    end : float
+        End of interval.
+
+    Attributes
+    ----------
+    start : float
+        Start of interval.
+    end : float
+        End of interval.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     start: float
     end: float
@@ -124,6 +150,31 @@ class LightIntensity(NamedTuple):
     """
     Intensity of light in three color channels.
     Each value should be between `0` and `1`.
+
+    Parameters
+    ----------
+    r : float
+        Red component.
+    g : float
+        Green component.
+    b : float
+        Blue component.
+
+    Attributes
+    ----------
+    r : float
+        Red component.
+    g : float
+        Green component.
+    b : float
+        Blue component.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     r: float
     g: float
@@ -137,9 +188,28 @@ class LightIntensity(NamedTuple):
 
 class Coordinates(NamedTuple):
     """
-    Two-dimensional coordinates. This differs from `Point`
-    as it expects arbitrary floats (as opposed to ints)
-    for each coordinate.
+    Two-dimensional coordinates.
+
+    Parameters
+    ----------
+    y : float
+        Y-coordinate.
+    x : float
+        X-coordinate.
+
+    Attributes
+    ----------
+    y : float
+        Y-coordinate.
+    x : float
+        X-coordinate.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     y: float
     x: float
@@ -189,11 +259,14 @@ class LightSource:
 
 class Restrictiveness(str, Enum):
     """
-    The restrictiveness of the shadow caster. For
-    permissive, any interval is visible as long as
-    any of it's start, center, or end points are visible.
-    For moderate, the center and either end must be visible.
-    For restrictive, all points in the interval must be visible.
+    The restrictiveness of the shadow caster.
+
+    `Restrictiveness` is one of "permissive", "moderate", "restrictive".
+
+    For "permissive", any interval is visible as long as any of it's start,
+    center, or end points are visible. For "moderate", the center and
+    either end must be visible. For "restrictive", all points in the
+    interval must be visible.
     """
     PERMISSIVE = "permissive"
     MODERATE = "moderate"

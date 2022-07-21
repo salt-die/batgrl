@@ -165,43 +165,43 @@ class Widget:
 
     Methods
     -------
-    on_size
+    on_size:
         Called when widget is resized.
-    update_geometry
+    update_geometry:
         Called when parent is resized. Applies size and pos hints.
-    to_local
+    to_local:
         Convert point in absolute coordinates to local coordinates.
-    collides_point
+    collides_point:
         True if point is within widget's bounding box.
-    collides_widget
+    collides_widget:
         True if other is within widget's bounding box.
-    add_widget
+    add_widget:
         Add a child widget.
-    add_widgets
+    add_widgets:
         Add multiple child widgets.
-    remove_widget
+    remove_widget:
         Remove a child widget.
-    pull_to_front
+    pull_to_front:
         Move to end of widget stack so widget is drawn last.
-    walk_from_root
+    walk_from_root:
         Yield all descendents of root widget.
-    walk
+    walk:
         Yield all descendents.
-    subscribe
+    subscribe:
         Subscribe to a widget property.
-    unsubscribe
+    unsubscribe:
         Unsubscribe to a widget property.
-    on_press
+    on_press:
         Handle key press event.
-    on_click
+    on_click:
         Handle mouse event.
-    on_double_click
+    on_double_click:
         Handle double-click mouse event.
-    on_triple_click
+    on_triple_click:
         Handle triple-click mouse event.
-    on_paste
+    on_paste:
         Handle paste event.
-    tween
+    tween:
         Sequentially update a widget property over time.
     """
     def __init__(

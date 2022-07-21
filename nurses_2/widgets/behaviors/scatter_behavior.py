@@ -15,6 +15,10 @@ class ScatterBehavior(GrabbableBehavior):
         Disallow child widgets from being translated out-of-bounds if true.
     disable_child_ptf : bool, default: False
         If true, child widgets won't be pulled-to-front when clicked.
+    is_grabbable : bool, default: True
+        If False, grabbable behavior is disabled.
+    disable_ptf : bool, default: False
+        If True, widget will not be pulled to front when grabbed.
 
     Attributes
     ----------
@@ -22,6 +26,27 @@ class ScatterBehavior(GrabbableBehavior):
         Disallow child widgets from being translated out-of-bounds if true.
     disable_child_ptf : bool
         If true, child widgets won't be pulled-to-front when clicked.
+    is_grabbable : bool
+        If False, grabbable behavior is disabled.
+    disable_ptf : bool
+        If True, widget will not be pulled to front when grabbed.
+    is_grabbed : bool
+        True if widget is grabbed.
+    mouse_dyx : Point
+        Last change in mouse position.
+    mouse_dy : int
+        Last vertical change in mouse position.
+    mouse_dx : int
+        Last horizontal change in mouse position.
+
+    Methods
+    -------
+    grab:
+        Grab the widget.
+    ungrab:
+        Ungrab the widget.
+    grab_update:
+        Update widget with incoming mouse events while grabbed.
     """
     def __init__(self, *, disable_child_oob=False, disable_child_ptf=False, **kwargs):
         super().__init__(**kwargs)

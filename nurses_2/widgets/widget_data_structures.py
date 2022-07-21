@@ -9,8 +9,30 @@ __all__ = "SizeHint", "PosHint", "Anchor", "Easing"
 
 class SizeHint(NamedTuple):
     """
-    A size hint. Sets a widget's size as a proportion
-    of parent's size.
+    A size hint.
+
+    Sets a widget's size as a proportion of parent's size.
+
+    Parameters
+    ----------
+    height : float | None
+        Proportion of parent's height.
+    width : float | None
+        Proportion of parent's width.
+
+    Attributes
+    ----------
+    height : float | None
+        Proportion of parent's height.
+    width : float | None
+        Proportion of parent's width.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     height: float | None
     width: float | None
@@ -18,8 +40,30 @@ class SizeHint(NamedTuple):
 
 class PosHint(NamedTuple):
     """
-    A position hint. Sets a widget's position as a proportion
-    of parent's size.
+    A position hint.
+
+    Sets a widget's position as a proportion of parent's size.
+
+    Parameters
+    ----------
+    y : float | None
+        Y-coordinate as a proportion of parent's height.
+    x : float | None
+        X-coordinate as a proportion of parent's width.
+
+    Attributes
+    ----------
+    y : float | None
+        Y-coordinate as a proportion of parent's height.
+    x : float | None
+        X-coordinate as a proportion of parent's width.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
     """
     y: float | None
     x: float | None
@@ -28,6 +72,10 @@ class PosHint(NamedTuple):
 class Anchor(str, Enum):
     """
     Point of widget attached to `pos_hint`.
+
+    `Anchor` is one of "center", "left_center", "right_center",
+    "top_left", "top_center", "top_right", "bottom_left",
+    "bottom_center", "bottom_right".
     """
     CENTER = "center"
     LEFT_CENTER = "left_center"

@@ -67,15 +67,15 @@ class App(ABC):
 
     Methods
     -------
-    on_start
+    on_start:
         Coroutine scheduled when app is run.
-    run
+    run:
         Run the app.
-    exit
+    exit:
         Exit the app.
-    add_widget
+    add_widget:
         Alias for `self.root.add_widget`.
-    add_widgets
+    add_widgets:
         Alias for `self.root.add_widgets`.
 
     """

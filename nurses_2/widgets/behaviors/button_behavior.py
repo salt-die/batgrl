@@ -10,6 +10,8 @@ __all__ = "ButtonState", "ButtonBehavior"
 class ButtonState(Enum):
     """
     State of a button widget.
+
+    `ButtonState` is one of "normal", "hover", "down".
     """
     NORMAL = "normal"
     HOVER = "hover"
@@ -41,13 +43,13 @@ class ButtonBehavior:
 
     Methods
     -------
-    update_normal
+    update_normal:
         Paint the normal state.
-    update_hover
+    update_hover:
         Paint the hover state.
-    update_down
+    update_down:
         Paint the down state.
-    on_release
+    on_release:
         Triggered when a button is released.
     """
     def __init__(self, *, always_release=False, **kwargs):

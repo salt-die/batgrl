@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.colors.color_data_structures &#8212; Python 0.9.4 documentation</title>
+    <title>nurses_2.colors.color_data_structures &#8212; Python 0.9.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.9.4 documentation</p>
+    <p class="title logo__title">Python 0.9.5 documentation</p>
   
 </a>
     
@@ -233,8 +233,20 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
 <p>A 24-bit color with an alpha channel.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>red</strong><span class="classifier">int</span></dt><dd><p>The red component.</p>
+</dd>
+<dt><strong>green</strong><span class="classifier">int</span></dt><dd><p>The green component.</p>
+</dd>
+<dt><strong>blue</strong><span class="classifier">int</span></dt><dd><p>The blue component.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">int</span></dt><dd><p>The alpha component.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>red</strong><span class="classifier">int</span></dt><dd><p>The red component.</p>
 </dd>
 <dt><strong>green</strong><span class="classifier">int</span></dt><dd><p>The green component.</p>
@@ -247,17 +259,23 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 19%" />
+<col style="width: 81%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor.from_hex" title="nurses_2.colors.color_data_structures.AColor.from_hex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hex</span></code></a>(hexcode)</p></td>
+<tr class="row-odd"><td><p><strong>from_hex:</strong></p></td>
 <td><p>Create an <cite>AColor</cite> from a hex code.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor.fog" title="nurses_2.colors.color_data_structures.AColor.fog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fog</span></code></a>(distance)</p></td>
+<tr class="row-even"><td><p><strong>fog:</strong></p></td>
 <td><p>Return color as if seen through a fog from a distance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -326,8 +344,18 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
 <p>A 24-bit color.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>red</strong><span class="classifier">int</span></dt><dd><p>The red component.</p>
+</dd>
+<dt><strong>green</strong><span class="classifier">int</span></dt><dd><p>The green component.</p>
+</dd>
+<dt><strong>blue</strong><span class="classifier">int</span></dt><dd><p>The blue component.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>red</strong><span class="classifier">int</span></dt><dd><p>The red component.</p>
 </dd>
 <dt><strong>green</strong><span class="classifier">int</span></dt><dd><p>The green component.</p>
@@ -338,14 +366,20 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 25%" />
+<col style="width: 75%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color.from_hex" title="nurses_2.colors.color_data_structures.Color.from_hex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_hex</span></code></a>(hexcode)</p></td>
+<tr class="row-odd"><td><p><strong>from_hex:</strong></p></td>
 <td><p>Create a <cite>Color</cite> from a hex code.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -402,8 +436,28 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
 <p>A foreground and background pair of 24-bit colors.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>fg_red</strong><span class="classifier">int</span></dt><dd><p>Foreground red component.</p>
+</dd>
+<dt><strong>fg_green</strong><span class="classifier">int</span></dt><dd><p>Foreground green component.</p>
+</dd>
+<dt><strong>fg_blue</strong><span class="classifier">int</span></dt><dd><p>Foreground blue component.</p>
+</dd>
+<dt><strong>bg_red</strong><span class="classifier">int</span></dt><dd><p>Background red component.</p>
+</dd>
+<dt><strong>bg_green</strong><span class="classifier">int</span></dt><dd><p>Background green component.</p>
+</dd>
+<dt><strong>bg_blue</strong><span class="classifier">int</span></dt><dd><p>Background blue component.</p>
+</dd>
+<dt><strong>fg_color</strong><span class="classifier">Color</span></dt><dd><p>The foreground color.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color</span></dt><dd><p>The background color.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>fg_red</strong><span class="classifier">int</span></dt><dd><p>Foreground red component.</p>
 </dd>
 <dt><strong>fg_green</strong><span class="classifier">int</span></dt><dd><p>Foreground green component.</p>
@@ -424,14 +478,20 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 30%" />
+<col style="width: 70%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair.from_colors" title="nurses_2.colors.color_data_structures.ColorPair.from_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_colors</span></code></a>(fg_color, bg_color)</p></td>
+<tr class="row-odd"><td><p><strong>from_colors:</strong></p></td>
 <td><p>Create a <cite>ColorPair</cite> from two colors.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
 </table>
@@ -518,8 +578,36 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
 <p>A palette of colors used to paint an app’s themable widgets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>primary_fg</strong><span class="classifier">Color</span></dt><dd><p>Primary foreground color.</p>
+</dd>
+<dt><strong>primary_bg</strong><span class="classifier">Color</span></dt><dd><p>Primary background color.</p>
+</dd>
+<dt><strong>primary_fg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light foreground color.</p>
+</dd>
+<dt><strong>primary_bg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light background color.</p>
+</dd>
+<dt><strong>primary_fg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark foreground color.</p>
+</dd>
+<dt><strong>primary_bg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark background color.</p>
+</dd>
+<dt><strong>secondary_fg</strong><span class="classifier">Color</span></dt><dd><p>Secondary foreground color.</p>
+</dd>
+<dt><strong>secondary_bg</strong><span class="classifier">Color</span></dt><dd><p>Secondary background color.</p>
+</dd>
+<dt><strong>primary_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary color pair.</p>
+</dd>
+<dt><strong>primary_light_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary light color pair.</p>
+</dd>
+<dt><strong>primary_dark_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary dark color pair.</p>
+</dd>
+<dt><strong>secondary_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Secondary color pair.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>primary_fg</strong><span class="classifier">Color</span></dt><dd><p>Primary foreground color.</p>
 </dd>
 <dt><strong>primary_bg</strong><span class="classifier">Color</span></dt><dd><p>Primary background color.</p>
@@ -548,16 +636,16 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 21%" />
+<col style="width: 79%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.count" title="nurses_2.colors.color_data_structures.ColorTheme.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.index" title="nurses_2.colors.color_data_structures.ColorTheme.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>

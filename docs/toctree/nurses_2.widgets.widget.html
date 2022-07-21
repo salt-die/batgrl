@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.widget &#8212; Python 0.9.4 documentation</title>
+    <title>nurses_2.widgets.widget &#8212; Python 0.9.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.9.4 documentation</p>
+    <p class="title logo__title">Python 0.9.5 documentation</p>
   
 </a>
     
@@ -661,68 +661,68 @@ widget is not transparent.</p>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 25%" />
+<col style="width: 75%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.on_size" title="nurses_2.widgets.widget.Widget.on_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_size</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.update_geometry" title="nurses_2.widgets.widget.Widget.update_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_geometry</span></code></a>()</p></td>
-<td><p>Update geometry due to a change in parent's size.</p></td>
+<tr class="row-even"><td><p><strong>update_geometry:</strong></p></td>
+<td><p>Called when parent is resized. Applies size and pos hints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.to_local" title="nurses_2.widgets.widget.Widget.to_local"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_local</span></code></a>(point)</p></td>
+<tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert point in absolute coordinates to local coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.collides_point" title="nurses_2.widgets.widget.Widget.collides_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_point</span></code></a>(point)</p></td>
-<td><p>Return True if point is within widget's bounding box.</p></td>
+<tr class="row-even"><td><p><strong>collides_point:</strong></p></td>
+<td><p>True if point is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.collides_widget" title="nurses_2.widgets.widget.Widget.collides_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collides_widget</span></code></a>(other)</p></td>
-<td><p>Return True if some part of <cite>other</cite> is within bounding box.</p></td>
+<tr class="row-odd"><td><p><strong>collides_widget:</strong></p></td>
+<td><p>True if other is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.add_widget" title="nurses_2.widgets.widget.Widget.add_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widget</span></code></a>(widget)</p></td>
+<tr class="row-even"><td><p><strong>add_widget:</strong></p></td>
 <td><p>Add a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.add_widgets" title="nurses_2.widgets.widget.Widget.add_widgets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_widgets</span></code></a>(*widgets)</p></td>
+<tr class="row-odd"><td><p><strong>add_widgets:</strong></p></td>
 <td><p>Add multiple child widgets.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.remove_widget" title="nurses_2.widgets.widget.Widget.remove_widget"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_widget</span></code></a>(widget)</p></td>
+<tr class="row-even"><td><p><strong>remove_widget:</strong></p></td>
 <td><p>Remove a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.pull_to_front" title="nurses_2.widgets.widget.Widget.pull_to_front"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pull_to_front</span></code></a>()</p></td>
-<td><p>Move widget to end of widget stack so that it is drawn last.</p></td>
+<tr class="row-odd"><td><p><strong>pull_to_front:</strong></p></td>
+<td><p>Move to end of widget stack so widget is drawn last.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.walk_from_root" title="nurses_2.widgets.widget.Widget.walk_from_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk_from_root</span></code></a>()</p></td>
-<td><p>Yield all descendents of the root widget.</p></td>
+<tr class="row-even"><td><p><strong>walk_from_root:</strong></p></td>
+<td><p>Yield all descendents of root widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.walk" title="nurses_2.widgets.widget.Widget.walk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">walk</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><strong>walk:</strong></p></td>
 <td><p>Yield all descendents.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.subscribe" title="nurses_2.widgets.widget.Widget.subscribe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subscribe</span></code></a>(source, attr, action)</p></td>
+<tr class="row-even"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.unsubscribe" title="nurses_2.widgets.widget.Widget.unsubscribe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsubscribe</span></code></a>(source, attr)</p></td>
-<td><p>Unsubscribe to a widget event and return the callable that was subscribed to the event or <cite>None</cite> if subscription isn't found.</p></td>
+<tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
+<td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.on_press" title="nurses_2.widgets.widget.Widget.on_press"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_press</span></code></a>(key_press_event)</p></td>
+<tr class="row-even"><td><p><strong>on_press:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.on_click" title="nurses_2.widgets.widget.Widget.on_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_click</span></code></a>(mouse_event)</p></td>
+<tr class="row-odd"><td><p><strong>on_click:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.on_double_click" title="nurses_2.widgets.widget.Widget.on_double_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_double_click</span></code></a>(mouse_event)</p></td>
+<tr class="row-even"><td><p><strong>on_double_click:</strong></p></td>
 <td><p>Handle double-click mouse event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.on_triple_click" title="nurses_2.widgets.widget.Widget.on_triple_click"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_triple_click</span></code></a>(mouse_event)</p></td>
+<tr class="row-odd"><td><p><strong>on_triple_click:</strong></p></td>
 <td><p>Handle triple-click mouse event.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.on_paste" title="nurses_2.widgets.widget.Widget.on_paste"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_paste</span></code></a>(paste_event)</p></td>
+<tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.Widget.tween" title="nurses_2.widgets.widget.Widget.tween"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tween</span></code></a>(*[, duration, easing, on_start, ...])</p></td>
-<td><p>Coroutine that sequentially updates widget properties over a duration (in seconds).</p></td>
+<tr class="row-odd"><td><p><strong>tween:</strong></p></td>
+<td><p>Sequentially update a widget property over time.</p></td>
 </tr>
 </tbody>
 </table>

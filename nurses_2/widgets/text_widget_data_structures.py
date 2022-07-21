@@ -23,7 +23,7 @@ class CanvasView:
 
     Methods
     -------
-    add_text
+    add_text:
         Add text to the underlying canvas.
     """
     __slots__ = "canvas",

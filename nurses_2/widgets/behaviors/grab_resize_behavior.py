@@ -117,7 +117,7 @@ class GrabResizeBehavior:
 
     Methods
     -------
-    pull_border_to_front
+    pull_border_to_front:
         Pull borders to the front.
 
     Notes

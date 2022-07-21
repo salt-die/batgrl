@@ -17,6 +17,8 @@ __all__ = (
 class ToggleState(str, Enum):
     """
     Toggle button states.
+
+    `ToggleState` is one of "on", "off".
     """
     ON = "on"
     OFF = "off"
@@ -38,6 +40,8 @@ class ToggleButtonBehavior(ButtonBehavior):
     toggle_state : ToggleState, default: ToggleState.OFF
         Initial toggle state of button. If button is in a group and `allow_no_selection`
         is `False` this value will be ignored if all buttons would be "off".
+    always_release : bool, default: False
+        Whether a mouse up event outside the button will trigger it.
 
     Attributes
     ----------
@@ -47,15 +51,27 @@ class ToggleButtonBehavior(ButtonBehavior):
         If true and button is in a group, every button can be in the "off" state.
     toggle_state : ToggleState
         Toggle state of button.
+    always_release : bool
+        Whether a mouse up event outside the button will trigger it.
+    state : ButtonState
+        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
 
     Methods
     -------
-    update_off
+    update_off:
         Paint the "off" state.
-    update_on
+    update_on:
         Paint the "on" state.
-    on_toggle
+    on_toggle:
         Called when the toggle state changes.
+    update_normal:
+        Paint the normal state.
+    update_hover:
+        Paint the hover state.
+    update_down:
+        Paint the down state.
+    on_release:
+        Triggered when a button is released.
     """
     __groups = { }
 

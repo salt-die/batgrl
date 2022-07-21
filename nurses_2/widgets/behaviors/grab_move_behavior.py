@@ -17,6 +17,10 @@ class GrabMoveBehavior(GrabbableBehavior):
         Allow vertical translation.
     allow_horizontal_translation : bool, default: True
         Allow horizontal translation.
+    is_grabbable : bool, default: True
+        If False, grabbable behavior is disabled.
+    disable_ptf : bool, default: False
+        If True, widget will not be pulled to front when grabbed.
 
     Attributes
     ----------
@@ -26,6 +30,27 @@ class GrabMoveBehavior(GrabbableBehavior):
         Allow vertical translation.
     allow_horizontal_translation : bool
         Allow horizontal translation.
+    is_grabbable : bool
+        If False, grabbable behavior is disabled.
+    disable_ptf : bool
+        If True, widget will not be pulled to front when grabbed.
+    is_grabbed : bool
+        True if widget is grabbed.
+    mouse_dyx : Point
+        Last change in mouse position.
+    mouse_dy : int
+        Last vertical change in mouse position.
+    mouse_dx : int
+        Last horizontal change in mouse position.
+
+    Methods
+    -------
+    grab:
+        Grab the widget.
+    ungrab:
+        Ungrab the widget.
+    grab_update:
+        Update widget with incoming mouse events while grabbed.
     """
     def __init__(
         self,

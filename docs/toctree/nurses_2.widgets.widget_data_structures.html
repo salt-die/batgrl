@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.widget_data_structures &#8212; Python 0.9.4 documentation</title>
+    <title>nurses_2.widgets.widget_data_structures &#8212; Python 0.9.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.9.4 documentation</p>
+    <p class="title logo__title">Python 0.9.5 documentation</p>
   
 </a>
     
@@ -543,6 +543,9 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Anchor" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Point of widget attached to <cite>pos_hint</cite>.</p>
+<p><cite>Anchor</cite> is one of “center”, “left_center”, “right_center”,
+“top_left”, “top_center”, “top_right”, “bottom_left”,
+“bottom_center”, “bottom_right”.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Anchor.BOTTOM_CENTER">
 <span class="sig-name descname"><span class="pre">BOTTOM_CENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bottom_center'</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Anchor.BOTTOM_CENTER" title="Permalink to this definition">#</a></dt>
@@ -756,29 +759,37 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.PosHint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">PosHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
-<p>A position hint. Sets a widget’s position as a proportion
-of parent’s size.</p>
+<p>A position hint.</p>
+<p>Sets a widget’s position as a proportion of parent’s size.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>x</strong></dt><dd><p>Alias for field number 1</p>
+<dt><strong>y</strong><span class="classifier">float | None</span></dt><dd><p>Y-coordinate as a proportion of parent’s height.</p>
 </dd>
-<dt><strong>y</strong></dt><dd><p>Alias for field number 0</p>
+<dt><strong>x</strong><span class="classifier">float | None</span></dt><dd><p>X-coordinate as a proportion of parent’s width.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>y</strong><span class="classifier">float | None</span></dt><dd><p>Y-coordinate as a proportion of parent’s height.</p>
+</dd>
+<dt><strong>x</strong><span class="classifier">float | None</span></dt><dd><p>X-coordinate as a proportion of parent’s width.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 21%" />
+<col style="width: 79%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.PosHint.count" title="nurses_2.widgets.widget_data_structures.PosHint.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.PosHint.index" title="nurses_2.widgets.widget_data_structures.PosHint.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>
@@ -814,29 +825,37 @@ of parent’s size.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.SizeHint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">SizeHint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.SizeHint" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
-<p>A size hint. Sets a widget’s size as a proportion
-of parent’s size.</p>
+<p>A size hint.</p>
+<p>Sets a widget’s size as a proportion of parent’s size.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>height</strong></dt><dd><p>Alias for field number 0</p>
+<dt><strong>height</strong><span class="classifier">float | None</span></dt><dd><p>Proportion of parent’s height.</p>
 </dd>
-<dt><strong>width</strong></dt><dd><p>Alias for field number 1</p>
+<dt><strong>width</strong><span class="classifier">float | None</span></dt><dd><p>Proportion of parent’s width.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>height</strong><span class="classifier">float | None</span></dt><dd><p>Proportion of parent’s height.</p>
+</dd>
+<dt><strong>width</strong><span class="classifier">float | None</span></dt><dd><p>Proportion of parent’s width.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<table class="autosummary longtable table autosummary">
+<table class="table">
 <colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
+<col style="width: 21%" />
+<col style="width: 79%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint.count" title="nurses_2.widgets.widget_data_structures.SizeHint.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a>(value, /)</p></td>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
 <td><p>Return number of occurrences of value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint.index" title="nurses_2.widgets.widget_data_structures.SizeHint.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(value[, start, stop])</p></td>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
 <td><p>Return first index of value.</p></td>
 </tr>
 </tbody>

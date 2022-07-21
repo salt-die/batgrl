@@ -47,6 +47,56 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     item_callback : Callable[[], None] | Callable[[ToggleState], None], default: lambda: None
         Callback when item is selected. For toggle items, the callable should have a
         single argument that will be the current state of the item.
+    label : str, default: ""
+        Toggle button label.
+    callback : Callable[[ToggleState], None], default: lambda: None
+        Called when toggle state changes. The new state is provided as first argument.
+    group : None | Hashable, default: None
+        If a group is provided, only one button in a group can be in the "on" state.
+    allow_no_selection : bool, default: False
+        If a group is provided, setting this to True allows no selection, i.e.,
+        every button can be in the "off" state.
+    toggle_state : ToggleState, default: ToggleState.OFF
+        Initial toggle state of button. If button is in a group and `allow_no_selection`
+        is `False` this value will be ignored if all buttons would be "off".
+    always_release : bool, default: False
+        Whether a mouse up event outside the button will trigger it.
+        size : Size, default: Size(10, 10)
+        Size of widget.
+    pos : Point, default: Point(0, 0)
+        Position of upper-left corner in parent.
+    size_hint : SizeHint, default: SizeHint(None, None)
+        Proportion of parent's height and width. Non-None values will have
+        precedent over `size`.
+    min_height : int | None, default: None
+        Minimum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_height : int | None, default: None
+        Maximum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    min_width : int | None, default: None
+        Minimum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_width : int | None, default: None
+        Maximum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    pos_hint : PosHint, default: PosHint(None, None)
+        Position as a proportion of parent's height and width. Non-None values
+        will have precedent over `pos`.
+    anchor : Anchor, default: Anchor.TOP_LEFT
+        The point of the widget attached to `pos_hint`.
+    is_transparent : bool, default: False
+        If true, background_char and background_color_pair won't be painted.
+    is_visible : bool, default: True
+        If false, widget won't be painted, but still dispatched.
+    is_enabled : bool, default: True
+        If false, widget won't be painted or dispatched.
+    background_char : str | None, default: None
+        The background character of the widget if not `None` and if the widget
+        is not transparent.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the widget if not `None` and if the
+        widget is not transparent.
 
     Attributes
     ----------
@@ -61,6 +111,146 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         single argument that will be the current state of the item.
     submenu: Menu | None
         If provided, menu item will open submenu on hover.
+    label : str
+        Toggle button label.
+    callback : Callable[[ToggleState], None]
+        Button callback when toggled.
+    group : None | Hashable
+        If a group is provided, only one button in a group can be in the "on" state.
+    allow_no_selection : bool
+        If true and button is in a group, every button can be in the "off" state.
+    toggle_state : ToggleState
+        Toggle state of button.
+    always_release : bool
+        Whether a mouse up event outside the button will trigger it.
+    state : ButtonState
+        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+    size : Size
+        Size of widget.
+    height : int
+        Height of widget.
+    rows : int
+        Alias for `height`.
+    width : int
+        Width of widget.
+    columns : int
+        Alias for `width`.
+    pos : Point
+        Position relative to parent.
+    top : int
+        Y-coordinate of position.
+    y : int
+        Y-coordinate of position.
+    left : int
+        X-coordinate of position.
+    x : int
+        X-coordinate of position.
+    bottom : int
+        `top` + `height`.
+    right : int
+        `left` + `width`.
+    absolute_pos : Point
+        Absolute position on screen.
+    center : Point
+        Center of widget in local coordinates.
+    size_hint : SizeHint
+        Size as a proportion of parent's size.
+    height_hint : float | None
+        Height as a proportion of parent's height.
+    width_hint : float | None
+        Width as a proportion of parent's width.
+    min_height : int
+        Minimum height allowed when using `size_hint`.
+    max_height : int
+        Maximum height allowed when using `size_hint`.
+    min_width : int
+        Minimum width allowed when using `size_hint`.
+    max_width : int
+        Maximum width allowed when using `size_hint`.
+    pos_hint : PosHint
+        Position as a proportion of parent's size.
+    y_hint : float | None
+        Vertical position as a proportion of parent's size.
+    x_hint : float | None
+        Horizontal position as a proportion of parent's size.
+    anchor : Anchor
+        Determines which point is attached to `pos_hint`.
+    background_char : str | None
+        Background character.
+    background_color_pair : ColorPair | None
+        Background color pair.
+    parent : Widget | None
+        Parent widget.
+    children : list[Widget]
+        Children widgets.
+    is_transparent : bool
+        True if widget is transparent.
+    is_visible : bool
+        True if widget is visible.
+    is_enabled : bool
+        True if widget is enabled.
+    root : Widget | None
+        If widget is in widget tree, return the root widget.
+    app : App
+        The running app.
+
+    Methods
+    -------
+    update_theme:
+        Repaint the widget with a new theme. This should be called at:
+        least once when a widget is initialized.
+    update_off:
+        Paint the "off" state.
+    update_on:
+        Paint the "on" state.
+    on_toggle:
+        Called when the toggle state changes.
+    update_normal:
+        Paint the normal state.
+    update_hover:
+        Paint the hover state.
+    update_down:
+        Paint the down state.
+    on_release:
+        Triggered when a button is released.
+    on_size:
+        Called when widget is resized.
+    update_geometry:
+        Called when parent is resized. Applies size and pos hints.
+    to_local:
+        Convert point in absolute coordinates to local coordinates.
+    collides_point:
+        True if point is within widget's bounding box.
+    collides_widget:
+        True if other is within widget's bounding box.
+    add_widget:
+        Add a child widget.
+    add_widgets:
+        Add multiple child widgets.
+    remove_widget:
+        Remove a child widget.
+    pull_to_front:
+        Move to end of widget stack so widget is drawn last.
+    walk_from_root:
+        Yield all descendents of root widget.
+    walk:
+        Yield all descendents.
+    subscribe:
+        Subscribe to a widget property.
+    unsubscribe:
+        Unsubscribe to a widget property.
+    on_press:
+        Handle key press event.
+    on_click:
+        Handle mouse event.
+    on_double_click:
+        Handle double-click mouse event.
+    on_triple_click:
+        Handle triple-click mouse event.
+    on_paste:
+        Handle paste event.
+    tween:
+        Sequentially update a widget property over time.
     """
     def __init__(
         self,
@@ -200,6 +390,61 @@ class Menu(GridLayout):
         If true, close the menu when an item is selected.
     close_on_click : bool, default: True
         If true, close the menu when a click doesn't collide with it.
+    grid_rows : int, default: 1
+        Number of rows.
+    grid_columns : int, default: 1
+        Number of columns.
+    orientation : Orientation, default: Orientation.LR_BT
+        The orientation of the grid. Describes how the grid fills as children are added. The
+        default is left-to-right then top-to-bottom.
+    left_padding : int, default: 0
+        Padding on left side of grid.
+    right_padding : int, default: 0
+        Padding on right side of grid.
+    top_padding : int, default: 0
+        Padding at the top of grid.
+    bottom_padding : int, default: 0
+        Padding at the bottom of grid.
+    horizontal_spacing : int, default: 0
+        Horizontal spacing between children.
+    vertical_spacing : int, default: 0
+        Vertical spacing between children.
+    size : Size, default: Size(10, 10)
+        Size of widget.
+    pos : Point, default: Point(0, 0)
+        Position of upper-left corner in parent.
+    size_hint : SizeHint, default: SizeHint(None, None)
+        Proportion of parent's height and width. Non-None values will have
+        precedent over `size`.
+    min_height : int | None, default: None
+        Minimum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_height : int | None, default: None
+        Maximum height set due to size_hint. Ignored if corresponding size
+        hint is None.
+    min_width : int | None, default: None
+        Minimum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    max_width : int | None, default: None
+        Maximum width set due to size_hint. Ignored if corresponding size
+        hint is None.
+    pos_hint : PosHint, default: PosHint(None, None)
+        Position as a proportion of parent's height and width. Non-None values
+        will have precedent over `pos`.
+    anchor : Anchor, default: Anchor.TOP_LEFT
+        The point of the widget attached to `pos_hint`.
+    is_transparent : bool, default: False
+        If true, background_char and background_color_pair won't be painted.
+    is_visible : bool, default: True
+        If false, widget won't be painted, but still dispatched.
+    is_enabled : bool, default: True
+        If false, widget won't be painted or dispatched.
+    background_char : str | None, default: None
+        The background character of the widget if not `None` and if the widget
+        is not transparent.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the widget if not `None` and if the
+        widget is not transparent.
 
     Attributes
     ----------
@@ -207,16 +452,142 @@ class Menu(GridLayout):
         If true, close the menu when an item is selected.
     close_on_click : bool, default: True
         If true, close the menu when a click doesn't collide with it.
+    grid_rows : int
+        Number of rows.
+    grid_columns : int
+        Number of columns.
+    orientation : Orientation
+        The orientation of the grid.
+    left_padding : int
+        Padding on left side of grid.
+    right_padding : int
+        Padding on right side of grid.
+    top_padding : int
+        Padding at the top of grid.
+    bottom_padding : int
+        Padding at the bottom of grid.
+    horizontal_spacing : int
+        Horizontal spacing between children.
+    vertical_spacing : int
+        Vertical spacing between children.
+    size : Size
+        Size of widget.
+    height : int
+        Height of widget.
+    rows : int
+        Alias for `height`.
+    width : int
+        Width of widget.
+    columns : int
+        Alias for `width`.
+    pos : Point
+        Position relative to parent.
+    top : int
+        Y-coordinate of position.
+    y : int
+        Y-coordinate of position.
+    left : int
+        X-coordinate of position.
+    x : int
+        X-coordinate of position.
+    bottom : int
+        `top` + `height`.
+    right : int
+        `left` + `width`.
+    absolute_pos : Point
+        Absolute position on screen.
+    center : Point
+        Center of widget in local coordinates.
+    size_hint : SizeHint
+        Size as a proportion of parent's size.
+    height_hint : float | None
+        Height as a proportion of parent's height.
+    width_hint : float | None
+        Width as a proportion of parent's width.
+    min_height : int
+        Minimum height allowed when using `size_hint`.
+    max_height : int
+        Maximum height allowed when using `size_hint`.
+    min_width : int
+        Minimum width allowed when using `size_hint`.
+    max_width : int
+        Maximum width allowed when using `size_hint`.
+    pos_hint : PosHint
+        Position as a proportion of parent's size.
+    y_hint : float | None
+        Vertical position as a proportion of parent's size.
+    x_hint : float | None
+        Horizontal position as a proportion of parent's size.
+    anchor : Anchor
+        Determines which point is attached to `pos_hint`.
+    background_char : str | None
+        Background character.
+    background_color_pair : ColorPair | None
+        Background color pair.
+    parent : Widget | None
+        Parent widget.
+    children : list[Widget]
+        Children widgets.
+    is_transparent : bool
+        True if widget is transparent.
+    is_visible : bool
+        True if widget is visible.
+    is_enabled : bool
+        True if widget is enabled.
+    root : Widget | None
+        If widget is in widget tree, return the root widget.
+    app : App
+        The running app.
 
     Methods
     -------
-    open_menu
+    open_menu:
         Open menu.
-    close_menu
+    close_menu:
         Close menu.
-    from_dict_of_dicts
+    from_dict_of_dicts:
         Constructor to create a menu from a dict of dicts. This should be
         default way of constructing menus.
+    index_at:
+        Return index of widget at position `row, column` in `self.children`.
+    on_size:
+        Called when widget is resized.
+    update_geometry:
+        Called when parent is resized. Applies size and pos hints.
+    to_local:
+        Convert point in absolute coordinates to local coordinates.
+    collides_point:
+        True if point is within widget's bounding box.
+    collides_widget:
+        True if other is within widget's bounding box.
+    add_widget:
+        Add a child widget.
+    add_widgets:
+        Add multiple child widgets.
+    remove_widget:
+        Remove a child widget.
+    pull_to_front:
+        Move to end of widget stack so widget is drawn last.
+    walk_from_root:
+        Yield all descendents of root widget.
+    walk:
+        Yield all descendents.
+    subscribe:
+        Subscribe to a widget property.
+    unsubscribe:
+        Unsubscribe to a widget property.
+    on_press:
+        Handle key press event.
+    on_click:
+        Handle mouse event.
+    on_double_click:
+        Handle double-click mouse event.
+    on_triple_click:
+        Handle triple-click mouse event.
+    on_paste:
+        Handle paste event.
+    tween:
+        Sequentially update a widget property over time.
     """
     def __init__(
         self,

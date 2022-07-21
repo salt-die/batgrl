@@ -27,9 +27,9 @@ class FocusBehavior:
 
     Methods
     -------
-    on_focus
+    on_focus:
         Called when widget is focused.
-    on_blur
+    on_blur:
         Called when widget loses focus.
     """
     __focus_widgets: deque[ReferenceType] = deque()
