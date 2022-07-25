@@ -57,7 +57,7 @@ class App(ABC):
     render_interval : float
         Seconds between screen renders.
     color_theme : ColorTheme
-        Color theme used for :class:`nurses_2.widgets.behaviors.Themable` widgets.
+        Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable` widgets.
     asciicast_path : Path | None
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
