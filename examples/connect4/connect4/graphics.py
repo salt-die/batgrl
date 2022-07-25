@@ -88,7 +88,7 @@ class Board(GridLayout):
     def on_click(self, mouse_event):
         if not self.collides_point(mouse_event.position):
             for i in range(6):
-                self.children[self._index_at(i, self._last_col)].unselect()
+                self.children[self.index_at(i, self._last_col)].unselect()
 
             self._last_col = -1
 
@@ -99,7 +99,7 @@ class Board(GridLayout):
         if col != self._last_col:
             for i in range(6):
                 if self._last_col != -1:
-                    self.children[self._index_at(i, self._last_col)].unselect()
-                self.children[self._index_at(i, col)].select()
+                    self.children[self.index_at(i, self._last_col)].unselect()
+                self.children[self.index_at(i, col)].select()
 
             self._last_col = col
