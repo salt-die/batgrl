@@ -35,7 +35,7 @@ class App(ABC):
     render_interval : float, default: 0.0
         Seconds between screen renders.
     color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
-        Color theme used for `Themable` widgets.
+        Color theme used for :class:`Themable` widgets.
     asciicast_path : Path | None, default: None
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
@@ -57,13 +57,13 @@ class App(ABC):
     render_interval : float
         Seconds between screen renders.
     color_theme : ColorTheme
-        Color theme used for `Themable` widgets.
+        Color theme used for :class:`Themable` widgets.
     asciicast_path : Path | None
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
         the asciicast format -- doing so will corrupt the recording.
     children : list[Widget]
-        Alias for `self.root.children`.
+        Alias for :attr:`root.children`.
 
     Methods
     -------
@@ -74,9 +74,9 @@ class App(ABC):
     exit:
         Exit the app.
     add_widget:
-        Alias for `self.root.add_widget`.
+        Alias for :attr:`root.add_widget`.
     add_widgets:
-        Alias for `self.root.add_widgets`.
+        Alias for :attr:`root.add_widgets`.
 
     """
     def __init__(
@@ -203,7 +203,7 @@ class App(ABC):
 
             async def auto_render():
                 """
-                Render screen every `render_interval` seconds.
+                Render screen every :attr:`render_interval` seconds.
                 """
                 render = root.render
 
@@ -216,20 +216,20 @@ class App(ABC):
 
     def add_widget(self, widget):
         """
-        Alias for `self.root.add_widget`.
+        Alias for :attr:`root.add_widget`.
         """
         self.root.add_widget(widget)
 
     def add_widgets(self, *widgets):
         """
-        Alias for `self.root.add_widgets`.
+        Alias for :attr:`root.add_widgets`.
         """
         self.root.add_widgets(*widgets)
 
     @property
     def children(self):
         """
-        Alias for `self.root.children`.
+        Alias for :attr:`root.children`.
         """
         return self.root.children
 
