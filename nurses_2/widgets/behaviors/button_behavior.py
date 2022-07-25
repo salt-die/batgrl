@@ -11,7 +11,7 @@ class ButtonState(Enum):
     """
     State of a button widget.
 
-    `ButtonState` is one of "normal", "hover", "down".
+    :class:`ButtonState` is one of "normal", "hover", "down".
     """
     NORMAL = "normal"
     HOVER = "hover"
@@ -25,9 +25,9 @@ class ButtonBehavior:
     A button has three states: 'normal', 'hover', and 'down'.
 
     When a button's state changes one of the following methods are called:
-    'update_normal', 'update_hover', and 'update_down'.
+    :meth:`update_normal`, :meth:`update_hover`, and :meth:`update_down`.
 
-    When a button is released, the `on_release` method is called.
+    When a button is released, the :meth:`on_release` method is called.
 
     Parameters
     ----------

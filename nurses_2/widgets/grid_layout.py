@@ -14,7 +14,7 @@ class Orientation(str, Enum):
     Orientation of the grid.
 
     As an example, the orientation `LR_TB` means left-to-right, then top-to-bottom.
-    `Orientation` is one of "lr-tb", "lr-bt", "rl-tb", "rl-bt", "tb-lr", "tb-rl",
+    :class:`Orientation` is one of "lr-tb", "lr-bt", "rl-tb", "rl-bt", "tb-lr", "tb-rl",
     "bt-lr", "bt-rl".
     """
     LR_TB = "lr-tb"
@@ -51,10 +51,10 @@ class GridLayout(Widget):
 
     Notes
     -----
-    Re-ordering children (such as through `pull_to_front`) and calling `_reposition_children`
+    Re-ordering children (such as through :meth:`pull_to_front`) and calling :meth:`_reposition_children`
     will change the positions of the children in the grid.
 
-    The read-only attribute `minimum_grid_size` is the minimum size the grid must be to show all
+    The read-only attribute :attr:`minimum_grid_size` is the minimum size the grid must be to show all
     children. This can be used to set the size of the grid layout, e.g.,
     ``my_grid.size = my_grid.minimum_grid_size``.
 
@@ -85,7 +85,7 @@ class GridLayout(Widget):
         Position of upper-left corner in parent.
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
+        precedent over :attr:`size`.
     min_height : int | None, default: None
         Minimum height set due to size_hint. Ignored if corresponding size
         hint is None.
@@ -100,9 +100,9 @@ class GridLayout(Widget):
         hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
+        will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        The point of the widget attached to `pos_hint`.
+        The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -141,11 +141,11 @@ class GridLayout(Widget):
     height : int
         Height of widget.
     rows : int
-        Alias for `height`.
+        Alias for :attr:`height`.
     width : int
         Width of widget.
     columns : int
-        Alias for `width`.
+        Alias for :attr:`width`.
     pos : Point
         Position relative to parent.
     top : int
@@ -157,9 +157,9 @@ class GridLayout(Widget):
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + `height`.
+        :attr:`top` + :attr:`height`.
     right : int
-        `left` + `width`.
+        :attr:`left` + :attr:`width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -171,13 +171,13 @@ class GridLayout(Widget):
     width_hint : float | None
         Width as a proportion of parent's width.
     min_height : int
-        Minimum height allowed when using `size_hint`.
+        Minimum height allowed when using :attr:`size_hint`.
     max_height : int
-        Maximum height allowed when using `size_hint`.
+        Maximum height allowed when using :attr:`size_hint`.
     min_width : int
-        Minimum width allowed when using `size_hint`.
+        Minimum width allowed when using :attr:`size_hint`.
     max_width : int
-        Maximum width allowed when using `size_hint`.
+        Maximum width allowed when using :attr:`size_hint`.
     pos_hint : PosHint
         Position as a proportion of parent's size.
     y_hint : float | None
@@ -185,7 +185,7 @@ class GridLayout(Widget):
     x_hint : float | None
         Horizontal position as a proportion of parent's size.
     anchor : Anchor
-        Determines which point is attached to `pos_hint`.
+        Determines which point is attached to :attr:`pos_hint`.
     background_char : str | None
         Background character.
     background_color_pair : ColorPair | None
@@ -208,7 +208,7 @@ class GridLayout(Widget):
     Methods
     -------
     index_at:
-        Return index of widget at position `row, column` in `self.children`.
+        Return index of widget in :attr:`children` at position `row, col` in the grid.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -251,7 +251,7 @@ class GridLayout(Widget):
     Raises
     ------
     ValueError
-        If grid is full and `add_widget` is called.
+        If grid is full and :meth:`add_widget` is called.
     """
     grid_rows: int = _RepositionProperty()
 
@@ -303,7 +303,7 @@ class GridLayout(Widget):
 
     def index_at(self, row: int, col: int) -> int:
         """
-        Return the index of the child at a given row and column in the grid.
+        Return the index of the widget in :attr:`children` at a given row and column in the grid.
         """
         rows = self.grid_rows
         cols = self.grid_columns

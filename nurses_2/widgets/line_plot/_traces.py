@@ -1,6 +1,6 @@
 """
-`_Traces` handles rendering a line plot in braille unicode characters
-for `LinePlot`.
+:class:`_Traces` handles rendering a line plot in braille unicode characters
+for :class:`nurses_2.widgets.line_plot.LinePlot`.
 """
 import cv2
 import numpy as np

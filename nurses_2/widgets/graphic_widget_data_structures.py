@@ -12,7 +12,7 @@ class Interpolation(IntEnum):
     """
     Interpolation methods for resizing graphic widgets.
 
-    `Interpolation` is one of `NEAREST`, `LINEAR`, `CUBIC`, `AREA`,
+    :class:`Interpolation` is one of `NEAREST`, `LINEAR`, `CUBIC`, `AREA`,
     `LANCZOS`.
     """
     NEAREST = cv2.INTER_NEAREST

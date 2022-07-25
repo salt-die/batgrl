@@ -553,7 +553,7 @@ the bar will progress upwards.</p>
 <dt><strong>pos</strong><span class="classifier">Point, default: Point(0, 0)</span></dt><dd><p>Position of upper-left corner in parent.</p>
 </dd>
 <dt><strong>size_hint</strong><span class="classifier">SizeHint, default: SizeHint(None, None)</span></dt><dd><p>Proportion of parent’s height and width. Non-None values will have
-precedent over <cite>size</cite>.</p>
+precedent over <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size" title="nurses_2.widgets.progress_bar.ProgressBar.size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size</span></code></a>.</p>
 </dd>
 <dt><strong>min_height</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum height set due to size_hint. Ignored if corresponding size
 hint is None.</p>
@@ -568,9 +568,9 @@ hint is None.</p>
 hint is None.</p>
 </dd>
 <dt><strong>pos_hint</strong><span class="classifier">PosHint, default: PosHint(None, None)</span></dt><dd><p>Position as a proportion of parent’s height and width. Non-None values
-will have precedent over <cite>pos</cite>.</p>
+will have precedent over <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.pos" title="nurses_2.widgets.progress_bar.ProgressBar.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pos</span></code></a>.</p>
 </dd>
-<dt><strong>anchor</strong><span class="classifier">Anchor, default: Anchor.TOP_LEFT</span></dt><dd><p>The point of the widget attached to <cite>pos_hint</cite>.</p>
+<dt><strong>anchor</strong><span class="classifier">Anchor, default: Anchor.TOP_LEFT</span></dt><dd><p>The point of the widget attached to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.pos_hint" title="nurses_2.widgets.progress_bar.ProgressBar.pos_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pos_hint</span></code></a>.</p>
 </dd>
 <dt><strong>is_transparent</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, background_char and background_color_pair won’t be painted.</p>
 </dd>
@@ -595,7 +595,7 @@ the bar will progress upwards.</p>
 </dd>
 <dt><strong>canvas</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The array of characters for the widget.</p>
 </dd>
-<dt><strong>colors</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The array of color pairs for each character in <cite>canvas</cite>.</p>
+<dt><strong>colors</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The array of color pairs for each character in <code class="xref py py-attr docutils literal notranslate"><span class="pre">canvas</span></code>.</p>
 </dd>
 <dt><strong>default_char</strong><span class="classifier">str, default: ” “</span></dt><dd><p>Default background character.</p>
 </dd>
@@ -605,8 +605,8 @@ the bar will progress upwards.</p>
 </dd>
 <dt><strong>default_bg_color: Color</strong></dt><dd><p>The default background color.</p>
 </dd>
-<dt><strong>get_view: CanvasView</strong></dt><dd><p>A <cite>CanvasView</cite> of the underlying canvas. A <cite>CanvasView</cite> simplifies adding
-text to the canvas with the <cite>add_text</cite> method.</p>
+<dt><strong>get_view: CanvasView</strong></dt><dd><p>Return a <a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_widget_data_structures.CanvasView</span></code></a>
+of the underlying <code class="xref py py-attr docutils literal notranslate"><span class="pre">canvas</span></code>.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size" title="nurses_2.widgets.progress_bar.ProgressBar.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -642,13 +642,13 @@ text to the canvas with the <cite>add_text</cite> method.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.width_hint" title="nurses_2.widgets.progress_bar.ProgressBar.width_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width_hint</span></code></a><span class="classifier">float | None</span></dt><dd><p>Widget’s width as proportion of its parent’s width.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.min_height" title="nurses_2.widgets.progress_bar.ProgressBar.min_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_height</span></code></a><span class="classifier">int</span></dt><dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.min_height" title="nurses_2.widgets.progress_bar.ProgressBar.min_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_height</span></code></a><span class="classifier">int</span></dt><dd><p>The minimum height of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.max_height" title="nurses_2.widgets.progress_bar.ProgressBar.max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_height</span></code></a><span class="classifier">int</span></dt><dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.max_height" title="nurses_2.widgets.progress_bar.ProgressBar.max_height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_height</span></code></a><span class="classifier">int</span></dt><dd><p>The maximum height of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.min_width" title="nurses_2.widgets.progress_bar.ProgressBar.min_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_width</span></code></a><span class="classifier">int</span></dt><dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.min_width" title="nurses_2.widgets.progress_bar.ProgressBar.min_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_width</span></code></a><span class="classifier">int</span></dt><dd><p>The minimum width of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.max_width" title="nurses_2.widgets.progress_bar.ProgressBar.max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_width</span></code></a><span class="classifier">int</span></dt><dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.max_width" title="nurses_2.widgets.progress_bar.ProgressBar.max_width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_width</span></code></a><span class="classifier">int</span></dt><dd><p>The maximum width of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.pos_hint" title="nurses_2.widgets.progress_bar.ProgressBar.pos_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_hint</span></code></a><span class="classifier">PosHint</span></dt><dd><p>Widget’s position as a proportion of its parent’s size.</p>
 </dd>
@@ -656,7 +656,7 @@ text to the canvas with the <cite>add_text</cite> method.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.x_hint" title="nurses_2.widgets.progress_bar.ProgressBar.x_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_hint</span></code></a><span class="classifier">float | None</span></dt><dd><p>Horizontal position of widget as proportion of its parent’s width.</p>
 </dd>
-<dt><strong>anchor</strong><span class="classifier">Anchor</span></dt><dd><p>Determines which point is attached to <cite>pos_hint</cite>.</p>
+<dt><strong>anchor</strong><span class="classifier">Anchor</span></dt><dd><p>Determines which point is attached to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.pos_hint" title="nurses_2.widgets.progress_bar.ProgressBar.pos_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pos_hint</span></code></a>.</p>
 </dd>
 <dt><strong>background_char</strong><span class="classifier">str | None</span></dt><dd><p>Background character.</p>
 </dd>
@@ -932,12 +932,8 @@ returns True.)</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.get_view">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><span class="pre">nurses_2.widgets.text_widget_data_structures.CanvasView</span></a></em><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.get_view" title="Permalink to this definition">#</a></dt>
-<dd><p>A wrapper around the canvas with an <cite>add_text</cite> method. This is to
-simplify adding text to views of the underlying canvas.</p>
-<p class="rubric">Notes</p>
-<p>One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-E.g., a view with shape <cite>(m,)</cite> will be re-shaped to <cite>(1, m)</cite> so that
-the <cite>row</cite> and <cite>column</cite> parameters of <cite>add_text</cite> make sense.</p>
+<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_data_structures.CanvasView</span></code> that simplifies
+adding text to a view of <code class="xref py py-attr docutils literal notranslate"><span class="pre">canvas</span></code>.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -965,25 +961,25 @@ the <cite>row</cite> and <cite>column</cite> parameters of <cite>add_text</cite>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.max_height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.max_height" title="Permalink to this definition">#</a></dt>
-<dd><p>The maximum height of widget set due to <cite>size_hint</cite>.</p>
+<dd><p>The maximum height of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.max_width">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.max_width" title="Permalink to this definition">#</a></dt>
-<dd><p>The maximum width of widget set due to <cite>size_hint</cite>.</p>
+<dd><p>The maximum width of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.min_height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.min_height" title="Permalink to this definition">#</a></dt>
-<dd><p>The minimum height of widget set due to <cite>size_hint</cite>.</p>
+<dd><p>The minimum height of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.min_width">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.min_width" title="Permalink to this definition">#</a></dt>
-<dd><p>The minimum width of widget set due to <cite>size_hint</cite>.</p>
+<dd><p>The minimum width of widget set due to <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size_hint" title="nurses_2.widgets.progress_bar.ProgressBar.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">

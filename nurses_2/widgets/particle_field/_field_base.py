@@ -22,7 +22,7 @@ class _ParticleFieldBase(Widget):
 
     def add_particle(self, particle):
         """
-        Alias for `add_widget`.
+        Alias for :meth:`add_widget`.
         """
         self.add_widget(particle)
 

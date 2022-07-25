@@ -10,7 +10,9 @@ from .widget import Widget
 
 class _Root(Widget):
     """
-    Root widget. Meant to be instantiated by the `App` class. Renders to terminal.
+    Root widget.
+
+    Meant to be instantiated by the :class:`nurses_2.app.App` class.
     """
     def __init__(
         self,

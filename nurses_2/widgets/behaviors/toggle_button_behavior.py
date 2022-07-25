@@ -18,7 +18,7 @@ class ToggleState(str, Enum):
     """
     Toggle button states.
 
-    `ToggleState` is one of "on", "off".
+    :class:`ToggleState` is one of "on", "off".
     """
     ON = "on"
     OFF = "off"
@@ -38,7 +38,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         If a group is provided, setting this to True allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and `allow_no_selection`
+        Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
         is `False` this value will be ignored if all buttons would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.

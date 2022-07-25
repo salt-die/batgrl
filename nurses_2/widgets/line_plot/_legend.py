@@ -1,5 +1,5 @@
 """
-Legend for `LinePlot`.
+Legend for :class:`nurses_2.widgets.line_plot.LinePlot`.
 """
 from wcwidth import wcswidth
 

@@ -71,9 +71,9 @@ class PosHint(NamedTuple):
 
 class Anchor(str, Enum):
     """
-    Point of widget attached to `pos_hint`.
+    Point of widget attached to :attr:`nurses_2.widgets.Widget.pos_hint`.
 
-    `Anchor` is one of "center", "left_center", "right_center",
+    :class:`Anchor` is one of "center", "left_center", "right_center",
     "top_left", "top_center", "top_right", "bottom_left",
     "bottom_center", "bottom_right".
     """
@@ -90,7 +90,7 @@ class Anchor(str, Enum):
 
 class Easing(str, Enum):
     """
-    Easings for `Widget.tween`.
+    Easings for :meth:`nurses_2.widgets.Widget.tween`.
     """
     LINEAR = "linear"
     IN_QUAD = "in_quad"

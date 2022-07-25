@@ -1,5 +1,5 @@
 """
-Protocols for `RayCaster`.
+Protocols for :class:`nurses_2.widgets.ray_caster.RayCaster`.
 """
 from typing import Protocol, Literal
 

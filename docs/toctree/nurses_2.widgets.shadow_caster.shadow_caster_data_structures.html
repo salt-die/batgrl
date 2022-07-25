@@ -520,7 +520,7 @@
                 
   <section id="module-nurses_2.widgets.shadow_caster.shadow_caster_data_structures">
 <span id="nurses-2-widgets-shadow-caster-shadow-caster-data-structures"></span><h1>nurses_2.widgets.shadow_caster.shadow_caster_data_structures<a class="headerlink" href="#module-nurses_2.widgets.shadow_caster.shadow_caster_data_structures" title="Permalink to this headline">#</a></h1>
-<p>Data structures for <cite>ShadowCaster</cite>.</p>
+<p>Data structures for <code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.shadow_caster.ShadowCaster</span></code>.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -591,7 +591,7 @@ will be zero.</p>
 <span class="sig-name descname"><span class="pre">get_submap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Camera.get_submap" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the section of a map visible by the camera.</p>
 <p class="rubric">Notes</p>
-<p>This is the exact algorithm used by <cite>Widget.render_intersection</cite>.</p>
+<p>This is the exact algorithm used by <code class="xref py py-meth docutils literal notranslate"><span class="pre">nurses_2.widgets.Widget.render_intersection()</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -827,8 +827,8 @@ Each value should be between <cite>0</cite> and <cite>1</cite>.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>coords</strong><span class="classifier">Coordinates, default: Coordinates(0.0, 0.0)</span></dt><dd><p>Coordinates of light source on map.</p>
 </dd>
-<dt><strong>intensity</strong><span class="classifier">Color | LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)</span></dt><dd><p>Intensity of light source. If a <cite>Color</cite> is given it will
-be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
+<dt><strong>intensity</strong><span class="classifier">Color | LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)</span></dt><dd><p>Intensity of light source. If a <code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.colors.Color</span></code> is given it will
+be converted to an intensity with <a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.from_color" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.from_color"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LightIntensity.from_color()</span></code></a>.</p>
 </dd>
 </dl>
 </dd>
@@ -836,8 +836,8 @@ be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
 <dd class="field-even"><dl class="simple">
 <dt><strong>coords</strong><span class="classifier">Coordinates</span></dt><dd><p>Coordinates of light source on map.</p>
 </dd>
-<dt><strong>intensity</strong><span class="classifier">LightIntensity</span></dt><dd><p>Intensity of light source. If set with a <cite>Color</cite>, it will
-be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
+<dt><strong>intensity</strong><span class="classifier">LightIntensity</span></dt><dd><p>Intensity of light source. If set with a <code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.colors.Color</span></code>, it will
+be converted to an intensity with <a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.from_color" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.LightIntensity.from_color"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LightIntensity.from_color()</span></code></a>.</p>
 </dd>
 </dl>
 </dd>
@@ -859,7 +859,7 @@ be converted to an intensity with <cite>LightIntensity.from_color</cite>.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.shadow_caster_data_structures.</span></span><span class="sig-name descname"><span class="pre">Restrictiveness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>The restrictiveness of the shadow caster.</p>
-<p><cite>Restrictiveness</cite> is one of “permissive”, “moderate”, “restrictive”.</p>
+<p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness" title="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.Restrictiveness"><code class="xref py py-class docutils literal notranslate"><span class="pre">Restrictiveness</span></code></a> is one of “permissive”, “moderate”, “restrictive”.</p>
 <p>For “permissive”, any interval is visible as long as any of it’s start,
 center, or end points are visible. For “moderate”, the center and
 either end must be visible. For “restrictive”, all points in the

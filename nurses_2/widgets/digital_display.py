@@ -153,7 +153,7 @@ class DigitalDisplay(TextWidget):
         Position of upper-left corner in parent.
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
+        precedent over :attr:`size`.
     min_height : int | None, default: None
         Minimum height set due to size_hint. Ignored if corresponding size
         hint is None.
@@ -168,9 +168,9 @@ class DigitalDisplay(TextWidget):
         hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
+        will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        The point of the widget attached to `pos_hint`.
+        The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -223,7 +223,7 @@ class DigitalDisplay(TextWidget):
     canvas : numpy.ndarray
         The array of characters for the widget.
     colors : numpy.ndarray
-        The array of color pairs for each character in `canvas`.
+        The array of color pairs for each character in :attr:`canvas`.
     default_char : str, default: " "
         Default background character.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -233,18 +233,18 @@ class DigitalDisplay(TextWidget):
     default_bg_color: Color
         The default background color.
     get_view: CanvasView
-        A `CanvasView` of the underlying canvas. A `CanvasView` simplifies adding
-        text to the canvas with the `add_text` method.
+        Return a :class:`nurses_2.widgets.text_widget_data_structures.CanvasView`
+        of the underlying :attr:`canvas`.
     size : Size
         Size of widget.
     height : int
         Height of widget.
     rows : int
-        Alias for `height`.
+        Alias for :attr:`height`.
     width : int
         Width of widget.
     columns : int
-        Alias for `width`.
+        Alias for :attr:`width`.
     pos : Point
         Position relative to parent.
     top : int
@@ -256,9 +256,9 @@ class DigitalDisplay(TextWidget):
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + `height`.
+        :attr:`top` + :attr:`height`.
     right : int
-        `left` + `width`.
+        :attr:`left` + :attr:`width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -270,13 +270,13 @@ class DigitalDisplay(TextWidget):
     width_hint : float | None
         Width as a proportion of parent's width.
     min_height : int
-        Minimum height allowed when using `size_hint`.
+        Minimum height allowed when using :attr:`size_hint`.
     max_height : int
-        Maximum height allowed when using `size_hint`.
+        Maximum height allowed when using :attr:`size_hint`.
     min_width : int
-        Minimum width allowed when using `size_hint`.
+        Minimum width allowed when using :attr:`size_hint`.
     max_width : int
-        Maximum width allowed when using `size_hint`.
+        Maximum width allowed when using :attr:`size_hint`.
     pos_hint : PosHint
         Position as a proportion of parent's size.
     y_hint : float | None

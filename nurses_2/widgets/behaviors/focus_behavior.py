@@ -10,8 +10,8 @@ from ...io import MouseEventType
 class FocusBehavior:
     """
     Focusable widgets can be given "focus" by pressing tab or shift + tab
-    or by clicking on them. When a widget gains focus the `on_focus` method
-    is called. When a widget loses focus the `on_blur` method is called.
+    or by clicking on them. When a widget gains focus :meth:`on_focus`
+    is called. When a widget loses focus the :meth:`on_blur` is called.
 
     Parameters
     ----------

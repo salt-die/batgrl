@@ -86,8 +86,8 @@ class _Border(GrabbableBehavior, GraphicWidget):
 class GrabResizeBehavior:
     """
     Draggable resize behavior for a widget. Resize a widget by clicking its border
-    and dragging it. Widget dimensions won't be resized smaller than `min_height`
-    or `min_width`.
+    and dragging it. Widget dimensions won't be resized smaller than :attr:`min_height`
+    or :attr:`min_width`.
 
     Parameters
     ----------
@@ -123,7 +123,7 @@ class GrabResizeBehavior:
     Notes
     -----
     Borders are added as child widgets. Children added later may overlap or cover the borders.
-    The method `pull_border_to_front` will correct this.
+    :meth:`pull_border_to_front` will correct this.
     """
     def __init__(
         self,

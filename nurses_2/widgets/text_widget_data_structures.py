@@ -15,7 +15,7 @@ STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH
 
 class CanvasView:
     """
-    A wrapper around a `numpy.ndarray` with a convenient `add_text` method.
+    A wrapper around a :class:`numpy.ndarray` with a convenient :meth:`add_text` method.
 
     One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
     E.g., a view with shape `(m,)` will be re-shaped to `(1, m)` so that

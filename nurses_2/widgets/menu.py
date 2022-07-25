@@ -34,7 +34,7 @@ def nargs(callable: Callable):
 class MenuItem(Themable, ToggleButtonBehavior, Widget):
     """
     A single item in a menu widget. This should normally only be
-    instantiated by `Menu.from_dict_of_dicts`.
+    instantiated by :meth:`Menu.from_dict_of_dicts`.
 
     Parameters
     ----------
@@ -57,7 +57,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         If a group is provided, setting this to True allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and `allow_no_selection`
+        Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
         is `False` this value will be ignored if all buttons would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
@@ -67,7 +67,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         Position of upper-left corner in parent.
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
+        precedent over :attr:`size`.
     min_height : int | None, default: None
         Minimum height set due to size_hint. Ignored if corresponding size
         hint is None.
@@ -82,9 +82,9 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
+        will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        The point of the widget attached to `pos_hint`.
+        The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -130,11 +130,11 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     height : int
         Height of widget.
     rows : int
-        Alias for `height`.
+        Alias for :attr:`height`.
     width : int
         Width of widget.
     columns : int
-        Alias for `width`.
+        Alias for :attr:`width`.
     pos : Point
         Position relative to parent.
     top : int
@@ -146,9 +146,9 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + `height`.
+        :attr:`top` + :attr:`height`.
     right : int
-        `left` + `width`.
+        :attr:`left` + :attr:`width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -160,13 +160,13 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     width_hint : float | None
         Width as a proportion of parent's width.
     min_height : int
-        Minimum height allowed when using `size_hint`.
+        Minimum height allowed when using :attr:`size_hint`.
     max_height : int
-        Maximum height allowed when using `size_hint`.
+        Maximum height allowed when using :attr:`size_hint`.
     min_width : int
-        Minimum width allowed when using `size_hint`.
+        Minimum width allowed when using :attr:`size_hint`.
     max_width : int
-        Maximum width allowed when using `size_hint`.
+        Maximum width allowed when using :attr:`size_hint`.
     pos_hint : PosHint
         Position as a proportion of parent's size.
     y_hint : float | None
@@ -174,7 +174,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     x_hint : float | None
         Horizontal position as a proportion of parent's size.
     anchor : Anchor
-        Determines which point is attached to `pos_hint`.
+        Determines which point is attached to :attr:`pos_hint`.
     background_char : str | None
         Background character.
     background_color_pair : ColorPair | None
@@ -376,11 +376,12 @@ class Menu(GridLayout):
     """
     A menu widget.
 
-    Menus are meant to be constructed with the class method `from_dict_of_dicts`.
+    Menus are meant to be constructed with the class method :meth:`from_dict_of_dicts`.
     Each key of the dict should be a tuple of two strings for left and right labels and
     each value should be either a callable with no arguments for a normal menu item, a
-    callable with one argument for a toggle menu item (the argument will be the state of the
-    toggle button as returned by `toggle_state`), or a dict (for a submenu).
+    callable with one argument for a toggle menu item (the argument will be
+    :attr:`nurses_2.widgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.toggle_state`
+    of the menu item), or a dict (for a submenu).
 
     Once opened, a menu can be navigated with the mouse or arrow keys.
 
@@ -415,7 +416,7 @@ class Menu(GridLayout):
         Position of upper-left corner in parent.
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
+        precedent over :attr:`size`.
     min_height : int | None, default: None
         Minimum height set due to size_hint. Ignored if corresponding size
         hint is None.
@@ -430,9 +431,9 @@ class Menu(GridLayout):
         hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
+        will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        The point of the widget attached to `pos_hint`.
+        The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -475,11 +476,11 @@ class Menu(GridLayout):
     height : int
         Height of widget.
     rows : int
-        Alias for `height`.
+        Alias for :attr:`height`.
     width : int
         Width of widget.
     columns : int
-        Alias for `width`.
+        Alias for :attr:`width`.
     pos : Point
         Position relative to parent.
     top : int
@@ -491,9 +492,9 @@ class Menu(GridLayout):
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + `height`.
+        :attr:`top` + :attr:`height`.
     right : int
-        `left` + `width`.
+        :attr:`left` + :attr:`width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -505,13 +506,13 @@ class Menu(GridLayout):
     width_hint : float | None
         Width as a proportion of parent's width.
     min_height : int
-        Minimum height allowed when using `size_hint`.
+        Minimum height allowed when using :attr:`size_hint`.
     max_height : int
-        Maximum height allowed when using `size_hint`.
+        Maximum height allowed when using :attr:`size_hint`.
     min_width : int
-        Minimum width allowed when using `size_hint`.
+        Minimum width allowed when using :attr:`size_hint`.
     max_width : int
-        Maximum width allowed when using `size_hint`.
+        Maximum width allowed when using :attr:`size_hint`.
     pos_hint : PosHint
         Position as a proportion of parent's size.
     y_hint : float | None
@@ -519,7 +520,7 @@ class Menu(GridLayout):
     x_hint : float | None
         Horizontal position as a proportion of parent's size.
     anchor : Anchor
-        Determines which point is attached to `pos_hint`.
+        Determines which point is attached to :attr:`pos_hint`.
     background_char : str | None
         Background character.
     background_color_pair : ColorPair | None
@@ -549,7 +550,7 @@ class Menu(GridLayout):
         Constructor to create a menu from a dict of dicts. This should be
         default way of constructing menus.
     index_at:
-        Return index of widget at position `row, column` in `self.children`.
+        Return index of widget in :attr:`children` at position `row, col` in the grid.
     on_size:
         Called when widget is resized.
     update_geometry:

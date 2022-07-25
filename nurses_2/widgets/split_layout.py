@@ -46,18 +46,18 @@ class _VSplitHandle(_Handle):
 
 class HSplitLayout(Widget):
     """
-    A horizontal split layout. Add widgets to the `left_pane` or `right_pane`,
-    e.g., `my_hsplit.left_pane.add_widget(my_widget)`.
+    A horizontal split layout. Add widgets to the :attr:`left_pane` or :attr:`right_pane`,
+    e.g., ``my_hsplit.left_pane.add_widget(my_widget)``.
 
     Parameters
     ----------
     split_col : int, default: 1
-        Width of left pane if `anchor_left_pane` is true, else
+        Width of left pane if :attr:`anchor_left_pane` is true, else
         width of right pane.
     min_split_width : int, default: 1
         Minimum width of either pane.
     anchor_left_pane : bool, default: True
-        If true, `split_col` will be calculated from the left,
+        If true, :attr:`split_col` will be calculated from the left,
         else from the right.
     split_resizable : bool, default: True
         If true, the split will be resizable with a grabbable
@@ -70,7 +70,7 @@ class HSplitLayout(Widget):
         Position of upper-left corner in parent.
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
+        precedent over :attr:`size`.
     min_height : int | None, default: None
         Minimum height set due to size_hint. Ignored if corresponding size
         hint is None.
@@ -85,9 +85,9 @@ class HSplitLayout(Widget):
         hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
+        will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        The point of the widget attached to `pos_hint`.
+        The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -112,9 +112,9 @@ class HSplitLayout(Widget):
     split_resizable : bool
         True if split is resizable with a grabbable handle.
     anchor_left_pane : bool
-        If true, `split_col` is calculated from the left.
+        If true, :attr:`split_col` is calculated from the left.
     split_col : int
-        Width of left pane if `anchor_left_pane` is true, else
+        Width of left pane if :attr:`anchor_left_pane` is true, else
         width of right pane.
     min_split_width : int
         Minimum width of either pane.
@@ -123,11 +123,11 @@ class HSplitLayout(Widget):
     height : int
         Height of widget.
     rows : int
-        Alias for `height`.
+        Alias for :attr:`height`.
     width : int
         Width of widget.
     columns : int
-        Alias for `width`.
+        Alias for :attr:`width`.
     pos : Point
         Position relative to parent.
     top : int
@@ -139,9 +139,9 @@ class HSplitLayout(Widget):
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + `height`.
+        :attr:`top` + :attr:`height`.
     right : int
-        `left` + `width`.
+        :attr:`left` + :attr:`width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -153,13 +153,13 @@ class HSplitLayout(Widget):
     width_hint : float | None
         Width as a proportion of parent's width.
     min_height : int
-        Minimum height allowed when using `size_hint`.
+        Minimum height allowed when using :attr:`size_hint`.
     max_height : int
-        Maximum height allowed when using `size_hint`.
+        Maximum height allowed when using :attr:`size_hint`.
     min_width : int
-        Minimum width allowed when using `size_hint`.
+        Minimum width allowed when using :attr:`size_hint`.
     max_width : int
-        Maximum width allowed when using `size_hint`.
+        Maximum width allowed when using :attr:`size_hint`.
     pos_hint : PosHint
         Position as a proportion of parent's size.
     y_hint : float | None
@@ -167,7 +167,7 @@ class HSplitLayout(Widget):
     x_hint : float | None
         Horizontal position as a proportion of parent's size.
     anchor : Anchor
-        Determines which point is attached to `pos_hint`.
+        Determines which point is attached to :attr:`pos_hint`.
     background_char : str | None
         Background character.
     background_color_pair : ColorPair | None
@@ -311,18 +311,18 @@ class HSplitLayout(Widget):
 
 class VSplitLayout(Widget):
     """
-    A vertical split layout. Add widgets to the `top_pane` or `bottom_pane`,
-    e.g., `my_vsplit.top_pane.add_widget(my_widget)`.
+    A vertical split layout. Add widgets to the :attr:`top_pane` or :attr:`bottom_pane`,
+    e.g., ``my_vsplit.top_pane.add_widget(my_widget)``.
 
     Parameters
     ----------
     split_row : int, default: 1
-        Height of top pane if `anchor_top_pane` is true, else
+        Height of top pane if :attr:`anchor_top_pane` is true, else
         height of right pane.
     min_split_height : int, default: 1
         Minimum height of either pane.
     anchor_top_pane : bool, default: True
-        If true, `split_row` will be calculated from the top,
+        If true, :attr:`split_row` will be calculated from the top,
         else from the bottom.
     split_resizable : bool, default: True
         If true, the split will be resizable with a grabbable
@@ -335,7 +335,7 @@ class VSplitLayout(Widget):
         Position of upper-left corner in parent.
     size_hint : SizeHint, default: SizeHint(None, None)
         Proportion of parent's height and width. Non-None values will have
-        precedent over `size`.
+        precedent over :attr:`size`.
     min_height : int | None, default: None
         Minimum height set due to size_hint. Ignored if corresponding size
         hint is None.
@@ -350,9 +350,9 @@ class VSplitLayout(Widget):
         hint is None.
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
-        will have precedent over `pos`.
+        will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
-        The point of the widget attached to `pos_hint`.
+        The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
     is_visible : bool, default: True
@@ -377,9 +377,9 @@ class VSplitLayout(Widget):
     split_resizable : bool
         True if split is resizable with a grabbable handle.
     anchor_top_pane : bool
-        If true, `split_row` is calculated from the top.
+        If true, :attr:`split_row` is calculated from the top.
     split_row : int
-        Height of top pane if `anchor_top_pane` is true, else
+        Height of top pane if :attr:`anchor_top_pane` is true, else
         height of right pane.
     min_split_height : int
         Minimum height of either pane.
@@ -388,11 +388,11 @@ class VSplitLayout(Widget):
     height : int
         Height of widget.
     rows : int
-        Alias for `height`.
+        Alias for :attr:`height`.
     width : int
         Width of widget.
     columns : int
-        Alias for `width`.
+        Alias for :attr:`width`.
     pos : Point
         Position relative to parent.
     top : int
@@ -404,9 +404,9 @@ class VSplitLayout(Widget):
     x : int
         X-coordinate of position.
     bottom : int
-        `top` + `height`.
+        :attr:`top` + :attr:`height`.
     right : int
-        `left` + `width`.
+        :attr:`left` + :attr:`width`.
     absolute_pos : Point
         Absolute position on screen.
     center : Point
@@ -418,13 +418,13 @@ class VSplitLayout(Widget):
     width_hint : float | None
         Width as a proportion of parent's width.
     min_height : int
-        Minimum height allowed when using `size_hint`.
+        Minimum height allowed when using :attr:`size_hint`.
     max_height : int
-        Maximum height allowed when using `size_hint`.
+        Maximum height allowed when using :attr:`size_hint`.
     min_width : int
-        Minimum width allowed when using `size_hint`.
+        Minimum width allowed when using :attr:`size_hint`.
     max_width : int
-        Maximum width allowed when using `size_hint`.
+        Maximum width allowed when using :attr:`size_hint`.
     pos_hint : PosHint
         Position as a proportion of parent's size.
     y_hint : float | None
@@ -432,7 +432,7 @@ class VSplitLayout(Widget):
     x_hint : float | None
         Horizontal position as a proportion of parent's size.
     anchor : Anchor
-        Determines which point is attached to `pos_hint`.
+        Determines which point is attached to :attr:`pos_hint`.
     background_char : str | None
         Background character.
     background_color_pair : ColorPair | None

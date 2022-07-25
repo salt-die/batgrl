@@ -8,14 +8,15 @@ from ...io import MouseEventType
 class GrabbableBehavior:
     """
     Grabbable behavior for a widget. Mouse down events that collide with widget will "grab"
-    it, calling the `grab` method. While grabbed, each mouse event will call `grab_update`
-    until the widget is ungrabbed, i.e., a mouse up event is received (which calls the `ungrab`
-    method).
+    it, calling :meth:`grab`. While grabbed, each mouse event will call :meth:`grab_update`
+    until the widget is ungrabbed, i.e., a mouse up event is received (which calls
+    :meth:`ungrab`).
 
-    To customize grabbable behavior, implement any of `grab`, `grab_update`, or `ungrab` methods.
+    To customize grabbable behavior, implement any of :meth:`grab`, :meth:`grab_update`,
+    or :meth:`ungrab`.
 
-    For convenience, the change in mouse position is available through the `mouse_dyx`, `mouse_dy`,
-    and `mouse_dx` properties.
+    For convenience, the change in mouse position is available through :attr:`mouse_dyx`,
+    :attr:`mouse_dy`, and :attr:`mouse_dx`.
 
     Parameters
     ----------

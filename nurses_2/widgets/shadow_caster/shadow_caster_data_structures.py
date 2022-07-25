@@ -1,5 +1,5 @@
 """
-Data structures for `ShadowCaster`.
+Data structures for :class:`nurses_2.widgets.shadow_caster.ShadowCaster`.
 """
 from enum import Enum
 from typing import NamedTuple
@@ -43,7 +43,7 @@ class Camera:
 
         Notes
         -----
-        This is the exact algorithm used by `Widget.render_intersection`.
+        This is the exact algorithm used by :meth:`nurses_2.widgets.Widget.render_intersection`.
         """
         submap = np.zeros((self.size), dtype=np.uint8)
 
@@ -224,16 +224,16 @@ class LightSource:
     coords : Coordinates, default: Coordinates(0.0, 0.0)
         Coordinates of light source on map.
     intensity : Color | LightIntensity, default: LightIntensity(0.0, 0.0, 0.0)
-        Intensity of light source. If a `Color` is given it will
-        be converted to an intensity with `LightIntensity.from_color`.
+        Intensity of light source. If a :class:`nurses_2.colors.Color` is given it will
+        be converted to an intensity with :meth:`LightIntensity.from_color`.
 
     Attributes
     ----------
     coords : Coordinates
         Coordinates of light source on map.
     intensity : LightIntensity
-        Intensity of light source. If set with a `Color`, it will
-        be converted to an intensity with `LightIntensity.from_color`.
+        Intensity of light source. If set with a :class:`nurses_2.colors.Color`, it will
+        be converted to an intensity with :meth:`LightIntensity.from_color`.
     """
     __slots__ = "coords", "_intensity"
 
@@ -261,7 +261,7 @@ class Restrictiveness(str, Enum):
     """
     The restrictiveness of the shadow caster.
 
-    `Restrictiveness` is one of "permissive", "moderate", "restrictive".
+    :class:`Restrictiveness` is one of "permissive", "moderate", "restrictive".
 
     For "permissive", any interval is visible as long as any of it's start,
     center, or end points are visible. For "moderate", the center and

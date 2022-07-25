@@ -1,5 +1,5 @@
 """
-Data structures for `nurses_2`.
+Data structures for :mod:`nurses_2`.
 """
 from typing import NamedTuple
 

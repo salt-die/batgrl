@@ -37,7 +37,7 @@ class Color(NamedTuple):
     Methods
     -------
     from_hex:
-        Create a `Color` from a hex code.
+        Create a :class:`Color` from a hex code.
     count:
         Return number of occurrences of value.
     index:
@@ -50,7 +50,7 @@ class Color(NamedTuple):
     @classmethod
     def from_hex(cls, hexcode: str):
         """
-        Create a `Color` from a hex code.
+        Create a :class:`Color` from a hex code.
 
         Parameters
         ----------
@@ -98,7 +98,7 @@ class AColor(NamedTuple):
     Methods
     -------
     from_hex:
-        Create an `AColor` from a hex code.
+        Create an :class:`AColor` from a hex code.
     fog:
         Return color as if seen through a fog from a distance.
     count:
@@ -114,7 +114,7 @@ class AColor(NamedTuple):
     @classmethod
     def from_hex(cls, hexcode: str):
         """
-        Create an `AColor` from a hex code.
+        Create an :class:`AColor` from a hex code.
 
         Parameters
         ----------
@@ -189,7 +189,7 @@ class ColorPair(NamedTuple):
     Methods
     -------
     from_colors:
-        Create a `ColorPair` from two colors.
+        Create a :class:`ColorPair` from two colors.
     count:
         Return number of occurrences of value.
     index:
@@ -205,7 +205,7 @@ class ColorPair(NamedTuple):
     @classmethod
     def from_colors(cls, fg_color: Color | AColor, bg_color: Color | AColor):
         """
-        Create a `ColorPair` from two colors.
+        Create a :class:`ColorPair` from two colors.
 
         Parameters
         ----------

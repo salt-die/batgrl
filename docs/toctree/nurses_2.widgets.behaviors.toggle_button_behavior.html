@@ -551,7 +551,7 @@ be in the “on” state at a time.</p>
 <dt><strong>allow_no_selection</strong><span class="classifier">bool, default: False</span></dt><dd><p>If a group is provided, setting this to True allows no selection, i.e.,
 every button can be in the “off” state.</p>
 </dd>
-<dt><strong>toggle_state</strong><span class="classifier">ToggleState, default: ToggleState.OFF</span></dt><dd><p>Initial toggle state of button. If button is in a group and <cite>allow_no_selection</cite>
+<dt><strong>toggle_state</strong><span class="classifier">ToggleState, default: ToggleState.OFF</span></dt><dd><p>Initial toggle state of button. If button is in a group and <code class="xref py py-attr docutils literal notranslate"><span class="pre">allow_no_selection</span></code>
 is <cite>False</cite> this value will be ignored if all buttons would be “off”.</p>
 </dd>
 <dt><strong>always_release</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether a mouse up event outside the button will trigger it.</p>
@@ -662,7 +662,7 @@ is <cite>False</cite> this value will be ignored if all buttons would be “off�
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.toggle_button_behavior.</span></span><span class="sig-name descname"><span class="pre">ToggleState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Toggle button states.</p>
-<p><cite>ToggleState</cite> is one of “on”, “off”.</p>
+<p><a class="reference internal" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState" title="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToggleState</span></code></a> is one of “on”, “off”.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState.OFF">
 <span class="sig-name descname"><span class="pre">OFF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'off'</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.toggle_button_behavior.ToggleState.OFF" title="Permalink to this definition">#</a></dt>
