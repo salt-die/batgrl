@@ -333,26 +333,36 @@ class ScrollView(GrabbableBehavior, Widget):
         else:
             self._view.left = -round(self.horizontal_proportion * self.total_horizontal_distance)
 
+    def _set_view_pos(self):
+        """
+        Set position of the view.
+        """
+        self._set_view_top()
+        self._set_view_left()
+
     def add_widget(self, widget):
         if self._view is not None:
             raise ValueError("ScrollView already has child.")
 
         self._view = widget
         widget.parent = self
-        self._set_view_top()
-        self._set_view_left()
+
+        self._set_view_pos()
+
+        self.subscribe(widget, "size", self._set_view_pos)
 
     def remove_widget(self, widget):
         if widget is not self._view:
             raise ValueError(f"{widget} not in ScrollView")
+
+        self.unsubscribe(widget, "size")
 
         self._view = None
         widget.parent = None
 
     def on_size(self):
         if self._view is not None:
-            self._set_view_left()
-            self._set_view_top()
+            self._set_view_pos()
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
