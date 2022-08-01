@@ -70,6 +70,23 @@ class Checker(GraphicWidget):
             except asyncio.CancelledError:
                 break
 
+    async def fall(self, target, on_complete):
+        velocity = 0
+        gravity = 1 / 36
+        y = self.y
+
+        while self.y != target:
+            velocity += gravity
+            y += velocity
+            self.y = min(target, int(y))
+
+            try:
+                await asyncio.sleep(0)
+            except asyncio.CancelledError:
+                break
+
+        on_complete()
+
 
 class Board(GridLayout):
     def __init__(self):

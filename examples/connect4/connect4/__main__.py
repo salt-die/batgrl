@@ -141,7 +141,7 @@ class Connect4(Widget):
         ):
             col = x_to_column(self.to_local(mouse_event.position).x)
 
-            if (row := (5 - len(self._columns[col]))) == 0:
+            if (row := (5 - len(self._columns[col]))) == -1:
                 self.display_message(COLUMN_FULL_MESSAGE)
                 asyncio.create_task(
                     self.display_message_after(TURN_MESSAGE.format(self.current_player), 2)
@@ -162,12 +162,7 @@ class Connect4(Widget):
             self._board.pull_to_front()
 
             self._animation_task = asyncio.create_task(
-                checker.tween(
-                    duration=(row + 1)**2 / 36,
-                    easing=Easing.IN_QUAD,
-                    on_complete=self.check_game,
-                    y=h * row + 2,
-                )
+                checker.fall(h * row + 2, self.check_game)
             )
 
 
