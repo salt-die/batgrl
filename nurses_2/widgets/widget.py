@@ -46,7 +46,7 @@ def emitter(setter):
 
     return wrapper
 
-def intersection(a: "Rect", b: "Rect"):
+def intersection(a: Rect, b: Rect):
     """
     Find the intersection of two rects and return the numpy slices that
     correspond to that intersection for both rects.
