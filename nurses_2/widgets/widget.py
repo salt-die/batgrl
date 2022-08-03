@@ -52,7 +52,7 @@ def intersection(a: Rect, b: Rect):
     correspond to that intersection for both rects.
     """
     btop, bbottom, bleft, bright = b
-    oheight, owidth = bbottom - btop, bright - bleft
+    bheight, bwidth = bbottom - btop, bright - bleft
 
     atop, abottom, aleft, aright = a
     atop -= btop
@@ -61,9 +61,9 @@ def intersection(a: Rect, b: Rect):
     aright -= bleft
 
     if (
-        atop >= oheight
+        atop >= bheight
         or abottom < 0
-        or aleft >= owidth
+        or aleft >= bwidth
         or aright < 0
     ):  # Empty intersection.
         return
@@ -75,9 +75,9 @@ def intersection(a: Rect, b: Rect):
         at = 0
         bt = atop
 
-    if abottom >= oheight:
-        ab = oheight - atop
-        bb = oheight
+    if abottom >= bheight:
+        ab = bheight - atop
+        bb = bheight
     else:
         ab = abottom - atop
         bb = abottom
@@ -89,9 +89,9 @@ def intersection(a: Rect, b: Rect):
         al = 0
         bl = aleft
 
-    if aright >= owidth:
-        ar = owidth - aleft
-        br = owidth
+    if aright >= bwidth:
+        ar = bwidth - aleft
+        br = bwidth
     else:
         ar = aright - aleft
         br = aright
