@@ -300,5 +300,5 @@ class Animation(Widget):
         self._i = 0
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        self.current_frame.render_intersection(source, canvas_view, colors_view)
+        self.current_frame.render(canvas_view, colors_view, source)
         super().render(canvas_view, colors_view, source)

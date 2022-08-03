@@ -245,19 +245,39 @@ class ScrollView(GrabbableBehavior, Widget):
         super().__init__(**kwargs)
         self.allow_vertical_scroll = allow_vertical_scroll
         self.allow_horizontal_scroll = allow_horizontal_scroll
-        self.show_vertical_bar = show_vertical_bar
-        self.show_horizontal_bar = show_horizontal_bar
         self.is_grabbable = is_grabbable
         self.scrollwheel_enabled = scrollwheel_enabled
         self.arrow_keys_enabled = arrow_keys_enabled
         self._vertical_proportion = clamp(vertical_proportion, 0, 1)
         self._horizontal_proportion = clamp(horizontal_proportion, 0, 1)
         self._view = None
+        self._vertical_bar = _VerticalBar(is_enabled=show_vertical_bar)
+        self._horizontal_bar = _HorizontalBar(is_enabled=show_horizontal_bar)
 
-        self.children = [
-            _VerticalBar(self),
-            _HorizontalBar(self),
-        ]
+        self.children = [self._vertical_bar, self._horizontal_bar]
+
+        self._vertical_bar.parent = self
+        self._vertical_bar.update_geometry()
+
+        self._horizontal_bar.parent = self
+        self._horizontal_bar.update_geometry()
+
+
+    @property
+    def show_vertical_bar(self) -> bool:
+        return self._vertical_bar.is_enabled
+
+    @show_vertical_bar.setter
+    def show_vertical_bar(self, show: bool):
+        self._vertical_bar.is_enabled = show
+
+    @property
+    def show_horizontal_bar(self) -> bool:
+        return self._horizontal_bar.is_enabled
+
+    @show_horizontal_bar.setter
+    def show_horizontal_bar(self, show: bool):
+        self._horizontal_bar.is_enabled = show
 
     @property
     def view(self) -> Widget | None:
@@ -276,8 +296,7 @@ class ScrollView(GrabbableBehavior, Widget):
                 self._vertical_proportion = clamp(value, 0, 1)
                 self._set_view_top()
 
-            vertical_bar = self.children[0]
-            vertical_bar.indicator.update_geometry()
+            self._vertical_bar.indicator.update_geometry()
 
     @property
     def horizontal_proportion(self):
@@ -292,8 +311,7 @@ class ScrollView(GrabbableBehavior, Widget):
                 self._horizontal_proportion = clamp(value, 0, 1)
                 self._set_view_left()
 
-            horizontal_bar = self.children[1]
-            horizontal_bar.indicator.update_geometry()
+            self._horizontal_bar.indicator.update_geometry()
 
     @property
     def total_vertical_distance(self) -> int:
@@ -342,49 +360,27 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def add_widget(self, widget):
         if self._view is not None:
-            raise ValueError("ScrollView already has child.")
+            raise ValueError("View already set.")
 
         self._view = widget
         widget.parent = self
+        self.children.insert(0, widget)
+        self.subscribe(widget, "size", self._set_view_pos)
 
         self._set_view_pos()
 
-        self.subscribe(widget, "size", self._set_view_pos)
-
     def remove_widget(self, widget):
         if widget is not self._view:
-            raise ValueError(f"{widget} not in ScrollView")
-
-        self.unsubscribe(widget, "size")
+            raise ValueError(f"{widget} is not view.")
 
         self._view = None
         widget.parent = None
+        self.children.remove(widget)
+        self.unsubscribe(widget, "size")
 
     def on_size(self):
         if self._view is not None:
             self._set_view_pos()
-
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        """
-        Paint region given by source into canvas_view and colors_view.
-        """
-        if not self.is_transparent:
-            if self.background_char is not None:
-                canvas_view[:] = self.background_char
-
-            if self.background_color_pair is not None:
-                colors_view[:] = self.background_color_pair
-
-        view = self._view
-        if view is not None and view.is_enabled:
-            view.render_intersection(source, canvas_view, colors_view)
-
-        vertical_bar, horizontal_bar = self.children
-        if self.show_vertical_bar:
-            vertical_bar.render_intersection(source, canvas_view, colors_view)
-
-        if self.show_horizontal_bar:
-            horizontal_bar.render_intersection(source, canvas_view, colors_view)
 
     def on_press(self, key_press_event: KeyPressEvent):
         if not self.arrow_keys_enabled:
@@ -427,70 +423,6 @@ class ScrollView(GrabbableBehavior, Widget):
 
     def _scroll_down(self, n=1):
         self._scroll_up(-n)
-
-    def dispatch_press(self, key_press_event: KeyPressEvent):
-        if (
-            self._view is not None
-            and self._view.is_enabled
-            and self._view.dispatch_press(key_press_event)
-        ):
-            return True
-
-        return self.on_press(key_press_event)
-
-    def dispatch_click(self, mouse_event: MouseEvent):
-        v_bar, h_bar = self.children
-
-        if self.show_horizontal_bar and h_bar.dispatch_click(mouse_event):
-            return True
-
-        if self.show_vertical_bar and v_bar.dispatch_click(mouse_event):
-            return True
-
-        if (
-            self._view is not None
-            and self._view.is_enabled
-            and self._view.dispatch_click(mouse_event)
-        ):
-            return True
-
-        return self.on_click(mouse_event)
-
-    def dispatch_double_click(self, mouse_event: MouseEvent):
-        v_bar, h_bar = self.children
-
-        if self.show_horizontal_bar and h_bar.dispatch_double_click(mouse_event):
-            return True
-
-        if self.show_vertical_bar and v_bar.dispatch_double_click(mouse_event):
-            return True
-
-        if (
-            self._view is not None
-            and self._view.is_enabled
-            and self._view.dispatch_double_click(mouse_event)
-        ):
-            return True
-
-        return self.on_double_click(mouse_event)
-
-    def dispatch_triple_click(self, mouse_event: MouseEvent):
-        v_bar, h_bar = self.children
-
-        if self.show_horizontal_bar and h_bar.dispatch_triple_click(mouse_event):
-            return True
-
-        if self.show_vertical_bar and v_bar.dispatch_triple_click(mouse_event):
-            return True
-
-        if (
-            self._view is not None
-            and self._view.is_enabled
-            and self._view.dispatch_triple_click(mouse_event)
-        ):
-            return True
-
-        return self.on_triple_click(mouse_event)
 
     def on_click(self, mouse_event: MouseEvent):
         if (

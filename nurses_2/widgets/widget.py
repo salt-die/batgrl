@@ -8,8 +8,6 @@ from time import monotonic
 from typing import Optional
 from weakref import WeakKeyDictionary
 
-import numpy as np
-
 from .. import easings
 from ..clamp import clamp
 from ..colors import ColorPair
@@ -47,6 +45,58 @@ def emitter(setter):
     wrapper.instances = instances
 
     return wrapper
+
+def intersection(a: "Rect", b: "Rect"):
+    """
+    Find the intersection of two rects and return the numpy slices that
+    correspond to that intersection for both rects.
+    """
+    btop, bbottom, bleft, bright = b
+    oheight, owidth = bbottom - btop, bright - bleft
+
+    atop, abottom, aleft, aright = a
+    atop -= btop
+    abottom -= btop
+    aleft -= bleft
+    aright -= bleft
+
+    if (
+        atop >= oheight
+        or abottom < 0
+        or aleft >= owidth
+        or aright < 0
+    ):  # Empty intersection.
+        return
+
+    if atop < 0:
+        at = -atop
+        bt = 0
+    else:
+        at = 0
+        bt = atop
+
+    if abottom >= oheight:
+        ab = oheight - atop
+        bb = oheight
+    else:
+        ab = abottom - atop
+        bb = abottom
+
+    if aleft < 0:
+        al = -aleft
+        bl = 0
+    else:
+        al = 0
+        bl = aleft
+
+    if aright >= owidth:
+        ar = owidth - aleft
+        br = owidth
+    else:
+        ar = aright - aleft
+        br = aright
+
+    return (slice(at, ab), slice(al, ar)), (slice(bt, bb), slice(bl, br))
 
 
 class Widget:
@@ -819,113 +869,18 @@ class Widget:
             if self.background_color_pair is not None:
                 colors_view[:] = self.background_color_pair
 
-        self.render_children(source, canvas_view, colors_view)
+            self.render_children(source, canvas_view, colors_view)
 
     def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
+        vert_slice, hori_slice = destination
+        dest = Rect(vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop)
+
         for child in self.children:
             if child.is_visible and child.is_enabled:
-                child.render_intersection(destination, canvas_view, colors_view)
-
-    def render_intersection(self, destination: tuple[slice, slice], canvas_view, colors_view):
-        """
-        Render the intersection of destination with widget.
-        """
-        vert_slice, hori_slice = destination
-        t = vert_slice.start
-        h = vert_slice.stop - t
-        l = hori_slice.start
-        w = hori_slice.stop - l
-
-        wt = self.top - t
-        wb = self.bottom - t
-        wl = self.left - l
-        wr = self.right - l
-
-        if (
-            wt >= h
-            or wb < 0
-            or wl >= w
-            or wr < 0
-        ):
-            # widget doesn't intersect.
-            return
-
-        ####################################################################
-        # Four cases for top / bottom of widget:                           #
-        #     1) widget top is off-screen and widget bottom is off-screen. #
-        #               +--------+                                         #
-        #            +--| widget |------------+                            #
-        #            |  |        |   dest     |                            #
-        #            +--|        |------------+                            #
-        #               +--------+                                         #
-        #     2) widget top is off-screen and widget bottom is on-screen.  #
-        #               +--------+                                         #
-        #            +--| widget |------------+                            #
-        #            |  +--------+   dest     |                            #
-        #            +------------------------+                            #
-        #                                                                  #
-        #     3) widget top is on-screen and widget bottom is off-screen.  #
-        #            +------------------------+                            #
-        #            |  +--------+   dest     |                            #
-        #            +--| widget |------------+                            #
-        #               +--------+                                         #
-        #                                                                  #
-        #     4) widget top is on-screen and widget bottom is on-screen.   #
-        #            +------------------------+                            #
-        #            |  +--------+            |                            #
-        #            |  | widget |   dest     |                            #
-        #            |  +--------+            |                            #
-        #            +------------------------+                            #
-        #                                                                  #
-        # Similarly, by symmetry, four cases for left / right of widget.   #
-        ####################################################################
-
-        # st, dt, sb, db, sl, dl, sr, dr stand for source_top, destination_top, source_bottom,
-        # destination_bottom, source_left, destination_left, source_right, destination_right.
-        if wt < 0:
-            st = -wt
-            dt = 0
-
-            if wb >= h:
-                sb = h + st
-                db = h
-            else:
-                sb = self.height
-                db = wb
-        else:
-            st =  0
-            dt = wt
-
-            if wb >= h:
-                sb = h - dt
-                db = h
-            else:
-                sb = self.height
-                db = wb
-
-        if wl < 0:
-            sl = -wl
-            dl = 0
-
-            if wr >= w:
-                sr = w + sl
-                dr = w
-            else:
-                sr = self.width
-                dr = wr
-        else:
-            sl = 0
-            dl = wl
-
-            if wr >= w:
-                sr = w - dl
-                dr = w
-            else:
-                sr = self.width
-                dr = wr
-
-        dest_slice = np.s_[dt: db, dl: dr]
-        self.render(canvas_view[dest_slice], colors_view[dest_slice], np.s_[st: sb, sl: sr])
+                source = Rect(child.top, child.bottom, child.left, child.right)
+                if (slices := intersection(dest, source)) is not None:
+                    dest_slice, source_slice = slices
+                    child.render(canvas_view[dest_slice], colors_view[dest_slice], source_slice)
 
     async def tween(
         self,

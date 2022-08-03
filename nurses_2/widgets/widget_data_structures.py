@@ -4,7 +4,7 @@ Data structures for widgets.
 from enum import Enum
 from typing import NamedTuple
 
-__all__ = "SizeHint", "PosHint", "Anchor", "Easing"
+__all__ = "SizeHint", "PosHint", "Rect", "Anchor", "Easing"
 
 
 class SizeHint(NamedTuple):
@@ -67,6 +67,45 @@ class PosHint(NamedTuple):
     """
     y: float | None
     x: float | None
+
+
+class Rect(NamedTuple):
+    """
+    Rectangular coordinates.
+
+    Parameters
+    ----------
+    top : int
+        Top-coordinate of rectangle.
+    bottom : int
+        Bottom-coordinate of rectangle.
+    left : int
+        Left-coordinate of rectangle.
+    right : int
+        Right-coordinate of rectangle.
+
+    Attributes
+    ----------
+    top : int
+        Top-coordinate of rectangle.
+    bottom : int
+        Bottom-coordinate of rectangle.
+    left : int
+        Left-coordinate of rectangle.
+    right : int
+        Right-coordinate of rectangle.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
+    """
+    top: int
+    bottom: int
+    left: int
+    right: int
 
 
 class Anchor(str, Enum):

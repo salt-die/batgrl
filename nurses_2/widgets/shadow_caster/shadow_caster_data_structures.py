@@ -8,6 +8,7 @@ import numpy as np
 
 from ...colors import Color
 from ...data_structures import Point, Size
+from ..widget import intersection, Rect
 
 
 class Camera:
@@ -40,70 +41,20 @@ class Camera:
     def get_submap(self, map: np.ndarray) -> np.ndarray:
         """
         Get the section of a map visible by the camera.
-
-        Notes
-        -----
-        This is the exact algorithm used by :meth:`nurses_2.widgets.Widget.render_intersection`.
         """
-        submap = np.zeros((self.size), dtype=np.uint8)
+        submap = np.zeros(self.size, dtype=np.uint8)
 
         mh, mw = map.shape
         h, w = self.size
+        t, l = self.pos
+        b, r = h + t, w + l
 
-        y, x = self.pos
-        b, r = h + y, w + x
+        dest = Rect(t, b, l, r)
+        source = Rect(0, mh, 0, mw)
 
-        if (
-            y >= mh
-            or b < 0
-            or x >= mw
-            or r < 0
-        ):
-            return submap
-
-        if y < 0:
-            st = -y
-            dt = 0
-
-            if b >= mh:
-                sb = mh + st
-                db = mh
-            else:
-                sb = h
-                db = b
-        else:
-            st = 0
-            dt = y
-
-            if b >= mh:
-                sb = mh - dt
-                db = mh
-            else:
-                sb = h
-                db = b
-
-        if x < 0:
-            sl = -x
-            dl = 0
-
-            if r >= mw:
-                sr = mw + sl
-                dr = mw
-            else:
-                sr = w
-                dr = r
-        else:
-            sl = 0
-            dl = x
-
-            if r >= mw:
-                sr = mw - dl
-                dr = mw
-            else:
-                sr = w
-                dr = r
-
-        submap[st: sb, sl: sr] = map[dt: db, dl: dr]
+        if (slices := intersection(dest, source)) is not None:
+            dest_slice, source_slice = slices
+            submap[dest_slice] = map[source_slice]
 
         return submap
 

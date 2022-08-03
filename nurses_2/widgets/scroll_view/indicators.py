@@ -54,9 +54,8 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         self.update_theme()
 
     def update_geometry(self):
-        vertical_bar = self.parent
-        scroll_view = vertical_bar.parent
-        self.top = round(scroll_view.vertical_proportion * vertical_bar.fill_height)
+        if (vertical_bar := self.parent) and (scroll_view := vertical_bar.parent):
+            self.top = round(scroll_view.vertical_proportion * vertical_bar.fill_height)
 
     def grab_update(self, mouse_event):
         vertical_bar = self.parent
@@ -70,9 +69,8 @@ class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         self.update_theme()
 
     def update_geometry(self):
-        horizontal_bar = self.parent
-        scroll_view = horizontal_bar.parent
-        self.left = round(scroll_view.horizontal_proportion * horizontal_bar.fill_width)
+        if (horizontal_bar := self.parent) and (scroll_view := horizontal_bar.parent):
+            self.left = round(scroll_view.horizontal_proportion * horizontal_bar.fill_width)
 
     def grab_update(self, mouse_event):
         horizontal_bar = self.parent

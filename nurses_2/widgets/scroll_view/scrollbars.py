@@ -11,17 +11,12 @@ HBAR_HEIGHT = 1
 
 
 class _VerticalBar(Themable, Widget):
-    def __init__(self, parent):
-        super().__init__()
-
-        self.parent = parent
-        self.update_geometry()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.indicator = _VerticalIndicator()
         self.add_widget(self.indicator)
-
         self.background_char = " "
-
         self.update_theme()
 
     def update_theme(self):
@@ -62,17 +57,12 @@ class _VerticalBar(Themable, Widget):
 
 
 class _HorizontalBar(Themable, Widget):
-    def __init__(self, parent):
-        super().__init__()
-
-        self.parent = parent
-        self.update_geometry()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.indicator = _HorizontalIndicator()
         self.add_widget(self.indicator)
-
         self.background_char = " "
-
         self.update_theme()
 
     def update_theme(self):
