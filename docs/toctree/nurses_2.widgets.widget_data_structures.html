@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.widget_data_structures &#8212; Python 0.9.5 documentation</title>
+    <title>nurses_2.widgets.widget_data_structures &#8212; Python 0.10.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.9.5 documentation</p>
+    <p class="title logo__title">Python 0.10.0 documentation</p>
   
 </a>
     
@@ -537,7 +537,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.PosHint" title="nurses_2.widgets.widget_data_structures.PosHint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PosHint</span></code></a>(y, x)</p></td>
 <td><p>A position hint.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint" title="nurses_2.widgets.widget_data_structures.SizeHint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SizeHint</span></code></a>(height, width)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.Rect" title="nurses_2.widgets.widget_data_structures.Rect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rect</span></code></a>(top, bottom, left, right)</p></td>
+<td><p>Rectangular coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.SizeHint" title="nurses_2.widgets.widget_data_structures.SizeHint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SizeHint</span></code></a>(height, width)</p></td>
 <td><p>A size hint.</p></td>
 </tr>
 </tbody>
@@ -820,6 +823,91 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.PosHint.y">
 <span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.PosHint.y" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Rect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>Rectangular coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>top</strong><span class="classifier">int</span></dt><dd><p>Top-coordinate of rectangle.</p>
+</dd>
+<dt><strong>bottom</strong><span class="classifier">int</span></dt><dd><p>Bottom-coordinate of rectangle.</p>
+</dd>
+<dt><strong>left</strong><span class="classifier">int</span></dt><dd><p>Left-coordinate of rectangle.</p>
+</dd>
+<dt><strong>right</strong><span class="classifier">int</span></dt><dd><p>Right-coordinate of rectangle.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>top</strong><span class="classifier">int</span></dt><dd><p>Top-coordinate of rectangle.</p>
+</dd>
+<dt><strong>bottom</strong><span class="classifier">int</span></dt><dd><p>Bottom-coordinate of rectangle.</p>
+</dd>
+<dt><strong>left</strong><span class="classifier">int</span></dt><dd><p>Left-coordinate of rectangle.</p>
+</dd>
+<dt><strong>right</strong><span class="classifier">int</span></dt><dd><p>Right-coordinate of rectangle.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect.bottom">
+<span class="sig-name descname"><span class="pre">bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect.bottom" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect.left">
+<span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect.left" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect.right">
+<span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect.right" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Rect.top">
+<span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Rect.top" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 

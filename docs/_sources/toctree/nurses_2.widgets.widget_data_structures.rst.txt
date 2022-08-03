@@ -20,6 +20,7 @@ nurses\_2.widgets.widget\_data\_structures
       Anchor
       Easing
       PosHint
+      Rect
       SizeHint
    
    

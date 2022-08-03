@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.widget &#8212; Python 0.9.5 documentation</title>
+    <title>nurses_2.widgets.widget &#8212; Python 0.10.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.9.5 documentation</p>
+    <p class="title logo__title">Python 0.10.0 documentation</p>
   
 </a>
     
@@ -531,6 +531,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.emitter" title="nurses_2.widgets.widget.emitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">emitter</span></code></a>(setter)</p></td>
 <td><p>A decorator for widget property setters that will notify subscribers when the property is updated.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.widget.intersection" title="nurses_2.widgets.widget.intersection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intersection</span></code></a>(a, b)</p></td>
+<td><p>Find the intersection of two rects and return the numpy slices that correspond to that intersection for both rects.</p></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Classes</p>
@@ -938,12 +941,6 @@ returns True.)</p>
 <span class="sig-name descname"><span class="pre">render_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget.Widget.render_children" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.widget.Widget.render_intersection">
-<span class="sig-name descname"><span class="pre">render_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget.Widget.render_intersection" title="Permalink to this definition">#</a></dt>
-<dd><p>Render the intersection of destination with widget.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.widget.Widget.right">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.widget.Widget.right" title="Permalink to this definition">#</a></dt>
@@ -1101,6 +1098,13 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget.</span></span><span class="sig-name descname"><span class="pre">emitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget.emitter" title="Permalink to this definition">#</a></dt>
 <dd><p>A decorator for widget property setters that will
 notify subscribers when the property is updated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget.intersection">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget.</span></span><span class="sig-name descname"><span class="pre">intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Rect" title="nurses_2.widgets.widget_data_structures.Rect"><span class="pre">nurses_2.widgets.widget_data_structures.Rect</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Rect" title="nurses_2.widgets.widget_data_structures.Rect"><span class="pre">nurses_2.widgets.widget_data_structures.Rect</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.widget.intersection" title="Permalink to this definition">#</a></dt>
+<dd><p>Find the intersection of two rects and return the numpy slices that
+correspond to that intersection for both rects.</p>
 </dd></dl>
 
 </section>
