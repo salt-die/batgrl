@@ -870,7 +870,7 @@ class Widget:
             if self.background_color_pair is not None:
                 colors_view[:] = self.background_color_pair
 
-            self.render_children(source, canvas_view, colors_view)
+        self.render_children(source, canvas_view, colors_view)
 
     def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
         vert_slice, hori_slice = destination
