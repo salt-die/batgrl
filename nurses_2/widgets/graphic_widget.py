@@ -224,7 +224,7 @@ class GraphicWidget(Widget):
         )
 
     @property
-    def alpha(self):
+    def alpha(self) -> float:
         return self._alpha
 
     @alpha.setter
@@ -243,7 +243,7 @@ class GraphicWidget(Widget):
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
-        Paint region given by source into canvas_view and colors_view.
+        Paint region given by `source` into `canvas_view` and `colors_view`.
         """
         vert_slice, hori_slice = source
         t = vert_slice.start
@@ -253,8 +253,8 @@ class GraphicWidget(Widget):
         even_rows = texture[2 * t: 2 * b: 2, hori_slice]
         odd_rows = texture[2 * t + 1: 2 * b: 2, hori_slice]
 
-        background = colors_view[..., 3:]
         foreground = colors_view[..., :3]
+        background = colors_view[..., 3:]
 
         if not self.is_transparent:
             foreground[:] = even_rows[..., :3]
@@ -285,5 +285,8 @@ class GraphicWidget(Widget):
         self.render_children(source, canvas_view, colors_view)
 
     def to_png(self, path: Path):
+        """
+        Write :attr:`texture` to provided path as a `png` image.
+        """
         BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
         cv2.imwrite(str(path.absolute()), BGRA)
