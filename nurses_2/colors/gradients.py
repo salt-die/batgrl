@@ -24,7 +24,7 @@ def rainbow_gradient(n: int, *, color_type: type[Color] | type[AColor]=Color) ->
     n : int
         Number of colors in gradient.
     color_type : Color | AColor, default: Color
-        Type of color gradient to make
+        Color type of gradient.
     """
     TAU = 2 * np.pi
     OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
