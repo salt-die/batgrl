@@ -275,7 +275,8 @@ class Widget:
         self.parent: Widget | None = None
         self.children: list[Widget] = [ ]
 
-        self._size = Size(*size)
+        h, w = size
+        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
         self._pos = Point(*pos)
 
         self._size_hint = size_hint
@@ -860,7 +861,7 @@ class Widget:
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
-        Paint widget and its children.
+        Paint region given by `source` into `canvas_view` and `colors_view`.
         """
         if not self.is_transparent:
             if self.background_char is not None:
