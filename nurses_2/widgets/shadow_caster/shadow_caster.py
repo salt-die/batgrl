@@ -30,7 +30,7 @@ class ShadowCaster(GraphicWidget):
 
     Parameters
     ----------
-    map : np.ndarray
+    map : numpy.ndarray
         A 2-d map. Non-zero values are walls.
     camera : Camera
         A camera that determines the visible portion of the map.
@@ -98,7 +98,7 @@ class ShadowCaster(GraphicWidget):
 
     Attributes
     ----------
-    map : np.ndarray
+    map : numpy.ndarray
         A 2-d map. Non-zero values are walls.
     camera : Camera
         A camera that determines the visible portion of the map.

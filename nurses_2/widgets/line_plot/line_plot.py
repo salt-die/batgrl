@@ -22,7 +22,7 @@ class LinePlot(Widget):
 
     Parameters
     ----------
-    *points : list[float] | np.ndarray
+    *points : list[float] | numpy.ndarray
         The horizontal / vertical coordinates of the data points.
         For `n` plots, there should be `2 * n` 1D arrays.
     xmin : float | None, default: None
