@@ -590,8 +590,7 @@ when compositing with <a class="reference internal" href="#nurses_2.widgets.grap
 <dd class="field-even"><dl class="simple">
 <dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
 </dd>
-<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>The alpha channel of <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> will be multiplied by this
-when compositing with <a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">paint()</span></code></a>.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha" title="nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Transparency of sprite.</p>
 </dd>
 </dl>
 </dd>
@@ -610,19 +609,21 @@ when compositing with <a class="reference internal" href="#nurses_2.widgets.grap
 <td><p>Compose sprite with another texture.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>from_image:</strong></p></td>
-<td><p>Create a sprite from a path.</p></td>
+<td><p>Create a sprite from an image.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Transparency of sprite.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.from_image">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.from_image" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Create a <a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code></a> from an image.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint">
@@ -633,7 +634,8 @@ when compositing with <a class="reference internal" href="#nurses_2.widgets.grap
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.resize">
 <span class="sig-name descname"><span class="pre">resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.resize" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Return a new sprite with resized <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code>.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.size">

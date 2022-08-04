@@ -57,7 +57,7 @@ class Sprite:
     paint:
         Compose sprite with another texture.
     from_image:
-        Create a sprite from a path.
+        Create a sprite from an image.
     """
     def __init__(self, texture: np.ndarray, alpha: float=1.0):
         self.texture = texture
@@ -71,6 +71,9 @@ class Sprite:
         return Size(*self.texture.shape[:2])
 
     def resize(self, size: Size, interpolation: Interpolation=Interpolation.LINEAR) -> "Sprite":
+        """
+        Return a new sprite with resized :attr:`texture`.
+        """
         h, w = size
         h = clamp(h, 1, None)
         w = clamp(w, 1, None)
@@ -82,6 +85,9 @@ class Sprite:
 
     @property
     def alpha(self) -> float:
+        """
+        Transparency of sprite.
+        """
         return self._alpha
 
     @alpha.setter
@@ -114,6 +120,9 @@ class Sprite:
 
     @classmethod
     def from_image(cls, path: Path) -> "Sprite":
+        """
+        Create a :class:`Sprite` from an image.
+        """
         image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
 
         if image.dtype == np.dtype(np.uint16):
