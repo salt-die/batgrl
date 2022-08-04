@@ -541,7 +541,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>*points</strong><span class="classifier">list[float] | np.ndarray</span></dt><dd><p>The horizontal / vertical coordinates of the data points.
+<dt><strong>*points</strong><span class="classifier">list[float] | numpy.ndarray</span></dt><dd><p>The horizontal / vertical coordinates of the data points.
 For <cite>n</cite> plots, there should be <cite>2 * n</cite> 1D arrays.</p>
 </dd>
 <dt><strong>xmin</strong><span class="classifier">float | None, default: None</span></dt><dd><p>Minimum x-value of plot. If None, xmin will be minimum of all xs.</p>
@@ -937,7 +937,7 @@ returns True.)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.render">
 <span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.render" title="Permalink to this definition">#</a></dt>
-<dd><p>Paint widget and its children.</p>
+<dd><p>Paint region given by <cite>source</cite> into <cite>canvas_view</cite> and <cite>colors_view</cite>.</p>
 </dd></dl>
 
 <dl class="py method">

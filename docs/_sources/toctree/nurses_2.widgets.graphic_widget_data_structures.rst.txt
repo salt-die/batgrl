@@ -18,6 +18,7 @@ nurses\_2.widgets.graphic\_widget\_data\_structures
    .. autosummary::
    
       Interpolation
+      Sprite
    
    
 

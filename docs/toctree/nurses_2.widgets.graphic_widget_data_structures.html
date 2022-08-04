@@ -531,6 +531,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Interpolation</span></code></a>(value)</p></td>
 <td><p>Interpolation methods for resizing graphic widgets.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sprite</span></code></a>(texture[, alpha])</p></td>
+<td><p>A graphic element.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py class">
@@ -564,6 +567,79 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.NEAREST">
 <span class="sig-name descname"><span class="pre">NEAREST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.NEAREST" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Sprite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A graphic element.</p>
+<p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code></a> simplifies placing and compositing images on another texture.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>The alpha channel of <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> will be multiplied by this
+when compositing with <a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">paint()</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>The alpha channel of <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> will be multiplied by this
+when compositing with <a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">paint()</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>resize:</strong></p></td>
+<td><p>Return a new sprite with given size.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>paint:</strong></p></td>
+<td><p>Compose sprite with another texture.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>from_image:</strong></p></td>
+<td><p>Create a sprite from a path.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.from_image">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.from_image" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint">
+<span class="sig-name descname"><span class="pre">paint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Point(y=0,</span> <span class="pre">x=0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="Permalink to this definition">#</a></dt>
+<dd><p>Paint this sprite on the given texture at position <cite>pos</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.resize">
+<span class="sig-name descname"><span class="pre">resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.resize" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.size" title="Permalink to this definition">#</a></dt>
+<dd><p>Size of sprite.</p>
+</dd></dl>
 
 </dd></dl>
 
