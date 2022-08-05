@@ -528,14 +528,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabbableBehavior</span></code></a>(*[, is_grabbable, disable_ptf])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabbableBehavior</span></code></a>(*[, is_grabbable, ...])</p></td>
 <td><p>Grabbable behavior for a widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grabbable_behavior.</span></span><span class="sig-name descname"><span class="pre">GrabbableBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_grabbable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_ptf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grabbable_behavior.</span></span><span class="sig-name descname"><span class="pre">GrabbableBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_grabbable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_ptf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouse_button</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.MouseButton</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MouseButton.LEFT</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Grabbable behavior for a widget. Mouse down events that collide with widget will “grab”
 it, calling <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab()</span></code></a>. While grabbed, each mouse event will call <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab_update()</span></code></a>
@@ -552,13 +552,17 @@ or <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_beh
 </dd>
 <dt><strong>disable_ptf</strong><span class="classifier">bool, default: False</span></dt><dd><p>If True, widget will not be pulled to front when grabbed.</p>
 </dd>
+<dt><strong>mouse_button</strong><span class="classifier">MouseButton, default: MouseButton.LEFT</span></dt><dd><p>Mouse button used for grabbing.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>is_grabbable</strong><span class="classifier">bool</span></dt><dd><p>If False, grabbable behavior is disabled.</p>
+<dt><strong>is_grabbable</strong><span class="classifier">bool, default: True</span></dt><dd><p>If False, grabbable behavior is disabled.</p>
 </dd>
-<dt><strong>disable_ptf</strong><span class="classifier">bool</span></dt><dd><p>If True, widget will not be pulled to front when grabbed.</p>
+<dt><strong>disable_ptf</strong><span class="classifier">bool, default: False</span></dt><dd><p>If True, widget will not be pulled to front when grabbed.</p>
+</dd>
+<dt><strong>mouse_button</strong><span class="classifier">MouseButton, default: MouseButton.LEFT</span></dt><dd><p>Mouse button used for grabbing.</p>
 </dd>
 <dt><strong>is_grabbed</strong><span class="classifier">bool</span></dt><dd><p>True if widget is grabbed.</p>
 </dd>

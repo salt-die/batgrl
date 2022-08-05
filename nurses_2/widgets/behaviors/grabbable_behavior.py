@@ -2,7 +2,7 @@
 Grabbable behavior for a widget.
 """
 from ...data_structures import Point
-from ...io import MouseEventType
+from ...io import MouseEventType, MouseButton
 
 
 class GrabbableBehavior:
@@ -24,13 +24,17 @@ class GrabbableBehavior:
         If False, grabbable behavior is disabled.
     disable_ptf : bool, default: False
         If True, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
 
     Attributes
     ----------
-    is_grabbable : bool
+    is_grabbable : bool, default: True
         If False, grabbable behavior is disabled.
-    disable_ptf : bool
+    disable_ptf : bool, default: False
         If True, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -49,11 +53,19 @@ class GrabbableBehavior:
     grab_update:
         Update widget with incoming mouse events while grabbed.
     """
-    def __init__(self, *, is_grabbable=True, disable_ptf=False, **kwargs):
+    def __init__(
+        self,
+        *,
+        is_grabbable: bool=True,
+        disable_ptf: bool=False,
+        mouse_button: MouseButton=MouseButton.LEFT,
+        **kwargs
+    ):
         super().__init__(**kwargs)
 
         self.is_grabbable = is_grabbable
         self.disable_ptf = disable_ptf
+        self.mouse_button = mouse_button
         self._is_grabbed = False
 
         self._last_mouse_pos = Point(0, 0)
@@ -76,6 +88,7 @@ class GrabbableBehavior:
             if (
                 self.collides_point(mouse_event.position)
                 and mouse_event.event_type == MouseEventType.MOUSE_DOWN
+                and mouse_event.button == self.mouse_button
             ):
                 self.grab(mouse_event)
                 return True
