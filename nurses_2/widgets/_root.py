@@ -109,7 +109,7 @@ class _Root(Widget):
 
         height, width = canvas.shape
 
-        self.render_children(np.s_[0: height, 0: width], canvas, colors)
+        self.render_children((slice(0, height), slice(0, width)), canvas, colors)
 
         if self._redraw_all:
             ys, xs = np.indices((height, width)).reshape(2, height * width)
