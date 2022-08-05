@@ -97,8 +97,8 @@ class WorldWidget(GraphicWidget):
 
     def on_click(self, mouse_event: MouseEvent) -> bool | None:
         if (
-            not self.collides_point(mouse_event.position)
-            or mouse_event.button is MouseButton.MIDDLE
+            mouse_event.button is MouseButton.MIDDLE
+            or not self.collides_point(mouse_event.position)
         ):
             return
 
