@@ -4,7 +4,7 @@ from nurses_2.app import App
 from nurses_2.widgets.image import Image
 
 THIS_DIR = Path(__file__).parent
-IMAGE_DIR = THIS_DIR / Path("images")
+IMAGE_DIR = THIS_DIR / "images"
 PATH_TO_LOGO_FLAT = IMAGE_DIR / "logo_solo_flat_256.png"
 PATH_TO_LOGO_FULL = IMAGE_DIR / "python_discord_logo.png"
 PATH_TO_BACKGROUND = IMAGE_DIR / "background.png"

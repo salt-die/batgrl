@@ -15,7 +15,7 @@ from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.animation import Animation
 
 THIS_DIR = Path(__file__).parent
-PATH_TO_PRIDE = THIS_DIR / Path("frames") / "pride"
+PATH_TO_PRIDE = THIS_DIR / "frames" / "pride"
 HEIGHT, WIDTH = 20, 20
 SNAKE_START = HEIGHT // 2, WIDTH // 2
 TICK_DURATION = .12

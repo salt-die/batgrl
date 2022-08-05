@@ -9,9 +9,9 @@ from nurses_2.widgets.ray_caster import RayCaster, Sprite
 from .animated_texture import AnimatedTexture
 from .camera import Camera
 
-ROOT_DIR = Path(__file__).parent.parent
-FRAMES_DIR = ROOT_DIR / Path("..") / "frames" / "spinner"
-IMAGES_DIR = ROOT_DIR / Path("..") / "images"
+ASSETS_DIR = Path(__file__).parent.parent.parent
+FRAMES_DIR = ASSETS_DIR / "frames" / "spinner"
+IMAGES_DIR = ASSETS_DIR / "images"
 CEILING_PATH = IMAGES_DIR / "bluestone.png"
 FLOOR_PATH = IMAGES_DIR / "greystone.png"
 SPRITE = IMAGES_DIR / "pixel_python.png"

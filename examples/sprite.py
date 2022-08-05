@@ -6,7 +6,7 @@ from nurses_2.widgets.graphic_widget_data_structures import Sprite
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
 THIS_DIR = Path(__file__).parent
-IMAGE_DIR = THIS_DIR / Path("images")
+IMAGE_DIR = THIS_DIR / "images"
 PATH_TO_LOGO_FULL = IMAGE_DIR / "python_discord_logo.png"
 sprite = Sprite.from_image(PATH_TO_LOGO_FULL).resize((10, 20))
 

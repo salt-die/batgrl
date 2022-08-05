@@ -26,7 +26,7 @@ FRICTION = .97
 PERCENTS = tuple(np.linspace(0, 1, 30))
 
 THIS_DIR = Path(__file__).parent
-IMAGE_DIR = THIS_DIR / Path("images")
+IMAGE_DIR = THIS_DIR / "images"
 PATH_TO_BACKGROUND = IMAGE_DIR / "background.png"
 PATH_TO_LOGO_FULL = IMAGE_DIR / "python_discord_logo.png"
 

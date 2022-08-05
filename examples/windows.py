@@ -11,7 +11,7 @@ from nurses_2.widgets.line_plot import LinePlot
 from nurses_2.widgets.window import Window
 
 THIS_DIR = Path(__file__).parent
-CAVEMAN_PATH = THIS_DIR / Path("frames") / "caveman"
+CAVEMAN_PATH = THIS_DIR / "frames" / "caveman"
 
 LIGHT_BLUE = Color.from_hex("56a1e2")
 DARK_PURPLE = Color.from_hex("020028")

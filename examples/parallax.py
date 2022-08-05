@@ -8,7 +8,7 @@ from nurses_2.widgets.image import Image
 from nurses_2.widgets.parallax import Parallax
 
 THIS_DIR = Path(__file__).parent
-IMAGES_DIR = THIS_DIR / Path("images")
+IMAGES_DIR = THIS_DIR / "images"
 SIZE = 30, 50
 
 def load_layers(path):
