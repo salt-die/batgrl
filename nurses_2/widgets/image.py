@@ -6,7 +6,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .graphic_widget import GraphicWidget, Interpolation
+from .graphic_widget import GraphicWidget, Interpolation, Sprite
 
 __all__ = "GraphicWidget", "Interpolation"
 
@@ -198,24 +198,7 @@ class Image(GraphicWidget):
     @path.setter
     def path(self, new_path):
         self._path = new_path
-        self._load_texture()
-
-    def _load_texture(self):
-        image = cv2.imread(str(self.path.absolute()), cv2.IMREAD_UNCHANGED)
-
-        if image.dtype == np.dtype(np.uint16):
-            image = (image // 257).astype(np.uint8)
-        elif image.dtype == np.dtype(np.float32):
-            image = (image * 255).astype(np.uint8)
-
-        # Add an alpha channel if there isn't one.
-        h, w, c = image.shape
-        if c == 3:
-            default_alpha_channel = np.full((h, w, 1), 255, dtype=np.uint8)
-            image = np.dstack((image, default_alpha_channel))
-
-        self._image_texture = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
-
+        self._image_texture = Sprite.from_image(new_path).texture
         self.on_size()
 
     def on_size(self):
