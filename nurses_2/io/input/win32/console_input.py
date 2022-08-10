@@ -14,7 +14,8 @@ try:
     )
 except ModuleNotFoundError:
     # This file needs to be importable on linux for auto-documentation.
-    pass
+    KEY_EVENT_RECORD = type(None)
+
 from ....data_structures import Point, Size
 from ..events import (
     Key,
