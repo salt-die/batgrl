@@ -12,7 +12,7 @@ class _Root(Widget):
     """
     Root widget.
 
-    Meant to be instantiated by the :class:`nurses_2.app.App` class.
+    Instantiated only by :class:`nurses_2.app.App`.
     """
     def __init__(
         self,
