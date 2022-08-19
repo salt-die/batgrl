@@ -1,3 +1,6 @@
+"""
+Data structures for input events.
+"""
 from functools import cache
 from collections import namedtuple
 from enum import Enum

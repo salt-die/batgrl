@@ -1,3 +1,6 @@
+"""
+Keyboard special keys.
+"""
 from enum import Enum
 
 
@@ -6,7 +9,6 @@ class Key(str, Enum):
     Special keys.
     """
     Escape = "escape"
-
     Left = "left"
     Right = "right"
     Up = "up"
@@ -17,7 +19,6 @@ class Key(str, Enum):
     Delete = "delete"
     PageUp = "pageup"
     PageDown = "pagedown"
-
     F1 = "f1"
     F2 = "f2"
     F3 = "f3"
@@ -42,14 +43,10 @@ class Key(str, Enum):
     F22 = "f22"
     F23 = "f23"
     F24 = "f24"
-
     ScrollUp = "<scroll-up>"
     ScrollDown = "<scroll-down>"
-
     Paste = "<paste>"
-
     Ignore = "<ignore>"
-
     Tab = "tab"
     Enter = "enter"
     Backspace = "backspace"
