@@ -45,7 +45,7 @@ _INT_TO_KEYS = {
 
 def _handle_mods(key_state: DWORD) -> Mods:
     """
-    Return :class:`Mods` from a event's `ControlKeyState`.
+    Return `Mods` from a event's `ControlKeyState`.
     """
     ALT_PRESSED = 0x0001 | 0x0002  # left alt or right alt
     CTRL_PRESSED = 0x0004 | 0x0008  # left ctrl or right ctrl
@@ -85,7 +85,7 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     # On windows, simultaneous mouse button presses are communicated through ev.ButtonState.
     # Linux only passes the last button pressed through ansi codes. To get behavior consistent with
     # linux, the last mouse button pressed is determined from the last button state, the current
-    # button state, and the order mouse buttons were pressed stored in _PRESSED_KEYS.
+    # button state, and the order mouse buttons were pressed (stored in _PRESSED_KEYS).
 
     # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent with
     # linux mouse-handling we determine double/triple-clicks with `nurses_2.app.App`.
@@ -114,8 +114,8 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
 
 def _purge(text: list[str]):
     """
-    Merge surrogate pairs, detect any PasteEvents and otherwise, yield Keys from text.
-    Text is cleared afterwards.
+    Merge surrogate pairs, detect any PasteEvents and otherwise, yield Keys from `text`.
+    `text` is cleared afterwards.
     """
     if not text:
         return
