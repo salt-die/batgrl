@@ -20,3 +20,5 @@ Welcome to nurses_2 documentation. Work in progress.
    nurses_2.data_structures
    nurses_2.easings
    nurses_2.widgets
+   nurses_2.io.input.events
+   nurses_2.io.input.keys

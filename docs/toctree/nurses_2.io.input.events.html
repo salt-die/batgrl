@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>nurses_2.io.input.events &#8212; Python 0.11.0 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="nurses_2.io.input.keys" href="nurses_2.io.input.keys.html" />
+    <link rel="prev" title="nurses_2.widgets.window" href="nurses_2.widgets.window.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">Python 0.11.0 documentation</p>
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.app.html">
+  nurses_2.app
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.colors.html">
+  nurses_2.colors
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.clamp.html">
+  nurses_2.clamp
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.data_structures.html">
+  nurses_2.data_structures
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.easings.html">
+  nurses_2.easings
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.widgets.html">
+  nurses_2.widgets
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  nurses_2.io.input.events
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="nurses_2.io.input.keys.html">
+  nurses_2.io.input.keys
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/salt-die/nurses_2" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="module-nurses_2.io.input.events">
+<span id="nurses-2-io-input-events"></span><h1>nurses_2.io.input.events<a class="headerlink" href="#module-nurses_2.io.input.events" title="Permalink to this headline">#</a></h1>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyPressEvent</span></code></a>(*args, **kwargs)</p></td>
+<td><p>A key press event.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mods</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Modifiers for input events.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.events.MouseButton" title="nurses_2.io.input.events.MouseButton"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseButton</span></code></a>(value)</p></td>
+<td><p>A mouse button.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseEvent</span></code></a>(position, event_type, button, ...)</p></td>
+<td><p>A mouse input event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.events.MouseEventType" title="nurses_2.io.input.events.MouseEventType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MouseEventType</span></code></a>(value)</p></td>
+<td><p>A mouse event type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PasteEvent</span></code></a>(paste)</p></td>
+<td><p>A paste event.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">KeyPressEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></code></a></p>
+<p>A key press event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>key</strong><span class="classifier">Key | str</span></dt><dd><p>The key pressed.</p>
+</dd>
+<dt><strong>mods</strong><span class="classifier">Mods</span></dt><dd><p>Modifiers for the key.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>key</strong><span class="classifier">Key | str</span></dt><dd><p>The key pressed.</p>
+</dd>
+<dt><strong>mods</strong><span class="classifier">Mods</span></dt><dd><p>Modifiers for the key event.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.ENTER">
+<span class="sig-name descname"><span class="pre">ENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">KeyPressEvent(key=&lt;Key.Enter:</span> <span class="pre">'enter'&gt;,</span> <span class="pre">mods=Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False))</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.ENTER" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.ESCAPE">
+<span class="sig-name descname"><span class="pre">ESCAPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">KeyPressEvent(key=&lt;Key.Escape:</span> <span class="pre">'escape'&gt;,</span> <span class="pre">mods=Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False))</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.ESCAPE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.io.input.keys.html#nurses_2.io.input.keys.Key" title="nurses_2.io.input.keys.Key"><span class="pre">nurses_2.io.input.keys.Key</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.key" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.mods">
+<span class="sig-name descname"><span class="pre">mods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><span class="pre">nurses_2.io.input.events.Mods</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.mods" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">Mods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.Mods" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.io.input.events.Mods</span></code></a></p>
+<p>Modifiers for input events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>alt</strong><span class="classifier">bool</span></dt><dd><p>True if <cite>alt</cite> was pressed.</p>
+</dd>
+<dt><strong>ctrl</strong><span class="classifier">bool</span></dt><dd><p>True if <cite>ctrl</cite> was pressed.</p>
+</dd>
+<dt><strong>shift</strong><span class="classifier">bool</span></dt><dd><p>True if <cite>shift</cite> was pressed.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>alt</strong><span class="classifier">bool</span></dt><dd><p>True if <cite>alt</cite> was pressed.</p>
+</dd>
+<dt><strong>ctrl</strong><span class="classifier">bool</span></dt><dd><p>True if <cite>ctrl</cite> was pressed.</p>
+</dd>
+<dt><strong>shift</strong><span class="classifier">bool</span></dt><dd><p>True if <cite>shift</cite> was pressed.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.io.input.events.Mods.meta" title="nurses_2.io.input.events.Mods.meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meta</span></code></a><span class="classifier">bool</span></dt><dd><p>Alias for <cite>alt</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.io.input.events.Mods.control" title="nurses_2.io.input.events.Mods.control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control</span></code></a><span class="classifier">bool</span></dt><dd><p>Alias for <cite>ctrl</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.NO_MODS">
+<span class="sig-name descname"><span class="pre">NO_MODS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False)</span></em><a class="headerlink" href="#nurses_2.io.input.events.Mods.NO_MODS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.alt">
+<span class="sig-name descname"><span class="pre">alt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.io.input.events.Mods.alt" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.control">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">control</span></span><a class="headerlink" href="#nurses_2.io.input.events.Mods.control" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for <cite>ctrl</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.Mods.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.ctrl">
+<span class="sig-name descname"><span class="pre">ctrl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.io.input.events.Mods.ctrl" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.Mods.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.meta">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">meta</span></span><a class="headerlink" href="#nurses_2.io.input.events.Mods.meta" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for <cite>alt</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.Mods.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.io.input.events.Mods.shift" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseButton">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">MouseButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.MouseButton" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>A mouse button.</p>
+<p><cite>MouseButton</cite> is one of <cite>LEFT</cite>, <cite>MIDDLE</cite>, <cite>RIGHT</cite>, <cite>NO_BUTTON</cite>,
+<cite>UNKNOWN_BUTTON</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseButton.LEFT">
+<span class="sig-name descname"><span class="pre">LEFT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LEFT'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseButton.LEFT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseButton.MIDDLE">
+<span class="sig-name descname"><span class="pre">MIDDLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MIDDLE'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseButton.MIDDLE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseButton.NO_BUTTON">
+<span class="sig-name descname"><span class="pre">NO_BUTTON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NO_BUTTON'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseButton.NO_BUTTON" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseButton.RIGHT">
+<span class="sig-name descname"><span class="pre">RIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RIGHT'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseButton.RIGHT" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseButton.UNKNOWN_BUTTON">
+<span class="sig-name descname"><span class="pre">UNKNOWN_BUTTON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UNKNOWN_BUTTON'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseButton.UNKNOWN_BUTTON" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">MouseEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.io.input.events.MouseEventType" title="nurses_2.io.input.events.MouseEventType"><span class="pre">nurses_2.io.input.events.MouseEventType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">button</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.io.input.events.MouseButton" title="nurses_2.io.input.events.MouseButton"><span class="pre">nurses_2.io.input.events.MouseButton</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><span class="pre">nurses_2.io.input.events.Mods</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nclicks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>A mouse input event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>position</strong><span class="classifier">Point</span></dt><dd><p>Position of mouse.</p>
+</dd>
+<dt><strong>event_type</strong><span class="classifier">MouseEventType</span></dt><dd><p>Mouse event type.</p>
+</dd>
+<dt><strong>button</strong><span class="classifier">MouseButton</span></dt><dd><p>Mouse button.</p>
+</dd>
+<dt><strong>mods</strong><span class="classifier">Mods</span></dt><dd><p>Modifiers for the mouse event.</p>
+</dd>
+<dt><strong>nclicks: int</strong></dt><dd><p>Number of consecutive clicks. From 0 to 3 inclusive.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>position</strong><span class="classifier">Point</span></dt><dd><p>Position of mouse.</p>
+</dd>
+<dt><strong>event_type</strong><span class="classifier">MouseEventType</span></dt><dd><p>Mouse event type.</p>
+</dd>
+<dt><strong>button</strong><span class="classifier">MouseButton</span></dt><dd><p>Mouse button.</p>
+</dd>
+<dt><strong>mods</strong><span class="classifier">Mods</span></dt><dd><p>Modifiers for the mouse event.</p>
+</dd>
+<dt><strong>nclicks</strong><span class="classifier">int</span></dt><dd><p>Number of consecutive clicks. From 0 to 3 inclusive.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.button">
+<span class="sig-name descname"><span class="pre">button</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.io.input.events.MouseButton" title="nurses_2.io.input.events.MouseButton"><span class="pre">nurses_2.io.input.events.MouseButton</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.button" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.event_type">
+<span class="sig-name descname"><span class="pre">event_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.io.input.events.MouseEventType" title="nurses_2.io.input.events.MouseEventType"><span class="pre">nurses_2.io.input.events.MouseEventType</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.event_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.mods">
+<span class="sig-name descname"><span class="pre">mods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><span class="pre">nurses_2.io.input.events.Mods</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.mods" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.nclicks">
+<span class="sig-name descname"><span class="pre">nclicks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.nclicks" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEvent.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEvent.position" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEventType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">MouseEventType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.MouseEventType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>A mouse event type.</p>
+<p><cite>MouseEventType</cite> is one of <cite>MOUSE_UP</cite>, <cite>MOUSE_DOWN</cite>, <cite>SCROLL_UP</cite>,
+<cite>SCROLL_DOWN</cite>, <cite>MOUSE_MOVE</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEventType.MOUSE_DOWN">
+<span class="sig-name descname"><span class="pre">MOUSE_DOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MOUSE_DOWN'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEventType.MOUSE_DOWN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEventType.MOUSE_MOVE">
+<span class="sig-name descname"><span class="pre">MOUSE_MOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MOUSE_MOVE'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEventType.MOUSE_MOVE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEventType.MOUSE_UP">
+<span class="sig-name descname"><span class="pre">MOUSE_UP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MOUSE_UP'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEventType.MOUSE_UP" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEventType.SCROLL_DOWN">
+<span class="sig-name descname"><span class="pre">SCROLL_DOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SCROLL_DOWN'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEventType.SCROLL_DOWN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.MouseEventType.SCROLL_UP">
+<span class="sig-name descname"><span class="pre">SCROLL_UP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SCROLL_UP'</span></em><a class="headerlink" href="#nurses_2.io.input.events.MouseEventType.SCROLL_UP" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.PasteEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">PasteEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.PasteEvent" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
+<p>A paste event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>paste</strong><span class="classifier">str</span></dt><dd><p>The paste data.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>paste</strong><span class="classifier">str</span></dt><dd><p>The paste data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 79%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>count:</strong></p></td>
+<td><p>Return number of occurrences of value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>index:</strong></p></td>
+<td><p>Return first index of value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.PasteEvent.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.PasteEvent.count" title="Permalink to this definition">#</a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.PasteEvent.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.PasteEvent.index" title="Permalink to this definition">#</a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.io.input.events.PasteEvent.paste">
+<span class="sig-name descname"><span class="pre">paste</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#nurses_2.io.input.events.PasteEvent.paste" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, salt-die.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
