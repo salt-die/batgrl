@@ -12,6 +12,7 @@ from ..events import Key, KeyPressEvent, _PartialMouseEvent, PasteEvent
 from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
 from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 
+_EVENTS = [ ]
 MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
 FILENO = sys.stdin.fileno()
@@ -102,8 +103,6 @@ def _find_longest_match(data):
 
     _EVENTS.append(KeyPressEvent(prefix, NO_MODS))
     return suffix
-
-_EVENTS = [ ]
 
 def read_keys():
     data = ""
