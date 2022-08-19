@@ -242,40 +242,31 @@ class GraphicWidget(Widget):
         Paint region given by `source` into `canvas_view` and `colors_view`.
         """
         vert_slice, hori_slice = source
-        t = vert_slice.start
-        b = vert_slice.stop
-
-        texture = self.texture
-        even_rows = texture[2 * t: 2 * b: 2, hori_slice]
-        odd_rows = texture[2 * t + 1: 2 * b: 2, hori_slice]
-
-        foreground = colors_view[..., :3]
-        background = colors_view[..., 3:]
+        source_tex = self.texture[2 * vert_slice.start: 2 * vert_slice.stop, hori_slice]
+        h, w, _ = colors_view.shape
 
         if not self.is_transparent:
-            foreground[:] = even_rows[..., :3]
-            background[:] = odd_rows[..., :3]
+            colors_view[:] = source_tex[..., :3].reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
         else:
-            # If alpha compositing with a text widget, will look better to replace
+            # If alpha compositing with a non-graphic widget, will look better to replace
             # foreground colors with background colors in most cases.
             mask = canvas_view != "▀"
-            foreground[mask] = background[mask]
+            colors_view[..., :3][mask] = colors_view[..., 3:][mask]
 
-            even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=float)
-            odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=float)
+            buffer = np.subtract(
+                source_tex[..., :3],
+                colors_view.reshape(h, w, 2, 3).swapaxes(1, 2).reshape(h * 2, w, 3),
+                dtype=float,
+            )
+            buffer *= source_tex[..., 3, None]
+            buffer *= self.alpha / 255
 
-            alpha = self.alpha
-
-            np.multiply(even_buffer, even_rows[..., 3, None], out=even_buffer)
-            np.multiply(even_buffer, alpha, out=even_buffer)
-            np.divide(even_buffer, 255, out=even_buffer)
-
-            np.multiply(odd_buffer, odd_rows[..., 3, None], out=odd_buffer)
-            np.multiply(odd_buffer, alpha, out=odd_buffer)
-            np.divide(odd_buffer, 255, out=odd_buffer)
-
-            np.add(even_buffer, foreground, out=foreground, casting="unsafe")
-            np.add(odd_buffer, background, out=background, casting="unsafe")
+            np.add(
+                buffer.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6),
+                colors_view,
+                out=colors_view,
+                casting="unsafe",
+            )
 
         canvas_view[:] = "▀"
         self.render_children(source, canvas_view, colors_view)
