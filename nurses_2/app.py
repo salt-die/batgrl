@@ -185,11 +185,11 @@ class App(ABC):
                     last_mouse_button is not partial_mouse_event.button
                     or current_time - last_mouse_time > self.double_click_timeout
                 ):
+                    last_mouse_button = partial_mouse_event.button
                     last_mouse_nclicks = 1
                 else:
                     last_mouse_nclicks = last_mouse_nclicks % 3 + 1
 
-                last_mouse_button = partial_mouse_event.button
                 last_mouse_time = current_time
                 return MouseEvent(*partial_mouse_event, last_mouse_nclicks)
 
