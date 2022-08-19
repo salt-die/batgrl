@@ -190,10 +190,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:
@@ -307,9 +303,3 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     def dispatch_click(self, mouse_event):
         return super().dispatch_click(mouse_event) or self.collides_point(mouse_event.position)
-
-    def dispatch_double_click(self, mouse_event):
-        return super().dispatch_double_click(mouse_event) or self.collides_point(mouse_event.position)
-
-    def dispatch_triple_click(self, mouse_event):
-        return super().dispatch_triple_click(mouse_event) or self.collides_point(mouse_event.position)

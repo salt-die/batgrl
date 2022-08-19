@@ -8,7 +8,7 @@ import sys
 from codecs import getincrementaldecoder
 
 from ....data_structures import Point
-from ..events import Key, KeyPressEvent, MouseEvent, PasteEvent
+from ..events import Key, KeyPressEvent, _PartialMouseEvent, PasteEvent
 from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
 from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
 
@@ -58,7 +58,7 @@ def _create_mouse_event(data):
         y -= 1
 
     if mouse_info is not None:
-        _EVENTS.append(MouseEvent(Point(y, x), *mouse_info))
+        _EVENTS.append(_PartialMouseEvent(Point(y, x), *mouse_info))
 
 def _find_longest_match(data):
     """

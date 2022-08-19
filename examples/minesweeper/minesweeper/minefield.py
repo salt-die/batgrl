@@ -42,7 +42,7 @@ class Minefield(Grid):
         self._pressed_cell = self._pressed_button = None
 
     def on_click(self, mouse_event):
-        position, event_type, button, _ = mouse_event
+        position, event_type, button, _, _ = mouse_event
 
         if event_type not in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_UP):
             return False

@@ -723,12 +723,6 @@ widget is not transparent.</p>
 <tr class="row-odd"><td><p><strong>on_click:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_double_click:</strong></p></td>
-<td><p>Handle double-click mouse event.</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>on_triple_click:</strong></p></td>
-<td><p>Handle triple-click mouse event.</p></td>
-</tr>
 <tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
@@ -808,13 +802,6 @@ widget is not transparent.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_double_click">
-<span class="sig-name descname"><span class="pre">dispatch_double_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.MouseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_double_click" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch double-click mouse event until handled. (A mouse event is handled if a handler
-returns True.)</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.PasteEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
@@ -824,13 +811,6 @@ returns True.)</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_press">
 <span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_press" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_triple_click">
-<span class="sig-name descname"><span class="pre">dispatch_triple_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.MouseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.dispatch_triple_click" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch triple-click mouse event until handled. (A mouse event is handled if a handler
-returns True.)</p>
 </dd></dl>
 
 <dl class="py property">
@@ -881,12 +861,6 @@ returns True.)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.on_double_click">
-<span class="sig-name descname"><span class="pre">on_double_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.MouseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.on_double_click" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle double-click mouse event. (Handled mouse events should return True else False or None).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.PasteEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.on_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
@@ -902,12 +876,6 @@ returns True.)</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.on_size">
 <span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.on_size" title="Permalink to this definition">#</a></dt>
 <dd><p>Called when widget is resized.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.line_plot.line_plot.LinePlot.on_triple_click">
-<span class="sig-name descname"><span class="pre">on_triple_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nurses_2.io.input.events.MouseEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.line_plot.line_plot.LinePlot.on_triple_click" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle triple-click mouse event. (Handled mouse events should return True else False or None).</p>
 </dd></dl>
 
 <dl class="py property">

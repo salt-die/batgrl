@@ -245,10 +245,6 @@ class Widget:
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:
@@ -793,34 +789,6 @@ class Widget:
             or self.on_click(mouse_event)
         )
 
-    def dispatch_double_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Dispatch double-click mouse event until handled. (A mouse event is handled if a handler
-        returns True.)
-        """
-        return (
-            any(
-                widget.dispatch_double_click(mouse_event)
-                for widget in reversed(self.children)
-                if widget.is_enabled
-            )
-            or self.on_double_click(mouse_event)
-        )
-
-    def dispatch_triple_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Dispatch triple-click mouse event until handled. (A mouse event is handled if a handler
-        returns True.)
-        """
-        return (
-            any(
-                widget.dispatch_triple_click(mouse_event)
-                for widget in reversed(self.children)
-                if widget.is_enabled
-            )
-            or self.on_triple_click(mouse_event)
-        )
-
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
         Dispatch paste event until handled. (A paste event is handled if a handler returns True.)
@@ -842,16 +810,6 @@ class Widget:
     def on_click(self, mouse_event: MouseEvent) -> bool | None:
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
-        """
-
-    def on_double_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Handle double-click mouse event. (Handled mouse events should return True else False or None).
-        """
-
-    def on_triple_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Handle triple-click mouse event. (Handled mouse events should return True else False or None).
         """
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:

@@ -68,42 +68,6 @@ class _ParticleFieldBase(Widget):
             )
         )
 
-    def dispatch_double_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Dispatch double-click mouse event to children.
-
-        Notes
-        -----
-        Particle fields, unlike usual widgets, will try to handle events before passing them
-        to their children.
-        """
-        return (
-            self.on_double_click(mouse_event)
-            or any(
-                particle.on_double_click(mouse_event)
-                for particle in reversed(self.children)
-                if particle.is_enabled
-            )
-        )
-
-    def dispatch_triple_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Dispatch triple-click mouse event to children.
-
-        Notes
-        -----
-        Particle fields, unlike usual widgets, will try to handle events before passing them
-        to their children.
-        """
-        return (
-            self.on_triple_click(mouse_event)
-            or any(
-                particle.on_triple_click(mouse_event)
-                for particle in reversed(self.children)
-                if particle.is_enabled
-            )
-        )
-
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
         Dispatch paste event to children.
@@ -213,16 +177,6 @@ class _ParticleBase:
     def on_click(self, mouse_event: MouseEvent) -> bool | None:
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
-        """
-
-    def on_double_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Handle double-click mouse event. (Handled mouse events should return True else False or None).
-        """
-
-    def on_triple_click(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Handle triple-click mouse event. (Handled mouse events should return True else False or None).
         """
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:

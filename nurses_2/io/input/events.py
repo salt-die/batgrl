@@ -141,9 +141,12 @@ class MouseButton(Enum):
     UNKNOWN_BUTTON = "UNKNOWN_BUTTON"
 
 
-class MouseEvent(NamedTuple):
+class _PartialMouseEvent(NamedTuple):
     """
-    A mouse input event.
+    A partial mouse input event.
+
+    Partial mouse events are missing double-click and
+    triple-click information.
 
     Parameters
     ----------
@@ -178,6 +181,50 @@ class MouseEvent(NamedTuple):
     event_type: MouseEventType
     button: MouseButton
     mods: Mods
+
+
+class MouseEvent(NamedTuple):
+    """
+    A mouse input event.
+
+    Parameters
+    ----------
+    position : Point
+        Position of mouse.
+    event_type : MouseEventType
+        Mouse event type.
+    button : MouseButton
+        Mouse button.
+    mods : Mods
+        Modifiers for the mouse event.
+    nclicks: int
+        Number of consecutive clicks. From 0 to 3 inclusive.
+
+    Attributes
+    ----------
+    position : Point
+        Position of mouse.
+    event_type : MouseEventType
+        Mouse event type.
+    button : MouseButton
+        Mouse button.
+    mods : Mods
+        Modifiers for the mouse event.
+    nclicks : int
+        Number of consecutive clicks. From 0 to 3 inclusive.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
+    """
+    position: Point
+    event_type: MouseEventType
+    button: MouseButton
+    mods: Mods
+    nclicks: int
 
 
 class PasteEvent(NamedTuple):

@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .input.events import (
+    _PartialMouseEvent,
     Key,
     Mods,
     KeyPressEvent,

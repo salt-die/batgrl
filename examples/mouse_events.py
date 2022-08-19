@@ -57,19 +57,16 @@ class MyButton(ButtonBehavior, TextWidget):
         info.add_text(f"{str(mouse_event.event_type)[15:35]:<21}", row=2, column=7)
         info.add_text(f"{str(mouse_event.button)[12:]:<20}", row=3, column=8)
         info.add_text(f"{str(mouse_event.mods)[5:-1]:<44}", row=4, column=6)
+        if mouse_event.nclicks == 2:
+            self.info_display.add_text(f"{'Double-click!':<50}", row=5)
+            self._reset_click.cancel()
+            self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
+        elif mouse_event.nclicks == 3:
+            self.info_display.add_text(f"{'Triple-click!':<50}", row=5)
+            self._reset_click.cancel()
+            self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
+
         return super().on_click(mouse_event)
-
-    def on_double_click(self, mouse_event):
-        self.info_display.add_text(f"{'Double-click!':<50}", row=5)
-
-        self._reset_click.cancel()
-        self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
-
-    def on_triple_click(self, mouse_event):
-        self.info_display.add_text(f"{'Triple-click!':<50}", row=5)
-
-        self._reset_click.cancel()
-        self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
 
     async def _reset_view(self, slice):
         try:

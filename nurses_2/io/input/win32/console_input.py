@@ -13,8 +13,10 @@ try:
         EventTypes,
     )
 except ModuleNotFoundError:
-    # This file needs to be importable on linux for auto-documentation.
+    # Assign arbitrary types so file is importable on linux for auto-documentation.
+    DWORD = type(None)
     KEY_EVENT_RECORD = type(None)
+    MOUSE_EVENT_RECORD = type(None)
 
 from ....data_structures import Point, Size
 from ..events import (
@@ -23,80 +25,91 @@ from ..events import (
     KeyPressEvent,
     MouseButton,
     MouseEventType,
-    MouseEvent,
+    _PartialMouseEvent,
     PasteEvent,
 )
 from .key_codes import KEY_CODES
 
-RIGHT_ALT_PRESSED = 0x0001
-LEFT_ALT_PRESSED = 0x0002
-RIGHT_CTRL_PRESSED = 0x0004
-LEFT_CTRL_PRESSED = 0x0008
-SHIFT_PRESSED = 0x0010
-CTRL_PRESSED = RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED
-ALT_PRESSED = RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED
+# Last mouse button pressed is needed to get behavior
+# consistent with linux mouse handling.
+_PRESSED_KEYS = [0]
+_INT_TO_KEYS = {
+    # FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
+    # RIGHTMOST_BUTTON_PRESSED = 0x0002
+    # FROM_LEFT_2ND_BUTTON_PRESSED = 0x0004
+    0: MouseButton.NO_BUTTON,
+    1: MouseButton.LEFT,
+    2: MouseButton.RIGHT,
+    4: MouseButton.MIDDLE,
+}
 
-def _handle_key(ev: KEY_EVENT_RECORD):
+def _handle_mods(key_state: DWORD) -> Mods:
     """
-    Return a KeyPressEvent from a KEY_EVENT_RECORD.
+    Return :class:`Mods` from a event's `ControlKeyState`.
+    """
+    ALT_PRESSED = 0x0001 | 0x0002  # left alt or right alt
+    CTRL_PRESSED = 0x0004 | 0x0008  # left ctrl or right ctrl
+    SHIFT_PRESSED = 0x0010
+
+    alt   = bool(key_state & ALT_PRESSED)
+    ctrl  = bool(key_state & CTRL_PRESSED)
+    shift = bool(key_state & SHIFT_PRESSED)
+    return Mods(alt, ctrl, shift)
+
+def _handle_key(ev: KEY_EVENT_RECORD) -> KeyPressEvent:
+    """
+    Return a `KeyPressEvent` from a `KEY_EVENT_RECORD`.
     """
     key = KEY_CODES.get(ev.VirtualKeyCode, ev.uChar.UnicodeChar)
 
     if key == "\x00":
         return None
 
-    key_state = ev.ControlKeyState
+    mods = _handle_mods(ev.ControlKeyState)
 
-    alt   = bool(key_state & ALT_PRESSED)
-    ctrl  = bool(key_state & CTRL_PRESSED)
-    shift = bool(key_state & SHIFT_PRESSED)
-
-    if not (isinstance(key, Key) or alt or ctrl):
+    if not (isinstance(key, Key) or mods.alt or mods.ctrl):
         key = ev.uChar.UnicodeChar
 
-    return KeyPressEvent(key, Mods(alt, ctrl, shift))
+    return KeyPressEvent(key, mods)
 
-def _handle_mouse(ev):
+def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     """
-    Return MouseEvent from EVENT_RECORD.
-    """
-    FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
-    RIGHTMOST_BUTTON_PRESSED =  0x0002
+    Return `_PartialMouseEvent` from `EVENT_RECORD`.
 
+    Reference: https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str
+    """
     MOUSE_MOVED = 0x0001
     MOUSE_WHEELED = 0x0004
+    last_button_state = sum(_PRESSED_KEYS)
 
+    # On windows, simultaneous mouse button presses are communicated through ev.ButtonState.
+    # Linux only passes the last button pressed through ansi codes. To get behavior consistent with
+    # linux, the last mouse button pressed is determined from the last button state, the current
+    # button state, and the order mouse buttons were pressed stored in _PRESSED_KEYS.
+
+    # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent with
+    # linux mouse-handling we determine double/triple-clicks with `nurses_2.app.App`.
     if ev.EventFlags & MOUSE_MOVED:
         event_type = MouseEventType.MOUSE_MOVE
+        button_state = _PRESSED_KEYS[-1]  # Last button pressed.
     elif ev.EventFlags & MOUSE_WHEELED:
         if ev.ButtonState > 0:
             event_type = MouseEventType.SCROLL_UP
         else:
             event_type = MouseEventType.SCROLL_DOWN
-    elif not ev.ButtonState:
+        button_state = 4  # Middle mouse button.
+    elif ev.ButtonState < last_button_state:
         event_type = MouseEventType.MOUSE_UP
+        _PRESSED_KEYS.remove(button_state := last_button_state - ev.ButtonState)
     else:
         event_type = MouseEventType.MOUSE_DOWN
+        _PRESSED_KEYS.append(button_state := ev.ButtonState - last_button_state)
 
-    # https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str?redirectedfrom=MSDN
-    if not ev.ButtonState:
-        button = MouseButton.NO_BUTTON
-    elif ev.ButtonState & FROM_LEFT_1ST_BUTTON_PRESSED:
-        button = MouseButton.LEFT
-    elif ev.ButtonState & RIGHTMOST_BUTTON_PRESSED:
-        button = MouseButton.RIGHT
-    else:
-        button = MouseButton.MIDDLE
-
-    return MouseEvent(
+    return _PartialMouseEvent(
         Point(ev.MousePosition.Y, ev.MousePosition.X),
         event_type,
-        button,
-        Mods(
-            bool(ev.ControlKeyState & ALT_PRESSED),
-            bool(ev.ControlKeyState & CTRL_PRESSED),
-            bool(ev.ControlKeyState & SHIFT_PRESSED),
-        )
+        _INT_TO_KEYS[button_state],
+        _handle_mods(ev.ControlKeyState),
     )
 
 def _purge(text: list[str]):

@@ -219,10 +219,6 @@ class HSplitLayout(Widget):
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:
@@ -484,10 +480,6 @@ class VSplitLayout(Widget):
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:

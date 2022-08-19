@@ -7,7 +7,15 @@ from pathlib import Path
 from time import monotonic
 
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
-from .io import KeyPressEvent, MouseButton, MouseEvent, MouseEventType, PasteEvent, io
+from .io import (
+    _PartialMouseEvent,
+    KeyPressEvent,
+    MouseButton,
+    MouseEvent,
+    MouseEventType,
+    PasteEvent,
+    io,
+)
 from .widgets._root import _Root
 from .widgets.behaviors.themable import Themable
 from .widgets.widget import Widget, Size
@@ -156,52 +164,53 @@ class App(ABC):
 
             dispatch_press = root.dispatch_press
             dispatch_click = root.dispatch_click
-            dispatch_double_click = root.dispatch_double_click
-            dispatch_triple_click = root.dispatch_triple_click
             dispatch_paste = root.dispatch_paste
 
-            last_click_info = MouseEvent(None, None, MouseButton.NO_BUTTON, None), monotonic(), 0  # last key, timestamp, total clicks
+            last_mouse_button = MouseButton.NO_BUTTON
+            last_mouse_time = monotonic()
+            last_mouse_nclicks = 0
 
-            def determine_click_dispatch(key):
+            def determine_nclicks(partial_mouse_event: _PartialMouseEvent) -> MouseEvent:
                 """
-                Determine if a click is a double-click or a triple-click.
+                Determine number of consecutive clicks for a :class:`_PartialMouseEvent`
+                and create a :class:`MouseEvent`.
                 """
-                nonlocal last_click_info
-                last_event, timestamp, nclicks = last_click_info
-
+                nonlocal last_mouse_button, last_mouse_time, last_mouse_nclicks
                 current_time = monotonic()
 
+                if partial_mouse_event.event_type is not MouseEventType.MOUSE_DOWN:
+                    return MouseEvent(*partial_mouse_event, 0)
+
                 if (
-                    last_event.button is not key.button
-                    or current_time - timestamp > self.double_click_timeout
-                    or nclicks == 0
+                    last_mouse_button is not partial_mouse_event.button
+                    or current_time - last_mouse_time > self.double_click_timeout
                 ):
-                    last_click_info = key, current_time, 1
-                elif nclicks == 1:
-                    dispatch_double_click(key)
-                    last_click_info = key, current_time, 2
-                elif nclicks == 2:
-                    dispatch_triple_click(key)
-                    last_click_info = key, current_time, 0  # Reset click count
+                    last_mouse_nclicks = 1
+                else:
+                    last_mouse_nclicks = last_mouse_nclicks % 3 + 1
+
+                last_mouse_button = partial_mouse_event.button
+                last_mouse_time = current_time
+                return MouseEvent(*partial_mouse_event, last_mouse_nclicks)
 
             def read_from_input():
                 """
                 Read and process input.
                 """
-                for key in env_in.read_keys():
-                    match key:
-                        case self.exit_key:
-                            return self.exit()
-                        case MouseEvent():
-                            dispatch_click(key)
-                            if key.event_type is MouseEventType.MOUSE_DOWN:
-                                determine_click_dispatch(key)
+                for event in env_in.read_keys():
+                    match event:
                         case KeyPressEvent():
-                            dispatch_press(key)
+                            if event is self.exit_key:
+                                self.exit()
+                                break
+                            dispatch_press(event)
+                        case _PartialMouseEvent():
+                            mouse_event = determine_nclicks(event)
+                            dispatch_click(mouse_event)
                         case PasteEvent():
-                            dispatch_paste(key)
+                            dispatch_paste(event)
                         case Size():
-                            root.size = key
+                            root.size = event
 
             async def auto_render():
                 """

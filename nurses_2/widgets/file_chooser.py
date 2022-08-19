@@ -246,10 +246,6 @@ class FileViewNode(TreeViewNode):
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:
@@ -453,10 +449,6 @@ class FileView(TreeView):
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:
@@ -562,9 +554,10 @@ class FileView(TreeView):
 
         return True
 
-    def on_double_click(self, mouse_event):
+    def on_click(self, mouse_event):
         if (
-            self.selected_node is not None
+            mouse_event.nclicks == 2
+            and self.selected_node is not None
             and self.selected_node.collides_point(mouse_event.position)
         ):
             self.select_callback(self.selected_node.path)
@@ -791,10 +784,6 @@ class FileChooser(ScrollView):
         Handle key press event.
     on_click:
         Handle mouse event.
-    on_double_click:
-        Handle double-click mouse event.
-    on_triple_click:
-        Handle triple-click mouse event.
     on_paste:
         Handle paste event.
     tween:
