@@ -45,7 +45,11 @@ _INT_TO_KEYS = {
 
 def _handle_mods(key_state: DWORD) -> Mods:
     """
+<<<<<<< HEAD
     Return `Mods` from an event's `ControlKeyState`.
+=======
+    Return `Mods` from a event's `ControlKeyState`.
+>>>>>>> 3bb5912f7d4f4aff95c34295fd622a6a7ecabf79
     """
     ALT_PRESSED = 0x0001 | 0x0002  # left alt or right alt
     CTRL_PRESSED = 0x0004 | 0x0008  # left ctrl or right ctrl
