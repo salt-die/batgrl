@@ -1,3 +1,6 @@
+"""
+Data structures for input and output.
+"""
 import os
 import platform
 import sys
@@ -23,7 +26,6 @@ __all__ = (
     "MouseButton",
     "MouseEvent",
     "PasteEvent",
-    "io",
 )
 
 def _create_io(asciicast_path: Path | None):
