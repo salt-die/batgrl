@@ -28,7 +28,7 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
     ctrl : bool
         True if `ctrl` was pressed.
     shift : bool
-        True if `shift was pressed.
+        True if `shift` was pressed.
 
     Attributes
     ----------
@@ -37,7 +37,7 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
     ctrl : bool
         True if `ctrl` was pressed.
     shift : bool
-        True if `shift was pressed.
+        True if `shift` was pressed.
     meta : bool
         Alias for `alt`.
     control : bool
