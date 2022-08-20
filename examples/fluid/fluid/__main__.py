@@ -23,7 +23,7 @@ class Fluid(GraphicWidget):
         self.sph_solver = SPHSolver((2 * y - 1, x - 1), nparticles)
         self._update_task = asyncio.create_task(self._update())
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         match key_press_event.key:
             case "r":
                 self.sph_solver.init_dam()
@@ -31,7 +31,7 @@ class Fluid(GraphicWidget):
 
         return False
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.button is MouseButton.NO_BUTTON
             or not self.collides_point(mouse_event.position)

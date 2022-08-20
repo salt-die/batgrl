@@ -51,7 +51,7 @@ class MyButton(ButtonBehavior, TextWidget):
         self._reset_waiting.cancel()
         self._reset_waiting = asyncio.create_task(self._reset_view(self.info_display.canvas[0, 18:]))
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         info = self.info_display
         info.add_text(f"{str(mouse_event.position):<18}", row=1, column=10)
         info.add_text(f"{str(mouse_event.event_type)[15:35]:<21}", row=2, column=7)
@@ -66,7 +66,7 @@ class MyButton(ButtonBehavior, TextWidget):
             self._reset_click.cancel()
             self._reset_click = asyncio.create_task(self._reset_view(self.info_display.canvas[5]))
 
-        return super().on_click(mouse_event)
+        return super().on_mouse(mouse_event)
 
     async def _reset_view(self, slice):
         try:

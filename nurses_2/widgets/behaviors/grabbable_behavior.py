@@ -71,7 +71,7 @@ class GrabbableBehavior:
         self._last_mouse_pos = Point(0, 0)
         self._mouse_dyx = Point(0, 0)
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         last_y, last_x = self._last_mouse_pos
         y, x = self._last_mouse_pos = mouse_event.position
         self._mouse_dyx = Point(y - last_y, x - last_x)
@@ -93,7 +93,7 @@ class GrabbableBehavior:
                 self.grab(mouse_event)
                 return True
 
-        return super().on_click(mouse_event)
+        return super().on_mouse(mouse_event)
 
     @property
     def is_grabbed(self) -> bool:

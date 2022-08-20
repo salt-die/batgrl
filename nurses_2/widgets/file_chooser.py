@@ -242,9 +242,9 @@ class FileViewNode(TreeViewNode):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -445,9 +445,9 @@ class FileView(TreeView):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -496,7 +496,7 @@ class FileView(TreeView):
 
         self.size = i + 1, max_width
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if not self.children:
             return False
 
@@ -544,7 +544,7 @@ class FileView(TreeView):
                 if self.selected_node is not None:
                     self.select_callback(self.selected_node.path)
             case _:
-                return super().on_press(key_press_event)
+                return super().on_keypress(key_press_event)
 
         top = self.selected_node.top + self.top + self.parent.top
         if top < 0:
@@ -554,7 +554,7 @@ class FileView(TreeView):
 
         return True
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.nclicks == 2
             and self.selected_node is not None
@@ -780,9 +780,9 @@ class FileChooser(ScrollView):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.

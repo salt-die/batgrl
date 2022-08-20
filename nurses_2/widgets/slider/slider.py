@@ -209,9 +209,9 @@ class Slider(TextWidget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -280,7 +280,7 @@ class Slider(TextWidget):
         """
         return self.width - self.handle.width
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
             and self.collides_point(mouse_event.position)

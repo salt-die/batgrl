@@ -70,8 +70,8 @@ class ButtonBehavior:
         self.state = ButtonState.DOWN
         self.update_down()
 
-    def on_click(self, mouse_event):
-        if super().on_click(mouse_event):
+    def on_mouse(self, mouse_event):
+        if super().on_mouse(mouse_event):
             return True
 
         collides = self.collides_point(mouse_event.position)

@@ -40,8 +40,8 @@ class _IndicatorBehavior(Themable):
         super().ungrab(mouse_event)
         self.update_color(mouse_event)
 
-    def on_click(self, mouse_event):
-        if super().on_click(mouse_event):
+    def on_mouse(self, mouse_event):
+        if super().on_mouse(mouse_event):
             return True
 
         if mouse_event.event_type == MouseEventType.MOUSE_MOVE:

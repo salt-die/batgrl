@@ -75,7 +75,7 @@ class BouncingWidget(TextWidget):
 
             await asyncio.sleep(.11)
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if mouse_event.event_type == MouseEventType.MOUSE_UP:
             point = self.to_local(mouse_event.position)
             self.coord_view.add_text("({:<4}, {:<4})".format(*point))

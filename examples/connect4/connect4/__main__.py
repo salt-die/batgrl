@@ -64,7 +64,7 @@ class Connect4(Widget):
     def current_player(self) -> str:
         return PLAYER_NAMES[self._player]
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         match key_press_event.key:
             case "r" | "R":
                 self.reset()
@@ -132,7 +132,7 @@ class Connect4(Widget):
 
         return False
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_DOWN
             and not self._game_over

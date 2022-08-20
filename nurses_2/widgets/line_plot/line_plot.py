@@ -177,9 +177,9 @@ class LinePlot(Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -308,7 +308,7 @@ class LinePlot(Widget):
             legend.top = h - legend.height - 3
             legend.left = w - legend.width - TICK_HALF - TICK_WIDTH % 2
 
-    def on_click(self, mouse_event: MouseEvent) -> bool | None:
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         if not self.collides_point(mouse_event.position):
             return
 
@@ -318,7 +318,7 @@ class LinePlot(Widget):
             case MouseEventType.SCROLL_DOWN:
                 self._trace_size_hint = max(0, self._trace_size_hint - 1)
             case _:
-                return super().on_click(mouse_event)
+                return super().on_mouse(mouse_event)
 
         self._traces.size_hint = PLOT_SIZES[self._trace_size_hint]
         return True

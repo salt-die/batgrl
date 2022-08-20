@@ -67,7 +67,7 @@ class AztecGold(GraphicWidget):
             interpolation=self.interpolation,
         )
 
-    def on_click(self, mouse_event: MouseEvent) -> bool | None:
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         match mouse_event.event_type:
             case MouseEventType.MOUSE_DOWN:
                 remove_collisions(self.tiles)
@@ -75,7 +75,7 @@ class AztecGold(GraphicWidget):
                 fill(self.tiles)
                 self.on_size()
 
-    def on_press(self, key_press_event: KeyPressEvent) -> bool | None:
+    def on_keypress(self, key_press_event: KeyPressEvent) -> bool | None:
         match key_press_event.key:
             case "r":
                 self.tiles = np.zeros((2, 2), dtype=np.uint8)

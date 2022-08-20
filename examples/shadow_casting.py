@@ -39,14 +39,14 @@ class MyShadowCaster(ShadowCaster):
             self.cast_shadows()
             await asyncio.sleep(0)
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_MOVE
             and self.collides_point(mouse_event.position)
         ):
             self.light_sources[0].coords = self.to_map_coords(self.to_local(mouse_event.position))
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         y, x = self.camera.pos
 
         match key_press_event.key:

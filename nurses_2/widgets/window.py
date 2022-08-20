@@ -186,9 +186,9 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.

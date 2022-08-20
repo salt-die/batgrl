@@ -57,5 +57,5 @@ class ButtonContainer(Widget):
         for i, element in enumerate(Element.all_elements.values()):
             self.add_widget(ElementButton(pos=(3 * i + 1, 2), element=element))
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         return self.collides_point(mouse_event.position)

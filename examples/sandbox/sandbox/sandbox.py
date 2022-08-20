@@ -49,7 +49,7 @@ class Sandbox(GraphicWidget):
         self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
         super().render(canvas_view, colors_view, source)
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.button != MouseButton.LEFT
             or not self.collides_point(mouse_event.position)

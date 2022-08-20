@@ -95,7 +95,7 @@ class WorldWidget(GraphicWidget):
                         HIGHLIGHTED_TILE.paint(self.texture, (ty, tx))
 
 
-    def on_click(self, mouse_event: MouseEvent) -> bool | None:
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         if (
             mouse_event.button is MouseButton.MIDDLE
             or not self.collides_point(mouse_event.position)

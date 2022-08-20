@@ -20,12 +20,12 @@ class _Handle(GrabbableBehavior, GraphicWidget):
             is_visible=False,
         )
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         self.is_visible = (
             self.is_grabbable
             and self.is_grabbed or self.collides_point(mouse_event.position)
         )
-        return super().on_click(mouse_event)
+        return super().on_mouse(mouse_event)
 
 
 class _HSplitHandle(_Handle):
@@ -215,9 +215,9 @@ class HSplitLayout(Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -476,9 +476,9 @@ class VSplitLayout(Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.

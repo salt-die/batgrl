@@ -239,9 +239,9 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -339,9 +339,9 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         if self.parent._current_selection == self.parent.children.index(self):
             self.parent._current_selection = -1
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         self._last_mouse_pos = mouse_event.position
-        return super().on_click(mouse_event)
+        return super().on_mouse(mouse_event)
 
     def on_release(self):
         if self.item_disabled:
@@ -573,9 +573,9 @@ class Menu(GridLayout):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -626,7 +626,7 @@ class Menu(GridLayout):
         else:
             self.close_menu()
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_DOWN
             and self.close_on_click
@@ -638,12 +638,12 @@ class Menu(GridLayout):
             self.close_menu()
             return False
 
-        return super().on_click(mouse_event)
+        return super().on_mouse(mouse_event)
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         for submenu in self._submenus:
             if submenu.is_enabled:
-                if submenu.on_press(key_press_event):
+                if submenu.on_keypress(key_press_event):
                     return True
                 else:
                     break
@@ -723,7 +723,7 @@ class Menu(GridLayout):
                         child._down()
                     return True
 
-        return super().on_press(key_press_event)
+        return super().on_keypress(key_press_event)
 
     @classmethod
     def from_dict_of_dicts(

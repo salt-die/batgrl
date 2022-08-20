@@ -9,7 +9,7 @@ try:
     from ctypes.wintypes import BOOL, DWORD, HANDLE
 
     from ...win32_types import STD_INPUT_HANDLE, SECURITY_ATTRIBUTES
-    from .console_input import read_keys
+    from .console_input import events
 except ModuleNotFoundError:
     # This file needs to be importable on linux for auto-documentation.
     pass
@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 __all__ = (
     "attach",
     "raw_input",
-    "read_keys",
+    "events",
 )
 
 @contextmanager

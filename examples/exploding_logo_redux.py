@@ -66,7 +66,7 @@ class PokeParticle(GraphicParticle):
         self.top += move_vertical
         self.left += move_horizontal
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if mouse_event.button == MouseButton.LEFT:
             if dyx := -complex(*self.to_local(mouse_event.position)):
                 self.velocity += POWER * dyx / (dyx.real**2 + dyx.imag**2)
@@ -75,7 +75,7 @@ class PokeParticle(GraphicParticle):
                     self._reset_task.cancel()
                     self._update_task = asyncio.create_task(self.update())
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if key_press_event.key == "r" and self._reset_task.done():
             self._reset_task = asyncio.create_task(self.reset())
 

@@ -241,9 +241,9 @@ class Widget:
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -773,7 +773,7 @@ class Widget:
                 for widget in reversed(self.children)
                 if widget.is_enabled
             )
-            or self.on_press(key_press_event)
+            or self.on_keypress(key_press_event)
         )
 
     def dispatch_click(self, mouse_event: MouseEvent) -> bool | None:
@@ -786,7 +786,7 @@ class Widget:
                 for widget in reversed(self.children)
                 if widget.is_enabled
             )
-            or self.on_click(mouse_event)
+            or self.on_mouse(mouse_event)
         )
 
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
@@ -802,12 +802,12 @@ class Widget:
             or self.on_paste(paste_event)
         )
 
-    def on_press(self, key_press_event: KeyPressEvent) -> bool | None:
+    def on_keypress(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Handle key press event. (Handled key presses should return True else False or None).
         """
 
-    def on_click(self, mouse_event: MouseEvent) -> bool | None:
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
         Handle mouse event. (Handled mouse events should return True else False or None).
         """

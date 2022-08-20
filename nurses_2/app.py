@@ -197,7 +197,7 @@ class App(ABC):
                 """
                 Read and process input.
                 """
-                for event in env_in.read_keys():
+                for event in env_in.events():
                     match event:
                         case KeyPressEvent():
                             if event is self.exit_key:

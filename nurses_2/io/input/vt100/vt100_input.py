@@ -16,12 +16,12 @@ except ModuleNotFoundError:
 from contextlib import contextmanager
 
 from ....data_structures import Size
-from .console_input import read_keys, _EVENTS
+from .console_input import events, _EVENTS
 
 __all__ = (
     "attach",
     "raw_mode",
-    "read_keys",
+    "events",
 )
 
 @contextmanager

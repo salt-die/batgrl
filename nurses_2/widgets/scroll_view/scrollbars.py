@@ -41,7 +41,7 @@ class _VerticalBar(Themable, Widget):
             - self.parent.show_horizontal_bar * HBAR_HEIGHT
         )
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
             and self.collides_point(mouse_event.position)
@@ -87,7 +87,7 @@ class _HorizontalBar(Themable, Widget):
             - self.parent.show_vertical_bar * VBAR_WIDTH
         )
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
             and self.collides_point(mouse_event.position)

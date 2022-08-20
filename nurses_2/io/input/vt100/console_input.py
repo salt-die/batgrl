@@ -104,7 +104,10 @@ def _find_longest_match(data):
     _EVENTS.append(KeyPressEvent(prefix, NO_MODS))
     return suffix
 
-def read_keys():
+def events():
+    """
+    Yield input events.
+    """
     data = ""
 
     while chars := read_stdin():

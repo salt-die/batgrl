@@ -58,9 +58,9 @@ class GraphicParticle(_ParticleBase):
     -------
     to_local:
         Convert absolute coordinates to relative coordinates.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -218,9 +218,9 @@ class GraphicParticleField(_ParticleFieldBase):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.

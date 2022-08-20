@@ -65,7 +65,7 @@ class Fluid(GraphicWidget):
         self.pressure = np.zeros(size_with_border, dtype=float)
         self.momentum = np.zeros(size_with_border, dtype=float)
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if not self.collides_point(mouse_event.position):
             return False
 
@@ -78,7 +78,7 @@ class Fluid(GraphicWidget):
 
             return True
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         match key_press_event.key:
             case "r" | "R":
                 self.on_size()  # Reset

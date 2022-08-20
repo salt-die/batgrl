@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.particle_field.text_field &#8212; Python 0.11.0 documentation</title>
+    <title>nurses_2.widgets.particle_field.text_field &#8212; Python 0.11.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.0 documentation</p>
+    <p class="title logo__title">Python 0.11.1 documentation</p>
   
 </a>
     
@@ -605,17 +605,17 @@ single “pixel” children.</p>
 <p class="rubric">Methods</p>
 <table class="table">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 23%" />
+<col style="width: 77%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert absolute coordinates to relative coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_press:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_keypress:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_click:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
@@ -639,8 +639,14 @@ single “pixel” children.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticle.on_click">
-<span class="sig-name descname"><span class="pre">on_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticle.on_click" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticle.on_keypress">
+<span class="sig-name descname"><span class="pre">on_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticle.on_keypress" title="Permalink to this definition">#</a></dt>
+<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticle.on_mouse">
+<span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticle.on_mouse" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle mouse event. (Handled mouse events should return True else False or None).</p>
 </dd></dl>
 
@@ -648,12 +654,6 @@ single “pixel” children.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticle.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticle.on_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticle.on_press">
-<span class="sig-name descname"><span class="pre">on_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticle.on_press" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
 </dd></dl>
 
 <dl class="py property">
@@ -860,10 +860,10 @@ widget is not transparent.</p>
 <tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_press:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_keypress:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_click:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
@@ -1013,8 +1013,14 @@ to their children.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticleField.on_click">
-<span class="sig-name descname"><span class="pre">on_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticleField.on_click" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticleField.on_keypress">
+<span class="sig-name descname"><span class="pre">on_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticleField.on_keypress" title="Permalink to this definition">#</a></dt>
+<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticleField.on_mouse">
+<span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticleField.on_mouse" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle mouse event. (Handled mouse events should return True else False or None).</p>
 </dd></dl>
 
@@ -1022,12 +1028,6 @@ to their children.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticleField.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticleField.on_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.particle_field.text_field.TextParticleField.on_press">
-<span class="sig-name descname"><span class="pre">on_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.particle_field.text_field.TextParticleField.on_press" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
 </dd></dl>
 
 <dl class="py method">

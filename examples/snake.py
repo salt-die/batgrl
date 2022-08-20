@@ -64,7 +64,7 @@ class Snake(GraphicWidget):
 
         return dy, dx
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if not self.snake_is_moving:
             self.snake_is_moving = True
 

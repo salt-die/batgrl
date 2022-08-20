@@ -211,9 +211,9 @@ class ScrollView(GrabbableBehavior, Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_press:
+    on_keypress:
         Handle key press event.
-    on_click:
+    on_mouse:
         Handle mouse event.
     on_paste:
         Handle paste event.
@@ -378,7 +378,7 @@ class ScrollView(GrabbableBehavior, Widget):
         if self._view is not None:
             self._set_view_pos()
 
-    def on_press(self, key_press_event: KeyPressEvent):
+    def on_keypress(self, key_press_event: KeyPressEvent):
         if not self.arrow_keys_enabled:
             return False
 
@@ -392,7 +392,7 @@ class ScrollView(GrabbableBehavior, Widget):
             case "right":
                 self._scroll_right()
             case _:
-                return super().on_press(key_press_event)
+                return super().on_keypress(key_press_event)
 
         return True
 
@@ -420,7 +420,7 @@ class ScrollView(GrabbableBehavior, Widget):
     def _scroll_down(self, n=1):
         self._scroll_up(-n)
 
-    def on_click(self, mouse_event: MouseEvent):
+    def on_mouse(self, mouse_event: MouseEvent):
         if (
             self.scrollwheel_enabled
             and self.collides_point(mouse_event.position)
@@ -433,4 +433,4 @@ class ScrollView(GrabbableBehavior, Widget):
                     self._scroll_down()
                     return True
 
-        return super().on_click(mouse_event)
+        return super().on_mouse(mouse_event)

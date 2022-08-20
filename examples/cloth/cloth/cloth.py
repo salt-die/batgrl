@@ -60,7 +60,7 @@ class Cloth(GraphicWidget):
             except asyncio.CancelledError:
                 return
 
-    def on_click(self, mouse_event):
+    def on_mouse(self, mouse_event):
         if mouse_event.button != MouseButton.LEFT:
             return False
 

@@ -6,7 +6,7 @@ from nurses_2.widgets.text_widget import TextWidget
 class ShowKeyPress(TextWidget):
     current_row = 0
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if self.current_row == self.height:
             self.current_row = 0
 

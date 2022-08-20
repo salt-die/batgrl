@@ -140,7 +140,7 @@ def _purge(text: list[str]):
 
     text.clear()
 
-def read_keys():
+def events():
     """
     Yield input events.
 

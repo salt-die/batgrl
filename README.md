@@ -62,7 +62,7 @@ if __name__ == "__main__":
     Pong().run()
 ```
 
-Next, let's add paddles for each player. We can respond to key presses by implementing a widget's `on_press` method. Player 1's paddle can be moved up and down with `w` and `s` and Player 2's paddle can be moved up and down with `up` and `down`:
+Next, let's add paddles for each player. We can respond to key presses by implementing a widget's `on_keypress` method. Player 1's paddle can be moved up and down with `w` and `s` and Player 2's paddle can be moved up and down with `up` and `down`:
 
 ```py
 from nurses_2.app import App
@@ -83,7 +83,7 @@ class Paddle(Widget):
         super().__init__(*args, **kwargs)
         self.player = player
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if self.player == 1:
             if key_press_event.key == "w":
                 self.y -= 1
@@ -178,7 +178,7 @@ class Paddle(Widget):
         super().__init__(*args, **kwargs)
         self.player = player
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if self.player == 1:
             if key_press_event.key == "w":
                 self.y -= 1
@@ -320,7 +320,7 @@ class Paddle(Widget):
         super().__init__(*args, **kwargs)
         self.player = player
 
-    def on_press(self, key_press_event):
+    def on_keypress(self, key_press_event):
         if self.player == 1:
             if key_press_event.key == "w":
                 self.y -= 1
