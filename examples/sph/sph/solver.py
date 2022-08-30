@@ -74,7 +74,7 @@ class SPHSolver:
         # Calculate forces due to pressure.
         with np.errstate(divide="ignore", invalid="ignore"):
             normals = relative_distances / distances[..., None]
-            normals[distances == 0] = 0
+        normals[distances == 0] = 0
 
         weight = H - distances
         weight[not_neighbors] = 0

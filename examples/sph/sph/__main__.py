@@ -73,7 +73,7 @@ class MyApp(App):
             size=(26, WIDTH),
             pos_hint=(.5, .5),
             anchor=Anchor.CENTER,
-            default_color_pair=BLACK_ON_BLACK
+            default_color_pair=BLACK_ON_BLACK,
         )
         container.colors[:6] = WHITE_ON_BLACK
 
