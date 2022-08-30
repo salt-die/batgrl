@@ -27,7 +27,7 @@ class SPHSolver:
 
     def resize(self, size):
         self.size = size
-        self.state = np.zeros((self.nparticles, 8), dtype=float)
+        self.state = np.zeros((self.nparticles, 4), dtype=float)
         self.init_dam()
 
     def init_dam(self):
@@ -52,13 +52,8 @@ class SPHSolver:
         H = self.H
         H_SQ = H * H
         MASS = self.MASS
-
-        state = self.state
-        positions    = state[:, :2]
-        velocities   = state[:, 2:4]
-        densities    = state[:, 4]
-        pressure     = state[:, 5]
-        forces       = state[:, 6:8]
+        positions    = self.state[:, :2]
+        velocities   = self.state[:, 2:4]
 
         relative_distances = positions[:, None, :] - positions[None, :, :]
         distances_sq = (relative_distances ** 2).sum(axis=-1)
@@ -68,8 +63,8 @@ class SPHSolver:
         # Set density / pressure of all particles.
         strength = (H_SQ - distances_sq)**3
         strength[not_neighbors] = 0
-        densities[:] = MASS * self.POLY6 * strength.sum(axis=-1)
-        pressure[:] = self.GAS_CONST * (densities - self.REST_DENS)
+        densities = MASS * self.POLY6 * strength.sum(axis=-1)
+        pressure = self.GAS_CONST * (densities - self.REST_DENS)
 
         # Calculate forces due to pressure.
         with np.errstate(divide="ignore", invalid="ignore"):
@@ -94,7 +89,7 @@ class SPHSolver:
             * weight[..., None]
         ).sum(axis=1)
 
-        forces[:] = MASS / densities[:, None] * (f_pressure + f_visc + self.GRAVITY)
+        forces = MASS / densities[:, None] * (f_pressure + f_visc + self.GRAVITY)
 
         # Integrate
         velocities += self.DT * forces / densities[:, None]

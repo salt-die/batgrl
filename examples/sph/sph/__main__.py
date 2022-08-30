@@ -77,7 +77,7 @@ class MyApp(App):
         )
         container.colors[:6] = WHITE_ON_BLACK
 
-        fluid = SPH(400, pos=(6, 0), size=(20, 50))
+        fluid = SPH(225, pos=(6, 0), size=(20, 50))
         solver = fluid.sph_solver
 
         slider_settings = {
