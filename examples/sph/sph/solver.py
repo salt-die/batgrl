@@ -9,7 +9,7 @@ class SPHSolver:
         self.H = .5
         self.GAS_CONST = 2300.0
         self.REST_DENS = 300.0
-        self.VISC = 250.0
+        self.VISC = 500.0
         self.MASS = 35.0
         self.DT = .01
         self.GRAVITY = np.array([1e6, 0.0])
@@ -50,7 +50,6 @@ class SPHSolver:
         finally integrate to obtain new positions.
         """
         H = self.H
-        H_SQ = H * H
         MASS = self.MASS
         positions    = self.state[:, :2]
         velocities   = self.state[:, 2:4]
@@ -58,10 +57,10 @@ class SPHSolver:
         relative_distances = positions[:, None, :] - positions[None, :, :]
         distances_sq = (relative_distances ** 2).sum(axis=-1)
         distances = distances_sq ** .5
-        not_neighbors = distances_sq >= H_SQ
+        not_neighbors = distances >= H
 
         # Set density / pressure of all particles.
-        strength = (H_SQ - distances_sq)**3
+        strength = (H ** 2 - distances_sq)**3
         strength[not_neighbors] = 0
         densities = MASS * self.POLY6 * strength.sum(axis=-1)
         pressure = self.GAS_CONST * (densities - self.REST_DENS)
@@ -89,7 +88,7 @@ class SPHSolver:
             * weight[..., None]
         ).sum(axis=1)
 
-        forces = MASS / densities[:, None] * (f_pressure + f_visc + self.GRAVITY)
+        forces = MASS * (f_pressure - f_visc + self.GRAVITY) / densities[:, None]
 
         # Integrate
         velocities += self.DT * forces / densities[:, None]

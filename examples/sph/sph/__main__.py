@@ -44,7 +44,7 @@ class SPH(GraphicWidget):
         relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
 
         self.sph_solver.state[:, 2:4] += (
-            1e2 * relative_positions
+            1e1 * relative_positions
             / np.linalg.norm(relative_positions, axis=-1, keepdims=True)
         )
 
@@ -132,13 +132,13 @@ class MyApp(App):
 
         adjust_VISC = Slider(
             pos=(3, HWIDTH + 1),
-            min=125.0,
-            max=500.0,
-            proportion=(solver.VISC - 125) / (500 - 125),
+            min=0.0,
+            max=20000.0,
+            proportion=(solver.VISC - 0) / (20000 - 0),
             callback=lambda value: (
-                setattr(solver, "POLYF", value),
+                setattr(solver, "VISC", value),
                 container.add_text(
-                    f'{f"Viscosity: {round(solver.POLYF, 4)}":<{HWIDTH}}',
+                    f'{f"Viscosity: {round(solver.VISC, 4)}":<{HWIDTH}}',
                     row=2,
                     column=HWIDTH,
                 ),
@@ -148,13 +148,13 @@ class MyApp(App):
 
         adjust_MASS = Slider(
             pos=(5, 0),
-            min=15.0,
-            max=100.0,
-            proportion=(solver.MASS - 15) / (100 - 15),
+            min=10.0,
+            max=500.0,
+            proportion=(solver.MASS - 10) / (500 - 10),
             callback=lambda value: (
-                setattr(solver, "VISCF", value),
+                setattr(solver, "MASS", value),
                 container.add_text(
-                    f'{f"Mass: {round(solver.VISCF, 4)}":<{HWIDTH}}',
+                    f'{f"Mass: {round(solver.MASS, 4)}":<{HWIDTH}}',
                     row=4,
                 ),
             ),
@@ -163,13 +163,13 @@ class MyApp(App):
 
         adjust_DT = Slider(
             pos=(5, HWIDTH + 1),
-            min=.001,
-            max=.1,
-            proportion=(solver.DT - .001) / (.1 - .001),
+            min=.01,
+            max=1.0,
+            proportion=(solver.DT - .01) / (1.0 - .01),
             callback=lambda value: (
-                setattr(solver, "SPIKYF", value),
+                setattr(solver, "DT", value),
                 container.add_text(
-                    f'{f"Time delta: {round(solver.SPIKYF, 4)}":<{HWIDTH}}',
+                    f'{f"DT: {round(solver.DT, 4)}":<{HWIDTH}}',
                     row=4,
                     column=HWIDTH,
                 ),
