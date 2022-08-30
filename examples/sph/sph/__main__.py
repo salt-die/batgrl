@@ -9,18 +9,18 @@ from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor
 from nurses_2.widgets.slider import Slider
 
-from .sph import SPHSolver
+from .solver import SPHSolver
 
 WATER_COLOR = Color.from_hex("1e1ea8")
 FILL_COLOR = Color.from_hex("2fa399")
 WATER_ON_BLACK = ColorPair.from_colors(WATER_COLOR, BLACK)
 
 
-class Fluid(GraphicWidget):
-    def __init__(self, nparticles=1000, **kwargs):
-        super().__init__(**kwargs)
+class SPH(GraphicWidget):
+    def __init__(self, nparticles, is_transparent=False, **kwargs):
+        super().__init__(is_transparent=is_transparent, **kwargs)
         y, x = self.size
-        self.sph_solver = SPHSolver((2 * y - 1, x - 1), nparticles)
+        self.sph_solver = SPHSolver(nparticles, (2 * y - 1, x - 1))
         self._update_task = asyncio.create_task(self._update())
 
     def on_keypress(self, key_press_event):
@@ -43,8 +43,8 @@ class Fluid(GraphicWidget):
 
         relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
 
-        self.sph_solver.state[:, 4:6] += (
-            1000 * relative_positions
+        self.sph_solver.state[:, 2:4] += (
+            1e2 * relative_positions
             / np.linalg.norm(relative_positions, axis=-1, keepdims=True)
         )
 
@@ -58,12 +58,8 @@ class Fluid(GraphicWidget):
             positions = solver.state[:, :2]
             ys, xs = positions.astype(int).T
 
-            pressure = solver.state[:, -1]
-            alphas = (255 / (1 + np.e**-(.125 * pressure))).astype(int)
-
             self.texture[:] = self.default_color
             self.texture[ys, xs, :3] = WATER_COLOR
-            self.texture[ys, xs, 3] = alphas
 
             await asyncio.sleep(0)
 
@@ -81,7 +77,7 @@ class MyApp(App):
         )
         container.colors[:6] = WHITE_ON_BLACK
 
-        fluid = Fluid(pos=(6, 0), size=(20, 50))
+        fluid = SPH(400, pos=(6, 0), size=(20, 50))
         solver = fluid.sph_solver
 
         slider_settings = {
@@ -93,8 +89,8 @@ class MyApp(App):
         adjust_H = Slider(
             pos=(1, 0),
             min=.4,
-            max=1.44,
-            proportion=.04711,
+            max=3.5,
+            proportion=(solver.H - .4) / (3.5 - .4),  # (H - min) / (max - min)
             callback=lambda value: (
                 setattr(solver, "H", value),
                 container.add_text(
@@ -106,9 +102,9 @@ class MyApp(App):
 
         adjust_GAS_CONST = Slider(
             pos=(1, HWIDTH + 1),
-            min=100.0,
+            min=500.0,
             max=4000.0,
-            proportion=.02564,
+            proportion=(solver.GAS_CONST - 500) / (4000 - 500),
             callback=lambda value: (
                 setattr(solver, "GAS_CONST", value),
                 container.add_text(
@@ -121,9 +117,9 @@ class MyApp(App):
 
         adjust_REST_DENS = Slider(
             pos=(3, 0),
-            min=40.0,
-            max=400.0,
-            proportion=.44444,
+            min=150.0,
+            max=500.0,
+            proportion=(solver.REST_DENS - 150) / (500 - 150),
             callback=lambda value: (
                 setattr(solver, "REST_DENS", value),
                 container.add_text(
@@ -134,15 +130,15 @@ class MyApp(App):
             **slider_settings,
         )
 
-        adjust_POLYF = Slider(
+        adjust_VISC = Slider(
             pos=(3, HWIDTH + 1),
-            min=1.0,
-            max=10.0,
-            proportion=0.0,
+            min=125.0,
+            max=500.0,
+            proportion=(solver.VISC - 125) / (500 - 125),
             callback=lambda value: (
                 setattr(solver, "POLYF", value),
                 container.add_text(
-                    f'{f"Poly 6 Kernel: {round(solver.POLYF, 4)}":<{HWIDTH}}',
+                    f'{f"Viscosity: {round(solver.POLYF, 4)}":<{HWIDTH}}',
                     row=2,
                     column=HWIDTH,
                 ),
@@ -150,30 +146,30 @@ class MyApp(App):
             **slider_settings,
         )
 
-        adjust_VISCF = Slider(
+        adjust_MASS = Slider(
             pos=(5, 0),
-            min=1000.0,
-            max=5000.0,
-            proportion=1.0,
+            min=15.0,
+            max=100.0,
+            proportion=(solver.MASS - 15) / (100 - 15),
             callback=lambda value: (
                 setattr(solver, "VISCF", value),
                 container.add_text(
-                    f'{f"Viscosity: {round(solver.VISCF, 4)}":<{HWIDTH}}',
+                    f'{f"Mass: {round(solver.VISCF, 4)}":<{HWIDTH}}',
                     row=4,
                 ),
             ),
             **slider_settings,
         )
 
-        adjust_SPIKYF = Slider(
+        adjust_DT = Slider(
             pos=(5, HWIDTH + 1),
-            min=-10.0,
-            max=-1.0,
-            proportion=.55555,
+            min=.001,
+            max=.1,
+            proportion=(solver.DT - .001) / (.1 - .001),
             callback=lambda value: (
                 setattr(solver, "SPIKYF", value),
                 container.add_text(
-                    f'{f"Spiky Gradient: {round(solver.SPIKYF, 4)}":<{HWIDTH}}',
+                    f'{f"Time delta: {round(solver.SPIKYF, 4)}":<{HWIDTH}}',
                     row=4,
                     column=HWIDTH,
                 ),
@@ -186,9 +182,9 @@ class MyApp(App):
             adjust_H,
             adjust_GAS_CONST,
             adjust_REST_DENS,
-            adjust_POLYF,
-            adjust_VISCF,
-            adjust_SPIKYF,
+            adjust_VISC,
+            adjust_MASS,
+            adjust_DT,
         )
 
         self.add_widget(container)
