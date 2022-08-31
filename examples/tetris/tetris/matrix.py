@@ -2,7 +2,7 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.widgets.behaviors.effects import Effect
+from nurses_2.widgets.behaviors.effect import Effect
 from nurses_2.widgets.text_widget import TextWidget
 
 
