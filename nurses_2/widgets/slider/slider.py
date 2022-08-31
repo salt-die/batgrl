@@ -22,14 +22,14 @@ class Slider(TextWidget):
         Minimum value.
     max : float
         Maximum value.
-    proportion : float, default: 0.0
-        Starting proportion of slider.
+    start_value: float | None, default: None
+        Start value of slider. If `None`, start value is `min`.
     handle_color : Color | None, default: None
         Color of slider handle. If None, handle color is :attr:`default_fg_color`.
     fill_color: Color | None, default: None
         Color of "filled" portion of slider.
     slider_enabled : bool, default: True
-        Allow dragging handle.
+        Whether slider value can be changed.
     callback : Callable | None, default: None
         Single argument callable called with new value of slider when slider is updated.
     default_char : str, default: " "
@@ -79,16 +79,16 @@ class Slider(TextWidget):
         Minimum value.
     max : float
         Maximum value.
-    proportion : float
-        Starting proportion of slider.
     handle_color : Color
         Color of slider handle.
     fill_color: Color
         Color of "filled" portion of slider.
     slider_enabled : bool
-        Allow dragging handle.
+        True if slider value can be changed.
     callback : Callable
         Single argument callable called with new value of slider when slider is updated.
+    proportion : float
+        Current proportion of slider.
     value : float
         Current value of slider.
     canvas : numpy.ndarray
@@ -224,10 +224,10 @@ class Slider(TextWidget):
         width: int,
         min: float,
         max: float,
-        proportion=0.0,
+        start_value: float | None=None,
         handle_color: Color | None=None,
         fill_color: Color | None=None,
-        slider_enabled=True,
+        slider_enabled: bool=True,
         callback: Callable | None=None,
         default_char="▬",
         **kwargs,
@@ -242,36 +242,37 @@ class Slider(TextWidget):
 
         self.slider_enabled = slider_enabled
         self.callback = callback
-        self._proportion = 0
-
         self.fill_color = fill_color or self.default_fg_color
+
+        self.value = self.min if start_value is None else start_value
 
         self.handle = _Handle(color=handle_color or self.default_fg_color)
         self.add_widget(self.handle)
-        self.proportion = proportion
 
     @property
-    def proportion(self):
+    def proportion(self) -> float:
         return self._proportion
 
     @proportion.setter
-    def proportion(self, value):
+    def proportion(self, value: float):
         if self.slider_enabled:
             self._proportion = clamp(value, 0, 1)
+            self._value = (self.max - self.min) * self._proportion + self.min
 
-            min, max = self.min, self.max
-            self._value = (max - min) * self._proportion + min
             if self.callback is not None:
                 self.callback(self._value)
 
-            self.handle.update_geometry()
-            handle_x = self.handle.x
-            self.colors[:, :handle_x, :3] = self.fill_color
-            self.colors[:, handle_x:, :3] = self.default_fg_color
+            if handle := getattr(self, "handle", False):
+                handle.update_handle()
 
     @property
-    def value(self):
+    def value(self) -> float:
         return self._value
+
+    @value.setter
+    def value(self, value: float):
+        value = clamp(value, self.min, self.max)
+        self.proportion = (value - self.min) / (self.max - self.min)
 
     @property
     def fill_width(self):

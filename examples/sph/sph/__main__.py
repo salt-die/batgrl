@@ -90,7 +90,7 @@ class MyApp(App):
             pos=(1, 0),
             min=.4,
             max=3.5,
-            proportion=(solver.H - .4) / (3.5 - .4),  # (H - min) / (max - min)
+            start_value=solver.H,
             callback=lambda value: (
                 setattr(solver, "H", value),
                 container.add_text(
@@ -104,7 +104,7 @@ class MyApp(App):
             pos=(1, HWIDTH + 1),
             min=500.0,
             max=4000.0,
-            proportion=(solver.GAS_CONST - 500) / (4000 - 500),
+            start_value=solver.GAS_CONST,
             callback=lambda value: (
                 setattr(solver, "GAS_CONST", value),
                 container.add_text(
@@ -119,7 +119,7 @@ class MyApp(App):
             pos=(3, 0),
             min=150.0,
             max=500.0,
-            proportion=(solver.REST_DENS - 150) / (500 - 150),
+            start_value=solver.REST_DENS,
             callback=lambda value: (
                 setattr(solver, "REST_DENS", value),
                 container.add_text(
@@ -134,7 +134,7 @@ class MyApp(App):
             pos=(3, HWIDTH + 1),
             min=0.0,
             max=5000.0,
-            proportion=(solver.VISC - 0) / (5000 - 0),
+            start_value=solver.VISC,
             callback=lambda value: (
                 setattr(solver, "VISC", value),
                 container.add_text(
@@ -150,7 +150,7 @@ class MyApp(App):
             pos=(5, 0),
             min=10.0,
             max=500.0,
-            proportion=(solver.MASS - 10) / (500 - 10),
+            start_value=solver.MASS,
             callback=lambda value: (
                 setattr(solver, "MASS", value),
                 container.add_text(
@@ -165,7 +165,7 @@ class MyApp(App):
             pos=(5, HWIDTH + 1),
             min=.001,
             max=.03,
-            proportion=(solver.DT - .001) / (.03 - .001),
+            start_value=solver.DT,
             callback=lambda value: (
                 setattr(solver, "DT", value),
                 container.add_text(

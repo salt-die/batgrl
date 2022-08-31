@@ -15,8 +15,13 @@ class _Handle(GrabbableBehavior, Widget):
         )
 
     def update_geometry(self):
+        self.update_handle()
+
+    def update_handle(self):
         slider = self.parent
-        self.left = round(slider.proportion * slider.fill_width)
+        self.x = x = round(slider.proportion * slider.fill_width)
+        slider.colors[:, :x, :3] = slider.fill_color
+        slider.colors[:, x:, :3] = slider.default_fg_color
 
     def grab_update(self, mouse_event):
         _, x = self.to_local(mouse_event.position)
