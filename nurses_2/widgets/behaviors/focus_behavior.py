@@ -1,5 +1,5 @@
 """
-Focus behavior fo a widget.
+Focus behavior for a widget.
 """
 from collections import deque
 from weakref import ref, ReferenceType
@@ -9,6 +9,8 @@ from ...io import MouseEventType
 
 class FocusBehavior:
     """
+    Focus behavior for a widget.
+
     Focusable widgets can be given "focus" by pressing tab or shift + tab
     or by clicking on them. When a widget gains focus :meth:`on_focus`
     is called. When a widget loses focus the :meth:`on_blur` is called.
