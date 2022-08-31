@@ -3,7 +3,7 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import Color, ColorPair, BLACK, BLACK_ON_BLACK, WHITE_ON_BLACK
+from nurses_2.colors import Color, ColorPair, BLACK, WHITE_ON_BLACK
 from nurses_2.io import MouseButton
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor
@@ -20,7 +20,7 @@ class SPH(GraphicWidget):
     def __init__(self, nparticles, is_transparent=False, **kwargs):
         super().__init__(is_transparent=is_transparent, **kwargs)
         y, x = self.size
-        self.sph_solver = SPHSolver(nparticles, (2 * y - 1, x - 1))
+        self.sph_solver = SPHSolver(nparticles, (2 * y, x))
         self._update_task = asyncio.create_task(self._update())
 
     def on_keypress(self, key_press_event):
@@ -56,7 +56,13 @@ class SPH(GraphicWidget):
             solver.step()
 
             positions = solver.state[:, :2]
+
             ys, xs = positions.astype(int).T
+            xs = xs + (self.width - solver.WIDTH) // 2  # Center the particles.
+
+            # Some solver configurations are unstable. Clip positions to prevent errors.
+            ys = np.clip(ys, 0, 2 * self.height - 1)
+            xs = np.clip(xs, 0, self.width - 1)
 
             self.texture[:] = self.default_color
             self.texture[ys, xs, :3] = WATER_COLOR
@@ -64,130 +70,61 @@ class SPH(GraphicWidget):
             await asyncio.sleep(0)
 
 
-class MyApp(App):
+class SPHApp(App):
     async def on_start(self):
-        WIDTH = 51
-        HWIDTH = WIDTH // 2
+        height, width = 26, 51
+        slider_settings = (
+            ("H", "Smoothing Length", .4, 3.5),
+            ("GAS_CONST", "Gas Constant", 500.0, 4000.0),
+            ("REST_DENS", "Rest Density", 150.0, 500.0),
+            ("VISC", "Viscosity", 0.0, 5000.0),
+            ("MASS", "Mass", 10.0, 500.0),
+            ("DT", "DT", .001, .03),
+            ("GRAVITY", "Gravity", 0.0, 1e5),
+            ("WIDTH", "Width", 5, width),
+        )
+        sliders_height = (len(slider_settings) + 1) // 2 * 2
 
         container = TextWidget(
-            size=(26, WIDTH),
+            size=(height, width),
             pos_hint=(.5, .5),
             anchor=Anchor.CENTER,
-            default_color_pair=BLACK_ON_BLACK,
-        )
-        container.colors[:6] = WHITE_ON_BLACK
-
-        fluid = SPH(225, pos=(6, 0), size=(20, 50))
-        solver = fluid.sph_solver
-
-        slider_settings = {
-            "width": HWIDTH,
-            "fill_color": FILL_COLOR,
-            "default_color_pair": WATER_ON_BLACK,
-        }
-
-        adjust_H = Slider(
-            pos=(1, 0),
-            min=.4,
-            max=3.5,
-            start_value=solver.H,
-            callback=lambda value: (
-                setattr(solver, "H", value),
-                container.add_text(
-                    f'{f"Smoothing Length: {round(solver.H, 4)}":<{HWIDTH}}',
-                ),
-            ),
-            **slider_settings,
+            default_color_pair=WHITE_ON_BLACK,
         )
 
-        adjust_GAS_CONST = Slider(
-            pos=(1, HWIDTH + 1),
-            min=500.0,
-            max=4000.0,
-            start_value=solver.GAS_CONST,
-            callback=lambda value: (
-                setattr(solver, "GAS_CONST", value),
-                container.add_text(
-                    f'{f"Gas Constant: {round(solver.GAS_CONST, 4)}":<{HWIDTH}}',
-                    column=HWIDTH,
-                ),
-            ),
-            **slider_settings,
+        fluid = SPH(
+            nparticles=225,
+            pos=(sliders_height, 0),
+            size=(height - sliders_height, width),
         )
 
-        adjust_REST_DENS = Slider(
-            pos=(3, 0),
-            min=150.0,
-            max=500.0,
-            start_value=solver.REST_DENS,
-            callback=lambda value: (
-                setattr(solver, "REST_DENS", value),
-                container.add_text(
-                    f'{f"Rest Density: {round(solver.REST_DENS, 4)}":<{HWIDTH}}',
-                    row=2,
-                ),
-            ),
-            **slider_settings,
-        )
+        def create_callback(caption, attr, y, x):
+            def update(value):
+                setattr(fluid.sph_solver, attr, value)
+                if isinstance(v := getattr(fluid.sph_solver, attr), int):
+                    value = f"{v}"
+                else:
+                    value = f"{v:.4}"
+                container.add_text(f"{caption}: {value}".ljust(width // 2), y, x)
+            return update
 
-        adjust_VISC = Slider(
-            pos=(3, HWIDTH + 1),
-            min=0.0,
-            max=5000.0,
-            start_value=solver.VISC,
-            callback=lambda value: (
-                setattr(solver, "VISC", value),
-                container.add_text(
-                    f'{f"Viscosity: {round(solver.VISC, 4)}":<{HWIDTH}}',
-                    row=2,
-                    column=HWIDTH,
-                ),
-            ),
-            **slider_settings,
-        )
-
-        adjust_MASS = Slider(
-            pos=(5, 0),
-            min=10.0,
-            max=500.0,
-            start_value=solver.MASS,
-            callback=lambda value: (
-                setattr(solver, "MASS", value),
-                container.add_text(
-                    f'{f"Mass: {round(solver.MASS, 4)}":<{HWIDTH}}',
-                    row=4,
-                ),
-            ),
-            **slider_settings,
-        )
-
-        adjust_DT = Slider(
-            pos=(5, HWIDTH + 1),
-            min=.001,
-            max=.03,
-            start_value=solver.DT,
-            callback=lambda value: (
-                setattr(solver, "DT", value),
-                container.add_text(
-                    f'{f"DT: {round(solver.DT, 4)}":<{HWIDTH}}',
-                    row=4,
-                    column=HWIDTH,
-                ),
-            ),
-            **slider_settings,
-        )
-
-        container.add_widgets(
-            fluid,
-            adjust_H,
-            adjust_GAS_CONST,
-            adjust_REST_DENS,
-            adjust_VISC,
-            adjust_MASS,
-            adjust_DT,
-        )
-
+        container.add_widget(fluid)
+        for i, (attr, caption, min, max) in enumerate(slider_settings):
+            y = i // 2 * 2
+            x = (i % 2) * (width // 2 + 1)
+            container.add_widget(
+                Slider(
+                    pos=(y + 1, x),
+                    min=min,
+                    max=max,
+                    start_value=getattr(fluid.sph_solver, attr),
+                    callback=create_callback(caption, attr, y, x),
+                    width=width // 2,
+                    fill_color=FILL_COLOR,
+                    default_color_pair=WATER_ON_BLACK,
+                )
+            )
         self.add_widget(container)
 
 
-MyApp(title="Smooth Particle Hydrodynamics Example").run()
+SPHApp(title="Smooth Particle Hydrodynamics Example").run()

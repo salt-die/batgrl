@@ -4,7 +4,9 @@ import numpy as np
 class SPHSolver:
     def __init__(self, nparticles, size):
         self.nparticles = nparticles
-        self.resize(size)
+        self.size = size
+        self.state = np.zeros((self.nparticles, 4), dtype=float)
+        self.init_dam()
 
         self.H = 1.1
         self.GAS_CONST = 2300.0
@@ -12,7 +14,7 @@ class SPHSolver:
         self.VISC = 500.0
         self.MASS = 250.0
         self.DT = .01
-        self.GRAVITY = np.array([1e6, 0.0])
+        self.GRAVITY = 5e4
 
     @property
     def H(self):
@@ -25,10 +27,15 @@ class SPHSolver:
         self.SPIKY_GRAD = -10.0 / (np.pi * H**5.0)
         self.VISC_LAP = 40.0 / (np.pi * H**5.0)
 
-    def resize(self, size):
-        self.size = size
-        self.state = np.zeros((self.nparticles, 4), dtype=float)
-        self.init_dam()
+    @property
+    def WIDTH(self):
+        return self.size[1]
+
+    @WIDTH.setter
+    def WIDTH(self, WIDTH):
+        h, w = self.size
+        self.state[:, :2] += (WIDTH - w) / 2
+        self.size = h, int(WIDTH)
 
     def init_dam(self):
         """
@@ -88,7 +95,7 @@ class SPHSolver:
             * weight[..., None]
         ).sum(axis=1)
 
-        forces = MASS * (f_pressure - f_visc + self.GRAVITY) / densities[:, None]
+        forces = MASS * (f_pressure - f_visc + (self.GRAVITY, 0)) / densities[:, None]
 
         # Integrate
         velocities += self.DT * forces / densities[:, None]
