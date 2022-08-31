@@ -119,7 +119,7 @@ class SPHApp(App):
                     max=max,
                     start_value=getattr(fluid.sph_solver, attr),
                     callback=create_callback(caption, attr, y, x),
-                    width=width // 2,
+                    size=(1, width // 2),
                     fill_color=FILL_COLOR,
                     default_color_pair=WATER_ON_BLACK,
                 )

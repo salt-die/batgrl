@@ -16,8 +16,6 @@ class Slider(TextWidget):
 
     Parameters
     ----------
-    width : int
-        Width of the slider.
     min : float
         Minimum value.
     max : float
@@ -32,6 +30,8 @@ class Slider(TextWidget):
         Whether slider value can be changed.
     callback : Callable | None, default: None
         Single argument callable called with new value of slider when slider is updated.
+    slider_char : str, default: "▬"
+        Character used to draw the slider.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -73,8 +73,6 @@ class Slider(TextWidget):
 
     Attributes
     ----------
-    width : int
-        Width of the slider.
     min : float
         Minimum value.
     max : float
@@ -87,6 +85,8 @@ class Slider(TextWidget):
         True if slider value can be changed.
     callback : Callable
         Single argument callable called with new value of slider when slider is updated.
+    slider_char : str, default: "▬"
+        Character used to draw the slider.
     proportion : float
         Current proportion of slider.
     value : float
@@ -221,7 +221,6 @@ class Slider(TextWidget):
     def __init__(
         self,
         *,
-        width: int,
         min: float,
         max: float,
         start_value: float | None=None,
@@ -229,25 +228,39 @@ class Slider(TextWidget):
         fill_color: Color | None=None,
         slider_enabled: bool=True,
         callback: Callable | None=None,
-        default_char="▬",
+        slider_char: str="▬",
         **kwargs,
         ):
-        super().__init__(size=(1, width), default_char=default_char, **kwargs)
+        super().__init__(**kwargs)
 
         if min >= max:
             raise ValueError(f"{min=} >= {max=}")
 
         self.min = min
         self.max = max
-
         self.slider_enabled = slider_enabled
         self.callback = callback
-        self.fill_color = fill_color or self.default_fg_color
-
         self.value = self.min if start_value is None else start_value
+        self.fill_color = fill_color or self.default_fg_color
+        self.slider_char = slider_char
 
         self.handle = _Handle(color=handle_color or self.default_fg_color)
         self.add_widget(self.handle)
+
+    @property
+    def slider_char(self) -> str:
+        return self._slider_char
+
+    @slider_char.setter
+    def slider_char(self, char: str):
+        self._slider_char = char
+        self.canvas[self.height // 2] = char
+
+    def on_size(self):
+        super().on_size()
+        self.canvas[:] = self.default_char
+        self.colors[:] = self.default_color_pair
+        self.canvas[self.height // 2] = self.slider_char
 
     @property
     def proportion(self) -> float:
