@@ -127,4 +127,4 @@ class SPHApp(App):
         self.add_widget(container)
 
 
-SPHApp(title="Smooth Particle Hydrodynamics Example").run()
+SPHApp(title="Smoothed-Particle Hydrodynamics").run()
