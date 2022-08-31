@@ -133,5 +133,6 @@ class Camera:
         # Sort faces by distance to camera.
         faces.sort(key=lambda tup: tup[0], reverse=True)
 
-        for distance, face, color in faces:
-            cv2.fillConvexPoly(image, vertices_2d[face], color.fog(distance * .2))
+        for distance, face, (r, g, b, a) in faces:
+            p = np.e ** -(distance * .2)
+            cv2.fillConvexPoly(image, vertices_2d[face], (int(p * r), int(p * g), int(p * b), a))

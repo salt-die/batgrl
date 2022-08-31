@@ -99,8 +99,6 @@ class AColor(NamedTuple):
     -------
     from_hex:
         Create an :class:`AColor` from a hex code.
-    fog:
-        Return color as if seen through a fog from a distance.
     count:
         Return number of occurrences of value.
     index:
@@ -132,16 +130,6 @@ class AColor(NamedTuple):
             int(hexcode[4:6], 16),
             int(hexcode[6:] or "ff", 16)
         )
-
-    def fog(self, distance):
-        """
-        Return color as if seen through a fog from a distance.
-        """
-        p = e ** -distance
-
-        r, g, b, a = self
-
-        return type(self)(int(p * r), int(p * g), int(p * b), a)
 
 
 class ColorPair(NamedTuple):
