@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.slider.slider &#8212; Python 0.11.1 documentation</title>
+    <title>nurses_2.widgets.slider.slider &#8212; Python 0.11.2 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.1 documentation</p>
+    <p class="title logo__title">Python 0.11.2 documentation</p>
   
 </a>
     
@@ -540,14 +540,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.slider.slider.Slider" title="nurses_2.widgets.slider.slider.Slider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Slider</span></code></a>(*, width, min, max[, proportion, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.slider.slider.Slider" title="nurses_2.widgets.slider.slider.Slider"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Slider</span></code></a>(*, width, min, max[, start_value, ...])</p></td>
 <td><p>A slider widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.slider.slider.Slider">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.slider.slider.</span></span><span class="sig-name descname"><span class="pre">Slider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proportion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slider_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_char</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'▬'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.slider.slider.Slider" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.slider.slider.</span></span><span class="sig-name descname"><span class="pre">Slider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slider_enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_char</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'▬'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.slider.slider.Slider" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.text_widget.html#nurses_2.widgets.text_widget.TextWidget" title="nurses_2.widgets.text_widget.TextWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_widget.TextWidget</span></code></a></p>
 <p>A slider widget.</p>
 <dl class="field-list simple">
@@ -559,13 +559,13 @@
 </dd>
 <dt><strong>max</strong><span class="classifier">float</span></dt><dd><p>Maximum value.</p>
 </dd>
-<dt><strong>proportion</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Starting proportion of slider.</p>
+<dt><strong>start_value: float | None, default: None</strong></dt><dd><p>Start value of slider. If <cite>None</cite>, start value is <code class="xref py py-attr docutils literal notranslate"><span class="pre">min</span></code>.</p>
 </dd>
 <dt><strong>handle_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Color of slider handle. If None, handle color is <a class="reference internal" href="#nurses_2.widgets.slider.slider.Slider.default_fg_color" title="nurses_2.widgets.slider.slider.Slider.default_fg_color"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_fg_color</span></code></a>.</p>
 </dd>
 <dt><strong>fill_color: Color | None, default: None</strong></dt><dd><p>Color of “filled” portion of slider.</p>
 </dd>
-<dt><strong>slider_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow dragging handle.</p>
+<dt><strong>slider_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Whether slider value can be changed.</p>
 </dd>
 <dt><strong>callback</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Single argument callable called with new value of slider when slider is updated.</p>
 </dd>
@@ -617,15 +617,15 @@ widget is not transparent.</p>
 </dd>
 <dt><strong>max</strong><span class="classifier">float</span></dt><dd><p>Maximum value.</p>
 </dd>
-<dt><strong>proportion</strong><span class="classifier">float</span></dt><dd><p>Starting proportion of slider.</p>
-</dd>
 <dt><strong>handle_color</strong><span class="classifier">Color</span></dt><dd><p>Color of slider handle.</p>
 </dd>
 <dt><strong>fill_color: Color</strong></dt><dd><p>Color of “filled” portion of slider.</p>
 </dd>
-<dt><strong>slider_enabled</strong><span class="classifier">bool</span></dt><dd><p>Allow dragging handle.</p>
+<dt><strong>slider_enabled</strong><span class="classifier">bool</span></dt><dd><p>True if slider value can be changed.</p>
 </dd>
 <dt><strong>callback</strong><span class="classifier">Callable</span></dt><dd><p>Single argument callable called with new value of slider when slider is updated.</p>
+</dd>
+<dt><strong>proportion</strong><span class="classifier">float</span></dt><dd><p>Current proportion of slider.</p>
 </dd>
 <dt><strong>value</strong><span class="classifier">float</span></dt><dd><p>Current value of slider.</p>
 </dd>
@@ -1043,7 +1043,7 @@ adding text to a view of <code class="xref py py-attr docutils literal notransla
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.slider.slider.Slider.proportion">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proportion</span></span><a class="headerlink" href="#nurses_2.widgets.slider.slider.Slider.proportion" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proportion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.slider.slider.Slider.proportion" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1175,7 +1175,7 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.slider.slider.Slider.value">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#nurses_2.widgets.slider.slider.Slider.value" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.slider.slider.Slider.value" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
