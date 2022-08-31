@@ -5,12 +5,10 @@ import numpy as np
 
 from ..easings import lerp
 from .color_data_structures import *
-from .colors import BLACK, WHITE, ColorPair
+from .colors import ColorPair
 
 __all__ = (
     "rainbow_gradient",
-    "foreground_rainbow",
-    "background_rainbow",
     "lerp_colors",
     "gradient",
 )
@@ -35,38 +33,6 @@ def rainbow_gradient(n: int, *, color_type: type[Color] | type[AColor]=Color) ->
             *(int(j) for j in (np.sin(THETA * i + OFFSETS) * 127 + 128))
         )
         for i in range(n)
-    ]
-
-def foreground_rainbow(ncolors: int=20, bg_color: Color=BLACK) -> list[ColorPair]:
-    """
-    A rainbow gradient of `ncolors` color pairs with a given background color.
-
-    Parameters
-    ----------
-    ncolors : int, default: 20
-        Number of colors in gradient.
-    bg_color : Color, default: BLACK
-        Background color used for gradient.
-    """
-    return [
-        ColorPair.from_colors(fg_color, bg_color)
-        for fg_color in rainbow_gradient(ncolors)
-    ]
-
-def background_rainbow(ncolors: int=20, fg_color: Color=WHITE) -> list[ColorPair]:
-    """
-    Return a rainbow gradient of `ncolors` color pairs with a given foreground color.
-
-    Parameters
-    ----------
-    ncolors : int, default: 20
-        Number of colors in gradient.
-    fg_color : Color, default: BLACK
-        Foreground color used for gradient.
-    """
-    return [
-        ColorPair.from_colors(fg_color, bg_color)
-        for bg_color in rainbow_gradient(ncolors)
     ]
 
 def lerp_colors(

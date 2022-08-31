@@ -11,7 +11,7 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import foreground_rainbow
+from nurses_2.colors import rainbow_gradient, ColorPair, BLACK
 from nurses_2.io import MouseButton
 from nurses_2.widgets.particle_field.text_field import (
     TextParticleField,
@@ -54,7 +54,10 @@ MAX_PARTICLE_SPEED = 10
 FRICTION = .97
 
 NCOLORS = 100
-RAINBOW = foreground_rainbow(NCOLORS)
+RAINBOW = [
+    ColorPair.from_colors(fg_color, BLACK)
+    for fg_color in rainbow_gradient(NCOLORS)
+]
 BLUE_INDEX = round(.65 * NCOLORS)
 YELLOW_INDEX = round(.1 * NCOLORS)
 
