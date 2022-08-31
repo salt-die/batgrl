@@ -28,7 +28,7 @@ nurses\_2.widgets.behaviors
    :recursive:
 
    nurses_2.widgets.behaviors.button_behavior
-   nurses_2.widgets.behaviors.effects
+   nurses_2.widgets.behaviors.effect
    nurses_2.widgets.behaviors.focus_behavior
    nurses_2.widgets.behaviors.grab_move_behavior
    nurses_2.widgets.behaviors.grab_resize_behavior

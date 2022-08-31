@@ -13,8 +13,6 @@ nurses\_2.colors.gradients
 
    .. autosummary::
    
-      background_rainbow
-      foreground_rainbow
       gradient
       lerp_colors
       rainbow_gradient
