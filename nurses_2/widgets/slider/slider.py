@@ -23,7 +23,7 @@ class Slider(TextWidget):
     max : float
         Maximum value.
     start_value: float | None, default: None
-        Start value of slider. If `None`, start value is `min`.
+        Start value of slider. If `None`, start value is :attr:`min`.
     handle_color : Color | None, default: None
         Color of slider handle. If None, handle color is :attr:`default_fg_color`.
     fill_color: Color | None, default: None
