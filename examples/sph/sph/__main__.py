@@ -44,7 +44,7 @@ class SPH(GraphicWidget):
         relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
 
         self.sph_solver.state[:, 2:4] += (
-            1e1 * relative_positions
+            1e2 * relative_positions
             / np.linalg.norm(relative_positions, axis=-1, keepdims=True)
         )
 
@@ -133,8 +133,8 @@ class MyApp(App):
         adjust_VISC = Slider(
             pos=(3, HWIDTH + 1),
             min=0.0,
-            max=20000.0,
-            proportion=(solver.VISC - 0) / (20000 - 0),
+            max=5000.0,
+            proportion=(solver.VISC - 0) / (5000 - 0),
             callback=lambda value: (
                 setattr(solver, "VISC", value),
                 container.add_text(
@@ -163,9 +163,9 @@ class MyApp(App):
 
         adjust_DT = Slider(
             pos=(5, HWIDTH + 1),
-            min=.01,
-            max=1.0,
-            proportion=(solver.DT - .01) / (1.0 - .01),
+            min=.001,
+            max=.03,
+            proportion=(solver.DT - .001) / (.03 - .001),
             callback=lambda value: (
                 setattr(solver, "DT", value),
                 container.add_text(

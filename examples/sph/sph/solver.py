@@ -6,11 +6,11 @@ class SPHSolver:
         self.nparticles = nparticles
         self.resize(size)
 
-        self.H = .5
+        self.H = 1.1
         self.GAS_CONST = 2300.0
         self.REST_DENS = 300.0
         self.VISC = 500.0
-        self.MASS = 35.0
+        self.MASS = 250.0
         self.DT = .01
         self.GRAVITY = np.array([1e6, 0.0])
 
