@@ -10,10 +10,10 @@ from codecs import getincrementaldecoder
 from ....data_structures import Point
 from ..events import Key, KeyPressEvent, _PartialMouseEvent, PasteEvent
 from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
-from .mouse_bindings import TERM_SGR, TYPICAL, URXVT
+from .mouse_bindings import TERM_SGR, TYPICAL
 
 _EVENTS = [ ]
-MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<?[\d;]+[mM]|M...)\Z")
+MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<[\d;]+[mM]|M...)\Z")
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
 FILENO = sys.stdin.fileno()
 SELECT_ARGS = [FILENO], [], [], 0
@@ -46,14 +46,9 @@ def _create_mouse_event(data):
         x -= 32
         y -= 32
 
-    else:
-        if data[2] == "<":  # Xterm SGR: "Esc[<64;85;12M"
-            mouse_event, x, y = map(int, data[3:-1].split(";"))
-            mouse_info = TERM_SGR.get((mouse_event, data[-1]))
-
-        else:  # Urxvt: "Esc[96;14;13M"
-            mouse_event, x, y = map(int, data[2:-1].split(";"))
-            mouse_info = URXVT.get(mouse_event)
+    elif data[2] == "<":  # Xterm SGR: "Esc[<64;85;12M"
+        mouse_event, x, y = map(int, data[3:-1].split(";"))
+        mouse_info = TERM_SGR.get((mouse_event, data[-1]))
 
         x -= 1
         y -= 1
