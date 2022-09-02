@@ -34,6 +34,8 @@ def _create_mouse_event(data):
     """
     Create a MouseEvent from ansi escapes.
     """
+    mouse_info = None
+
     if data[2] == "M":  # Typical: "Esc[MaB*"
         mouse_event, x, y = map(ord, data[3:])
         mouse_info = TYPICAL.get(mouse_event)
