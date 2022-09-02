@@ -95,8 +95,6 @@ class CanvasView:
                 break
 
             match wcswidth(letter):
-                case 0:
-                    continue
                 case 1:
                     canvas[row, column + i] = f"{PREPEND}{letter}{POSTPEND}"
                     i += 1
