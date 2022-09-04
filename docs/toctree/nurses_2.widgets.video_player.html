@@ -523,20 +523,22 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.video_player.VideoPlayer" title="nurses_2.widgets.video_player.VideoPlayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VideoPlayer</span></code></a>(*, source[, default_color, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.video_player.VideoPlayer" title="nurses_2.widgets.video_player.VideoPlayer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VideoPlayer</span></code></a>(*, source[, loop, ...])</p></td>
 <td><p>A video player.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.video_player.</span></span><span class="sig-name descname"><span class="pre">VideoPlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">AColor(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0,</span> <span class="pre">alpha=255)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_transparent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.video_player.</span></span><span class="sig-name descname"><span class="pre">VideoPlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">AColor(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0,</span> <span class="pre">alpha=255)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_transparent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
 <p>A video player.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>source</strong><span class="classifier">pathlib.Path | str | int</span></dt><dd><p>A path to video, URL to video stream, or capturing device (by index).</p>
+</dd>
+<dt><strong>loop</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, restart video after last frame.</p>
 </dd>
 <dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
 </dd>
@@ -585,9 +587,9 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>video</strong><span class="classifier">asyncio.Task</span></dt><dd><p>The task updating the widget’s texture.</p>
-</dd>
 <dt><strong>source</strong><span class="classifier">Path | str | int</span></dt><dd><p>Source of video.</p>
+</dd>
+<dt><strong>loop</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, restart video after last frame.</p>
 </dd>
 <dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
 </dd>
@@ -1064,11 +1066,6 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <span class="sig-name descname"><span class="pre">update_geometry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.update_geometry" title="Permalink to this definition">#</a></dt>
 <dd><p>Update geometry due to a change in parent’s size.</p>
 </dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.video">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">video</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_asyncio.Task</span></em><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.video" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.walk">

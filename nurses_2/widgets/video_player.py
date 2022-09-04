@@ -23,6 +23,8 @@ class VideoPlayer(GraphicWidget):
     ----------
     source : pathlib.Path | str | int
         A path to video, URL to video stream, or capturing device (by index).
+    loop : bool, default: True
+        If true, restart video after last frame.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -69,10 +71,10 @@ class VideoPlayer(GraphicWidget):
 
     Attributes
     ----------
-    video : asyncio.Task
-        The task updating the widget's texture.
     source : Path | str | int
         Source of video.
+    loop : bool, default: True
+        If true, restart video after last frame.
     texture : numpy.ndarray
         uint8 RGBA color array.
     default_color : AColor
@@ -199,6 +201,7 @@ class VideoPlayer(GraphicWidget):
         self,
         *,
         source: Path | str | int,
+        loop: bool=True,
         default_color=ABLACK,
         is_transparent=False,
         **kwargs
@@ -210,13 +213,9 @@ class VideoPlayer(GraphicWidget):
         )
 
         self._resource = None
-        self._video = asyncio.create_task(asyncio.sleep(0))  # dummy task
-
+        self._video_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self.loop = loop
         self.source = source
-
-    @property
-    def video(self) -> asyncio.Task:
-        return self._video
 
     @property
     def source(self) -> Path | str | int:
@@ -252,7 +251,7 @@ class VideoPlayer(GraphicWidget):
         super().on_size()
 
         # If video is paused, resize current frame.
-        if self._video.done() and self._current_frame is not None:
+        if self._video_task.done() and self._current_frame is not None:
             h, w, _ = self.texture.shape
             resized_frame = cv2.resize(self._current_frame, (w, h), interpolation=self.interpolation)
             self.texture[..., :3] = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
@@ -291,9 +290,11 @@ class VideoPlayer(GraphicWidget):
             try:
                 await asyncio.sleep(seconds_ahead)
             except asyncio.CancelledError:
-                return
+                break
 
         self.close()
+        if self.loop:
+            self.play()
 
     def play(self):
         """
@@ -302,14 +303,14 @@ class VideoPlayer(GraphicWidget):
         if self._resource is None:
             self._load_video()
 
-        self._video.cancel()
-        self._video = asyncio.create_task(self._play_video())
+        self._video_task.cancel()
+        self._video_task = asyncio.create_task(self._play_video())
 
     def pause(self):
         """
         Pause video.
         """
-        self._video.cancel()
+        self._video_task.cancel()
 
     def stop(self):
         """
