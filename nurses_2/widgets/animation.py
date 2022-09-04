@@ -31,6 +31,8 @@ class Animation(Widget):
         equal to the number of frames.
     loop : bool, default: True
         If true, restart animation after last frame.
+    reverse : bool, default: False
+        If true, play animation in reverse.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -80,7 +82,9 @@ class Animation(Widget):
     frame_duration : Sequence[float| int]
         Time between updates of frames of the animation in seconds.
     loop : bool
-        If true, restart animation after last frame.
+        If true, animation is restarted after last frame.
+    reverse : bool
+        If true, animation is played in reverse.
     current_frame : Image
         Current frame of the animation.
     size : Size
@@ -203,6 +207,7 @@ class Animation(Widget):
         interpolation: Interpolation=Interpolation.LINEAR,
         frame_durations: float | Sequence[float]=1/12,
         loop: bool=True,
+        reverse: bool=False,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -221,7 +226,7 @@ class Animation(Widget):
                 raise ValueError("")
 
         self.loop = loop
-
+        self.reverse = reverse
         self.alpha = alpha
         self.interpolation = interpolation
 
@@ -268,12 +273,20 @@ class Animation(Widget):
             except asyncio.CancelledError:
                 break
 
-            self._i += 1
-            if self._i >= len(self.frames):
-                if not self.loop:
+            if self.reverse:
+                self._i -= 1
+                if self._i == 0 and not self.loop:
                     return
 
-                self._i = 0
+                if self._i < 0:
+                    self._i = len(self.frames) - 1
+            else:
+                self._i += 1
+                if self._i == len(self.frames) - 1 and not self.loop:
+                    return
+
+                if self._i == len(self.frames):
+                    self._i = 0
 
     def play(self):
         """
