@@ -7,8 +7,10 @@ from collections.abc import Callable
 
 from wcwidth import wcswidth
 
+from ..colors import ColorPair
 from .scroll_view import ScrollView
 from .tree_view import TreeViewNode, TreeView
+from .behaviors.themable import Themable
 
 __all__ = "FileChooser",
 
@@ -282,6 +284,18 @@ class FileViewNode(TreeViewNode):
             f"{self.path.name}"
         )
 
+    def on_mouse(self, mouse_event):
+        if (
+            mouse_event.nclicks == 2
+            and self.is_leaf
+            and self.parent.selected_node is self
+            and self.collides_point(mouse_event.position)
+        ):
+            self.parent.select_callback(self.path)
+            return True
+
+        return super().on_mouse(mouse_event)
+
 
 class FileView(TreeView):
     """
@@ -554,17 +568,8 @@ class FileView(TreeView):
 
         return True
 
-    def on_mouse(self, mouse_event):
-        if (
-            mouse_event.nclicks == 2
-            and self.selected_node is not None
-            and self.selected_node.collides_point(mouse_event.position)
-        ):
-            self.select_callback(self.selected_node.path)
-            return True
 
-
-class FileChooser(ScrollView):
+class FileChooser(Themable, ScrollView):
     """
     A file chooser widget.
 
@@ -809,6 +814,11 @@ class FileChooser(ScrollView):
             )
         )
         self._view.update_tree_layout()
+        self.update_theme()
+
+    def update_theme(self):
+        bg = self.color_theme.primary_bg
+        self.background_color_pair = ColorPair.from_colors(bg, bg)
 
     def on_size(self):
         super().on_size()
