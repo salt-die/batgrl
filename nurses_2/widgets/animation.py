@@ -31,7 +31,7 @@ class Animation(Widget):
     alpha : float, default: 1.0
         Transparency of the animation.
     interpolation : Interpolation, default: Interpolation.Linear
-        Interpolation used when resizing the animation.
+        Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -78,7 +78,7 @@ class Animation(Widget):
     alpha : float
         Transparency of the animation.
     interpolation : Interpolation
-        Interpolation used when resizing the animation.
+        Interpolation used when widget is resized.
     size : Size
         Size of widget.
     height : int
@@ -203,7 +203,10 @@ class Animation(Widget):
         **kwargs
     ):
         paths = sorted(path.iterdir(), key=lambda file: file.name)
-        self.frames = [Image(path=path, interpolation=interpolation) for path in paths]
+        self.frames = [
+            Image(path=path, interpolation=interpolation, alpha=alpha)
+            for path in paths
+        ]
         if not self.frames:
             raise ValueError(f"{path} empty")
 
@@ -218,8 +221,6 @@ class Animation(Widget):
 
         self.loop = loop
         self.reverse = reverse
-        self.alpha = alpha
-        self.interpolation = interpolation
 
         self._i = 0
         self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
@@ -230,23 +231,19 @@ class Animation(Widget):
 
     @property
     def alpha(self) -> float:
-        return self._alpha
+        return self.frames[0].alpha
 
     @alpha.setter
     def alpha(self, alpha: float):
-        self._alpha = alpha
-
         for frame in self.frames:
             frame.alpha = alpha
 
     @property
     def interpolation(self) -> Interpolation:
-        return self._interpolation
+        return self.frames[0].interpolation
 
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
-        self._interpolation = interpolation
-
         for frame in self.frames:
             frame.interpolation = interpolation
 
@@ -293,5 +290,14 @@ class Animation(Widget):
         self._i = 0
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        if not self.is_transparent:
+            if self.background_char is not None:
+                canvas_view[:] = self.background_char
+
+            if self.background_color_pair is not None:
+                colors_view[:] = self.background_color_pair
+
         self.frames[self._i].render(canvas_view, colors_view, source)
-        super().render(canvas_view, colors_view, source)
+
+        self.render_children(source, canvas_view, colors_view)
+

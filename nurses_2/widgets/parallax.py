@@ -2,28 +2,31 @@
 A parallax widget.
 """
 from collections.abc import Sequence
+from pathlib import Path
 
 import numpy as np
 
-from .graphic_widget import GraphicWidget
+from .image import Image
+from .widget import Widget
+from .graphic_widget_data_structures import Interpolation
+
+__all__ = "Interpolation", "Parallax"
 
 
-class Parallax(GraphicWidget):
+class Parallax(Widget):
     """
     A parallax widget.
 
     Parameters
     ----------
-    layers : Sequence[GraphicWidget]
-        Individual layers of the parallax in background-to-foreground order.
+    path : Path
+        Path to directory of images for layers of the parallax (loaded
+        in lexographical order of filenames) layered from background to foreground.
     speeds : Sequence[float] | None, default: None
         The scrolling speed of each layer. Default speeds are `1/(N - i)`
         where `N` is the number of layers and `i` is the index of a layer.
-    default_color : AColor, default: AColor(0, 0, 0, 0)
-        Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        Transparency of the parallax.
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -72,12 +75,8 @@ class Parallax(GraphicWidget):
         Vertical offset of first layer of the parallax.
     horizontal_offset : float
         Horizontal offset of first layer of the parallax
-    texture : numpy.ndarray
-        uint8 RGBA color array.
-    default_color : AColor
-        Default texture color.
     alpha : float
-        Transparency of widget if :attr:`is_transparent` is true.
+        Transparency of the parallax.
     interpolation : Interpolation
         Interpolation used when widget is resized.
     size : Size
@@ -151,8 +150,6 @@ class Parallax(GraphicWidget):
 
     Methods
     -------
-    to_png:
-        Write :attr:`texture` to provided path as a `png` image.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -188,24 +185,53 @@ class Parallax(GraphicWidget):
     tween:
         Sequentially update a widget property over time.
     """
-    def __init__(self, *, layers: Sequence[GraphicWidget], speeds: Sequence[float] | None=None, **kwargs):
+    def __init__(
+        self,
+        *,
+        path: Path,
+        speeds: Sequence[float] | None=None,
+        alpha: float=1.0,
+        interpolation: Interpolation=Interpolation.LINEAR,
+        **kwargs
+    ):
+
+        paths = sorted(path.iterdir(), key=lambda file: file.name)
+        self.layers = [
+            Image(path=path, interpolation=interpolation, alpha=alpha)
+            for path in paths
+        ]
+        if not self.layers:
+            raise ValueError(f"{path} empty")
+
         super().__init__(**kwargs)
 
-        self.layers = layers
-
-        self._image_copies = [layer.texture.copy() for layer in layers]
-
-        nlayers = len(layers)
+        nlayers = len(self.layers)
         self.speeds = speeds or [1 / (nlayers - i) for i in range(nlayers)]
 
         self._vertical_offset = self._horizontal_offset = 0.0
 
-        for widget in layers:
-            self.add_widget(widget)
+    def on_size(self):
+        for layer in self.layers:
+            layer.size = self.size
+        self._otextures = [layer.texture for layer in self.layers]
 
-    def update_geometry(self):
-        super().update_geometry()
-        self._image_copies = [layer.texture.copy() for layer in self.layers]
+    @property
+    def alpha(self) -> float:
+        return self.layers[0].alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        for layer in self.layers:
+            layer.alpha = alpha
+
+    @property
+    def interpolation(self) -> Interpolation:
+        return self.layers[0].interpolation
+
+    @interpolation.setter
+    def interpolation(self, interpolation: Interpolation):
+        for layer in self.layers:
+            layer.interpolation = interpolation
 
     @property
     def vertical_offset(self) -> float:
@@ -235,11 +261,23 @@ class Parallax(GraphicWidget):
         self._adjust()
 
     def _adjust(self):
-        for speed, image, layer in zip(
+        for speed, texture, layer in zip(
             self.speeds,
-            self._image_copies,
+            self._otextures,
             self.layers,
         ):
             rolls = -round(speed * self._vertical_offset), -round(speed * self._horizontal_offset)
-            axis = 0, 1
-            layer.texture = np.roll(image, rolls, axis)
+            layer.texture = np.roll(texture, rolls, axis=(0, 1))
+
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        if not self.is_transparent:
+            if self.background_char is not None:
+                canvas_view[:] = self.background_char
+
+            if self.background_color_pair is not None:
+                colors_view[:] = self.background_color_pair
+
+        for layer in self.layers:
+            layer.render(canvas_view, colors_view, source)
+
+        self.render_children(source, canvas_view, colors_view)
