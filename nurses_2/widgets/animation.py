@@ -21,18 +21,17 @@ class Animation(Widget):
     path : Path
         Path to directory of images for frames in the animation (loaded
         in lexographical order of filenames).
-    alpha : float, default: 1.0
-        Transparency of the animation.
-    interpolation : Interpolation, default: Interpolation.Linear
-        Interpolation used when resizing the animation.
-    frame_duration : float | int | Sequence[float| int], default: 1/12
-        Time between updates of frames of the animation in seconds.
-        Raises `ValueError` if a sequence is provided with length not
-        equal to the number of frames.
+    frame_durations : float | int | Sequence[float| int], default: 1/12
+        Time each frame is displayed. If a sequence is provided, it's length
+        should be equal to number of frames.
     loop : bool, default: True
         If true, restart animation after last frame.
     reverse : bool, default: False
         If true, play animation in reverse.
+    alpha : float, default: 1.0
+        Transparency of the animation.
+    interpolation : Interpolation, default: Interpolation.Linear
+        Interpolation used when resizing the animation.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -72,21 +71,14 @@ class Animation(Widget):
 
     Attributes
     ----------
-    path : Path
-        Path to directory of images for frames in the animation (loaded
-        in lexographical order of filenames).
-    alpha : float
-        Transparency of the animation.
-    interpolation : Interpolation
-        Interpolation used when resizing the animation.
-    frame_duration : Sequence[float| int]
-        Time between updates of frames of the animation in seconds.
     loop : bool
         If true, animation is restarted after last frame.
     reverse : bool
         If true, animation is played in reverse.
-    current_frame : Image
-        Current frame of the animation.
+    alpha : float
+        Transparency of the animation.
+    interpolation : Interpolation
+        Interpolation used when resizing the animation.
     size : Size
         Size of widget.
     height : int
@@ -203,27 +195,26 @@ class Animation(Widget):
         self,
         *,
         path: Path,
-        alpha: float=1.0,
-        interpolation: Interpolation=Interpolation.LINEAR,
         frame_durations: float | Sequence[float]=1/12,
         loop: bool=True,
         reverse: bool=False,
+        alpha: float=1.0,
+        interpolation: Interpolation=Interpolation.LINEAR,
         **kwargs
     ):
-        super().__init__(**kwargs)
-
         paths = sorted(path.iterdir(), key=lambda file: file.name)
-
-        self.frames: list[Image] = [Image(size=self.size, path=path) for path in paths]
+        self.frames = [Image(path=path, interpolation=interpolation) for path in paths]
         if not self.frames:
             raise ValueError(f"{path} empty")
 
         if isinstance(frame_durations, (int, float)):
-            self.frame_durations = [frame_durations] * len(paths)
+            self.frame_durations = [frame_durations] * len(self.frames)
         else:
             self.frame_durations = frame_durations
             if len(frame_durations) != len(paths):
-                raise ValueError("")
+                raise ValueError("number of frames doesn't match number of frame durations")
+
+        super().__init__(**kwargs)
 
         self.loop = loop
         self.reverse = reverse
@@ -235,14 +226,7 @@ class Animation(Widget):
 
     def on_size(self):
         for frame in self.frames:
-            frame.size = self.size
-
-    @property
-    def current_frame(self) -> Image:
-        """
-        Current frame of animation.
-        """
-        return self.frames[self._i]
+            frame.size = self._size
 
     @property
     def alpha(self) -> float:
@@ -309,5 +293,5 @@ class Animation(Widget):
         self._i = 0
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        self.current_frame.render(canvas_view, colors_view, source)
+        self.frames[self._i].render(canvas_view, colors_view, source)
         super().render(canvas_view, colors_view, source)
