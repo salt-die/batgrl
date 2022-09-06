@@ -37,12 +37,10 @@ def tetromino_generator(tetrominos):
     """
     Yield each tetromino from a sequence of tetrominos in random order and repeat.
     """
+    bag = list(tetrominos)
     while True:
-        bag = list(tetrominos)
         shuffle(bag)
-
-        while bag:
-            yield bag.pop()
+        yield from bag
 
 def setup_background(widget):
     t = widget.top
