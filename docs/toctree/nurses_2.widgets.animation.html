@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.animation &#8212; Python 0.11.4 documentation</title>
+    <title>nurses_2.widgets.animation &#8212; Python 0.11.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.4 documentation</p>
+    <p class="title logo__title">Python 0.11.5 documentation</p>
   
 </a>
     
@@ -523,14 +523,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Animation</span></code></a>(*, path[, alpha, interpolation, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Animation</span></code></a>(*, path[, frame_durations, loop, ...])</p></td>
 <td><p>An animation widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.animation.Animation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.animation.</span></span><span class="sig-name descname"><span class="pre">Animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_durations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.08333333333333333</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.animation.Animation" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.animation.</span></span><span class="sig-name descname"><span class="pre">Animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_durations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.08333333333333333</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.animation.Animation" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
 <p>An animation widget.</p>
 <dl class="field-list simple">
@@ -539,17 +539,16 @@
 <dt><strong>path</strong><span class="classifier">Path</span></dt><dd><p>Path to directory of images for frames in the animation (loaded
 in lexographical order of filenames).</p>
 </dd>
-<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of the animation.</p>
-</dd>
-<dt><strong>interpolation</strong><span class="classifier">Interpolation, default: Interpolation.Linear</span></dt><dd><p>Interpolation used when resizing the animation.</p>
-</dd>
-<dt><strong>frame_duration</strong><span class="classifier">float | int | Sequence[float| int], default: 1/12</span></dt><dd><p>Time between updates of frames of the animation in seconds.
-Raises <cite>ValueError</cite> if a sequence is provided with length not
-equal to the number of frames.</p>
+<dt><strong>frame_durations</strong><span class="classifier">float | int | Sequence[float| int], default: 1/12</span></dt><dd><p>Time each frame is displayed. If a sequence is provided, it’s length
+should be equal to number of frames.</p>
 </dd>
 <dt><strong>loop</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, restart animation after last frame.</p>
 </dd>
 <dt><strong>reverse</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, play animation in reverse.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of the animation.</p>
+</dd>
+<dt><strong>interpolation</strong><span class="classifier">Interpolation, default: Interpolation.Linear</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
 <dt><strong>size</strong><span class="classifier">Size, default: Size(10, 10)</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -591,20 +590,13 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>path</strong><span class="classifier">Path</span></dt><dd><p>Path to directory of images for frames in the animation (loaded
-in lexographical order of filenames).</p>
-</dd>
-<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Transparency of the animation.</p>
-</dd>
-<dt><strong>interpolation</strong><span class="classifier">Interpolation</span></dt><dd><p>Interpolation used when resizing the animation.</p>
-</dd>
-<dt><strong>frame_duration</strong><span class="classifier">Sequence[float| int]</span></dt><dd><p>Time between updates of frames of the animation in seconds.</p>
-</dd>
 <dt><strong>loop</strong><span class="classifier">bool</span></dt><dd><p>If true, animation is restarted after last frame.</p>
 </dd>
 <dt><strong>reverse</strong><span class="classifier">bool</span></dt><dd><p>If true, animation is played in reverse.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.animation.Animation.current_frame" title="nurses_2.widgets.animation.Animation.current_frame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_frame</span></code></a><span class="classifier">Image</span></dt><dd><p>Current frame of animation.</p>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Transparency of the animation.</p>
+</dd>
+<dt><strong>interpolation</strong><span class="classifier">Interpolation</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.animation.Animation.size" title="nurses_2.widgets.animation.Animation.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -813,12 +805,6 @@ in lexographical order of filenames).</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.animation.Animation.columns">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.animation.Animation.columns" title="Permalink to this definition">#</a></dt>
 <dd><p>Width of widget.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.animation.Animation.current_frame">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_frame</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.image.html#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><span class="pre">nurses_2.widgets.image.Image</span></a></em><a class="headerlink" href="#nurses_2.widgets.animation.Animation.current_frame" title="Permalink to this definition">#</a></dt>
-<dd><p>Current frame of animation.</p>
 </dd></dl>
 
 <dl class="py method">

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.parallax &#8212; Python 0.11.4 documentation</title>
+    <title>nurses_2.widgets.parallax &#8212; Python 0.11.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.4 documentation</p>
+    <p class="title logo__title">Python 0.11.5 documentation</p>
   
 </a>
     
@@ -523,28 +523,26 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.parallax.Parallax" title="nurses_2.widgets.parallax.Parallax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Parallax</span></code></a>(*, layers[, speeds])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.parallax.Parallax" title="nurses_2.widgets.parallax.Parallax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Parallax</span></code></a>(*, path[, speeds, alpha, interpolation])</p></td>
 <td><p>A parallax widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.parallax.Parallax">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.parallax.</span></span><span class="sig-name descname"><span class="pre">Parallax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speeds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.parallax.Parallax" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.parallax.</span></span><span class="sig-name descname"><span class="pre">Parallax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speeds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.parallax.Parallax" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
 <p>A parallax widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>layers</strong><span class="classifier">Sequence[GraphicWidget]</span></dt><dd><p>Individual layers of the parallax in background-to-foreground order.</p>
+<dt><strong>path</strong><span class="classifier">Path</span></dt><dd><p>Path to directory of images for layers of the parallax (loaded
+in lexographical order of filenames) layered from background to foreground.</p>
 </dd>
 <dt><strong>speeds</strong><span class="classifier">Sequence[float] | None, default: None</span></dt><dd><p>The scrolling speed of each layer. Default speeds are <cite>1/(N - i)</cite>
 where <cite>N</cite> is the number of layers and <cite>i</cite> is the index of a layer.</p>
 </dd>
-<dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
-</dd>
-<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-value. (0 &lt;= alpha &lt;= 1.0)</p>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of the parallax.</p>
 </dd>
 <dt><strong>interpolation</strong><span class="classifier">Interpolation, default: Interpolation.LINEAR</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
@@ -595,11 +593,7 @@ be adjusted automatically.</p>
 </dd>
 <dt><strong>horizontal_offset</strong><span class="classifier">float</span></dt><dd><p>Horizontal offset of first layer of the parallax</p>
 </dd>
-<dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
-</dd>
-<dt><strong>default_color</strong><span class="classifier">AColor</span></dt><dd><p>Default texture color.</p>
-</dd>
-<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Transparency of widget if <code class="xref py py-attr docutils literal notranslate"><span class="pre">is_transparent</span></code> is true.</p>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Transparency of the parallax.</p>
 </dd>
 <dt><strong>interpolation</strong><span class="classifier">Interpolation</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
@@ -681,58 +675,55 @@ be adjusted automatically.</p>
 <col style="width: 75%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>to_png:</strong></p></td>
-<td><p>Write <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> to provided path as a <cite>png</cite> image.</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>on_size:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>update_geometry:</strong></p></td>
+<tr class="row-even"><td><p><strong>update_geometry:</strong></p></td>
 <td><p>Called when parent is resized. Applies size and pos hints.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>to_local:</strong></p></td>
+<tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert point in absolute coordinates to local coordinates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>collides_point:</strong></p></td>
+<tr class="row-even"><td><p><strong>collides_point:</strong></p></td>
 <td><p>True if point is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>collides_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>collides_widget:</strong></p></td>
 <td><p>True if other is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>add_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>add_widget:</strong></p></td>
 <td><p>Add a child widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>add_widgets:</strong></p></td>
+<tr class="row-odd"><td><p><strong>add_widgets:</strong></p></td>
 <td><p>Add multiple child widgets.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>remove_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>remove_widget:</strong></p></td>
 <td><p>Remove a child widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>pull_to_front:</strong></p></td>
+<tr class="row-odd"><td><p><strong>pull_to_front:</strong></p></td>
 <td><p>Move to end of widget stack so widget is drawn last.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>walk_from_root:</strong></p></td>
+<tr class="row-even"><td><p><strong>walk_from_root:</strong></p></td>
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>walk:</strong></p></td>
+<tr class="row-odd"><td><p><strong>walk:</strong></p></td>
 <td><p>Yield all descendents.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
+<tr class="row-even"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
+<tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_keypress:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_keypress:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_paste:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>tween:</strong></p></td>
+<tr class="row-odd"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
 </tr>
 </tbody>
@@ -839,6 +830,11 @@ be adjusted automatically.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.parallax.Parallax.horizontal_offset">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizontal_offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.parallax.Parallax.horizontal_offset" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.parallax.Parallax.interpolation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interpolation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></em><a class="headerlink" href="#nurses_2.widgets.parallax.Parallax.interpolation" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -986,12 +982,6 @@ be adjusted automatically.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.parallax.Parallax.to_local">
 <span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.parallax.Parallax.to_local" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert point in absolute coordinates to local coordinates.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.parallax.Parallax.to_png">
-<span class="sig-name descname"><span class="pre">to_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.parallax.Parallax.to_png" title="Permalink to this definition">#</a></dt>
-<dd><p>Write <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> to provided path as a <cite>png</cite> image.</p>
 </dd></dl>
 
 <dl class="py property">
