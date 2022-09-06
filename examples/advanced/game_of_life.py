@@ -32,7 +32,8 @@ class Life(GraphicWidget):
     def _reset(self):
         h, w = self._size
         self.universe = np.random.randint(0, 2, (h * 2, w))
-        self.RGB = [np.random.randint(0, 256, (h * 2, w)) for _ in range(3)]
+        self.texture[..., :3] = np.random.randint(0, 256, (h * 2, w, 3))
+        self.texture[~self.universe] = self.default_color
 
     async def _update(self):
         while True:
@@ -41,15 +42,14 @@ class Life(GraphicWidget):
             new_borns = ~self.universe & (neighbors == 3)
             self.universe = still_alive + new_borns
 
-            old_colors = [np.where(still_alive, color, 0) for color in self.RGB]
-            new_colors = [
-                np.where(new_borns, convolve(color, KERNEL, mode="constant") / 3, 0)
-                for color in self.RGB
-            ]
+            old_colors = (np.where(still_alive, self.texture[..., i], 0) for i in range(3))
+            new_colors = (
+                np.where(new_borns, convolve(self.texture[..., i], KERNEL, mode="constant"), 0) / 3
+                for i in range(3)
+            )
 
-            self.RGB = [sum(color) for color in zip(old_colors, new_colors)]
-
-            self.texture[..., :3] = np.dstack(self.RGB)
+            for i, (old_color, new_color) in enumerate(zip(old_colors, new_colors)):
+                self.texture[..., i] = old_color + new_color
 
             await asyncio.sleep(UPDATE_SPEED)
 
@@ -68,8 +68,7 @@ class Life(GraphicWidget):
             h *= 2
 
             self.universe[h - 1: h + 3, w - 1: w + 2] = 1
-            for color in self.RGB:
-                color[h - 1: h + 3, w - 1: w + 2] = np.random.randint(0, 256)
+            self.texture[h - 1: h + 3, w - 1: w + 2, :3] = np.random.randint(0, 256, 3)
 
 
 run_widget_as_app(Life, size_hint=(1.0, 1.0), default_color=ABLACK)
