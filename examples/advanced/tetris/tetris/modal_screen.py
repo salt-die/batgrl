@@ -102,8 +102,6 @@ class ModalScreen(TextWidget):
         self.is_enabled = True
 
     async def countdown(self):
-        self.canvas[:] = " "
-
         for number in (THREE, TWO, ONE):
             self.canvas[:] = " "
 
