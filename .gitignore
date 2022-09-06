@@ -10,4 +10,5 @@ docsrc/*
 !docsrc/regen_docs.py
 !docsrc/requirements.txt
 
+examples/_old/
 examples/_old/*
