@@ -26,30 +26,26 @@ class ShowIOEvents(TextWidget):
 
         match event:
             case KeyPressEvent():
-                text = dedent(f"""
+                text = """
                 Got keypress event:
-                    key: {event.key}
-                    mods: {event.mods}
-                """)
+                    key: {}
+                    mods: {}
+                """
             case MouseEvent():
-                text = dedent(f"""
+                text = """
                 Got mouse event:
-                    position: {event.position}
-                    type: {event.event_type}
-                    button: {event.button}
-                    nclicks: {event.nclicks}
-                    mods: {event.mods}
-                """)
+                    position: {}
+                    type: {}
+                    button: {}
+                    nclicks: {}
+                    mods: {}
+                """
             case PasteEvent():
-                text = "Got paste event:\n" + event.paste
+                text = "\nGot paste event:\n{}"
 
-        for i, line in enumerate(text.splitlines()):
-            self.add_text(self._just(line), row=i)
+        lines = dedent(text.format(*event)).splitlines()
+        for i, line in enumerate(lines):
+            self.add_text(line.ljust(self.width)[:self.width], row=i)
 
-    def _just(self, text):
-        """
-        Adjust text to be exactly width of widget.
-        """
-        return text.ljust(self.width)[:self.width]
 
 run_widget_as_app(ShowIOEvents, size_hint=(1.0, 1.0))
