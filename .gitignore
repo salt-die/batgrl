@@ -9,3 +9,5 @@ docsrc/*
 !docsrc/index.rst
 !docsrc/regen_docs.py
 !docsrc/requirements.txt
+
+examples/_old/*
