@@ -194,19 +194,28 @@ class Parallax(Widget):
         interpolation: Interpolation=Interpolation.LINEAR,
         **kwargs
     ):
+        super().__init__(**kwargs)
 
         paths = sorted(path.iterdir(), key=lambda file: file.name)
         self.layers = [
-            Image(path=path, interpolation=interpolation, alpha=alpha)
+            Image(
+                path=path,
+                interpolation=interpolation,
+                alpha=alpha,
+                size=self.size,
+            )
             for path in paths
         ]
         if not self.layers:
             raise ValueError(f"{path} empty")
 
-        super().__init__(**kwargs)
-
         nlayers = len(self.layers)
-        self.speeds = speeds or [1 / (nlayers - i) for i in range(nlayers)]
+        if speeds is None:
+            self.speeds = [1 / (nlayers - i) for i in range(nlayers)]
+        else:
+            self.speeds = speeds
+            if len(self.speeds) != nlayers:
+                raise ValueError("number of layers doesn't match number of layer speeds")
 
         self._vertical_offset = self._horizontal_offset = 0.0
 

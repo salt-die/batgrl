@@ -202,9 +202,16 @@ class Animation(Widget):
         interpolation: Interpolation=Interpolation.LINEAR,
         **kwargs
     ):
+        super().__init__(**kwargs)
+
         paths = sorted(path.iterdir(), key=lambda file: file.name)
         self.frames = [
-            Image(path=path, interpolation=interpolation, alpha=alpha)
+            Image(
+                path=path,
+                interpolation=interpolation,
+                alpha=alpha,
+                size=self.size,
+            )
             for path in paths
         ]
         if not self.frames:
@@ -216,8 +223,6 @@ class Animation(Widget):
             self.frame_durations = frame_durations
             if len(frame_durations) != len(paths):
                 raise ValueError("number of frames doesn't match number of frame durations")
-
-        super().__init__(**kwargs)
 
         self.loop = loop
         self.reverse = reverse
