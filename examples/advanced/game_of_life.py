@@ -6,7 +6,7 @@ Press `r` to reset. Click to create new live cells with random colors.
 import asyncio
 
 import numpy as np
-from scipy.ndimage import convolve
+from cv2 import filter2D, BORDER_CONSTANT
 
 from nurses_2.app import run_widget_as_app
 from nurses_2.colors import ABLACK
@@ -18,7 +18,8 @@ KERNEL = np.array([
     [1, 0, 1],
     [1, 1, 1],
 ])
-UPDATE_SPEED = .012
+UPDATE_SPEED = .1
+
 
 class Life(GraphicWidget):
     def __init__(self, **kwargs):
@@ -31,25 +32,24 @@ class Life(GraphicWidget):
 
     def _reset(self):
         h, w = self._size
-        self.universe = np.random.randint(0, 2, (h * 2, w))
+
+        self.universe = np.random.randint(0, 2, (h * 2, w), dtype=bool)
+
         self.texture[..., :3] = np.random.randint(0, 256, (h * 2, w, 3))
-        self.texture[~self.universe] = self.default_color
+        self.texture[..., 3] = 255
+        self.texture[~self.universe, :3] = 0
 
     async def _update(self):
         while True:
-            neighbors = convolve(self.universe, KERNEL, mode="constant")
+            neighbors = filter2D(self.universe.astype(np.uint8), -1, KERNEL, borderType=BORDER_CONSTANT)
             still_alive = self.universe & (neighbors > 1) & (neighbors < 4)
             new_borns = ~self.universe & (neighbors == 3)
-            self.universe = still_alive + new_borns
+            self.universe = new_borns | still_alive
 
-            old_colors = (np.where(still_alive, self.texture[..., i], 0) for i in range(3))
-            new_colors = (
-                np.where(new_borns, convolve(self.texture[..., i], KERNEL, mode="constant"), 0) / 3
-                for i in range(3)
-            )
-
-            for i, (old_color, new_color) in enumerate(zip(old_colors, new_colors)):
-                self.texture[..., i] = old_color + new_color
+            rgb = self.texture[..., :3]
+            new_colors = filter2D(rgb, -1, KERNEL / 3)
+            rgb[~still_alive] = 0
+            rgb[new_borns] = new_colors[new_borns]
 
             await asyncio.sleep(UPDATE_SPEED)
 
@@ -71,4 +71,4 @@ class Life(GraphicWidget):
             self.texture[h - 1: h + 3, w - 1: w + 2, :3] = np.random.randint(0, 256, 3)
 
 
-run_widget_as_app(Life, size_hint=(1.0, 1.0), default_color=ABLACK)
+run_widget_as_app(Life, size_hint=(1.0, 1.0))
