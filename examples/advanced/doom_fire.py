@@ -5,12 +5,13 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.clamp import clamp
 from nurses_2.app import App
-from nurses_2.widgets.button import Button
+from nurses_2.clamp import clamp
+from nurses_2.colors import Color, ColorPair
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.text_widget import TextWidget, Anchor
 from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.slider import Slider
 
 FIRE_PALETTE = np.array([
     [  0,   0,   0,   0],
@@ -54,6 +55,9 @@ FIRE_PALETTE = np.array([
 ])
 
 MAX_STRENGTH = len(FIRE_PALETTE) - 1
+SLIDER_DEFAULT = ColorPair(215, 103, 15, 0, 0, 0)
+SLIDER_FILL = Color(159, 47, 7)
+SLIDER_HANDLE = Color(239, 239, 199)
 
 
 class DoomFire(GraphicWidget):
@@ -116,39 +120,32 @@ class DoomFireApp(App):
     async def on_start(self):
         doomfire = DoomFire(size_hint=(1.0, 1.0))
 
-        button_container = Widget(size=(1, 28), pos_hint=(1.0, .5), anchor=Anchor.BOTTOM_CENTER)
+        strength_label = TextWidget(
+            size=(1, 22),
+            pos_hint=(None, .5),
+            anchor=Anchor.TOP_CENTER,
+            default_color_pair=SLIDER_DEFAULT,
+        )
+        strength_label.add_text(f"Current Strength: {doomfire.fire_strength:2d}", column=1)
 
-        strength_label = TextWidget(pos=(0, 3), size=(1, 22))
-        strength_label.add_text(f"Current Strength:", column=1)
-
-        def update_label():
+        def slider_update(v):
+            doomfire.fire_strength = int(v)
             strength_label.add_text(f"{doomfire.fire_strength:2d}", column=19)
 
-        update_label()
-
-        def decrease_callback():
-            doomfire.fire_strength -= 1
-            update_label()
-
-        decrease_button = Button(
-            size=(1, 3),
-            label="-",
-            callback=decrease_callback,
+        slider = Slider(
+            min=0,
+            max=37,
+            size=(1, 38),
+            pos=(1, 0),
+            callback=slider_update,
+            default_color_pair=SLIDER_DEFAULT,
+            fill_color=SLIDER_FILL,
+            handle_color=SLIDER_HANDLE,
         )
 
-        def increase_callback():
-            doomfire.fire_strength += 1
-            update_label()
-
-        increase_button = Button(
-            size=(1, 3),
-            pos=(0, 25),
-            label="+",
-            callback=increase_callback,
-        )
-
-        button_container.add_widgets(increase_button, strength_label, decrease_button)
-        self.add_widgets(doomfire, button_container)
+        slider_container = Widget(size=(2, 38), pos_hint=(0, .5), anchor=Anchor.TOP_CENTER)
+        slider_container.add_widgets(strength_label, slider)
+        self.add_widgets(doomfire, slider_container)
 
 
 DoomFireApp(title="Doom Fire Example").run()
