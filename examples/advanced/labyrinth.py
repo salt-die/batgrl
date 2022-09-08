@@ -29,7 +29,7 @@ def _path_yx(a, b):
 
 class Labyrinth(GraphicWidget):
     def __init__(self, **kwargs):
-        super().__init__(default_color=(255, 0, 0, 255), **kwargs)
+        super().__init__(**kwargs)
 
         self._player_task = asyncio.create_task(self._update_player())
         self._new_level_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
