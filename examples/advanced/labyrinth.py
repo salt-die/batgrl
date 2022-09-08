@@ -33,6 +33,7 @@ class Labyrinth(GraphicWidget):
 
         self._player_task = asyncio.create_task(self._update_player())
         self._new_level_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._reconfigure_task = asyncio.create_task(self._step_reconfigure())
         self.on_size()
 
     def on_size(self):
@@ -41,7 +42,7 @@ class Labyrinth(GraphicWidget):
 
         # Creating new level is intensive. To prevent lock-up when resizing terminal,
         # defer creation for a small amount of time.
-        self._suspend_player_task = True
+        self._suspend_tasks = True
         self._new_level_task.cancel()
         self._new_level_task = asyncio.create_task(self._new_level_soon())
 
@@ -55,7 +56,7 @@ class Labyrinth(GraphicWidget):
 
     def new_level(self):
         self.player = 1, 0
-        self._suspend_player_task = False
+        self._suspend_tasks = False
 
         h, w = self._size
         h *= 2
@@ -83,13 +84,21 @@ class Labyrinth(GraphicWidget):
 
     async def _update_player(self):
         while True:
-            if not self._suspend_player_task:
+            if not self._suspend_tasks:
                 self.texture[self.player] = next(PLAYER_GRADIENT)
-
             await asyncio.sleep(.03)
+
+    async def _step_reconfigure(self):
+        while True:
+            if not self._suspend_tasks:
+                self._reconfigure_maze()
+            await asyncio.sleep(1)
 
     def _reconfigure_maze(self):
         u = choice(self.nodes)
+        uy, ux = u
+        if self.player == (2 * uy + 1, 2 * ux + 1):
+            return
 
         if neighbors := list(self.grid_graph[u].keys() - self.maze[u].keys()):
             v = choice(neighbors)
@@ -124,11 +133,7 @@ class Labyrinth(GraphicWidget):
         elif px >= 0 and (self.texture[py, px] == 0).all():
             self.texture[y, x] = 0
             self.texture[py, px] = next(PLAYER_GRADIENT)
-
             self.player = py, px
-
-            if py % 2 == 1 and px % 2 == 1:
-                self._reconfigure_maze()
 
         return True
 
