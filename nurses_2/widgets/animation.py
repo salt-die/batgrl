@@ -373,8 +373,8 @@ class Animation(Widget):
         kls = cls(**kwargs)
         kls.frames = list(images)
         for image in kls.frames:
+            image.interpolation = kls.interpolation
             image.size = kls.size
             image.alpha = kls.alpha
-            image.interpolation = kls.interpolation
         kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
         return kls

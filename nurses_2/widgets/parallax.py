@@ -356,8 +356,8 @@ class Parallax(Widget):
         kls = cls(**kwargs)
         kls.layers = list(images)
         for image in kls.layers:
+            image.interpolation = kls.interpolation
             image.size = kls.size
             image.alpha = kls.alpha
-            image.interpolation = kls.interpolation
         kls.speeds = _check_layer_speeds(kls.layers, speeds)
         return kls
