@@ -38,10 +38,10 @@ class Labyrinth(GraphicWidget):
     def on_size(self):
         h, w = self._size
         self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
-        self.player = 1, 0
 
         # Creating new level is intensive. To prevent lock-up when resizing terminal,
         # defer creation for a small amount of time.
+        self._suspend_player_task = True
         self._new_level_task.cancel()
         self._new_level_task = asyncio.create_task(self._new_level_soon())
 
@@ -54,6 +54,9 @@ class Labyrinth(GraphicWidget):
             self.new_level()
 
     def new_level(self):
+        self.player = 1, 0
+        self._suspend_player_task = False
+
         h, w = self._size
         h *= 2
 
@@ -80,7 +83,9 @@ class Labyrinth(GraphicWidget):
 
     async def _update_player(self):
         while True:
-            self.texture[self.player] = next(PLAYER_GRADIENT)
+            if not self._suspend_player_task:
+                self.texture[self.player] = next(PLAYER_GRADIENT)
+
             await asyncio.sleep(.03)
 
     def _reconfigure_maze(self):
