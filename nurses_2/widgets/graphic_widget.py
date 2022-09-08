@@ -244,7 +244,6 @@ class GraphicWidget(Widget):
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
         self._interpolation = Interpolation(interpolation)
-        self.on_size()
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
