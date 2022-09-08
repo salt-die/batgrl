@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.image &#8212; Python 0.11.5 documentation</title>
+    <title>nurses_2.widgets.image &#8212; Python 0.11.6 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.5 documentation</p>
+    <p class="title logo__title">Python 0.11.6 documentation</p>
   
 </a>
     
@@ -523,20 +523,20 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Image</span></code></a>(*, path, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Image</span></code></a>(*[, path])</p></td>
 <td><p>An Image widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.image.Image">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.image.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.image.Image" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.image.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.image.Image" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
 <p>An Image widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>path</strong><span class="classifier">pathlib.Path</span></dt><dd><p>Path to image.</p>
+<dt><strong>path</strong><span class="classifier">pathlib.Path | None, default: None</span></dt><dd><p>Path to image. If <cite>None</cite>, image will be <code class="xref py py-attr docutils literal notranslate"><span class="pre">default_color</span></code>.</p>
 </dd>
 <dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
 </dd>
@@ -585,7 +585,8 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>path</strong><span class="classifier">pathlib.Path</span></dt><dd><p>Path to image. Setting the path immediately reloads the image.</p>
+<dt><strong>path</strong><span class="classifier">pathlib.Path | None</span></dt><dd><p>Path to image if image was loaded from a path. Setting the path
+immediately reloads the image.</p>
 </dd>
 <dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
 </dd>
@@ -673,6 +674,12 @@ widget is not transparent.</p>
 <col style="width: 75%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><strong>from_texture:</strong></p></td>
+<td><p>Create an <a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a> from a uint8 rgba ndarray.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>from_sprite:</strong></p></td>
+<td><p>Create an <a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a> from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code>.</p></td>
+</tr>
 <tr class="row-odd"><td><p><strong>to_png:</strong></p></td>
 <td><p>Write <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> to provided path as a <cite>png</cite> image.</p></td>
 </tr>
@@ -816,6 +823,18 @@ widget is not transparent.</p>
 <dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.image.Image.from_sprite">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sprite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sprite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><span class="pre">nurses_2.widgets.image.Image</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.image.Image.from_sprite" title="Permalink to this definition">#</a></dt>
+<dd><p>Create an <a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a> from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.image.Image.from_texture">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><span class="pre">nurses_2.widgets.image.Image</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.image.Image.from_texture" title="Permalink to this definition">#</a></dt>
+<dd><p>Create an <a class="reference internal" href="#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a> from a uint8 rgba ndarray.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.image.Image.height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.image.Image.height" title="Permalink to this definition">#</a></dt>
@@ -827,6 +846,11 @@ widget is not transparent.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.image.Image.height_hint" title="Permalink to this definition">#</a></dt>
 <dd><p>Widget’s height as proportion of its parent’s height.</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.image.Image.interpolation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interpolation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></em><a class="headerlink" href="#nurses_2.widgets.image.Image.interpolation" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.image.Image.left">
@@ -883,7 +907,7 @@ widget is not transparent.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.image.Image.path">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#nurses_2.widgets.image.Image.path" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.image.Image.path" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">

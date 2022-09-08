@@ -1,16 +1,31 @@
 """
 A parallax widget.
 """
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 import numpy as np
 
+from ..clamp import clamp
+from .graphic_widget_data_structures import Interpolation, Sprite
 from .image import Image
-from .widget import Widget
-from .graphic_widget_data_structures import Interpolation
+from .widget import Widget, emitter
 
 __all__ = "Interpolation", "Parallax"
+
+def _check_layer_speeds(layers, speeds):
+    """
+    Raise `ValueError` if `layers` and `speeds` are incompatible,
+    else return a sequence of layer speeds.
+    """
+    nlayers = len(layers)
+    if speeds is None:
+        return [1 / (nlayers - i) for i in range(nlayers)]
+
+    if len(speeds) != nlayers:
+        raise ValueError("number of layers doesn't match number of layer speeds")
+
+    return speeds
 
 
 class Parallax(Widget):
@@ -19,7 +34,7 @@ class Parallax(Widget):
 
     Parameters
     ----------
-    path : Path
+    path : Path | None, default: None
         Path to directory of images for layers of the parallax (loaded
         in lexographical order of filenames) layered from background to foreground.
     speeds : Sequence[float] | None, default: None
@@ -150,6 +165,12 @@ class Parallax(Widget):
 
     Methods
     -------
+    from_textures:
+        Create a :class:`Parallax` from an iterable of uint8 rgba ndarray.
+    from_sprites:
+        Create a :class:`Parallax` from an iterable of :class:`Sprite`.
+    from_images:
+        Create a :class:`Parallax` from an iterable of :class:`Image`.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -188,7 +209,7 @@ class Parallax(Widget):
     def __init__(
         self,
         *,
-        path: Path,
+        path: Path | None=None,
         speeds: Sequence[float] | None=None,
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,
@@ -196,49 +217,41 @@ class Parallax(Widget):
     ):
         super().__init__(**kwargs)
 
-        paths = sorted(path.iterdir(), key=lambda file: file.name)
-        self.layers = [
-            Image(
-                path=path,
-                interpolation=interpolation,
-                alpha=alpha,
-                size=self.size,
-            )
-            for path in paths
-        ]
-        if not self.layers:
-            raise ValueError(f"{path} empty")
-
-        nlayers = len(self.layers)
-        if speeds is None:
-            self.speeds = [1 / (nlayers - i) for i in range(nlayers)]
+        if path is None:
+            self.layers = []
         else:
-            self.speeds = speeds
-            if len(self.speeds) != nlayers:
-                raise ValueError("number of layers doesn't match number of layer speeds")
+            paths = sorted(path.iterdir(), key=lambda file: file.name)
+            self.layers = [Image(path=path, size=self.size) for path in paths]
+
+        self.speeds = _check_layer_speeds(self.layers, speeds)
+        self.alpha = alpha
+        self.interpolation = interpolation
 
         self._vertical_offset = self._horizontal_offset = 0.0
 
     def on_size(self):
         for layer in self.layers:
-            layer.size = self.size
+            layer.size = self._size
         self._otextures = [layer.texture for layer in self.layers]
 
     @property
     def alpha(self) -> float:
-        return self.layers[0].alpha
+        return self._alpha
 
     @alpha.setter
+    @emitter
     def alpha(self, alpha: float):
+        self._alpha = clamp(float(alpha), 0.0, 1.0)
         for layer in self.layers:
             layer.alpha = alpha
 
     @property
     def interpolation(self) -> Interpolation:
-        return self.layers[0].interpolation
+        return self._interpolation
 
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
+        self._interpolation = Interpolation(interpolation)
         for layer in self.layers:
             layer.interpolation = interpolation
 
@@ -290,3 +303,61 @@ class Parallax(Widget):
             layer.render(canvas_view, colors_view, source)
 
         self.render_children(source, canvas_view, colors_view)
+
+    @classmethod
+    def from_textures(
+        cls,
+        textures: Iterable[np.ndarray],
+        *,
+        speeds: Sequence[float] | None=None,
+        **kwargs
+    ) -> "Parallax":
+        """
+        Create an :class:`Parallax` from an iterable of uint8 rgba ndarray.
+        """
+        kls = cls(**kwargs)
+        kls.layers = [
+            Image.from_texture(texture, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
+            for texture in textures
+        ]
+        kls.speeds = _check_layer_speeds(kls.layers, speeds)
+        return kls
+
+    @classmethod
+    def from_sprites(
+        cls,
+        sprites: Iterable[Sprite],
+        *,
+        speeds: Sequence[float] | None=None,
+        **kwargs
+    ) -> "Parallax":
+        """
+        Create an :class:`Parallax` from an iterable of :class:`Sprite`.
+        """
+        kls = cls(**kwargs)
+        kls.layers = [
+            Image.from_sprite(sprite, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
+            for sprite in sprites
+        ]
+        kls.speeds = _check_layer_speeds(kls.layers, speeds)
+        return kls
+
+    @classmethod
+    def from_images(
+        cls,
+        images: Iterable[Image],
+        *,
+        speeds: Sequence[float] | None=None,
+        **kwargs
+    ) -> "Parallax":
+        """
+        Create an :class:`Parallax` from an iterable of :class:`Image`.
+        """
+        kls = cls(**kwargs)
+        kls.layers = list(images)
+        for image in kls.layers:
+            image.size = kls.size
+            image.alpha = kls.alpha
+            image.interpolation = kls.interpolation
+        kls.speeds = _check_layer_speeds(kls.layers, speeds)
+        return kls

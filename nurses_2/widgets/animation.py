@@ -2,14 +2,30 @@
 An animation widget.
 """
 import asyncio
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 
-from .graphic_widget_data_structures import Interpolation
+import numpy as np
+
+from ..clamp import clamp
+from .graphic_widget_data_structures import Interpolation, Sprite
 from .image import Image
-from .widget import Widget
+from .widget import Widget, emitter
 
 __all__ = "Animation", "Interpolaton"
+
+def _check_frame_durations(frames, frame_durations):
+    """
+    Raise `ValueError` if `frames` and `frame_durations` are incompatible,
+    else return a sequence of frame durations.
+    """
+    if isinstance(frame_durations, (int, float)):
+        return [frame_durations] * len(frames)
+
+    if len(frame_durations) != len(frames):
+        raise ValueError("number of frames doesn't match number of frame durations")
+
+    return frame_durations
 
 
 class Animation(Widget):
@@ -18,7 +34,7 @@ class Animation(Widget):
 
     Parameters
     ----------
-    path : Path
+    path : Path | None, default: None
         Path to directory of images for frames in the animation (loaded
         in lexographical order of filenames).
     frame_durations : float | int | Sequence[float| int], default: 1/12
@@ -155,7 +171,13 @@ class Animation(Widget):
     pause:
         Pause the animation
     stop:
-        Stop the animation.
+        Stop the animation and reset current frame.
+    from_textures:
+        Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
+    from_sprites:
+        Create an :class:`Animation` from an iterable of :class:`Sprite`.
+    from_images:
+        Create an :class:`Animation` from an iterable of :class:`Image`.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -194,7 +216,7 @@ class Animation(Widget):
     def __init__(
         self,
         *,
-        path: Path,
+        path: Path | None=None,
         frame_durations: float | Sequence[float]=1/12,
         loop: bool=True,
         reverse: bool=False,
@@ -204,26 +226,15 @@ class Animation(Widget):
     ):
         super().__init__(**kwargs)
 
-        paths = sorted(path.iterdir(), key=lambda file: file.name)
-        self.frames = [
-            Image(
-                path=path,
-                interpolation=interpolation,
-                alpha=alpha,
-                size=self.size,
-            )
-            for path in paths
-        ]
-        if not self.frames:
-            raise ValueError(f"{path} empty")
-
-        if isinstance(frame_durations, (int, float)):
-            self.frame_durations = [frame_durations] * len(self.frames)
+        if path is None:
+            self.frames = []
         else:
-            self.frame_durations = frame_durations
-            if len(frame_durations) != len(paths):
-                raise ValueError("number of frames doesn't match number of frame durations")
+            paths = sorted(path.iterdir(), key=lambda file: file.name)
+            self.frames = [Image(path=path, size=self.size) for path in paths]
 
+        self.frame_durations = _check_frame_durations(self.frames, frame_durations)
+        self.alpha = alpha
+        self.interpolation = interpolation
         self.loop = loop
         self.reverse = reverse
 
@@ -236,24 +247,27 @@ class Animation(Widget):
 
     @property
     def alpha(self) -> float:
-        return self.frames[0].alpha
+        return self._alpha
 
     @alpha.setter
+    @emitter
     def alpha(self, alpha: float):
+        self._alpha = clamp(float(alpha), 0.0, 1.0)
         for frame in self.frames:
             frame.alpha = alpha
 
     @property
     def interpolation(self) -> Interpolation:
-        return self.frames[0].interpolation
+        return self._interpolation
 
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
+        self._interpolation = interpolation
         for frame in self.frames:
             frame.interpolation = interpolation
 
     async def _play_animation(self):
-        while True:
+        while self.frames:
             try:
                 await asyncio.sleep(self.frame_durations[self._i])
             except asyncio.CancelledError:
@@ -289,7 +303,7 @@ class Animation(Widget):
 
     def stop(self):
         """
-        Stop animation.
+        Stop the animation and reset current frame.
         """
         self.pause()
         self._i = 0
@@ -302,7 +316,65 @@ class Animation(Widget):
             if self.background_color_pair is not None:
                 colors_view[:] = self.background_color_pair
 
-        self.frames[self._i].render(canvas_view, colors_view, source)
+        if self.frames:
+            self.frames[self._i].render(canvas_view, colors_view, source)
 
         self.render_children(source, canvas_view, colors_view)
 
+    @classmethod
+    def from_textures(
+        cls,
+        textures: Iterable[np.ndarray],
+        *,
+        frame_durations: float | int | Sequence[float| int]=1/12,
+        **kwargs
+    ) -> "Animation":
+        """
+        Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
+        """
+        kls = cls(**kwargs)
+        kls.frames = [
+            Image.from_texture(texture, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
+            for texture in textures
+        ]
+        kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
+        return kls
+
+    @classmethod
+    def from_sprites(
+        cls,
+        sprites: Iterable[Sprite],
+        *,
+        frame_durations: float | int | Sequence[float| int]=1/12,
+        **kwargs
+    ) -> "Animation":
+        """
+        Create an :class:`Animation` from an iterable of :class:`Sprite`.
+        """
+        kls = cls(**kwargs)
+        kls.frames = [
+            Image.from_sprite(sprite, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
+            for sprite in sprites
+        ]
+        kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
+        return kls
+
+    @classmethod
+    def from_images(
+        cls,
+        images: Iterable[Image],
+        *,
+        frame_durations: float | int | Sequence[float| int]=1/12,
+        **kwargs
+    ) -> "Animation":
+        """
+        Create an :class:`Animation` from an iterable of :class:`Image`.
+        """
+        kls = cls(**kwargs)
+        kls.frames = list(images)
+        for image in kls.frames:
+            image.size = kls.size
+            image.alpha = kls.alpha
+            image.interpolation = kls.interpolation
+        kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
+        return kls

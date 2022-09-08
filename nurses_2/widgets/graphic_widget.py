@@ -237,6 +237,15 @@ class GraphicWidget(Widget):
             interpolation=self.interpolation,
         )
 
+    @property
+    def interpolation(self) -> Interpolation:
+        return self._interpolation
+
+    @interpolation.setter
+    def interpolation(self, interpolation: Interpolation):
+        self._interpolation = Interpolation(interpolation)
+        self.on_size()
+
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
         Paint region given by `source` into `canvas_view` and `colors_view`.

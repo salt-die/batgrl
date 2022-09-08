@@ -4,6 +4,7 @@ An image widget.
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 from .graphic_widget import GraphicWidget, Interpolation, Sprite
 
@@ -16,8 +17,8 @@ class Image(GraphicWidget):
 
     Parameters
     ----------
-    path : pathlib.Path
-        Path to image.
+    path : pathlib.Path | None, default: None
+        Path to image. If `None`, image will be :attr:`default_color`.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -64,8 +65,9 @@ class Image(GraphicWidget):
 
     Attributes
     ----------
-    path : pathlib.Path
-        Path to image. Setting the path immediately reloads the image.
+    path : pathlib.Path | None
+        Path to image if image was loaded from a path. Setting the path
+        immediately reloads the image.
     texture : numpy.ndarray
         uint8 RGBA color array.
     default_color : AColor
@@ -145,6 +147,10 @@ class Image(GraphicWidget):
 
     Methods
     -------
+    from_texture:
+        Create an :class:`Image` from a uint8 rgba ndarray.
+    from_sprite:
+        Create an :class:`Image` from a :class:`Sprite`.
     to_png:
         Write :attr:`texture` to provided path as a `png` image.
     on_size:
@@ -182,20 +188,45 @@ class Image(GraphicWidget):
     tween:
         Sequentially update a widget property over time.
     """
-    def __init__(self, *, path: Path, **kwargs):
+    def __init__(self, *, path: Path | None=None, **kwargs):
+        self._otexture = np.zeros((2, 1, 4), dtype=np.uint8)
         super().__init__(**kwargs)
         self.path = path
 
     @property
-    def path(self):
+    def path(self) -> Path | None:
         return self._path
 
     @path.setter
-    def path(self, new_path):
+    def path(self, new_path: Path | None):
         self._path = new_path
-        self._image_texture = Sprite.from_image(new_path).texture
+        if new_path is not None:
+            self._otexture = Sprite.from_image(new_path).texture
+        else:
+            self._otexture = np.full((2, 1, 4), self.default_color, dtype=np.uint8)
+
         self.on_size()
 
     def on_size(self):
         h, w = self._size
-        self.texture = cv2.resize(self._image_texture, (w, 2 * h), interpolation=self.interpolation)
+        self.texture = cv2.resize(self._otexture, (w, 2 * h), interpolation=self.interpolation)
+
+    @classmethod
+    def from_texture(cls, texture: np.ndarray, **kwargs) -> "Image":
+        """
+        Create an :class:`Image` from a uint8 rgba ndarray.
+        """
+        kls = cls(**kwargs)
+        kls._otexture = texture
+        kls.on_size()
+        return kls
+
+    @classmethod
+    def from_sprite(cls, sprite: Sprite, **kwargs) -> "Image":
+        """
+        Create an :class:`Image` from a :class:`Sprite`.
+        """
+        kls = cls(**kwargs)
+        kls._otexture = sprite.texture
+        kls.on_size()
+        return kls
