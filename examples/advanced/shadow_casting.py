@@ -116,12 +116,13 @@ class MyShadowCaster(ShadowCaster):
 
 
 run_widget_as_app(
-    MyShadowCaster,
-    size_hint=(1.0, 1.0),
-    map=MAP,
-    camera=Camera((0, 0), (50, 50)),
-    tile_colors=[AGRAY, ACYAN, AMAGENTA],
-    light_sources=[LightSource()],
-    ambient_light=.1,
-    radius=40,
+    MyShadowCaster(
+        size_hint=(1.0, 1.0),
+        map=MAP,
+        camera=Camera((0, 0), (50, 50)),
+        tile_colors=[AGRAY, ACYAN, AMAGENTA],
+        light_sources=[LightSource()],
+        ambient_light=.1,
+        radius=40,
+    )
 )

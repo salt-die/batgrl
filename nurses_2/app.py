@@ -245,23 +245,17 @@ class App(ABC):
         return self.root.children
 
 
-def run_widget_as_app(widget: type[Widget], *args, **kwargs):
+def run_widget_as_app(widget: Widget):
     """
     Run a widget as a full-screen app.
 
     Parameters
     ----------
-    widget : type[Widget]
-        Widget type to be instantiated and run as an app.
-
-    *args
-        Positional arguments for widget instantiation.
-
-    **kwargs
-        Keyword arguments for widget instantiation.
+    widget : Widget
+        A widget to run as a full screen app.
     """
     class _DefaultApp(App):
         async def on_start(self):
-            self.add_widget(widget(*args, **kwargs))
+            self.add_widget(widget)
 
-    _DefaultApp(title=widget.__name__).run()
+    _DefaultApp(title=type(widget).__name__).run()

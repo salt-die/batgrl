@@ -75,4 +75,4 @@ class Life(GraphicWidget):
             self.texture[h - 1: h + 3, w - 1: w + 2, :3] = np.random.randint(0, 256, 3)
 
 
-run_widget_as_app(Life, size_hint=(1.0, 1.0))
+run_widget_as_app(Life(size_hint=(1.0, 1.0)))

@@ -29,11 +29,11 @@ def _path_yx(a, b):
 
 class Labyrinth(GraphicWidget):
     def on_add(self):
-        super().on_add()
-        self._player_task = asyncio.create_task(self._update_player())
         self._new_level_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._player_task = asyncio.create_task(self._update_player())
         self._reconfigure_task = asyncio.create_task(self._step_reconfigure())
         self.on_size()
+        super().on_add()
 
     def on_remove(self):
         super().on_remove()
@@ -143,4 +143,4 @@ class Labyrinth(GraphicWidget):
         return True
 
 
-run_widget_as_app(Labyrinth, size_hint=(1.0, 1.0))
+run_widget_as_app(Labyrinth(size_hint=(1.0, 1.0)))

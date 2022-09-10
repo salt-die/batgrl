@@ -81,13 +81,7 @@ class Element(ABC):
 
         self.inactivity = 0
 
-    def on_add(self):
-        super().on_add()
         self._update_task = asyncio.create_task(self.update())
-
-    def on_remove(self):
-        super().on_remove()
-        self._update_task.cancel()
 
     def sleep(self):
         """

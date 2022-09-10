@@ -170,4 +170,4 @@ class Connect4(Widget):
             )
 
 
-run_widget_as_app(Connect4)
+run_widget_as_app(Connect4())

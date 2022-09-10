@@ -37,8 +37,8 @@ class ShowIOEvents(TextWidget):
                     position: {}
                     type: {}
                     button: {}
-                    nclicks: {}
                     mods: {}
+                    nclicks: {}
                 """
             case PasteEvent():
                 text = "\nGot paste event:\n{}"
@@ -48,4 +48,4 @@ class ShowIOEvents(TextWidget):
             self.add_text(line.ljust(self.width)[:self.width], row=i)
 
 
-run_widget_as_app(ShowIOEvents, size_hint=(1.0, 1.0))
+run_widget_as_app(ShowIOEvents(size_hint=(1.0, 1.0)))

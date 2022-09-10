@@ -14,16 +14,14 @@ YS_2 = np.random.randint(0, 100, 20)
 YS_3 = np.random.randint(0, 100, 20)
 
 run_widget_as_app(
-    LinePlot,
-    XS,
-    YS_1,
-    XS,
-    YS_2,
-    XS,
-    YS_3,
-    xlabel="X Values",
-    ylabel="Y Values",
-    legend_labels=("Before", "During", "After"),
-    size_hint=(1.0, 1.0),
-    background_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
+    LinePlot(
+        XS, YS_1,
+        XS, YS_2,
+        XS, YS_3,
+        xlabel="X Values",
+        ylabel="Y Values",
+        legend_labels=("Before", "During", "After"),
+        size_hint=(1.0, 1.0),
+        background_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
+    )
 )

@@ -153,4 +153,4 @@ class StableFluid(GraphicWidget):
             await asyncio.sleep(0)
 
 
-run_widget_as_app(StableFluid, size_hint=(1.0, 1.0))
+run_widget_as_app(StableFluid(size_hint=(1.0, 1.0)))

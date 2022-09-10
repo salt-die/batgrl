@@ -25,13 +25,14 @@ class Sandbox(GraphicWidget):
     def __init__(self, size: Size):
         super().__init__(size=size, anchor=Anchor.CENTER, pos_hint=(.5, .5), default_color=ABLACK)
 
+    def on_add(self):
+        super().on_add()
         # Build array of particles -- Initially all Air
         self.world = world = np.full((2 * self.height, self.width), None, dtype=object)
         for y in range(2 * self.height):
             for x in range(self.width):
                 world[y, x] = Air(world, (y, x))
 
-        # Add children widgets
         self.display = TextWidget(
             size=(1, 9),
             pos=(1, 0),
@@ -43,6 +44,11 @@ class Sandbox(GraphicWidget):
 
         # Press the Stone button setting particle type.
         self.children[1].children[1].on_release()
+
+    def on_remove(self):
+        super().on_remove()
+        for particle in self.world.flatten():
+            particle.sleep()
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         # Color of each particle in `self.world` is written into color array.

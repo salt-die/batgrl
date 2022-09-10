@@ -108,4 +108,4 @@ class Fluid(GraphicWidget):
             await asyncio.sleep(0)
 
 
-run_widget_as_app(Fluid, size_hint=(1.0, 1.0))
+run_widget_as_app(Fluid(size_hint=(1.0, 1.0)))
