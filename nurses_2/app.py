@@ -144,6 +144,7 @@ class App(ABC):
         """
         Exit the app.
         """
+        self.root.destroy()
         for task in asyncio.all_tasks():
             task.cancel()
 

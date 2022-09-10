@@ -156,7 +156,7 @@ class IsoTileApp(App):
             show_horizontal_bar=False,
             mouse_button=MouseButton.MIDDLE,
         )
-        sv.add_widget(WorldWidget())
+        sv.view = WorldWidget()
         self.add_widget(sv)
 
 

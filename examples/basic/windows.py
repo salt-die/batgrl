@@ -25,30 +25,29 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class MyApp(App):
     async def on_start(self):
-        animation = Animation(size_hint=(1.0, 1.0), path=CAVEMAN_PATH, interpolation=Interpolation.NEAREST)
-        animation.play()
-        window_1 = Window(size=(25, 50), alpha=.7, title=CAVEMAN_PATH.name)
-        window_1.add_widget(animation)
+        window_kwargs = dict(size=(25, 50), border_alpha=.7, alpha=.7)
 
-        window_2 = Window(size=(25, 50), alpha=.7, title="File Chooser")
-        window_2.add_widget(FileChooser(root_dir=ASSETS, size_hint=(1.0, 1.0)))
+        animation = Animation(path=CAVEMAN_PATH, interpolation=Interpolation.NEAREST)
+        window_1 = Window(title=CAVEMAN_PATH.name, **window_kwargs)
+        window_1.view = animation
 
-        window_3 = Window(size=(25, 50), alpha=.7, title="Color Picker")
-        window_3.add_widget(ColorPicker(size_hint=(1.0, 1.0)))
+        window_2 = Window(title="File Chooser", **window_kwargs)
+        window_2.view = FileChooser(root_dir=ASSETS)
 
-        window_4 = Window(size=(25, 50), alpha=.7, title="Line Plot")
-        window_4.add_widget(
-            LinePlot(
-                XS, YS_1, XS, YS_2, XS, YS_3,
-                xlabel="X Values",
-                ylabel="Y Values",
-                legend_labels=("Before", "During", "After"),
-                size_hint=(1.0, 1.0),
-                background_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
-            )
+        window_3 = Window(title="Color Picker", **window_kwargs)
+        window_3.view = ColorPicker()
+
+        window_4 = Window(title="Line Plot", **window_kwargs)
+        window_4.view = LinePlot(
+            XS, YS_1, XS, YS_2, XS, YS_3,
+            xlabel="X Values",
+            ylabel="Y Values",
+            legend_labels=("Before", "During", "After"),
+            background_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
         )
 
         self.add_widgets(window_1, window_2, window_3, window_4)
+        animation.play()
 
 
 MyApp(title="Windows Example").run()

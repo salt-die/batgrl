@@ -3,6 +3,7 @@ Draggable resize behavior for a widget.
 """
 from ...clamp import clamp
 from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
+from ..widget import emitter
 from .grabbable_behavior import GrabbableBehavior
 
 __all__ = "GrabResizeBehavior",
@@ -168,6 +169,7 @@ class GrabResizeBehavior:
         return self._border_size
 
     @border_size.setter
+    @emitter
     def border_size(self, size: Size):
         h, w = size
         self._border_size = Size(clamp(h, 1, None), clamp(w, 1, None))

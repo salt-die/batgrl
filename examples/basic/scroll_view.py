@@ -27,7 +27,7 @@ class MyApp(App):
             big_widget.colors[y] = gradient(LEFT_GRADIENT[y], RIGHT_GRADIENT[y], BIG_WIDGET_SIZE.columns)
 
         scroll_view = ScrollView(size=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))
-        scroll_view.add_widget(big_widget)
+        scroll_view.view = big_widget
 
         self.add_widget(scroll_view)
 

@@ -829,13 +829,11 @@ class FileChooser(Themable, ScrollView):
         kwargs.pop("arrow_keys_enabled", None)
         super().__init__(arrow_keys_enabled=False, **kwargs)
 
-        self.add_widget(
-            FileView(
-                root_node=FileViewNode(path=root_dir or Path()),
-                directories_only=directories_only,
-                show_hidden=show_hidden,
-                select_callback=select_callback,
-            )
+        self.view = FileView(
+            root_node=FileViewNode(path=root_dir or Path()),
+            directories_only=directories_only,
+            show_hidden=show_hidden,
+            select_callback=select_callback,
         )
         self._view.update_tree_layout()
         self.update_theme()

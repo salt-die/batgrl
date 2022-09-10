@@ -240,7 +240,7 @@ class LinePlot(Widget):
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
         )
-        self._scrollview.add_widget(self._traces)
+        self._scrollview.view = self._traces
 
         self._tick_corner = TextWidget(
             size=(2, TICK_WIDTH),
