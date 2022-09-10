@@ -5,7 +5,7 @@ import numpy as np
 from nurses_2.app import run_widget_as_app
 from nurses_2.colors import AYELLOW, ARED
 from nurses_2.io import MouseEventType
-from nurses_2.widgets.widget import Widget, Easing
+from nurses_2.widgets.widget import Widget
 from nurses_2.widgets.text_widget import TextWidget
 
 from .graphics import CHECKER_SIZE, x_to_column, Checker, Board
