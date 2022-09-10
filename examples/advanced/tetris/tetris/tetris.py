@@ -89,10 +89,6 @@ class Tetris(Image):
         )
         self.tetromino_generator = tetromino_generator(ARIKA_TETROMINOS if arika else TETROMINOS)
         self._level = 0
-        self._game_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self._clear_lines_queue = deque()
-
         self.is_paused = False
 
         # Setup HELD display
@@ -159,7 +155,21 @@ class Tetris(Image):
         self.add_widget(self.matrix_widget)
 
         self.modal_screen = ModalScreen()
-        self.add_widget(self.modal_screen)
+
+    def on_add(self):
+        super().on_add()
+        self.root.add_widget(self.modal_screen)
+        self._game_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._clear_lines_queue = deque()
+
+    def on_remove(self):
+        super().on_remove()
+        self.root.remove_widget(self.modal_screen)
+        self._game_task.cancel()
+        self._lock_down_task.cancel()
+        for task in self._clear_lines_queue:
+            task.cancel()
 
     def on_size(self):
         super().on_size()

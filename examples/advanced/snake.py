@@ -30,11 +30,16 @@ def inbounds(pos):
 
 
 class Snake(GraphicWidget):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def on_add(self):
+        super().on_add()
         self.reset()
         self._update_task = asyncio.create_task(self._update())
         self._apple_task = asyncio.create_task(self._paint_apple())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
+        self._apple_task.cancel()
 
     def on_size(self):
         super().on_size()

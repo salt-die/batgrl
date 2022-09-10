@@ -46,7 +46,14 @@ class Ball(Widget):
         self.left_label = left_label
         self.right_label = right_label
         self.left_score = self.right_score = 0
-        asyncio.create_task(self.update())
+
+    def on_add(self):
+        super().on_add()
+        self._update_task = asyncio.create_task(self.update())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     def reset(self):
         self.y_pos = FIELD_HEIGHT / 2

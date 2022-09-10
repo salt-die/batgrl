@@ -22,9 +22,13 @@ UPDATE_SPEED = .1
 
 
 class Life(GraphicWidget):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def on_add(self):
+        super().on_add()
         self._update_task = asyncio.create_task(self._update())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     def on_size(self):
         super().on_size()

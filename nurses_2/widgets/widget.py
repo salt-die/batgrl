@@ -249,6 +249,14 @@ class Widget:
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -689,7 +697,8 @@ class Widget:
         """
         self.children.append(widget)
         widget.parent = self
-        widget.update_geometry()
+        if self.root:
+            widget.on_add()
 
     def add_widgets(self, *widgets: "Widget"):
         """
@@ -708,14 +717,16 @@ class Widget:
         """
         self.children.remove(widget)
         widget.parent = None
+        if self.root:
+            widget.on_remove()
 
     def pull_to_front(self):
         """
         Move widget to end of widget stack so that it is drawn last.
         """
-        if (parent := self.parent) is not None:
-            parent.remove_widget(self)
-            parent.add_widget(self)
+        if self.parent is not None:
+            self.parent.children.remove(self)
+            self.parent.children.append(self)
 
     def walk_from_root(self):
         """
@@ -916,3 +927,33 @@ class Widget:
 
         if on_complete:
             on_complete()
+
+    def on_add(self):
+        """
+        Called when widget is added to widget tree.
+        """
+        self.update_geometry()
+        for child in self.children:
+            child.on_add()
+
+    def on_remove(self):
+        """
+        Called when widget is removed from widget tree.
+        """
+        for child in self.children:
+            child.on_remove()
+
+    def prolicide(self):
+        """
+        Recursively remove all children.
+        """
+        for child in self.children.copy():
+            child.destroy()
+
+    def destroy(self):
+        """
+        Destroy this widget and all descendents.
+        """
+        self.prolicide()
+        if self.parent:
+            self.parent.remove_widget(self)

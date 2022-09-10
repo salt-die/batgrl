@@ -79,7 +79,15 @@ class ModalScreen(TextWidget):
         for i, color in enumerate(GRADIENT):
             self.colors[i, :] = color
 
+    def on_add(self):
+        super().on_add()
         self._countdown_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._line_glow_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+    def on_remove(self):
+        super().on_remove()
+        self._countdown_task.cancel()
+        self._line_glow_task.cancel()
 
     def on_keypress(self, key_press_event):
         if self._countdown_task.done():
@@ -89,11 +97,6 @@ class ModalScreen(TextWidget):
 
     def enable(self, callback, is_game_over):
         self.callback = callback
-
-        if self.parent is not self.root:
-            root = self.root
-            self.parent.remove_widget(self)
-            root.add_widget(self)
 
         for i, line in enumerate(GAME_OVER if is_game_over else PAUSED, start=1):
             self.add_text(line, row=i)

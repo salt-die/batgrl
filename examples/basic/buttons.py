@@ -10,26 +10,15 @@ from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
 class MyApp(App):
     async def on_start(self):
         display = TextWidget(size=(1, 20), pos=(1, 9))
-        display._clear_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-
-        async def clear_display():
-            await asyncio.sleep(3)
-            display.canvas[:] = " "
 
         def button_callback(i):
             def callback():
                 display.add_text(f"Button {i + 1} pressed!".ljust(20))
-                display._clear_task.cancel()
-                display._clear_task = asyncio.create_task(clear_display())
-
             return callback
 
         def toggle_button_callback(i):
             def callback(state):
                 display.add_text(f"Button {i + 1} {'un' if state is ToggleState.OFF else ''}toggled!".ljust(20))
-                display._clear_task.cancel()
-                display._clear_task = asyncio.create_task(clear_display())
-
             return callback
 
         grid_layout = GridLayout(

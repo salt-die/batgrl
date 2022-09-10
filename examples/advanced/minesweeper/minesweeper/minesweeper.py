@@ -68,11 +68,16 @@ class MineSweeper(Widget):
             pos_hint=(None, .5),
         )
 
-        self._timer_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-
         self.add_widgets(self.mines_left, self.timer, self.reset_button)
 
+    def on_add(self):
+        super().on_add()
+        self._timer_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self.reset()
+
+    def on_remove(self):
+        super().on_remove()
+        self._timer_task.cancel()
 
     @property
     def mines(self):

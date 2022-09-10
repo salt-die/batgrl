@@ -10,10 +10,14 @@ class LevelGlowEffect(Effect):
     """
     Apply a glow effect that quickens as levels increase.
     """
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def on_add(self):
+        super().on_add()
         self._glow = 0
-        asyncio.create_task(self.glow())
+        self._glow_task = asyncio.create_task(self.glow())
+
+    def on_remove(self):
+        super().on_remove()
+        self._glow_task.cancel()
 
     async def glow(self):
         while self.parent is None:

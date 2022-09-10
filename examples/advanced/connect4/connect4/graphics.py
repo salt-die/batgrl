@@ -45,16 +45,18 @@ class Checker(GraphicWidget):
     def __init__(self, color):
         super().__init__(size=CHECKER_SIZE)
 
-        self._flash_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-
         h, w = self._size
         center = h, w // 2
         radius = w // 3
         cv2.circle(self.texture, center, radius, color, -1)
         self._color = color
 
+    def on_add(self):
+        super().on_add()
+        self._flash_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
     def flash(self):
-        asyncio.create_task(self._flash())
+        self._flash_task = asyncio.create_task(self._flash())
 
     def stop_flash(self):
         self._flash_task.cancel()
