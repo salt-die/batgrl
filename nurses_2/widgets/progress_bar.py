@@ -192,7 +192,7 @@ class ProgressBar(Themable, TextWidget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_keypress:
+    on_key_press:
         Handle key press event.
     on_mouse:
         Handle mouse event.

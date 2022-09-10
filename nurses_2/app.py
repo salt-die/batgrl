@@ -163,8 +163,8 @@ class App(ABC):
             if self.title:
                 env_out.set_title(self.title)
 
-            dispatch_press = root.dispatch_press
-            dispatch_click = root.dispatch_click
+            dispatch_key_press = root.dispatch_key_press
+            dispatch_mouse = root.dispatch_mouse
             dispatch_paste = root.dispatch_paste
 
             last_mouse_button = MouseButton.NO_BUTTON
@@ -204,10 +204,10 @@ class App(ABC):
                             if event is self.exit_key:
                                 self.exit()
                                 break
-                            dispatch_press(event)
+                            dispatch_key_press(event)
                         case _PartialMouseEvent():
                             mouse_event = determine_nclicks(event)
-                            dispatch_click(mouse_event)
+                            dispatch_mouse(mouse_event)
                         case PasteEvent():
                             dispatch_paste(event)
                         case Size():

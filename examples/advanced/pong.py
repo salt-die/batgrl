@@ -20,7 +20,7 @@ class Paddle(Widget):
         super().__init__(*args, **kwargs)
         self.player = player
 
-    def on_keypress(self, key_press_event):
+    def on_key_press(self, key_press_event):
         if self.player == 1:
             if key_press_event.key == "w":
                 self.y -= 1

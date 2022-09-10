@@ -237,7 +237,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_keypress:
+    on_key_press:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -357,5 +357,5 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     def on_blur(self):
         self.update_theme()
 
-    def dispatch_click(self, mouse_event):
-        return super().dispatch_click(mouse_event) or self.collides_point(mouse_event.position)
+    def dispatch_mouse(self, mouse_event):
+        return super().dispatch_mouse(mouse_event) or self.collides_point(mouse_event.position)

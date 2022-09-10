@@ -214,7 +214,7 @@ class ScrollView(GrabbableBehavior, Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_keypress:
+    on_key_press:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -382,7 +382,7 @@ class ScrollView(GrabbableBehavior, Widget):
         if self._view is not None:
             self._set_view_pos()
 
-    def on_keypress(self, key_press_event: KeyPressEvent):
+    def on_key_press(self, key_press_event: KeyPressEvent):
         if not self.arrow_keys_enabled:
             return False
 
@@ -396,7 +396,7 @@ class ScrollView(GrabbableBehavior, Widget):
             case "right":
                 self._scroll_right()
             case _:
-                return super().on_keypress(key_press_event)
+                return super().on_key_press(key_press_event)
 
         return True
 

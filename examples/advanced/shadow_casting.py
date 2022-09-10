@@ -97,7 +97,7 @@ class MyShadowCaster(ShadowCaster):
         ):
             self.light_sources[0].coords = self.to_map_coords(self.to_local(mouse_event.position))
 
-    def on_keypress(self, key_press_event):
+    def on_key_press(self, key_press_event):
         y, x = self.camera.pos
 
         match key_press_event.key:

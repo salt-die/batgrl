@@ -57,7 +57,7 @@ class Life(GraphicWidget):
 
             await asyncio.sleep(UPDATE_SPEED)
 
-    def on_keypress(self, key_press_event):
+    def on_key_press(self, key_press_event):
         match key_press_event.key:
             case "r":
                 self._reset()

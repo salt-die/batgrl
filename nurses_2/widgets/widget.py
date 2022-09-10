@@ -241,7 +241,7 @@ class Widget:
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_keypress:
+    on_key_press:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -774,26 +774,26 @@ class Widget:
         setter = getattr(type(source), attr).fset
         return setter.instances[source].pop(self, None)
 
-    def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
+    def dispatch_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
         """
         return (
             any(
-                widget.dispatch_press(key_press_event)
+                widget.dispatch_key_press(key_press_event)
                 for widget in reversed(self.children)
                 if widget.is_enabled
             )
-            or self.on_keypress(key_press_event)
+            or self.on_key_press(key_press_event)
         )
 
-    def dispatch_click(self, mouse_event: MouseEvent) -> bool | None:
+    def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
         Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)
         """
         return (
             any(
-                widget.dispatch_click(mouse_event)
+                widget.dispatch_mouse(mouse_event)
                 for widget in reversed(self.children)
                 if widget.is_enabled
             )
@@ -813,7 +813,7 @@ class Widget:
             or self.on_paste(paste_event)
         )
 
-    def on_keypress(self, key_press_event: KeyPressEvent) -> bool | None:
+    def on_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Handle key press event. (Handled key presses should return True else False or None).
         """

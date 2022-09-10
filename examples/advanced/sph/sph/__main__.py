@@ -30,7 +30,7 @@ class SPH(GraphicWidget):
         super().on_remove()
         self._update_task.cancel()
 
-    def on_keypress(self, key_press_event):
+    def on_key_press(self, key_press_event):
         match key_press_event.key:
             case "r":
                 self.sph_solver.init_dam()

@@ -12,7 +12,7 @@ class ShowIOEvents(TextWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def on_keypress(self, key_press_event: KeyPressEvent) -> bool | None:
+    def on_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
         self._on_io(key_press_event)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
@@ -27,7 +27,7 @@ class ShowIOEvents(TextWidget):
         match event:
             case KeyPressEvent():
                 text = """
-                Got keypress event:
+                Got key_press event:
                     key: {}
                     mods: {}
                 """

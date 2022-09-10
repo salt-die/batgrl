@@ -89,7 +89,7 @@ class ModalScreen(TextWidget):
         self._countdown_task.cancel()
         self._line_glow_task.cancel()
 
-    def on_keypress(self, key_press_event):
+    def on_key_press(self, key_press_event):
         if self._countdown_task.done():
             self._countdown_task = asyncio.create_task(self.countdown())
 

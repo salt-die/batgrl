@@ -60,7 +60,7 @@ class TextParticle(_ParticleBase):
     -------
     to_local:
         Convert absolute coordinates to relative coordinates.
-    on_keypress:
+    on_key_press:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -222,7 +222,7 @@ class TextParticleField(_ParticleFieldBase):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_keypress:
+    on_key_press:
         Handle key press event.
     on_mouse:
         Handle mouse event.

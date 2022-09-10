@@ -82,7 +82,7 @@ class Fluid(GraphicWidget):
 
             return True
 
-    def on_keypress(self, key_press_event):
+    def on_key_press(self, key_press_event):
         match key_press_event.key:
             case "r" | "R":
                 self.on_size()  # Reset

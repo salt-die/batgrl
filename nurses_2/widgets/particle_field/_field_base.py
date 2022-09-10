@@ -32,7 +32,7 @@ class _ParticleFieldBase(Widget):
         """
         yield from self.children
 
-    def dispatch_press(self, key_press_event: KeyPressEvent) -> bool | None:
+    def dispatch_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Dispatch key press to children.
 
@@ -42,15 +42,15 @@ class _ParticleFieldBase(Widget):
         to their children.
         """
         return (
-            self.on_keypress(key_press_event)
+            self.on_key_press(key_press_event)
             or any(
-                particle.on_keypress(key_press_event)
+                particle.on_key_press(key_press_event)
                 for particle in reversed(self.children)
                 if particle.is_enabled
             )
         )
 
-    def dispatch_click(self, mouse_event: MouseEvent) -> bool | None:
+    def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
         Dispatch mouse event to children.
 
@@ -169,7 +169,7 @@ class _ParticleBase:
         y, x = self.parent.to_local(coords)
         return Point(y - self.top, x - self.left)
 
-    def on_keypress(self, key_press_event: KeyPressEvent) -> bool | None:
+    def on_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
         """
         Handle key press event. (Handled key presses should return True else False or None).
         """

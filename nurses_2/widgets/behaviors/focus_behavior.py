@@ -46,10 +46,10 @@ class FocusBehavior:
     def is_focused(self) -> bool:
         return FocusBehavior.__focused is not None and FocusBehavior.__focused() is self
 
-    def dispatch_press(self, key_press_event):
+    def dispatch_key_press(self, key_press_event):
         if key_press_event.key != "tab":
             if self.is_focused:
-                return super().dispatch_press(key_press_event)
+                return super().dispatch_key_press(key_press_event)
 
             return False
 
@@ -93,7 +93,7 @@ class FocusBehavior:
 
         return True
 
-    def dispatch_click(self, mouse_event):
+    def dispatch_mouse(self, mouse_event):
         if (
             mouse_event.event_type is MouseEventType.MOUSE_DOWN
             and not self.is_focused
@@ -122,7 +122,7 @@ class FocusBehavior:
 
             self.on_focus()
 
-        return super().dispatch_click(mouse_event)
+        return super().dispatch_mouse(mouse_event)
 
     def on_focus(self):
         """
