@@ -36,8 +36,15 @@ EPSILON = np.finfo(float).eps
 class StableFluid(GraphicWidget):
     def __init__(self, default_color=ABLACK, **kwargs):
         super().__init__(default_color=default_color, **kwargs)
+
+    def on_add(self):
+        super().on_add()
         self.on_size()
         self._update_task = asyncio.create_task(self._update())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     def on_size(self):
         h, w = self._size
@@ -146,4 +153,4 @@ class StableFluid(GraphicWidget):
             await asyncio.sleep(0)
 
 
-run_widget_as_app(StableFluid, size_hint=(1.0, 1.0))
+run_widget_as_app(StableFluid(size_hint=(1.0, 1.0)))

@@ -21,7 +21,13 @@ class DigitalClock(TextWidget):
 
         self.canvas[[2, -3], 16] = self.canvas[[2, -3], 34] = "●"
 
+    def on_add(self):
+        super().on_add()
         self._update_task = asyncio.create_task(self._update_time())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     def _formatted_time(self):
         hours, minutes, seconds = time.localtime()[3: 6]

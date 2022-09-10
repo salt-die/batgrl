@@ -88,7 +88,7 @@ DEFAULT_COLOR_THEME = ColorTheme(
     primary_bg=Color.from_hex("#311b92"),
 
     primary_fg_dark=Color.from_hex("#b39ddb"),
-    primary_bg_dark=Color.from_hex("#000063"),
+    primary_bg_dark=Color.from_hex("#29177a"),
 
     primary_fg_light=Color.from_hex("#ede7f6"),
     primary_bg_light=Color.from_hex("#6746c3"),

@@ -51,10 +51,14 @@ def sigmoid(array):
 
 
 class Fluid(GraphicWidget):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def on_add(self):
+        super().on_add()
         self.on_size()
         self._update_task = asyncio.create_task(self._update())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     def on_size(self):
         h, w = self._size
@@ -104,4 +108,4 @@ class Fluid(GraphicWidget):
             await asyncio.sleep(0)
 
 
-run_widget_as_app(Fluid, size_hint=(1.0, 1.0))
+run_widget_as_app(Fluid(size_hint=(1.0, 1.0)))

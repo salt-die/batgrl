@@ -167,7 +167,7 @@ class Animation(Widget):
     Methods
     -------
     play:
-        Play the animation.
+        Play the animation. Returns a task.
     pause:
         Pause the animation
     stop:
@@ -212,6 +212,14 @@ class Animation(Widget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -238,8 +246,14 @@ class Animation(Widget):
         self.loop = loop
         self.reverse = reverse
 
-        self._i = 0
-        self._animation = asyncio.create_task(asyncio.sleep(0))  # dummy task
+    def on_add(self):
+        super().on_add()
+        self._i = len(self.frames) - 1 if self.reverse else 0
+        self._animation_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+    def on_remove(self):
+        super().on_remove()
+        self._animation_task.cancel()
 
     def on_size(self):
         for frame in self.frames:
@@ -288,25 +302,32 @@ class Animation(Widget):
                 if self._i == len(self.frames):
                     self._i = 0
 
-    def play(self):
+    def play(self) -> asyncio.Task:
         """
         Play animation.
         """
-        self.pause()
-        self._animation = asyncio.create_task(self._play_animation())
+        self._animation_task.cancel()
+
+        if self._i == 0 and self.reverse:
+            self._i = len(self.frames) - 1
+        elif self._i == len(self.frames) - 1 and not self.reverse:
+            self._i = 0
+
+        self._animation_task = asyncio.create_task(self._play_animation())
+        return self._animation_task
 
     def pause(self):
         """
         Pause animation.
         """
-        self._animation.cancel()
+        self._animation_task.cancel()
 
     def stop(self):
         """
         Stop the animation and reset current frame.
         """
-        self.pause()
-        self._i = 0
+        self._animation_task.cancel()
+        self._i = len(self.frames) - 1 if self.reverse else 0
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         if not self.is_transparent:

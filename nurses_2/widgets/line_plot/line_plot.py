@@ -185,6 +185,14 @@ class LinePlot(Widget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -232,7 +240,7 @@ class LinePlot(Widget):
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
         )
-        self._scrollview.add_widget(self._traces)
+        self._scrollview.view = self._traces
 
         self._tick_corner = TextWidget(
             size=(2, TICK_WIDTH),

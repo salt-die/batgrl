@@ -225,6 +225,14 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(self, is_leaf=True, **kwargs):
         self.is_leaf = is_leaf
@@ -500,6 +508,14 @@ class TreeView(Widget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(self, root_node: TreeViewNode, **kwargs):
         self.selected_node = None

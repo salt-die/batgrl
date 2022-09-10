@@ -299,6 +299,14 @@ class ColorPicker(Themable, Widget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,

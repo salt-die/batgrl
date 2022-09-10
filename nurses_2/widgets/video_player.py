@@ -155,7 +155,7 @@ class VideoPlayer(GraphicWidget):
     Methods
     -------
     play:
-        Play the video.
+        Play the video. Returns a task.
     pause:
         Pause the video.
     stop:
@@ -196,6 +196,14 @@ class VideoPlayer(GraphicWidget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -211,11 +219,18 @@ class VideoPlayer(GraphicWidget):
             is_transparent=is_transparent,
             **kwargs
         )
-
         self._resource = None
-        self._video_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self.loop = loop
         self.source = source
+        self.loop = loop
+
+    def on_add(self):
+        super().on_add()
+        self._video_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+    def on_remove(self):
+        super().on_remove()
+        self._video_task.cancel()
+        self.close()
 
     @property
     def source(self) -> Path | str | int:
@@ -296,7 +311,7 @@ class VideoPlayer(GraphicWidget):
         if self.loop:
             self.play()
 
-    def play(self):
+    def play(self) -> asyncio.Task:
         """
         Play video.
         """
@@ -305,6 +320,7 @@ class VideoPlayer(GraphicWidget):
 
         self._video_task.cancel()
         self._video_task = asyncio.create_task(self._play_video())
+        return self._video_task
 
     def pause(self):
         """
@@ -316,5 +332,5 @@ class VideoPlayer(GraphicWidget):
         """
         Stop video.
         """
-        self.pause()
+        self._video_task.cancel()
         self.close()

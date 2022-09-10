@@ -10,8 +10,9 @@ from .scrollbars import _HorizontalBar, _VerticalBar
 
 class ScrollView(GrabbableBehavior, Widget):
     """
-    A scrollable view widget. A scroll view accepts only one child and
-    places it in a scrollable viewport.
+    A scrollable view widget.
+
+    The view can be set with the :attr:`view` property, e.g., ``my_scrollview.view = some_widget``.
 
     Parameters
     ----------
@@ -76,6 +77,8 @@ class ScrollView(GrabbableBehavior, Widget):
 
     Attributes
     ----------
+    view : Widget | None
+        The scrolled widget.
     allow_vertical_scroll : bool
         Allow vertical scrolling.
     allow_horizontal_scroll : bool
@@ -219,11 +222,14 @@ class ScrollView(GrabbableBehavior, Widget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
-
-    Raises
-    ------
-    ValueError
-        If `add_widget` is called while already containing a child.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -250,14 +256,7 @@ class ScrollView(GrabbableBehavior, Widget):
         self._vertical_bar = _VerticalBar(is_enabled=show_vertical_bar)
         self._horizontal_bar = _HorizontalBar(is_enabled=show_horizontal_bar)
 
-        self.children = [self._vertical_bar, self._horizontal_bar]
-
-        self._vertical_bar.parent = self
-        self._vertical_bar.update_geometry()
-
-        self._horizontal_bar.parent = self
-        self._horizontal_bar.update_geometry()
-
+        self.add_widgets(self._vertical_bar, self._horizontal_bar)
 
     @property
     def show_vertical_bar(self) -> bool:
@@ -354,25 +353,30 @@ class ScrollView(GrabbableBehavior, Widget):
         self._set_view_top()
         self._set_view_left()
 
-    def add_widget(self, widget):
+    @property
+    def view(self) -> Widget | None:
+        return self._view
+
+    @view.setter
+    def view(self, view: Widget | None):
         if self._view is not None:
-            raise ValueError("View already set.")
+            self.remove_widget(self._view)
 
-        self._view = widget
-        widget.parent = self
-        self.children.insert(0, widget)
-        self.subscribe(widget, "size", self._set_view_pos)
+        self._view = view
 
-        self._set_view_pos()
+        if view is not None:
+            self.add_widget(view)
 
-    def remove_widget(self, widget):
-        if widget is not self._view:
-            raise ValueError(f"{widget} is not view.")
+            self.children.insert(0, self.children.pop())  # Move view to top of view stack.
+            self.subscribe(view, "size", self._set_view_pos)
+            self._set_view_pos()
 
-        self._view = None
-        widget.parent = None
-        self.children.remove(widget)
-        self.unsubscribe(widget, "size")
+    def remove_widget(self, widget: Widget):
+        if widget is self._view:
+            self._view = None
+            self.unsubscribe(widget, "size")
+
+        super().remove_widget(widget)
 
     def on_size(self):
         if self._view is not None:

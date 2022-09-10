@@ -56,7 +56,13 @@ class WorldWidget(GraphicWidget):
 
         self.paint_world()
 
+    def on_add(self):
+        super().on_add()
         self._update_world_task = asyncio.create_task(self._update_world())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_world_task.cancel()
 
     def iso_tile_to_uv(self, y, x):
         h, w = TILE_SIZE
@@ -150,7 +156,7 @@ class IsoTileApp(App):
             show_horizontal_bar=False,
             mouse_button=MouseButton.MIDDLE,
         )
-        sv.add_widget(WorldWidget())
+        sv.view = WorldWidget()
         self.add_widget(sv)
 
 

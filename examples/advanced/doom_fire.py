@@ -68,7 +68,13 @@ class DoomFire(GraphicWidget):
         self._fire_values = np.zeros((2 * h, w), dtype=int)
         self.fire_strength = fire_strength
 
-        asyncio.create_task(self._step_forever())
+    def on_add(self):
+        super().on_add()
+        self._step_forever_task = asyncio.create_task(self._step_forever())
+
+    def on_remove(self):
+        super().on_remove()
+        self._step_forever_task.cancel()
 
     @property
     def fire_strength(self):

@@ -76,9 +76,13 @@ WHITE_TO_BLUE = cycle(map(
 
 
 class MyShadowCaster(ShadowCaster):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def on_add(self):
+        super().on_add()
         self._update_task = asyncio.create_task(self._update())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     async def _update(self):
         while True:
@@ -112,12 +116,13 @@ class MyShadowCaster(ShadowCaster):
 
 
 run_widget_as_app(
-    MyShadowCaster,
-    size_hint=(1.0, 1.0),
-    map=MAP,
-    camera=Camera((0, 0), (50, 50)),
-    tile_colors=[AGRAY, ACYAN, AMAGENTA],
-    light_sources=[LightSource()],
-    ambient_light=.1,
-    radius=40,
+    MyShadowCaster(
+        size_hint=(1.0, 1.0),
+        map=MAP,
+        camera=Camera((0, 0), (50, 50)),
+        tile_colors=[AGRAY, ACYAN, AMAGENTA],
+        light_sources=[LightSource()],
+        ambient_light=.1,
+        radius=40,
+    )
 )

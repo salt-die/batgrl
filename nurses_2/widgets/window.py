@@ -1,24 +1,24 @@
 """
 A movable, resizable window widget.
 """
+import numpy as np
 from wcwidth import wcswidth
 
-from ..clamp import clamp
 from ..colors import ColorPair, AColor
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .behaviors.themable import Themable
-from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
-from .widget import Widget, Size, Anchor
+from .graphic_widget import GraphicWidget
+from .widget import Widget, Anchor
 
 __all__ = "Window",
 
 
-class _TitleBar(GrabbableBehavior, TextWidget):
-    def __init__(self, **kwargs):
-        super().__init__(disable_ptf=True, **kwargs)
+class _TitleBar(GrabbableBehavior, Widget):
+    def __init__(self):
+        super().__init__(disable_ptf=True, is_transparent=False, background_char=" ")
 
         self._label = TextWidget(pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
         self.add_widget(self._label)
@@ -32,24 +32,41 @@ class _TitleBar(GrabbableBehavior, TextWidget):
         self.size = bh, self.parent.width - 2 * bw
 
 
-class _View(GraphicWidget):
-    def update_geometry(self):
-        h, w = self.parent.size
-        bh, bw = self.parent.border_size
-        self.size = h - 1 - 2 * bh, w - 2 * bw
-        self.is_visible = h > bh * 3 and w > bw * 2
-
-
-class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
+class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     """
     A movable, resizable window widget.
+
+    The view can be set with the :attr:`view` property, e.g., ``my_window.view = some_widget``.
+
+    Note
+    ----
+    As the window is resized, the :attr:`view` will be resized to fit within the window's borders,
+    but non-`None` size hints of the view are still respected which can have unexpected results.
+    It is recommended to use views with no size hints.
 
     Parameters
     ----------
     title : str, default: ""
         Title of window.
+    ptf_on_focus : bool, default: True
+        Pull widget to front when it gains focus.
+    allow_vertical_resize : bool, default: True
+        Allow vertical resize.
+    allow_horizontal_resize : bool, default: True
+        Allow horizontal resize.
+    border_alpha : float, default: 1.0
+        Transparency of border. This value will be clamped between `0.0` and `1.0`.
+    border_color : AColor, default: TRANSPARENT
+        Color of border.
+    border_size : Size, default: Size(1, 2)
+        Height and width of horizontal and vertical borders, respectively.
+    default_color : AColor, default: AColor(0, 0, 0, 0)
+        Default texture color.
     alpha : float, default: 1.0
-        Transparency of window background and border.
+        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
+        value. (0 <= alpha <= 1.0)
+    interpolation : Interpolation, default: Interpolation.LINEAR
+        Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -89,6 +106,30 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     Attributes
     ----------
+    title : str
+        Title of window.
+    ptf_on_focus : bool, default: True
+        Pull widget to front when it gains focus.
+    is_focused : bool
+        True if widget has focus.
+    allow_vertical_resize : bool
+        Allow vertical resize.
+    allow_horizontal_resize : bool
+        Allow horizontal resize.
+    border_alpha : float
+        Transparency of border. This value will be clamped between `0.0` and `1.0`.
+    border_color : AColor
+        Color of border.
+    border_size : Size
+        Height and width of horizontal and vertical borders, respectively.
+    texture : numpy.ndarray
+        uint8 RGBA color array.
+    default_color : AColor
+        Default texture color.
+    alpha : float
+        Transparency of widget if :attr:`is_transparent` is true.
+    interpolation : Interpolation
+        Interpolation used when widget is resized.
     size : Size
         Size of widget.
     height : int
@@ -160,6 +201,16 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
 
     Methods
     -------
+    update_theme:
+        Paint the widget with current theme.
+    on_focus:
+        Called when widget is focused.
+    on_blur:
+        Called when widget loses focus.
+    pull_border_to_front:
+        Pull borders to the front.
+    to_png:
+        Write :attr:`texture` to provided path as a `png` image.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -194,6 +245,14 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
 
     Notes
     -----
@@ -201,9 +260,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
     set large enough so that the border is visible and the titlebar's
     label is visible.
     """
-    def __init__(self, title="", alpha=1.0, **kwargs):
-        self._view = None
-
+    def __init__(self, title="", **kwargs):
         super().__init__(**kwargs)
 
         if self.min_height is None:
@@ -212,38 +269,59 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         if self.min_width is None:
             self.min_width = 1
 
-        self.add_widgets(_View(), _TitleBar())
-        self.pull_border_to_front()
-        self._view = self.children[0]
-        self._titlebar = self.children[1]
+        self._view = None
+        self._titlebar = _TitleBar()
+        self.add_widget(self._titlebar)
 
-        self.alpha = alpha
         self.title = title
 
         self.update_theme()
 
-        self.border_size = self.border_size  # Reposition titlebar and view
+        def on_border_size():
+            h, w = self.border_size
+            self._titlebar.pos = h, w
+
+            if self._view is not None:
+                self._view.pos = h * 2, w
+
+            self.min_height = max(h * 3, self.min_height)
+            self.min_width = max(wcswidth(self._title) + w * 2 + 2, self.min_width)
+
+        self.subscribe(self, "border_size", on_border_size)
+        on_border_size()
 
     @property
-    def border_size(self) -> Size:
-        return self._border_size
+    def view(self) -> Widget | None:
+        return self._view
 
-    @border_size.setter
-    def border_size(self, size: Size):
-        h, w = size
-        self._border_size = Size(clamp(h, 1, None), clamp(w, 1, None))
+    @view.setter
+    def view(self, view: Widget | None):
+        if self._view is not None:
+            self.remove_widget(self._view)
 
-        for border in self._borders:
-            border.update_geometry()
+        self._view = view
 
-        if self._view is None:  # Still being initialized.
-            return
+        if view is not None:
+            h, w = self.border_size
+            view.pos = 2 * h, w
+            self.add_widget(view)
+            self.children.insert(0, self.children.pop())  # Move view to top of view stack.
+            self.on_size()
 
-        self._titlebar.pos = h, w
-        self._view.pos = h * 2, w
+    def on_size(self):
+        h, w = self._size
+        bh, bw = self.border_size
 
-        self.min_height = max(h * 3, self.min_height)
-        self.min_width = max(wcswidth(self._title) + self.border_size.width * 2 + 2, self.min_width)
+        self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
+        self.texture[2 * bh: -2 * bh, bw: -bw] = self.default_color
+
+        if self._view is not None:
+            if self._view.size_hint == (None, None):
+                self._view.size = h - 3 * bh, w - 2 * bw
+            elif self._view.height_hint is None:
+                self._view.height = h - 3 * bh
+            elif self._view.width_hint is None:
+                self._view.width = w - 2 * bw
 
     @property
     def title(self):
@@ -256,50 +334,28 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, Widget):
         self._titlebar._label.add_text(title)
         self.min_width = max(wcswidth(title) + self.border_size.width * 2 + 2, self.min_width)
 
-    @property
-    def alpha(self) -> float:
-        return self._alpha
-
-    @alpha.setter
-    def alpha(self, alpha: float):
-        self._alpha = clamp(alpha, 0.0, 1.0)
-        self.border_alpha = self._view.alpha = self._alpha
-
     def update_theme(self):
         ct = self.color_theme
 
-        view_background = AColor(*ct.primary_bg_light, 255)
-        self._view.default_color = view_background
-        self._view.texture[:] = view_background
+        self.default_color = AColor(*ct.primary_bg)
+        bh, bw = self.border_size
+        self.texture[2 * bh: -2 * bh, bw: -bw] = self.default_color
 
         if self.is_focused:
-            self.border_color = AColor(*ct.secondary_bg, 255)
+            self.border_color = AColor(*ct.primary_bg_light)
         else:
-            self.border_color = AColor(*ct.primary_bg, 255)
+            self.border_color = self.default_color
 
         title_bar_color_pair = ColorPair.from_colors(ct.secondary_bg, ct.primary_bg_dark)
-        self._titlebar.default_color_pair = title_bar_color_pair
-        self._titlebar.colors[:] = title_bar_color_pair
-        self._titlebar._label.default_color_pair = title_bar_color_pair
-        self._titlebar._label.colors[:] = title_bar_color_pair
+        self._titlebar.background_color_pair = ct.primary_dark_color_pair
+        self._titlebar._label.default_color_pair = ct.primary_dark_color_pair
+        self._titlebar._label.colors[:] = ct.primary_dark_color_pair
 
     def on_focus(self):
         self.update_theme()
 
     def on_blur(self):
         self.update_theme()
-
-    def add_widget(self, widget):
-        if self._view is None:  # Still being initialized.
-            super().add_widget(widget)
-        else:
-            self._view.add_widget(widget)
-
-    def remove_widget(self, widget):
-        if self._view is None:  # Still being initialized.
-            super().remove_widget(widget)
-        else:
-            self._view.remove_widget(widget)
 
     def dispatch_click(self, mouse_event):
         return super().dispatch_click(mouse_event) or self.collides_point(mouse_event.position)

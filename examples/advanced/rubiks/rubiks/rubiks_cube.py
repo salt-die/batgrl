@@ -42,7 +42,13 @@ class RubiksCube(GrabbableBehavior, GraphicWidget):
         self._selected_row = self._selected_axis = 0
         self._select()
 
+    def on_add(self):
+        super().on_add()
         self._rotate_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+
+    def on_remove(self):
+        super().on_remove()
+        self._rotate_task.cancel()
 
     def _unselect(self):
         for cube in self.selected_cubes:

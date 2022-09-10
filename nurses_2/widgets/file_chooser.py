@@ -252,6 +252,14 @@ class FileViewNode(TreeViewNode):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(self, path: Path, **kwargs):
         self.path = path
@@ -467,6 +475,14 @@ class FileView(TreeView):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -793,6 +809,14 @@ class FileChooser(Themable, ScrollView):
         Handle paste event.
     tween:
         Sequentially update a widget property over time.
+    on_add:
+        Called when widget is added to widget tree.
+    on_remove:
+        Called when widget is removed from widget tree.
+    prolicide:
+        Recursively remove all children.
+    destroy:
+        Destroy this widget and all descendents.
     """
     def __init__(
         self,
@@ -805,13 +829,11 @@ class FileChooser(Themable, ScrollView):
         kwargs.pop("arrow_keys_enabled", None)
         super().__init__(arrow_keys_enabled=False, **kwargs)
 
-        self.add_widget(
-            FileView(
-                root_node=FileViewNode(path=root_dir or Path()),
-                directories_only=directories_only,
-                show_hidden=show_hidden,
-                select_callback=select_callback,
-            )
+        self.view = FileView(
+            root_node=FileViewNode(path=root_dir or Path()),
+            directories_only=directories_only,
+            show_hidden=show_hidden,
+            select_callback=select_callback,
         )
         self._view.update_tree_layout()
         self.update_theme()

@@ -20,19 +20,26 @@ PLAYER_NAMES = "Red", "Yellow"
 class Connect4(Widget):
     def __init__(self):
         self._board = Board()
-        self._label = TextWidget(size=(1, 10), pos_hint=(None, .5), anchor="center")
-
         h, w = self._board.size
 
-        super().__init__(
-            size=(h + 2, w),
+        super().__init__(size=(h + 2, w),
             pos_hint=(.5, .5),
             anchor="center",
         )
 
+        self._label = TextWidget(size=(1, 10), pos_hint=(None, .5), anchor="center")
+        self.add_widgets(self._board, self._label)
+
+    def on_add(self):
+        super().on_add()
         self._animation_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self._columns = [[]]
+        self._label_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self.reset()
+
+    def on_remove(self):
+        super().on_remove()
+        self._animation_task.cancel()
+        self._label_task.cancel()
 
     def display_message(self, message):
         self._label.width = len(message)
@@ -46,17 +53,14 @@ class Connect4(Widget):
     def reset(self):
         self._animation_task.cancel()
 
-        for column in self._columns:
-            for checker in column:
-                checker.stop_flash()
-
         self._columns = [[] for _ in range(7)]
         self._board_array = np.zeros((6, 7), dtype=int)
         self._game_over = False
         self._player = 0
 
-        self.children.clear()
-        self.add_widgets(self._label, self._board)
+        for child in self.children.copy():
+            if child not in {self._label, self._board}:
+                child.destroy()
 
         self.display_message(TURN_MESSAGE.format(self.current_player))
 
@@ -143,7 +147,7 @@ class Connect4(Widget):
 
             if (row := (5 - len(self._columns[col]))) == -1:
                 self.display_message(COLUMN_FULL_MESSAGE)
-                asyncio.create_task(
+                self._label_task = asyncio.create_task(
                     self.display_message_after(TURN_MESSAGE.format(self.current_player), 2)
                 )
                 return
@@ -166,4 +170,4 @@ class Connect4(Widget):
             )
 
 
-run_widget_as_app(Connect4)
+run_widget_as_app(Connect4())

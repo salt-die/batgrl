@@ -78,8 +78,10 @@ class Element(ABC):
         self.pos = pos
 
         self.world[pos] = self
-        self._update_task = asyncio.create_task(self.update())
+
         self.inactivity = 0
+
+        self._update_task = asyncio.create_task(self.update())
 
     def sleep(self):
         """

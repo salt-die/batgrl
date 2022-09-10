@@ -21,7 +21,14 @@ class SPH(GraphicWidget):
         super().__init__(is_transparent=is_transparent, **kwargs)
         y, x = self.size
         self.sph_solver = SPHSolver(nparticles, (2 * y, x))
+
+    def on_add(self):
+        super().on_add()
         self._update_task = asyncio.create_task(self._update())
+
+    def on_remove(self):
+        super().on_remove()
+        self._update_task.cancel()
 
     def on_keypress(self, key_press_event):
         match key_press_event.key:

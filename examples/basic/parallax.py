@@ -22,9 +22,9 @@ class MyApp(App):
             while True:
                 for theta in angles:
                     parallax.offset = radius * np.cos(theta), radius * np.sin(theta)
-                    await asyncio.sleep(.016)
+                    await asyncio.sleep(0)
 
-        asyncio.create_task(circle_movement())
+        await circle_movement()
 
 
 MyApp(title="Parallax Example").run()
