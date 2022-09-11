@@ -332,8 +332,8 @@
   </a>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="nurses_2.widgets.ray_caster.html">
-   nurses_2.widgets.ray_caster
+  <a class="reference internal" href="nurses_2.widgets.raycaster.html">
+   nurses_2.widgets.raycaster
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
   <label for="toctree-checkbox-4">
@@ -342,18 +342,18 @@
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="nurses_2.widgets.ray_caster.protocols.html">
-     nurses_2.widgets.ray_caster.protocols
+    <a class="reference internal" href="nurses_2.widgets.raycaster.protocols.html">
+     nurses_2.widgets.raycaster.protocols
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="nurses_2.widgets.ray_caster.ray_caster.html">
-     nurses_2.widgets.ray_caster.ray_caster
+    <a class="reference internal" href="nurses_2.widgets.raycaster.raycaster.html">
+     nurses_2.widgets.raycaster.raycaster
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="nurses_2.widgets.ray_caster.sprite.html">
-     nurses_2.widgets.ray_caster.sprite
+    <a class="reference internal" href="nurses_2.widgets.raycaster.sprite.html">
+     nurses_2.widgets.raycaster.sprite
     </a>
    </li>
   </ul>
@@ -570,7 +570,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Sprite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A graphic element.</p>
-<p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code></a> simplifies placing and compositing images on another texture.</p>
+<p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code></a> simplifies reading images and painting and compositing textures.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -593,8 +593,8 @@ when compositing with <a class="reference internal" href="#nurses_2.widgets.grap
 <p class="rubric">Methods</p>
 <table class="table">
 <colgroup>
-<col style="width: 29%" />
-<col style="width: 71%" />
+<col style="width: 26%" />
+<col style="width: 74%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>resize:</strong></p></td>
@@ -605,6 +605,9 @@ when compositing with <a class="reference internal" href="#nurses_2.widgets.grap
 </tr>
 <tr class="row-odd"><td><p><strong>from_image:</strong></p></td>
 <td><p>Create a sprite from an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>read_image:</strong></p></td>
+<td><p>Create a uint8 rgba texture from an image.</p></td>
 </tr>
 </tbody>
 </table>
@@ -624,6 +627,12 @@ when compositing with <a class="reference internal" href="#nurses_2.widgets.grap
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint">
 <span class="sig-name descname"><span class="pre">paint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Point(y=0,</span> <span class="pre">x=0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="Permalink to this definition">#</a></dt>
 <dd><p>Paint this sprite on the given texture at position <cite>pos</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.read_image">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.read_image" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a <cite>numpy.ndarray</cite> from an image.</p>
 </dd></dl>
 
 <dl class="py method">

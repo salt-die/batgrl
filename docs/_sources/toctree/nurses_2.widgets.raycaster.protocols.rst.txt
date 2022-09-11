@@ -1,7 +1,7 @@
-nurses\_2.widgets.ray\_caster.protocols
-=======================================
+nurses\_2.widgets.raycaster.protocols
+=====================================
 
-.. automodule:: nurses_2.widgets.ray_caster.protocols
+.. automodule:: nurses_2.widgets.raycaster.protocols
 
    
    

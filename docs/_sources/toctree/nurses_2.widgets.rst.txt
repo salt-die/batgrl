@@ -43,7 +43,7 @@
    nurses_2.widgets.parallax
    nurses_2.widgets.particle_field
    nurses_2.widgets.progress_bar
-   nurses_2.widgets.ray_caster
+   nurses_2.widgets.raycaster
    nurses_2.widgets.scroll_view
    nurses_2.widgets.shadow_caster
    nurses_2.widgets.slider
