@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.window &#8212; Python 0.11.6 documentation</title>
+    <title>nurses_2.widgets.window &#8212; Python 0.12 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.6 documentation</p>
+    <p class="title logo__title">Python 0.12 documentation</p>
   
 </a>
     
@@ -523,22 +523,40 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.window.Window" title="nurses_2.widgets.window.Window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Window</span></code></a>([title, alpha])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.window.Window" title="nurses_2.widgets.window.Window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Window</span></code></a>([title])</p></td>
 <td><p>A movable, resizable window widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.window.</span></span><span class="sig-name descname"><span class="pre">Window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.focus_behavior.FocusBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.window.</span></span><span class="sig-name descname"><span class="pre">Window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.focus_behavior.FocusBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
 <p>A movable, resizable window widget.</p>
+<p>The view can be set with the <a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> property, e.g., <code class="docutils literal notranslate"><span class="pre">my_window.view</span> <span class="pre">=</span> <span class="pre">some_widget</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>title</strong><span class="classifier">str, default: “”</span></dt><dd><p>Title of window.</p>
 </dd>
-<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of window background and border.</p>
+<dt><strong>ptf_on_focus</strong><span class="classifier">bool, default: True</span></dt><dd><p>Pull widget to front when it gains focus.</p>
+</dd>
+<dt><strong>allow_vertical_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow vertical resize.</p>
+</dd>
+<dt><strong>allow_horizontal_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow horizontal resize.</p>
+</dd>
+<dt><strong>border_alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of border. This value will be clamped between <cite>0.0</cite> and <cite>1.0</cite>.</p>
+</dd>
+<dt><strong>border_color</strong><span class="classifier">AColor, default: TRANSPARENT</span></dt><dd><p>Color of border.</p>
+</dd>
+<dt><strong>border_size</strong><span class="classifier">Size, default: Size(1, 2)</span></dt><dd><p>Height and width of horizontal and vertical borders, respectively.</p>
+</dd>
+<dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
+value. (0 &lt;= alpha &lt;= 1.0)</p>
+</dd>
+<dt><strong>interpolation</strong><span class="classifier">Interpolation, default: Interpolation.LINEAR</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
 <dt><strong>size</strong><span class="classifier">Size, default: Size(10, 10)</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -580,12 +598,38 @@ widget is not transparent.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If not given or too small, <a class="reference internal" href="#nurses_2.widgets.window.Window.min_height" title="nurses_2.widgets.window.Window.min_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_height</span></code></a> and <a class="reference internal" href="#nurses_2.widgets.window.Window.min_width" title="nurses_2.widgets.window.Window.min_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_width</span></code></a> will be
-set large enough so that the border is visible and the titlebar’s
-label is visible.</p>
+<p>If not given or too small, <a class="reference internal" href="#nurses_2.widgets.window.Window.min_height" title="nurses_2.widgets.window.Window.min_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_height</span></code></a> and <a class="reference internal" href="#nurses_2.widgets.window.Window.min_width" title="nurses_2.widgets.window.Window.min_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_width</span></code></a> will be set large enough
+so that the border is visible and the titlebar’s label is visible.</p>
+<p>As the window is resized, the <a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> will be resized to fit within the window’s borders,
+but non-<cite>None</cite> size hints of the view are still respected which can have unexpected results.
+It is recommended to use views with no size hints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>Title of window.</p>
+</dd>
+<dt><strong>ptf_on_focus</strong><span class="classifier">bool, default: True</span></dt><dd><p>Pull widget to front when it gains focus.</p>
+</dd>
+<dt><strong>is_focused</strong><span class="classifier">bool</span></dt><dd><p>True if widget has focus.</p>
+</dd>
+<dt><strong>allow_vertical_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow vertical resize.</p>
+</dd>
+<dt><strong>allow_horizontal_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow horizontal resize.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_alpha" title="nurses_2.widgets.window.Window.border_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Background character of the border.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_color" title="nurses_2.widgets.window.Window.border_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_color</span></code></a><span class="classifier">AColor</span></dt><dd><p>Color of border.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_size" title="nurses_2.widgets.window.Window.border_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_size</span></code></a><span class="classifier">Size</span></dt><dd><p>Height and width of horizontal and vertical borders, respectively.</p>
+</dd>
+<dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
+</dd>
+<dt><strong>default_color</strong><span class="classifier">AColor</span></dt><dd><p>Default texture color.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Transparency of widget if <code class="xref py py-attr docutils literal notranslate"><span class="pre">is_transparent</span></code> is true.</p>
+</dd>
+<dt><strong>interpolation</strong><span class="classifier">Interpolation</span></dt><dd><p>Interpolation used when widget is resized.</p>
+</dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.window.Window.size" title="nurses_2.widgets.window.Window.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of widget.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.window.Window.height" title="nurses_2.widgets.window.Window.height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></a><span class="classifier">int</span></dt><dd><p>Height of widget.</p>
@@ -660,60 +704,87 @@ label is visible.</p>
 <p class="rubric">Methods</p>
 <table class="table">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 75%" />
+<col style="width: 30%" />
+<col style="width: 70%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
+<tr class="row-odd"><td><p><strong>update_theme:</strong></p></td>
+<td><p>Paint the widget with current theme.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_focus:</strong></p></td>
+<td><p>Called when widget is focused.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_blur:</strong></p></td>
+<td><p>Called when widget loses focus.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>pull_border_to_front:</strong></p></td>
+<td><p>Pull borders to the front.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>to_png:</strong></p></td>
+<td><p>Write <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> to provided path as a <cite>png</cite> image.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>update_geometry:</strong></p></td>
+<tr class="row-odd"><td><p><strong>update_geometry:</strong></p></td>
 <td><p>Called when parent is resized. Applies size and pos hints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
+<tr class="row-even"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert point in absolute coordinates to local coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>collides_point:</strong></p></td>
+<tr class="row-odd"><td><p><strong>collides_point:</strong></p></td>
 <td><p>True if point is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>collides_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>collides_widget:</strong></p></td>
 <td><p>True if other is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>add_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>add_widget:</strong></p></td>
 <td><p>Add a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>add_widgets:</strong></p></td>
+<tr class="row-even"><td><p><strong>add_widgets:</strong></p></td>
 <td><p>Add multiple child widgets.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>remove_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>remove_widget:</strong></p></td>
 <td><p>Remove a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>pull_to_front:</strong></p></td>
+<tr class="row-even"><td><p><strong>pull_to_front:</strong></p></td>
 <td><p>Move to end of widget stack so widget is drawn last.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>walk_from_root:</strong></p></td>
+<tr class="row-odd"><td><p><strong>walk_from_root:</strong></p></td>
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>walk:</strong></p></td>
+<tr class="row-even"><td><p><strong>walk:</strong></p></td>
 <td><p>Yield all descendents.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>subscribe:</strong></p></td>
+<tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
+<tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_keypress:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_key_press:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>tween:</strong></p></td>
+<tr class="row-even"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_add:</strong></p></td>
+<td><p>Called when widget is added to widget tree.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_remove:</strong></p></td>
+<td><p>Called when widget is removed from widget tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>prolicide:</strong></p></td>
+<td><p>Recursively remove all children.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>destroy:</strong></p></td>
+<td><p>Destroy this widget and all descendents.</p></td>
 </tr>
 </tbody>
 </table>
@@ -725,7 +796,7 @@ label is visible.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.add_widget">
-<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.add_widget" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.add_widget" title="Permalink to this definition">#</a></dt>
 <dd><p>Add a child widget.</p>
 </dd></dl>
 
@@ -800,7 +871,7 @@ label is visible.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.color_theme">
-<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=99),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.color_theme" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=41,</span> <span class="pre">green=23,</span> <span class="pre">blue=122),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.color_theme" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -810,8 +881,20 @@ label is visible.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_click">
-<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_click" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.destroy">
+<span class="sig-name descname"><span class="pre">destroy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.destroy" title="Permalink to this definition">#</a></dt>
+<dd><p>Destroy this widget and all descendents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_key_press">
+<span class="sig-name descname"><span class="pre">dispatch_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_key_press" title="Permalink to this definition">#</a></dt>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_mouse">
+<span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_mouse" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
 </dd></dl>
 
@@ -819,12 +902,6 @@ label is visible.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_press">
-<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_press" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
 </dd></dl>
 
 <dl class="py property">
@@ -838,6 +915,11 @@ label is visible.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.height_hint" title="Permalink to this definition">#</a></dt>
 <dd><p>Widget’s height as proportion of its parent’s height.</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.interpolation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interpolation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></em><a class="headerlink" href="#nurses_2.widgets.window.Window.interpolation" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.is_focused">
@@ -874,6 +956,12 @@ label is visible.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_add" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is added to widget tree.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_blur">
 <span class="sig-name descname"><span class="pre">on_blur</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_blur" title="Permalink to this definition">#</a></dt>
 <dd><p>Called when widget loses focus.</p>
@@ -886,8 +974,8 @@ label is visible.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_keypress">
-<span class="sig-name descname"><span class="pre">on_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_keypress" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_key_press">
+<span class="sig-name descname"><span class="pre">on_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_key_press" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
 </dd></dl>
 
@@ -901,6 +989,12 @@ label is visible.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_remove">
+<span class="sig-name descname"><span class="pre">on_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_remove" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is removed from widget tree.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -922,6 +1016,12 @@ label is visible.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.prolicide">
+<span class="sig-name descname"><span class="pre">prolicide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.prolicide" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively remove all children.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.pull_border_to_front">
 <span class="sig-name descname"><span class="pre">pull_border_to_front</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.pull_border_to_front" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -934,7 +1034,7 @@ label is visible.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.remove_widget">
-<span class="sig-name descname"><span class="pre">remove_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.remove_widget" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">remove_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.remove_widget" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove a child widget.</p>
 </dd></dl>
 
@@ -1008,6 +1108,12 @@ label is visible.</p>
 <dd><p>Convert point in absolute coordinates to local coordinates.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.to_png">
+<span class="sig-name descname"><span class="pre">to_png</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.to_png" title="Permalink to this definition">#</a></dt>
+<dd><p>Write <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> to provided path as a <cite>png</cite> image.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.top">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.top" title="Permalink to this definition">#</a></dt>
@@ -1063,6 +1169,11 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <span class="sig-name descname"><span class="pre">update_theme</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.update_theme" title="Permalink to this definition">#</a></dt>
 <dd><p>Paint the widget with current theme.</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.view">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.view" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.walk">

@@ -17,7 +17,6 @@ nurses\_2.widgets.particle\_field.text\_field
 
    .. autosummary::
    
-      TextParticle
       TextParticleField
    
    

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.file_chooser &#8212; Python 0.11.6 documentation</title>
+    <title>nurses_2.widgets.file_chooser &#8212; Python 0.12 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.11.6 documentation</p>
+    <p class="title logo__title">Python 0.12 documentation</p>
   
 </a>
     
@@ -788,7 +788,7 @@ or <cite>enter</cite> is pressed.</p>
 <tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_keypress:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_key_press:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
@@ -800,6 +800,18 @@ or <cite>enter</cite> is pressed.</p>
 <tr class="row-even"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
 </tr>
+<tr class="row-odd"><td><p><strong>on_add:</strong></p></td>
+<td><p>Called when widget is added to widget tree.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_remove:</strong></p></td>
+<td><p>Called when widget is removed from widget tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>prolicide:</strong></p></td>
+<td><p>Recursively remove all children.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>destroy:</strong></p></td>
+<td><p>Destroy this widget and all descendents.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py property">
@@ -810,7 +822,7 @@ or <cite>enter</cite> is pressed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.add_widget">
-<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.add_widget" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.add_widget" title="Permalink to this definition">#</a></dt>
 <dd><p>Add a child widget.</p>
 </dd></dl>
 
@@ -862,7 +874,7 @@ or <cite>enter</cite> is pressed.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.color_theme">
-<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=99),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.color_theme" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=41,</span> <span class="pre">green=23,</span> <span class="pre">blue=122),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.color_theme" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -871,14 +883,26 @@ or <cite>enter</cite> is pressed.</p>
 <dd><p>Width of widget.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.destroy">
+<span class="sig-name descname"><span class="pre">destroy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.destroy" title="Permalink to this definition">#</a></dt>
+<dd><p>Destroy this widget and all descendents.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.directories_only">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">directories_only</span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.directories_only" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.dispatch_click">
-<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.dispatch_click" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.dispatch_key_press">
+<span class="sig-name descname"><span class="pre">dispatch_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.dispatch_key_press" title="Permalink to this definition">#</a></dt>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.dispatch_mouse">
+<span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.dispatch_mouse" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
 </dd></dl>
 
@@ -886,12 +910,6 @@ or <cite>enter</cite> is pressed.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.dispatch_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.dispatch_press">
-<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.dispatch_press" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -976,8 +994,14 @@ or <cite>enter</cite> is pressed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.on_keypress">
-<span class="sig-name descname"><span class="pre">on_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.on_keypress" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.on_add" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is added to widget tree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.on_key_press">
+<span class="sig-name descname"><span class="pre">on_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.on_key_press" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
 </dd></dl>
 
@@ -991,6 +1015,12 @@ or <cite>enter</cite> is pressed.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.on_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.on_remove">
+<span class="sig-name descname"><span class="pre">on_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.on_remove" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is removed from widget tree.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1012,6 +1042,12 @@ or <cite>enter</cite> is pressed.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.prolicide">
+<span class="sig-name descname"><span class="pre">prolicide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.prolicide" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively remove all children.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.pull_to_front">
 <span class="sig-name descname"><span class="pre">pull_to_front</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.pull_to_front" title="Permalink to this definition">#</a></dt>
 <dd><p>Move widget to end of widget stack so that it is drawn last.</p>
@@ -1019,7 +1055,7 @@ or <cite>enter</cite> is pressed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.remove_widget">
-<span class="sig-name descname"><span class="pre">remove_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.remove_widget" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">remove_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.remove_widget" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove a child widget.</p>
 </dd></dl>
 
@@ -1421,7 +1457,7 @@ or <cite>enter</cite> is pressed.</p>
 <tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_keypress:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_key_press:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
@@ -1432,6 +1468,18 @@ or <cite>enter</cite> is pressed.</p>
 </tr>
 <tr class="row-even"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_add:</strong></p></td>
+<td><p>Called when widget is added to widget tree.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_remove:</strong></p></td>
+<td><p>Called when widget is removed from widget tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>prolicide:</strong></p></td>
+<td><p>Recursively remove all children.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>destroy:</strong></p></td>
+<td><p>Destroy this widget and all descendents.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1500,8 +1548,20 @@ or <cite>enter</cite> is pressed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.dispatch_click">
-<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.dispatch_click" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.destroy">
+<span class="sig-name descname"><span class="pre">destroy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.destroy" title="Permalink to this definition">#</a></dt>
+<dd><p>Destroy this widget and all descendents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.dispatch_key_press">
+<span class="sig-name descname"><span class="pre">dispatch_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.dispatch_key_press" title="Permalink to this definition">#</a></dt>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.dispatch_mouse">
+<span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.dispatch_mouse" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
 </dd></dl>
 
@@ -1509,12 +1569,6 @@ or <cite>enter</cite> is pressed.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.dispatch_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.dispatch_press">
-<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.dispatch_press" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1559,8 +1613,14 @@ or <cite>enter</cite> is pressed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.on_keypress">
-<span class="sig-name descname"><span class="pre">on_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.on_keypress" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.on_add" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is added to widget tree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.on_key_press">
+<span class="sig-name descname"><span class="pre">on_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.on_key_press" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
 </dd></dl>
 
@@ -1574,6 +1634,12 @@ or <cite>enter</cite> is pressed.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.on_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.on_remove">
+<span class="sig-name descname"><span class="pre">on_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.on_remove" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is removed from widget tree.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1592,6 +1658,12 @@ or <cite>enter</cite> is pressed.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.pos_hint">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.PosHint" title="nurses_2.widgets.widget_data_structures.PosHint"><span class="pre">nurses_2.widgets.widget_data_structures.PosHint</span></a></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.pos_hint" title="Permalink to this definition">#</a></dt>
 <dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileView.prolicide">
+<span class="sig-name descname"><span class="pre">prolicide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileView.prolicide" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively remove all children.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2017,7 +2089,7 @@ of the underlying <code class="xref py py-attr docutils literal notranslate"><sp
 <tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_keypress:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_key_press:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
@@ -2028,6 +2100,18 @@ of the underlying <code class="xref py py-attr docutils literal notranslate"><sp
 </tr>
 <tr class="row-odd"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_add:</strong></p></td>
+<td><p>Called when widget is added to widget tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_remove:</strong></p></td>
+<td><p>Called when widget is removed from widget tree.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>prolicide:</strong></p></td>
+<td><p>Recursively remove all children.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>destroy:</strong></p></td>
+<td><p>Destroy this widget and all descendents.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2157,7 +2241,7 @@ index error is raised.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.color_theme">
-<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=99),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.color_theme" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary_fg=Color(red=209,</span> <span class="pre">green=196,</span> <span class="pre">blue=233),</span> <span class="pre">primary_bg=Color(red=49,</span> <span class="pre">green=27,</span> <span class="pre">blue=146),</span> <span class="pre">primary_fg_light=Color(red=237,</span> <span class="pre">green=231,</span> <span class="pre">blue=246),</span> <span class="pre">primary_bg_light=Color(red=103,</span> <span class="pre">green=70,</span> <span class="pre">blue=195),</span> <span class="pre">primary_fg_dark=Color(red=179,</span> <span class="pre">green=157,</span> <span class="pre">blue=219),</span> <span class="pre">primary_bg_dark=Color(red=41,</span> <span class="pre">green=23,</span> <span class="pre">blue=122),</span> <span class="pre">secondary_fg=Color(red=33,</span> <span class="pre">green=33,</span> <span class="pre">blue=33),</span> <span class="pre">secondary_bg=Color(red=255,</span> <span class="pre">green=179,</span> <span class="pre">blue=0))</span></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.color_theme" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -2178,8 +2262,20 @@ index error is raised.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.dispatch_click">
-<span class="sig-name descname"><span class="pre">dispatch_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.dispatch_click" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.destroy">
+<span class="sig-name descname"><span class="pre">destroy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.destroy" title="Permalink to this definition">#</a></dt>
+<dd><p>Destroy this widget and all descendents.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.dispatch_key_press">
+<span class="sig-name descname"><span class="pre">dispatch_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.dispatch_key_press" title="Permalink to this definition">#</a></dt>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.dispatch_mouse">
+<span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.dispatch_mouse" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
 </dd></dl>
 
@@ -2187,12 +2283,6 @@ index error is raised.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.dispatch_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.dispatch_press">
-<span class="sig-name descname"><span class="pre">dispatch_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.dispatch_press" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
 </dd></dl>
 
 <dl class="py property">
@@ -2265,8 +2355,14 @@ all open child nodes.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.on_keypress">
-<span class="sig-name descname"><span class="pre">on_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.on_keypress" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.on_add" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is added to widget tree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.on_key_press">
+<span class="sig-name descname"><span class="pre">on_key_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_press_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.on_key_press" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
 </dd></dl>
 
@@ -2289,6 +2385,12 @@ all open child nodes.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.on_remove">
+<span class="sig-name descname"><span class="pre">on_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.on_remove" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when widget is removed from widget tree.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.on_size">
 <span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.on_size" title="Permalink to this definition">#</a></dt>
 <dd><p>Called when widget is resized.</p>
@@ -2304,6 +2406,12 @@ all open child nodes.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.pos_hint">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.PosHint" title="nurses_2.widgets.widget_data_structures.PosHint"><span class="pre">nurses_2.widgets.widget_data_structures.PosHint</span></a></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.pos_hint" title="Permalink to this definition">#</a></dt>
 <dd><p>Widget’s position as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileViewNode.prolicide">
+<span class="sig-name descname"><span class="pre">prolicide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileViewNode.prolicide" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively remove all children.</p>
 </dd></dl>
 
 <dl class="py method">
