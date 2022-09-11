@@ -1,5 +1,5 @@
 """
-A sprite class for :class:`nurses_2.widgets.ray_caster.RayCaster`.
+A sprite class for :class:`nurses_2.widgets.raycaster.RayCaster`.
 """
 import numpy as np
 
