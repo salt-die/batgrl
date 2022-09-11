@@ -271,7 +271,7 @@ class GraphicWidget(Widget):
 
             buffer = np.subtract(
                 source_tex[..., :3],
-                colors_view.reshape(h, w, 2, 3).swapaxes(1, 2).reshape(h * 2, w, 3),
+                colors_view.reshape(h, w, 2, 3).swapaxes(1, 2).reshape(h * 2, w, 3),  # TODO: This creates a copy, should break into two views
                 dtype=float,
             )
             buffer *= source_tex[..., 3, None]
