@@ -217,7 +217,11 @@ class Image(GraphicWidget):
 
     def on_size(self):
         h, w = self._size
-        self.texture = cv2.resize(self._otexture, (w, 2 * h), interpolation=self.interpolation)
+        self.texture = cv2.resize(
+            self._otexture,
+            (w, 2 * h),
+            interpolation=Interpolation._to_cv_enum[self.interpolation],
+        )
 
     @classmethod
     def from_texture(cls, texture: np.ndarray, **kwargs) -> "Image":

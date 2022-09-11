@@ -1,7 +1,7 @@
 """
 Graphic widget data structures.
 """
-from enum import IntEnum
+from enum import Enum
 from pathlib import Path
 
 import cv2
@@ -14,18 +14,27 @@ from .widget import intersection, Rect
 __all__ = "Interpolation", "Sprite"
 
 
-class Interpolation(IntEnum):
+class Interpolation(str, Enum):
     """
     Interpolation methods for resizing graphic widgets.
 
     :class:`Interpolation` is one of `NEAREST`, `LINEAR`, `CUBIC`, `AREA`,
     `LANCZOS`.
     """
-    NEAREST = cv2.INTER_NEAREST
-    LINEAR = cv2.INTER_LINEAR
-    CUBIC = cv2.INTER_CUBIC
-    AREA = cv2.INTER_AREA
-    LANCZOS = cv2.INTER_LANCZOS4
+    NEAREST = "nearest"
+    LINEAR = "linear"
+    CUBIC = "cubic"
+    AREA = "area"
+    LANCZOS = "lanczos"
+
+
+Interpolation._to_cv_enum = {
+    Interpolation.LINEAR: cv2.INTER_LINEAR,
+    Interpolation.CUBIC: cv2.INTER_CUBIC,
+    Interpolation.AREA: cv2.INTER_AREA,
+    Interpolation.LANCZOS: cv2.INTER_LANCZOS4,
+    Interpolation.NEAREST: cv2.INTER_NEAREST,
+}
 
 
 class Sprite:
@@ -79,7 +88,11 @@ class Sprite:
         w = clamp(w, 1, None)
 
         return Sprite(
-            cv2.resize(self.texture, (w, h), interpolation=interpolation),
+            cv2.resize(
+                self.texture,
+                (w, h),
+                interpolation=Interpolation._to_cv_enum(interpolation),
+            ),
             self.alpha,
         )
 

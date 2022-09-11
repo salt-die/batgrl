@@ -242,7 +242,7 @@ class GraphicWidget(Widget):
         self.texture = cv2.resize(
             self.texture,
             (w, 2 * h),
-            interpolation=self.interpolation,
+            interpolation=Interpolation._to_cv_enum[self.interpolation],
         )
 
     @property
