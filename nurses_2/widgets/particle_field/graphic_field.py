@@ -12,7 +12,7 @@ __all__ = "GraphicParticleField",
 
 class GraphicParticleField(Widget):
     """
-    A text particle field.
+    A graphic particle field.
 
     Parameters
     ----------
