@@ -1,87 +1,30 @@
 """
-A graphic particle field. A particle field specializes in handling many
-single "pixel" children.
+A graphic particle field.
+
+A particle field specializes in handling many single "pixel" children.
 """
 import numpy as np
 
-from ...colors import AColor, ABLACK
-from ._field_base import _ParticleFieldBase, _ParticleBase
+from ..widget import Widget
 
-__all__ = "GraphicParticle", "GraphicParticleField"
+__all__ = "GraphicParticleField",
 
 
-class GraphicParticle(_ParticleBase):
+class GraphicParticleField(Widget):
     """
-    A .5x1 TUI element.
+    A text particle field.
 
     Parameters
     ----------
-    pos : Point, default: Point(0, 0)
-        Position of particle.
-    is_transparent : bool, default: False
-        If true, particle is transparent.
-    is_visible : bool, default: True
-        If true, particle is visible.
-    is_enabled : bool, default: True
-        If true, particle is enabled.
-    color : AColor, default: ABLACK
-        Color of particle.
-
-    Attributes
-    ----------
-    pos : Point
-        Position of particle.
-    is_transparent : bool
-        If true, particle is transparent.
-    is_visible : bool
-        If true, particle is visible.
-    is_enabled : bool
-        If true, particle is enabled.
-    color : AColor
-        Color of particle.
-    size : Size
-        Size of particle.
-    top : int
-        Y-coordinate of particle.
-    left : int
-        X-coordinate of particle.
-    height : Literal[1]
-        Height of particle.
-    width : Literal[1]
-        Width of particle
-    bottom : int
-        :attr:`top` + 1
-    right : int
-        :attr:`left` + 1
-
-    Methods
-    -------
-    to_local:
-        Convert absolute coordinates to relative coordinates.
-    on_key_press:
-        Handle key press event.
-    on_mouse:
-        Handle mouse event.
-    on_paste:
-        Handle paste event.
-
-    Notes
-    -----
-    The y-component of :attr:`pos` can be a float. The fractional part determines
-    whether the half block is upper or lower.
-    """
-    def __init__(self, *, color: AColor=ABLACK, is_transparent=True, **kwargs):
-        super().__init__(is_transparent=is_transparent, **kwargs)
-
-        self.color = color
-
-
-class GraphicParticleField(_ParticleFieldBase):
-    """
-    A widget that only has :class:`GraphicParticle` children.
-
-    Parameters
-    ----------
+    particle_positions : np.ndarray | None=None, default: None
+        Positions of particles. Expect int array with shape `N, 2`.
+    particle_colors : np.ndarray | None=None, default: None
+        Colors of particles. Expect uint8 array with shape `N, 4`.
+    particle_alphas : np.ndarray | None=None, default: None
+        Alphas of particles. Expect float array of values between
+        0 and 1 with shape `N,`.
+    particle_properties : dict[str, np.ndarray]=None, default: None
+        Additional particle properties.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -121,6 +64,16 @@ class GraphicParticleField(_ParticleFieldBase):
 
     Attributes
     ----------
+    nparticles : int
+        Number of particles in particle field.
+    particle_positions : np.ndarray
+        Positions of particles.
+    particle_colors : np.ndarray
+        Colors of particles.
+    particle_alphas : np.ndarray
+        Alphas of particles.
+    particle_properties : dict[str, np.ndarray]
+        Additional particle properties.
     size : Size
         Size of widget.
     height : int
@@ -235,38 +188,72 @@ class GraphicParticleField(_ParticleFieldBase):
     destroy:
         Destroy this widget and all descendents.
     """
-    _child_type = GraphicParticle
-
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        particle_positions: np.ndarray | None=None,
+        particle_colors: np.ndarray | None=None,
+        particle_alphas: np.ndarray | None=None,
+        particle_properties: dict[str, np.ndarray]=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
 
-        self._buffer = np.zeros((3, ), dtype=float)
+        if particle_positions is None:
+            self.particle_positions = np.zeros((0, 2), dtype=int)
+        else:
+            self.particle_positions = particle_positions
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        buffer = self._buffer
-        subtract, add = np.subtract, np.add
+        if particle_colors is None:
+            self.particle_colors = np.zeros((len(self.particle_positions), 4), dtype=np.uint8)
+        else:
+            self.particle_colors = particle_colors
 
+        if particle_alphas is None:
+            self.particle_alphas = np.ones(len(self.particle_positions), dtype=np.float)
+        else:
+            self.particle_alphas = particle_alphas
+
+        if particle_properties is None:
+            self.particle_properties = {}
+        else:
+            self.particle_properties = particle_properties
+
+    @property
+    def nparticles(self) -> int:
+        """
+        Number of particles in particle field.
+        """
+        return len(self.particle_positions)
+
+    def render(self, canvas_view, colors_view: np.ndarray, source: tuple[slice, slice]):
+        """
+        Paint region given by `source` into `canvas_view` and `colors_view`.
+        """
         vert_slice, hori_slice = source
         t = vert_slice.start
         h = vert_slice.stop - t
         l = hori_slice.start
         w = hori_slice.stop - l
 
-        for child in self.children:
-            if not child.is_enabled or not child.is_visible:
-                continue
+        pos = self.particle_positions - (2 * t, l)
+        where_inbounds = np.nonzero((((0, 0) <= pos) & (pos < (2 * h, w))).all(axis=1))
+        local_ys, local_xs = pos[where_inbounds].T
 
-            ct = child.top
-            pos = top, left = int(ct) - t, child.left - l
+        ch, cw, _ = colors_view.shape
+        texture_view = colors_view.reshape(ch, cw, 2, 3).swapaxes(1, 2).reshape(2 * ch, w, 3)
+        colors = self.particle_colors[where_inbounds]
+        if not self.is_transparent:
+            texture_view[local_ys, local_xs] = colors[..., :3]
+        else:
+            mask = canvas_view != "▀"
+            colors_view[..., :3][mask] = colors_view[..., 3:][mask]
 
-            if 0 <= top < h and 0 <= left < w:
-                canvas_view[pos] = "▀"
+            buffer = np.subtract(colors[:, :3], texture_view[local_ys, local_xs], dtype=float)
+            buffer *= colors[:, 3, None]
+            buffer *= self.particle_alphas[where_inbounds][:, None]
+            buffer /= 255
+            texture_view[local_ys, local_xs] = (buffer + texture_view[local_ys, local_xs]).astype(np.uint8)
 
-                *rgb, a = child.color
-                if child.is_transparent:
-                    color = colors_view[pos][np.s_[3:] if (ct % 1) >= .5 else np.s_[:3]]
-                    subtract(rgb, color, out=buffer, dtype=float)
-                    buffer *= a / 255
-                    add(buffer, color, out=color, casting="unsafe")
-                else:
-                    colors_view[pos][np.s_[3:] if (ct % 1) >= .5 else np.s_[:3]] = rgb
+        colors_view[:] = texture_view.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
+        canvas_view[:] = "▀"
+        self.render_children(source, canvas_view, colors_view)

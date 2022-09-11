@@ -1,91 +1,29 @@
 """
-A text particle field. A particle field specializes in handling many
-single "pixel" children.
+A text particle field.
+
+A particle field specializes in handling many single "pixel" children.
 """
-from ...colors import WHITE_ON_BLACK, ColorPair
-from ._field_base import _ParticleFieldBase, _ParticleBase
+import numpy as np
 
-__all__ = "TextParticle", "TextParticleField"
+from ..widget import Widget
+
+__all__ = "TextParticleField",
 
 
-class TextParticle(_ParticleBase):
+class TextParticleField(Widget):
     """
-    A 1x1 TUI element.
+    A text particle field.
 
     Parameters
     ----------
-    pos : Point, default: Point(0, 0)
-        Position of particle.
-    is_transparent : bool, default: False
-        If true, particle is transparent.
-    is_visible : bool, default: True
-        If true, particle is visible.
-    is_enabled : bool, default: True
-        If true, particle is enabled.
-    char : str, default: " ",
-        A one-character string.
-    color_pair: ColorPair, default: WHITE_ON_BLACK
-        Color pair of the particle.
-
-    Attributes
-    ----------
-    pos : Point
-        Position of particle.
-    is_transparent : bool
-        If true, particle is transparent.
-    is_visible : bool
-        If true, particle is visible.
-    is_enabled : bool
-        If true, particle is enabled.
-    char : str
-        A one-character string.
-    color_pair : ColorPair
-        Color pair of particle.
-    size : Size
-        Size of particle.
-    top : int
-        Y-coordinate of particle.
-    left : int
-        X-coordinate of particle.
-    height : Literal[1]
-        Height of particle.
-    width : Literal[1]
-        Width of particle
-    bottom : int
-        :attr:`top` + 1
-    right : int
-        :attr:`left` + 1
-
-    Methods
-    -------
-    to_local:
-        Convert absolute coordinates to relative coordinates.
-    on_key_press:
-        Handle key press event.
-    on_mouse:
-        Handle mouse event.
-    on_paste:
-        Handle paste event.
-    """
-    def __init__(
-        self,
-        *,
-        char=" ",
-        color_pair: ColorPair=WHITE_ON_BLACK,
-        **kwargs,
-    ):
-        super().__init__(**kwargs)
-
-        self.char = char
-        self.color_pair = color_pair
-
-
-class TextParticleField(_ParticleFieldBase):
-    """
-    A widget that only has :class:`TextParticle` children.
-
-    Parameters
-    ----------
+    particle_positions : np.ndarray | None=None, default: None
+        Positions of particles. Expect int array with shape `N, 2`.
+    particle_chars : np.ndarray | None=None, default: None
+        Characters of alphas. Expect object array with shape `N,`.
+    particle_color_pairs : np.ndarray | None=None, default: None
+        Color pairs of particles. Expect uint8 array with shape `N, 6`.
+    particle_properties : dict[str, np.ndarray]=None, default: None
+        Additional particle properties.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -125,6 +63,16 @@ class TextParticleField(_ParticleFieldBase):
 
     Attributes
     ----------
+    nparticles : int
+        Number of particles in particle field.
+    particle_positions : np.ndarray
+        Positions of particles.
+    particle_chars : np.ndarray
+        Characters of alphas.
+    particle_color_pairs : np.ndarray
+        Color pairs of particles.
+    particle_properties : dict[str, np.ndarray]
+        Additional particle properties.
     size : Size
         Size of widget.
     height : int
@@ -239,7 +187,42 @@ class TextParticleField(_ParticleFieldBase):
     destroy:
         Destroy this widget and all descendents.
     """
-    _child_type = TextParticle
+    def __init__(
+        self,
+        particle_positions: np.ndarray | None=None,
+        particle_chars: np.ndarray | None=None,
+        particle_color_pairs: np.ndarray | None=None,
+        particle_properties: dict[str, np.ndarray]=None,
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+
+        if particle_positions is None:
+            self.particle_positions = np.zeros((0, 2), dtype=int)
+        else:
+            self.particle_positions = particle_positions
+
+        if particle_chars is None:
+            self.particle_chars = np.full(len(self.particle_positions), " ", dtype=object)
+        else:
+            self.particle_chars = particle_chars
+
+        if particle_color_pairs is None:
+            self.particle_color_pairs = np.zeros((len(self.particle_positions), 6), dtype=np.uint8)
+        else:
+            self.particle_color_pairs = particle_color_pairs
+
+        if particle_properties is None:
+            self.particle_properties = {}
+        else:
+            self.particle_properties = particle_properties
+
+    @property
+    def nparticles(self) -> int:
+        """
+        Number of particles in particle field.
+        """
+        return len(self.particle_positions)
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         vert_slice, hori_slice = source
@@ -248,15 +231,11 @@ class TextParticleField(_ParticleFieldBase):
         l = hori_slice.start
         w = hori_slice.stop - l
 
-        for child in self.children:
-            pos = top, left = child.top - t, child.left - l
+        pos = self.particle_positions - (t, l)
+        where_inbounds = np.nonzero((((0, 0) <= pos) & (pos < (h, w))).all(axis=1))
+        local_ys, local_xs = pos[where_inbounds].T
 
-            if (
-                child.is_enabled
-                and child.is_visible
-                and not (child.is_transparent and child.char == " ")
-                and 0 <= top < h
-                and 0 <= left < w
-            ):
-                canvas_view[pos] = child.char
-                colors_view[pos] = child.color_pair
+        canvas_view[local_ys, local_xs] = self.particle_chars[where_inbounds]
+        colors_view[local_ys, local_xs] = self.particle_color_pairs[where_inbounds]
+
+        self.render_children(source, canvas_view, colors_view)

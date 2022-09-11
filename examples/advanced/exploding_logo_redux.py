@@ -1,68 +1,30 @@
 """
-Credit for ascii art logo to Matthew Barber (https://ascii.matthewbarber.io/art/python/)
-
 Directions:
     'esc' to quit
     'r' to reset
     'click' to poke
 """
 import asyncio
+from pathlib import Path
 
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import rainbow_gradient, ColorPair, BLACK
 from nurses_2.io import MouseButton
-from nurses_2.widgets.particle_field.text_field import TextParticleField
+from nurses_2.widgets.particle_field.graphic_field import GraphicParticleField
+from nurses_2.widgets.image import Image
 
-LOGO = """
-                   _.gj8888888lkoz.,_
-                d888888888888888888888b,
-               j88P""V8888888888888888888
-               888    8888888888888888888
-               888baed8888888888888888888
-               88888888888888888888888888
-                            8888888888888
-    ,ad8888888888888888888888888888888888  888888be,
-   d8888888888888888888888888888888888888  888888888b,
-  d88888888888888888888888888888888888888  8888888888b,
- j888888888888888888888888888888888888888  88888888888p,
-j888888888888888888888888888888888888888'  8888888888888
-8888888888888888888888888888888888888^"   ,8888888888888
-88888888888888^'                        .d88888888888888
-8888888888888"   .a8888888888888888888888888888888888888
-8888888888888  ,888888888888888888888888888888888888888^
-^888888888888  888888888888888888888888888888888888888^
- V88888888888  88888888888888888888888888888888888888Y
-  V8888888888  8888888888888888888888888888888888888Y
-   `"^8888888  8888888888888888888888888888888888^"'
-               8888888888888
-               88888888888888888888888888
-               8888888888888888888P""V888
-               8888888888888888888    888
-               8888888888888888888baed88V
-                `^888888888888888888888^
-                  `'"^^V888888888V^^'
-"""
-HEIGHT, WIDTH = 28, 56
-
+HEIGHT, WIDTH = 18, 36
 POWER = 2
 MAX_PARTICLE_SPEED = 10
 FRICTION = .99
-
-NCOLORS = 100
-RAINBOW = np.array([
-    list(ColorPair.from_colors(fg_color, BLACK))
-    for fg_color in rainbow_gradient(NCOLORS)
-])
-BLUE_INDEX = round(.65 * NCOLORS)
-YELLOW_INDEX = round(.1 * NCOLORS)
-
-COLOR_CHANGE_SPEED = 5
 PERCENTS = tuple(np.linspace(0, 1, 30))
+ASSETS = Path(__file__).parent.parent / "assets"
+PATH_TO_BACKGROUND = ASSETS / "background.png"
+PATH_TO_LOGO_FULL = ASSETS / "python_discord_logo.png"
 
 
-class PokeParticleField(TextParticleField):
+class PokeParticleField(GraphicParticleField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._old_middle = 0, 0
@@ -81,7 +43,8 @@ class PokeParticleField(TextParticleField):
         super().on_size()
         oh, ow = self._old_middle
         h, w = self.center
-        nh, nw = self._old_middle = h - HEIGHT // 2, w - WIDTH // 2
+        h *= 2
+        nh, nw = self._old_middle = h - HEIGHT, w - WIDTH // 2
 
         real_positions = self.particle_properties["real_positions"]
         real_positions += nh - oh, nw - ow
@@ -94,6 +57,8 @@ class PokeParticleField(TextParticleField):
             and self.collides_point(mouse_event.position)
          ):
             y, x = self.to_local(mouse_event.position)
+            y *= 2
+
             relative_distances = self.particle_positions - (y, x)
 
             distances_sq = (relative_distances ** 2).sum(axis=1)
@@ -116,18 +81,11 @@ class PokeParticleField(TextParticleField):
         positions = self.particle_positions
         real_positions = self.particle_properties["real_positions"]
         velocities = self.particle_properties["velocities"]
-        color_pairs = self.particle_color_pairs
-        color_indices = self.particle_properties["indices"]
 
         while True:
             speeds = np.linalg.norm(velocities, axis=1)
             if (speeds < .001).all():
                 return
-
-            clipped_speeds = np.clip(speeds, None, MAX_PARTICLE_SPEED)
-
-            color_indices = (color_indices + clipped_speeds * COLOR_CHANGE_SPEED).astype(int) % NCOLORS
-            color_pairs[:] = RAINBOW[color_indices]
 
             speed_mask = speeds > MAX_PARTICLE_SPEED
             velocities[speed_mask] *= MAX_PARTICLE_SPEED / speeds[:, None][speed_mask]
@@ -141,6 +99,7 @@ class PokeParticleField(TextParticleField):
             vys, vxs = velocities.T
 
             h, w = self.size
+            h *= 2
 
             top = ys < 0
             left = xs < 0
@@ -174,19 +133,11 @@ class PokeParticleField(TextParticleField):
         end = self.particle_properties["original_positions"]
         real = self.particle_properties["real_positions"]
 
-        indices = self.particle_properties["indices"]
-        start_indices = indices.copy()
-        end_indices = self.particle_properties["original_indices"]
-        color_pairs = self.particle_color_pairs
-
         for percent in PERCENTS:
             percent_left = 1 - percent
 
             real[:] = percent_left * start + percent * end
             pos[:] = real.astype(int)
-
-            indices[:] = (percent_left * start_indices + percent * end_indices).astype(int)
-            color_pairs[:] = RAINBOW[indices]
 
             try:
                 await asyncio.sleep(0.03)
@@ -196,36 +147,29 @@ class PokeParticleField(TextParticleField):
 
 class MyApp(App):
     async def on_start(self):
-        colors = np.full((HEIGHT, WIDTH), BLUE_INDEX)
-        colors[-7:] = colors[-13: -7, -41:] = YELLOW_INDEX
-        colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW_INDEX
+        background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))
 
-        chars = np.array([list(line + " " * (WIDTH - len(line))) for line in LOGO.splitlines()])
+        logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL)
 
-        particle_positions = np.argwhere(chars != " ")
+        particle_positions = np.argwhere(logo.texture[..., 3])
         pys, pxs = particle_positions.T
 
-        particle_chars = chars[pys, pxs]
-
         particle_properties = dict(
-            indices=colors[pys, pxs],
             original_positions=particle_positions.copy(),
-            original_indices=colors[pys, pxs],
             real_positions=particle_positions.astype(float),
             velocities=np.zeros((len(particle_positions), 2), dtype=float),
         )
 
-        particle_color_pairs = np.array(RAINBOW[particle_properties["indices"]], dtype=np.uint8)
-
         field = PokeParticleField(
             size_hint=(1.0, 1.0),
             particle_positions=particle_positions,
-            particle_chars=particle_chars,
-            particle_color_pairs=particle_color_pairs,
+            particle_colors=logo.texture[pys, pxs],
             particle_properties=particle_properties,
+            particle_alphas=np.full(len(particle_positions), .7),
+            is_transparent=True,
         )
 
-        self.add_widget(field)
+        self.add_widgets(background, field)
 
 
-MyApp(title="Exploding Logo Example").run()
+MyApp(title="Exploding Logo Redux Example").run()
