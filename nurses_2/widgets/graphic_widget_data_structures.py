@@ -41,7 +41,7 @@ class Sprite:
     """
     A graphic element.
 
-    :class:`Sprite` simplifies placing and compositing images on another texture.
+    :class:`Sprite` simplifies reading images and painting and compositing textures.
 
     Parameters
     ----------
@@ -67,6 +67,8 @@ class Sprite:
         Compose sprite with another texture.
     from_image:
         Create a sprite from an image.
+    read_image:
+        Create a uint8 rgba texture from an image.
     """
     def __init__(self, texture: np.ndarray, alpha: float=1.0):
         self.texture = texture
@@ -136,6 +138,13 @@ class Sprite:
         """
         Create a :class:`Sprite` from an image.
         """
+        return cls(cls.read_image(path))
+
+    @staticmethod
+    def read_image(path: Path) -> np.ndarray:
+        """
+        Create a `numpy.ndarray` from an image.
+        """
         image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
 
         if image.dtype == np.dtype(np.uint16):
@@ -149,6 +158,4 @@ class Sprite:
             default_alpha_channel = np.full((h, w, 1), 255, dtype=np.uint8)
             image = np.dstack((image, default_alpha_channel))
 
-        texture = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
-
-        return cls(texture)
+        return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)

@@ -209,7 +209,7 @@ class Image(GraphicWidget):
     def path(self, new_path: Path | None):
         self._path = new_path
         if new_path is not None:
-            self._otexture = Sprite.from_image(new_path).texture
+            self._otexture = Sprite.read_image(new_path)
         else:
             self._otexture = np.full((2, 1, 4), self.default_color, dtype=np.uint8)
 
