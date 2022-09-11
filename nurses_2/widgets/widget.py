@@ -620,7 +620,8 @@ class Widget:
             else:
                 width = clamp(round(w_hint * w), self.min_width, self.max_width)
 
-            self.size = height, width
+            if self.size != (height, width):  # Avoid unnecessary `on_size` calls.
+                self.size = height, width
 
         y_hint, x_hint = self.pos_hint
         if y_hint is None and x_hint is None:
