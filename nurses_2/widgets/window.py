@@ -38,12 +38,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
     The view can be set with the :attr:`view` property, e.g., ``my_window.view = some_widget``.
 
-    Note
-    ----
-    As the window is resized, the :attr:`view` will be resized to fit within the window's borders,
-    but non-`None` size hints of the view are still respected which can have unexpected results.
-    It is recommended to use views with no size hints.
-
     Parameters
     ----------
     title : str, default: ""
@@ -256,9 +250,12 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
     Notes
     -----
-    If not given or too small, :attr:`min_height` and :attr:`min_width` will be
-    set large enough so that the border is visible and the titlebar's
-    label is visible.
+    If not given or too small, :attr:`min_height` and :attr:`min_width` will be set large enough
+    so that the border is visible and the titlebar's label is visible.
+
+    As the window is resized, the :attr:`view` will be resized to fit within the window's borders,
+    but non-`None` size hints of the view are still respected which can have unexpected results.
+    It is recommended to use views with no size hints.
     """
     def __init__(self, title="", **kwargs):
         super().__init__(**kwargs)
