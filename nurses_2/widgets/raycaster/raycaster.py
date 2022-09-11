@@ -5,12 +5,12 @@ import numpy as np
 
 from ...clamp import clamp
 from ...colors import BLACK, Color
-from ...widgets.graphic_widget import GraphicWidget
+from ..graphic_widget import GraphicWidget
 from .protocols import Map, Camera, Texture
-from .sprite import Sprite
+from .sprite import RaySprite
 
 
-class RayCaster(GraphicWidget):
+class Raycaster(GraphicWidget):
     """
     A raycaster widget.
 
@@ -236,7 +236,7 @@ class RayCaster(GraphicWidget):
         camera: Camera,
         wall_textures: list[Texture] | None,
         light_wall_textures: list[Texture] | None=None,
-        sprites: list[Sprite] | None=None,
+        sprites: list[RaySprite] | None=None,
         sprite_textures: list[Texture] | None=None,
         ceiling: Texture | None=None,
         ceiling_color: Color=BLACK,

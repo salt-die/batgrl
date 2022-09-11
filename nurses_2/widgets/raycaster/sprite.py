@@ -4,9 +4,9 @@ A sprite class for :class:`nurses_2.widgets.ray_caster.RayCaster`.
 import numpy as np
 
 
-class Sprite:
+class RaySprite:  # `Sprite` is already used by this library.
     """
-    A sprite.
+    A sprite for a raycaster.
     """
     __slots__ = "pos", "texture_idx", "_relative", "distance"
 
