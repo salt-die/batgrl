@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.window &#8212; Python 0.12 documentation</title>
+    <title>nurses_2.widgets.window &#8212; Python 0.12.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.12 documentation</p>
+    <p class="title logo__title">Python 0.12.1 documentation</p>
   
 </a>
     
@@ -545,6 +545,12 @@
 </dd>
 <dt><strong>allow_horizontal_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow horizontal resize.</p>
 </dd>
+<dt><strong>grab_resize_min_height</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum height widget can be resized by grabbing. Minimum
+height will never be less than <cite>2 * border_size.height</cite>.</p>
+</dd>
+<dt><strong>grab_resize_min_width</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum width widget can be resized by grabbing. Minimum
+width will never be less than <cite>2 * border_size.width</cite>.</p>
+</dd>
 <dt><strong>border_alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of border. This value will be clamped between <cite>0.0</cite> and <cite>1.0</cite>.</p>
 </dd>
 <dt><strong>border_color</strong><span class="classifier">AColor, default: TRANSPARENT</span></dt><dd><p>Color of border.</p>
@@ -598,14 +604,16 @@ widget is not transparent.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If not given or too small, <a class="reference internal" href="#nurses_2.widgets.window.Window.min_height" title="nurses_2.widgets.window.Window.min_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_height</span></code></a> and <a class="reference internal" href="#nurses_2.widgets.window.Window.min_width" title="nurses_2.widgets.window.Window.min_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_width</span></code></a> will be set large enough
-so that the border is visible and the titlebar’s label is visible.</p>
+<p>If not given or too small, <a class="reference internal" href="#nurses_2.widgets.window.Window.grab_resize_min_height" title="nurses_2.widgets.window.Window.grab_resize_min_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grab_resize_min_height</span></code></a> and <a class="reference internal" href="#nurses_2.widgets.window.Window.grab_resize_min_width" title="nurses_2.widgets.window.Window.grab_resize_min_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grab_resize_min_width</span></code></a> will
+be set large enough so that the border and title are visible.</p>
 <p>As the window is resized, the <a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> will be resized to fit within the window’s borders,
 but non-<cite>None</cite> size hints of the view are still respected which can have unexpected results.
 It is recommended to use views with no size hints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-obj docutils literal notranslate"><span class="pre">view</span></code></a><span class="classifier">Widget</span></dt><dd><p>The windowed widget.</p>
+</dd>
 <dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>Title of window.</p>
 </dd>
 <dt><strong>ptf_on_focus</strong><span class="classifier">bool, default: True</span></dt><dd><p>Pull widget to front when it gains focus.</p>
@@ -615,6 +623,10 @@ It is recommended to use views with no size hints.</p>
 <dt><strong>allow_vertical_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow vertical resize.</p>
 </dd>
 <dt><strong>allow_horizontal_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow horizontal resize.</p>
+</dd>
+<dt><strong>grab_resize_min_height</strong><span class="classifier">int</span></dt><dd><p>Minimum height widget can be resized by grabbing.</p>
+</dd>
+<dt><strong>grab_resize_min_width</strong><span class="classifier">int</span></dt><dd><p>Minimum width widget can be resized by grabbing.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_alpha" title="nurses_2.widgets.window.Window.border_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Background character of the border.</p>
 </dd>
@@ -905,6 +917,16 @@ It is recommended to use views with no size hints.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.grab_resize_min_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grab_resize_min_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.grab_resize_min_height" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.grab_resize_min_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grab_resize_min_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.grab_resize_min_width" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.height" title="Permalink to this definition">#</a></dt>
 <dd><p>Height of widget.</p>
@@ -1173,7 +1195,8 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.view">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.view" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>The windowed widget.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.walk">

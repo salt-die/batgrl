@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.behaviors.grab_resize_behavior &#8212; Python 0.12 documentation</title>
+    <title>nurses_2.widgets.behaviors.grab_resize_behavior &#8212; Python 0.12.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.12 documentation</p>
+    <p class="title logo__title">Python 0.12.1 documentation</p>
   
 </a>
     
@@ -530,7 +530,7 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grab_resize_behavior.</span></span><span class="sig-name descname"><span class="pre">GrabResizeBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_vertical_resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_horizontal_resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">AColor(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0,</span> <span class="pre">alpha=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Size(height=1,</span> <span class="pre">width=2)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grab_resize_behavior.</span></span><span class="sig-name descname"><span class="pre">GrabResizeBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_vertical_resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_horizontal_resize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grab_resize_min_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grab_resize_min_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">AColor(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0,</span> <span class="pre">alpha=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Size(height=1,</span> <span class="pre">width=2)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Draggable resize behavior for a widget. Resize a widget by clicking its border
 and dragging it. Widget dimensions won’t be resized smaller than <code class="xref py py-attr docutils literal notranslate"><span class="pre">min_height</span></code>
@@ -541,6 +541,12 @@ or <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dt><strong>allow_vertical_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow vertical resize.</p>
 </dd>
 <dt><strong>allow_horizontal_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow horizontal resize.</p>
+</dd>
+<dt><strong>grab_resize_min_height</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum height widget can be resized by grabbing. Minimum
+height will never be less than <cite>2 * border_size.height</cite>.</p>
+</dd>
+<dt><strong>grab_resize_min_width</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum width widget can be resized by grabbing. Minimum
+width will never be less than <cite>2 * border_size.width</cite>.</p>
 </dd>
 <dt><strong>border_alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of border. This value will be clamped between <cite>0.0</cite> and <cite>1.0</cite>.</p>
 </dd>
@@ -560,6 +566,10 @@ or <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dt><strong>allow_vertical_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow vertical resize.</p>
 </dd>
 <dt><strong>allow_horizontal_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow horizontal resize.</p>
+</dd>
+<dt><strong>grab_resize_min_height</strong><span class="classifier">int</span></dt><dd><p>Minimum height widget can be resized by grabbing.</p>
+</dd>
+<dt><strong>grab_resize_min_width</strong><span class="classifier">int</span></dt><dd><p>Minimum width widget can be resized by grabbing.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_alpha" title="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Background character of the border.</p>
 </dd>
@@ -599,6 +609,16 @@ or <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.border_size" title="Permalink to this definition">#</a></dt>
 <dd><p>Height and width of horizontal and vertical borders, respectively.</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.grab_resize_min_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grab_resize_min_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.grab_resize_min_height" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.grab_resize_min_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grab_resize_min_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.grab_resize_min_width" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grab_resize_behavior.GrabResizeBehavior.pull_border_to_front">
