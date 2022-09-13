@@ -12,7 +12,7 @@ property.
 The widget tree can be modified with the following methods:
 
 * `add_widget`: Add a widget as a child.
-* `add_widgets`: Add an iterable of widgets or add multiple widgets as a child.
+* `add_widgets`: Add an iterable of widgets or add multiple widgets as children.
 * `remove_widget`: Remove a widget from `children`.
 * `prolicide`: Recursively remove all child widgets.
 * `destroy`: Remove a widget from its parent and recursiely remove all its children.
