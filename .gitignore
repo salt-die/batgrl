@@ -7,5 +7,4 @@ TODO.md
 docsrc/_build
 docsrc/reference/generated
 
-examples/_old/
-examples/_old/*
+examples/_old
