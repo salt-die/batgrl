@@ -15,7 +15,7 @@ The widget tree can be modified with the following methods:
 * `add_widgets`: Add an iterable of widgets or add multiple widgets as children.
 * `remove_widget`: Remove a widget from `children`.
 * `prolicide`: Recursively remove all child widgets.
-* `destroy`: Remove a widget from its parent and recursiely remove all its children.
+* `destroy`: Remove a widget from its parent and recursively remove all its children.
 
 When a widget is added to the widget tree (there must be a path from the widget to the root), the
 `on_add` method is called. Similarly, when a widget is removed from the widget tree, `on_remove` is called.
