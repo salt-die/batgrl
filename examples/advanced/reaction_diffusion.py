@@ -92,6 +92,7 @@ class ReactionDiffusion(GraphicWidget):
         A[:] = np.clip(A * (1 - feed) + laplace_A - react + feed, 0, 1)
         B[:] = np.clip(B * (1 - kill - feed) + laplace_B + react, 0, 1)
 
+        # Try other ways to map A and B to texture!
         self.texture[..., 0] = (255 * A).astype(np.uint8)
         self.texture[..., 1] = (255 * B).astype(np.uint8)
         self.texture[..., 2] = (127.5 * (B - A + 1)).astype(np.uint8)
