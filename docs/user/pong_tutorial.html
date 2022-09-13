@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="nurses_2 Reference" href="../reference/index.html" />
-    <link rel="prev" title="Handling Input" href="handling_input.html" />
+    <link rel="prev" title="The Widget Tree" href="widget_tree.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -141,17 +141,12 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="widgets.html">
-   Meet the Widgets
+   Widgets
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="widget_tree.html">
    The Widget Tree
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="handling_input.html">
-   Handling Input
   </a>
  </li>
  <li class="toctree-l1 current active">
@@ -248,7 +243,7 @@
 </pre></div>
 </div>
 <p>If you run this file, you should just see a blank terminal. To exit, press <cite>escape</cite>. The <cite>on_start</cite> method
-is where you add widgets to and schedule tasks for our app. Note that <cite>on_start</cite> is an async method.</p>
+is where you add widgets to and schedule tasks for your app. Note that <cite>on_start</cite> is an async method.</p>
 </section>
 <section id="simple-graphics">
 <h2>Simple Graphics<a class="headerlink" href="#simple-graphics" title="Permalink to this headline">#</a></h2>
@@ -281,7 +276,7 @@ color is not used.</p>
     <span class="n">Pong</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Widgets are interactive graphic elements that make up our app. In fact, the app is just a tree of widgets.
+<p>Widgets are interactive graphic elements that make up your app. In fact, the app is just a tree of widgets.
 The base <cite>Widget</cite> class is little more than a container for other widgets, but it can be given a background color pair.</p>
 <p>The app’s <cite>add_widget</cite> method adds a widget to the root widget in the widget tree. The root widget always has a size
 that is equal to your terminal’s current size.</p>

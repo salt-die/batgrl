@@ -35,8 +35,8 @@
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Handling Input" href="handling_input.html" />
-    <link rel="prev" title="Meet the Widgets" href="widgets.html" />
+    <link rel="next" title="A Proper Pong Preamble" href="pong_tutorial.html" />
+    <link rel="prev" title="Widgets" href="widgets.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -141,17 +141,12 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="widgets.html">
-   Meet the Widgets
+   Widgets
   </a>
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    The Widget Tree
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="handling_input.html">
-   Handling Input
   </a>
  </li>
  <li class="toctree-l1">
@@ -177,9 +172,24 @@
     
     <div class="toc-item">
       
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#rendering">
+   Rendering
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dispatching">
+   Dispatching
+  </a>
+ </li>
+</ul>
+
 </nav>
     </div>
     
@@ -194,8 +204,45 @@
               <article class="bd-article" role="main">
                 
   <section id="the-widget-tree">
-<h1>The Widget Tree<a class="headerlink" href="#the-widget-tree" title="Permalink to this headline">#</a></h1>
-<p>This user guide is currently being written, please check back soon.</p>
+<span id="widget-tree"></span><h1>The Widget Tree<a class="headerlink" href="#the-widget-tree" title="Permalink to this headline">#</a></h1>
+<p>Widgets your app are organized in a tree.  The root of the tree is a special widget that always
+matches your terminal’s size. The root has <cite>children</cite> widgets and these widget can have <cite>children</cite>
+of their own. Widgets that are part of the widget tree can access the root widget with the <cite>root</cite>
+property.</p>
+<p>The widget tree can be modified with the following methods:</p>
+<ul class="simple">
+<li><p><cite>add_widget</cite>: Add a widget as a child.</p></li>
+<li><p><cite>add_widgets</cite>: Add an iterable of widgets or add multiple widgets as a child.</p></li>
+<li><p><cite>remove_widget</cite>: Remove a widget from <cite>children</cite>.</p></li>
+<li><p><cite>prolicide</cite>: Recursively remove all child widgets.</p></li>
+<li><p><cite>destroy</cite>: Remove a widget from its parent and recursiely remove all its children.</p></li>
+</ul>
+<p>When a widget is added to the widget tree (there must be a path from the widget to the root), the
+<cite>on_add</cite> method is called. Similarly, when a widget is removed from the widget tree, <cite>on_remove</cite> is called.</p>
+<p>You can visit all widgets in the widget tree with the <cite>walk_from_root</cite> method. Or visit all descendents of a
+widget with <cite>walk</cite>.</p>
+<section id="rendering">
+<h2>Rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">#</a></h2>
+<p>The widgets are drawn based on their position in the widget tree. Children are drawn on top of their parents and
+in the order of <cite>children</cite>.  The <cite>pull_to_front</cite> method will move a widget to the end of <cite>children</cite> making sure
+it is drawn after all its siblings.</p>
+</section>
+<section id="dispatching">
+<h2>Dispatching<a class="headerlink" href="#dispatching" title="Permalink to this headline">#</a></h2>
+<p>Input is dispatched across the entire widget tree. If a widget has children, events will first
+be dispatched to its children in reversed order. For the following tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">Root</span>
+   <span class="o">/</span>  \
+  <span class="n">A</span>    <span class="n">B</span>
+ <span class="o">/</span> \   <span class="o">|</span>
+<span class="n">a</span>   <span class="n">b</span>  <span class="n">c</span>
+</pre></div>
+</div>
+<p>dispatching would visit <em>c B b a A Root</em>. If any widget returns True from its event handler,
+the dispatching will stop. The event handlers are <cite>on_key_press</cite>, <cite>on_mouse</cite>, and <cite>on_paste</cite>.
+They handle key presses, mouse events, and paste events respectively. The structure of the different
+input events can be found <a class="reference external" href="https://github.com/salt-die/nurses_2/blob/main/nurses_2/io/input/events.py">here</a>.</p>
+</section>
 </section>
 
 

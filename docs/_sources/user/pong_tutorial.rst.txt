@@ -25,7 +25,7 @@ Let's just get a basic app up and running. Create a new file named `pong.py`.
         Pong().run()
 
 If you run this file, you should just see a blank terminal. To exit, press `escape`. The `on_start` method
-is where you add widgets to and schedule tasks for our app. Note that `on_start` is an async method.
+is where you add widgets to and schedule tasks for your app. Note that `on_start` is an async method.
 
 Simple Graphics
 ---------------
@@ -60,7 +60,7 @@ color is not used.
     if __name__ == "__main__":
         Pong().run()
 
-Widgets are interactive graphic elements that make up our app. In fact, the app is just a tree of widgets.
+Widgets are interactive graphic elements that make up your app. In fact, the app is just a tree of widgets.
 The base `Widget` class is little more than a container for other widgets, but it can be given a background color pair.
 
 The app's `add_widget` method adds a widget to the root widget in the widget tree. The root widget always has a size

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Meet the Widgets &#8212; Python 0.12.1 documentation</title>
+    <title>Widgets &#8212; Python 0.12.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -141,17 +141,12 @@
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Meet the Widgets
+   Widgets
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="widget_tree.html">
    The Widget Tree
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="handling_input.html">
-   Handling Input
   </a>
  </li>
  <li class="toctree-l1">
@@ -177,9 +172,29 @@
     
     <div class="toc-item">
       
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#size-and-pos-hints">
+   Size and Pos Hints
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#responding-to-events">
+   Responding to Events
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#collisions">
+   Collisions
+  </a>
+ </li>
+</ul>
+
 </nav>
     </div>
     
@@ -193,9 +208,41 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="meet-the-widgets">
-<h1>Meet the Widgets<a class="headerlink" href="#meet-the-widgets" title="Permalink to this headline">#</a></h1>
-<p>This user guide is currently being written, please check back soon.</p>
+  <section id="widgets">
+<h1>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">#</a></h1>
+<p>Widgets are the building blocks of your app.  All widgets have a size, position, and
+<a class="reference internal" href="widget_tree.html#widget-tree"><span class="std std-ref">children</span></a>. The base widget has a <cite>background_color_pair</cite> and a <cite>background_char</cite>
+so you can fill the area of the screen the widget is located in with some character or color.</p>
+<p>For more interesting displays, there are <cite>TextWidget</cite> and <cite>GraphicWidget</cite>. Underlying both
+these classes are NumPy arrays that represent the content of the widget. The <cite>TextWidget</cite> has
+a <cite>canvas</cite> array of characters and a <cite>colors</cite> array of color pairs. The <cite>GraphicWidget</cite> widget
+has a rgba <cite>texture</cite> array that is twice the height of the widget. Painting any image on screen
+is as simple as copying the image into the <cite>texture</cite> array.  Layered graphic widgets do proper
+alpha compositing.</p>
+<section id="size-and-pos-hints">
+<h2>Size and Pos Hints<a class="headerlink" href="#size-and-pos-hints" title="Permalink to this headline">#</a></h2>
+<p>If a widget has a non-None size hint, it will have a size that is some proportion (given by the hint) of its
+parent. If the parent is resized, the widget will update its size to follow the size hint. Similary, for non-None
+position hints, a widget will position itself at some proportion of its parent’s size.  Position hints can be
+further controlled with the <cite>anchor</cite> keyword-argument or attribute. The <cite>anchor</cite> determines which point
+in the widget is aligned with the position hint (the default is <cite>“top-left”</cite>).</p>
+</section>
+<section id="responding-to-events">
+<h2>Responding to Events<a class="headerlink" href="#responding-to-events" title="Permalink to this headline">#</a></h2>
+<p>Each widget has <cite>on_key_press</cite>, <cite>on_mouse</cite>, and <cite>on_paste</cite> methods to enable responding to
+input events. Input events are dispatched to every widget until one of these methods return
+True to signal that the event was handled.</p>
+<p>In addition to input events, widgets may want to update when other widget properties change.
+Widgets have a <cite>subscribe</cite> method that notifies them of property changes and allows you to
+register any callback when said properties change.</p>
+</section>
+<section id="collisions">
+<h2>Collisions<a class="headerlink" href="#collisions" title="Permalink to this headline">#</a></h2>
+<p>To determine if a point is within a widget’s bounds you can use <cite>collides_point</cite>.
+Related, <cite>to_local</cite> converts a point to a widget’s local coordinates (which can be used
+to determine how close the point is to the widget). Use <cite>collides_widget</cite> to check if a
+widget overlaps another.</p>
+</section>
 </section>
 
 
