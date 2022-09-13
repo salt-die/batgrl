@@ -46,7 +46,7 @@ class Life(GraphicWidget):
     async def _update(self):
         while True:
             neighbors = filter2D(self.universe.astype(np.uint8), -1, KERNEL, borderType=BORDER_CONSTANT)
-            still_alive = self.universe & (neighbors > 1) & (neighbors < 4)
+            still_alive = self.universe & np.isin(neighbors, (2, 3))
             new_borns = ~self.universe & (neighbors == 3)
             self.universe = new_borns | still_alive
 
