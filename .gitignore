@@ -4,11 +4,8 @@ dist/
 TODO.md
 
 # Documentation source is built in docsrc.
-docsrc/*
-!docsrc/conf.py
-!docsrc/index.rst
-!docsrc/regen_docs.py
-!docsrc/requirements.txt
+docsrc/_build
+docsrc/reference/generated
 
 examples/_old/
 examples/_old/*

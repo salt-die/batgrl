@@ -1,5 +1,4 @@
 import asyncio
-import random
 
 from nurses_2.app import App
 from nurses_2.colors import GREEN, BLUE, WHITE, ColorPair
@@ -16,8 +15,8 @@ WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
 class Paddle(Widget):
-    def __init__(self, player, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, player, **kwargs):
+        super().__init__(**kwargs)
         self.player = player
 
     def on_key_press(self, key_press_event):
@@ -39,41 +38,35 @@ class Paddle(Widget):
 
 
 class Ball(Widget):
-    def __init__(self, left_paddle, right_paddle, left_label, right_label, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, left_paddle, right_paddle, left_label, right_label, **kwargs):
+        super().__init__(**kwargs)
         self.left_paddle = left_paddle
         self.right_paddle = right_paddle
         self.left_label = left_label
         self.right_label = right_label
-        self.left_score = self.right_score = 0
 
     def on_add(self):
         super().on_add()
         self._update_task = asyncio.create_task(self.update())
-
-    def on_remove(self):
-        super().on_remove()
-        self._update_task.cancel()
 
     def reset(self):
         self.y_pos = FIELD_HEIGHT / 2
         self.x_pos = FIELD_WIDTH / 2 - 1
         self.y_velocity = 0.0
         self.x_velocity = 1.0
-        self.speed = 1.0
+        self.speed = .04
 
-    def bounce_paddle(self, paddle):
-        self.x_velocity *= -1
-        self.x_pos += 2 * self.x_velocity
-        paddle_middle = (paddle.bottom + paddle.top) // 2
-        self.y_velocity += (self.y - paddle_middle) / 5 + random.random() / 20
-        self.speed *= 1.1
+    def bounce_paddle(self, paddle: Widget):
+        self.x_pos -= 2 * self.x_velocity
+        x_sgn = 1 if self.x_velocity > 0 else -1
 
-    def normalize_speed(self):
-        current_speed = (self.y_velocity**2 + self.x_velocity**2)**.5
-        if current_speed > self.speed:
-            self.x_velocity *= self.speed / current_speed
-            self.y_velocity *= self.speed / current_speed
+        center_y = paddle.center.y
+        intersect = max(min(paddle.y + center_y - self.y, .95), -.95)
+        normalized = intersect / center_y
+        self.y_velocity = -normalized
+        self.x_velocity = -x_sgn * (1 - normalized**2)**.5
+
+        self.speed = max(0, self.speed - .001)
 
     async def update(self):
         self.reset()
@@ -82,18 +75,22 @@ class Ball(Widget):
         self.right_label.add_text(f"{0:^5}")
 
         while True:
+            # Update ball position.
             self.y_pos += self.y_velocity
             self.x_pos += self.x_velocity
 
+            # Does ball collide with a paddle?
             if self.collides_widget(self.left_paddle):
                 self.bounce_paddle(self.left_paddle)
             elif self.collides_widget(self.right_paddle):
                 self.bounce_paddle(self.right_paddle)
 
+            # Bounce off the top or bottom of the play field.
             if self.y_pos < 0 or self.y_pos >= FIELD_HEIGHT:
                 self.y_velocity *= -1
                 self.y_pos += 2 * self.y_velocity
 
+            # If out of bounds, update the score.
             if self.x_pos < 0:
                 self.reset()
                 right_score += 1
@@ -103,12 +100,10 @@ class Ball(Widget):
                 left_score += 1
                 self.left_label.add_text(f"{left_score:^5}")
 
-            self.normalize_speed()
-
             self.y = int(self.y_pos)
             self.x = int(self.x_pos)
 
-            await asyncio.sleep(.04)
+            await asyncio.sleep(self.speed)
 
 
 class Pong(App):

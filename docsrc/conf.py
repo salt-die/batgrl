@@ -3,6 +3,7 @@ from datetime import datetime
 from nurses_2 import __version__
 
 author = "salt-die"
+today = f"{datetime.now():%B %d, %Y}"
 copyright = f"{datetime.now().year}, {author}"
 release = __version__
 

@@ -14,17 +14,15 @@ from pathlib import Path
 DOC_SRC = Path(__file__).absolute().parent
 DOCS = DOC_SRC.parent / "docs"
 
-EXCLUDED_FILES = {
-    DOC_SRC / "conf.py",
-    DOC_SRC / "index.rst",
-    DOC_SRC / "regen_docs.py",
-    DOC_SRC / "requirements.txt",
-}
-
 SPHINX_BUILD = "sphinx-build"
 SOURCE_DIR = "."
 BUILD_DIR = "_build"
 SPHINX_COMMAND = [SPHINX_BUILD, "-M", "html", SOURCE_DIR, BUILD_DIR]
+
+DIRECTORIES_TO_REMOVE = (
+    DOC_SRC / BUILD_DIR,
+    DOC_SRC / "reference" / "generated",
+)
 
 if __name__ == "__main__":
     import os
@@ -33,11 +31,9 @@ if __name__ == "__main__":
 
     os.chdir(DOC_SRC)
 
-    for item in list(DOC_SRC.iterdir()):
-        if item.is_dir():
-            shutil.rmtree(item)
-        elif item not in EXCLUDED_FILES:
-            item.unlink()
+    for directory in DIRECTORIES_TO_REMOVE:
+        if directory.exists():
+            shutil.rmtree(directory)
 
     subprocess.run(SPHINX_COMMAND)
 

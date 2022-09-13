@@ -1,0 +1,703 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>nurses_2.widgets.graphic_widget_data_structures &#8212; Python 0.12.1 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nurses_2.widgets.grid_layout" href="nurses_2.widgets.grid_layout.html" />
+    <link rel="prev" title="nurses_2.widgets.graphic_widget" href="nurses_2.widgets.graphic_widget.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">Python 0.12.1 documentation</p>
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  API reference
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/salt-die/nurses_2" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.app.html">
+   nurses_2.app
+  </a>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="nurses_2.colors.html">
+   nurses_2.colors
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.colors.color_data_structures.html">
+     nurses_2.colors.color_data_structures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.colors.colors.html">
+     nurses_2.colors.colors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.colors.gradients.html">
+     nurses_2.colors.gradients
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.data_structures.html">
+   nurses_2.data_structures
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.io.input.events.html">
+   nurses_2.io.input.events
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="nurses_2.io.input.keys.html">
+   nurses_2.io.input.keys
+  </a>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="nurses_2.widgets.html">
+   nurses_2.widgets
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.animation.html">
+     nurses_2.widgets.animation
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.behaviors.html">
+     nurses_2.widgets.behaviors
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.button_behavior.html">
+       nurses_2.widgets.behaviors.button_behavior
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.effect.html">
+       nurses_2.widgets.behaviors.effect
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html">
+       nurses_2.widgets.behaviors.focus_behavior
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.grab_move_behavior.html">
+       nurses_2.widgets.behaviors.grab_move_behavior
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html">
+       nurses_2.widgets.behaviors.grab_resize_behavior
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html">
+       nurses_2.widgets.behaviors.grabbable_behavior
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.scatter_behavior.html">
+       nurses_2.widgets.behaviors.scatter_behavior
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html">
+       nurses_2.widgets.behaviors.themable
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.toggle_button_behavior.html">
+       nurses_2.widgets.behaviors.toggle_button_behavior
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.braille_image.html">
+     nurses_2.widgets.braille_image
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.button.html">
+     nurses_2.widgets.button
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.color_picker.html">
+     nurses_2.widgets.color_picker
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.digital_display.html">
+     nurses_2.widgets.digital_display
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.file_chooser.html">
+     nurses_2.widgets.file_chooser
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.graphic_widget.html">
+     nurses_2.widgets.graphic_widget
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     nurses_2.widgets.graphic_widget_data_structures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.grid_layout.html">
+     nurses_2.widgets.grid_layout
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.image.html">
+     nurses_2.widgets.image
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.line_plot.html">
+     nurses_2.widgets.line_plot
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.line_plot.line_plot.html">
+       nurses_2.widgets.line_plot.line_plot
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.menu.html">
+     nurses_2.widgets.menu
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.parallax.html">
+     nurses_2.widgets.parallax
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.particle_field.html">
+     nurses_2.widgets.particle_field
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+    <label for="toctree-checkbox-5">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.particle_field.graphic_field.html">
+       nurses_2.widgets.particle_field.graphic_field
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.particle_field.text_field.html">
+       nurses_2.widgets.particle_field.text_field
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.progress_bar.html">
+     nurses_2.widgets.progress_bar
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.raycaster.html">
+     nurses_2.widgets.raycaster
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.raycaster.protocols.html">
+       nurses_2.widgets.raycaster.protocols
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.raycaster.raycaster.html">
+       nurses_2.widgets.raycaster.raycaster
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.raycaster.sprite.html">
+       nurses_2.widgets.raycaster.sprite
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.scroll_view.html">
+     nurses_2.widgets.scroll_view
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.scroll_view.indicators.html">
+       nurses_2.widgets.scroll_view.indicators
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html">
+       nurses_2.widgets.scroll_view.scroll_view
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.scroll_view.scrollbars.html">
+       nurses_2.widgets.scroll_view.scrollbars
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
+     nurses_2.widgets.shadow_caster
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster.html">
+       nurses_2.widgets.shadow_caster.shadow_caster
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
+       nurses_2.widgets.shadow_caster.shadow_caster_data_structures
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="nurses_2.widgets.slider.html">
+     nurses_2.widgets.slider
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.slider.handle.html">
+       nurses_2.widgets.slider.handle
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.slider.slider.html">
+       nurses_2.widgets.slider.slider
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.split_layout.html">
+     nurses_2.widgets.split_layout
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.text_widget.html">
+     nurses_2.widgets.text_widget
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html">
+     nurses_2.widgets.text_widget_data_structures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.tiled_image.html">
+     nurses_2.widgets.tiled_image
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.toggle_button.html">
+     nurses_2.widgets.toggle_button
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.tree_view.html">
+     nurses_2.widgets.tree_view
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.video_player.html">
+     nurses_2.widgets.video_player
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.widget.html">
+     nurses_2.widgets.widget
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.widget_data_structures.html">
+     nurses_2.widgets.widget_data_structures
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.window.html">
+     nurses_2.widgets.window
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="module-nurses_2.widgets.graphic_widget_data_structures">
+<span id="nurses-2-widgets-graphic-widget-data-structures"></span><h1>nurses_2.widgets.graphic_widget_data_structures<a class="headerlink" href="#module-nurses_2.widgets.graphic_widget_data_structures" title="Permalink to this headline">#</a></h1>
+<p>Graphic widget data structures.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Interpolation</span></code></a>(value)</p></td>
+<td><p>Interpolation methods for resizing graphic widgets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sprite</span></code></a>(texture[, alpha])</p></td>
+<td><p>A graphic element.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>Interpolation methods for resizing graphic widgets.</p>
+<p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolation</span></code></a> is one of <cite>NEAREST</cite>, <cite>LINEAR</cite>, <cite>CUBIC</cite>, <cite>AREA</cite>,
+<cite>LANCZOS</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.AREA">
+<span class="sig-name descname"><span class="pre">AREA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'area'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.AREA" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.CUBIC">
+<span class="sig-name descname"><span class="pre">CUBIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cubic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.CUBIC" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.LANCZOS">
+<span class="sig-name descname"><span class="pre">LANCZOS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lanczos'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.LANCZOS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.LINEAR">
+<span class="sig-name descname"><span class="pre">LINEAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'linear'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.LINEAR" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.NEAREST">
+<span class="sig-name descname"><span class="pre">NEAREST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nearest'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.NEAREST" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Sprite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A graphic element.</p>
+<p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code></a> simplifies reading images and painting and compositing textures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>The alpha channel of <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> will be multiplied by this
+when compositing with <a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">paint()</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha" title="nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Transparency of sprite.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="table">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 74%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>resize:</strong></p></td>
+<td><p>Return a new sprite with given size.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>paint:</strong></p></td>
+<td><p>Compose sprite with another texture.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>from_image:</strong></p></td>
+<td><p>Create a sprite from an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>read_image:</strong></p></td>
+<td><p>Create a uint8 rgba texture from an image.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.alpha" title="Permalink to this definition">#</a></dt>
+<dd><p>Transparency of sprite.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.from_image">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.from_image" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a <a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code></a> from an image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.paint">
+<span class="sig-name descname"><span class="pre">paint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Point(y=0,</span> <span class="pre">x=0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.paint" title="Permalink to this definition">#</a></dt>
+<dd><p>Paint this sprite on the given texture at position <cite>pos</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.read_image">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.read_image" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a <cite>numpy.ndarray</cite> from an image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.resize">
+<span class="sig-name descname"><span class="pre">resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.resize" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a new sprite with resized <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Sprite.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Sprite.size" title="Permalink to this definition">#</a></dt>
+<dd><p>Size of sprite.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, salt-die.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

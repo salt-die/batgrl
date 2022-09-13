@@ -1,24 +1,20 @@
-.. module:: nurses_2
-
 **********************
-nurses_2 documentation
+nurses_2 Documentation
 **********************
 
-Welcome to nurses_2 documentation. Work in progress.
+Welcome to the nurses_2 docs. nurses_2 is a library for terminal graphics.
+It is a unique package that can turn your terminal into a low-res game engine,
+a tool for simulation visualizations, or a GUI with proper alpha compositing
+and responsive IO.
 
 .. toctree::
    :maxdepth: 1
-   :hidden:
 
-.. autosummary::
-   :toctree: toctree
-   :recursive:
+   User Guide <user/index>
+   API reference <reference/index>
 
-   nurses_2.app
-   nurses_2.colors
-   nurses_2.clamp
-   nurses_2.data_structures
-   nurses_2.easings
-   nurses_2.widgets
-   nurses_2.io.input.events
-   nurses_2.io.input.keys
+**Version**: |release|
+
+**Links**:
+`Source <https://github.com/salt-die/nurses_2>`_ |
+`Examples <https://github.com/salt-die/nurses_2/tree/main/examples>`_
