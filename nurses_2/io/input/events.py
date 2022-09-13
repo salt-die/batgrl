@@ -116,32 +116,32 @@ KeyPressEvent.ESCAPE = KeyPressEvent(Key.Escape, Mods.NO_MODS)
 KeyPressEvent.ENTER = KeyPressEvent(Key.Enter, Mods.NO_MODS)
 
 
-class MouseEventType(Enum):
+class MouseEventType(str, Enum):
     """
     A mouse event type.
 
     `MouseEventType` is one of `MOUSE_UP`, `MOUSE_DOWN`, `SCROLL_UP`,
     `SCROLL_DOWN`, `MOUSE_MOVE`.
     """
-    MOUSE_UP    = "MOUSE_UP"
-    MOUSE_DOWN  = "MOUSE_DOWN"
-    SCROLL_UP   = "SCROLL_UP"
-    SCROLL_DOWN = "SCROLL_DOWN"
-    MOUSE_MOVE  = "MOUSE_MOVE"
+    MOUSE_UP    = "mouse_up"
+    MOUSE_DOWN  = "mouse_down"
+    SCROLL_UP   = "scroll_up"
+    SCROLL_DOWN = "scroll_down"
+    MOUSE_MOVE  = "mouse_move"
 
 
-class MouseButton(Enum):
+class MouseButton(str, Enum):
     """
     A mouse button.
 
     `MouseButton` is one of `LEFT`, `MIDDLE`, `RIGHT`, `NO_BUTTON`,
     `UNKNOWN_BUTTON`.
     """
-    LEFT           = "LEFT"
-    MIDDLE         = "MIDDLE"
-    RIGHT          = "RIGHT"
-    NO_BUTTON      = "NO_BUTTON"
-    UNKNOWN_BUTTON = "UNKNOWN_BUTTON"
+    LEFT           = "left"
+    MIDDLE         = "middle"
+    RIGHT          = "right"
+    NO_BUTTON      = "no_button"
+    UNKNOWN_BUTTON = "unknown_button"
 
 
 class _PartialMouseEvent(NamedTuple):
