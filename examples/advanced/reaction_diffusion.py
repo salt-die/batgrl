@@ -14,7 +14,7 @@ from nurses_2.widgets.slider import Slider
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.widget import Widget
 
-KERNEL =    np.array([
+KERNEL = np.array([
     [.05, .2, .05],
     [0.2, -1, 0.2],
     [.05, .2, .05],
