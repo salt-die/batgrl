@@ -99,7 +99,7 @@ class ReactionDiffusion(GraphicWidget):
 
 class ReactionDiffusionApp(App):
     async def on_start(self):
-        rd = ReactionDiffusion(size_hint=(1.0, 1.0))
+        react = ReactionDiffusion(size_hint=(1.0, 1.0))
         container = MoveMe(size=(8, 30))
 
         attrs = (
@@ -118,11 +118,11 @@ class ReactionDiffusionApp(App):
             for i in range(4)
         ]
         for label, (attr, _, _) in zip(labels, attrs):
-            label.add_text(f"{attr}: {getattr(rd, attr):.4}")
+            label.add_text(f"{attr}: {getattr(react, attr):.4}")
 
         def create_callback(attr, i):
             def set_attr(value):
-                setattr(rd, attr, value)
+                setattr(react, attr, value)
                 labels[i].add_text(f"{attr}: {value:.6}".ljust(30))
 
             return set_attr
@@ -133,7 +133,7 @@ class ReactionDiffusionApp(App):
                 max=max,
                 size=(1, 30),
                 pos=(2 * i + 1, 0),
-                start_value=getattr(rd, attr),
+                start_value=getattr(react, attr),
                 callback=create_callback(attr, i),
                 fill_color=GREEN,
                 default_color_pair=BLUE_ON_BLACK,
@@ -142,7 +142,7 @@ class ReactionDiffusionApp(App):
         ]
 
         container.add_widgets(*sliders, *labels)
-        self.add_widgets(rd, container)
+        self.add_widgets(react, container)
 
 
 ReactionDiffusionApp(title="Reaction Diffusion").run()
