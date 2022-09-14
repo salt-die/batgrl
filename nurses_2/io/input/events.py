@@ -12,7 +12,7 @@ from .keys import Key
 __all__ = (
     "Mods",
     "Key",
-    "KeyPressEvent",
+    "KeyEvent",
     "MouseEventType",
     "MouseButton",
     "MouseEvent",
@@ -79,7 +79,7 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
 Mods.NO_MODS = Mods(False, False, False)
 
 
-class KeyPressEvent(namedtuple("KeyPressEvent", "key mods")):
+class KeyEvent(namedtuple("KeyEvent", "key mods")):
     """
     A key press event.
 
@@ -112,8 +112,8 @@ class KeyPressEvent(namedtuple("KeyPressEvent", "key mods")):
         return super().__new__(cls, *args, **kwargs)
 
 
-KeyPressEvent.ESCAPE = KeyPressEvent(Key.Escape, Mods.NO_MODS)
-KeyPressEvent.ENTER = KeyPressEvent(Key.Enter, Mods.NO_MODS)
+KeyEvent.ESCAPE = KeyEvent(Key.Escape, Mods.NO_MODS)
+KeyEvent.ENTER = KeyEvent(Key.Enter, Mods.NO_MODS)
 
 
 class MouseEventType(str, Enum):

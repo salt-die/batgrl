@@ -46,10 +46,10 @@ class FocusBehavior:
     def is_focused(self) -> bool:
         return FocusBehavior.__focused is not None and FocusBehavior.__focused() is self
 
-    def dispatch_key_press(self, key_press_event):
-        if key_press_event.key != "tab":
+    def dispatch_key(self, key_event):
+        if key_event.key != "tab":
             if self.is_focused:
-                return super().dispatch_key_press(key_press_event)
+                return super().dispatch_key(key_event)
 
             return False
 
@@ -71,7 +71,7 @@ class FocusBehavior:
 
             return True
 
-        if key_press_event.mods.shift:
+        if key_event.mods.shift:
             while (widget := focus_widgets[-1]()) is None:
                 focus_widgets.pop()
 

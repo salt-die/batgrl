@@ -116,8 +116,8 @@ class Labyrinth(GraphicWidget):
             yx = _path_yx(a, b)
             self.texture[yx] = self._texture_gradient[yx]
 
-    def on_key_press(self, key_press_event):
-        match key_press_event.key:
+    def on_key(self, key_event):
+        match key_event.key:
             case "up":
                 dy, dx = -1, 0
             case "left":

@@ -11,7 +11,7 @@ from .input.events import (
     _PartialMouseEvent,
     Key,
     Mods,
-    KeyPressEvent,
+    KeyEvent,
     MouseEventType,
     MouseButton,
     MouseEvent,
@@ -21,7 +21,7 @@ from .input.events import (
 __all__ = (
     "Key",
     "Mods",
-    "KeyPressEvent",
+    "KeyEvent",
     "MouseEventType",
     "MouseButton",
     "MouseEvent",

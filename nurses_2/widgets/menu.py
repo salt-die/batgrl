@@ -239,7 +239,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_key_press:
+    on_key:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -581,7 +581,7 @@ class Menu(GridLayout):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_key_press:
+    on_key:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -656,15 +656,15 @@ class Menu(GridLayout):
 
         return super().on_mouse(mouse_event)
 
-    def on_key_press(self, key_press_event):
+    def on_key(self, key_event):
         for submenu in self._submenus:
             if submenu.is_enabled:
-                if submenu.on_key_press(key_press_event):
+                if submenu.on_key(key_event):
                     return True
                 else:
                     break
 
-        match key_press_event.key:
+        match key_event.key:
             case "up":
                 i = self._current_selection
 
@@ -739,7 +739,7 @@ class Menu(GridLayout):
                         child._down()
                     return True
 
-        return super().on_key_press(key_press_event)
+        return super().on_key(key_event)
 
     @classmethod
     def from_dict_of_dicts(

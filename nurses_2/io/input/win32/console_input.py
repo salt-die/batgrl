@@ -22,7 +22,7 @@ from ....data_structures import Point, Size
 from ..events import (
     Key,
     Mods,
-    KeyPressEvent,
+    KeyEvent,
     MouseButton,
     MouseEventType,
     _PartialMouseEvent,
@@ -56,9 +56,9 @@ def _handle_mods(key_state: DWORD) -> Mods:
     shift = bool(key_state & SHIFT_PRESSED)
     return Mods(alt, ctrl, shift)
 
-def _handle_key(ev: KEY_EVENT_RECORD) -> KeyPressEvent:
+def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent:
     """
-    Return a `KeyPressEvent` from a `KEY_EVENT_RECORD`.
+    Return a `KeyEvent` from a `KEY_EVENT_RECORD`.
     """
     key = KEY_CODES.get(ev.VirtualKeyCode, ev.uChar.UnicodeChar)
 
@@ -70,7 +70,7 @@ def _handle_key(ev: KEY_EVENT_RECORD) -> KeyPressEvent:
     if not (isinstance(key, Key) or mods.alt or mods.ctrl):
         key = ev.uChar.UnicodeChar
 
-    return KeyPressEvent(key, mods)
+    return KeyEvent(key, mods)
 
 def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     """
@@ -131,7 +131,7 @@ def _purge(text: list[str]):
 
     else:
         yield from (
-            KeyPressEvent(
+            KeyEvent(
                 Key.Enter if char == "\n" else char,
                 Mods.NO_MODS,
             )
@@ -159,12 +159,12 @@ def events():
                 match _handle_key(ev):
                     case None:
                         continue
-                    case KeyPressEvent.ENTER:
+                    case KeyEvent.ENTER:
                         text.append("\n")
-                    case KeyPressEvent(key, (alt, ctrl, _)) as key_press_event if isinstance(key, Key) or alt or ctrl:
+                    case KeyEvent(key, (alt, ctrl, _)) as key_event if isinstance(key, Key) or alt or ctrl:
                         yield from _purge(text)
-                        yield key_press_event
-                    case KeyPressEvent(char, _):
+                        yield key_event
+                    case KeyEvent(char, _):
                         text.append(char)
 
             case MOUSE_EVENT_RECORD():

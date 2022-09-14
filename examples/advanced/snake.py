@@ -72,11 +72,11 @@ class Snake(GraphicWidget):
 
         return dy, dx
 
-    def on_key_press(self, key_press_event):
+    def on_key(self, key_event):
         if not self.snake_is_moving:
             self.snake_is_moving = True
 
-        match key_press_event.key:
+        match key_event.key:
             case "up":
                 self.current_direction = self._check_neck(-1, 0)
             case "left":

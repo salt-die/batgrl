@@ -8,7 +8,7 @@ import sys
 from codecs import getincrementaldecoder
 
 from ....data_structures import Point
-from ..events import Key, KeyPressEvent, _PartialMouseEvent, PasteEvent
+from ..events import Key, KeyEvent, _PartialMouseEvent, PasteEvent
 from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
 from .mouse_bindings import TERM_SGR, TYPICAL
 
@@ -86,19 +86,19 @@ def _find_longest_match(data):
                         _EVENTS.append(PasteEvent(suffix[:i]))
                         return suffix[i + 6:]
 
-            case KeyPressEvent.ESCAPE if suffix and suffix not in ANSI_ESCAPES:
+            case KeyEvent.ESCAPE if suffix and suffix not in ANSI_ESCAPES:
                 if len(suffix) == 1:  # alt + character
-                    _EVENTS.append(KeyPressEvent(suffix, ALT))
+                    _EVENTS.append(KeyEvent(suffix, ALT))
                 else:
                     # Unrecognized escape sequence.
-                    _EVENTS.append(KeyPressEvent(data, NO_MODS))
+                    _EVENTS.append(KeyEvent(data, NO_MODS))
                 return ""
 
-            case key_press:
-                _EVENTS.append(key_press)
+            case key:
+                _EVENTS.append(key)
                 return suffix
 
-    _EVENTS.append(KeyPressEvent(prefix, NO_MODS))
+    _EVENTS.append(KeyEvent(prefix, NO_MODS))
     return suffix
 
 def events():

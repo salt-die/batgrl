@@ -4,7 +4,7 @@ Move/click mouse, press keys or paste in terminal to show IO events.
 from textwrap import dedent
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.io import KeyPressEvent, MouseEvent, PasteEvent
+from nurses_2.io import KeyEvent, MouseEvent, PasteEvent
 from nurses_2.widgets.text_widget import TextWidget
 
 
@@ -12,8 +12,8 @@ class ShowIOEvents(TextWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def on_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
-        self._on_io(key_press_event)
+    def on_key(self, key_event: KeyEvent) -> bool | None:
+        self._on_io(key_event)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         self._on_io(mouse_event)
@@ -25,9 +25,9 @@ class ShowIOEvents(TextWidget):
         self.canvas[:] = " "
 
         match event:
-            case KeyPressEvent():
+            case KeyEvent():
                 text = """
-                Got key_press event:
+                Got key event:
                     key: {}
                     mods: {}
                 """

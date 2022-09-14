@@ -105,8 +105,8 @@ class PokeParticleField(TextParticleField):
                 self._reset_task.cancel()
                 self._update_task = asyncio.create_task(self.update())
 
-    def on_key_press(self, key_press_event):
-        if key_press_event.key == "r" and self._reset_task.done():
+    def on_key(self, key_event):
+        if key_event.key == "r" and self._reset_task.done():
             self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):

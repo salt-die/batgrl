@@ -12,7 +12,7 @@ from .. import easings
 from ..clamp import clamp
 from ..colors import ColorPair
 from ..data_structures import *
-from ..io import KeyPressEvent, MouseEvent, PasteEvent
+from ..io import KeyEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
 __all__ = (
@@ -241,7 +241,7 @@ class Widget:
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_key_press:
+    on_key:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -775,17 +775,17 @@ class Widget:
         setter = getattr(type(source), attr).fset
         return setter.instances[source].pop(self, None)
 
-    def dispatch_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
+    def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """
         Dispatch key press until handled. (A key press is handled if a handler returns True.)
         """
         return (
             any(
-                widget.dispatch_key_press(key_press_event)
+                widget.dispatch_key(key_event)
                 for widget in reversed(self.children)
                 if widget.is_enabled
             )
-            or self.on_key_press(key_press_event)
+            or self.on_key(key_event)
         )
 
     def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
@@ -814,7 +814,7 @@ class Widget:
             or self.on_paste(paste_event)
         )
 
-    def on_key_press(self, key_press_event: KeyPressEvent) -> bool | None:
+    def on_key(self, key_event: KeyEvent) -> bool | None:
         """
         Handle key press event. (Handled key presses should return True else False or None).
         """

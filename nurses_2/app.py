@@ -9,7 +9,7 @@ from time import monotonic
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import (
     _PartialMouseEvent,
-    KeyPressEvent,
+    KeyEvent,
     MouseButton,
     MouseEvent,
     MouseEventType,
@@ -29,7 +29,7 @@ class App(ABC):
 
     Parameters
     ----------
-    exit_key : KeyPressEvent | None, default: KeyPressEvent.ESCAPE
+    exit_key : KeyEvent | None, default: KeyEvent.ESCAPE
         Quit the app when this key is pressed.
     background_char : str, default: " "
         Background character for root widget.
@@ -51,7 +51,7 @@ class App(ABC):
 
     Attributes
     ----------
-    exit_key : KeyPressEvent | None
+    exit_key : KeyEvent | None
         Quit the app when this key is pressed.
     background_char : str
         Background character for root widget.
@@ -92,7 +92,7 @@ class App(ABC):
     def __init__(
         self,
         *,
-        exit_key: KeyPressEvent | None=KeyPressEvent.ESCAPE,
+        exit_key: KeyEvent | None=KeyEvent.ESCAPE,
         background_char: str=" ",
         background_color_pair: ColorPair=BLACK_ON_BLACK,
         title: str | None=None,
@@ -163,7 +163,7 @@ class App(ABC):
             if self.title:
                 env_out.set_title(self.title)
 
-            dispatch_key_press = root.dispatch_key_press
+            dispatch_key = root.dispatch_key
             dispatch_mouse = root.dispatch_mouse
             dispatch_paste = root.dispatch_paste
 
@@ -200,11 +200,11 @@ class App(ABC):
                 """
                 for event in env_in.events():
                     match event:
-                        case KeyPressEvent():
+                        case KeyEvent():
                             if event is self.exit_key:
                                 self.exit()
                                 break
-                            dispatch_key_press(event)
+                            dispatch_key(event)
                         case _PartialMouseEvent():
                             mouse_event = determine_nclicks(event)
                             dispatch_mouse(mouse_event)

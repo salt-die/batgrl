@@ -217,7 +217,7 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_key_press:
+    on_key:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -500,7 +500,7 @@ class TreeView(Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_key_press:
+    on_key:
         Handle key press event.
     on_mouse:
         Handle mouse event.

@@ -2,7 +2,7 @@
 A scrollable view widget.
 """
 from ...clamp import clamp
-from ...io import KeyPressEvent, MouseEventType, MouseEvent
+from ...io import KeyEvent, MouseEventType, MouseEvent
 from ..behaviors.grabbable_behavior import GrabbableBehavior
 from ..widget import Widget
 from .scrollbars import _HorizontalBar, _VerticalBar
@@ -214,7 +214,7 @@ class ScrollView(GrabbableBehavior, Widget):
         Subscribe to a widget property.
     unsubscribe:
         Unsubscribe to a widget property.
-    on_key_press:
+    on_key:
         Handle key press event.
     on_mouse:
         Handle mouse event.
@@ -382,11 +382,11 @@ class ScrollView(GrabbableBehavior, Widget):
         if self._view is not None:
             self._set_view_pos()
 
-    def on_key_press(self, key_press_event: KeyPressEvent):
+    def on_key(self, key_event: KeyEvent):
         if not self.arrow_keys_enabled:
             return False
 
-        match key_press_event.key:
+        match key_event.key:
             case "up":
                 self._scroll_up()
             case "down":
@@ -396,7 +396,7 @@ class ScrollView(GrabbableBehavior, Widget):
             case "right":
                 self._scroll_right()
             case _:
-                return super().on_key_press(key_press_event)
+                return super().on_key(key_event)
 
         return True
 

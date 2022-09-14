@@ -494,8 +494,8 @@ class Tetris(Image):
         while self.move_current_piece(dy=1):
             pass
 
-    def on_key_press(self, key_press_event):
-        match key_press_event.key:
+    def on_key(self, key_event):
+        match key_event.key:
             case "f1":
                 self.pause()
             case "enter":

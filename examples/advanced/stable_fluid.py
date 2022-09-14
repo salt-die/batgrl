@@ -85,8 +85,8 @@ class StableFluid(GraphicWidget):
 
         return True
 
-    def on_key_press(self, key_press_event):
-        match key_press_event.key:
+    def on_key(self, key_event):
+        match key_event.key:
             case "r" | "R":
                 self.on_size()  # Reset
                 return True

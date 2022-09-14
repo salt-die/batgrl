@@ -68,8 +68,8 @@ class Connect4(Widget):
     def current_player(self) -> str:
         return PLAYER_NAMES[self._player]
 
-    def on_key_press(self, key_press_event):
-        match key_press_event.key:
+    def on_key(self, key_event):
+        match key_event.key:
             case "r" | "R":
                 self.reset()
 
