@@ -7,6 +7,7 @@ from ...io import MouseEventType
 
 __all__ = "ButtonState", "ButtonBehavior"
 
+
 class ButtonState(str, Enum):
     """
     State of a button widget.
