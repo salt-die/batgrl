@@ -3,9 +3,8 @@ nurses_2 Documentation
 **********************
 
 Welcome to the nurses_2 docs. nurses_2 is a library for terminal graphics.
-It is a unique package that can turn your terminal into a low-res game engine,
-a tool for simulation visualizations, or a GUI with proper alpha compositing
-and responsive IO.
+It can render transparent images, animations, or videos. Perfect for simulation
+visualizations, games, or GUIs.
 
 .. toctree::
    :maxdepth: 1
