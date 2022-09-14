@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>A Proper Pong Preamble &#8212; Python 0.12.1 documentation</title>
+    <title>A Proper Pong Preamble &#8212; Python 0.13 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.12.1 documentation</p>
+    <p class="title logo__title">Python 0.13 documentation</p>
   
 </a>
     
@@ -285,7 +285,7 @@ that is equal to your terminal’s current size.</p>
 <section id="responding-to-input">
 <h2>Responding to Input<a class="headerlink" href="#responding-to-input" title="Permalink to this headline">#</a></h2>
 <p>You can add two more widgets to the game field for paddles. To allow the paddles to respond to key presses you must
-subclass widget and implement the <cite>on_key_press</cite> method.</p>
+subclass widget and implement the <cite>on_key</cite> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PADDLE_HEIGHT</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">PADDLE_WIDTH</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">WHITE_ON_BLUE</span> <span class="o">=</span> <span class="n">ColorPair</span><span class="o">.</span><span class="n">from_colors</span><span class="p">(</span><span class="n">WHITE</span><span class="p">,</span> <span class="n">BLUE</span><span class="p">)</span>
@@ -296,16 +296,16 @@ subclass widget and implement the <cite>on_key_press</cite> method.</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">player</span>
 
-    <span class="k">def</span> <span class="nf">on_key_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_press_event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_event</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key_press_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="mi">1</span>
-            <span class="k">elif</span> <span class="n">key_press_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key_press_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-=</span> <span class="mi">1</span>
-            <span class="k">elif</span> <span class="n">key_press_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>

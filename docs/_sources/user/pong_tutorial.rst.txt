@@ -72,7 +72,7 @@ If you run the app now, you should see a green rectangle.
 Responding to Input
 -------------------
 You can add two more widgets to the game field for paddles. To allow the paddles to respond to key presses you must
-subclass widget and implement the `on_key_press` method.
+subclass widget and implement the `on_key` method.
 
 .. code-block:: python
 
@@ -86,16 +86,16 @@ subclass widget and implement the `on_key_press` method.
             super().__init__(**kwargs)
             self.player = player
 
-        def on_key_press(self, key_press_event):
+        def on_key(self, key_event):
             if self.player == 1:
-                if key_press_event.key == "w":
+                if key_event.key == "w":
                     self.y -= 1
-                elif key_press_event.key == "s":
+                elif key_event.key == "s":
                     self.y += 1
             elif self.player == 2:
-                if key_press_event.key == "up":
+                if key_event.key == "up":
                     self.y -= 1
-                elif key_press_event.key == "down":
+                elif key_event.key == "down":
                     self.y += 1
 
             if self.y < 0:

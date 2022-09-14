@@ -23,7 +23,7 @@ in the widget is aligned with the position hint (the default is `"top-left"`).
 
 Responding to Events
 --------------------
-Each widget has `on_key_press`, `on_mouse`, and `on_paste` methods to enable responding to
+Each widget has `on_key`, `on_mouse`, and `on_paste` methods to enable responding to
 input events. Input events are dispatched to every widget until one of these methods return
 True to signal that the event was handled.
 

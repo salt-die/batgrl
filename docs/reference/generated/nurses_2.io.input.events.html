@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.io.input.events &#8212; Python 0.12.1 documentation</title>
+    <title>nurses_2.io.input.events &#8212; Python 0.13 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.12.1 documentation</p>
+    <p class="title logo__title">Python 0.13 documentation</p>
   
 </a>
     
@@ -546,7 +546,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyPressEvent</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyEvent</span></code></a>(*args, **kwargs)</p></td>
 <td><p>A key press event.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mods</span></code></a>(*args, **kwargs)</p></td>
@@ -567,9 +567,9 @@
 </tbody>
 </table>
 <dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">KeyPressEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#nurses_2.io.input.events.KeyPressEvent" title="nurses_2.io.input.events.KeyPressEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.io.input.events.KeyPressEvent</span></code></a></p>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.io.input.events.</span></span><span class="sig-name descname"><span class="pre">KeyEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.io.input.events.KeyEvent</span></code></a></p>
 <p>A key press event.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -605,37 +605,37 @@
 </tbody>
 </table>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.ENTER">
-<span class="sig-name descname"><span class="pre">ENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">KeyPressEvent(key=&lt;Key.Enter:</span> <span class="pre">'enter'&gt;,</span> <span class="pre">mods=Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False))</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.ENTER" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent.ENTER">
+<span class="sig-name descname"><span class="pre">ENTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">KeyEvent(key=&lt;Key.Enter:</span> <span class="pre">'enter'&gt;,</span> <span class="pre">mods=Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False))</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent.ENTER" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.ESCAPE">
-<span class="sig-name descname"><span class="pre">ESCAPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">KeyPressEvent(key=&lt;Key.Escape:</span> <span class="pre">'escape'&gt;,</span> <span class="pre">mods=Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False))</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.ESCAPE" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent.ESCAPE">
+<span class="sig-name descname"><span class="pre">ESCAPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">KeyEvent(key=&lt;Key.Escape:</span> <span class="pre">'escape'&gt;,</span> <span class="pre">mods=Mods(alt=False,</span> <span class="pre">ctrl=False,</span> <span class="pre">shift=False))</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent.ESCAPE" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.count" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent.count" title="Permalink to this definition">#</a></dt>
 <dd><p>Return number of occurrences of value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.index" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent.index" title="Permalink to this definition">#</a></dt>
 <dd><p>Return first index of value.</p>
 <p>Raises ValueError if the value is not present.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.key">
-<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.io.input.keys.html#nurses_2.io.input.keys.Key" title="nurses_2.io.input.keys.Key"><span class="pre">nurses_2.io.input.keys.Key</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.key" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.io.input.keys.html#nurses_2.io.input.keys.Key" title="nurses_2.io.input.keys.Key"><span class="pre">nurses_2.io.input.keys.Key</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent.key" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyPressEvent.mods">
-<span class="sig-name descname"><span class="pre">mods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><span class="pre">nurses_2.io.input.events.Mods</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.KeyPressEvent.mods" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.io.input.events.KeyEvent.mods">
+<span class="sig-name descname"><span class="pre">mods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.io.input.events.Mods" title="nurses_2.io.input.events.Mods"><span class="pre">nurses_2.io.input.events.Mods</span></a></em><a class="headerlink" href="#nurses_2.io.input.events.KeyEvent.mods" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 

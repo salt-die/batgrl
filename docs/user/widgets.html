@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Widgets &#8212; Python 0.12.1 documentation</title>
+    <title>Widgets &#8212; Python 0.13 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.12.1 documentation</p>
+    <p class="title logo__title">Python 0.13 documentation</p>
   
 </a>
     
@@ -229,7 +229,7 @@ in the widget is aligned with the position hint (the default is <cite>“top-lef
 </section>
 <section id="responding-to-events">
 <h2>Responding to Events<a class="headerlink" href="#responding-to-events" title="Permalink to this headline">#</a></h2>
-<p>Each widget has <cite>on_key_press</cite>, <cite>on_mouse</cite>, and <cite>on_paste</cite> methods to enable responding to
+<p>Each widget has <cite>on_key</cite>, <cite>on_mouse</cite>, and <cite>on_paste</cite> methods to enable responding to
 input events. Input events are dispatched to every widget until one of these methods return
 True to signal that the event was handled.</p>
 <p>In addition to input events, widgets may want to update when other widget properties change.
