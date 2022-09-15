@@ -258,31 +258,38 @@ class GraphicWidget(Widget):
         Paint region given by `source` into `canvas_view` and `colors_view`.
         """
         vert_slice, hori_slice = source
-        source_tex = self.texture[2 * vert_slice.start: 2 * vert_slice.stop, hori_slice]
-        h, w, _ = colors_view.shape
+        t = 2 * vert_slice.start
+        b = 2 * vert_slice.stop
+
+        texture = self.texture
+        even_rows = texture[t: b: 2, hori_slice]
+        odd_rows = texture[t + 1: b: 2, hori_slice]
+
+        foreground = colors_view[..., :3]
+        background = colors_view[..., 3:]
 
         if not self.is_transparent:
-            colors_view[:] = source_tex[..., :3].reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
+            foreground[:] = even_rows[..., :3]
+            background[:] = odd_rows[..., :3]
         else:
-            # If alpha compositing with a non-graphic widget, will look better to replace
+            # If alpha compositing with a text widget, will look better to replace
             # foreground colors with background colors in most cases.
             mask = canvas_view != "▀"
-            colors_view[..., :3][mask] = colors_view[..., 3:][mask]
+            foreground[mask] = background[mask]
 
-            buffer = np.subtract(
-                source_tex[..., :3],
-                colors_view.reshape(h, w, 2, 3).swapaxes(1, 2).reshape(h * 2, w, 3),  # TODO: This creates a copy, should break into two views
-                dtype=float,
-            )
-            buffer *= source_tex[..., 3, None]
-            buffer *= self.alpha / 255
+            even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=float)
+            odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=float)
 
-            np.add(
-                buffer.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6),
-                colors_view,
-                out=colors_view,
-                casting="unsafe",
-            )
+            norm_alpha = self.alpha / 255
+
+            even_buffer *= even_rows[..., 3, None]
+            even_buffer *= norm_alpha
+
+            odd_buffer *= odd_rows[..., 3, None]
+            odd_buffer *= norm_alpha
+
+            np.add(even_buffer, foreground, out=foreground, casting="unsafe")
+            np.add(odd_buffer, background, out=background, casting="unsafe")
 
         canvas_view[:] = "▀"
         self.render_children(source, canvas_view, colors_view)
