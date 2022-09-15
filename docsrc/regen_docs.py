@@ -20,6 +20,7 @@ BUILD_DIR = "_build"
 SPHINX_COMMAND = [SPHINX_BUILD, "-M", "html", SOURCE_DIR, BUILD_DIR]
 
 DIRECTORIES_TO_REMOVE = (
+    DOCS,
     DOC_SRC / BUILD_DIR,
     DOC_SRC / "reference" / "generated",
 )
@@ -36,11 +37,6 @@ if __name__ == "__main__":
             shutil.rmtree(directory)
 
     subprocess.run(SPHINX_COMMAND)
-
-    try:
-        shutil.rmtree(DOCS)
-    except FileNotFoundError:
-        pass
 
     shutil.copytree(DOC_SRC / BUILD_DIR / "html", DOCS)
     (DOCS / ".nojekyll").touch()
