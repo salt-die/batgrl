@@ -12,7 +12,7 @@ from ..events import Key, KeyEvent, _PartialMouseEvent, PasteEvent
 from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
 from .mouse_bindings import TERM_SGR, TYPICAL
 
-_EVENTS = [ ]
+_EVENTS = []
 MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<[\d;]+[mM]|M...)\Z")
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
 FILENO = sys.stdin.fileno()
@@ -105,6 +105,8 @@ def events():
     """
     Yield input events.
     """
+    _EVENTS.clear()
+
     data = ""
 
     while chars := read_stdin():
@@ -114,5 +116,3 @@ def events():
         data = _find_longest_match(data)
 
     yield from _EVENTS
-
-    _EVENTS.clear()
