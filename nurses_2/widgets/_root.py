@@ -27,7 +27,7 @@ class _Root(Widget):
         self.background_char = background_char
         self.background_color_pair = background_color_pair
 
-        self.size = env_out.get_size()  # Setting this property implicitly calls `on_size` to initialize canvas and colors.
+        self.size = env_out.get_size()
 
     def on_size(self):
         """
