@@ -1,6 +1,6 @@
 """
 Directions:
-    'esc' to quit
+    'ctrl+c' to quit
     'r' to reset
     'click' to poke
 """

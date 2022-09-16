@@ -2,7 +2,10 @@
 Base for creating terminal applications.
 """
 import asyncio
+import sys
 from abc import ABC, abstractmethod
+from io import StringIO
+from contextlib import redirect_stderr
 from pathlib import Path
 from time import monotonic
 
@@ -29,8 +32,6 @@ class App(ABC):
 
     Parameters
     ----------
-    exit_key : KeyEvent | None, default: KeyEvent.ESCAPE
-        Quit the app when this key is pressed.
     background_char : str, default: " "
         Background character for root widget.
     background_color_pair : ColorPair, default: BLACK_ON_BLACK
@@ -51,14 +52,12 @@ class App(ABC):
 
     Attributes
     ----------
-    exit_key : KeyEvent | None
-        Quit the app when this key is pressed.
     background_char : str
         Background character for root widget.
     background_color_pair : ColorPair
         Background color pair for root widget.
     title : str | None
-        Set terminal title (if supported).
+        The terminal's title (if supported).
     double_click_timeout : float
         Max duration of a double-click. Max duration of a triple-click
         is double this value.
@@ -67,9 +66,7 @@ class App(ABC):
     color_theme : ColorTheme
         Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable` widgets.
     asciicast_path : Path | None
-        Record the terminal in asciicast v2 file format if a path is provided.
-        Resizing the terminal while recording isn't currently supported by
-        the asciicast format -- doing so will corrupt the recording.
+        Path where asciicast recording will be saved.
     root : _Root | None
         Root of widget tree.
     children : list[Widget]
@@ -92,7 +89,6 @@ class App(ABC):
     def __init__(
         self,
         *,
-        exit_key: KeyEvent | None=KeyEvent.ESCAPE,
         background_char: str=" ",
         background_color_pair: ColorPair=BLACK_ON_BLACK,
         title: str | None=None,
@@ -103,7 +99,6 @@ class App(ABC):
     ):
         self.root = None
 
-        self.exit_key = exit_key
         self.background_char = background_char
         self.background_color_pair = background_color_pair
         self.title = title
@@ -136,9 +131,12 @@ class App(ABC):
         Run the app.
         """
         try:
-            asyncio.run(self._run_async())
+            with redirect_stderr(StringIO()) as defer_stderr:
+                asyncio.run(self._run_async())
         except asyncio.CancelledError:
             pass
+        finally:
+            print(defer_stderr.getvalue(), file=sys.stderr)
 
     def exit(self):
         """
@@ -200,10 +198,10 @@ class App(ABC):
                 """
                 for event in env_in.events():
                     match event:
+                        case KeyEvent.CTRL_C:
+                            self.exit()
+                            return
                         case KeyEvent():
-                            if event is self.exit_key:
-                                self.exit()
-                                break
                             dispatch_key(event)
                         case _PartialMouseEvent():
                             mouse_event = determine_nclicks(event)

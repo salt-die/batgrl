@@ -2,7 +2,7 @@
 Credit for ascii art logo to Matthew Barber (https://ascii.matthewbarber.io/art/python/)
 
 Directions:
-    'esc' to quit
+    'ctrl+c' to quit
     'r' to reset
     'click' to poke
 """
