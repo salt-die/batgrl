@@ -24,7 +24,7 @@ Let's just get a basic app up and running. Create a new file named `pong.py`.
     if __name__ == "__main__":
         Pong().run()
 
-If you run this file, you should just see a blank terminal. To exit, press `escape`. The `on_start` method
+If you run this file, you should just see a blank terminal. To exit, press `ctrl+c`. The `on_start` method
 is where you add widgets to and schedule tasks for your app. Note that `on_start` is an async method.
 
 Simple Graphics
