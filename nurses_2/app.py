@@ -136,7 +136,7 @@ class App(ABC):
         except asyncio.CancelledError:
             pass
         finally:
-            print(defer_stderr.getvalue(), file=sys.stderr)
+            print(defer_stderr.getvalue(), file=sys.stderr, end="")
 
     def exit(self):
         """
