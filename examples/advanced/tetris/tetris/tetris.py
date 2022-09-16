@@ -165,7 +165,8 @@ class Tetris(Image):
 
     def on_remove(self):
         super().on_remove()
-        self.modal_screen.destroy()
+        if self.modal_screen.parent:
+            self.modal_screen.parent.remove_widget(self.modal_screen)
         self._game_task.cancel()
         self._lock_down_task.cancel()
         for task in self._clear_lines_queue:
