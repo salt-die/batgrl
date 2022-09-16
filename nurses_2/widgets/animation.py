@@ -245,15 +245,12 @@ class Animation(Widget):
         self.interpolation = interpolation
         self.loop = loop
         self.reverse = reverse
-
-    def on_add(self):
-        super().on_add()
         self._i = len(self.frames) - 1 if self.reverse else 0
-        self._animation_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._animation_task = None
 
     def on_remove(self):
+        self.pause()
         super().on_remove()
-        self._animation_task.cancel()
 
     def on_size(self):
         for frame in self.frames:
@@ -285,7 +282,7 @@ class Animation(Widget):
             try:
                 await asyncio.sleep(self.frame_durations[self._i])
             except asyncio.CancelledError:
-                break
+                return
 
             if self.reverse:
                 self._i -= 1
@@ -306,7 +303,7 @@ class Animation(Widget):
         """
         Play animation.
         """
-        self._animation_task.cancel()
+        self.pause()
 
         if self._i == 0 and self.reverse:
             self._i = len(self.frames) - 1
@@ -320,13 +317,14 @@ class Animation(Widget):
         """
         Pause animation.
         """
-        self._animation_task.cancel()
+        if self._animation_task is not None:
+            self._animation_task.cancel()
 
     def stop(self):
         """
         Stop the animation and reset current frame.
         """
-        self._animation_task.cancel()
+        self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
