@@ -112,8 +112,9 @@ class KeyEvent(namedtuple("KeyEvent", "key mods")):
         return super().__new__(cls, *args, **kwargs)
 
 
-KeyEvent.ESCAPE = KeyEvent(Key.Escape, Mods.NO_MODS)
+KeyEvent.CTRL_C = KeyEvent("c", Mods(False, True, False))
 KeyEvent.ENTER = KeyEvent(Key.Enter, Mods.NO_MODS)
+KeyEvent.ESCAPE = KeyEvent(Key.Escape, Mods.NO_MODS)
 
 
 class MouseEventType(str, Enum):
