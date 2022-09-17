@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import Color, ColorPair
+from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.animation import Animation, Interpolation
 from nurses_2.widgets.color_picker import ColorPicker
 from nurses_2.widgets.file_chooser import FileChooser
@@ -12,9 +12,6 @@ from nurses_2.widgets.window import Window
 
 ASSETS = Path(__file__).parent.parent / "assets"
 CAVEMAN_PATH = ASSETS / "caveman"
-
-LIGHT_BLUE = Color.from_hex("56a1e2")
-DARK_PURPLE = Color.from_hex("020028")
 
 XS = np.arange(20)
 
@@ -43,7 +40,7 @@ class MyApp(App):
             xlabel="X Values",
             ylabel="Y Values",
             legend_labels=("Before", "During", "After"),
-            background_color_pair=ColorPair.from_colors(LIGHT_BLUE, DARK_PURPLE),
+            background_color_pair=DEFAULT_COLOR_THEME.primary_dark_color_pair,
         )
 
         self.add_widgets(window_1, window_2, window_3, window_4)
