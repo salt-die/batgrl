@@ -378,13 +378,13 @@ in the middle of each half of the play field. Add the following to your <cite>on
 </pre></div>
 </div>
 <p>The <cite>anchor</cite> keyword argument is used for position hints to specify which point the of the widget
-is aligned with the hint. The default is <cite>“top-left”</cite>.</p>
+is aligned with the hint. The default is <cite>“top_left”</cite>.</p>
 </section>
 <section id="scheduling-tasks">
 <h2>Scheduling Tasks<a class="headerlink" href="#scheduling-tasks" title="Permalink to this headline">#</a></h2>
 <p>Pong isn’t complete without a ball. Because nurses_2 uses <cite>asyncio</cite>, you can create a task (with <cite>asyncio.create_task</cite>)
 to constantly update the ball’s position. In the code below, the task is created in <cite>on_add</cite> which is
-called when a widget is added to the widget tree.</p>
+called when the widget is added to the widget tree.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Ball</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left_paddle</span><span class="p">,</span> <span class="n">right_paddle</span><span class="p">,</span> <span class="n">left_label</span><span class="p">,</span> <span class="n">right_label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

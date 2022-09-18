@@ -172,13 +172,13 @@ in the middle of each half of the play field. Add the following to your `on_star
     self.add_widget(game_field)
 
 The `anchor` keyword argument is used for position hints to specify which point the of the widget
-is aligned with the hint. The default is `"top-left"`.
+is aligned with the hint. The default is `"top_left"`.
 
 Scheduling Tasks
 ----------------
 Pong isn't complete without a ball. Because nurses_2 uses `asyncio`, you can create a task (with `asyncio.create_task`)
 to constantly update the ball's position. In the code below, the task is created in `on_add` which is
-called when a widget is added to the widget tree.
+called when the widget is added to the widget tree.
 
 .. code-block:: python
 

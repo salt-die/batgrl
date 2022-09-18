@@ -4,7 +4,7 @@
 The Widget Tree
 ###############
 
-Widgets your app are organized in a tree.  The root of the tree is a special widget that always
+Widgets in your app are organized in a tree.  The root of the tree is a special widget that always
 matches your terminal's size. The root has `children` widgets and these widget can have `children`
 of their own. Widgets that are part of the widget tree can access the root widget with the `root`
 property.
