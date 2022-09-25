@@ -3,18 +3,22 @@ A video player widget.
 """
 import asyncio
 import atexit
-from pathlib import Path
 import time
+import warnings
+from pathlib import Path
+from platform import uname
 
 import cv2
+import numpy as np
 
 from ..colors import ABLACK
 from .graphic_widget import GraphicWidget, Interpolation
 
 __all__ = "Interpolation", "VideoPlayer"
 
+_IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
-# Seeking is not yet implemented
+
 class VideoPlayer(GraphicWidget):
     """
     A video player.
@@ -22,7 +26,8 @@ class VideoPlayer(GraphicWidget):
     Parameters
     ----------
     source : pathlib.Path | str | int
-        A path to video, URL to video stream, or capturing device (by index).
+        A path to video, URL to video stream, or video capturing device (by index).
+        Trying to open a video capturing device on WSL will issue a warning.
     loop : bool, default: True
         If true, restart video after last frame.
     default_color : AColor, default: AColor(0, 0, 0, 0)
@@ -72,9 +77,11 @@ class VideoPlayer(GraphicWidget):
     Attributes
     ----------
     source : Path | str | int
-        Source of video.
+        A path, URL, or capturing device (by index) of the video.
     loop : bool, default: True
-        If true, restart video after last frame.
+        If true, video will restart after last frame.
+    is_device : bool
+        If true, video is from a video capturing device.
     texture : numpy.ndarray
         uint8 RGBA color array.
     default_color : AColor
@@ -158,6 +165,8 @@ class VideoPlayer(GraphicWidget):
         Play the video. Returns a task.
     pause:
         Pause the video.
+    seek:
+        Seek to certain time (in seconds) in the video.
     stop:
         Stop the video.
     to_png:
@@ -219,34 +228,54 @@ class VideoPlayer(GraphicWidget):
             is_transparent=is_transparent,
             **kwargs
         )
+        self._current_frame = None
         self._resource = None
-        self._source = source
         self._video_task = None
+        self.source = source
         self.loop = loop
 
     def on_remove(self):
-        self.pause()
-        self.close()
         super().on_remove()
+        self.pause()
+        self._release_resource()
 
     @property
     def source(self) -> Path | str | int:
         return self._source
 
     @source.setter
-    def source(self, new_source):
-        self.stop()
-        self._source = new_source
+    def source(self, source: Path | str | int):
+        self.pause()
+        self._release_resource()
+        self._source = source
+        self._load_resource()
 
-    def _load_video(self):
+    @property
+    def is_device(self):
+        """
+        Return true if source is a video capturing device.
+        """
+        return isinstance(self._source, int)
+
+    def _load_resource(self):
         source = self.source
+
+        if _IS_WSL and self.is_device:
+            # Problem: WSL doesn't support most USB devices (yet?), and trying to open one
+            # with cv2 will pollute the terminal with cv2 errors (which can't be redirected
+            # without duping file descriptors -- though this may be done sometime in the future).
+            # Solution: Prevent the error.
+            warnings.warn("device not available on WSL")
+            self._resource = None
+            return
+
         if isinstance(source, Path):
             source = str(source.absolute())
 
         self._resource = cv2.VideoCapture(source)
         atexit.register(self._resource.release)
 
-    def close(self):
+    def _release_resource(self):
         if self._resource is not None:
             self._resource.release()
             atexit.unregister(self._resource.release)
@@ -255,77 +284,49 @@ class VideoPlayer(GraphicWidget):
             self.texture[:] = self.default_color
 
     def on_size(self):
-        super().on_size()
+        h, w = self.size
+        h *= 2
+        self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
 
-        # If video is paused, resize current frame.
-        if (
-            self._video_task is not None
-            and self._video_task.done()
-            and self._current_frame is not None
-        ):
-            h, w, _ = self.texture.shape
-            resized_frame = cv2.resize(
+        if self._current_frame is not None:
+            self.texture[..., :3] = cv2.resize(
                 self._current_frame,
                 (w, h),
                 interpolation=Interpolation._to_cv_enum[self.interpolation],
             )
-            self.texture[..., :3] = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+
+    def _time_delta(self) -> float:
+        return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
 
     async def _play_video(self):
-        # Bring in to locals:
-        resize = cv2.resize
-        recolor = cv2.cvtColor
-        MSEC = cv2.CAP_PROP_POS_MSEC
-        BGR2RGB = cv2.COLOR_BGR2RGB
-        monotonic = time.monotonic
+        if self._resource is None:
+            return
 
-        video_get = self._resource.get
-        video_grab = self._resource.grab
-        video_retrieve = self._resource.retrieve
+        self._start_time = self._time_delta()
 
-        video_grab()
-        start_time = monotonic() - video_get(MSEC) / 1000
-
-        while True:
-            if not video_grab():
-                break
-
-            seconds_ahead = video_get(MSEC) / 1000 + start_time - monotonic()
-            if seconds_ahead < 0:
+        while self._resource.grab():
+            if self.is_device:
+                seconds_ahead = 0
+            elif (seconds_ahead := self._start_time - self._time_delta()) < 0:
                 continue
-
-            ret_flag, self._current_frame = video_retrieve()
-            if not ret_flag:
-                break
-
-            size = self.width, 2 * self.height
-            resized_frame = resize(
-                self._current_frame,
-                size,
-                interpolation=Interpolation._to_cv_enum[self.interpolation],
-            )
-            self.texture[..., :3] = recolor(resized_frame, BGR2RGB)
 
             try:
                 await asyncio.sleep(seconds_ahead)
             except asyncio.CancelledError:
-                self.close()
                 return
 
-        self.close()
+            _, frame = self._resource.retrieve()
+            self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            self.texture[..., :3] =  cv2.resize(
+                self._current_frame,
+                (self.width, 2 * self.height),
+                interpolation=Interpolation._to_cv_enum[self.interpolation],
+            )
+
         if self.loop:
+            self.seek(0)
             self.play()
-
-    def play(self) -> asyncio.Task:
-        """
-        Play video.
-        """
-        if self._resource is None:
-            self._load_video()
-
-        self.pause()
-        self._video_task = asyncio.create_task(self._play_video())
-        return self._video_task
 
     def pause(self):
         """
@@ -334,9 +335,32 @@ class VideoPlayer(GraphicWidget):
         if self._video_task is not None:
             self._video_task.cancel()
 
+    def play(self) -> asyncio.Task:
+        """
+        Play video.
+        """
+        self.pause()
+
+        if self._resource is None:
+            self._load_resource()
+
+        self._video_task = asyncio.create_task(self._play_video())
+        return self._video_task
+
+    def seek(self, time: float):
+        """
+        If supported, seek to certain time (in seconds) in the video.
+        """
+        if self._resource is not None and not self.is_device:
+            self._resource.set(cv2.CAP_PROP_POS_MSEC, time * 1000)
+            self._resource.grab()
+            self._start_time = self._time_delta()
+
     def stop(self):
         """
         Stop video.
         """
         self.pause()
-        self.close()
+        self.seek(0)
+        self._current_frame = None
+        self.texture[:] = self.default_color

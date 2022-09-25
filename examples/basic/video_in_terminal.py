@@ -1,19 +1,20 @@
 """
 An example of how to play videos with nurses.
-"""
-import pathlib
 
+`VideoPlayer.source` can be a `pathlib.Path` to a video, an URL as a string, or an int for a capturing device.
+"""
 from nurses_2.app import App
 from nurses_2.widgets.video_player import VideoPlayer
 
-PATH_TO_VIDEO = pathlib.Path("path") / "to" / "video.mp4"
+LINK_TO_VIDEO = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
 
 class MyApp(App):
     async def on_start(self):
-        player = VideoPlayer(source=PATH_TO_VIDEO, size_hint=(1.0, 1.0))
+        player = VideoPlayer(source=LINK_TO_VIDEO, size_hint=(1.0, 1.0))  # Try `source=0` to capture a webcam.
 
         self.add_widget(player)
+        player.seek(100)
         player.play()
 
 

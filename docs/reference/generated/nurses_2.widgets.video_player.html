@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.video_player &#8212; Python 0.13.3 documentation</title>
+    <title>nurses_2.widgets.video_player &#8212; Python 0.13.4 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.13.3 documentation</p>
+    <p class="title logo__title">Python 0.13.4 documentation</p>
   
 </a>
     
@@ -559,7 +559,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>source</strong><span class="classifier">pathlib.Path | str | int</span></dt><dd><p>A path to video, URL to video stream, or capturing device (by index).</p>
+<dt><strong>source</strong><span class="classifier">pathlib.Path | str | int</span></dt><dd><p>A path to video, URL to video stream, or video capturing device (by index).
+Trying to open a video capturing device on WSL will issue a warning.</p>
 </dd>
 <dt><strong>loop</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, restart video after last frame.</p>
 </dd>
@@ -610,9 +611,11 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>source</strong><span class="classifier">Path | str | int</span></dt><dd><p>Source of video.</p>
+<dt><strong>source</strong><span class="classifier">Path | str | int</span></dt><dd><p>A path, URL, or capturing device (by index) of the video.</p>
 </dd>
-<dt><strong>loop</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, restart video after last frame.</p>
+<dt><strong>loop</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, video will restart after last frame.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.video_player.VideoPlayer.is_device" title="nurses_2.widgets.video_player.VideoPlayer.is_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_device</span></code></a><span class="classifier">bool</span></dt><dd><p>Return true if source is a video capturing device.</p>
 </dd>
 <dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
 </dd>
@@ -706,73 +709,76 @@ widget is not transparent.</p>
 <tr class="row-even"><td><p><strong>pause:</strong></p></td>
 <td><p>Pause the video.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>stop:</strong></p></td>
+<tr class="row-odd"><td><p><strong>seek:</strong></p></td>
+<td><p>Seek to certain time (in seconds) in the video.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>stop:</strong></p></td>
 <td><p>Stop the video.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>to_png:</strong></p></td>
+<tr class="row-odd"><td><p><strong>to_png:</strong></p></td>
 <td><p>Write <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code> to provided path as a <cite>png</cite> image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>update_geometry:</strong></p></td>
+<tr class="row-odd"><td><p><strong>update_geometry:</strong></p></td>
 <td><p>Called when parent is resized. Applies size and pos hints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
+<tr class="row-even"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert point in absolute coordinates to local coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>collides_point:</strong></p></td>
+<tr class="row-odd"><td><p><strong>collides_point:</strong></p></td>
 <td><p>True if point is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>collides_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>collides_widget:</strong></p></td>
 <td><p>True if other is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>add_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>add_widget:</strong></p></td>
 <td><p>Add a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>add_widgets:</strong></p></td>
+<tr class="row-even"><td><p><strong>add_widgets:</strong></p></td>
 <td><p>Add multiple child widgets.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>remove_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>remove_widget:</strong></p></td>
 <td><p>Remove a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>pull_to_front:</strong></p></td>
+<tr class="row-even"><td><p><strong>pull_to_front:</strong></p></td>
 <td><p>Move to end of widget stack so widget is drawn last.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>walk_from_root:</strong></p></td>
+<tr class="row-odd"><td><p><strong>walk_from_root:</strong></p></td>
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>walk:</strong></p></td>
+<tr class="row-even"><td><p><strong>walk:</strong></p></td>
 <td><p>Yield all descendents.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>subscribe:</strong></p></td>
+<tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
+<tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_key:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_key:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>tween:</strong></p></td>
+<tr class="row-even"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_add:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_add:</strong></p></td>
 <td><p>Called when widget is added to widget tree.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_remove:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_remove:</strong></p></td>
 <td><p>Called when widget is removed from widget tree.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>prolicide:</strong></p></td>
+<tr class="row-odd"><td><p><strong>prolicide:</strong></p></td>
 <td><p>Recursively remove all children.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>destroy:</strong></p></td>
+<tr class="row-even"><td><p><strong>destroy:</strong></p></td>
 <td><p>Destroy this widget and all descendents.</p></td>
 </tr>
 </tbody>
@@ -827,11 +833,6 @@ widget is not transparent.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.center" title="Permalink to this definition">#</a></dt>
 <dd><p>The center of the widget in local coordinates.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.close" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.collides_point">
@@ -891,6 +892,12 @@ widget is not transparent.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.interpolation">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interpolation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></em><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.interpolation" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.is_device">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_device</span></span><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.is_device" title="Permalink to this definition">#</a></dt>
+<dd><p>Return true if source is a video capturing device.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.left">
@@ -1026,6 +1033,12 @@ widget is not transparent.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.rows">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.rows" title="Permalink to this definition">#</a></dt>
 <dd><p>Height of widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.video_player.VideoPlayer.seek">
+<span class="sig-name descname"><span class="pre">seek</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.video_player.VideoPlayer.seek" title="Permalink to this definition">#</a></dt>
+<dd><p>If supported, seek to certain time (in seconds) in the video.</p>
 </dd></dl>
 
 <dl class="py property">
