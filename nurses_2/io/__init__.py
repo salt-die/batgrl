@@ -63,6 +63,7 @@ def io(asciicast_path: Path | None):
     env_out.enable_mouse_support()
     env_out.enable_bracketed_paste()
     env_out.enter_alternate_screen()
+    env_out.hide_cursor()
     env_out.flush()
 
     try:

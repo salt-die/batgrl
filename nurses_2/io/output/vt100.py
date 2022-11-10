@@ -113,6 +113,9 @@ class Vt100_Output:
     def disable_bracketed_paste(self):
         self._buffer.append("\x1b[?2004l")
 
+    def hide_cursor(self):
+        self._buffer.append("\x1b[?25l")
+
     def show_cursor(self):
         self._buffer.append("\x1b[?25h")
 

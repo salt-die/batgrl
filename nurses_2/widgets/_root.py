@@ -111,6 +111,8 @@ class _Root(Widget):
 
         self.render_children((slice(0, height), slice(0, width)), canvas, colors)
 
+        write(f"\x1b7")  # Save cursor
+
         if self._redraw_all:
             ys, xs = np.indices((height, width)).reshape(2, height * width)
             self._redraw_all = False
@@ -128,8 +130,6 @@ class _Root(Widget):
 
             ys, xs = np.nonzero(char_diffs)
 
-        write("\x1b[?25l")  # Hide cursor
-
         for y, x, (fr, fg, fb, br, bg, bb), char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
@@ -137,6 +137,6 @@ class _Root(Widget):
                 f"{char}"
             )
 
-        write("\x1b[0m")  # Reset attributes
+        write(f"\x1b8")  # Restore cursor
 
         env_out.flush()
