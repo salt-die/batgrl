@@ -11,8 +11,8 @@ class MyApp(App):
         sv = ScrollView(allow_horizontal_scroll=False, show_horizontal_bar=False, show_vertical_bar=False)
         label = TextWidget(size=(2, 100), default_color_pair=DEFAULT_COLOR_THEME.primary_color_pair)
 
-        label.subscribe(window, "pos", lambda: label.add_text(f"{window.pos}"))
-        label.subscribe(window, "size", lambda: label.add_text(f"{window.size}", row=1))
+        label.subscribe(window, "pos", lambda: label.add_text(f"{window.pos}".ljust(30)))
+        label.subscribe(window, "size", lambda: label.add_text(f"{window.size}".ljust(30), row=1))
 
         window.view = sv
         sv.view = label
