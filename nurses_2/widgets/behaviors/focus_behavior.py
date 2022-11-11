@@ -2,7 +2,7 @@
 Focus behavior for a widget.
 """
 from collections import deque
-from weakref import ref, ReferenceType
+from weakref import ref, ReferenceType, WeakSet
 
 from ...io import MouseEventType
 
@@ -45,7 +45,7 @@ class FocusBehavior:
         Called when widget loses focus.
     """
     __focus_widgets: deque[ReferenceType] = deque()
-    __focused = None
+    __focused = WeakSet()
 
     def __init__(self, ptf_on_focus=True, **kwargs):
         FocusBehavior.__focus_widgets.append(ref(self))
@@ -57,26 +57,36 @@ class FocusBehavior:
         """
         Return True if widget has focus.
         """
-        return FocusBehavior.__focused is not None and FocusBehavior.__focused() is self
+        return self in FocusBehavior.__focused
 
     @property
     def any_focused(self) -> bool:
         """
         Return True if any widget has focus.
         """
-        return FocusBehavior.__focused is not None and FocusBehavior.__focused() is not None
+        return bool(FocusBehavior.__focused)
 
     def focus(self):
         """
         Focus widget.
         """
-        if self.is_focused:
-            return
+        ancestors = WeakSet(
+            parent
+            for parent in self.walk(reverse=True) if isinstance(parent, FocusBehavior)
+        )
+        ancestors.add(self)
 
-        if self.any_focused:
-            FocusBehavior.__focused().blur()
+        focused = FocusBehavior.__focused
+        FocusBehavior.__focused = ancestors
 
-        FocusBehavior.__focused = ref(self)
+        for blurred in focused - ancestors:
+            blurred.on_blur()
+
+        for needs_focus in ancestors - focused:
+            if needs_focus.ptf_on_focus:
+                needs_focus.pull_to_front()
+
+            needs_focus.on_focus()
 
         focus_widgets = FocusBehavior.__focus_widgets
         while (widget := focus_widgets[0]()) is not self:
@@ -85,17 +95,12 @@ class FocusBehavior:
             else:
                 focus_widgets.rotate(-1)
 
-        if self.ptf_on_focus:
-            self.pull_to_front()
-
-        self.on_focus()
-
     def blur(self):
         """
         Un-focus widget.
         """
         if self.is_focused:
-            FocusBehavior.__focused = None
+            FocusBehavior.__focused.remove(self)
             self.on_blur()
 
     def focus_next(self):
@@ -144,12 +149,12 @@ class FocusBehavior:
         return True
 
     def dispatch_mouse(self, mouse_event):
-        if (
-            mouse_event.event_type is MouseEventType.MOUSE_DOWN
-            and not self.is_focused
-            and self.collides_point(mouse_event.position)
-        ):
-            self.focus()
+        if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
+            collides = self.collides_point(mouse_event.position)
+            if not self.is_focused and collides:
+                self.focus()
+            elif self.is_focused and not collides:
+                self.blur()
 
         return super().dispatch_mouse(mouse_event)
 
