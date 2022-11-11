@@ -145,7 +145,7 @@ class GrabResizeBehavior:
         **kwargs
     ):
         super().__init__(**kwargs)
-        self._border_size = Size(1, 1)
+        self._border_size = border_size
 
         self.allow_vertical_resize = allow_vertical_resize
         self.allow_horizontal_resize = allow_horizontal_resize
@@ -155,11 +155,12 @@ class GrabResizeBehavior:
 
         borders = ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1))
         self._borders = tuple(_Border(*border) for border in borders)
+
+        self.add_widgets(self._borders)
+
         self.border_alpha = border_alpha
         self.border_color = border_color
         self.border_size = border_size
-
-        self.add_widgets(self._borders)
 
     @property
     def grab_resize_min_height(self) -> int:
