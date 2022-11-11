@@ -192,7 +192,7 @@ class VideoPlayer(GraphicWidget):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents.
+        Yield all descendents (or ancestors if `reverse` is True).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

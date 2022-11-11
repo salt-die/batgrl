@@ -236,7 +236,7 @@ class Widget:
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents.
+        Yield all descendents (or ancestors if `reverse` is True).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:
@@ -737,13 +737,18 @@ class Widget:
             yield child
             yield from child.walk()
 
-    def walk(self):
+    def walk(self, reverse: bool=False):
         """
-        Yield all descendents.
+        Yield all descendents (or ancestors if `reverse` is True).
         """
-        for child in self.children:
-            yield child
-            yield from child.walk()
+        if reverse:
+            if self.parent:
+                yield self.parent
+                yield from self.parent.walk(reverse=True)
+        else:
+            for child in self.children:
+                yield child
+                yield from child.walk()
 
     def subscribe(
         self,
