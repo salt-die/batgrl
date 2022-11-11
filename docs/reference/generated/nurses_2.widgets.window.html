@@ -638,9 +638,11 @@ It is recommended to use views with no size hints.</p>
 </dd>
 <dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>Title of window.</p>
 </dd>
-<dt><strong>ptf_on_focus</strong><span class="classifier">bool, default: True</span></dt><dd><p>Pull widget to front when it gains focus.</p>
+<dt><strong>ptf_on_focus</strong><span class="classifier">bool</span></dt><dd><p>Pull widget to front when it gains focus.</p>
 </dd>
-<dt><strong>is_focused</strong><span class="classifier">bool</span></dt><dd><p>True if widget has focus.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.is_focused" title="nurses_2.widgets.window.Window.is_focused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_focused</span></code></a><span class="classifier">bool</span></dt><dd><p>Return True if widget has focus.</p>
+</dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.any_focused" title="nurses_2.widgets.window.Window.any_focused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">any_focused</span></code></a><span class="classifier">bool</span></dt><dd><p>Return True if any widget has focus.</p>
 </dd>
 <dt><strong>allow_vertical_resize</strong><span class="classifier">bool</span></dt><dd><p>Allow vertical resize.</p>
 </dd>
@@ -744,6 +746,18 @@ It is recommended to use views with no size hints.</p>
 <tbody>
 <tr class="row-odd"><td><p><strong>update_theme:</strong></p></td>
 <td><p>Paint the widget with current theme.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>focus:</strong></p></td>
+<td><p>Focus widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>blur:</strong></p></td>
+<td><p>Un-focus widget.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>focus_next:</strong></p></td>
+<td><p>Focus next focusable widget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>focus_previous:</strong></p></td>
+<td><p>Focus previous focusable widget.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>on_focus:</strong></p></td>
 <td><p>Called when widget is focused.</p></td>
@@ -851,6 +865,12 @@ It is recommended to use views with no size hints.</p>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.any_focused">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">any_focused</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.any_focused" title="Permalink to this definition">#</a></dt>
+<dd><p>Return True if any widget has focus.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.app">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.app" title="Permalink to this definition">#</a></dt>
 <dd><p>The running app.</p>
@@ -860,6 +880,12 @@ It is recommended to use views with no size hints.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.background_char">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">background_char</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.background_char" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.blur">
+<span class="sig-name descname"><span class="pre">blur</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.blur" title="Permalink to this definition">#</a></dt>
+<dd><p>Un-focus widget.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.border_alpha">
@@ -938,6 +964,24 @@ It is recommended to use views with no size hints.</p>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.focus">
+<span class="sig-name descname"><span class="pre">focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.focus" title="Permalink to this definition">#</a></dt>
+<dd><p>Focus widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.focus_next">
+<span class="sig-name descname"><span class="pre">focus_next</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.focus_next" title="Permalink to this definition">#</a></dt>
+<dd><p>Focus next focusable widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.focus_previous">
+<span class="sig-name descname"><span class="pre">focus_previous</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.focus_previous" title="Permalink to this definition">#</a></dt>
+<dd><p>Focus previous focusable widget.</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.grab_resize_min_height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">grab_resize_min_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.grab_resize_min_height" title="Permalink to this definition">#</a></dt>
@@ -968,7 +1012,8 @@ It is recommended to use views with no size hints.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.is_focused">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_focused</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.widgets.window.Window.is_focused" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Return True if widget has focus.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.left">

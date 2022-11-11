@@ -110,10 +110,12 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         The windowed widget.
     title : str
         Title of window.
-    ptf_on_focus : bool, default: True
+    ptf_on_focus : bool
         Pull widget to front when it gains focus.
     is_focused : bool
-        True if widget has focus.
+        Return True if widget has focus.
+    any_focused : bool
+        Return True if any widget has focus.
     allow_vertical_resize : bool
         Allow vertical resize.
     allow_horizontal_resize : bool
@@ -209,6 +211,14 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     -------
     update_theme:
         Paint the widget with current theme.
+    focus:
+        Focus widget.
+    blur:
+        Un-focus widget.
+    focus_next:
+        Focus next focusable widget.
+    focus_previous:
+        Focus previous focusable widget.
     on_focus:
         Called when widget is focused.
     on_blur:
