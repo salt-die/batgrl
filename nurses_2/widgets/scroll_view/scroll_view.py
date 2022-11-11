@@ -285,7 +285,7 @@ class ScrollView(GrabbableBehavior, Widget):
     @vertical_proportion.setter
     def vertical_proportion(self, value):
         if self.allow_vertical_scroll:
-            if self._view is None or self._view.height <= self.height:
+            if self._view is None or self.total_vertical_distance <= 0:
                 self._vertical_proportion = 0
             else:
                 self._vertical_proportion = clamp(value, 0, 1)
@@ -300,7 +300,7 @@ class ScrollView(GrabbableBehavior, Widget):
     @horizontal_proportion.setter
     def horizontal_proportion(self, value):
         if self.allow_horizontal_scroll:
-            if self._view is None or self._view.width <= self.width:
+            if self._view is None or self.total_horizontal_distance <= 0:
                 self._horizontal_proportion = 0
             else:
                 self._horizontal_proportion = clamp(value, 0, 1)
