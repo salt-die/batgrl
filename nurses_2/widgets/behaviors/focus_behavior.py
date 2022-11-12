@@ -135,18 +135,15 @@ class FocusBehavior:
         widget.focus()
 
     def dispatch_key(self, key_event):
-        if key_event.key != "tab":
-            if self.is_focused:
-                return super().dispatch_key(key_event)
+        if key_event.key == "tab":
+            if not (self.any_focused and FocusBehavior.__focus_widgets[0]().on_key(key_event)):
+                if key_event.mods.shift:
+                    self.focus_previous()
+                else:
+                    self.focus_next()
+            return True
 
-            return False
-
-        if key_event.mods.shift:
-            self.focus_previous()
-        else:
-            self.focus_next()
-
-        return True
+        return super().dispatch_key(key_event)
 
     def dispatch_mouse(self, mouse_event):
         if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
