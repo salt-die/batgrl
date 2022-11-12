@@ -1,0 +1,29 @@
+nurses\_2.widgets.text\_pad
+===========================
+
+.. automodule:: nurses_2.widgets.text_pad
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TextPad
+   
+   
+
+   
+   
+   
+
+
+

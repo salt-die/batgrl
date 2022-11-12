@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.braille_image &#8212; Python 0.13.4 documentation</title>
+    <title>nurses_2.widgets.braille_image &#8212; Python 0.14.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.13.4 documentation</p>
+    <p class="title logo__title">Python 0.14.0 documentation</p>
   
 </a>
     
@@ -456,6 +456,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.text_pad.html">
+     nurses_2.widgets.text_pad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.text_widget.html">
      nurses_2.widgets.text_widget
     </a>
@@ -740,7 +745,7 @@ of the underlying <code class="xref py py-attr docutils literal notranslate"><sp
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>walk:</strong></p></td>
-<td><p>Yield all descendents.</p></td>
+<td><p>Yield all descendents (or ancestors if <cite>reverse</cite> is True).</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
@@ -1183,8 +1188,8 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.braille_image.BrailleImage.walk">
-<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.braille_image.BrailleImage.walk" title="Permalink to this definition">#</a></dt>
-<dd><p>Yield all descendents.</p>
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.braille_image.BrailleImage.walk" title="Permalink to this definition">#</a></dt>
+<dd><p>Yield all descendents (or ancestors if <cite>reverse</cite> is True).</p>
 </dd></dl>
 
 <dl class="py method">
