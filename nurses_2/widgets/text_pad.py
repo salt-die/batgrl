@@ -1,3 +1,5 @@
+from wcwidth import wcswidth
+
 from ..clamp import clamp
 from ..colors import lerp_colors, WHITE, ColorPair
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
@@ -329,14 +331,15 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     @text.setter
     def text(self, text: str):
         lines = text.splitlines()
-        self._line_lengths = list(map(len, lines))
+        self._line_lengths = list(map(wcswidth, lines))
 
-        self.view.canvas[:] = " "
-        self.view.height = len(lines)
-        self.view.width = max(max(self._line_lengths), self.width)
+        view = self.view
+        view.canvas[:] = " "
+        view.height = len(lines)
+        view.width = max(max(self._line_lengths), self.width)
 
         for i, line in enumerate(lines):
-            self.view.add_text(line, row=i)
+            view.add_text(line, row=i)
 
     @property
     def absolute_cursor(self) -> Point:
@@ -726,7 +729,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         paste_lines = paste_event.paste.splitlines()
         if len(paste_lines) == 1:
             [paste] = paste_lines
-            len_paste = len(paste)
+            len_paste = wcswidth(paste)
 
             ll[y] += len_paste
             if ll[y] >= view.width:
@@ -739,15 +742,15 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         else:
             first, *lines, last = paste_lines
             newlines = len(lines) + 1
-            len_last = len(last)
+            len_last = wcswidth(last)
 
             view.height += newlines
             view.canvas[y + newlines + 1:] = view.canvas[y + 1: -newlines]
             view.canvas[y, x: ll[y]] = view.default_char
 
-            ll[y] = x + len(first)
+            ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
-                ll.insert(i, len(line))
+                ll.insert(i, wcswidth(line))
             ll.insert(i + 1, len_last + len(line_remaining))
 
             max_width = max(ll)
