@@ -1,6 +1,6 @@
 from ..clamp import clamp
 from ..colors import lerp_colors, WHITE, ColorPair
-from ..io import Key, KeyEvent, Mods, MouseEvent, MouseButton, PasteEvent
+from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.themable import Themable
 from .scroll_view import ScrollView
@@ -717,61 +717,53 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         self.delete_selection()
+
         y, x = self.cursor
-        pad = self.view
-        line_lengths = self._line_lengths
-        first_line_2nd_half = pad.canvas[y, x: line_lengths[y]].copy()
+        view = self.view
+        ll = self._line_lengths
+        line_remaining = view.canvas[y, x: ll[y]].copy()
 
-        lines = paste_event.paste.splitlines()
-        if len(lines) == 1:
-            first = lines[0]
-            len_first_paste = len(first)
+        paste_lines = paste_event.paste.splitlines()
+        if len(paste_lines) == 1:
+            [paste] = paste_lines
+            len_paste = len(paste)
 
-            line_lengths[y] += len_first_paste
-            if line_lengths[y] >= pad.width:
-                pad.width = line_lengths[y] + 1
+            ll[y] += len_paste
+            if ll[y] >= view.width:
+                view.width = ll[y] + 1
 
-            pad.canvas[y, x: x + len_first_paste] = tuple(first)
-            pad.canvas[y, x + len_first_paste: line_lengths[y]] = first_line_2nd_half
+            view.add_text(paste, row=y, column=x)
+            view.canvas[y, x + len_paste: ll[y]] = line_remaining
 
-            self.cursor = y, x + len_first_paste
-            return True
+            self.cursor = y, x + len_paste
+        else:
+            first, *lines, last = paste_lines
+            newlines = len(lines) + 1
+            len_last = len(last)
 
-        first, *lines, last = lines
-        newlines = len(lines) + 1
-        len_first_paste = len(first)
-        len_last_paste = len(last)
-        len_2nd_half = len(first_line_2nd_half)
-        len_last_line = len_last_paste + len_2nd_half
-        last_line_index = y + newlines
+            view.height += newlines
+            view.canvas[y + newlines + 1:] = view.canvas[y + 1: -newlines]
+            view.canvas[y, x: ll[y]] = view.default_char
 
-        pad.height += newlines
-        pad.canvas[y + newlines + 1:] = pad.canvas[y + 1: -newlines]
-        pad.canvas[y, x: line_lengths[y]] = pad.default_char
+            ll[y] = x + len(first)
+            for i, line in enumerate(lines, start=y + 1):
+                ll.insert(i, len(line))
+            ll.insert(i + 1, len_last + len(line_remaining))
 
-        # Fix line lengths.
-        line_lengths[y] -= len_2nd_half
-        line_lengths[y] += len_first_paste
-        for i, line in enumerate(lines, start=y + 1):
-            line_lengths.insert(i, len(line))
-        line_lengths.insert(last_line_index, len_last_line)
+            max_width = max(ll)
+            if max_width >= view.width:
+                view.width = max_width + 1
 
-        # Adjust width.
-        max_width = max(line_lengths)
-        if max_width >= pad.width:
-            pad.width = max_width + 1
+            view.add_text(first, row=y, column=x)
+            for i, line in enumerate(lines, start=y + 1):
+                view.add_text(line.ljust(view.width), row=i)
 
-        pad.canvas[y, x: x + len_first_paste] = tuple(first)
-        for i, line in enumerate(lines, start=y + 1):
-            ll = len(line)
-            pad.canvas[i, :ll] = tuple(line)
-            pad.canvas[i, ll:] = pad.default_char
+            view.add_text(last, row=i + 1)
+            view.canvas[i + 1, len_last: ll[i + 1]] = line_remaining
+            view.canvas[i + 1, ll[i + 1]:] = view.default_char
 
-        pad.canvas[last_line_index, :len_last_paste] = tuple(last)
-        pad.canvas[last_line_index, len_last_paste: len_last_line] = first_line_2nd_half
-        pad.canvas[last_line_index, len_last_line:] = pad.default_char
+            self.cursor = i + 1, len_last
 
-        self.cursor = last_line_index, len_last_paste
         return True
 
     def grab(self, mouse_event):
