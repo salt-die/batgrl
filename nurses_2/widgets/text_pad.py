@@ -303,7 +303,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         if not self.root:
             return
 
-        cursor = y, x = self.absolute_cursor
+        py, px = self.view.absolute_pos
+        cy, cx = self._cursor
+        cursor = y, x = py + cy, px + cx
         out = self.root.env_out
 
         if (
@@ -325,7 +327,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     def text(self) -> str:
         return "\n".join(
             "".join(row[:nchars])
-            for row, nchars in zip(self.canvas, self._line_lengths)
+            for row, nchars in zip(self.view.canvas, self._line_lengths)
         )
 
     @text.setter
@@ -336,16 +338,10 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         view = self.view
         view.canvas[:] = " "
         view.height = len(lines)
-        view.width = max(max(self._line_lengths), self.width)
+        view.width = max(max(self._line_lengths) + 1, self.width)
 
         for i, line in enumerate(lines):
             view.add_text(line, row=i)
-
-    @property
-    def absolute_cursor(self) -> Point:
-        y, x = self.view.absolute_pos
-        cy, cx = self._cursor
-        return Point(y + cy, x + cx)
 
     @property
     def cursor(self) -> Point:
@@ -709,7 +705,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             (Key.End,       SHIFT): self._shift_end,
         }
 
-        if key_event.mods == NO_MODS and len(key_event.key) == 1:
+        if not self.is_focused:
+            return
+        elif key_event.mods == NO_MODS and len(key_event.key) == 1:
             self._ascii(key_event.key)
         elif handler := handlers.get(key_event):
             handler()
