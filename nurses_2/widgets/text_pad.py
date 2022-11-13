@@ -679,44 +679,46 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
         self.cursor = y, x + 1
 
-    def on_key(self, key_event: KeyEvent) -> bool | None:
-        NO_MODS = Mods.NO_MODS
-        SHIFT = (False, False, True)
-        handlers = {
-            (Key.Enter,     NO_MODS): self._enter,
-            (Key.Tab,       NO_MODS): self._tab,
-            (Key.Backspace, NO_MODS): self._backspace,
-            (Key.Delete,    NO_MODS): self._delete,
-            (Key.Left,      NO_MODS): self._left,
-            (Key.Right,     NO_MODS): self._right,
-            (Key.Up,        NO_MODS): self._up,
-            (Key.Down,      NO_MODS): self._down,
-            (Key.PageUp,    NO_MODS): self._pgup,
-            (Key.PageDown,  NO_MODS): self._pgdn,
-            (Key.Home,      NO_MODS): self._home,
-            (Key.End,       NO_MODS): self._end,
-            (Key.Left,      SHIFT): self._shift_left,
-            (Key.Right,     SHIFT): self._shift_right,
-            (Key.Up,        SHIFT): self._shift_up,
-            (Key.Down,      SHIFT): self._shift_down,
-            (Key.PageUp,    SHIFT): self._shift_pgup,
-            (Key.PageDown,  SHIFT): self._shift_pgdn,
-            (Key.Home,      SHIFT): self._shift_home,
-            (Key.End,       SHIFT): self._shift_end,
-        }
+    __HANDLERS = {
+        (Key.Enter, Mods.NO_MODS): _enter,
+        (Key.Tab, Mods.NO_MODS): _tab,
+        (Key.Backspace, Mods.NO_MODS): _backspace,
+        (Key.Delete, Mods.NO_MODS): _delete,
+        (Key.Left, Mods.NO_MODS): _left,
+        (Key.Right, Mods.NO_MODS): _right,
+        (Key.Up, Mods.NO_MODS): _up,
+        (Key.Down, Mods.NO_MODS): _down,
+        (Key.PageUp, Mods.NO_MODS): _pgup,
+        (Key.PageDown, Mods.NO_MODS): _pgdn,
+        (Key.Home, Mods.NO_MODS): _home,
+        (Key.End, Mods.NO_MODS): _end,
+        (Key.Left, Mods(False, False, True)): _shift_left,
+        (Key.Right, Mods(False, False, True)): _shift_right,
+        (Key.Up, Mods(False, False, True)): _shift_up,
+        (Key.Down, Mods(False, False, True)): _shift_down,
+        (Key.PageUp, Mods(False, False, True)): _shift_pgup,
+        (Key.PageDown, Mods(False, False, True)): _shift_pgdn,
+        (Key.Home, Mods(False, False, True)): _shift_home,
+        (Key.End, Mods(False, False, True)): _shift_end,
+    }
 
+    def on_key(self, key_event: KeyEvent) -> bool | None:
         if not self.is_focused:
             return
-        elif key_event.mods == NO_MODS and len(key_event.key) == 1:
+
+        if key_event.mods == Mods.NO_MODS and len(key_event.key) == 1:
             self._ascii(key_event.key)
-        elif handler := handlers.get(key_event):
-            handler()
+        elif handler := self.__HANDLERS.get(key_event):
+            handler(self)
         else:
             return super().on_key(key_event)
 
         return True
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
+        if not self.is_focused:
+            return
+
         self.delete_selection()
 
         y, x = self.cursor
