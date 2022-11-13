@@ -13,7 +13,7 @@ class Themable(ABC):
 
     :meth:`update_theme` should be called at least once in the `__init__`.
 
-    Whenever the running app's theme is changed, all :class:`Themable` widgets
+    Whenever the running app's theme is changed, all :class:`Themable` widgets'
     theme will be updated.
 
     Methods
