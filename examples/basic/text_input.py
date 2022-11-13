@@ -1,7 +1,11 @@
 from textwrap import dedent
 
 from nurses_2.app import App
+from nurses_2.colors import DEFAULT_COLOR_THEME
+from nurses_2.widgets.textbox import Textbox
 from nurses_2.widgets.text_pad import TextPad
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.widget import Widget
 from nurses_2.widgets.window import Window
 
 
@@ -49,6 +53,23 @@ class TextPadApp(App):
             All mimsy were the borogoves,
                 And the mome raths outgrabe.
         """)
-        self.add_widget(window)
+
+        def enter_callback(textbox):
+            textbox.text = ""
+        textbox = Textbox(pos=(1, 1), size=(1, 31), enter_callback=enter_callback, max_chars=50)
+
+        color_pair = DEFAULT_COLOR_THEME.primary_color_pair
+
+        border = TextWidget(pos=(1, 0), size=(3, 33), default_color_pair=color_pair)
+        border.add_border()
+        border.add_widget(textbox)
+
+        label = TextWidget(pos_hint=(None, .5), anchor="top_center", size=(1, 7), default_color_pair=color_pair)
+        label.add_text("Textbox")
+
+        container = Widget(size=(4, 33), background_color_pair=textbox.background_color_pair)
+        container.add_widgets(label, border)
+
+        self.add_widgets(window, container)
 
 TextPadApp().run()
