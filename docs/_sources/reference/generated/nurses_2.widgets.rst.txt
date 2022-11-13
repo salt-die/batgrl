@@ -51,6 +51,7 @@
    nurses_2.widgets.text_pad
    nurses_2.widgets.text_widget
    nurses_2.widgets.text_widget_data_structures
+   nurses_2.widgets.textbox
    nurses_2.widgets.tiled_image
    nurses_2.widgets.toggle_button
    nurses_2.widgets.tree_view
