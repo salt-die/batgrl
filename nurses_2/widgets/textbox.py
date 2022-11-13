@@ -257,6 +257,13 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
 
     def on_add(self):
         super().on_add()
+
+        # Update cursor if absolute position changes.
+        # TODO: Cleanly unsubscribe in `on_remove`.
+        for ancestor in self.walk(reverse=True):
+            if ancestor is not self.root:
+                self.input_box.subscribe(ancestor, "pos", self._update_cursor)
+
         self.focus()
 
     def update_theme(self):
@@ -405,7 +412,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         if not self.has_selection:
             self.select()
             if self.cursor < self._line_length:
-                self._selection_end -= 1
+                self._selection_end += 1
 
         self.delete_selection()
 
@@ -542,3 +549,10 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         if self.input_box.collides_point(mouse_event.position):
             _, x = self.input_box.to_local(mouse_event.position)
             self.cursor = min(x, self._line_length)
+        else:
+            _, x = self.to_local(mouse_event.position)
+
+            if x < 0:
+                self.move_cursor_left()
+            elif x >= self.width:
+                self.move_cursor_right()

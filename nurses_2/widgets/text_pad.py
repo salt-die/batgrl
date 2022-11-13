@@ -281,6 +281,13 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     def on_add(self):
         super().on_add()
+
+        # Update cursor if absolute position changes.
+        # TODO: Cleanly unsubscribe in `on_remove`.
+        for ancestor in self.walk(reverse=True):
+            if ancestor is not self.root:
+                self.view.subscribe(ancestor, "pos", self._update_cursor)
+
         self.focus()
 
     def update_theme(self):
@@ -787,3 +794,19 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             y, x = self.view.to_local(mouse_event.position)
             x = min(x, self._line_lengths[y])
             self.cursor = y, x
+        else:
+            cy, cx = self.cursor
+            y, x = self.to_local(mouse_event.position)
+            h, w = self.size
+
+            if y < 0:
+                self.move_cursor_up()
+            elif y >= h:
+                self.move_cursor_down()
+
+            if x < 0:
+                if cx > 0:
+                    self.move_cursor_left()
+            elif x >= w:
+                if cx < self._line_lengths[cy]:
+                    self.move_cursor_right()
