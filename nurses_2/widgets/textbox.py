@@ -437,6 +437,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self.cursor = 0
 
     def _end(self):
+        self.unselect()
         self.cursor = self._line_length
 
     def _shift_left(self):
