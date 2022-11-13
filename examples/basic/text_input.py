@@ -54,7 +54,8 @@ class TextPadApp(App):
                 And the mome raths outgrabe.
         """)
 
-        def enter_callback(textbox):
+
+        def enter_callback(textbox):  # Note that this enter_callback expects the textbox as the only argument.
             textbox.text = ""
         textbox = Textbox(pos=(1, 1), size=(1, 31), enter_callback=enter_callback, max_chars=50)
 
@@ -67,9 +68,15 @@ class TextPadApp(App):
         label = TextWidget(pos_hint=(None, .5), anchor="top_center", size=(1, 7), default_color_pair=color_pair)
         label.add_text("Textbox")
 
-        container = Widget(size=(4, 33), background_color_pair=textbox.background_color_pair)
+        container = Widget(
+            size=(4, 33),
+            pos_hint=(None, .5),
+            anchor="top_center",
+            background_color_pair=textbox.background_color_pair,
+        )
         container.add_widgets(label, border)
 
         self.add_widgets(window, container)
+
 
 TextPadApp().run()
