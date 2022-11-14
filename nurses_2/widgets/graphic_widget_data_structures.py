@@ -93,7 +93,7 @@ class Sprite:
             cv2.resize(
                 self.texture,
                 (w, h),
-                interpolation=Interpolation._to_cv_enum(interpolation),
+                interpolation=Interpolation._to_cv_enum[interpolation],
             ),
             self.alpha,
         )
