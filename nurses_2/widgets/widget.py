@@ -250,9 +250,9 @@ class Widget:
     tween:
         Sequentially update a widget property over time.
     on_add:
-        Called when widget is added to widget tree.
+        Called after a widget is added to widget tree.
     on_remove:
-        Called when widget is removed from widget tree.
+        Called before widget is removed from widget tree.
     prolicide:
         Recursively remove all children.
     destroy:
@@ -698,6 +698,7 @@ class Widget:
         """
         self.children.append(widget)
         widget.parent = self
+
         if self.root:
             widget.on_add()
 
@@ -716,10 +717,11 @@ class Widget:
         """
         Remove a child widget.
         """
-        self.children.remove(widget)
-        widget.parent = None
         if self.root:
             widget.on_remove()
+
+        self.children.remove(widget)
+        widget.parent = None
 
     def pull_to_front(self):
         """
@@ -936,7 +938,7 @@ class Widget:
 
     def on_add(self):
         """
-        Called when widget is added to widget tree.
+        Called after a widget is added to widget tree.
         """
         self.update_geometry()
         for child in self.children:
@@ -944,7 +946,7 @@ class Widget:
 
     def on_remove(self):
         """
-        Called when widget is removed from widget tree.
+        Called before widget is removed from widget tree.
         """
         for child in self.children:
             child.on_remove()

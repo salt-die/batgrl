@@ -244,9 +244,9 @@ class GridLayout(Widget):
     tween:
         Sequentially update a widget property over time.
     on_add:
-        Called when widget is added to widget tree.
+        Called after a widget is added to widget tree.
     on_remove:
-        Called when widget is removed from widget tree.
+        Called before widget is removed from widget tree.
     prolicide:
         Recursively remove all children.
     destroy:
