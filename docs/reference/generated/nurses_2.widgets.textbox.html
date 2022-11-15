@@ -556,7 +556,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.textbox.Textbox" title="nurses_2.widgets.textbox.Textbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Textbox</span></code></a>([enter_callback, max_chars])</p></td>
-<td><p>A textbox widget.</p></td>
+<td><p>A textbox widget for single-line editable text.</p></td>
 </tr>
 </tbody>
 </table>
@@ -564,7 +564,8 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.textbox.Textbox">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.textbox.</span></span><span class="sig-name descname"><span class="pre">Textbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enter_callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.textbox.Textbox" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.focus_behavior.FocusBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
-<p>A textbox widget.</p>
+<p>A textbox widget for single-line editable text.</p>
+<p>Supports pasting, mouse selection, and cursor navigation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">

@@ -567,8 +567,8 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Focus behavior for a widget.</p>
 <p>Focusable widgets can be given “focus” by pressing tab or shift + tab
-or by clicking on them. When a widget gains focus <a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_focus()</span></code></a>
-is called. When a widget loses focus the <a class="reference internal" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_blur()</span></code></a> is called.</p>
+or by clicking on them. When a widget is focused, all focusable ancestors
+also gain focus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -661,6 +661,11 @@ is called. When a widget loses focus the <a class="reference internal" href="#nu
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_add" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur">
 <span class="sig-name descname"><span class="pre">on_blur</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_blur" title="Permalink to this definition">#</a></dt>
 <dd><p>Called when widget loses focus.</p>
@@ -671,6 +676,11 @@ is called. When a widget loses focus the <a class="reference internal" href="#nu
 <span class="sig-name descname"><span class="pre">on_focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_focus" title="Permalink to this definition">#</a></dt>
 <dd><p>Called when widget gains focus.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_remove">
+<span class="sig-name descname"><span class="pre">on_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior.on_remove" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
