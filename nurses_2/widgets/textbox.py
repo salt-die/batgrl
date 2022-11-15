@@ -239,43 +239,57 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._selection_start = self._selection_end = None
         self._line_length = 0
 
-        self.input_box = TextWidget(size=(1, 1))
-        self.add_widget(self.input_box)
-
-        def _size_update():
-            if self.width > self.input_box.width:
-                self.input_box.width = self.width
-            elif self.width < self.input_box.width:
-                self.input_box.width = max(self.width, self._line_length + 1)
-            self._highlight_selection()
-
-        self.input_box.subscribe(self, "size", _size_update)
-
-        self.subscribe(self.input_box, "pos", self._update_cursor)
+        self._box = TextWidget(size=(1, 1))
 
         self.update_theme()
-
-    def on_add(self):
-        super().on_add()
-
-        # Update cursor if absolute position changes.
-        # TODO: Cleanly unsubscribe in `on_remove`.
-        for ancestor in self.walk(reverse=True):
-            if ancestor is not self.root:
-                self.input_box.subscribe(ancestor, "pos", self._update_cursor)
-
-        self.focus()
 
     def update_theme(self):
         primary = self.color_theme.primary_color_pair
         backgound = primary.bg_color
 
-        self.input_box.colors[:] = primary
-        self.input_box.default_color_pair = primary
+        self._box.colors[:] = primary
+        self._box.default_color_pair = primary
         self.background_color_pair = ColorPair.from_colors(backgound, backgound)
 
         self.selection_hightlight = lerp_colors(backgound, WHITE, 1/10)
 
+        self._highlight_selection()
+
+    def on_add(self):
+        super().on_add()
+
+        self.add_widget(self._box)
+
+        # To keep real cursor's position in-sync with virtual cursor's absolute position,
+        # subscribe to every ancestor's `pos` property.
+
+        self.subscribe(self._box, "pos", self._update_cursor)
+        self.subscribe(self, "pos", self._update_cursor)
+
+        for ancestor in self.walk(reverse=True):
+            if ancestor is not self.root:
+                self._box.subscribe(ancestor, "pos", self._update_cursor)
+
+        self.focus()
+
+    def on_remove(self):
+        super().on_remove()
+
+        if self._box in self.children:
+            self.remove_widget(self._box)
+
+        self.unsubscribe(self._box, "pos")
+        self.unsubscribe(self, "pos")
+
+        for ancestor in self.walk(reverse=True):
+            if ancestor is not self.root:
+                self.unsubscribe(ancestor, "pos")
+
+    def on_size(self):
+        if self.width > self._box.width:
+            self._box.width = self.width
+        elif self.width < self._box.width:
+            self._box.width = max(self.width, self._line_length + 1)
         self._highlight_selection()
 
     def _update_cursor(self):
@@ -285,13 +299,13 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         if not self.root:
             return
 
-        y, x = self.input_box.absolute_pos
+        y, x = self._box.absolute_pos
         x += self._cursor
         out = self.root.env_out
 
         if (
             self.is_focused
-            and self.input_box.collides_point((y, x))
+            and self._box.collides_point((y, x))
         ):
             out._buffer.append(f"\x1b[{y + 1};{x + 1}H")  # Move cursor.
             out.show_cursor()
@@ -304,17 +318,17 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
 
     @property
     def text(self) -> str:
-        return "".join(self.input_box.canvas[0, :self._line_length])
+        return "".join(self._box.canvas[0, :self._line_length])
 
     @text.setter
     def text(self, text: str):
         text = text.replace("\n", " ")
         self._line_length = wcswidth(text)
 
-        input_box = self.input_box
-        input_box.canvas[:] = " "
-        input_box.width = max(self._line_length + 1, self.width)
-        input_box.add_text(text)
+        box = self._box
+        box.canvas[:] = " "
+        box.width = max(self._line_length + 1, self.width)
+        box.add_text(text)
         self.cursor = self._line_length
 
     @property
@@ -330,10 +344,10 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._cursor = cursor
 
         max_x = self.width - 1
-        if (rel_x := cursor + self.input_box.x) > max_x:
-            self.input_box.x += max_x - rel_x
+        if (rel_x := cursor + self._box.x) > max_x:
+            self._box.x += max_x - rel_x
         elif rel_x < 0:
-            self.input_box.x -= rel_x
+            self._box.x -= rel_x
 
         self._update_cursor()
         self._update_selection()
@@ -353,7 +367,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         if not self.has_selection:
             return
 
-        input_box = self.input_box
+        box = self._box
 
         start = self._selection_start
         end = self._selection_end
@@ -361,16 +375,16 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         len_end = self._line_length - end
         new_len = self._line_length = start + len_end
 
-        input_box.canvas[0, start: new_len] = input_box.canvas[0, end: end + len_end]
-        input_box.canvas[0, new_len:] = input_box.default_char
+        box.canvas[0, start: new_len] = box.canvas[0, end: end + len_end]
+        box.canvas[0, new_len:] = box.default_char
 
         self.unselect()
 
         self.cursor = start
 
     def _highlight_selection(self):
-        colors = self.input_box.colors
-        colors[:] = self.input_box.default_color_pair
+        colors = self._box.colors
+        colors[:] = self._box.default_color_pair
 
         if self._selection_start != self._selection_end:
             start = self._selection_start
@@ -463,14 +477,14 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             return
 
         x = self.cursor
-        input_box = self.input_box
+        box = self._box
 
         self._line_length += 1
-        if self._line_length >= input_box.width:
-            input_box.width = self._line_length + 1
+        if self._line_length >= box.width:
+            box.width = self._line_length + 1
 
-        input_box.canvas[0, x + 1:] = input_box.canvas[0, x: -1]
-        input_box.canvas[0, x] = key
+        box.canvas[0, x + 1:] = box.canvas[0, x: -1]
+        box.canvas[0, x] = key
 
         self.cursor = x + 1
 
@@ -508,23 +522,23 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self.delete_selection()
 
         x = self.cursor
-        input_box = self.input_box
+        box = self._box
         paste = paste_event.paste.replace("\n", " ")
         width_paste = wcswidth(paste)
 
         input_text = (
-            "".join(input_box.canvas[0, :x])
+            "".join(box.canvas[0, :x])
             + paste
-            + "".join(input_box.canvas[0, x: self._line_length])
+            + "".join(box.canvas[0, x: self._line_length])
         )[:self.max_chars]
 
         len_input = wcswidth(input_text)
 
-        if len_input >= input_box.width:
-            input_box.width = len_input + 1
+        if len_input >= box.width:
+            box.width = len_input + 1
 
-        input_box.add_text(input_text)
-        input_box.canvas[0, len_input:] = input_box.default_char
+        box.add_text(input_text)
+        box.canvas[0, len_input:] = box.default_char
 
         self._line_length = len_input
         self.cursor = min(len_input, x + width_paste)
@@ -534,11 +548,11 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     def grab(self, mouse_event):
         if (
             mouse_event.button is MouseButton.LEFT
-            and self.input_box.collides_point(mouse_event.position)
+            and self._box.collides_point(mouse_event.position)
         ):
             super().grab(mouse_event)
 
-            _, x = self.input_box.to_local(mouse_event.position)
+            _, x = self._box.to_local(mouse_event.position)
 
             if not mouse_event.mods.shift:
                 self.unselect()
@@ -547,8 +561,8 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             self.select()  # Need at least an empty selection for `grab_update`.
 
     def grab_update(self, mouse_event: MouseEvent):
-        if self.input_box.collides_point(mouse_event.position):
-            _, x = self.input_box.to_local(mouse_event.position)
+        if self._box.collides_point(mouse_event.position):
+            _, x = self._box.to_local(mouse_event.position)
             self.cursor = min(x, self._line_length)
         else:
             _, x = self.to_local(mouse_event.position)
