@@ -56,8 +56,17 @@ class FocusBehavior:
         super().on_add()
 
     def on_remove(self):
-        FocusBehavior.__focus_widgets.remove(ref(self))
         super().on_remove()
+
+        if self.is_focused:
+            FocusBehavior.__focused.remove(self)
+
+            for ancestor in self.walk(reverse=True):
+                if isinstance(ancestor, FocusBehavior):
+                    ancestor.focus()
+                    break
+
+        FocusBehavior.__focus_widgets.remove(ref(self))
 
     @property
     def is_focused(self) -> bool:
@@ -78,8 +87,9 @@ class FocusBehavior:
         Focus widget.
         """
         ancestors = WeakSet(
-            parent
-            for parent in self.walk(reverse=True) if isinstance(parent, FocusBehavior)
+            ancestor
+            for ancestor in self.walk(reverse=True)
+            if isinstance(ancestor, FocusBehavior)
         )
         ancestors.add(self)
 
@@ -107,6 +117,11 @@ class FocusBehavior:
         Un-focus widget.
         """
         if self.is_focused:
+            for ancestor in self.walk(reverse=True):
+                if isinstance(ancestor, FocusBehavior):
+                    ancestor.focus()
+                    return
+
             FocusBehavior.__focused.remove(self)
             self.on_blur()
 
