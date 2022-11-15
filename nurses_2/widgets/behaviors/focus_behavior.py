@@ -12,8 +12,8 @@ class FocusBehavior:
     Focus behavior for a widget.
 
     Focusable widgets can be given "focus" by pressing tab or shift + tab
-    or by clicking on them. When a widget gains focus :meth:`on_focus`
-    is called. When a widget loses focus the :meth:`on_blur` is called.
+    or by clicking on them. When a widget is focused, all focusable ancestors
+    also gain focus.
 
     Parameters
     ----------
@@ -48,9 +48,16 @@ class FocusBehavior:
     __focused = WeakSet()
 
     def __init__(self, ptf_on_focus=True, **kwargs):
-        FocusBehavior.__focus_widgets.append(ref(self))
         self.ptf_on_focus = ptf_on_focus
         super().__init__(**kwargs)
+
+    def on_add(self):
+        FocusBehavior.__focus_widgets.append(ref(self))
+        super().on_add()
+
+    def on_remove(self):
+        FocusBehavior.__focus_widgets.remove(ref(self))
+        super().on_remove()
 
     @property
     def is_focused(self) -> bool:
