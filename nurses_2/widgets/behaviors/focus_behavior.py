@@ -59,7 +59,7 @@ class FocusBehavior:
         super().on_remove()
 
         if self.is_focused:
-            FocusBehavior.__focused.remove(self)
+            FocusBehavior.__focused.remove(self)  # Avoiding `on_blur` being called.
 
             for ancestor in self.walk(reverse=True):
                 if isinstance(ancestor, FocusBehavior):
