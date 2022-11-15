@@ -55,8 +55,10 @@ class TextPadApp(App):
         """)
 
 
-        def enter_callback(textbox):  # Note that this enter_callback expects the textbox as the only argument.
+        def enter_callback(textbox):
             textbox.text = ""
+
+        # Note that `enter_callback` expects a callable with the textbox as the only argument.
         textbox = Textbox(pos=(1, 1), size=(1, 31), enter_callback=enter_callback, max_chars=50)
 
         color_pair = DEFAULT_COLOR_THEME.primary_color_pair
