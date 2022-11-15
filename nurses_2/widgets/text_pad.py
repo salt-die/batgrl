@@ -13,7 +13,9 @@ from .text_widget import TextWidget, Point
 
 class TextPad(Themable, FocusBehavior, ScrollView):
     """
-    A textpad widget.
+    A text-pad widget for multiline editable text.
+
+    Supports pasting, mouse selection, and cursor navigation.
 
     Parameters
     ----------
@@ -689,6 +691,13 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         y = self.cursor.y
         self.cursor = y, self._line_lengths[y]
 
+    def _escape(self):
+        if self.has_selection:
+            self.unselect()
+            self._highlight_selection()
+        else:
+            self.blur()
+
     def _ascii(self, key):
         self.delete_selection()
         y, x = self.cursor
@@ -724,6 +733,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         (Key.PageDown, Mods(False, False, True)): _shift_pgdn,
         (Key.Home, Mods(False, False, True)): _shift_home,
         (Key.End, Mods(False, False, True)): _shift_end,
+        (Key.Escape, Mods.NO_MODS): _escape,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:

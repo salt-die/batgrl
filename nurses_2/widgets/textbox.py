@@ -13,7 +13,9 @@ from .widget import Widget
 
 class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     """
-    A textbox widget.
+    A textbox widget for single-line editable text.
+
+    Supports pasting, mouse selection, and cursor navigation.
 
     Parameters
     ----------
@@ -470,6 +472,13 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self.select()
         self.cursor = self._line_length
 
+    def _escape(self):
+        if self.has_selection:
+            self.unselect()
+            self._highlight_selection()
+        else:
+            self.blur()
+
     def _ascii(self, key):
         self.delete_selection()
 
@@ -500,6 +509,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         (Key.Right, Mods(False, False, True)): _shift_right,
         (Key.Home, Mods(False, False, True)): _shift_home,
         (Key.End, Mods(False, False, True)): _shift_end,
+        (Key.Escape, Mods.NO_MODS): _escape,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
