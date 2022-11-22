@@ -230,6 +230,13 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         Recursively remove all children.
     destroy:
         Destroy this widget and all descendents.
+
+    Notes
+    -----
+    The cursor for text input widgets is the real terminal cursor. Because the terminal cursor isn't subject to
+    the painter's algorithm for rendering widgets, it's possible for a text input widget to be covered by
+    another widget, but the cursor still be visible. This may be resolved in the future by attaching clipping
+    regions to widgets.
     """
     def __init__(self, enter_callback: Callable | None=None, max_chars: int | None=None, **kwargs):
         super().__init__(**kwargs)

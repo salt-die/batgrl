@@ -43,6 +43,10 @@ class FocusBehavior:
         Called when widget is focused.
     on_blur:
         Called when widget loses focus.
+
+    Notes
+    -----
+    Disabled focusables can be focused. This behavior will change in the future.
     """
     __focus_widgets: deque[ReferenceType] = deque()
     __focused = WeakSet()
@@ -156,6 +160,7 @@ class FocusBehavior:
 
         widget.focus()
 
+    # TODO: Dispatch to focusables should be handled by the running app. Making the following two methods obsolete.
     def dispatch_key(self, key_event):
         if key_event.key == "tab":
             if not (self.any_focused and FocusBehavior.__focus_widgets[0]().on_key(key_event)):
