@@ -100,9 +100,6 @@ class _Root(Widget):
         canvas = self.canvas
         colors = self.colors
 
-        env_out = self.env_out
-        write = env_out._buffer.append
-
         # Erase canvas:
         canvas[:] = self.background_char
         colors[:, :] = self.background_color_pair
@@ -110,8 +107,6 @@ class _Root(Widget):
         height, width = canvas.shape
 
         self.render_children((slice(0, height), slice(0, width)), canvas, colors)
-
-        write(f"\x1b7")  # Save cursor
 
         if self._redraw_all:
             ys, xs = np.indices((height, width)).reshape(2, height * width)
@@ -128,15 +123,17 @@ class _Root(Widget):
             np.any(color_diffs, axis=-1, out=reduced_color_diffs)
             np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
 
-            ys, xs = np.nonzero(char_diffs)
+            ys, xs = char_diffs.nonzero()
 
+        env_out = self.env_out
+        write = env_out._buffer.append
+
+        write("\x1b7")  # Save cursor
         for y, x, (fr, fg, fb, br, bg, bb), char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
                 f"\x1b[0;38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
-                f"{char}"
+                f"{char}"  # A single unicode grapheme with optional pre- and post-pended style ansi escapes.
             )
-
-        write(f"\x1b8")  # Restore cursor
-
+        write("\x1b8")  # Restore cursor
         env_out.flush()
