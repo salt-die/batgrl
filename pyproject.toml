@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nurses_2"
+description = "A widgetful and async-centric library for terminal graphics."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "salt-die", email = "salt-die@protonmail.com"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy>=1.21.2",
+    "opencv-python>=4.5.4.58",
+    "wcwidth>=0.2.5",
+]
+dynamic = ["version"]
+
+[project.urls]
+"repository" = "https://github.com/salt-die/nurses_2"
+"documentation" = "https://salt-die.github.io/nurses_2/index.html"
+
+[tool.setuptools.dynamic]
+version = {attr = "nurses_2.__version__"}
+
+[tool.setuptools.packages]
+find = {}
