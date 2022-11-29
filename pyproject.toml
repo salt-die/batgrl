@@ -28,5 +28,10 @@ dynamic = ["version"]
 [tool.setuptools.dynamic]
 version = {attr = "nurses_2.__version__"}
 
-[tool.setuptools.packages]
-find = {}
+[tool.setuptools.packages.find]
+exclude = [
+    "docs*",
+    "docsrc*",
+    "examples*",
+    "preview_images*",
+]
