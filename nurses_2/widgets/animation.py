@@ -286,18 +286,18 @@ class Animation(Widget):
 
             if self.reverse:
                 self._i -= 1
-                if self._i == 0 and not self.loop:
-                    return
-
                 if self._i < 0:
                     self._i = len(self.frames) - 1
+
+                    if not self.loop:
+                        return
             else:
                 self._i += 1
-                if self._i == len(self.frames) - 1 and not self.loop:
-                    return
-
                 if self._i == len(self.frames):
                     self._i = 0
+
+                    if not self.loop:
+                        return
 
     def play(self) -> asyncio.Task:
         """
