@@ -1,7 +1,6 @@
 """
 Color data structures.
 """
-from math import e
 from typing import NamedTuple
 
 __all__ = (
@@ -150,13 +149,13 @@ class ColorPair(NamedTuple):
         Background green component.
     bg_blue : int
         Background blue component.
+
+    Attributes
+    ----------
     fg_color : Color
         The foreground color.
     bg_color : Color
         The background color.
-
-    Attributes
-    ----------
     fg_red : int
         Foreground red component.
     fg_green : int
@@ -169,10 +168,6 @@ class ColorPair(NamedTuple):
         Background green component.
     bg_blue : int
         Background blue component.
-    fg_color : Color
-        The foreground color.
-    bg_color : Color
-        The background color.
 
     Methods
     -------
@@ -182,6 +177,8 @@ class ColorPair(NamedTuple):
         Return number of occurrences of value.
     index:
         Return first index of value.
+    reversed:
+        Return a :class:`ColorPair` with the foreground and background reversed.
     """
     fg_red:   int
     fg_green: int
@@ -205,12 +202,24 @@ class ColorPair(NamedTuple):
         return cls(*fg_color[:3], *bg_color[:3])
 
     @property
-    def fg_color(self):
+    def fg_color(self) -> Color:
+        """
+        The foreground color.
+        """
         return Color(*self[:3])
 
     @property
-    def bg_color(self):
+    def bg_color(self) -> Color:
+        """
+        The background color.
+        """
         return Color(*self[3:])
+
+    def reversed(self) -> "ColorPair":
+        """
+        Return a :class:`ColorPair` with the foreground and background reversed.
+        """
+        return ColorPair.from_colors(self.bg_color, self.fg_color)
 
 
 class ColorTheme(NamedTuple):
