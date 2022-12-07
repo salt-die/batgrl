@@ -6,7 +6,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .graphic_widget import GraphicWidget, Interpolation, Sprite
+from .graphic_widget import GraphicWidget, Interpolation, read_texture
 
 __all__ = "GraphicWidget", "Interpolation"
 
@@ -149,8 +149,6 @@ class Image(GraphicWidget):
     -------
     from_texture:
         Create an :class:`Image` from a uint8 rgba ndarray.
-    from_sprite:
-        Create an :class:`Image` from a :class:`Sprite`.
     to_png:
         Write :attr:`texture` to provided path as a `png` image.
     on_size:
@@ -209,7 +207,7 @@ class Image(GraphicWidget):
     def path(self, new_path: Path | None):
         self._path = new_path
         if new_path is not None:
-            self._otexture = Sprite.read_image(new_path)
+            self._otexture = read_texture(new_path)
         else:
             self._otexture = np.full((2, 1, 4), self.default_color, dtype=np.uint8)
 
@@ -230,15 +228,5 @@ class Image(GraphicWidget):
         """
         kls = cls(**kwargs)
         kls._otexture = texture
-        kls.on_size()
-        return kls
-
-    @classmethod
-    def from_sprite(cls, sprite: Sprite, **kwargs) -> "Image":
-        """
-        Create an :class:`Image` from a :class:`Sprite`.
-        """
-        kls = cls(**kwargs)
-        kls._otexture = sprite.texture
         kls.on_size()
         return kls

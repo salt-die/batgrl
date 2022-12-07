@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets.graphic_widget_data_structures import Sprite
-from nurses_2.widgets.raycaster import Raycaster, RaySprite
+from nurses_2.widgets.graphic_widget_data_structures import read_texture
+from nurses_2.widgets.raycaster import Raycaster, Sprite
 
 from .animated_texture import AnimatedTexture
 from .camera import Camera
@@ -34,7 +34,7 @@ MAP = np.array(
 class MyApp(App):
     async def on_start(self):
         sources = sorted(SPINNER.iterdir(), key=lambda file: file.name)
-        textures = [Sprite.read_image(source) for source in sources]
+        textures = [read_texture(source) for source in sources]
 
         raycaster = Raycaster(
             map=MAP,
@@ -42,14 +42,14 @@ class MyApp(App):
             wall_textures=[ AnimatedTexture(textures) ],
             light_wall_textures=[ AnimatedTexture(textures, lighten=True) ],
             sprites=[
-                RaySprite(pos=(2.5, 2.5), texture_idx=0),
-                RaySprite(pos=(2.5, 7.5), texture_idx=0),
-                RaySprite(pos=(7.5, 7.5), texture_idx=0),
-                RaySprite(pos=(7.5, 2.5), texture_idx=0),
+                Sprite(pos=(2.5, 2.5), texture_idx=0),
+                Sprite(pos=(2.5, 7.5), texture_idx=0),
+                Sprite(pos=(7.5, 7.5), texture_idx=0),
+                Sprite(pos=(7.5, 2.5), texture_idx=0),
             ],
-            sprite_textures=[ Sprite.read_image(SPRITE) ],
-            ceiling=Sprite.read_image(CEILING),
-            floor=Sprite.read_image(FLOOR),
+            sprite_textures=[ read_texture(SPRITE) ],
+            ceiling=read_texture(CEILING),
+            floor=read_texture(FLOOR),
             size_hint=(1.0, 1.0),
         )
 

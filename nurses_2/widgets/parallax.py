@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from ..clamp import clamp
-from .graphic_widget_data_structures import Interpolation, Sprite
+from .graphic_widget_data_structures import Interpolation, read_texture
 from .image import Image
 from .widget import Widget, emitter
 
@@ -167,8 +167,6 @@ class Parallax(Widget):
     -------
     from_textures:
         Create a :class:`Parallax` from an iterable of uint8 rgba ndarray.
-    from_sprites:
-        Create a :class:`Parallax` from an iterable of :class:`Sprite`.
     from_images:
         Create a :class:`Parallax` from an iterable of :class:`Image`.
     on_size:
@@ -323,32 +321,18 @@ class Parallax(Widget):
         """
         Create an :class:`Parallax` from an iterable of uint8 rgba ndarray.
         """
-        kls = cls(**kwargs)
-        kls.layers = [
-            Image.from_texture(texture, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
+        parallax = cls(**kwargs)
+        parallax.layers = [
+            Image.from_texture(
+                texture,
+                size=parallax.size,
+                alpha=parallax.alpha,
+                interpolation=parallax.interpolation
+            )
             for texture in textures
         ]
-        kls.speeds = _check_layer_speeds(kls.layers, speeds)
-        return kls
-
-    @classmethod
-    def from_sprites(
-        cls,
-        sprites: Iterable[Sprite],
-        *,
-        speeds: Sequence[float] | None=None,
-        **kwargs
-    ) -> "Parallax":
-        """
-        Create an :class:`Parallax` from an iterable of :class:`Sprite`.
-        """
-        kls = cls(**kwargs)
-        kls.layers = [
-            Image.from_sprite(sprite, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
-            for sprite in sprites
-        ]
-        kls.speeds = _check_layer_speeds(kls.layers, speeds)
-        return kls
+        parallax.speeds = _check_layer_speeds(parallax.layers, speeds)
+        return parallax
 
     @classmethod
     def from_images(
@@ -361,11 +345,11 @@ class Parallax(Widget):
         """
         Create an :class:`Parallax` from an iterable of :class:`Image`.
         """
-        kls = cls(**kwargs)
-        kls.layers = list(images)
-        for image in kls.layers:
-            image.interpolation = kls.interpolation
-            image.size = kls.size
-            image.alpha = kls.alpha
-        kls.speeds = _check_layer_speeds(kls.layers, speeds)
-        return kls
+        parallax = cls(**kwargs)
+        parallax.layers = list(images)
+        for image in parallax.layers:
+            image.interpolation = parallax.interpolation
+            image.size = parallax.size
+            image.alpha = parallax.alpha
+        parallax.speeds = _check_layer_speeds(parallax.layers, speeds)
+        return parallax

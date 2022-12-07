@@ -6,7 +6,7 @@ from nurses_2.app import run_widget_as_app
 from nurses_2.colors import AWHITE, ABLACK
 from nurses_2.io import MouseEventType, MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.graphic_widget_data_structures import Sprite
+from nurses_2.widgets.graphic_widget_data_structures import read_texture, resize_texture
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "python_discord_logo.png"
@@ -48,12 +48,7 @@ class SlidingPuzzle(GraphicWidget):
     def __init__(self, path: Path, **kwargs):
         super().__init__(**kwargs)
 
-        sprite = (
-            Sprite
-            .from_image(path)
-            .resize((H * 2, W))
-            .texture
-        )
+        sprite = resize_texture(read_texture(path), (H * 2, W))
 
         self._grid = {}
 

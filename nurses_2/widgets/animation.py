@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from ..clamp import clamp
-from .graphic_widget_data_structures import Interpolation, Sprite
+from .graphic_widget_data_structures import Interpolation
 from .image import Image
 from .widget import Widget, emitter
 
@@ -174,8 +174,6 @@ class Animation(Widget):
         Stop the animation and reset current frame.
     from_textures:
         Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
-    from_sprites:
-        Create an :class:`Animation` from an iterable of :class:`Sprite`.
     from_images:
         Create an :class:`Animation` from an iterable of :class:`Image`.
     on_size:
@@ -351,32 +349,18 @@ class Animation(Widget):
         """
         Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
         """
-        kls = cls(**kwargs)
-        kls.frames = [
-            Image.from_texture(texture, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
+        animation = cls(**kwargs)
+        animation.frames = [
+            Image.from_texture(
+                texture,
+                size=animation.size,
+                alpha=animation.alpha,
+                interpolation=animation.interpolation
+            )
             for texture in textures
         ]
-        kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
-        return kls
-
-    @classmethod
-    def from_sprites(
-        cls,
-        sprites: Iterable[Sprite],
-        *,
-        frame_durations: float | int | Sequence[float| int]=1/12,
-        **kwargs
-    ) -> "Animation":
-        """
-        Create an :class:`Animation` from an iterable of :class:`Sprite`.
-        """
-        kls = cls(**kwargs)
-        kls.frames = [
-            Image.from_sprite(sprite, size=kls.size, alpha=kls.alpha, interpolation=kls.interpolation)
-            for sprite in sprites
-        ]
-        kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
-        return kls
+        animation.frame_durations = _check_frame_durations(animation.frames, frame_durations)
+        return animation
 
     @classmethod
     def from_images(
@@ -389,11 +373,11 @@ class Animation(Widget):
         """
         Create an :class:`Animation` from an iterable of :class:`Image`.
         """
-        kls = cls(**kwargs)
-        kls.frames = list(images)
-        for image in kls.frames:
-            image.interpolation = kls.interpolation
-            image.size = kls.size
-            image.alpha = kls.alpha
-        kls.frame_durations = _check_frame_durations(kls.frames, frame_durations)
-        return kls
+        animation = cls(**kwargs)
+        animation.frames = list(images)
+        for image in animation.frames:
+            image.interpolation = animation.interpolation
+            image.size = animation.size
+            image.alpha = animation.alpha
+        animation.frame_durations = _check_frame_durations(animation.frames, frame_durations)
+        return animation

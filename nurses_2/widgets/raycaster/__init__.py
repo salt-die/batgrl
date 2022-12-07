@@ -2,6 +2,6 @@
 A raycaster widget.
 """
 from .raycaster import Raycaster
-from .sprite import RaySprite
+from .sprite import Sprite
 
-__all__ = "Raycaster", "RaySprite"
+__all__ = "Raycaster", "Sprite"

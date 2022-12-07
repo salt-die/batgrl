@@ -4,7 +4,7 @@ A sprite class for :class:`nurses_2.widgets.raycaster.Raycaster`.
 import numpy as np
 
 
-class RaySprite:  # `Sprite` is already used by this library.
+class Sprite:
     """
     A sprite for a raycaster.
     """

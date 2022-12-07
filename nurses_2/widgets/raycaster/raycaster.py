@@ -7,7 +7,7 @@ from ...clamp import clamp
 from ...colors import BLACK, Color
 from ..graphic_widget import GraphicWidget
 from .protocols import Map, Camera, Texture
-from .sprite import RaySprite
+from .sprite import Sprite
 
 
 class Raycaster(GraphicWidget):
@@ -26,7 +26,7 @@ class Raycaster(GraphicWidget):
         If provided, walls north/south face will use textures in :attr:`light_wall_textures`
         instead of :attr:`wall_textures`.
     sprites : list[Sprite] | None, default: None
-        List of Sprites.
+        List of sprites.
     sprite_textures : list[Texture] | None, default: None
         Textures for sprites.
     ceiling : Texture | None, default: None
@@ -92,7 +92,7 @@ class Raycaster(GraphicWidget):
     light_wall_textures : list[Texture]
         North/south-faced walls' textures.
     sprites : list[Sprite]
-        List of Sprites.
+        List of sprites.
     sprite_textures : list[Texture]
         Textures for sprites.
     ceiling : Texture | None
@@ -236,7 +236,7 @@ class Raycaster(GraphicWidget):
         camera: Camera,
         wall_textures: list[Texture] | None,
         light_wall_textures: list[Texture] | None=None,
-        sprites: list[RaySprite] | None=None,
+        sprites: list[Sprite] | None=None,
         sprite_textures: list[Texture] | None=None,
         ceiling: Texture | None=None,
         ceiling_color: Color=BLACK,

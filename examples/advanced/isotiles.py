@@ -6,7 +6,7 @@ import nurses_2.colors as colors
 from nurses_2.app import App
 from nurses_2.colors import AWHITE
 from nurses_2.io import MouseEvent, MouseEventType, MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget, Sprite, Size, Point
+from nurses_2.widgets.graphic_widget import GraphicWidget, Point, Size, read_texture, composite
 from nurses_2.widgets.scroll_view import ScrollView
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -17,16 +17,16 @@ WORLD_SIZE = Size(5, 5)
 ORIGIN = Point(0, 2)
 TILE_SIZE = TH, TW = Size(20, 40)
 
-TILE_SHEET = Sprite.from_image(TILES_PATH)
-HIGHLIGHTED_TILE = Sprite(TILE_SHEET.texture[:TH, :TW])
-BLANK_TILE       = Sprite(TILE_SHEET.texture[:TH, TW:2 * TW])
-GRASS_TILE       = Sprite(TILE_SHEET.texture[:TH, 2 * TW:3 * TW])
-BODGE_TILE       = Sprite(TILE_SHEET.texture[:TH, 3 * TW:])
-TREE_TILE        = Sprite(TILE_SHEET.texture[TH:, :TW])
-TREE_2_TILE      = Sprite(TILE_SHEET.texture[TH:, TW:2 * TW])
-SAND_TILE        = Sprite(TILE_SHEET.texture[2 * TH:, 2 * TW:3 * TW])
+TILE_SHEET = read_texture(TILES_PATH)
+HIGHLIGHTED_TILE = TILE_SHEET[:TH, :TW]
+BLANK_TILE       = TILE_SHEET[:TH, TW:2 * TW]
+GRASS_TILE       = TILE_SHEET[:TH, 2 * TW:3 * TW]
+BODGE_TILE       = TILE_SHEET[:TH, 3 * TW:]
+TREE_TILE        = TILE_SHEET[TH:, :TW]
+TREE_2_TILE      = TILE_SHEET[TH:, TW:2 * TW]
+SAND_TILE        = TILE_SHEET[2 * TH:, 2 * TW:3 * TW]
 WATER_TILES = [
-    Sprite.from_image(path)
+    read_texture(path)
     for path in sorted(WATER_TILE_PATH.iterdir(), key=lambda file: file.name)
 ]
 
@@ -45,15 +45,9 @@ class WorldWidget(GraphicWidget):
         wh, ww = WORLD_SIZE
         th, tw = TILE_SIZE
 
-        super().__init__(
-            size=(wh * th // 2, ww * tw),
-            default_color=AWHITE,
-        )
-
+        super().__init__(size=(wh * th // 2, ww * tw), default_color=AWHITE)
         self.tile_map = [[0 for _ in range(ww)] for _ in range(wh)]
-
-        self.selected_tile = 666, 666
-
+        self.selected_tile = -1, -1
         self.paint_world()
 
     def on_add(self):
@@ -86,19 +80,18 @@ class WorldWidget(GraphicWidget):
                 if tile is WATER_TILES:
                     tile = WATER_TILES[water_tx]
 
-                ty, tx = self.iso_tile_to_uv(y, x)
+                uv = self.iso_tile_to_uv(y, x)
 
                 if tile is TREE_TILE or tile is TREE_2_TILE:
-                    GRASS_TILE.paint(self.texture, (ty, tx))
+                    composite(GRASS_TILE, self.texture, uv, mask_mode=True)
                     if (y, x) == self.selected_tile:
-                        HIGHLIGHTED_TILE.paint(self.texture, (ty, tx))
+                        composite(HIGHLIGHTED_TILE, self.texture, uv)
 
-                    ty -= TILE_SIZE.height
-                    tile.paint(self.texture, (ty, tx))
+                    composite(tile, self.texture, (uv[0] - TILE_SIZE.height, uv[1]), mask_mode=True)
                 else:
-                    tile.paint(self.texture, (ty, tx))
+                    composite(tile, self.texture, uv, mask_mode=True)
                     if (y, x) == self.selected_tile:
-                        HIGHLIGHTED_TILE.paint(self.texture, (ty, tx))
+                        composite(HIGHLIGHTED_TILE, self.texture, uv)
 
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
@@ -131,8 +124,7 @@ class WorldWidget(GraphicWidget):
         selected_tile_y = (tile_y - ORIGIN.y) - (tile_x - ORIGIN.x)
         selected_tile_x = (tile_y - ORIGIN.y) + (tile_x - ORIGIN.x)
 
-        color = *BODGE_TILE.texture[tile_offset_y, tile_offset_x, :3],
-        match color:
+        match tuple(BODGE_TILE[tile_offset_y, tile_offset_x, :3]):
             case colors.RED:
                 selected_tile_x -= 1
             case colors.YELLOW:
