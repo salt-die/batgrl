@@ -54,7 +54,7 @@ def read_texture(path: Path) -> np.ndarray:
 
     return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
 
-def resize_texture(texture: np.ndarray, size: Size, interpolation: Interpolation=Interpolation.LINEAR):
+def resize_texture(texture: np.ndarray, size: Size, interpolation: Interpolation=Interpolation.LINEAR) -> np.ndarray:
     """
     Resize texture.
     """
