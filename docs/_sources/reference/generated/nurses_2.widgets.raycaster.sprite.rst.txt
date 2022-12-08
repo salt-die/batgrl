@@ -17,7 +17,7 @@ nurses\_2.widgets.raycaster.sprite
 
    .. autosummary::
    
-      RaySprite
+      Sprite
    
    
 

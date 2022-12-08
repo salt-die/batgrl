@@ -9,6 +9,14 @@ nurses\_2.widgets.graphic\_widget\_data\_structures
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      composite
+      read_texture
+      resize_texture
+   
    
 
    
@@ -18,7 +26,6 @@ nurses\_2.widgets.graphic\_widget\_data\_structures
    .. autosummary::
    
       Interpolation
-      Sprite
    
    
 

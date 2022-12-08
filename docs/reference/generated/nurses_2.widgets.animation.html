@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.animation &#8212; Python 0.14.4 documentation</title>
+    <title>nurses_2.widgets.animation &#8212; Python 0.15.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.14.4 documentation</p>
+    <p class="title logo__title">Python 0.15.0 documentation</p>
   
 </a>
     
@@ -721,73 +721,70 @@ widget is not transparent.</p>
 <tr class="row-even"><td><p><strong>from_textures:</strong></p></td>
 <td><p>Create an <a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Animation</span></code></a> from an iterable of uint8 rgba ndarray.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>from_sprites:</strong></p></td>
-<td><p>Create an <a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Animation</span></code></a> from an iterable of <code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code>.</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>from_images:</strong></p></td>
+<tr class="row-odd"><td><p><strong>from_images:</strong></p></td>
 <td><p>Create an <a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Animation</span></code></a> from an iterable of <code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>update_geometry:</strong></p></td>
+<tr class="row-odd"><td><p><strong>update_geometry:</strong></p></td>
 <td><p>Called when parent is resized. Applies size and pos hints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
+<tr class="row-even"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert point in absolute coordinates to local coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>collides_point:</strong></p></td>
+<tr class="row-odd"><td><p><strong>collides_point:</strong></p></td>
 <td><p>True if point is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>collides_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>collides_widget:</strong></p></td>
 <td><p>True if other is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>add_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>add_widget:</strong></p></td>
 <td><p>Add a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>add_widgets:</strong></p></td>
+<tr class="row-even"><td><p><strong>add_widgets:</strong></p></td>
 <td><p>Add multiple child widgets.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>remove_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>remove_widget:</strong></p></td>
 <td><p>Remove a child widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>pull_to_front:</strong></p></td>
+<tr class="row-even"><td><p><strong>pull_to_front:</strong></p></td>
 <td><p>Move to end of widget stack so widget is drawn last.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>walk_from_root:</strong></p></td>
+<tr class="row-odd"><td><p><strong>walk_from_root:</strong></p></td>
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>walk:</strong></p></td>
+<tr class="row-even"><td><p><strong>walk:</strong></p></td>
 <td><p>Yield all descendents (or ancestors if <cite>reverse</cite> is True).</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>subscribe:</strong></p></td>
+<tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
+<tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_key:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_key:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>tween:</strong></p></td>
+<tr class="row-even"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_add:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_add:</strong></p></td>
 <td><p>Called after a widget is added to widget tree.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_remove:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_remove:</strong></p></td>
 <td><p>Called before widget is removed from widget tree.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>prolicide:</strong></p></td>
+<tr class="row-odd"><td><p><strong>prolicide:</strong></p></td>
 <td><p>Recursively remove all children.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>destroy:</strong></p></td>
+<tr class="row-even"><td><p><strong>destroy:</strong></p></td>
 <td><p>Destroy this widget and all descendents.</p></td>
 </tr>
 </tbody>
@@ -889,12 +886,6 @@ widget is not transparent.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.animation.Animation.from_images">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.image.html#nurses_2.widgets.image.Image" title="nurses_2.widgets.image.Image"><span class="pre">nurses_2.widgets.image.Image</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_durations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.08333333333333333</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><span class="pre">nurses_2.widgets.animation.Animation</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.animation.Animation.from_images" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an <a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Animation</span></code></a> from an iterable of <code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.animation.Animation.from_sprites">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sprites</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sprites</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Sprite" title="nurses_2.widgets.graphic_widget_data_structures.Sprite"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Sprite</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_durations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.08333333333333333</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><span class="pre">nurses_2.widgets.animation.Animation</span></a></span></span><a class="headerlink" href="#nurses_2.widgets.animation.Animation.from_sprites" title="Permalink to this definition">#</a></dt>
-<dd><p>Create an <a class="reference internal" href="#nurses_2.widgets.animation.Animation" title="nurses_2.widgets.animation.Animation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Animation</span></code></a> from an iterable of <code class="xref py py-class docutils literal notranslate"><span class="pre">Sprite</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
