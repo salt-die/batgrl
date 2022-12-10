@@ -279,8 +279,6 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             if ancestor is not self.root:
                 self._box.subscribe(ancestor, "pos", self._update_cursor)
 
-        self.focus()
-
     def on_remove(self):
         super().on_remove()
 

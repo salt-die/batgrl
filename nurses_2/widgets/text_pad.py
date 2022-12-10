@@ -305,8 +305,6 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             if ancestor is not self.root:
                 self.subscribe(ancestor, "pos", self._update_cursor)
 
-        self.focus()
-
     def on_remove(self):
         super().on_remove()
 
