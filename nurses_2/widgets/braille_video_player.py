@@ -16,7 +16,7 @@ __all__ = "BrailleVideo",
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
 
-class BrailleVideo(TextWidget):
+class BrailleVideoPlayer(TextWidget):
     """
     A video player that renders to braille unicode characters in grayscale.
 
