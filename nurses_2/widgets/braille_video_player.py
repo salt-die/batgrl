@@ -298,7 +298,7 @@ class BrailleVideoPlayer(TextWidget):
         h, w = self.size
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
-        if self._current_frame:
+        if self._current_frame is not None:
             upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > 0
             sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
             self.canvas = binary_to_braille(sectioned)
