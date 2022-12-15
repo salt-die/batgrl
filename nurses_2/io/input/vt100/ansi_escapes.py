@@ -46,7 +46,7 @@ ANSI_ESCAPES = {
     "\x1d": KeyEvent("]", CONTROL),
     "\x1e": KeyEvent("^", CONTROL),
     "\x1f": KeyEvent("-", CONTROL),
-    "\x7f": KeyEvent("h", CONTROL),
+    "\x7f": KeyEvent(Key.Backspace, NO_MODS),  # Not KeyEvent("h", CONTROL) on WSL
 
     "\x1b[1~": KeyEvent(Key.Home, NO_MODS),
     "\x1b[2~": KeyEvent(Key.Insert, NO_MODS),
