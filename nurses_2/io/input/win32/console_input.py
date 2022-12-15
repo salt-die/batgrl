@@ -100,10 +100,18 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
         button_state = 4  # Middle mouse button.
     elif ev.ButtonState < last_button_state:
         event_type = MouseEventType.MOUSE_UP
+        # ? Check containment?
         _PRESSED_KEYS.remove(button_state := last_button_state - ev.ButtonState)
     else:
         event_type = MouseEventType.MOUSE_DOWN
+        # ? Check containment?
         _PRESSED_KEYS.append(button_state := ev.ButtonState - last_button_state)
+
+    if button_state not in _INT_TO_KEYS:
+        # We're in an inconsistent input state. Just start over...
+        _PRESSED_KEYS.clear()
+        _PRESSED_KEYS.append(0)
+        return
 
     return _PartialMouseEvent(
         Point(ev.MousePosition.Y, ev.MousePosition.X),
