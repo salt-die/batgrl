@@ -29,6 +29,8 @@ def attach(callback):
     """
     Context manager that makes this input active in the current event loop.
     """
+    _EVENTS.clear()
+
     stdin = sys.stdin.fileno()
 
     loop = asyncio.get_event_loop()
