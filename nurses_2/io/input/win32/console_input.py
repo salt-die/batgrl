@@ -32,8 +32,8 @@ from ..events import (
 )
 from .key_codes import KEY_CODES
 
-# Last mouse button pressed is needed to get behavior
-# consistent with linux mouse handling.
+# Last mouse button pressed is needed to get behavior consistent with linux mouse handling.
+# OrderedDict is being used as an ordered-set.
 _PRESSED_KEYS = OrderedDict.fromkeys([0])
 _INT_TO_KEYS = {
     # FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
