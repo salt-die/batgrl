@@ -1,6 +1,8 @@
 """
 Parse and create events for each input record from a win32 console.
 """
+from collections import OrderedDict
+
 try:
     from ctypes.wintypes import DWORD
     from ctypes import byref, windll
@@ -32,7 +34,7 @@ from .key_codes import KEY_CODES
 
 # Last mouse button pressed is needed to get behavior
 # consistent with linux mouse handling.
-_PRESSED_KEYS = [0]
+_PRESSED_KEYS = OrderedDict.fromkeys([0])
 _INT_TO_KEYS = {
     # FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
     # RIGHTMOST_BUTTON_PRESSED = 0x0002
@@ -91,7 +93,7 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     # linux mouse-handling we determine double/triple-clicks with `nurses_2.app.App`.
     if ev.EventFlags & MOUSE_MOVED:
         event_type = MouseEventType.MOUSE_MOVE
-        button_state = _PRESSED_KEYS[-1]  # Last button pressed.
+        button_state = next(reversed(_PRESSED_KEYS))  # Last button pressed.
     elif ev.EventFlags & MOUSE_WHEELED:
         if ev.ButtonState > 0:
             event_type = MouseEventType.SCROLL_UP
@@ -100,27 +102,18 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
         button_state = 4  # Middle mouse button.
     elif ev.ButtonState < last_button_state:
         event_type = MouseEventType.MOUSE_UP
-        try:
-            _PRESSED_KEYS.remove(button_state := last_button_state - ev.ButtonState)
-        except ValueError:
-            # We're in an inconsistent input state. Just start over...
-            # This can happen when some combination of mouse-down/up events
-            # happen both inside and outside the terminal.
-            _PRESSED_KEYS.clear()
-            _PRESSED_KEYS.append(button_state := 0)
+        button_state = last_button_state - ev.ButtonState
+        _PRESSED_KEYS.pop(button_state, None)
     else:
         event_type = MouseEventType.MOUSE_DOWN
-        _PRESSED_KEYS.append(button_state := ev.ButtonState - last_button_state)
-
-    if button_state not in _INT_TO_KEYS:
-        # We're in an inconsistent input state. Just start over...
-        _PRESSED_KEYS.clear()
-        _PRESSED_KEYS.append(button_state := 0)
+        button_state = ev.ButtonState - last_button_state
+        _PRESSED_KEYS[button_state] = None
+        _PRESSED_KEYS.move_to_end(button_state)
 
     return _PartialMouseEvent(
         Point(ev.MousePosition.Y, ev.MousePosition.X),
         event_type,
-        _INT_TO_KEYS[button_state],
+        _INT_TO_KEYS.get(button_state, MouseButton.NO_BUTTON),
         _handle_mods(ev.ControlKeyState),
     )
 
