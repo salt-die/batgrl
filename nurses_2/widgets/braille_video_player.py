@@ -31,6 +31,8 @@ class BrailleVideoPlayer(TextWidget):
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool, default: False
         If true, foreground will be set to `default_fg_color` multiplied by the normalized grays from the source.
+    invert_colors : bool, default: False
+        Invert the colors in the source before rendering.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -82,6 +84,8 @@ class BrailleVideoPlayer(TextWidget):
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool, default: False
         If true, foreground will be set to `default_fg_color` multiplied by the normalized grays from the source.
+    invert_colors : bool, default: False
+        If true, colors in the source are inverted before video is rendered.
     is_device : bool
         If true, video is from a video capturing device.
     canvas : numpy.ndarray
@@ -234,6 +238,7 @@ class BrailleVideoPlayer(TextWidget):
         loop: bool=True,
         gray_threshold: int=127,
         enable_shading: bool=False,
+        invert_colors: bool=False,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -244,6 +249,7 @@ class BrailleVideoPlayer(TextWidget):
         self.loop = loop
         self.gray_threshold = gray_threshold
         self.enable_shading = enable_shading
+        self.invert_colors = invert_colors
 
     def on_remove(self):
         super().on_remove()
@@ -331,6 +337,8 @@ class BrailleVideoPlayer(TextWidget):
 
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if self.invert_colors:
+                self._current_frame = 255 - self._current_frame
 
             h, w = self.size
 
