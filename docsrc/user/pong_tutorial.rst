@@ -17,7 +17,7 @@ Let's just get a basic app up and running. Create a new file named `pong.py`.
 
 
     class Pong(App):
-        async def on_start():
+        async def on_start(self):
             pass
 
 
