@@ -32,9 +32,6 @@ from ..events import (
 )
 from .key_codes import KEY_CODES
 
-# Last mouse button pressed is needed to get behavior consistent with linux mouse handling.
-# OrderedDict is being used as an ordered-set.
-_PRESSED_KEYS = OrderedDict.fromkeys([0])
 _INT_TO_KEYS = {
     # FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
     # RIGHTMOST_BUTTON_PRESSED = 0x0002
@@ -44,6 +41,10 @@ _INT_TO_KEYS = {
     2: MouseButton.RIGHT,
     4: MouseButton.MIDDLE,
 }
+# Last mouse button pressed is needed to get behavior consistent with linux mouse handling.
+# OrderedDict is being used as an ordered-set.
+_PRESSED_KEYS = OrderedDict.fromkeys([0])
+_TEXT: list[str] = []
 
 def _handle_mods(key_state: DWORD) -> Mods:
     """
@@ -53,26 +54,25 @@ def _handle_mods(key_state: DWORD) -> Mods:
     CTRL_PRESSED = 0x0004 | 0x0008  # left ctrl or right ctrl
     SHIFT_PRESSED = 0x0010
 
-    alt   = bool(key_state & ALT_PRESSED)
-    ctrl  = bool(key_state & CTRL_PRESSED)
+    alt = bool(key_state & ALT_PRESSED)
+    ctrl = bool(key_state & CTRL_PRESSED)
     shift = bool(key_state & SHIFT_PRESSED)
     return Mods(alt, ctrl, shift)
 
 def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent:
     """
-    Return a `KeyEvent` from a `KEY_EVENT_RECORD`.
+    Return a `KeyEvent` or add a character to _TEXT from a `KEY_EVENT_RECORD`.
     """
     key = KEY_CODES.get(ev.VirtualKeyCode, ev.uChar.UnicodeChar)
-
     if key == "\x00":
-        return None
+        return
 
     mods = _handle_mods(ev.ControlKeyState)
 
-    if not (isinstance(key, Key) or mods.alt or mods.ctrl):
-        key = ev.uChar.UnicodeChar
+    if mods.alt or mods.ctrl or isinstance(key, Key):
+        return KeyEvent(key, mods)
 
-    return KeyEvent(key, mods)
+    _TEXT.append(key)
 
 def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     """
@@ -117,33 +117,21 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
         _handle_mods(ev.ControlKeyState),
     )
 
-def _purge(text: list[str]):
+def _purge_text():
     """
-    Merge surrogate pairs, detect any PasteEvents and otherwise, yield Keys from `text`.
-    `text` is cleared afterwards.
+    Key events are first collected into _TEXT to determine if a paste event has occurred.
     """
-    if not text:
+    if not _TEXT:
         return
 
-    chars = (
-        "".join(text)
-        .encode("utf-16", "surrogatepass")
-        .decode("utf-16")
-    )  # Merge surrogate pairs.
+    chars = "".join(_TEXT).encode("utf-16", "surrogatepass").decode("utf-16")  # Merge surrogate pairs.
+    _TEXT.clear()
 
     if len(chars) > 2 or not chars.isascii():  # Heuristic for detecting paste event.
         yield PasteEvent(chars)
-
     else:
-        yield from (
-            KeyEvent(
-                Key.Enter if char == "\n" else char,
-                Mods.NO_MODS,
-            )
-            for char in chars
-        )
-
-    text.clear()
+        for char in chars:
+            yield KeyEvent(Key.Enter if char == "\n" else char, Mods.NO_MODS)
 
 def events():
     """
@@ -157,27 +145,19 @@ def events():
         STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0))
     )
 
-    text = [ ]
     for ir in input_records:
         match ev := getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
             case KEY_EVENT_RECORD() if ev.KeyDown:
-                match _handle_key(ev):
-                    case None:
-                        continue
-                    case KeyEvent.ENTER:
-                        text.append("\n")
-                    case KeyEvent(key, (alt, ctrl, _)) as key_event if isinstance(key, Key) or alt or ctrl:
-                        yield from _purge(text)
-                        yield key_event
-                    case KeyEvent(char, _):
-                        text.append(char)
+                if (key := _handle_key(ev)) is not None:
+                    yield from _purge_text()
+                    yield key
 
             case MOUSE_EVENT_RECORD():
-                yield from _purge(text)
+                yield from _purge_text()
                 yield _handle_mouse(ev)
 
             case WINDOW_BUFFER_SIZE_RECORD():
-                yield from _purge(text)
+                yield from _purge_text()
                 yield Size(ev.Size.Y, ev.Size.X)
 
-    yield from _purge(text)
+    yield from _purge_text()
