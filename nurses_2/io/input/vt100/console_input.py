@@ -105,10 +105,7 @@ def events():
     """
     Yield input events.
     """
-    data = ""
-
-    while chars := read_stdin():
-        data += chars
+    data = "".join(iter(read_stdin, ""))
 
     while data:
         data = _find_longest_match(data)
