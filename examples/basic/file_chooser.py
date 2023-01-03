@@ -1,3 +1,4 @@
+import asyncio
 from pathlib import Path
 
 from nurses_2.app import App
@@ -18,5 +19,8 @@ class FileApp(App):
         )
         self.add_widgets(label, fc)
 
+        await asyncio.sleep(5)
+
+        fc.root_dir = ASSETS.parent.parent
 
 FileApp(title="File Chooser Example").run()
