@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.file_chooser &#8212; Python 0.15.0 documentation</title>
+    <title>nurses_2.widgets.file_chooser &#8212; Python 0.16.4 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.15.0 documentation</p>
+    <p class="title logo__title">Python 0.16.4 documentation</p>
   
 </a>
     
@@ -256,6 +256,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.braille_image.html">
      nurses_2.widgets.braille_image
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.braille_video_player.html">
+     nurses_2.widgets.braille_video_player
     </a>
    </li>
    <li class="toctree-l2">
@@ -581,12 +586,15 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.file_chooser.</span></span><span class="sig-name descname"><span class="pre">FileChooser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">root_dir:</span> <span class="pre">typing.Optional[pathlib.Path]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directories_only:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">show_hidden:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">select_callback:</span> <span class="pre">collections.abc.Callable[[pathlib.Path],</span> <span class="pre">None]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">FileChooser.&lt;lambda&gt;&gt;,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.file_chooser.</span></span><span class="sig-name descname"><span class="pre">FileChooser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">root_dir:</span> <span class="pre">typing.Optional[pathlib.Path]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">directories_only:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">show_hidden:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">select_callback:</span> <span class="pre">collections.abc.Callable[[pathlib.Path],</span> <span class="pre">None]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">FileChooser.&lt;lambda&gt;&gt;,</span> <span class="pre">arrow_keys_enabled=False,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="nurses_2.widgets.scroll_view.scroll_view.ScrollView"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.scroll_view.scroll_view.ScrollView</span></code></a></p>
 <p>A file chooser widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>root_dir</strong><span class="classifier">Path | None, default: None</span></dt><dd><p>The root directory of the file chooser. If None, then
+root_dir will be cwd.</p>
+</dd>
 <dt><strong>directories_only</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, show only directories in the file view.</p>
 </dd>
 <dt><strong>show_hidden</strong><span class="classifier">bool, default: True</span></dt><dd><p>If False, hidden files won’t be rendered.</p>
@@ -606,7 +614,8 @@ or <cite>enter</cite> is pressed.</p>
 </dd>
 <dt><strong>scrollwheel_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow vertical scrolling with scrollwheel.</p>
 </dd>
-<dt><strong>arrow_keys_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow scrolling with arrow keys.</p>
+<dt><strong>arrow_keys_enabled</strong><span class="classifier">bool, default: False</span></dt><dd><p>Allow scrolling with arrow keys. Navigating the file chooser with arrow keys
+will be disabled if scrolling with arrow keys is enabled.</p>
 </dd>
 <dt><strong>vertical_proportion</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Vertical scroll position as a proportion of total.</p>
 </dd>
@@ -656,6 +665,8 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
+<dt><strong>root_dir</strong><span class="classifier">Path</span></dt><dd><p>The root directory of the file chooser.</p>
+</dd>
 <dt><strong>directories_only</strong><span class="classifier">bool</span></dt><dd><p>If true, show only directories in the file view.</p>
 </dd>
 <dt><strong>show_hidden</strong><span class="classifier">bool</span></dt><dd><p>If False, hidden files won’t be rendered.</p>
@@ -675,7 +686,8 @@ or <cite>enter</cite> is pressed.</p>
 </dd>
 <dt><strong>scrollwheel_enabled</strong><span class="classifier">bool</span></dt><dd><p>Allow vertical scrolling with scrollwheel.</p>
 </dd>
-<dt><strong>arrow_keys_enabled</strong><span class="classifier">bool</span></dt><dd><p>Allow scrolling with arrow keys.</p>
+<dt><strong>arrow_keys_enabled</strong><span class="classifier">bool</span></dt><dd><p>Allow scrolling with arrow keys. Navigating the file chooser with arrow keys
+will be disabled if scrolling with arrow keys is enabled.</p>
 </dd>
 <dt><strong>vertical_proportion</strong><span class="classifier">float</span></dt><dd><p>Vertical scroll position as a proportion of total.</p>
 </dd>
@@ -1116,6 +1128,11 @@ or <cite>enter</cite> is pressed.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.root_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.root_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.file_chooser.FileChooser.rows">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.file_chooser.FileChooser.rows" title="Permalink to this definition">#</a></dt>
 <dd><p>Height of widget.</p>
@@ -1312,14 +1329,14 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>root_node</strong><span class="classifier">TreeViewNode</span></dt><dd><p>Root node of tree view.</p>
+</dd>
 <dt><strong>directories_only</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, show only directories in the file view.</p>
 </dd>
 <dt><strong>show_hidden</strong><span class="classifier">bool, default: True</span></dt><dd><p>If False, hidden files won’t be rendered.</p>
 </dd>
 <dt><strong>select_callback</strong><span class="classifier">Callable[[Path], None], default: lambda path: None</span></dt><dd><p>Called with path of selected node when node is double-clicked
 or <cite>enter</cite> is pressed.</p>
-</dd>
-<dt><strong>root_node</strong><span class="classifier">TreeViewNode</span></dt><dd><p>Root node of tree view.</p>
 </dd>
 <dt><strong>size</strong><span class="classifier">Size, default: Size(10, 10)</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -1361,14 +1378,14 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
+<dt><strong>root_node</strong><span class="classifier">TreeViewNode</span></dt><dd><p>Root node of tree view</p>
+</dd>
 <dt><strong>directories_only</strong><span class="classifier">bool</span></dt><dd><p>If true, show only directories in the file view.</p>
 </dd>
 <dt><strong>show_hidden</strong><span class="classifier">bool</span></dt><dd><p>If False, hidden files won’t be rendered.</p>
 </dd>
 <dt><strong>select_callback</strong><span class="classifier">Callable[[Path], None]</span></dt><dd><p>Called with path of selected node when node is double-clicked
 or <cite>enter</cite> is pressed.</p>
-</dd>
-<dt><strong>root_node</strong><span class="classifier">TreeViewNode</span></dt><dd><p>Root node of tree view</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.file_chooser.FileView.size" title="nurses_2.widgets.file_chooser.FileView.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -2706,7 +2723,7 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2022, salt-die.<br>
+    &copy; Copyright 2023, salt-die.<br>
 </p>
   </div>
   
