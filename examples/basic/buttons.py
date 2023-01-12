@@ -25,7 +25,7 @@ class MyApp(App):
             grid_rows=5,
             grid_columns=3,
             pos=(2, 0),
-            orientation=Orientation.BT_LR,
+            orientation=Orientation.TB_LR,
             top_padding=1,
             bottom_padding=1,
             left_padding=1,
