@@ -3,7 +3,7 @@ Toggle button behavior for a widget.
 """
 from enum import Enum
 from collections.abc import Hashable
-from weakref import WeakSet
+from weakref import WeakValueDictionary
 
 from .button_behavior import ButtonBehavior, ButtonState
 
@@ -73,7 +73,7 @@ class ToggleButtonBehavior(ButtonBehavior):
     on_release:
         Triggered when a button is released.
     """
-    __groups = { }
+    __toggled = WeakValueDictionary()
 
     def __init__(
         self,
@@ -86,16 +86,16 @@ class ToggleButtonBehavior(ButtonBehavior):
         self.allow_no_selection = allow_no_selection
         self._toggle_state = ToggleState.OFF
 
-        if group is not None:
-            button_group = ToggleButtonBehavior.__groups.setdefault(group, WeakSet())
-
-            if not button_group and not allow_no_selection:
-                # In the case where a group requires a selection and initial `toggle_state`
-                # would be off for all members of a group, this will force the first member
-                # of the group to be on, ignoring `toggle_state` completely.
-                self._toggle_state = ToggleState.ON
-
-            button_group.add(self)
+        if (
+            group is not None and
+            toggle_state is ToggleState.OFF and
+            ToggleButtonBehavior.__toggled.get(group) is None and
+            not allow_no_selection
+        ):
+            # If a group requires a selection, the first member of the group
+            # will be forced on and initial toggle state will be ignored.
+            toggle_state = ToggleState.ON
+            ToggleButtonBehavior.__toggled[group] = self
 
         super().__init__(**kwargs)
 
@@ -122,20 +122,20 @@ class ToggleButtonBehavior(ButtonBehavior):
         self._toggle_state = toggle_state
 
         if toggle_state is ToggleState.ON:
+            if (
+                self.group is not None and
+                (last_on := ToggleButtonBehavior.__toggled[self.group]) is not None and
+                last_on is not self  # last condition should only be false if initialized in the "on" state
+            ):
+                last_on._toggle_state = ToggleState.OFF
+                last_on.update_off()
+                last_on.on_toggle()
+                ToggleButtonBehavior.__toggled[self.group] = self
             self.update_on()
         else:
+            if self.group is not None:
+                del ToggleButtonBehavior.__toggled[self.group]
             self.update_off()
-
-        if self.group is not None and toggle_state is ToggleState.ON:
-            button_group = ToggleButtonBehavior.__groups[self.group]
-            for widget in button_group:
-                if widget is self:
-                    continue
-
-                if widget.toggle_state is ToggleState.ON:
-                    widget._toggle_state = ToggleState.OFF
-                    widget.update_off()
-                    widget.on_toggle()
 
         self.on_toggle()
 
