@@ -3,7 +3,7 @@ Toggle button behavior for a widget.
 """
 from enum import Enum
 from collections.abc import Hashable
-from weakref import ref
+from weakref import WeakSet
 
 from .button_behavior import ButtonBehavior, ButtonState
 
@@ -87,7 +87,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         self._toggle_state = ToggleState.OFF
 
         if group is not None:
-            button_group = ToggleButtonBehavior.__groups.setdefault(group, [ ])
+            button_group = ToggleButtonBehavior.__groups.setdefault(group, WeakSet())
 
             if not button_group and not allow_no_selection:
                 # In the case where a group requires a selection and initial `toggle_state`
@@ -95,7 +95,7 @@ class ToggleButtonBehavior(ButtonBehavior):
                 # of the group to be on, ignoring `toggle_state` completely.
                 self._toggle_state = ToggleState.ON
 
-            button_group.append(ref(self))
+            button_group.add(self)
 
         super().__init__(**kwargs)
 
@@ -107,7 +107,7 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     @toggle_state.setter
     def toggle_state(self, toggle_state: ToggleState):
-        toggle_state = ToggleState(toggle_state)  # Error will be raised if toggle_state is invalid.
+        toggle_state = ToggleState(toggle_state)
 
         if (
             self._toggle_state is toggle_state
@@ -128,12 +128,11 @@ class ToggleButtonBehavior(ButtonBehavior):
 
         if self.group is not None and toggle_state is ToggleState.ON:
             button_group = ToggleButtonBehavior.__groups[self.group]
-            for item in button_group.copy():
-                if (widget := item()) is None:
-                    button_group.remove(item)
-                elif widget is self:
+            for widget in button_group:
+                if widget is self:
                     continue
-                elif widget.toggle_state is ToggleState.ON:
+
+                if widget.toggle_state is ToggleState.ON:
                     widget._toggle_state = ToggleState.OFF
                     widget.update_off()
                     widget.on_toggle()
