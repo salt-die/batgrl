@@ -9,7 +9,6 @@ import numpy as np
 from cv2 import filter2D, BORDER_CONSTANT
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.colors import ABLACK
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
