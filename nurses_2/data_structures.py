@@ -45,10 +45,6 @@ class Size(NamedTuple):
         Height component of size.
     width : int
         Width component of size.
-    rows : int
-        Alias for height.
-    columns : int
-        Alias for width.
 
     Attributes
     ----------
