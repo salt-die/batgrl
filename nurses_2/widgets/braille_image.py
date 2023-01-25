@@ -75,9 +75,6 @@ class BrailleImage(TextWidget):
         The default foreground color.
     default_bg_color: Color
         The default background color.
-    get_view: CanvasView
-        Return a :class:`nurses_2.widgets.text_widget_data_structures.CanvasView`
-        of the underlying :attr:`canvas`.
     size : Size
         Size of widget.
     height : int
