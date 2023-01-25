@@ -1,105 +1,68 @@
 """
 Data structures for text widgets.
 """
-from wcwidth import wcswidth
+import numpy as np
+from wcwidth import wcswidth, wcwidth
 
-__all__ = "CanvasView",
+__all__ = "add_text",
 
 RESET = "\x1b[0m"
-BOLD = "\x1b[1m"
-ITALIC = "\x1b[3m"
-UNDERLINE = "\x1b[4m"
-STRIKETHROUGH = "\x1b[9m"
-STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH
+STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH = "\x1b[1m", "\x1b[3m", "\x1b[4m", "\x1b[9m"
 
-
-class CanvasView:
+def add_text(
+    canvas: np.ndarray[object],
+    text: str,
+    *,
+    bold: bool=False,
+    italic: bool=False,
+    underline: bool=False,
+    strikethrough: bool=False,
+    truncate_text: bool=False,
+):
     """
-    A wrapper around a :class:`numpy.ndarray` with a convenient :meth:`add_text` method.
+    Add text to a ``numpy.ndarray``.
 
-    One-dimensional views will have an extra axis pre-pended to make them two-dimensional.
-    E.g., a view with shape `(m,)` will be re-shaped to `(1, m)` so that
-    the `row` and `column` parameters of `add_text` make sense.
+    Text is added starting at first index in canvas. Every new line is added on a new row.
 
-    Methods
-    -------
-    add_text:
-        Add text to the underlying canvas.
+    Parameters
+    ----------
+    canvas : numpy.ndarray[object]
+        A 1- or 2-dimensional numpy array of python strings.
+    text : str
+        Text to add to canvas.
+    bold : bool, default: False
+        Whether text is bold.
+    italic : bool, default: False
+        Whether text is italic.
+    underline : bool, default: False
+        Whether text is underlined.
+    strikethrough : bool, default: False
+        Whether text is strikethrough.
+    truncate_text : bool, default: False
+        For text that doesn't fit on canvas, truncate text if true else raise an ``IndexError``.
     """
-    __slots__ = "canvas",
+    if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
+        canvas = canvas[None]
+    rows, columns = canvas.shape
 
-    def __init__(self, canvas):
-        if canvas.ndim == 1:
-            canvas = canvas[None]
-
-        self.canvas = canvas
-
-    def __getattr__(self, attr):
-        return getattr(self.canvas, attr)
-
-    def __getitem__(self, key):
-        return type(self)(self.canvas[key])
-
-    def __setitem__(self, key, value):
-        self.canvas[key] = value
-
-    def add_text(
-        self,
-        text,
-        row=0,
-        column=0,
-        *,
-        bold=False,
-        italic=False,
-        underline=False,
-        strikethrough=False,
+    text_lines = text.splitlines()
+    if not truncate_text and (
+        len(text_lines) > rows or
+        max(map(wcswidth, text_lines)) > columns
     ):
-        """
-        Add text to the canvas.
+        raise IndexError("Text does not fit in canvas.")
 
-        Parameters
-        ----------
-        text : str
-            Text to add to canvas.
-        row : int | tuple[int, ...] | slice, default: 0
-            Row or rows to which text is added.
-        column : int, default: 0
-            The first column to which text is added.
-        bold : bool, default: False
-            Whether text is bold.
-        italic : bool, default: False
-            Whether text is italic.
-        underline : bool, default: False
-            Whether text is underlined.
-        strikethrough : bool, default: False
-            Whether text is strikethrough.
+    styles = bold, italic, underline, strikethrough
+    PREPEND = "".join(ansi for style, ansi in zip(styles, STYLE_ANSI) if style)
+    POSTPEND = RESET if PREPEND else ""
 
-        Notes
-        -----
-        Text is meant to be a single line of text. Text is not wrapped if it is too long, instead
-        index error is raised.
-        """
-        canvas = self.canvas
-        columns = canvas.shape[1]
-
-        is_style = bold, italic, underline, strikethrough
-        PREPEND = "".join(ansi for style, ansi in zip(is_style, STYLE_ANSI) if style)
-        POSTPEND = RESET if PREPEND else ""
-
-        if column < 0:
-            column += columns
-
+    for text_line, canvas_line in zip(text_lines, canvas):
         i = 0
-        for letter in text:
-            if column + i >= columns:
+        for letter in text_line:
+            if i >= columns:
                 break
 
-            match wcswidth(letter):
-                case 1:
-                    canvas[row, column + i] = f"{PREPEND}{letter}{POSTPEND}"
-                    i += 1
-                case 2:
-                    canvas[row, column + i] = f"{PREPEND}{letter}{POSTPEND}"
-                    if column + i + 1 < columns:
-                        canvas[row, column + i + 1] = chr(0x200B)  # Zero-width space
-                    i += 2
+            canvas_line[i] = f"{PREPEND}{letter}{POSTPEND}"
+            i += (width := wcwidth(letter))
+            if width == 2 and i <= columns:
+                canvas[i - 1] = chr(0x200B)  # Zero-width space

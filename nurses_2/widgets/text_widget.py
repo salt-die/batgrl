@@ -11,8 +11,8 @@ from .widget import Widget
 from .widget_data_structures import *
 
 __all__ = (
+    "add_text",
     "Anchor",
-    "CanvasView",
     "ColorPair",
     "Easing",
     "Point",
@@ -84,9 +84,6 @@ class TextWidget(Widget):
         The default foreground color.
     default_bg_color: Color
         The default background color.
-    get_view: CanvasView
-        Return a :class:`nurses_2.widgets.text_widget_data_structures.CanvasView`
-        of the underlying :attr:`canvas`.
     size : Size
         Size of widget.
     height : int
@@ -326,15 +323,49 @@ class TextWidget(Widget):
 
             canvas[y, x + 1] = chr(0x200B)  # Zero-width space
 
-    @property
-    def get_view(self) -> CanvasView:
+    def add_text(
+        self,
+        text: str,
+        *,
+        bold: bool=False,
+        italic: bool=False,
+        underline: bool=False,
+        strikethrough: bool=False,
+        truncate_text: bool=False,
+        ):
         """
-        Return a :class:`nurses_2.widgets.text_data_structures.CanvasView` that simplifies
-        adding text to a view of :attr:`canvas`.
-        """
-        return CanvasView(self.canvas)
+        Add text to the canvas.
 
-    add_text = CanvasView.add_text
+        Text is added starting at first index in canvas. Every new line is added on a new row.
+        This method is an alias for ``nurses_2.text_widget_data_structures.add_text`` with `self.canvas`
+        as first argument. To add text to views of `self.canvas`, use the more general function.
+
+        Parameters
+        ----------
+        canvas : numpy.ndarray[object]
+            A 1- or 2-dimensional numpy array of python strings.
+        text : str
+            Text to add to canvas.
+        bold : bool, default: False
+            Whether text is bold.
+        italic : bool, default: False
+            Whether text is italic.
+        underline : bool, default: False
+            Whether text is underlined.
+        strikethrough : bool, default: False
+            Whether text is strikethrough.
+        truncate_text : bool, default: False
+            For text that doesn't fit on canvas, truncate text if true else raise an ``IndexError``.
+        """
+        add_text(
+            self.canvas,
+            text,
+            bold=bold,
+            italic=italic,
+            underline=underline,
+            strikethrough=strikethrough,
+            truncate_text=truncate_text,
+        )
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
