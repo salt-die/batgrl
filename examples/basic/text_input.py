@@ -68,7 +68,7 @@ class TextPadApp(App):
         border.add_widget(textbox)
 
         label = TextWidget(pos_hint=(None, .5), anchor="top_center", size=(1, 7), default_color_pair=color_pair)
-        label.add_text("Textbox")
+        label.add_str("Textbox")
 
         container = Widget(
             size=(4, 33),

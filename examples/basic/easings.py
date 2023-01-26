@@ -21,12 +21,12 @@ class MyApp(App):
             pos_hint=next(POS_HINTS),
         )
 
-        label = TextWidget(size=(1, 20), pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
+        label = TextWidget(size=(1, 30), pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
 
         self.add_widgets(logo, label)
 
         for easing in Easing:
-            label.add_text(f"{easing:^20}")
+            label.add_str(f"{easing:^30}")
 
             await logo.tween(
                 pos_hint=next(POS_HINTS),

@@ -99,7 +99,7 @@ class ModalScreen(TextWidget):
         self.callback = callback
 
         for i, line in enumerate(GAME_OVER if is_game_over else PAUSED, start=1):
-            self.add_text(line, row=i)
+            self.add_str(line, (i, 0))
 
         self._line_glow_task = asyncio.create_task(self._line_glow())
         self.is_enabled = True
@@ -109,7 +109,7 @@ class ModalScreen(TextWidget):
             self.canvas[:] = " "
 
             for i, line in enumerate(number, start=1):
-                self.add_text(line, row=i, column=31)
+                self.add_str(line, (i, 31))
 
             await asyncio.sleep(1)
 

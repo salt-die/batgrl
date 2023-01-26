@@ -21,4 +21,4 @@ class _Legend(GrabMoveBehavior, TextWidget):
         self.colors[1:-1, 2, :3] = colors
 
         for i, name in enumerate(labels, start=1):
-            self.add_text(name, i, 4)
+            self.add_str(name, (i, 4))

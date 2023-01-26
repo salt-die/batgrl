@@ -25,10 +25,10 @@ H_SPACING = Grid.H_SPACING
 
 class ResetButton(ButtonBehavior, TextWidget):
     def update_normal(self):
-        self.add_text(HAPPY)
+        self.add_str(HAPPY)
 
     def update_down(self):
-        self.add_text(SURPRISED)
+        self.add_str(SURPRISED)
 
     def on_release(self):
         self.parent.reset()
@@ -51,7 +51,7 @@ class MineSweeper(Widget):
             pos_hint=(None, .95),
             default_color_pair=DATA_BAR,
         )
-        self.timer.add_text("Time Elapsed:")
+        self.timer.add_str("Time Elapsed:")
         self._elapsed_time = 0
 
         self.mines_left = TextWidget(
@@ -59,7 +59,7 @@ class MineSweeper(Widget):
             pos_hint=(None, .05),
             default_color_pair=DATA_BAR,
         )
-        self.mines_left.add_text("Mines:")
+        self.mines_left.add_str("Mines:")
 
         self.reset_button = ResetButton(
             size=(1, 2),
@@ -86,7 +86,7 @@ class MineSweeper(Widget):
     @mines.setter
     def mines(self, mines):
         self._mines = mines
-        self.mines_left.add_text(str(mines).zfill(3), column=-3)
+        self.mines_left.add_str(str(mines).zfill(3), (0, -3))
 
     def reset(self):
         if len(self.children) == 5:
@@ -106,7 +106,7 @@ class MineSweeper(Widget):
 
     async def _time(self):
         while True:
-            self.timer.add_text(str(self._elapsed_time).zfill(6), column=-6)
+            self.timer.add_str(str(self._elapsed_time).zfill(6), (0, -6))
             await asyncio.sleep(1)
             self._elapsed_time += 1
 
@@ -116,14 +116,14 @@ class MineSweeper(Widget):
         count, minefield = self.children[-2:]
 
         if not win:
-            self.reset_button.add_text(KNOCKED_OUT)
+            self.reset_button.add_str(KNOCKED_OUT)
             count.canvas[(count.canvas == BOMB) & (minefield.canvas != FLAG)] = EXPLODED
 
             bad_flags = (count.canvas != BOMB) & (minefield.canvas == FLAG)
             count.canvas[bad_flags] = BAD_FLAG
             count.colors[bad_flags, :3] = FLAG_COLOR
         else:
-            self.reset_button.add_text(COOL)
+            self.reset_button.add_str(COOL)
 
     def create_minefield(self):
         minefield = np.zeros(SIZE, dtype=np.uint8)

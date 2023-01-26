@@ -39,7 +39,7 @@ class ElementButton(ButtonBehavior, TextWidget):
         sandbox = self.parent.parent
 
         sandbox.particle_type = element
-        sandbox.display.add_text(f"{element.__name__:^{sandbox.display.width}}")
+        sandbox.display.add_str(f"{element.__name__:^{sandbox.display.width}}")
 
 
 class ButtonContainer(Widget):

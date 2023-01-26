@@ -105,23 +105,22 @@ class _Traces(TextWidget):
 
         for row in range(offset_h - 1, -1, -VERTICAL_SPACING):
             y_label = lerp(ymax, ymin, row / (offset_h - 1))
-            y_ticks.add_text(
+            y_ticks.add_str(
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
-                row=row
+                (row, 0),
             )
         y_ticks.canvas[0, -1] = "┐"
 
         for column in range(0, offset_w, TICK_WIDTH):
             x_label = lerp(xmin, xmax, column / (offset_w - 1))
-            x_ticks.add_text("┬", row=0, column=column + TICK_HALF)
-            x_ticks.add_text(
+            x_ticks.add_str("┬", (0, column + TICK_HALF))
+            x_ticks.add_str(
                 f"{x_label:^{TICK_WIDTH}.{PRECISION}g}"[:TICK_WIDTH],
-                row=1,
-                column=column,
+                (1, column),
             )
 
         last_tick_column = -TICK_HALF - 1 - TICK_WIDTH % 2
-        x_ticks.add_text("┐", row=0, column=last_tick_column)
+        x_ticks.add_str("┐", (0, last_tick_column))
         x_ticks.canvas[0, last_tick_column + 1:] = x_ticks.default_char
 
         x_ticks.update_geometry()  # Ensure x-ticks are moved to the bottom of plot.

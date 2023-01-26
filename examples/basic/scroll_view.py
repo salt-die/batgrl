@@ -23,7 +23,7 @@ class MyApp(App):
         big_widget = TextWidget(size=BIG_WIDGET_SIZE)
 
         for y in range(BIG_WIDGET_SIZE.rows):
-            big_widget.add_text(" ".join(f"({y:<2}, {x:<2})" for x in range(N)), row=y)
+            big_widget.add_str(" ".join(f"({y:<2}, {x:<2})" for x in range(N)), (y, 0))
             big_widget.colors[y] = gradient(LEFT_GRADIENT[y], RIGHT_GRADIENT[y], BIG_WIDGET_SIZE.columns)
 
         scroll_view = ScrollView(size=(10, 30), anchor=Anchor.CENTER, pos_hint=(0.5, 0.5))

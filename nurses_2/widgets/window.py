@@ -372,7 +372,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     def title(self, title: str):
         self._title = title
         self._titlebar._label.width = wcswidth(title)
-        self._titlebar._label.add_text(title)
+        self._titlebar._label.add_str(title)
         self.grab_resize_min_width = self.grab_resize_min_width
 
     def update_theme(self):

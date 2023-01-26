@@ -112,7 +112,7 @@ class SPHApp(App):
                     value = f"{v}"
                 else:
                     value = f"{v:.4}"
-                container.add_text(f"{caption}: {value}".ljust(width // 2), y, x)
+                container.add_str(f"{caption}: {value}".ljust(width // 2), (y, x))
             return update
 
         container.add_widget(fluid)

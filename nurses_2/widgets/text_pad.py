@@ -6,9 +6,11 @@ from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.themable import Themable
 from .scroll_view import ScrollView
-from .text_widget import TextWidget, Point
+from .text_widget import TextWidget, Point, add_text
 
 # TODO: Add an Undo stack.
+# TODO: Fix backspace/delete over full-width characters.
+# TODO: Move across words keybinds.
 
 
 class TextPad(Themable, FocusBehavior, ScrollView):
@@ -371,8 +373,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         pad.height = len(lines)
         pad.width = max(max(self._line_lengths) + 1, self.width)
 
-        for i, line in enumerate(lines):
-            pad.add_text(line, row=i)
+        add_text(pad.canvas, text)
 
     @property
     def cursor(self) -> Point:
@@ -774,7 +775,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             if ll[y] >= pad.width:
                 pad.width = ll[y] + 1
 
-            pad.add_text(paste, row=y, column=x)
+            pad.add_str(paste, (y, x))
             pad.canvas[y, x + len_paste: ll[y]] = line_remaining
 
             self.cursor = y, x + len_paste
@@ -796,11 +797,11 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             if max_width >= pad.width:
                 pad.width = max_width + 1
 
-            pad.add_text(first, row=y, column=x)
+            pad.add_str(first, (y, x))
             for i, line in enumerate(lines, start=y + 1):
-                pad.add_text(line.ljust(pad.width), row=i)
+                pad.add_str(line.ljust(pad.width), (i, 0))
 
-            pad.add_text(last, row=i + 1)
+            pad.add_str(last, (i + 1, 0))
             pad.canvas[i + 1, len_last: ll[i + 1]] = line_remaining
             pad.canvas[i + 1, ll[i + 1]:] = pad.default_char
 

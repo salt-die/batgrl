@@ -159,8 +159,8 @@ class TextWidget(Widget):
         Add a border to the widget.
     normalize_canvas:
         Add zero-width characters after each full-width character.
-    add_text:
-        Add text to the canvas.
+    add_str:
+        Add a single line of text to the canvas.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -323,29 +323,27 @@ class TextWidget(Widget):
 
             canvas[y, x + 1] = chr(0x200B)  # Zero-width space
 
-    def add_text(
+    def add_str(
         self,
-        text: str,
+        str: str,
+        pos: Point=Point(0, 0),
         *,
         bold: bool=False,
         italic: bool=False,
         underline: bool=False,
         strikethrough: bool=False,
-        truncate_text: bool=False,
+        truncate_str: bool=False,
         ):
         """
-        Add text to the canvas.
-
-        Text is added starting at first index in canvas. Every new line is added on a new row.
-        This method is an alias for ``nurses_2.text_widget_data_structures.add_text`` with `self.canvas`
-        as first argument. To add text to views of `self.canvas`, use the more general function.
+        Add a single line of text to the canvas at position `pos`.
 
         Parameters
         ----------
-        canvas : numpy.ndarray[object]
-            A 1- or 2-dimensional numpy array of python strings.
-        text : str
-            Text to add to canvas.
+        str : str
+            A single line of text to add to canvas.
+        pos : Point, default: Point(0, 0)
+            Position of first character of string. Negative coordinates position
+            from the right or bottom of canvas (like negative indices).
         bold : bool, default: False
             Whether text is bold.
         italic : bool, default: False
@@ -354,17 +352,22 @@ class TextWidget(Widget):
             Whether text is underlined.
         strikethrough : bool, default: False
             Whether text is strikethrough.
-        truncate_text : bool, default: False
-            For text that doesn't fit on canvas, truncate text if true else raise an ``IndexError``.
+        truncate_str : bool, default: False
+            If false, an ``IndexError`` is raised if the text would not fit on canvas.
+
+        See Also
+        --------
+        text_widget.add_text : Add multiple lines of text on an arbitrary ``np.ndarray`` or view.
         """
+        y, x = pos
         add_text(
-            self.canvas,
-            text,
+            self.canvas[y, x:],
+            str,
             bold=bold,
             italic=italic,
             underline=underline,
             strikethrough=strikethrough,
-            truncate_text=truncate_text,
+            truncate_text=truncate_str,
         )
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):

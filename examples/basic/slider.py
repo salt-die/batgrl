@@ -1,8 +1,6 @@
 """
 Example slider widget.
 """
-import asyncio
-
 from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, BLACK, RED, WHITE, ColorPair
 from nurses_2.widgets.text_widget import TextWidget
@@ -15,8 +13,8 @@ GREEN_ON_WHITE = ColorPair.from_colors(GREEN, WHITE)
 class MyApp(App):
     async def on_start(self):
         display = TextWidget(size=(2, 30))
-        display.add_text("Slider 1 Value:", row=0)
-        display.add_text("Slider 2 Value:", row=1)
+        display.add_str("Slider 1 Value:")
+        display.add_str("Slider 2 Value:", (1, 0))
 
         slider_1 = Slider(
             size=(1, 20),
@@ -24,7 +22,7 @@ class MyApp(App):
             min=0,
             max=100,
             handle_color=BLUE,
-            callback=lambda value: display.add_text(f"{round(value, 3):<10}", row=0, column=16),
+            callback=lambda value: display.add_str(f"{round(value, 3):<10}", (0, 16)),
             fill_color=RED,
             default_color_pair=GREEN_ON_BLACK,
         )
@@ -34,7 +32,7 @@ class MyApp(App):
             min=-20,
             max=50,
             handle_color=BLUE,
-            callback=lambda value: display.add_text(f"{round(value, 3):<10}", row=1, column=16),
+            callback=lambda value: display.add_str(f"{round(value, 3):<10}", (1, 16)),
             fill_color=RED,
             default_color_pair=GREEN_ON_WHITE,
         )

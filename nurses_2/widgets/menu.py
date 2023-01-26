@@ -270,14 +270,14 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         self._item_disabled = item_disabled
 
         self.left_label = TextWidget(size=(1, wcswidth(left_label)))
-        self.left_label.add_text(left_label)
+        self.left_label.add_str(left_label)
 
         self.right_label = TextWidget(
             size=(1, wcswidth(right_label)),
             pos_hint=(None, 1.0),
             anchor=Anchor.RIGHT_CENTER,
         )
-        self.right_label.add_text(right_label)
+        self.right_label.add_str(right_label)
 
         self.submenu = submenu
 

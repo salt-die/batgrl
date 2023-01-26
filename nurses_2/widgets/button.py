@@ -240,7 +240,7 @@ class Button(Themable, ButtonBehavior, Widget):
         self._label = label
         self._label_widget.size = 1, wcswidth(label)
         self._label_widget.update_geometry()
-        self._label_widget.add_text(label)
+        self._label_widget.add_str(label)
 
     def on_release(self):
         self.callback()

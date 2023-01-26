@@ -213,8 +213,8 @@ class FileViewNode(TreeViewNode):
         Add a border to the widget.
     normalize_canvas:
         Add zero-width characters after each full-width character.
-    add_text:
-        Add text to the canvas.
+    add_str:
+        Add a single line of text to the canvas.
     on_size:
         Called when widget is resized.
     update_geometry:
@@ -513,7 +513,8 @@ class FileView(TreeView):
         for node in self.children:
             node.size = 1, max_width
             node.repaint()
-            node.add_text(f"{node.label:<{max_width}}")
+            node.canvas[:] = " "
+            node.add_str(node.label)
 
     def on_key(self, key_event):
         if not self.children:

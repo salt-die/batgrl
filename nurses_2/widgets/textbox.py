@@ -335,7 +335,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         box = self._box
         box.canvas[:] = " "
         box.width = max(self._line_length + 1, self.width)
-        box.add_text(text)
+        box.add_str(text)
         self.cursor = self._line_length
 
     @property
@@ -552,7 +552,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         if len_input >= box.width:
             box.width = len_input + 1
 
-        box.add_text(input_text)
+        box.add_str(input_text)
         box.canvas[0, len_input:] = box.default_char
 
         self._line_length = len_input

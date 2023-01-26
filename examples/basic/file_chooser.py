@@ -10,7 +10,7 @@ ASSETS = Path(__file__).parent.parent / "assets"
 class FileApp(App):
     async def on_start(self):
         label = TextWidget(size=(1, 50), pos=(0, 26))
-        select_callback = lambda path: label.add_text(f"{f'{path.name} selected!':<50}"[:50])
+        select_callback = lambda path: label.add_str(f"{f'{path.name} selected!':<50}"[:50])
         fc = FileChooser(
             root_dir=ASSETS,
             size=(20, 25),

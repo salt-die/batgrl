@@ -13,12 +13,12 @@ class MyApp(App):
 
         def button_callback(i):
             def callback():
-                display.add_text(f"Button {i + 1} pressed!".ljust(20))
+                display.add_str(f"Button {i + 1} pressed!".ljust(20))
             return callback
 
         def toggle_button_callback(i):
             def callback(state):
-                display.add_text(f"Button {i + 1} {'un' if state is ToggleState.OFF else ''}toggled!".ljust(20))
+                display.add_str(f"Button {i + 1} {'un' if state is ToggleState.OFF else ''}toggled!".ljust(20))
             return callback
 
         grid_layout = GridLayout(

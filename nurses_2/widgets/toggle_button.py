@@ -281,7 +281,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         text = prefix + label
         self._label_widget.size = 1, wcswidth(text)
         self._label_widget.update_geometry()
-        self._label_widget.add_text(text)
+        self._label_widget.add_str(text)
 
     def update_hover(self):
         self.background_color_pair = self._label_widget.colors[:] = self.hover_color_pair

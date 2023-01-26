@@ -20,7 +20,7 @@ def add_text(
     truncate_text: bool=False,
 ):
     """
-    Add text to a ``numpy.ndarray``.
+    Add multiline text to a ``numpy.ndarray`` or view.
 
     Text is added starting at first index in canvas. Every new line is added on a new row.
 
@@ -48,9 +48,9 @@ def add_text(
     text_lines = text.splitlines()
     if not truncate_text and (
         len(text_lines) > rows or
-        max(map(wcswidth, text_lines)) > columns
+        max(map(wcswidth, text_lines), default=0) > columns
     ):
-        raise IndexError("Text does not fit in canvas.")
+        raise IndexError(f"Text does not fit in canvas.")
 
     styles = bold, italic, underline, strikethrough
     PREPEND = "".join(ansi for style, ansi in zip(styles, STYLE_ANSI) if style)
@@ -65,4 +65,4 @@ def add_text(
             canvas_line[i] = f"{PREPEND}{letter}{POSTPEND}"
             i += (width := wcwidth(letter))
             if width == 2 and i <= columns:
-                canvas[i - 1] = chr(0x200B)  # Zero-width space
+                canvas_line[i - 1] = chr(0x200B)  # Zero-width space

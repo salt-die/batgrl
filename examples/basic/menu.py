@@ -7,27 +7,27 @@ class MyApp(App):
     async def on_start(self):
         label = TextWidget(size=(1, 50))
 
-        def add_text(text):
+        def add_label(text):
             def inner():
-                label.add_text(f"{text:<50}"[:50])
+                label.add_str(f"{text:<50}"[:50])
             return inner
 
-        def add_text_toggle(text):
+        def add_label_toggle(text):
             def inner(toggle_state):
-                label.add_text(f"{f'{text} {toggle_state}':<50}"[:50])
+                label.add_str(f"{f'{text} {toggle_state}':<50}"[:50])
             return inner
 
         # These "keybinds" aren't implemented.
         menu_dict = {
-            ("New File", "Ctrl+N"): add_text("New File"),
-            ("Open File...", "Ctrl+O"): add_text("Open File..."),
-            ("Save", "Ctrl+S"): add_text("Save"),
-            ("Save as...", "Ctrl+Shift+S"): add_text("Save as..."),
+            ("New File", "Ctrl+N"): add_label("New File"),
+            ("Open File...", "Ctrl+O"): add_label("Open File..."),
+            ("Save", "Ctrl+S"): add_label("Save"),
+            ("Save as...", "Ctrl+Shift+S"): add_label("Save as..."),
             ("Preferences", ""): {
-                ("Settings", "Ctrl+,"): add_text("Settings"),
-                ("Keyboard Shortcuts", "Ctrl+K Ctrl+S"): add_text("Keyboard Shortcuts"),
-                ("Toggle Item 1", ""): add_text_toggle("Toggle Item 1"),
-                ("Toggle Item 2", ""): add_text_toggle("Toggle Item 2"),
+                ("Settings", "Ctrl+,"): add_label("Settings"),
+                ("Keyboard Shortcuts", "Ctrl+K Ctrl+S"): add_label("Keyboard Shortcuts"),
+                ("Toggle Item 1", ""): add_label_toggle("Toggle Item 1"),
+                ("Toggle Item 2", ""): add_label_toggle("Toggle Item 2"),
             },
         }
 

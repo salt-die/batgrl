@@ -94,7 +94,7 @@ class Tetris(Image):
         # Setup HELD display
         ##################################################
         held_border = TextWidget(size=bsize, pos=(t, l)) #
-        held_border.add_text(f"{'HOLD':^{bsize[1]}}")    #
+        held_border.add_str(f"{'HOLD':^{bsize[1]}}")    #
         held_space = TextWidget(**display_geometry)      #
                                                          #
         held_border.add_widget(held_space)               #
@@ -103,7 +103,7 @@ class Tetris(Image):
         # Setup NEXT display
         ##################################################
         next_border = TextWidget(size=bsize, pos=(t, r)) #
-        next_border.add_text(f"{'NEXT':^{bsize[1]}}")    #
+        next_border.add_str(f"{'NEXT':^{bsize[1]}}")    #
         next_space = TextWidget(**display_geometry)      #
                                                          #
         next_border.add_widget(next_space)               #
@@ -112,7 +112,7 @@ class Tetris(Image):
         # Setup SCORE display
         #####################################################
         score_border = TextWidget(size=bsize, pos=(b, l))   #
-        score_border.add_text(f"{'SCORE':^{bsize[1]}}")     #
+        score_border.add_str(f"{'SCORE':^{bsize[1]}}")     #
         self.score_display = TextWidget(**display_geometry) #
                                                             #
         score_border.add_widget(self.score_display)         #
@@ -121,7 +121,7 @@ class Tetris(Image):
         # Setup LEVEL Display
         #####################################################
         level_border = TextWidget(size=bsize, pos=(b, r))   #
-        level_border.add_text(f"{'LEVEL':^{bsize[1]}}")     #
+        level_border.add_str(f"{'LEVEL':^{bsize[1]}}")     #
         self.level_display = TextWidget(**display_geometry) #
                                                             #
         level_border.add_widget(self.level_display)         #
@@ -212,7 +212,7 @@ class Tetris(Image):
     @score.setter
     def score(self, value):
         self._score = value
-        self.score_display.add_text(f"{value:^8}", row=1)
+        self.score_display.add_str(f"{value:^8}", (1, 0))
 
     @property
     def level(self):
@@ -221,7 +221,7 @@ class Tetris(Image):
     @level.setter
     def level(self, value):
         self._level = value
-        self.level_display.add_text(f"{value:^8}", row=0)
+        self.level_display.add_str(f"{value:^8}")
 
     @property
     def lines_to_next_level(self):
@@ -230,8 +230,8 @@ class Tetris(Image):
     @lines_to_next_level.setter
     def lines_to_next_level(self, value):
         self._lines_to_next_level = value
-        self.level_display.add_text(" Lines: ", row=2)
-        self.level_display.add_text(f"{value:^8}", row=3)
+        self.level_display.add_str(" Lines: ", (2, 0))
+        self.level_display.add_str(f"{value:^8}", (3, 0))
 
     async def _run_game(self):
         while True:
@@ -251,7 +251,7 @@ class Tetris(Image):
 
             modal = self.modal_screen
             modal.enable(callback=self.pause, is_game_over=False)
-            modal.add_text(f"{f'Current Score: {self.score}':^{modal.width}}", row=-2)
+            modal.add_str(f"{f'Current Score: {self.score}':^{modal.width}}", (-2, 0))
 
         self.is_paused = not self.is_paused
 
@@ -315,7 +315,7 @@ class Tetris(Image):
             self._game_task.cancel()
             modal = self.modal_screen
             modal.enable(callback=self.new_game, is_game_over=True)
-            modal.add_text(f"{f'Final Score: {self.score}':^{modal.width}}", row=-2)
+            modal.add_str(f"{f'Final Score: {self.score}':^{modal.width}}", (-2, 0))
 
     def collides(self, offset, piece, orientation=None):
         """
