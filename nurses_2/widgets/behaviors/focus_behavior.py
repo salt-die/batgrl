@@ -4,7 +4,7 @@ Focus behavior for a widget.
 from collections import deque
 from weakref import ref, ReferenceType, WeakSet
 
-from ...io import MouseEventType
+from ...io import MouseEventType, Key
 
 
 class FocusBehavior:
@@ -43,10 +43,6 @@ class FocusBehavior:
         Called when widget is focused.
     on_blur:
         Called when widget loses focus.
-
-    Notes
-    -----
-    Disabled focusables can be focused. This behavior will change in the future.
     """
     __focus_widgets: deque[ReferenceType] = deque()
     __focused = WeakSet()
@@ -138,10 +134,15 @@ class FocusBehavior:
         if self.any_focused:
             focus_widgets.rotate(-1)
 
-        while (widget := focus_widgets[0]()) is None:
-            focus_widgets.popleft()
-
-        widget.focus()
+        for _ in range(len(focus_widgets)):
+            widget = focus_widgets[0]()
+            if widget is None:
+                focus_widgets.popleft()
+            elif not widget.is_visible or not widget.is_enabled:
+                focus_widgets.rotate(-1)
+            else:
+                widget.focus()
+                return
 
     def focus_previous(self):
         """
@@ -150,37 +151,46 @@ class FocusBehavior:
         focus_widgets = FocusBehavior.__focus_widgets
 
         if self.any_focused:
-            while (widget := focus_widgets[-1]()) is None:
-                focus_widgets.pop()
-
             focus_widgets.rotate(1)
-        else:
-            while (widget := focus_widgets[0]()) is None:
+
+        for _ in range(len(focus_widgets)):
+            widget = focus_widgets[0]()
+            if widget is None:
                 focus_widgets.popleft()
+            elif not widget.is_visible or not widget.is_enabled:
+                focus_widgets.rotate(1)
+            else:
+                widget.focus()
+                return
 
-        widget.focus()
-
-    # TODO: Dispatch to focusables should be handled by the running app. Making the following two methods obsolete.
-    def dispatch_key(self, key_event):
-        if key_event.key == "tab":
-            if not (self.any_focused and FocusBehavior.__focus_widgets[0]().on_key(key_event)):
-                if key_event.mods.shift:
-                    self.focus_previous()
-                else:
-                    self.focus_next()
+    def on_key(self, key_event):
+        if super().on_key(key_event):
             return True
 
-        return super().dispatch_key(key_event)
+        if key_event.key is Key.Tab:
+            if key_event.mods.shift:
+                self.focus_previous()
+            else:
+                self.focus_next()
+            return True
+
+        return False
 
     def dispatch_mouse(self, mouse_event):
-        if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
+        handled = super().dispatch_mouse(mouse_event)
+        if handled and not self.is_focused and self.is_visible:
+            self.focus()
+        return handled
+
+    def on_mouse(self, mouse_event):
+        if mouse_event.event_type is MouseEventType.MOUSE_DOWN and self.is_visible:
             collides = self.collides_point(mouse_event.position)
             if not self.is_focused and collides:
                 self.focus()
             elif self.is_focused and not collides:
                 self.blur()
 
-        return super().dispatch_mouse(mouse_event)
+        return super().on_mouse(mouse_event)
 
     def on_focus(self):
         """
