@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.progress_bar &#8212; Python 0.16.4 documentation</title>
+    <title>nurses_2.widgets.progress_bar &#8212; Python 0.17.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.16.4 documentation</p>
+    <p class="title logo__title">Python 0.17.0 documentation</p>
   
 </a>
     
@@ -634,12 +634,9 @@ the bar will progress upwards.</p>
 </dd>
 <dt><strong>default_color_pair</strong><span class="classifier">ColorPair, default: WHITE_ON_BLACK</span></dt><dd><p>Default color pair of widget.</p>
 </dd>
-<dt><strong>default_fg_color: Color</strong></dt><dd><p>The default foreground color.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.default_fg_color" title="nurses_2.widgets.progress_bar.ProgressBar.default_fg_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_fg_color</span></code></a><span class="classifier">Color</span></dt><dd><p>The default foreground color.</p>
 </dd>
-<dt><strong>default_bg_color: Color</strong></dt><dd><p>The default background color.</p>
-</dd>
-<dt><strong>get_view: CanvasView</strong></dt><dd><p>Return a <a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_widget_data_structures.CanvasView</span></code></a>
-of the underlying <code class="xref py py-attr docutils literal notranslate"><span class="pre">canvas</span></code>.</p>
+<dt><strong>default_bg_color</strong><span class="classifier">Color</span></dt><dd><p>The default background color.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.size" title="nurses_2.widgets.progress_bar.ProgressBar.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -728,8 +725,8 @@ of the underlying <code class="xref py py-attr docutils literal notranslate"><sp
 <tr class="row-odd"><td><p><strong>normalize_canvas:</strong></p></td>
 <td><p>Add zero-width characters after each full-width character.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>add_text:</strong></p></td>
-<td><p>Add text to the canvas.</p></td>
+<tr class="row-even"><td><p><strong>add_str:</strong></p></td>
+<td><p>Add a single line of text to the canvas.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
@@ -829,17 +826,16 @@ of the underlying <code class="xref py py-attr docutils literal notranslate"><sp
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.add_text">
-<span class="sig-name descname"><span class="pre">add_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.add_text" title="Permalink to this definition">#</a></dt>
-<dd><p>Add text to the canvas.</p>
+<dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.add_str">
+<span class="sig-name descname"><span class="pre">add_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Point(y=0,</span> <span class="pre">x=0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncate_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.add_str" title="Permalink to this definition">#</a></dt>
+<dd><p>Add a single line of text to the canvas at position <cite>pos</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
+<dt><strong>str</strong><span class="classifier">str</span></dt><dd><p>A single line of text to add to canvas.</p>
 </dd>
-<dt><strong>row</strong><span class="classifier">int | tuple[int, …] | slice, default: 0</span></dt><dd><p>Row or rows to which text is added.</p>
-</dd>
-<dt><strong>column</strong><span class="classifier">int, default: 0</span></dt><dd><p>The first column to which text is added.</p>
+<dt><strong>pos</strong><span class="classifier">Point, default: Point(0, 0)</span></dt><dd><p>Position of first character of string. Negative coordinates position
+from the right or bottom of canvas (like negative indices).</p>
 </dd>
 <dt><strong>bold</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is bold.</p>
 </dd>
@@ -849,12 +845,18 @@ of the underlying <code class="xref py py-attr docutils literal notranslate"><sp
 </dd>
 <dt><strong>strikethrough</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is strikethrough.</p>
 </dd>
+<dt><strong>truncate_str</strong><span class="classifier">bool, default: False</span></dt><dd><p>If false, an <cite>IndexError</cite> is raised if the text would not fit on canvas.</p>
+</dd>
 </dl>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Text is meant to be a single line of text. Text is not wrapped if it is too long, instead
-index error is raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_widget.add_text</span></code></dt><dd><p>Add multiple lines of text on an arbitrary <cite>numpy.ndarray</cite> or view.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -958,13 +960,6 @@ index error is raised.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.dispatch_paste" title="Permalink to this definition">#</a></dt>
 <dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar.get_view">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_view</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.text_widget_data_structures.html#nurses_2.widgets.text_widget_data_structures.CanvasView" title="nurses_2.widgets.text_widget_data_structures.CanvasView"><span class="pre">nurses_2.widgets.text_widget_data_structures.CanvasView</span></a></em><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar.get_view" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_data_structures.CanvasView</span></code> that simplifies
-adding text to a view of <code class="xref py py-attr docutils literal notranslate"><span class="pre">canvas</span></code>.</p>
 </dd></dl>
 
 <dl class="py property">

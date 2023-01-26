@@ -9,15 +9,15 @@ nurses\_2.widgets.text\_widget\_data\_structures
 
    
    
-   
-
-   
-   
-   .. rubric:: Classes
+   .. rubric:: Functions
 
    .. autosummary::
    
-      CanvasView
+      add_text
+   
+   
+
+   
    
    
 

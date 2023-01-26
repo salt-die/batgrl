@@ -216,8 +216,8 @@ called when the widget is added to the widget tree.
         async def update(self):
             self.reset()
             left_score = right_score = 0
-            self.left_label.add_text(f"{0:^5}")
-            self.right_label.add_text(f"{0:^5}")
+            self.left_label.add_str(f"{0:^5}")
+            self.right_label.add_str(f"{0:^5}")
 
             while True:
                 # Update ball position.
@@ -239,11 +239,11 @@ called when the widget is added to the widget tree.
                 if self.x_pos < 0:
                     self.reset()
                     right_score += 1
-                    self.right_label.add_text(f"{right_score:^5}")
+                    self.right_label.add_str(f"{right_score:^5}")
                 elif self.x_pos >= FIELD_WIDTH:
                     self.reset()
                     left_score += 1
-                    self.left_label.add_text(f"{left_score:^5}")
+                    self.left_label.add_str(f"{left_score:^5}")
 
                 self.y = int(self.y_pos)
                 self.x = int(self.x_pos)
