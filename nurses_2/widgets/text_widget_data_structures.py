@@ -10,7 +10,7 @@ RESET = "\x1b[0m"
 STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH = "\x1b[1m", "\x1b[3m", "\x1b[4m", "\x1b[9m"
 
 def add_text(
-    canvas: np.ndarray[object],
+    canvas: np.ndarray,
     text: str,
     *,
     bold: bool=False,
