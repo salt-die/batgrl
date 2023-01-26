@@ -276,6 +276,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._line_lengths = [0]
 
         self._pad = TextWidget(size=(1, 1))
+        self.view = self._pad
 
         self.update_theme()
 
@@ -293,13 +294,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._highlight_selection()
 
     def on_add(self):
-        super().on_add()
-
-        self.view = self._pad
-
         # To keep real cursor's position in-sync with virtual cursor's absolute position,
         # subscribe to every ancestor's `pos` property.
-
         self.subscribe(self._pad, "pos", self._update_cursor)
         self.subscribe(self, "pos", self._update_cursor)
 
@@ -307,17 +303,17 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             if ancestor is not self.root:
                 self.subscribe(ancestor, "pos", self._update_cursor)
 
+        super().on_add()
+
     def on_remove(self):
-        super().on_remove()
-
-        self.view = None
-
         self.unsubscribe(self._pad, "pos")
         self.unsubscribe(self, "pos")
 
         for ancestor in self.walk(reverse=True):
             if ancestor is not self.root:
                 self.unsubscribe(ancestor, "pos")
+
+        super().on_remove()
 
     def on_size(self):
         super().on_size()
@@ -333,17 +329,18 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         """
         Move or hide terminal cursor to match position of `self.cursor`.
         """
-        if not self.root:
+        out = self.root.env_out
+
+        if not self.is_focused:
+            out.hide_cursor()
             return
 
         py, px = self._pad.absolute_pos
         cy, cx = self._cursor
         cursor = y, x = py + cy, px + cx
-        out = self.root.env_out
 
         if (
-            self.is_focused
-            and self._pad.collides_point(cursor)
+            self._pad.collides_point(cursor)
             and not (self.show_vertical_bar and self._vertical_bar.collides_point(cursor))
             and not (self.show_horizontal_bar and self._horizontal_bar.collides_point(cursor))
         ):

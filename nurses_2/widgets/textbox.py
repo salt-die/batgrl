@@ -249,6 +249,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._line_length = 0
 
         self._box = TextWidget(size=(1, 1))
+        self.add_widget(self._box)
 
         self.update_theme()
 
@@ -265,13 +266,8 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._highlight_selection()
 
     def on_add(self):
-        super().on_add()
-
-        self.add_widget(self._box)
-
         # To keep real cursor's position in-sync with virtual cursor's absolute position,
         # subscribe to every ancestor's `pos` property.
-
         self.subscribe(self._box, "pos", self._update_cursor)
         self.subscribe(self, "pos", self._update_cursor)
 
@@ -279,18 +275,17 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             if ancestor is not self.root:
                 self._box.subscribe(ancestor, "pos", self._update_cursor)
 
+        super().on_add()
+
     def on_remove(self):
-        super().on_remove()
-
-        if self._box in self.children:
-            self.remove_widget(self._box)
-
         self.unsubscribe(self._box, "pos")
         self.unsubscribe(self, "pos")
 
         for ancestor in self.walk(reverse=True):
             if ancestor is not self.root:
                 self.unsubscribe(ancestor, "pos")
+
+        super().on_remove()
 
     def on_size(self):
         if self.width > self._box.width:
@@ -303,17 +298,16 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         """
         Move or hide terminal cursor to match position of `self.cursor`.
         """
-        if not self.root:
+        out = self.root.env_out
+
+        if not self.is_focused:
+            out.hide_cursor()
             return
 
         y, x = self._box.absolute_pos
         x += self._cursor
-        out = self.root.env_out
 
-        if (
-            self.is_focused
-            and self._box.collides_point((y, x))
-        ):
+        if self._box.collides_point((y, x)):
             out._buffer.append(f"\x1b[{y + 1};{x + 1}H")  # Move cursor.
             out.show_cursor()
         else:
