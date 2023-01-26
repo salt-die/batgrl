@@ -353,11 +353,11 @@ class TextWidget(Widget):
         strikethrough : bool, default: False
             Whether text is strikethrough.
         truncate_str : bool, default: False
-            If false, an ``IndexError`` is raised if the text would not fit on canvas.
+            If false, an `IndexError` is raised if the text would not fit on canvas.
 
         See Also
         --------
-        text_widget.add_text : Add multiple lines of text on an arbitrary ``np.ndarray`` or view.
+        text_widget.add_text : Add multiple lines of text on an arbitrary `numpy.ndarray` or view.
         """
         y, x = pos
         add_text(

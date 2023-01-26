@@ -20,13 +20,13 @@ def add_text(
     truncate_text: bool=False,
 ):
     """
-    Add multiline text to a ``numpy.ndarray`` or view.
+    Add multiline text to a `numpy.ndarray` or view.
 
     Text is added starting at first index in canvas. Every new line is added on a new row.
 
     Parameters
     ----------
-    canvas : numpy.ndarray[object]
+    canvas : numpy.ndarray
         A 1- or 2-dimensional numpy array of python strings.
     text : str
         Text to add to canvas.
@@ -39,7 +39,7 @@ def add_text(
     strikethrough : bool, default: False
         Whether text is strikethrough.
     truncate_text : bool, default: False
-        For text that doesn't fit on canvas, truncate text if true else raise an ``IndexError``.
+        For text that doesn't fit on canvas, truncate text if true else raise an `IndexError`.
     """
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
