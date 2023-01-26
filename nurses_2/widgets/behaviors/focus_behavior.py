@@ -52,21 +52,14 @@ class FocusBehavior:
         super().__init__(**kwargs)
 
     def on_add(self):
-        FocusBehavior.__focus_widgets.append(ref(self))
         super().on_add()
+        FocusBehavior.__focus_widgets.append(ref(self))
+        self.focus()
 
     def on_remove(self):
-        super().on_remove()
-
-        if self.is_focused:
-            FocusBehavior.__focused.remove(self)  # Avoiding `on_blur` being called.
-
-            for ancestor in self.walk(reverse=True):
-                if isinstance(ancestor, FocusBehavior):
-                    ancestor.focus()
-                    break
-
+        self.blur()
         FocusBehavior.__focus_widgets.remove(ref(self))
+        super().on_remove()
 
     @property
     def is_focused(self) -> bool:
