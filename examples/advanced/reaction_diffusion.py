@@ -119,12 +119,12 @@ class ReactionDiffusionApp(App):
             for i in range(4)
         ]
         for label, (attr, _, _) in zip(labels, attrs):
-            label.add_text(f"{attr}: {getattr(react, attr):.4}")
+            label.add_str(f"{attr}: {getattr(react, attr):.4}")
 
         def create_callback(attr, i):
             def set_attr(value):
                 setattr(react, attr, value)
-                labels[i].add_text(f"{attr}: {value:.6}".ljust(30))
+                labels[i].add_str(f"{attr}: {value:.6}".ljust(30))
 
             return set_attr
 

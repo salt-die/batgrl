@@ -132,11 +132,11 @@ class DoomFireApp(App):
             anchor=Anchor.TOP_CENTER,
             default_color_pair=SLIDER_DEFAULT,
         )
-        strength_label.add_text(f"Current Strength: {doomfire.fire_strength:2d}", column=1)
+        strength_label.add_str(f"Current Strength: {doomfire.fire_strength:2d}", (0, 1))
 
         def slider_update(v):
             doomfire.fire_strength = int(v)
-            strength_label.add_text(f"{doomfire.fire_strength:2d}", column=19)
+            strength_label.add_str(f"{doomfire.fire_strength:2d}", (0, 19))
 
         slider = Slider(
             min=0,

@@ -44,7 +44,7 @@ class Connect4(Widget):
     def display_message(self, message):
         self._label.width = len(message)
         self._label.update_geometry()  # Re-center label
-        self._label.add_text(message)
+        self._label.add_str(message)
 
     async def display_message_after(self, message, duration):
         await asyncio.sleep(duration)
