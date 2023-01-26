@@ -228,9 +228,9 @@ class DigitalDisplay(TextWidget):
         Default background character.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color pair of widget.
-    default_fg_color: Color
+    default_fg_color : Color
         The default foreground color.
-    default_bg_color: Color
+    default_bg_color : Color
         The default background color.
     size : Size
         Size of widget.
