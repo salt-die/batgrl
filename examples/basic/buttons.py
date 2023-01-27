@@ -1,5 +1,3 @@
-import asyncio
-
 from nurses_2.app import App
 from nurses_2.widgets.button import Button
 from nurses_2.widgets.grid_layout import GridLayout, Orientation
