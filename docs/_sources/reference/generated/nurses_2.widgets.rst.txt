@@ -35,6 +35,7 @@
    nurses_2.widgets.color_picker
    nurses_2.widgets.digital_display
    nurses_2.widgets.file_chooser
+   nurses_2.widgets.flat_toggle
    nurses_2.widgets.graphic_widget
    nurses_2.widgets.graphic_widget_data_structures
    nurses_2.widgets.grid_layout
