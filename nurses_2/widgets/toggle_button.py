@@ -227,7 +227,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         *,
         background_char=" ",
         label: str="",
-        callback: Callable[[ToggleState], None]=lambda: None,
+        callback: Callable[[ToggleState], None]=lambda state: None,
         **kwargs,
     ):
         self.normal_color_pair = (0, ) * 6  # Temporary assignment
