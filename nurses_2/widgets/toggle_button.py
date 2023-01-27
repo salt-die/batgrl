@@ -38,7 +38,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         is `False` this value will be ignored if all buttons would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-        size : Size, default: Size(10, 10)
+    size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
