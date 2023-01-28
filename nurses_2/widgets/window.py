@@ -356,7 +356,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
             h, w = self.border_size
             view.pos = 2 * h, w
             self.add_widget(view)
-            self.children.insert(0, self.children.pop())  # Move view to top of view stack.
             self.on_size()
 
     def on_size(self):
