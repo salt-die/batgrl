@@ -1334,7 +1334,7 @@ widget is not transparent.</p>
 <td><p>Add a border to the widget.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>normalize_canvas:</strong></p></td>
-<td><p>Add zero-width characters after each full-width character.</p></td>
+<td><p>Ensure column width of text in the canvas is equal to widget width.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>add_str:</strong></p></td>
 <td><p>Add a single line of text to the canvas.</p></td>
@@ -1643,15 +1643,11 @@ all open child nodes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.tree_view.TreeViewNode.normalize_canvas">
 <span class="sig-name descname"><span class="pre">normalize_canvas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.tree_view.TreeViewNode.normalize_canvas" title="Permalink to this definition">#</a></dt>
-<dd><p>Add zero-width characters after each full-width character.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>ValueError</dt><dd><p>If full-width character is followed by non-default character.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dd><p>Ensure column width of text in the canvas is equal to widget width.</p>
+<p>Rendering issues can occur when column width of text exceeds widget width.
+To fix this, 0-width characters are replaced, then null characters are placed
+after each full-width character.</p>
+<p>Text added with <cite>add_str</cite> or <cite>add_text</cite> is already normalized.</p>
 </dd></dl>
 
 <dl class="py method">
