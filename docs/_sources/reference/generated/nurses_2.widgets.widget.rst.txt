@@ -13,8 +13,8 @@ nurses\_2.widgets.widget
 
    .. autosummary::
    
-      emitter
       intersection
+      subscribable
    
    
 
