@@ -158,7 +158,7 @@ class TextWidget(Widget):
     add_border:
         Add a border to the widget.
     normalize_canvas:
-        Add zero-width characters after each full-width character.
+        Ensure column width of text in the canvas is equal to widget width.
     add_str:
         Add a single line of text to the canvas.
     on_size:
@@ -299,29 +299,19 @@ class TextWidget(Widget):
 
     def normalize_canvas(self):
         """
-        Add zero-width characters after each full-width character.
+        Ensure column width of text in the canvas is equal to widget width.
 
-        Raises
-        ------
-        ValueError
-            If full-width character is followed by non-default character.
+        Rendering issues can occur when column width of text exceeds widget width.
+        To fix this, 0-width characters are replaced, then null characters are placed
+        after each full-width character.
+
+        Text added with `add_str` or `add_text` is already normalized.
         """
-        canvas = self.canvas
-        default_char = self.default_char
-
         char_widths = self.character_width(self.canvas)
-
-        canvas[char_widths == 0] = default_char  # Zero-width characters are replaced with the default character.
-
-        where_fullwidth = np.argwhere(char_widths == 2)
-        for y, x in where_fullwidth:
-            if x == self.width - 1:
-                raise ValueError("can't normalize, full-width character on edge")
-
-            if canvas[y, x + 1] != default_char:
-                raise ValueError("can't normalize, full-width character followed by non-default char")
-
-            canvas[y, x + 1] = chr(0x200B)  # Zero-width space
+        self.canvas[char_widths == 0] = self.default_char
+        self.canvas[:, -1][char_widths[:, -1] == 2] = self.default_char
+        for x in range(self.width - 1):
+            self.canvas[:, x + 1][self.character_width(self.canvas[:, x]) == 2] = "\0"
 
     def add_str(
         self,
@@ -333,7 +323,7 @@ class TextWidget(Widget):
         underline: bool=False,
         strikethrough: bool=False,
         truncate_str: bool=False,
-        ):
+    ):
         """
         Add a single line of text to the canvas at position `pos`.
 

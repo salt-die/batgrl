@@ -160,7 +160,7 @@ class ProgressBar(Themable, TextWidget):
     add_border:
         Add a border to the widget.
     normalize_canvas:
-        Add zero-width characters after each full-width character.
+        Ensure column width of text in the canvas is equal to widget width.
     add_str:
         Add a single line of text to the canvas.
     on_size:
