@@ -181,8 +181,8 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         Triggered when a button is released.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -280,7 +280,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
 
         text = prefix + label
         self._label_widget.size = 1, wcswidth(text)
-        self._label_widget.update_geometry()
+        self._label_widget.apply_hints()
         self._label_widget.add_str(text)
 
     def update_hover(self):

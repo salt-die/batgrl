@@ -154,8 +154,8 @@ class Button(Themable, ButtonBehavior, Widget):
         Triggered when a button is released.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -239,7 +239,7 @@ class Button(Themable, ButtonBehavior, Widget):
     def label(self, label: str):
         self._label = label
         self._label_widget.size = 1, wcswidth(label)
-        self._label_widget.update_geometry()
+        self._label_widget.apply_hints()
         self._label_widget.add_str(label)
 
     def on_release(self):

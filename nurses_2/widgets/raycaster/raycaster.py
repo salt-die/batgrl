@@ -186,8 +186,8 @@ class Raycaster(GraphicWidget):
         Write :attr:`texture` to provided path as a `png` image.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:

@@ -187,8 +187,8 @@ class BrailleVideoPlayer(TextWidget):
         Add a single line of text to the canvas.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:

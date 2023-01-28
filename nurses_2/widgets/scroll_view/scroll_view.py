@@ -4,7 +4,7 @@ A scrollable view widget.
 from ...clamp import clamp
 from ...io import KeyEvent, MouseEventType, MouseEvent
 from ..behaviors.grabbable_behavior import GrabbableBehavior
-from ..widget import Widget
+from ..widget import Widget, subscribable
 from .scrollbars import _HorizontalBar, _VerticalBar
 
 
@@ -190,8 +190,8 @@ class ScrollView(GrabbableBehavior, Widget):
         Update widget with incoming mouse events while grabbed.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -283,6 +283,7 @@ class ScrollView(GrabbableBehavior, Widget):
         return self._vertical_proportion
 
     @vertical_proportion.setter
+    @subscribable
     def vertical_proportion(self, value):
         if self.allow_vertical_scroll:
             if self._view is None or self.total_vertical_distance <= 0:
@@ -291,13 +292,12 @@ class ScrollView(GrabbableBehavior, Widget):
                 self._vertical_proportion = clamp(value, 0, 1)
                 self._set_view_top()
 
-            self._vertical_bar.indicator.update_geometry()
-
     @property
     def horizontal_proportion(self):
         return self._horizontal_proportion
 
     @horizontal_proportion.setter
+    @subscribable
     def horizontal_proportion(self, value):
         if self.allow_horizontal_scroll:
             if self._view is None or self.total_horizontal_distance <= 0:
@@ -305,8 +305,6 @@ class ScrollView(GrabbableBehavior, Widget):
             else:
                 self._horizontal_proportion = clamp(value, 0, 1)
                 self._set_view_left()
-
-            self._horizontal_bar.indicator.update_geometry()
 
     @property
     def total_vertical_distance(self) -> int:

@@ -7,6 +7,7 @@ from ...clamp import clamp
 from ...colors import Color
 from ...io import MouseEventType
 from ..text_widget import TextWidget
+from ..widget import subscribable
 from .handle import _Handle
 
 
@@ -182,8 +183,8 @@ class Slider(TextWidget):
         Add a single line of text to the canvas.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -272,6 +273,7 @@ class Slider(TextWidget):
         return self._proportion
 
     @proportion.setter
+    @subscribable
     def proportion(self, value: float):
         if self.slider_enabled:
             self._proportion = clamp(value, 0, 1)
@@ -280,14 +282,12 @@ class Slider(TextWidget):
             if self.callback is not None:
                 self.callback(self._value)
 
-            if handle := getattr(self, "handle", False):
-                handle.update_handle()
-
     @property
     def value(self) -> float:
         return self._value
 
     @value.setter
+    @subscribable
     def value(self, value: float):
         value = clamp(value, self.min, self.max)
         self.proportion = (value - self.min) / (self.max - self.min)

@@ -24,12 +24,22 @@ class _TitleBar(GrabbableBehavior, Widget):
         self._label = TextWidget(pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
         self.add_widget(self._label)
 
+    def on_add(self):
+        super().on_add()
+
+        def reset_pos():
+            self.size = 1, self.parent.width - 2 * self.parent.border_size.width
+
+        reset_pos()
+        self.subscribe(self.parent, "size", reset_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        super().on_remove()
+
     def grab_update(self, mouse_event):
         self.parent.top += self.mouse_dy
         self.parent.left += self.mouse_dx
-
-    def update_geometry(self):
-        self.size = 1, self.parent.width - 2 * self.parent.border_size.width
 
 
 class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
@@ -229,8 +239,8 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         Write :attr:`texture` to provided path as a `png` image.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:

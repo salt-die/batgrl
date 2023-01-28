@@ -217,8 +217,8 @@ class FileViewNode(TreeViewNode):
         Add a single line of text to the canvas.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -262,31 +262,23 @@ class FileViewNode(TreeViewNode):
         super().__init__(is_leaf=path.is_file(), **kwargs)
         self.path = path
 
+    @property
+    def label(self) -> str:
+        return (
+            f"{NESTED_PREFIX * self.level}"
+            f"{FILE_PREFIX if self.path.is_file() else OPEN_FOLDER_PREFIX if self.is_open else FOLDER_PREFIX}"
+            f"{self.path.name}"
+        )
+
     def _toggle_update(self):
         if not self.child_nodes:
-            prefix = NESTED_PREFIX * (self.level + 1)
-
             paths = sorted(
                 self.path.iterdir(),
                 key=lambda path: (path.is_file(), path.name),
             )
 
             for path in paths:
-                file_view_node = FileViewNode(path=path)
-
-                self.add_node(file_view_node)
-
-                file_view_node.label = (
-                    f"{prefix}"
-                    f"{FOLDER_PREFIX if file_view_node.path.is_dir() else FILE_PREFIX}"
-                    f"{file_view_node.path.name}"
-                )
-
-        self.label = (
-            f"{NESTED_PREFIX * self.level}"
-            f"{OPEN_FOLDER_PREFIX if self.is_open else FOLDER_PREFIX}"
-            f"{self.path.name}"
-        )
+                self.add_node(FileViewNode(path=path))
 
     def on_mouse(self, mouse_event):
         if (
@@ -439,8 +431,8 @@ class FileView(TreeView):
         Update tree layout after a child node is toggled open or closed.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -502,18 +494,16 @@ class FileView(TreeView):
         if not self.show_hidden:
             it = (node for node in it if not is_hidden(node.path))
 
-        max_height = 0
-        max_width = self.parent and self.parent.width or -1
-        for max_height, node in enumerate(it):
+        max_width = self.parent and self.parent.width or 1
+        for y, node in enumerate(it):
             max_width = max(max_width, wcswidth(node.label))
-            node.top = max_height
+            node.y = y
             self.add_widget(node)
-        self.size = max_height + 1, max_width
+        self.size = y + 1, max_width
 
         for node in self.children:
             node.size = 1, max_width
             node.repaint()
-            node.canvas[:] = " "
             node.add_str(node.label)
 
     def on_key(self, key_event):
@@ -774,8 +764,8 @@ class FileChooser(Themable, ScrollView):
         Update widget with incoming mouse events while grabbed.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:

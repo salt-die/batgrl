@@ -123,7 +123,7 @@ class _Traces(TextWidget):
         x_ticks.add_str("┐", (0, last_tick_column))
         x_ticks.canvas[0, last_tick_column + 1:] = x_ticks.default_char
 
-        x_ticks.update_geometry()  # Ensure x-ticks are moved to the bottom of plot.
+        x_ticks.apply_hints()  # Ensure x-ticks are moved to the bottom of plot.
 
     @property
     def left(self):

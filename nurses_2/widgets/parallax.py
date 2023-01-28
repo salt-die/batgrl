@@ -9,7 +9,7 @@ import numpy as np
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation, read_texture
 from .image import Image
-from .widget import Widget, emitter
+from .widget import Widget, subscribable
 
 __all__ = "Interpolation", "Parallax"
 
@@ -171,8 +171,8 @@ class Parallax(Widget):
         Create a :class:`Parallax` from an iterable of :class:`Image`.
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -245,7 +245,7 @@ class Parallax(Widget):
         return self._alpha
 
     @alpha.setter
-    @emitter
+    @subscribable
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
         for layer in self.layers:

@@ -22,13 +22,20 @@ class _VerticalBar(Themable, Widget):
     def update_theme(self):
         self.background_color_pair = self.color_theme.primary_dark_color_pair
 
-    def update_geometry(self):
-        h, w = self.parent.size
+    def on_add(self):
+        super().on_add()
 
-        self.left = w - VBAR_WIDTH
-        self.size = h, VBAR_WIDTH
+        def update_size_pos():
+            h, w = self.parent.size
+            self.x = w - VBAR_WIDTH
+            self.height = h
 
-        super().update_geometry()
+        update_size_pos()
+        self.subscribe(self.parent, "size", update_size_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        super().on_remove()
 
     @property
     def fill_height(self):
@@ -68,13 +75,20 @@ class _HorizontalBar(Themable, Widget):
     def update_theme(self):
         self.background_color_pair = self.color_theme.primary_dark_color_pair
 
-    def update_geometry(self):
-        h, w = self.parent.size
+    def on_add(self):
+        super().on_add()
 
-        self.top = h - HBAR_HEIGHT
-        self.size = HBAR_HEIGHT, w
+        def update_size_pos():
+            h, w = self.parent.size
+            self.y = h - HBAR_HEIGHT
+            self.width = w
 
-        super().update_geometry()
+        update_size_pos()
+        self.subscribe(self.parent, "size", update_size_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        super().on_remove()
 
     @property
     def fill_width(self):

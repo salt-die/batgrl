@@ -16,7 +16,7 @@ from ..io import KeyEvent, MouseEvent, PasteEvent
 from .widget_data_structures import *
 
 __all__ = (
-    "emitter",
+    "subscribable",
     "Anchor",
     "ColorPair",
     "Easing",
@@ -27,10 +27,9 @@ __all__ = (
     "Widget",
 )
 
-def emitter(setter):
+def subscribable(setter):
     """
-    A decorator for widget property setters that will
-    notify subscribers when the property is updated.
+    A decorator for property setters that makes the properties subscribable.
     """
     instances = WeakKeyDictionary()
 
@@ -217,8 +216,8 @@ class Widget:
     -------
     on_size:
         Called when widget is resized.
-    update_geometry:
-        Called when parent is resized. Applies size and pos hints.
+    apply_hints:
+        Apply size and pos hints.
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
@@ -307,7 +306,7 @@ class Widget:
         return self._size
 
     @size.setter
-    @emitter
+    @subscribable
     def size(self, size: Size):
         h, w = size
         self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
@@ -315,7 +314,7 @@ class Widget:
         self.on_size()
 
         for child in self.children:
-            child.update_geometry()
+            child.apply_hints()
 
     @property
     def height(self) -> int:
@@ -351,7 +350,7 @@ class Widget:
         return self._pos
 
     @pos.setter
-    @emitter
+    @subscribable
     def pos(self, point: Point):
         self._pos = Point(*point)
 
@@ -420,21 +419,19 @@ class Widget:
         return self._size_hint
 
     @size_hint.setter
-    @emitter
+    @subscribable
     def size_hint(self, size_hint: SizeHint):
         """
         Set widget's size as a proportion of its parent's size.
-        Negative size hints will be clamped to 0.
+
+        Negative size hints are set to 0.0.
         """
         h, w = size_hint
-
         self._size_hint = SizeHint(
             h if h is None else max(float(h), 0.0),
             w if w is None else max(float(w), 0.0),
         )
-
-        if self.parent:
-            self.update_geometry()
+        self.apply_hints()
 
     @property
     def height_hint(self) -> float | None:
@@ -466,11 +463,10 @@ class Widget:
         return self._min_height
 
     @min_height.setter
-    @emitter
+    @subscribable
     def min_height(self, min_height: int | None):
         self._min_height = min_height
-        if self.parent:
-            self.update_geometry()
+        self.apply_hints()
 
     @property
     def max_height(self) -> int | None:
@@ -480,11 +476,10 @@ class Widget:
         return self._max_height
 
     @max_height.setter
-    @emitter
+    @subscribable
     def max_height(self, max_height: int | None):
         self._max_height = max_height
-        if self.parent:
-            self.update_geometry()
+        self.apply_hints()
 
     @property
     def min_width(self) -> int | None:
@@ -494,11 +489,10 @@ class Widget:
         return self._min_width
 
     @min_width.setter
-    @emitter
+    @subscribable
     def min_width(self, min_width: int | None):
         self._min_width = min_width
-        if self.parent:
-            self.update_geometry()
+        self.apply_hints()
 
     @property
     def max_width(self) -> int | None:
@@ -508,11 +502,10 @@ class Widget:
         return self._max_width
 
     @max_width.setter
-    @emitter
+    @subscribable
     def max_width(self, max_width: int | None):
         self._max_width = max_width
-        if self.parent:
-            self.update_geometry()
+        self.apply_hints()
 
     @property
     def pos_hint(self) -> PosHint:
@@ -522,16 +515,14 @@ class Widget:
         return self._pos_hint
 
     @pos_hint.setter
-    @emitter
+    @subscribable
     def pos_hint(self, pos_hint: PosHint):
         h, w = pos_hint
         self._pos_hint = PosHint(
             h if h is None else float(h),
             w if w is None else float(w),
         )
-
-        if self.parent:
-            self.update_geometry()
+        self.apply_hints()
 
     @property
     def y_hint(self) -> float | None:
@@ -560,17 +551,17 @@ class Widget:
         return self._anchor
 
     @anchor.setter
-    @emitter
+    @subscribable
     def anchor(self, anchor: Anchor):
         self._anchor = Anchor(anchor)
-        self.update_geometry()
+        self.apply_hints()
 
     @property
     def background_char(self) -> str | None:
         return self._background_char
 
     @background_char.setter
-    @emitter
+    @subscribable
     def background_char(self, background_char: str | None):
         match background_char:
             case None:
@@ -599,9 +590,12 @@ class Widget:
         Called when widget is resized.
         """
 
-    def update_geometry(self):
+    def apply_hints(self):
         """
-        Update geometry due to a change in parent's size.
+        Apply size and pos hints.
+
+        This is called automatically when the widget is added to the widget tree and
+        when the widget's parent's size changes.
         """
         if self.parent is None:
             return
@@ -940,7 +934,7 @@ class Widget:
         """
         Called after a widget is added to widget tree.
         """
-        self.update_geometry()
+        self.apply_hints()
         for child in self.children:
             child.on_add()
 

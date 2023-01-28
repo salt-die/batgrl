@@ -53,9 +53,20 @@ class _VerticalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         super().__init__(size=(2, 2))
         self.update_theme()
 
-    def update_geometry(self):
-        if (vertical_bar := self.parent) and (scroll_view := vertical_bar.parent):
-            self.top = round(scroll_view.vertical_proportion * vertical_bar.fill_height)
+    def on_add(self):
+        super().on_add()
+
+        def update_pos():
+            self.y = round(self.parent.parent.vertical_proportion * self.parent.fill_height)
+
+        update_pos()
+        self.subscribe(self.parent, "size", update_pos)
+        self.subscribe(self.parent.parent, "vertical_proportion", update_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        self.unsubscribe(self.parent.parent, "vertical_proportion")
+        super().on_remove()
 
     def grab_update(self, mouse_event):
         vertical_bar = self.parent
@@ -68,9 +79,20 @@ class _HorizontalIndicator(_IndicatorBehavior, GrabbableBehavior, Widget):
         super().__init__(size=(1, 4))
         self.update_theme()
 
-    def update_geometry(self):
-        if (horizontal_bar := self.parent) and (scroll_view := horizontal_bar.parent):
-            self.left = round(scroll_view.horizontal_proportion * horizontal_bar.fill_width)
+    def on_add(self):
+        super().on_add()
+
+        def update_pos():
+            self.x = round(self.parent.parent.horizontal_proportion * self.parent.fill_width)
+
+        update_pos()
+        self.subscribe(self.parent, "size", update_pos)
+        self.subscribe(self.parent.parent, "horizontal_proportion", update_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        self.unsubscribe(self.parent.parent, "horizontal_proportion")
+        super().on_remove()
 
     def grab_update(self, mouse_event):
         horizontal_bar = self.parent

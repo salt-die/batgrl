@@ -3,7 +3,7 @@ Draggable resize behavior for a widget.
 """
 from ...clamp import clamp
 from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
-from ..widget import emitter
+from ..widget import subscribable
 from .grabbable_behavior import GrabbableBehavior
 
 __all__ = "GrabResizeBehavior",
@@ -47,37 +47,43 @@ class _Border(GrabbableBehavior, GraphicWidget):
             if x_edge == - 1:
                 parent.left += w - parent.width
 
-    def update_geometry(self):
-        if self.parent is None:
-            return
-
+    def _update_size_pos(self):
         h, w = self.parent.size
         bh, bw = self.parent.border_size
 
-        match self.y_edge:
-            case 0:
-                height = h - 2 * bh
-                top = bh
-            case -1:
-                height = bh
-                top = 0
-            case 1:
-                height = bh
-                top = h - bh
+        if self.y_edge == -1:
+            height = bh
+            top = 0
+        elif self.y_edge == 0:
+            height = h - 2 * bh
+            top = bh
+        else:
+            height = bh
+            top = h - bh
 
-        match self.x_edge:
-            case 0:
-                width = w - 2 * bw
-                left = bw
-            case -1:
-                width = bw
-                left = 0
-            case 1:
-                width = bw
-                left = w - bw
+        if self.x_edge == -1:
+            width = bw
+            left = 0
+        elif self.x_edge == 0:
+            width = w - 2 * bw
+            left = bw
+        else:
+            width = bw
+            left = w - bw
 
         self.pos = top, left
         self.size = height, width
+
+    def on_add(self):
+        super().on_add()
+        self._update_size_pos()
+        self.subscribe(self.parent, "size", self._update_size_pos)
+        self.subscribe(self.parent, "border_size", self._update_size_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        self.unsubscribe(self.parent, "border_size")
+        super().on_remove()
 
 
 class GrabResizeBehavior:
@@ -194,7 +200,7 @@ class GrabResizeBehavior:
         return self._border_size
 
     @border_size.setter
-    @emitter
+    @subscribable
     def border_size(self, size: Size):
         h, w = size
         h = clamp(h, 1, None)
@@ -202,9 +208,6 @@ class GrabResizeBehavior:
         self._border_size = Size(h, w)
         self._grab_resize_min_height = max(2 * h, self._grab_resize_min_height)
         self._grab_resize_min_width = max(2 * w, self._grab_resize_min_width)
-
-        for border in self._borders:
-            border.update_geometry()
 
     @property
     def border_alpha(self) -> float:
