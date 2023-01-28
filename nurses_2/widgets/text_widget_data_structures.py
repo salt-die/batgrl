@@ -62,7 +62,11 @@ def add_text(
             if i >= columns:
                 break
 
+            width = wcwidth(letter)
+            if width == 0:
+                continue
+            if width == 2 and i + 1 < columns:
+                canvas_line[i + 1] = "\0"  # Null character
+
             canvas_line[i] = f"{PREPEND}{letter}{POSTPEND}"
-            i += (width := wcwidth(letter))
-            if width == 2 and i <= columns:
-                canvas_line[i - 1] = chr(0x200B)  # Zero-width space
+            i += width
