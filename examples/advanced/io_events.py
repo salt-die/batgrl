@@ -238,13 +238,18 @@ class KeyboardWidget(RainbowBehavior, TextWidget):
 
     def on_key(self, key_event):
         key, mods = key_event
-        pos, size = KEYS[SHIFTS.get(key, key)]
         showkey = self._key_border
-        showkey.pos = pos
-        showkey.size = size
-        showkey.canvas[:] = " "
-        showkey.add_border(**HEAVY_BORDER)
-        showkey.is_visible = True
+
+        try:
+            pos, size = KEYS[SHIFTS.get(key, key)]
+        except KeyError:
+            showkey.is_visible = False
+        else:
+            showkey.pos = pos
+            showkey.size = size
+            showkey.canvas[:] = " "
+            showkey.add_border(**HEAVY_BORDER)
+            showkey.is_visible = True
         self._show_mods(mods, key in SHIFTS)
 
     def on_mouse(self, mouse_event):
