@@ -69,10 +69,12 @@ def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent:
 
     mods = _handle_mods(ev.ControlKeyState)
 
-    if mods.alt or mods.ctrl or isinstance(key, Key):
+    if key is Key.Enter and not any(mods):
+        _TEXT.append("\n")
+    elif mods.alt or mods.ctrl or isinstance(key, Key):
         return KeyEvent(key, mods)
-
-    _TEXT.append("\n" if key == "\n" else ev.uChar.UnicodeChar)
+    else:
+        _TEXT.append(ev.uChar.UnicodeChar)
 
 def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     """

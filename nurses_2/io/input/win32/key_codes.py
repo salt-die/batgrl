@@ -6,7 +6,7 @@ from ..keys import Key
 KEY_CODES = {
     8: Key.Backspace,
     9: Key.Tab,
-    13: "\n",  # Converted to Key.Enter if not in a paste event.
+    13: Key.Enter,
     27: Key.Escape,
     32: " ",
     33: Key.PageUp,
