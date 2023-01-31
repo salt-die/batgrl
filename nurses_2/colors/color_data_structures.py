@@ -59,7 +59,7 @@ class Color(NamedTuple):
         hexcode = hexcode.removeprefix("#")
 
         if len(hexcode) != 6:
-            raise ValueError(f"{hexcode} has bad length")
+            raise ValueError(f"{hexcode!r} is not a valid hex code")
 
         return cls(
             int(hexcode[:2], 16),
@@ -121,7 +121,7 @@ class AColor(NamedTuple):
         hexcode = hexcode.removeprefix("#")
 
         if len(hexcode) not in (6, 8):
-            raise ValueError(f"{hexcode} has bad length")
+            raise ValueError(f"{hexcode!r} is not a valid hex code")
 
         return cls(
             int(hexcode[:2], 16),
@@ -201,6 +201,20 @@ class ColorPair(NamedTuple):
         """
         return cls(*fg_color[:3], *bg_color[:3])
 
+    @classmethod
+    def from_hexes(cls, fg_hexcode: str, bg_hexcode: str):
+        """
+        Create a :class:`ColorPair` from two hex codes.
+
+        Parameters
+        ----------
+        fg_hexcode : int | str
+            Hex code for foreground color.
+        bg_hexcode : int | str
+            Hex code for background color.
+        """
+        return cls(*AColor.from_hex(fg_hexcode)[:3], *AColor.from_hex(bg_hexcode)[:3])
+
     @property
     def fg_color(self) -> Color:
         """
@@ -224,61 +238,69 @@ class ColorPair(NamedTuple):
 
 class ColorTheme(NamedTuple):
     """
-    A palette of colors used to paint an app's themable widgets.
+    Colors used on themable widgets.
 
     Parameters
     ----------
-    primary_fg : Color
-        Primary foreground color.
-    primary_bg : Color
-        Primary background color.
-    primary_fg_light : Color
-        Primary light foreground color.
-    primary_bg_light : Color
-        Primary light background color.
-    primary_fg_dark : Color
-        Primary dark foreground color.
-    primary_bg_dark : Color
-        Primary dark background color.
-    secondary_fg : Color
-        Secondary foreground color.
-    secondary_bg : Color
-        Secondary background color.
-    primary_color_pair : ColorPair
+    primary : ColorPair
         Primary color pair.
-    primary_light_color_pair :  ColorPair
-        Primary light color pair.
-    primary_dark_color_pair : ColorPair
-        Primary dark color pair.
-    secondary_color_pair : ColorPair
-        Secondary color pair.
+    button_normal : ColorPair
+        Button color pair.
+    button_hover : ColorPair
+        Hovored button color pair.
+    button_press : ColorPair
+        Pressed button color pair.
+    item_hover : ColorPair
+        Hovered item color pair.
+    item_selected : ColorPair
+        Selected item color pair.
+    titlebar_normal : ColorPair
+        Titlebar color pair.
+    titlebar_inactive : ColorPair
+        Inactive titlebar color pair.
+    border_normal : AColor
+        Border color.
+    border_inactive : AColor
+        Inactive border color.
+    scrollbar : Color
+        Scrollbar color.
+    scrollbar_indicator_normal : Color
+        Scrollbar indicator color.
+    scrollbar_indicator_hover : Color
+        Hovered scrollbar indicator color.
+    scrollbar_indicator_press : Color
+        Pressed scrollbar indicator color.
 
     Attributes
     ----------
-    primary_fg : Color
-        Primary foreground color.
-    primary_bg : Color
-        Primary background color.
-    primary_fg_light : Color
-        Primary light foreground color.
-    primary_bg_light : Color
-        Primary light background color.
-    primary_fg_dark : Color
-        Primary dark foreground color.
-    primary_bg_dark : Color
-        Primary dark background color.
-    secondary_fg : Color
-        Secondary foreground color.
-    secondary_bg : Color
-        Secondary background color.
-    primary_color_pair : ColorPair
+    primary : ColorPair
         Primary color pair.
-    primary_light_color_pair :  ColorPair
-        Primary light color pair.
-    primary_dark_color_pair : ColorPair
-        Primary dark color pair.
-    secondary_color_pair : ColorPair
-        Secondary color pair.
+    button_normal : ColorPair
+        Button color pair.
+    button_hover : ColorPair
+        Hovored button color pair.
+    button_press : ColorPair
+        Pressed button color pair.
+    item_hover : ColorPair
+        Hovered item color pair.
+    item_selected : ColorPair
+        Selected item color pair.
+    titlebar_normal : ColorPair
+        Titlebar color pair.
+    titlebar_inactive : ColorPair
+        Inactive titlebar color pair.
+    border_normal : AColor
+        Border color.
+    border_inactive : AColor
+        Inactive border color.
+    scrollbar : Color
+        Scrollbar color.
+    scrollbar_indicator_normal : Color
+        Scrollbar indicator color.
+    scrollbar_indicator_hover : Color
+        Hovered scrollbar indicator color.
+    scrollbar_indicator_press : Color
+        Pressed scrollbar indicator color.
 
     Methods
     -------
@@ -287,42 +309,18 @@ class ColorTheme(NamedTuple):
     index:
         Return first index of value.
     """
-    primary_fg: Color
-    primary_bg: Color
-
-    primary_fg_light: Color
-    primary_bg_light: Color
-
-    primary_fg_dark: Color
-    primary_bg_dark: Color
-
-    secondary_fg: Color
-    secondary_bg: Color
-
-    @property
-    def primary_color_pair(self):
-        """
-        Primary color pair.
-        """
-        return ColorPair.from_colors(self.primary_fg, self.primary_bg)
-
-    @property
-    def primary_light_color_pair(self):
-        """
-        Primary light color pair.
-        """
-        return ColorPair.from_colors(self.primary_fg_light, self.primary_bg_light)
-
-    @property
-    def primary_dark_color_pair(self):
-        """
-        Primary dark color pair.
-        """
-        return ColorPair.from_colors(self.primary_fg_dark, self.primary_bg_dark)
-
-    @property
-    def secondary_color_pair(self):
-        """
-        Secondary color pair.
-        """
-        return ColorPair.from_colors(self.secondary_fg, self.secondary_bg)
+    primary: ColorPair
+    button_normal: ColorPair
+    button_hover: ColorPair
+    button_press: ColorPair
+    item_hover: ColorPair
+    item_selected: ColorPair
+    item_disabled: ColorPair
+    titlebar_normal: ColorPair
+    titlebar_inactive: ColorPair
+    border_normal: AColor
+    border_inactive: AColor
+    scrollbar: Color
+    scrollbar_indicator_normal: Color
+    scrollbar_indicator_hover: Color
+    scrollbar_indicator_press: Color

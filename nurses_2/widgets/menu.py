@@ -197,8 +197,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     Methods
     -------
     update_theme:
-        Repaint the widget with a new theme. This should be called at:
-        least once when a widget is initialized.
+        Paint the widget with current theme.
     update_off:
         Paint the "off" state.
     update_on:
@@ -287,7 +286,18 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
         self.item_callback = item_callback
         self.update_off()
-        self.update_theme()
+
+    def _repaint(self):
+        if self.item_disabled:
+            color = self.color_theme.item_disabled
+        elif self.state is ButtonState.NORMAL:
+            color = self.color_theme.primary
+        elif self.state is ButtonState.HOVER or self.state is ButtonState.DOWN:
+            color = self.color_theme.item_hover
+
+        self.background_color_pair = color
+        self.left_label.colors[:] = color
+        self.right_label.colors[:] = color
 
     @property
     def item_disabled(self) -> bool:
@@ -296,56 +306,34 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     @item_disabled.setter
     def item_disabled(self, item_disabled: bool):
         self._item_disabled = item_disabled
-        self.update_theme()
+        self._repaint()
 
     def update_theme(self):
-        ct = self.color_theme
-
-        self.normal_color_pair = ct.primary_color_pair
-        self.hover_color_pair = ct.primary_light_color_pair
-        self.disabled_color_pair = ct.primary_dark_color_pair
-
-        if self.state is ButtonState.NORMAL:
-            self.update_normal()
-        else:
-            self.update_hover()
-
-    def _update_color_pair(self, color):
-        if self.item_disabled:
-            color = self.disabled_color_pair
-
-        self.background_color_pair = color
-        self.left_label.colors[:] = color
-        self.right_label.colors[:] = color
+        self._repaint()
 
     def update_hover(self):
-        self._update_color_pair(self.hover_color_pair)
+        self._repaint()
 
         index = self.parent.children.index(self)
-        if self.parent._current_selection not in (-1, index):
+        if self.parent._current_selection not in {-1, index}:
             self.parent.close_submenus()
-            self.parent.children[self.parent._current_selection]._normal()
+            if self.parent._current_selection != -1:
+                self.parent.children[self.parent._current_selection]._normal()
 
         self.parent._current_selection = index
-
         if self.submenu is not None:
             self.submenu.open_menu()
 
     def update_normal(self):
+        self._repaint()
         if self.parent is None:
-            self._update_color_pair(self.normal_color_pair)
             return
 
         if self.submenu is None or not self.submenu.is_enabled:
-            pass
+            if self.parent._current_selection == self.parent.children.index(self):
+                self.parent._current_selection = -1
         elif not self.submenu.collides_point(self._last_mouse_pos):
             self.submenu.close_menu()
-        else:
-            return
-
-        self._update_color_pair(self.normal_color_pair)
-        if self.parent._current_selection == self.parent.children.index(self):
-            self.parent._current_selection = -1
 
     def on_mouse(self, mouse_event):
         self._last_mouse_pos = mouse_event.position

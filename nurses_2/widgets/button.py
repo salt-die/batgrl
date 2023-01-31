@@ -142,8 +142,7 @@ class Button(Themable, ButtonBehavior, Widget):
     Methods
     -------
     update_theme:
-        Repaint the widget with a new theme. This should be called at:
-        least once when a widget is initialized.
+        Paint the widget with current theme.
     update_normal:
         Paint the normal state.
     update_hover:
@@ -203,8 +202,6 @@ class Button(Themable, ButtonBehavior, Widget):
         callback: Callable[[], None]=lambda: None,
         **kwargs,
     ):
-        self.normal_color_pair = (0, ) * 6  # Temporary assignment
-
         self._label_widget = TextWidget(pos_hint=(.5, .5), anchor=Anchor.CENTER)
 
         super().__init__(background_char=background_char, **kwargs)
@@ -214,15 +211,7 @@ class Button(Themable, ButtonBehavior, Widget):
         self.label = label
         self.callback = callback
 
-        self.update_theme()
-
     def update_theme(self):
-        ct = self.color_theme
-
-        self.normal_color_pair = ct.primary_color_pair
-        self.hover_color_pair = ct.primary_light_color_pair
-        self.down_color_pair = ct.secondary_color_pair
-
         match self.state:
             case ButtonState.NORMAL:
                 self.update_normal()
@@ -246,10 +235,10 @@ class Button(Themable, ButtonBehavior, Widget):
         self.callback()
 
     def update_hover(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.hover_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.color_theme.button_hover
 
     def update_down(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.down_color_pair
+        self.background_color_pair = self._label_widget.colors[:] =  self.color_theme.button_press
 
     def update_normal(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.normal_color_pair
+        self.background_color_pair = self._label_widget.colors[:] = self.color_theme.button_normal

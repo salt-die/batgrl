@@ -269,6 +269,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        primary = self.color_theme.primary
+        self.selection_highlight = lerp_colors(primary.bg_color, WHITE, 1/10)
+        self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
 
         self._cursor = self._prev_cursor = Point(0, 0)
         self._last_x = None
@@ -278,19 +281,15 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._pad = TextWidget(size=(1, 1))
         self.view = self._pad
 
-        self.update_theme()
-
     def update_theme(self):
-        primary = self.color_theme.primary_color_pair
-        backgound = primary.bg_color
+        primary = self.color_theme.primary
 
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
-        self.background_color_pair = ColorPair.from_colors(backgound, backgound)
+        self.background_color_pair = primary
 
-        self.selection_hightlight = lerp_colors(backgound, WHITE, 1/10)
-        self.line_highlight = lerp_colors(backgound, WHITE, 1/40)
-
+        self.selection_highlight = lerp_colors(primary.bg_color, WHITE, 1/10)
+        self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
         self._highlight_selection()
 
     def on_add(self):
@@ -458,7 +457,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         if self._selection_start != self._selection_end:
             sy, sx = self._selection_start
             ey, ex = self._selection_end
-            highlight = self.selection_hightlight
+            highlight = self.selection_highlight
             ll = self._line_lengths
 
             if ey > sy:

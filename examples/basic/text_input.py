@@ -61,20 +61,20 @@ class TextPadApp(App):
         # Note that `enter_callback` expects a callable with the textbox as the only argument.
         textbox = Textbox(pos=(1, 1), size=(1, 31), enter_callback=enter_callback, max_chars=50)
 
-        color_pair = DEFAULT_COLOR_THEME.primary_color_pair
+        primary = DEFAULT_COLOR_THEME.primary
 
-        border = TextWidget(pos=(1, 0), size=(3, 33), default_color_pair=color_pair)
+        border = TextWidget(pos=(1, 0), size=(3, 33), default_color_pair=primary)
         border.add_border()
         border.add_widget(textbox)
 
-        label = TextWidget(pos_hint=(None, .5), anchor="top_center", size=(1, 7), default_color_pair=color_pair)
+        label = TextWidget(pos_hint=(None, .5), anchor="top_center", size=(1, 7), default_color_pair=primary)
         label.add_str("Textbox")
 
         container = Widget(
             size=(4, 33),
             pos_hint=(None, .5),
             anchor="top_center",
-            background_color_pair=textbox.background_color_pair,
+            background_color_pair=primary,
         )
         container.add_widgets(label, border)
 

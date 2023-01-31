@@ -263,8 +263,7 @@ class ColorPicker(Themable, Widget):
     Methods
     -------
     update_theme:
-        Repaint the widget with a new theme. This should be called at:
-        least once when a widget is initialized.
+        Paint the widget with current theme.
     on_size:
         Called when widget is resized.
     apply_hints:
@@ -347,8 +346,6 @@ class ColorPicker(Themable, Widget):
 
         self.add_widgets(self.color_swatch, self.hues, self.shades, self.label)
 
-        self.update_theme()
-
     def on_size(self):
         h, w = self._size
 
@@ -369,9 +366,8 @@ class ColorPicker(Themable, Widget):
         label.left = shades.right + 1
 
     def update_theme(self):
-        ct = self.color_theme
+        primary = self.color_theme.primary
 
-        self.background_color_pair = ct.primary_color_pair
-
-        self.label.default_color_pair = ct.primary_dark_color_pair
-        self.label.colors[:] = ct.primary_dark_color_pair
+        self.background_color_pair = primary
+        self.label.default_color_pair = primary
+        self.label.colors[:] = primary

@@ -575,8 +575,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorPair</span></code></a>(fg_red, fg_green, fg_blue, bg_red, ...)</p></td>
 <td><p>A foreground and background pair of 24-bit colors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme" title="nurses_2.colors.color_data_structures.ColorTheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorTheme</span></code></a>(primary_fg, primary_bg, ...)</p></td>
-<td><p>A palette of colors used to paint an app's themable widgets.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme" title="nurses_2.colors.color_data_structures.ColorTheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColorTheme</span></code></a>(primary, button_normal, ...)</p></td>
+<td><p>Colors used on themable widgets.</p></td>
 </tr>
 </tbody>
 </table>
@@ -909,6 +909,22 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorPair.from_hexes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_hexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fg_hexcode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_hexcode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorPair.from_hexes" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a <a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><code class="xref py py-class docutils literal notranslate"><span class="pre">ColorPair</span></code></a> from two hex codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fg_hexcode</strong><span class="classifier">int | str</span></dt><dd><p>Hex code for foreground color.</p>
+</dd>
+<dt><strong>bg_hexcode</strong><span class="classifier">int | str</span></dt><dd><p>Hex code for background color.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorPair.index">
 <span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">sys.maxsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorPair.index" title="Permalink to this definition">#</a></dt>
 <dd><p>Return first index of value.</p>
@@ -925,63 +941,71 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.colors.color_data_structures.</span></span><span class="sig-name descname"><span class="pre">ColorTheme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_fg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_fg_light</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg_light</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_fg_dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_bg_dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_fg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_bg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.colors.color_data_structures.</span></span><span class="sig-name descname"><span class="pre">ColorTheme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">button_normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">button_hover</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">button_press</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_hover</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_disabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">titlebar_normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">titlebar_inactive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">border_inactive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scrollbar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scrollbar_indicator_normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scrollbar_indicator_hover</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scrollbar_indicator_press</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></p>
-<p>A palette of colors used to paint an app’s themable widgets.</p>
+<p>Colors used on themable widgets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>primary_fg</strong><span class="classifier">Color</span></dt><dd><p>Primary foreground color.</p>
+<dt><strong>primary</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary color pair.</p>
 </dd>
-<dt><strong>primary_bg</strong><span class="classifier">Color</span></dt><dd><p>Primary background color.</p>
+<dt><strong>button_normal</strong><span class="classifier">ColorPair</span></dt><dd><p>Button color pair.</p>
 </dd>
-<dt><strong>primary_fg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light foreground color.</p>
+<dt><strong>button_hover</strong><span class="classifier">ColorPair</span></dt><dd><p>Hovored button color pair.</p>
 </dd>
-<dt><strong>primary_bg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light background color.</p>
+<dt><strong>button_press</strong><span class="classifier">ColorPair</span></dt><dd><p>Pressed button color pair.</p>
 </dd>
-<dt><strong>primary_fg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark foreground color.</p>
+<dt><strong>item_hover</strong><span class="classifier">ColorPair</span></dt><dd><p>Hovered item color pair.</p>
 </dd>
-<dt><strong>primary_bg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark background color.</p>
+<dt><strong>item_selected</strong><span class="classifier">ColorPair</span></dt><dd><p>Selected item color pair.</p>
 </dd>
-<dt><strong>secondary_fg</strong><span class="classifier">Color</span></dt><dd><p>Secondary foreground color.</p>
+<dt><strong>titlebar_normal</strong><span class="classifier">ColorPair</span></dt><dd><p>Titlebar color pair.</p>
 </dd>
-<dt><strong>secondary_bg</strong><span class="classifier">Color</span></dt><dd><p>Secondary background color.</p>
+<dt><strong>titlebar_inactive</strong><span class="classifier">ColorPair</span></dt><dd><p>Inactive titlebar color pair.</p>
 </dd>
-<dt><strong>primary_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary color pair.</p>
+<dt><strong>border_normal</strong><span class="classifier">AColor</span></dt><dd><p>Border color.</p>
 </dd>
-<dt><strong>primary_light_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary light color pair.</p>
+<dt><strong>border_inactive</strong><span class="classifier">AColor</span></dt><dd><p>Inactive border color.</p>
 </dd>
-<dt><strong>primary_dark_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary dark color pair.</p>
+<dt><strong>scrollbar</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar color.</p>
 </dd>
-<dt><strong>secondary_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Secondary color pair.</p>
+<dt><strong>scrollbar_indicator_normal</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar indicator color.</p>
+</dd>
+<dt><strong>scrollbar_indicator_hover</strong><span class="classifier">Color</span></dt><dd><p>Hovered scrollbar indicator color.</p>
+</dd>
+<dt><strong>scrollbar_indicator_press</strong><span class="classifier">Color</span></dt><dd><p>Pressed scrollbar indicator color.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>primary_fg</strong><span class="classifier">Color</span></dt><dd><p>Primary foreground color.</p>
+<dt><strong>primary</strong><span class="classifier">ColorPair</span></dt><dd><p>Primary color pair.</p>
 </dd>
-<dt><strong>primary_bg</strong><span class="classifier">Color</span></dt><dd><p>Primary background color.</p>
+<dt><strong>button_normal</strong><span class="classifier">ColorPair</span></dt><dd><p>Button color pair.</p>
 </dd>
-<dt><strong>primary_fg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light foreground color.</p>
+<dt><strong>button_hover</strong><span class="classifier">ColorPair</span></dt><dd><p>Hovored button color pair.</p>
 </dd>
-<dt><strong>primary_bg_light</strong><span class="classifier">Color</span></dt><dd><p>Primary light background color.</p>
+<dt><strong>button_press</strong><span class="classifier">ColorPair</span></dt><dd><p>Pressed button color pair.</p>
 </dd>
-<dt><strong>primary_fg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark foreground color.</p>
+<dt><strong>item_hover</strong><span class="classifier">ColorPair</span></dt><dd><p>Hovered item color pair.</p>
 </dd>
-<dt><strong>primary_bg_dark</strong><span class="classifier">Color</span></dt><dd><p>Primary dark background color.</p>
+<dt><strong>item_selected</strong><span class="classifier">ColorPair</span></dt><dd><p>Selected item color pair.</p>
 </dd>
-<dt><strong>secondary_fg</strong><span class="classifier">Color</span></dt><dd><p>Secondary foreground color.</p>
+<dt><strong>titlebar_normal</strong><span class="classifier">ColorPair</span></dt><dd><p>Titlebar color pair.</p>
 </dd>
-<dt><strong>secondary_bg</strong><span class="classifier">Color</span></dt><dd><p>Secondary background color.</p>
+<dt><strong>titlebar_inactive</strong><span class="classifier">ColorPair</span></dt><dd><p>Inactive titlebar color pair.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Primary color pair.</p>
+<dt><strong>border_normal</strong><span class="classifier">AColor</span></dt><dd><p>Border color.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_light_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Primary light color pair.</p>
+<dt><strong>border_inactive</strong><span class="classifier">AColor</span></dt><dd><p>Inactive border color.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">primary_dark_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Primary dark color pair.</p>
+<dt><strong>scrollbar</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar color.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair" title="nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair"><code class="xref py py-obj docutils literal notranslate"><span class="pre">secondary_color_pair</span></code></a><span class="classifier">ColorPair</span></dt><dd><p>Secondary color pair.</p>
+<dt><strong>scrollbar_indicator_normal</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar indicator color.</p>
+</dd>
+<dt><strong>scrollbar_indicator_hover</strong><span class="classifier">Color</span></dt><dd><p>Hovered scrollbar indicator color.</p>
+</dd>
+<dt><strong>scrollbar_indicator_press</strong><span class="classifier">Color</span></dt><dd><p>Pressed scrollbar indicator color.</p>
 </dd>
 </dl>
 </dd>
@@ -1001,6 +1025,36 @@
 </tr>
 </tbody>
 </table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.border_inactive">
+<span class="sig-name descname"><span class="pre">border_inactive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.border_inactive" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 10</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.border_normal">
+<span class="sig-name descname"><span class="pre">border_normal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.border_normal" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 9</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.button_hover">
+<span class="sig-name descname"><span class="pre">button_hover</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.button_hover" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.button_normal">
+<span class="sig-name descname"><span class="pre">button_normal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.button_normal" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.button_press">
+<span class="sig-name descname"><span class="pre">button_press</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.button_press" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.count">
 <span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.count" title="Permalink to this definition">#</a></dt>
@@ -1015,75 +1069,63 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_bg">
-<span class="sig-name descname"><span class="pre">primary_bg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_bg" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 1</p>
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.item_disabled">
+<span class="sig-name descname"><span class="pre">item_disabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.item_disabled" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 6</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_bg_dark">
-<span class="sig-name descname"><span class="pre">primary_bg_dark</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_bg_dark" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 5</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_bg_light">
-<span class="sig-name descname"><span class="pre">primary_bg_light</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_bg_light" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 3</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">primary_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_color_pair" title="Permalink to this definition">#</a></dt>
-<dd><p>Primary color pair.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">primary_dark_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_dark_color_pair" title="Permalink to this definition">#</a></dt>
-<dd><p>Primary dark color pair.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_fg">
-<span class="sig-name descname"><span class="pre">primary_fg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_fg" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_fg_dark">
-<span class="sig-name descname"><span class="pre">primary_fg_dark</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_fg_dark" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.item_hover">
+<span class="sig-name descname"><span class="pre">item_hover</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.item_hover" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 4</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_fg_light">
-<span class="sig-name descname"><span class="pre">primary_fg_light</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_fg_light" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">primary_light_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary_light_color_pair" title="Permalink to this definition">#</a></dt>
-<dd><p>Primary light color pair.</p>
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.item_selected">
+<span class="sig-name descname"><span class="pre">item_selected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.item_selected" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 5</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.secondary_bg">
-<span class="sig-name descname"><span class="pre">secondary_bg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.secondary_bg" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.primary">
+<span class="sig-name descname"><span class="pre">primary</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.primary" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.scrollbar">
+<span class="sig-name descname"><span class="pre">scrollbar</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.scrollbar" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 11</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.scrollbar_indicator_hover">
+<span class="sig-name descname"><span class="pre">scrollbar_indicator_hover</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.scrollbar_indicator_hover" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 13</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.scrollbar_indicator_normal">
+<span class="sig-name descname"><span class="pre">scrollbar_indicator_normal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.scrollbar_indicator_normal" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 12</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.scrollbar_indicator_press">
+<span class="sig-name descname"><span class="pre">scrollbar_indicator_press</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.scrollbar_indicator_press" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 14</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.titlebar_inactive">
+<span class="sig-name descname"><span class="pre">titlebar_inactive</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.titlebar_inactive" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 8</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.titlebar_normal">
+<span class="sig-name descname"><span class="pre">titlebar_normal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.ColorPair" title="nurses_2.colors.color_data_structures.ColorPair"><span class="pre">nurses_2.colors.color_data_structures.ColorPair</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.titlebar_normal" title="Permalink to this definition">#</a></dt>
 <dd><p>Alias for field number 7</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">secondary_color_pair</span></span><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.secondary_color_pair" title="Permalink to this definition">#</a></dt>
-<dd><p>Secondary color pair.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.colors.color_data_structures.ColorTheme.secondary_fg">
-<span class="sig-name descname"><span class="pre">secondary_fg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.colors.color_data_structures.ColorTheme.secondary_fg" title="Permalink to this definition">#</a></dt>
-<dd><p>Alias for field number 6</p>
 </dd></dl>
 
 </dd></dl>

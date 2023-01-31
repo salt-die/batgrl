@@ -40,7 +40,7 @@ class MyApp(App):
             xlabel="X Values",
             ylabel="Y Values",
             legend_labels=("Before", "During", "After"),
-            background_color_pair=DEFAULT_COLOR_THEME.primary_dark_color_pair,
+            background_color_pair=DEFAULT_COLOR_THEME.primary,
         )
 
         self.add_widgets(window_1, window_2, window_3, window_4)

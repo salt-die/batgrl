@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 from wcwidth import wcswidth
 
-from ..colors import lerp_colors, WHITE, ColorPair
+from ..colors import lerp_colors, WHITE
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.grabbable_behavior import GrabbableBehavior
@@ -251,18 +251,13 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._box = TextWidget(size=(1, 1))
         self.add_widget(self._box)
 
-        self.update_theme()
-
     def update_theme(self):
-        primary = self.color_theme.primary_color_pair
-        backgound = primary.bg_color
-
+        primary = self.color_theme.primary
         self._box.colors[:] = primary
         self._box.default_color_pair = primary
-        self.background_color_pair = ColorPair.from_colors(backgound, backgound)
+        self.background_color_pair = primary
 
-        self.selection_hightlight = lerp_colors(backgound, WHITE, 1/10)
-
+        self.selection_hightlight = lerp_colors(primary.bg_color, WHITE, 1/10)
         self._highlight_selection()
 
     def on_add(self):

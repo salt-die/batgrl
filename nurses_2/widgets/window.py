@@ -299,8 +299,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
         self.title = title
 
-        self.update_theme()
-
         def on_border_size():
             h, w = self.border_size
             self._titlebar.pos = h, w
@@ -385,20 +383,24 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         self.grab_resize_min_width = self.grab_resize_min_width
 
     def update_theme(self):
-        ct = self.color_theme
-
-        self.default_color = AColor(*ct.primary_bg)
+        self.default_color = AColor(*self.color_theme.primary.bg_color)
         bh, bw = self.border_size
         self.texture[2 * bh + 2: -2 * bh, bw: -bw] = self.default_color
 
         if self.is_focused:
-            self.border_color = AColor(*ct.primary_bg_light)
-        else:
-            self.border_color = self.default_color
+            title_color = self.color_theme.titlebar_normal
+            self._titlebar.background_color_pair = title_color
+            self._titlebar._label.default_color_pair = title_color
+            self._titlebar._label.colors[:] = title_color
 
-        self._titlebar.background_color_pair = ct.primary_dark_color_pair
-        self._titlebar._label.default_color_pair = ct.primary_dark_color_pair
-        self._titlebar._label.colors[:] = ct.primary_dark_color_pair
+            self.border_color = self.color_theme.border_normal
+        else:
+            title_color = self.color_theme.titlebar_inactive
+            self._titlebar.background_color_pair = title_color
+            self._titlebar._label.default_color_pair = title_color
+            self._titlebar._label.colors[:] = title_color
+
+            self.border_color = self.color_theme.border_inactive
 
     def on_focus(self):
         self.update_theme()

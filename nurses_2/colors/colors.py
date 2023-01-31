@@ -84,16 +84,20 @@ BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)
 """Black on black color pair."""
 
 DEFAULT_COLOR_THEME = ColorTheme(
-    primary_fg=Color.from_hex("#d1c4e9"),
-    primary_bg=Color.from_hex("#311b92"),
-
-    primary_fg_dark=Color.from_hex("#b39ddb"),
-    primary_bg_dark=Color.from_hex("#29177a"),
-
-    primary_fg_light=Color.from_hex("#ede7f6"),
-    primary_bg_light=Color.from_hex("#6746c3"),
-
-    secondary_fg=Color.from_hex("#212121"),
-    secondary_bg=Color.from_hex("#ffb300"),
+    primary=ColorPair.from_hexes("F6A7A9", "070C25"),
+    button_normal=ColorPair.from_hexes("DDE4ED", "2A3CA0"),
+    button_hover=ColorPair.from_hexes("FFF0F6", "3248C0"),
+    button_press=ColorPair.from_hexes("FFF0F6", "c4a219"),
+    item_hover=ColorPair.from_hexes("F6A7A9", "111834"),
+    item_selected=ColorPair.from_hexes("ECF3FF", "1B244B"),
+    item_disabled=ColorPair.from_hexes("272B40", "070C25"),
+    titlebar_normal=ColorPair.from_hexes("FFE0DF", "05081A"),
+    titlebar_inactive=ColorPair.from_hexes("7D6B71", "05081A"),
+    border_normal=AColor.from_hex("122162FF"),
+    border_inactive=AColor.from_hex("282C3EFF"),
+    scrollbar=Color.from_hex("070C25"),
+    scrollbar_indicator_normal=Color.from_hex("0E1843"),
+    scrollbar_indicator_hover=Color.from_hex("111E4F"),
+    scrollbar_indicator_press=Color.from_hex("172868"),
 )
 """Default color theme."""

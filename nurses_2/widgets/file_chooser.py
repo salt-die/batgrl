@@ -7,7 +7,6 @@ from collections.abc import Callable
 
 from wcwidth import wcswidth
 
-from ..colors import ColorPair
 from .scroll_view import ScrollView
 from .tree_view import TreeViewNode, TreeView
 from .behaviors.themable import Themable
@@ -199,8 +198,7 @@ class FileViewNode(TreeViewNode):
     unselect:
         Unselect this node.
     update_theme:
-        Repaint the widget with a new theme. This should be called at:
-        least once when a widget is initialized.
+        Paint the widget with current theme.
     update_normal:
         Paint the normal state.
     update_hover:
@@ -503,7 +501,6 @@ class FileView(TreeView):
 
         for node in self.children:
             node.size = 1, max_width
-            node.repaint()
             node.add_str(node.label)
 
     def on_key(self, key_event):
@@ -823,11 +820,9 @@ class FileChooser(Themable, ScrollView):
             select_callback=select_callback,
         )
         self._root_dir = path
-        self.update_theme()
 
     def update_theme(self):
-        bg = self.color_theme.primary_bg
-        self.background_color_pair = ColorPair.from_colors(bg, bg)
+        self.background_color_pair = self.color_theme.primary.bg_color * 2
 
     def on_size(self):
         super().on_size()
