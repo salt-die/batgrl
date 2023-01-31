@@ -212,7 +212,7 @@ class GrabResizeBehavior:
     @property
     def border_alpha(self) -> float:
         """
-        Background character of the border.
+        Border transparency.
         """
         return self._border_alpha
 
