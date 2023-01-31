@@ -19,7 +19,7 @@ __all__ = "Window",
 
 class _TitleBar(GrabbableBehavior, Widget):
     def __init__(self):
-        super().__init__(disable_ptf=True, is_transparent=False, background_char=" ")
+        super().__init__(pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" ")
 
         self._label = TextWidget(pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
         self.add_widget(self._label)
@@ -27,11 +27,11 @@ class _TitleBar(GrabbableBehavior, Widget):
     def on_add(self):
         super().on_add()
 
-        def reset_pos():
-            self.size = 1, self.parent.width - 2 * self.parent.border_size.width
+        def update_size():
+            self.size = 1, self.parent.width - 4
 
-        reset_pos()
-        self.subscribe(self.parent, "size", reset_pos)
+        update_size()
+        self.subscribe(self.parent, "size", update_size)
 
     def on_remove(self):
         self.unsubscribe(self.parent, "size")
@@ -60,16 +60,14 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         Allow horizontal resize.
     grab_resize_min_height : int | None, default: None
         Minimum height widget can be resized by grabbing. Minimum
-        height will never be less than `2 * border_size.height`.
+        height will never be less than 3.
     grab_resize_min_width : int | None, default: None
         Minimum width widget can be resized by grabbing. Minimum
-        width will never be less than `2 * border_size.width`.
+        width will never be less than 6 + column width of title.
     border_alpha : float, default: 1.0
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor, default: TRANSPARENT
         Color of border.
-    border_size : Size, default: Size(1, 2)
-        Height and width of horizontal and vertical borders, respectively.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -138,8 +136,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor
         Color of border.
-    border_size : Size
-        Height and width of horizontal and vertical borders, respectively.
     texture : numpy.ndarray
         uint8 RGBA color array.
     default_color : AColor
@@ -291,26 +287,13 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     """
     def __init__(self, title="", **kwargs):
         self._title = title
+
         super().__init__(**kwargs)
 
         self._view = None
         self._titlebar = _TitleBar()
         self.add_widget(self._titlebar)
-
         self.title = title
-
-        def on_border_size():
-            h, w = self.border_size
-            self._titlebar.pos = h, w
-
-            if self._view is not None:
-                self._view.pos = h * 2, w
-
-            self.grab_resize_min_height = self.grab_resize_min_height
-            self.grab_resize_min_width = self.grab_resize_min_width
-
-        self.subscribe(self, "border_size", on_border_size)
-        on_border_size()
 
     @property
     def grab_resize_min_height(self) -> int:
@@ -318,11 +301,10 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
     @grab_resize_min_height.setter
     def grab_resize_min_height(self, min_height: int | None):
-        h = 2 * self._border_size.height + 1
         if min_height is None:
-            self._grab_resize_min_height = h
+            self._grab_resize_min_height = 3
         else:
-            self._grab_resize_min_height = clamp(min_height, h, None)
+            self._grab_resize_min_height = clamp(min_height, 3, None)
 
     @property
     def grab_resize_min_width(self) -> int:
@@ -330,7 +312,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
     @grab_resize_min_width.setter
     def grab_resize_min_width(self, min_width: int | None):
-        w = 2 * self._border_size.width + wcswidth(self._title) + 2
+        w = 6 + wcswidth(self._title)
         if min_width is None:
             self._grab_resize_min_width = w
         else:
@@ -351,25 +333,22 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         self._view = view
 
         if view is not None:
-            h, w = self.border_size
-            view.pos = 2 * h, w
+            view.pos = 2, 2
             self.add_widget(view)
             self.on_size()
 
     def on_size(self):
         h, w = self._size
-        bh, bw = self.border_size
-
         self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
-        self.texture[2 * bh + 2: -2 * bh, bw: -bw] = self.default_color
+        self.texture[4: -2, 2: -2] = self.default_color
 
         if self._view is not None:
             if self._view.size_hint == (None, None):
-                self._view.size = h - 2 * bh - 1, w - 2 * bw
+                self._view.size = h - 3, w - 4
             elif self._view.height_hint is None:
-                self._view.height = h - 2 * bh - 1
+                self._view.height = h - 3
             elif self._view.width_hint is None:
-                self._view.width = w - 2 * bw
+                self._view.width = w - 4
 
     @property
     def title(self):
@@ -384,8 +363,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
     def update_theme(self):
         self.default_color = AColor(*self.color_theme.primary.bg_color)
-        bh, bw = self.border_size
-        self.texture[2 * bh + 2: -2 * bh, bw: -bw] = self.default_color
+        self.texture[4: -2, 2: -2] = self.default_color
 
         if self.is_focused:
             title_color = self.color_theme.titlebar_normal

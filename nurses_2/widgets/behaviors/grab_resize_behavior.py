@@ -11,7 +11,7 @@ __all__ = "GrabResizeBehavior",
 
 class _Border(GrabbableBehavior, GraphicWidget):
     def __init__(self, y_edge, x_edge):
-        super().__init__(disable_ptf=True)
+        super().__init__(size=(1, 2), disable_ptf=True)
         self.y_edge = y_edge
         self.x_edge = x_edge
 
@@ -49,27 +49,26 @@ class _Border(GrabbableBehavior, GraphicWidget):
 
     def _update_size_pos(self):
         h, w = self.parent.size
-        bh, bw = self.parent.border_size
 
         if self.y_edge == -1:
-            height = bh
+            height = 1
             top = 0
         elif self.y_edge == 0:
-            height = h - 2 * bh
-            top = bh
+            height = h - 2 * 1
+            top = 1
         else:
-            height = bh
-            top = h - bh
+            height = 1
+            top = h - 1
 
         if self.x_edge == -1:
-            width = bw
+            width = 2
             left = 0
         elif self.x_edge == 0:
-            width = w - 2 * bw
-            left = bw
+            width = w - 2 * 2
+            left = 2
         else:
-            width = bw
-            left = w - bw
+            width = 2
+            left = w - 2
 
         self.pos = top, left
         self.size = height, width
@@ -78,11 +77,9 @@ class _Border(GrabbableBehavior, GraphicWidget):
         super().on_add()
         self._update_size_pos()
         self.subscribe(self.parent, "size", self._update_size_pos)
-        self.subscribe(self.parent, "border_size", self._update_size_pos)
 
     def on_remove(self):
         self.unsubscribe(self.parent, "size")
-        self.unsubscribe(self.parent, "border_size")
         super().on_remove()
 
 
@@ -100,16 +97,14 @@ class GrabResizeBehavior:
         Allow horizontal resize.
     grab_resize_min_height : int | None, default: None
         Minimum height widget can be resized by grabbing. Minimum
-        height will never be less than `2 * border_size.height`.
+        height will never be less than 2.
     grab_resize_min_width : int | None, default: None
         Minimum width widget can be resized by grabbing. Minimum
-        width will never be less than `2 * border_size.width`.
+        width will never be less than 4.
     border_alpha : float, default: 1.0
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor, default: TRANSPARENT
         Color of border.
-    border_size : Size, default: Size(1, 2)
-        Height and width of horizontal and vertical borders, respectively.
 
     Attributes
     ----------
@@ -125,8 +120,6 @@ class GrabResizeBehavior:
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor
         Color of border.
-    border_size : Size
-        Height and width of horizontal and vertical borders, respectively.
 
     Methods
     -------
@@ -147,12 +140,9 @@ class GrabResizeBehavior:
         grab_resize_min_width: int | None=None,
         border_alpha: float=1.0,
         border_color: AColor=TRANSPARENT,
-        border_size: Size=Size(1, 2),
         **kwargs
     ):
         super().__init__(**kwargs)
-        self._border_size = border_size
-
         self.allow_vertical_resize = allow_vertical_resize
         self.allow_horizontal_resize = allow_horizontal_resize
 
@@ -166,7 +156,6 @@ class GrabResizeBehavior:
 
         self.border_alpha = border_alpha
         self.border_color = border_color
-        self.border_size = border_size
 
     @property
     def grab_resize_min_height(self) -> int:
@@ -174,11 +163,10 @@ class GrabResizeBehavior:
 
     @grab_resize_min_height.setter
     def grab_resize_min_height(self, min_height: int | None):
-        h = 2 * self._border_size.height
         if min_height is None:
-            self._grab_resize_min_height = h
+            self._grab_resize_min_height = 2
         else:
-            self._grab_resize_min_height = clamp(min_height, h, None)
+            self._grab_resize_min_height = clamp(min_height, 2, None)
 
     @property
     def grab_resize_min_width(self) -> int:
@@ -186,28 +174,10 @@ class GrabResizeBehavior:
 
     @grab_resize_min_width.setter
     def grab_resize_min_width(self, min_width: int | None):
-        w = 2 * self._border_size.width
         if min_width is None:
-            self._grab_resize_min_width = w
+            self._grab_resize_min_width = 4
         else:
-            self._grab_resize_min_width = clamp(min_width, w, None)
-
-    @property
-    def border_size(self) -> Size:
-        """
-        Height and width of horizontal and vertical borders, respectively.
-        """
-        return self._border_size
-
-    @border_size.setter
-    @subscribable
-    def border_size(self, size: Size):
-        h, w = size
-        h = clamp(h, 1, None)
-        w = clamp(w, 1, None)
-        self._border_size = Size(h, w)
-        self._grab_resize_min_height = max(2 * h, self._grab_resize_min_height)
-        self._grab_resize_min_width = max(2 * w, self._grab_resize_min_width)
+            self._grab_resize_min_width = clamp(min_width, 4, None)
 
     @property
     def border_alpha(self) -> float:

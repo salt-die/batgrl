@@ -588,16 +588,14 @@
 <dt><strong>allow_horizontal_resize</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow horizontal resize.</p>
 </dd>
 <dt><strong>grab_resize_min_height</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum height widget can be resized by grabbing. Minimum
-height will never be less than <cite>2 * border_size.height</cite>.</p>
+height will never be less than 3.</p>
 </dd>
 <dt><strong>grab_resize_min_width</strong><span class="classifier">int | None, default: None</span></dt><dd><p>Minimum width widget can be resized by grabbing. Minimum
-width will never be less than <cite>2 * border_size.width</cite>.</p>
+width will never be less than 6 + column width of title.</p>
 </dd>
 <dt><strong>border_alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>Transparency of border. This value will be clamped between <cite>0.0</cite> and <cite>1.0</cite>.</p>
 </dd>
 <dt><strong>border_color</strong><span class="classifier">AColor, default: TRANSPARENT</span></dt><dd><p>Color of border.</p>
-</dd>
-<dt><strong>border_size</strong><span class="classifier">Size, default: Size(1, 2)</span></dt><dd><p>Height and width of horizontal and vertical borders, respectively.</p>
 </dd>
 <dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
 </dd>
@@ -675,8 +673,6 @@ It is recommended to use views with no size hints.</p>
 <dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_alpha" title="nurses_2.widgets.window.Window.border_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Border transparency.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_color" title="nurses_2.widgets.window.Window.border_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_color</span></code></a><span class="classifier">AColor</span></dt><dd><p>Color of border.</p>
-</dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.window.Window.border_size" title="nurses_2.widgets.window.Window.border_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">border_size</span></code></a><span class="classifier">Size</span></dt><dd><p>Height and width of horizontal and vertical borders, respectively.</p>
 </dd>
 <dt><strong>texture</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>uint8 RGBA color array.</p>
 </dd>
@@ -925,12 +921,6 @@ when the widget’s parent’s size changes.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.border_color">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.AColor" title="nurses_2.colors.color_data_structures.AColor"><span class="pre">nurses_2.colors.color_data_structures.AColor</span></a></em><a class="headerlink" href="#nurses_2.widgets.window.Window.border_color" title="Permalink to this definition">#</a></dt>
 <dd><p>Color of border.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.window.Window.border_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">border_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.window.Window.border_size" title="Permalink to this definition">#</a></dt>
-<dd><p>Height and width of horizontal and vertical borders, respectively.</p>
 </dd></dl>
 
 <dl class="py property">
