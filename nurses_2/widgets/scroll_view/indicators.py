@@ -2,6 +2,7 @@
 Indicators for scroll view scrollbars.
 """
 from ...io import MouseEventType
+from ...clamp import clamp
 from ..behaviors.grabbable_behavior import GrabbableBehavior
 from ..behaviors.themable import Themable
 from ..widget import Widget
@@ -11,6 +12,9 @@ class _IndicatorBehaviorBase(Themable, GrabbableBehavior, Widget):
     """
     Common behavior for vertical and horizontal indicators.
     """
+    def __init__(self):
+        super().__init__(size=(1, 2))
+
     def update_theme(self):
         self.background_color_pair = self.color_theme.scrollbar_indicator_normal * 2
 
@@ -39,52 +43,72 @@ class _IndicatorBehaviorBase(Themable, GrabbableBehavior, Widget):
 
 
 class _VerticalIndicator(_IndicatorBehaviorBase):
-    def __init__(self):
-        super().__init__(size=(2, 2))
-        self.update_theme()
+    def update_size_pos(self):
+        bar = self.parent
+        scroll_view = bar.parent
+        if scroll_view.view == None:
+            view_height = 1
+        else:
+            view_height = scroll_view.view.height
+
+        self.height = clamp(int(scroll_view.port_height ** 2 / view_height), 1, scroll_view.port_height)
+        self.y = round(scroll_view.vertical_proportion * bar.fill_height)
 
     def on_add(self):
         super().on_add()
-
-        def update_pos():
-            self.y = round(self.parent.parent.vertical_proportion * self.parent.fill_height)
-
-        update_pos()
-        self.subscribe(self.parent, "size", update_pos)
-        self.subscribe(self.parent.parent, "vertical_proportion", update_pos)
+        scroll_view = self.parent.parent
+        self.update_size_pos()
+        self.subscribe(scroll_view, "size", self.update_size_pos)
+        self.subscribe(scroll_view, "vertical_proportion", self.update_size_pos)
+        self.subscribe(scroll_view, "show_horizontal_bar", self.update_size_pos)
 
     def on_remove(self):
-        self.unsubscribe(self.parent, "size")
-        self.unsubscribe(self.parent.parent, "vertical_proportion")
+        scroll_view = self.parent.parent
+        self.unsubscribe(scroll_view, "size")
+        self.unsubscribe(scroll_view, "vertical_proportion")
+        self.unsubscribe(scroll_view, "show_horizontal_bar")
         super().on_remove()
 
     def grab_update(self, mouse_event):
-        vertical_bar = self.parent
-        scroll_view = vertical_bar.parent
-        scroll_view.vertical_proportion += self.mouse_dy / vertical_bar.fill_height
+        bar = self.parent
+        scroll_view = bar.parent
+        if bar.fill_height == 0:
+            scroll_view.vertical_proportion = 0
+        else:
+            scroll_view.vertical_proportion += self.mouse_dy / bar.fill_height
 
 
 class _HorizontalIndicator(_IndicatorBehaviorBase):
-    def __init__(self):
-        super().__init__(size=(1, 4))
-        self.update_theme()
+    def update_size_pos(self):
+        bar = self.parent
+        scroll_view = bar.parent
+        if scroll_view.view == None:
+            view_width = 1
+        else:
+            view_width = scroll_view.view.width
+
+        self.width = clamp(int(scroll_view.port_width ** 2 / view_width), 2, scroll_view.port_width)
+        self.x = round(scroll_view.horizontal_proportion * bar.fill_width)
 
     def on_add(self):
         super().on_add()
-
-        def update_pos():
-            self.x = round(self.parent.parent.horizontal_proportion * self.parent.fill_width)
-
-        update_pos()
-        self.subscribe(self.parent, "size", update_pos)
-        self.subscribe(self.parent.parent, "horizontal_proportion", update_pos)
+        scroll_view = self.parent.parent
+        self.update_size_pos()
+        self.subscribe(scroll_view, "size", self.update_size_pos)
+        self.subscribe(scroll_view, "horizontal_proportion", self.update_size_pos)
+        self.subscribe(scroll_view, "show_vertical_bar", self.update_size_pos)
 
     def on_remove(self):
-        self.unsubscribe(self.parent, "size")
-        self.unsubscribe(self.parent.parent, "horizontal_proportion")
+        scroll_view = self.parent.parent
+        self.unsubscribe(scroll_view, "size")
+        self.unsubscribe(scroll_view, "horizontal_proportion")
+        self.unsubscribe(scroll_view, "show_vertical_bar")
         super().on_remove()
 
     def grab_update(self, mouse_event):
-        horizontal_bar = self.parent
-        scroll_view = horizontal_bar.parent
-        scroll_view.horizontal_proportion += self.mouse_dx / horizontal_bar.fill_width
+        bar = self.parent
+        scroll_view = bar.parent
+        if bar.fill_width == 0:
+            scroll_view.horizontal_proportion = 0
+        else:
+            scroll_view.horizontal_proportion += self.mouse_dx / bar.fill_width

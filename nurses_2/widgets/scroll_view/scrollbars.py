@@ -6,9 +6,6 @@ from ..widget import Widget
 from ..behaviors.themable import Themable
 from .indicators import _VerticalIndicator, _HorizontalIndicator
 
-VBAR_WIDTH = 2
-HBAR_HEIGHT = 1
-
 
 class _VerticalBar(Themable, Widget):
     def __init__(self, **kwargs):
@@ -25,7 +22,7 @@ class _VerticalBar(Themable, Widget):
 
         def update_size_pos():
             h, w = self.parent.size
-            self.x = w - VBAR_WIDTH
+            self.x = w - 2
             self.height = h
 
         update_size_pos()
@@ -43,18 +40,19 @@ class _VerticalBar(Themable, Widget):
         return (
             self.height
             - self.indicator.height
-            - self.parent.show_horizontal_bar * HBAR_HEIGHT
+            - self.parent.show_horizontal_bar
         )
 
     def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
+            and self.fill_height != 0
             and self.collides_point(mouse_event.position)
         ):
             y = self.to_local(mouse_event.position).y
             sv = self.parent
 
-            if not (y >= self.height - HBAR_HEIGHT and sv.show_horizontal_bar):
+            if not sv.show_horizontal_bar or y < self.height - 1:
                 sv.vertical_proportion = y / self.fill_height
                 self.indicator.grab(mouse_event)
 
@@ -76,7 +74,7 @@ class _HorizontalBar(Themable, Widget):
 
         def update_size_pos():
             h, w = self.parent.size
-            self.y = h - HBAR_HEIGHT
+            self.y = h - 1
             self.width = w
 
         update_size_pos()
@@ -94,18 +92,19 @@ class _HorizontalBar(Themable, Widget):
         return (
             self.width
             - self.indicator.width
-            - self.parent.show_vertical_bar * VBAR_WIDTH
+            - self.parent.show_vertical_bar * 2
         )
 
     def on_mouse(self, mouse_event):
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
+            and self.fill_width != 0
             and self.collides_point(mouse_event.position)
         ):
             x = self.to_local(mouse_event.position).x
             sv = self.parent
 
-            if not (x >= self.width - VBAR_WIDTH and sv.show_vertical_bar):
+            if not sv.show_vertical_bar or x < self.width - 2:
                 sv.horizontal_proportion = x / self.fill_width
                 self.indicator.grab(mouse_event)
 

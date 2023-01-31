@@ -9,12 +9,6 @@ nurses\_2.widgets.file\_chooser
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      is_hidden
-   
    
 
    
@@ -24,8 +18,6 @@ nurses\_2.widgets.file\_chooser
    .. autosummary::
    
       FileChooser
-      FileView
-      FileViewNode
    
    
 
