@@ -2,10 +2,6 @@ from collections.abc import Callable
 
 from wcwidth import wcswidth
 
-from ..colors import lerp_colors, WHITE
-from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
-from .behaviors.focus_behavior import FocusBehavior
-from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
 from .widget import Widget
