@@ -187,12 +187,13 @@ class TextContainer(Themable, Widget):
     def __init__(self, default_text: str="", max_chars: int | None=None, **kwargs):
         super().__init__(**kwargs)
 
-        self.text = default_text
         self.max_chars = max_chars
-
         self._line_length = 0
 
         self._box = TextWidget(size=(1, 1))
+
+        self.text = default_text
+
         self.add_widget(self._box)
 
     def update_theme(self):
