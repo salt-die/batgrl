@@ -11,8 +11,6 @@ class TextContainer(Themable, Widget):
     """
     A text_container widget for single-line editable text.
 
-    Supports pasting, mouse selection, and cursor navigation.
-
     Parameters
     ----------
     default_text : str, default: ""
