@@ -143,9 +143,9 @@ class Anchor(str, Enum):
     """
     Point of widget attached to :attr:`nurses_2.widgets.Widget.pos_hint`.
 
-    :class:`Anchor` is one of "center", "left_center", "right_center",
-    "top_left", "top_center", "top_right", "bottom_left",
-    "bottom_center", "bottom_right".
+    :class:`Anchor` is one of `"center"`, `"left_center"`, `"right_center"`,
+    `"top_left"`, `"top_center"`, `"top_right"`, `"bottom_left"`,
+    `"bottom_center"`, `"bottom_right"`.
     """
     CENTER = "center"
     LEFT_CENTER = "left_center"
