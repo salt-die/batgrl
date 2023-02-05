@@ -257,42 +257,34 @@ class TextWidget(Widget):
         """
         return wcswidth(char)
 
-    def add_border(
-        self,
-        tl: str="┌",
-        tr: str="┐",
-        bl: str="└",
-        br: str="┘",
-        v: str="│",
-        h: str="─",
-        color_pair: ColorPair | None=None,
-    ):
+    def add_border(self, style: Border=Border.LIGHT, bold: bool= False, color_pair: ColorPair | None=None,):
         """
-        Add a border. Default border characters are light box-drawing characters.
+        Add a text border.
 
         Parameters
         ----------
-        tl : str, default: "┌"
-            Top left character.
-        tr : str, default: "┐"
-            Top right character.
-        bl : str, default: "└"
-            Bottom left character.
-        br : str, default: "┘"
-            Bottom right character.
-        v : str, default: "│"
-            Vertical character.
-        h : str, default: "─"
-            Horizontal character.
+        style : Border, default: Border.LIGHT
+            Style of border. Default style uses light box-drawing characters.
+        bold : bool, default: False
+            Whether the border is bold.
         color_pair : ColorPair | None, default: None
             Border color pair if not None.
         """
-        canvas = self.canvas
+        BORDER_STYLES = dict(
+            light=  "┌┐│─└┘",
+            heavy=  "┏┓┃━┗┛",
+            double= "╔╗║═╚╝",
+            curved= "╭╮│─╰╯",
+            ascii=  "++|-++",
+        )
+        tl, tr, v, h, bl, br = BORDER_STYLES[style]
 
+        canvas = self.canvas
         canvas["char"][(0, 0, -1, -1), (0, -1, 0, -1)] = tl, tr, bl, br
-        canvas[["bold", "italic", "underline", "strikethrough"]][(0, 0, -1, -1), (0, -1, 0, -1)] = False
-        canvas[1: -1, [0, -1]] = style_char(v)
-        canvas[[0, -1], 1: -1] = style_char(h)
+        canvas["bold"][(0, 0, -1, -1), (0, -1, 0, -1)] = bold
+        canvas[["italic", "underline", "strikethrough"]][(0, 0, -1, -1), (0, -1, 0, -1)] = False
+        canvas[1: -1, [0, -1]] = style_char(v, bold=bold)
+        canvas[[0, -1], 1: -1] = style_char(h, bold=bold)
 
         if color_pair is not None:
             self.colors[[0, -1]] = color_pair

@@ -171,7 +171,6 @@ KEYS = {
     Key.Down:      ((17, 74), (4,  6)),
     Key.Right:     ((17, 79), (4,  6)),
 }
-HEAVY_BORDER = dict(tl="┏", tr="┓", bl="┗", br="┛", v="┃", h="━")
 
 def rainbow(texture):
     """
@@ -224,7 +223,7 @@ class KeyboardWidget(RainbowBehavior, TextWidget):
             self._key_border,
         )
         for child in self.children:
-            child.add_border(**HEAVY_BORDER)
+            child.add_border("heavy", bold=True)
 
     def _show_mods(self, mods, in_shift=False):
         alt, ctrl, shift = mods
@@ -248,7 +247,7 @@ class KeyboardWidget(RainbowBehavior, TextWidget):
             showkey.pos = pos
             showkey.size = size
             showkey.canvas["char"][:] = " "
-            showkey.add_border(**HEAVY_BORDER)
+            showkey.add_border("heavy", bold=True)
             showkey.is_visible = True
         self._show_mods(mods, key in SHIFTS)
 
