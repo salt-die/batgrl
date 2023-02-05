@@ -90,6 +90,6 @@ def composite(source: np.ndarray, dest: np.ndarray, pos: Point=Point(0, 0), mask
             dest_tex[mask] = source_tex[mask]
         else:
             buffer = np.subtract(source_tex, dest_tex, dtype=float)
-            buffer *= source_alpha
+            buffer *= source_alpha[..., None]
             buffer /= 255
             np.add(buffer, dest_tex, out=dest_tex, casting="unsafe")
