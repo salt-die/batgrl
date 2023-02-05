@@ -559,6 +559,30 @@
   <section id="module-nurses_2.widgets.widget_data_structures">
 <span id="nurses-2-widgets-widget-data-structures"></span><h1>nurses_2.widgets.widget_data_structures<a class="headerlink" href="#module-nurses_2.widgets.widget_data_structures" title="Permalink to this headline">#</a></h1>
 <p>Data structures for widgets.</p>
+<p class="rubric">Module Attributes</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.Char" title="nurses_2.widgets.widget_data_structures.Char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Char</span></code></a></p></td>
+<td><p>Data type of canvas arrays.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.widget_data_structures.style_char" title="nurses_2.widgets.widget_data_structures.style_char"><code class="xref py py-obj docutils literal notranslate"><span class="pre">style_char</span></code></a>(char[, bold, italic, underline, ...])</p></td>
+<td><p>Return a zero-dimensional <cite>Char</cite> array.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -636,6 +660,12 @@
 <span class="sig-name descname"><span class="pre">TOP_RIGHT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'top_right'</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Anchor.TOP_RIGHT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.Char">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Char</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dtype([('char',</span> <span class="pre">'&lt;U1'),</span> <span class="pre">('bold',</span> <span class="pre">'?'),</span> <span class="pre">('italic',</span> <span class="pre">'?'),</span> <span class="pre">('underline',</span> <span class="pre">'?'),</span> <span class="pre">('strikethrough',</span> <span class="pre">'?')])</span></em><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.Char" title="Permalink to this definition">#</a></dt>
+<dd><p>Data type of canvas arrays.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1015,6 +1045,28 @@
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nurses_2.widgets.widget_data_structures.style_char">
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">style_char</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.widgets.widget_data_structures.style_char" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a zero-dimensional <cite>Char</cite> array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>char</strong><span class="classifier">str</span></dt><dd><p>A single unicode character.</p>
+</dd>
+<dt><strong>bold</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether char is bold.</p>
+</dd>
+<dt><strong>italic</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether char is italic.</p>
+</dd>
+<dt><strong>underline</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether char is underlined.</p>
+</dd>
+<dt><strong>strikethrough</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether char is strikethrough.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

@@ -3,13 +3,10 @@ import asyncio
 import numpy as np
 
 from nurses_2.widgets.behaviors.effect import Effect
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget
 
 
-class LevelGlowEffect(Effect):
-    """
-    Apply a glow effect that quickens as levels increase.
-    """
+class MatrixWidget(Effect, GraphicWidget):
     def on_add(self):
         super().on_add()
         self._glow = 0
@@ -25,29 +22,22 @@ class LevelGlowEffect(Effect):
 
         while True:
             level = self.parent.level
-            alpha = np.linspace(0, min(1, .05 * level), 30)
+            glow = np.linspace(0, min(1, .05 * level), 30)
 
             brighten_delay = .04 * .8 ** level
             darken_delay = 2 * brighten_delay
             sleep = 20 * darken_delay
 
-            for self._glow in alpha:
+            for self._glow in glow:
                 await asyncio.sleep(brighten_delay)
 
-            for self._glow in alpha[::-1]:
+            for self._glow in glow[::-1]:
                 await asyncio.sleep(darken_delay)
 
             await asyncio.sleep(sleep)
 
     def apply_effect(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        alpha = self._glow
-
-        visible = self.canvas[source] != " "
-
-        colors_view[..., :3][visible] = (colors_view[..., :3][visible] * (1 - alpha) + alpha * 255).astype(int)
-
-
-class MatrixWidget(LevelGlowEffect, TextWidget):
-    """
-    Visual representation of tetromino matrix.
-    """
+        glow = self._glow
+        visible = self.texture[..., 3] == 255
+        colors_view[..., :3][visible[::2]] = (colors_view[..., :3][visible[::2]] * (1 - glow) + glow * 255).astype(int)
+        colors_view[..., 3:][visible[1::2]] = (colors_view[..., 3:][visible[1::2]] * (1 - glow) + glow * 255).astype(int)

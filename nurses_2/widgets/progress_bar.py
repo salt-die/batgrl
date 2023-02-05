@@ -238,17 +238,17 @@ class ProgressBar(Themable, TextWidget):
         if self.is_horizontal:
             fill, partial = divmod(self.progress * self.width, 1)
             fill_length, partial_index = int(fill), int(len(HORIZONTAL_BLOCKS) * partial)
-            self.canvas[:, :fill_length] = FULL_BLOCK
+            self.canvas["char"][:, :fill_length] = FULL_BLOCK
 
             if fill_length < self.width:
-                self.canvas[:, fill_length] = HORIZONTAL_BLOCKS[partial_index]
-                self.canvas[:, fill_length + 1:] = HORIZONTAL_BLOCKS[0]
+                self.canvas["char"][:, fill_length] = HORIZONTAL_BLOCKS[partial_index]
+                self.canvas["char"][:, fill_length + 1:] = HORIZONTAL_BLOCKS[0]
         else:
             fill, partial = divmod(self.progress * self.height, 1)
             fill_length, partial_index = int(fill), int(len(VERTICAL_BLOCKS) * partial)
-            canvas = self.canvas[::-1]
-            canvas[:fill_length] = FULL_BLOCK
+            chars = self.canvas["char"][::-1]
+            chars[:fill_length] = FULL_BLOCK
 
             if fill_length < self.height:
-                canvas[fill_length: fill_length + 1] = VERTICAL_BLOCKS[partial_index]
-                canvas[fill_length + 1:] = VERTICAL_BLOCKS[0]
+                chars[fill_length: fill_length + 1] = VERTICAL_BLOCKS[partial_index]
+                chars[fill_length + 1:] = VERTICAL_BLOCKS[0]

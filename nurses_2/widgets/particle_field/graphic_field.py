@@ -5,7 +5,7 @@ A particle field specializes in handling many single "pixel" children.
 """
 import numpy as np
 
-from ..widget import Widget
+from ..widget import Widget, style_char
 
 __all__ = "GraphicParticleField",
 
@@ -245,7 +245,7 @@ class GraphicParticleField(Widget):
         if not self.is_transparent:
             texture_view[local_ys, local_xs] = colors[..., :3]
         else:
-            mask = canvas_view != "▀"
+            mask = canvas_view != style_char("▀")
             colors_view[..., :3][mask] = colors_view[..., 3:][mask]
 
             buffer = np.subtract(colors[:, :3], texture_view[local_ys, local_xs], dtype=float)
@@ -255,5 +255,5 @@ class GraphicParticleField(Widget):
             texture_view[local_ys, local_xs] = (buffer + texture_view[local_ys, local_xs]).astype(np.uint8)
 
         colors_view[:] = texture_view.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
-        canvas_view[:] = "▀"
+        canvas_view[:] = style_char("▀")
         self.render_children(source, canvas_view, colors_view)

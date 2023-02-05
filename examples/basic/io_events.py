@@ -22,7 +22,7 @@ class ShowIOEvents(TextWidget):
         self._on_io(paste_event)
 
     def _on_io(self, event):
-        self.canvas[:] = " "
+        self.canvas["char"][:] = " "
 
         match event:
             case KeyEvent():

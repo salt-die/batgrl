@@ -6,14 +6,14 @@ from random import shuffle
 
 import numpy as np
 
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.colors import AWHITE
+from nurses_2.widgets.graphic_widget import composite, GraphicWidget
 from nurses_2.widgets.image import Image
+from nurses_2.widgets.text_widget import TextWidget
 
-from .color_scheme import CLEAR_LINE_FLASH_COLOR
 from .matrix import MatrixWidget
 from .modal_screen import ModalScreen
-from .piece import CurrentPiece, GhostPiece, CenteredPiece
-from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS
+from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS, Orientation
 
 MAX_LEVEL = 20
 FLASH_DELAY = .1
@@ -52,6 +52,32 @@ def setup_background(widget):
         widget.colors[..., 3:] = widget.parent.texture[2 * t + 1: 2 * b: 2, l: r, :3] // 2
     else:
         widget.colors[..., 3:] = widget.parent.colors[t: b, l: r, 3:] // 2
+
+
+class Piece(GraphicWidget):
+    @property
+    def tetromino(self):
+        return self._tetromino
+
+    @tetromino.setter
+    def tetromino(self, new_tetromino):
+        self._tetromino = new_tetromino
+        self.is_enabled = True
+        self.orientation = Orientation.UP
+
+    @property
+    def orientation(self):
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, orientation):
+        self._orientation = orientation
+        h, w, _ = self._tetromino.textures[orientation].shape
+        self.size = h // 2, w
+        self.apply_hints()
+
+    def on_size(self):
+        self.texture = self._tetromino.textures[self._orientation]
 
 
 class Tetris(Image):
@@ -132,24 +158,20 @@ class Tetris(Image):
         for widget in self.walk():
             setup_background(widget)
 
-        self.held_piece = CenteredPiece()
+        self.held_piece = Piece(pos_hint=(.5, .5), anchor="center", is_enabled=False)
         held_space.add_widget(self.held_piece)
 
-        self.next_piece = CenteredPiece()
+        self.next_piece = Piece(pos_hint=(.5, .5), anchor="center", is_enabled=False)
         next_space.add_widget(self.next_piece)
 
         # matrix is a boolean array where True values indicate that a mino exists in that location.
         self.matrix = np.zeros(matrix_size, dtype=np.bool8)
         # matrix_widget is the visual representation of matrix
-        self.matrix_widget = MatrixWidget(
-            size=(h, 2 * w),
-            pos=(0, 2 * SPACING + bw),
-            is_transparent=True,
-        )
+        self.matrix_widget = MatrixWidget(size=(h, 2 * w), pos=(0, 2 * SPACING + bw))
         self.on_size()
 
-        self.ghost_piece = GhostPiece()
-        self.current_piece = CurrentPiece()
+        self.ghost_piece = Piece(alpha=.33, is_enabled=False)
+        self.current_piece = Piece(is_enabled=False)
         self.matrix_widget.add_widgets(self.ghost_piece, self.current_piece)
 
         self.add_widget(self.matrix_widget)
@@ -187,7 +209,7 @@ class Tetris(Image):
             self._clear_lines_queue.popleft().cancel()
 
         self.matrix[:] = 0
-        self.matrix_widget.canvas[:] = " "
+        self.matrix_widget.texture[:] = 0
 
         self.current_piece.is_enabled = False
         self.next_piece.is_enabled = False
@@ -330,12 +352,10 @@ class Tetris(Image):
             + (piece.top, piece.left // 2)
             + offset
         )
-        matrix = self.matrix
-
         return (
             (mino_positions < 0).any()
-            or (matrix.shape <= mino_positions).any()
-            or matrix[mino_positions[:, 0], mino_positions[:, 1]].any()
+            or (self.matrix.shape <= mino_positions).any()
+            or self.matrix[mino_positions[:, 0], mino_positions[:, 1]].any()
         )
 
     def rotate_current_piece(self, clockwise=True):
@@ -347,7 +367,7 @@ class Tetris(Image):
 
         target_orientation = orientation.rotate(clockwise=clockwise)
 
-        for dy, dx in current_piece.tetromino.WALL_KICKS[orientation, target_orientation]:
+        for dy, dx in current_piece.tetromino.kicks[orientation, target_orientation]:
             if not self.collides((dy, dx), current_piece, target_orientation):
                 current_piece.orientation = target_orientation
                 current_piece.top += dy
@@ -405,21 +425,15 @@ class Tetris(Image):
         self._lock_down_task.cancel()
 
         current_piece = self.current_piece
-        mino_positions = (
+        y, x = current_piece.pos
+
+        ys, xs = (
             current_piece.tetromino.mino_positions[current_piece.orientation]
-            + (current_piece.top, current_piece.left // 2)
-        )
+            + (y, x // 2)
+        ).T
+        self.matrix[ys, xs] = 1
 
-        h, w = self.matrix.shape
-
-        for y, x in mino_positions:
-            if 0 <= y < h and 0 <= x < w:
-                self.matrix[y, x] = 1
-
-                x *= 2
-                self.matrix_widget.canvas[y, x: x + 2] = "█"
-                self.matrix_widget.colors[y, x: x + 2, :3] = current_piece.tetromino.COLOR
-
+        composite(current_piece.texture, self.matrix_widget.texture, (2 * y, x), mask_mode=True)
         task_name = str(next(QUEUE_ID))
         self._clear_lines_queue.append(
             asyncio.create_task(self.clear_lines(task_name), name=task_name)
@@ -447,28 +461,26 @@ class Tetris(Image):
         if not completed_lines.any():
             return
 
-        not_completed_lines = np.any(~matrix, axis=1)
-        matrix_canvas = self.matrix_widget.canvas
-        matrix_colors = self.matrix_widget.colors
-        old_colors = matrix_colors[completed_lines].copy()
+        matrix_texture = self.matrix_widget.texture
+        matrix_lines = np.kron(completed_lines, [True, True])
+        old_texture = matrix_texture[matrix_lines].copy()
 
         delay = FLASH_DELAY * .95**(self.level - 1)
         for _ in range(10):
-            matrix_colors[completed_lines] = CLEAR_LINE_FLASH_COLOR
+            matrix_texture[matrix_lines] = AWHITE
             await asyncio.sleep(delay)
 
             delay *= .8
-            matrix_colors[completed_lines] = old_colors
+            matrix_texture[matrix_lines] = old_texture
             await asyncio.sleep(delay)
 
         nlines = completed_lines.sum()
 
-        matrix[nlines:] = matrix[not_completed_lines]
+        matrix[nlines:] = matrix[~completed_lines]
         matrix[:nlines] = 0
 
-        matrix_canvas[nlines:] = matrix_canvas[not_completed_lines]
-        matrix_canvas[:nlines] = " "
-        matrix_colors[nlines:] = matrix_colors[not_completed_lines]
+        matrix_texture[2 * nlines:] = matrix_texture[~matrix_lines]
+        matrix_texture[:2 * nlines] = 0
 
         self.update_ghost_position()
         self.update_score(nlines)

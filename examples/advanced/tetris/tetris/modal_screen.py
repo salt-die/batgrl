@@ -106,7 +106,7 @@ class ModalScreen(TextWidget):
 
     async def countdown(self):
         for number in (THREE, TWO, ONE):
-            self.canvas[:] = " "
+            self.canvas["char"][:] = " "
 
             for i, line in enumerate(number, start=1):
                 self.add_str(line, (i, 31))

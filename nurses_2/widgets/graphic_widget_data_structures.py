@@ -81,15 +81,15 @@ def composite(source: np.ndarray, dest: np.ndarray, pos: Point=Point(0, 0), mask
     if (slices := intersection(source_rect, dest_rect)) is not None:
         source_slice, dest_slice = slices
 
-        dest_tex = dest[dest_slice][..., :3]
+        dest_tex = dest[dest_slice]
         source_tex = source[source_slice]
+        source_alpha = source_tex[..., 3]
 
         if mask_mode:
-            mask = source_tex[..., 3] == 255
-            dest_tex[mask] = source_tex[..., :3][mask]
+            mask = source_alpha == 255
+            dest_tex[mask] = source_tex[mask]
         else:
-            buffer = np.subtract(source_tex[..., :3], dest_tex, dtype=float)
-            buffer *= source_tex[..., 3, None]
+            buffer = np.subtract(source_tex, dest_tex, dtype=float)
+            buffer *= source_alpha[..., None]
             buffer /= 255
-
             np.add(buffer, dest_tex, out=dest_tex, casting="unsafe")

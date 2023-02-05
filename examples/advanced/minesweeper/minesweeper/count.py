@@ -41,8 +41,8 @@ class Count(Grid):
         )
         v_center, h_center = self.cell_center_indices
 
-        self.canvas[v_center, h_center] = stringify(count)
-        self.canvas[v_center, h_center][minefield == 1] = BOMB
-        self.normalize_canvas()  # Null characters are inserted after the full-width `BOMB`s.
+        self.canvas["char"][v_center, h_center] = stringify(count)
+        self.canvas["char"][v_center, h_center][minefield == 1] = BOMB
+        self.normalize_canvas()  # Empty characters (`''`) are inserted after the full-width `BOMB`s.
 
         self.colors[v_center, h_center, :3] = np.dstack(colorify(count))

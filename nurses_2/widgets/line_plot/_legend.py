@@ -17,7 +17,7 @@ class _Legend(GrabMoveBehavior, TextWidget):
 
         self.add_border()
 
-        self.canvas[1:-1, 2] = "█"
+        self.canvas["char"][1:-1, 2] = "█"
         self.colors[1:-1, 2, :3] = colors
 
         for i, name in enumerate(labels, start=1):

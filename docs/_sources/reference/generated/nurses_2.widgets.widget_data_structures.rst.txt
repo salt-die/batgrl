@@ -5,9 +5,21 @@ nurses\_2.widgets.widget\_data\_structures
 
    
    
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      Char
+   
    
 
    
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      style_char
    
    
 

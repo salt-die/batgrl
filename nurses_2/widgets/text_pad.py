@@ -6,7 +6,7 @@ from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.themable import Themable
 from .scroll_view import ScrollView
-from .text_widget import TextWidget, Point, add_text
+from .text_widget import TextWidget, Point, add_text, style_char
 
 # TODO: Add an Undo stack.
 # TODO: Fix backspace/delete over full-width characters.
@@ -356,7 +356,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     def text(self) -> str:
         return "\n".join(
             "".join(row[:nchars])
-            for row, nchars in zip(self._pad.canvas, self._line_lengths)
+            for row, nchars in zip(self._pad.canvas["char"], self._line_lengths)
         )
 
     @text.setter
@@ -365,7 +365,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._line_lengths = list(map(wcswidth, lines))
 
         pad = self._pad
-        pad.canvas[:] = " "
+        pad.canvas[:] = style_char(" ")
         pad.height = len(lines)
         pad.width = max(max(self._line_lengths) + 1, self.width)
 
@@ -439,7 +439,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             pad.width = len_start + 1
 
         pad.canvas[sy, sx: len_start] = pad.canvas[ey, ex: ex + len_end]
-        pad.canvas[sy, len_start:] = pad.default_char
+        pad.canvas[sy, len_start:] = style_char(pad.default_char)
 
         remaining = pad.canvas[ey + 1:]
         pad.canvas[sy + 1: sy + 1 + len(remaining)] = remaining
@@ -555,12 +555,12 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         pad.height += 1
 
         pad.canvas[y + 2:] = pad.canvas[y + 1: -1]
-        pad.canvas[y + 1] = pad.default_char
+        pad.canvas[y + 1] = style_char(pad.default_char)
 
         len_line = self._line_lengths[y] - x
         if len_line > 0:
             pad.canvas[y + 1, :len_line] = pad.canvas[y, x: x + len_line]
-            pad.canvas[y, x: x + len_line] = pad.default_char
+            pad.canvas[y, x: x + len_line] = style_char(pad.default_char)
 
         self._line_lengths[y] = x
         self._line_lengths.insert(y + 1, len_line)
@@ -581,7 +581,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             pad.width = self._line_lengths[y] + 1
 
         pad.canvas[y, x + 4:] = pad.canvas[y, x: -4]
-        pad.canvas[y, x: x + 4] = pad.default_char
+        pad.canvas[y, x: x + 4] = style_char(pad.default_char)
 
         self.cursor = y, x + 4
 
@@ -710,7 +710,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             pad.width = self._line_lengths[y] + 1
 
         pad.canvas[y, x + 1:] = pad.canvas[y, x: -1]
-        pad.canvas[y, x] = key
+        pad.canvas[y, x] = style_char(key)
 
         self.cursor = y, x + 1
 
@@ -782,7 +782,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
             pad.height += newlines
             pad.canvas[y + newlines + 1:] = pad.canvas[y + 1: -newlines]
-            pad.canvas[y, x: ll[y]] = pad.default_char
+            pad.canvas[y, x: ll[y]] = style_char(pad.default_char)
 
             ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
@@ -799,7 +799,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
             pad.add_str(last, (i + 1, 0))
             pad.canvas[i + 1, len_last: ll[i + 1]] = line_remaining
-            pad.canvas[i + 1, ll[i + 1]:] = pad.default_char
+            pad.canvas[i + 1, ll[i + 1]:] = style_char(pad.default_char)
 
             self.cursor = i + 1, len_last
 

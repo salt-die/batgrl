@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 
 from ._binary_to_braille import binary_to_braille
-from .text_widget import TextWidget
+from .text_widget import TextWidget, style_char
 
 __all__ = "BrailleVideo",
 
@@ -295,7 +295,7 @@ class BrailleVideoPlayer(TextWidget):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self.canvas[:] = self.default_char
+            self.canvas["char"][:] = self.default_char
 
     def on_size(self):
         h, w = self.size
@@ -304,13 +304,13 @@ class BrailleVideoPlayer(TextWidget):
         if self._current_frame is not None:
             upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > 0
             sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
-            self.canvas = binary_to_braille(sectioned)
+            self.canvas["char"] = binary_to_braille(sectioned)
 
             if self.enable_shading:
                 grays_normalized = cv2.resize(self._current_frame, (w, h)) / 255
                 self.colors[..., :3] = (grays_normalized[..., None] * self.default_fg_color).astype(np.uint8)
         else:
-            self.canvas = np.full((h, w), self.default_char, dtype=object)
+            self.canvas = np.full((h, w), style_char(self.default_char))
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -345,7 +345,7 @@ class BrailleVideoPlayer(TextWidget):
 
             upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
             sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
-            self.canvas[:] = binary_to_braille(sectioned)
+            self.canvas["char"][:] = binary_to_braille(sectioned)
 
         if self.loop:
             self.seek(0)
@@ -386,4 +386,4 @@ class BrailleVideoPlayer(TextWidget):
         self.pause()
         self.seek(0)
         self._current_frame = None
-        self.canvas[:] = self.default_char
+        self.canvas["char"][:] = self.default_char

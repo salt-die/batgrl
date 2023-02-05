@@ -17,24 +17,24 @@ class Grid(TextWidget):
 
         h, v, tl, tm, tr, bl, bm, br, ml, mm, mr = LIGHT_BOX if is_light else HEAVY_BOX
 
-        canvas[::vs] = h
-        canvas[:, ::hs] = v
-        canvas[vs: -vs: vs, hs: -hs: hs] = mm
+        canvas["char"][::vs] = h
+        canvas["char"][:, ::hs] = v
+        canvas["char"][vs: -vs: vs, hs: -hs: hs] = mm
 
         # Top
-        canvas[0, hs: -hs: hs] = tm
+        canvas["char"][0, hs: -hs: hs] = tm
         # Bottom
-        canvas[-1, hs: -hs: hs] = bm
+        canvas["char"][-1, hs: -hs: hs] = bm
         # Left
-        canvas[vs: -vs: vs, 0] = ml
+        canvas["char"][vs: -vs: vs, 0] = ml
         # Right
-        canvas[vs: -vs: vs, -1] = mr
+        canvas["char"][vs: -vs: vs, -1] = mr
 
         # Corners
-        canvas[0, 0] = tl
-        canvas[0, -1] = tr
-        canvas[-1, 0] = bl
-        canvas[-1, -1] = br
+        canvas["char"][0, 0] = tl
+        canvas["char"][0, -1] = tr
+        canvas["char"][-1, 0] = bl
+        canvas["char"][-1, -1] = br
 
     @property
     def cell_center_indices(self):

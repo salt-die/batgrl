@@ -6,10 +6,9 @@ import cv2
 import numpy as np
 
 from ...colors import Color, rainbow_gradient
-from ...data_structures import Size
 from ...easings import lerp
 from .._binary_to_braille import binary_to_braille
-from ..text_widget import TextWidget, Anchor
+from ..text_widget import TextWidget, Anchor, style_char
 
 TICK_WIDTH = 11
 TICK_HALF = TICK_WIDTH // 2
@@ -70,7 +69,7 @@ class _Traces(TextWidget):
         ymax = self.ymax
         y_length = ymax - ymin
 
-        self.canvas = np.full((h, w), self.default_char, dtype=object)
+        self.canvas = np.full((h, w), style_char(self.default_char))
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         canvas_view = self.canvas[:-VERTICAL_HALF, TICK_HALF:-TICK_HALF - TICK_WIDTH % 2]
@@ -89,19 +88,19 @@ class _Traces(TextWidget):
             braille = binary_to_braille(sectioned)
             where_braille = braille != chr(0x2800)  # Empty braille character
 
-            canvas_view[where_braille] = braille[where_braille]
+            canvas_view["char"][where_braille] = braille[where_braille]
             colors_view[where_braille] = color
 
         # Regenerate Ticks
         y_ticks = self.y_ticks
         y_ticks.size = h, TICK_WIDTH
-        y_ticks.canvas[:] = y_ticks.default_char
-        y_ticks.canvas[:, -1] = "│"
+        y_ticks.canvas["char"][:] = y_ticks.default_char
+        y_ticks.canvas["char"][:, -1] = "│"
 
         x_ticks = self.x_ticks
         x_ticks.size = 2, w
-        x_ticks.canvas[:] = x_ticks.default_char
-        x_ticks.canvas[0] = "─"
+        x_ticks.canvas["char"][:] = x_ticks.default_char
+        x_ticks.canvas["char"][0] = "─"
 
         for row in range(offset_h - 1, -1, -VERTICAL_SPACING):
             y_label = lerp(ymax, ymin, row / (offset_h - 1))
@@ -109,7 +108,7 @@ class _Traces(TextWidget):
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
                 (row, 0),
             )
-        y_ticks.canvas[0, -1] = "┐"
+        y_ticks.canvas["char"][0, -1] = "┐"
 
         for column in range(0, offset_w, TICK_WIDTH):
             x_label = lerp(xmin, xmax, column / (offset_w - 1))
@@ -121,7 +120,7 @@ class _Traces(TextWidget):
 
         last_tick_column = -TICK_HALF - 1 - TICK_WIDTH % 2
         x_ticks.add_str("┐", (0, last_tick_column))
-        x_ticks.canvas[0, last_tick_column + 1:] = x_ticks.default_char
+        x_ticks.canvas["char"][0, last_tick_column + 1:] = x_ticks.default_char
 
         x_ticks.apply_hints()  # Ensure x-ticks are moved to the bottom of plot.
 

@@ -353,11 +353,11 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
     def update_off(self):
         if self.item_callback is not None and nargs(self.item_callback) == 1:
-            self.left_label.canvas[0, 1] = CHECK_OFF
+            self.left_label.canvas["char"][0, 1] = CHECK_OFF
 
     def update_on(self):
         if self.item_callback is not None and nargs(self.item_callback) == 1:
-            self.left_label.canvas[0, 1] = CHECK_ON
+            self.left_label.canvas["char"][0, 1] = CHECK_ON
 
     def on_toggle(self):
         if self.item_callback is not None and nargs(self.item_callback) == 1:

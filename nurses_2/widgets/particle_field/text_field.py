@@ -5,7 +5,7 @@ A particle field specializes in handling many single "pixel" children.
 """
 import numpy as np
 
-from ..widget import Widget
+from ..widget import Widget, style_char
 
 __all__ = "TextParticleField",
 
@@ -19,7 +19,7 @@ class TextParticleField(Widget):
     particle_positions : np.ndarray | None=None, default: None
         Positions of particles. Expect int array with shape `N, 2`.
     particle_chars : np.ndarray | None=None, default: None
-        Characters of alphas. Expect object array with shape `N,`.
+        An array of characters. Expect a `Char` array with shape `N,`.
     particle_color_pairs : np.ndarray | None=None, default: None
         Color pairs of particles. Expect uint8 array with shape `N, 6`.
     particle_properties : dict[str, np.ndarray]=None, default: None
@@ -203,7 +203,7 @@ class TextParticleField(Widget):
             self.particle_positions = particle_positions
 
         if particle_chars is None:
-            self.particle_chars = np.full(len(self.particle_positions), " ", dtype=object)
+            self.particle_chars = np.full(len(self.particle_positions), style_char(" "))
         else:
             self.particle_chars = particle_chars
 
