@@ -76,12 +76,6 @@ class Vt100_Output:
     def clear_title(self):
         self.set_title("")
 
-    def erase_screen(self):
-        """
-        Erase the screen and move cursor to home.
-        """
-        self._buffer.append("\x1b[2J")
-
     def enter_alternate_screen(self):
         self._buffer.append("\x1b[?1049h\x1b[H")
 

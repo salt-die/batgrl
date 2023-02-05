@@ -35,9 +35,6 @@ class _Root(Widget):
         """
         h, w = self._size
 
-        #self.env_out.erase_screen()  # TODO: Remove erase_screen
-        #self.env_out.flush()
-
         self._last_canvas = np.full((h, w), style_char(self.background_char))
         self._last_colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
 
