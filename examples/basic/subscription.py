@@ -9,7 +9,7 @@ class MyApp(App):
     async def on_start(self):
         window = Window(title="Move/Resize Me")
         sv = ScrollView(allow_horizontal_scroll=False, show_horizontal_bar=False, show_vertical_bar=False)
-        label = TextWidget(size=(2, 100), default_color_pair=DEFAULT_COLOR_THEME.primary_color_pair)
+        label = TextWidget(size=(2, 100), default_color_pair=DEFAULT_COLOR_THEME.primary)
 
         label.subscribe(window, "pos", lambda: label.add_str(f"{window.pos}".ljust(30)))
         label.subscribe(window, "size", lambda: label.add_str(f"{window.size}".ljust(30), (1, 0)))
