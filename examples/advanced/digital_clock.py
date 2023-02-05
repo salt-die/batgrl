@@ -19,7 +19,7 @@ class DigitalClock(TextWidget):
         for i in range(6):
             self.add_widget(DigitalDisplay(pos=(0, i * 8 + i // 2 * 2)))
 
-        self.canvas[[2, -3], 16] = self.canvas[[2, -3], 34] = "●"
+        self.canvas["char"][[2, -3], 16] = self.canvas["char"][[2, -3], 34] = "●"
 
     def on_add(self):
         super().on_add()

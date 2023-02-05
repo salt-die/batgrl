@@ -139,7 +139,7 @@ class Minefield(Grid):
             yield v, u
 
     def is_flagged(self, cell):
-        return self.canvas[self._cell_center(cell)] == FLAG
+        return self.canvas["char"][self._cell_center(cell)] == FLAG
 
     def _normal_press(self):
         if not self._is_gameover:
@@ -156,7 +156,7 @@ class Minefield(Grid):
         if self.hidden_cells[cell] != 0:
             is_flagged = self.is_flagged(cell)
 
-            self.canvas[self._cell_center(cell)] = " " if is_flagged else FLAG
+            self.canvas["char"][self._cell_center(cell)] = " " if is_flagged else FLAG
             self.parent.mines += 1 if is_flagged else -1
 
     def _super_press(self):

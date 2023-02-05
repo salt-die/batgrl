@@ -8,6 +8,9 @@ from time import monotonic
 from typing import Optional
 from weakref import WeakKeyDictionary
 
+from numpy.typing import NDArray
+import numpy as np
+
 from .. import easings
 from ..clamp import clamp
 from ..colors import ColorPair
@@ -836,14 +839,14 @@ class Widget:
         """
         if not self.is_transparent:
             if self.background_char is not None:
-                canvas_view[:] = self.background_char
+                canvas_view[:] = style_char(self.background_char)
 
             if self.background_color_pair is not None:
                 colors_view[:] = self.background_color_pair
 
         self.render_children(source, canvas_view, colors_view)
 
-    def render_children(self, destination: tuple[slice, slice], canvas_view, colors_view):
+    def render_children(self, destination: tuple[slice, slice], canvas_view: NDArray[Char], colors_view: NDArray[np.uint8]):
         vert_slice, hori_slice = destination
         dest = Rect(vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop)
 

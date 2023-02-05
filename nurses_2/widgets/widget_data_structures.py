@@ -4,7 +4,38 @@ Data structures for widgets.
 from enum import Enum
 from typing import NamedTuple
 
-__all__ = "SizeHint", "PosHint", "Rect", "Anchor", "Easing"
+import numpy as np
+
+__all__ = "Char", "style_char", "SizeHint", "PosHint", "Rect", "Anchor", "Easing"
+
+Char = np.dtype([("char", "U1"), ("bold", "?"), ("italic", "?"), ("underline", "?"), ("strikethrough", "?")])
+"""Data type of canvas arrays."""
+
+
+def style_char(
+    char: str,
+    bold: bool=False,
+    italic: bool=False,
+    underline: bool=False,
+    strikethrough: bool=False,
+) -> np.ndarray:
+    """
+    Return a zero-dimensional `Char` array.
+
+    Parameters
+    ----------
+    char : str
+        A single unicode character.
+    bold : bool, default: False
+        Whether char is bold.
+    italic : bool, default: False
+        Whether char is italic.
+    underline : bool, default: False
+        Whether char is underlined.
+    strikethrough : bool, default: False
+        Whether char is strikethrough.
+    """
+    return np.array((char, bold, italic, underline, strikethrough), dtype=Char)
 
 
 class SizeHint(NamedTuple):

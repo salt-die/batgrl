@@ -274,7 +274,7 @@ class GraphicWidget(Widget):
         else:
             # If alpha compositing with a text widget, will look better to replace
             # foreground colors with background colors in most cases.
-            mask = canvas_view != "▀"
+            mask = canvas_view != style_char("▀")
             foreground[mask] = background[mask]
 
             even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=float)
@@ -291,7 +291,7 @@ class GraphicWidget(Widget):
             np.add(even_buffer, foreground, out=foreground, casting="unsafe")
             np.add(odd_buffer, background, out=background, casting="unsafe")
 
-        canvas_view[:] = "▀"
+        canvas_view[:] = style_char("▀")
         self.render_children(source, canvas_view, colors_view)
 
     def to_png(self, path: Path):

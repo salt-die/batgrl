@@ -56,7 +56,7 @@ class _AnimatedToggle(ToggleButtonBehavior, TextWidget):
 
         for i in r:
             self._animation_progess = i
-            self.canvas[1, 1:3] = HORIZONTAL_BLOCKS[i]
+            self.canvas["char"][1, 1:3] = HORIZONTAL_BLOCKS[i]
             await asyncio.sleep(.05)
 
         self.parent.callback(self.toggle_state)

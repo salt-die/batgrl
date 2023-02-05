@@ -8,7 +8,7 @@ from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
-from .widget import Widget
+from .widget import Widget, style_char
 
 
 class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
@@ -314,7 +314,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
 
     @property
     def text(self) -> str:
-        return "".join(self._box.canvas[0, :self._line_length])
+        return "".join(self._box.canvas["char"][0, :self._line_length])
 
     @text.setter
     def text(self, text: str):
@@ -322,7 +322,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._line_length = wcswidth(text)
 
         box = self._box
-        box.canvas[:] = " "
+        box.canvas[:] = style_char(" ")
         box.width = max(self._line_length + 1, self.width)
         box.add_str(text)
         self.cursor = self._line_length
@@ -372,7 +372,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         new_len = self._line_length = start + len_end
 
         box.canvas[0, start: new_len] = box.canvas[0, end: end + len_end]
-        box.canvas[0, new_len:] = box.default_char
+        box.canvas[0, new_len:] = style_char(box.default_char)
 
         self.unselect()
 
@@ -487,7 +487,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             box.width = self._line_length + 1
 
         box.canvas[0, x + 1:] = box.canvas[0, x: -1]
-        box.canvas[0, x] = key
+        box.canvas[0, x] = style_char(key)
 
         self.cursor = x + 1
 
@@ -531,9 +531,9 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         width_paste = wcswidth(paste)
 
         input_text = (
-            "".join(box.canvas[0, :x])
+            "".join(box.canvas["char"][0, :x])
             + paste
-            + "".join(box.canvas[0, x: self._line_length])
+            + "".join(box.canvas["char"][0, x: self._line_length])
         )[:self.max_chars]
 
         len_input = wcswidth(input_text)
@@ -542,7 +542,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             box.width = len_input + 1
 
         box.add_str(input_text)
-        box.canvas[0, len_input:] = box.default_char
+        box.canvas[0, len_input:] = style_char(box.default_char)
 
         self._line_length = len_input
         self.cursor = min(len_input, x + width_paste)

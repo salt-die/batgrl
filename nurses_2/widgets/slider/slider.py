@@ -260,13 +260,13 @@ class Slider(TextWidget):
     @slider_char.setter
     def slider_char(self, char: str):
         self._slider_char = char
-        self.canvas[self.height // 2] = char
+        self.canvas["char"][self.height // 2] = char
 
     def on_size(self):
         super().on_size()
-        self.canvas[:] = self.default_char
+        self.canvas["char"][:] = self.default_char
+        self.canvas["char"][self.height // 2] = self.slider_char
         self.colors[:] = self.default_color_pair
-        self.canvas[self.height // 2] = self.slider_char
 
     @property
     def proportion(self) -> float:

@@ -214,7 +214,7 @@ class TextWidget(Widget):
 
         size = self.size
 
-        self.canvas = np.full(size, default_char, dtype=object)
+        self.canvas = np.full(size, style_char(default_char))
         self.colors = np.full((*size, 6), default_color_pair, dtype=np.uint8)
 
         self.default_char = default_char
@@ -232,7 +232,7 @@ class TextWidget(Widget):
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full((h, w), self.default_char, dtype=object)
+        self.canvas = np.full((h, w), style_char(self.default_char))
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
@@ -289,9 +289,10 @@ class TextWidget(Widget):
         """
         canvas = self.canvas
 
-        canvas[(0, 0, -1, -1), (0, -1, 0, -1)] = tl, tr, bl, br
-        canvas[1: -1, [0, -1]] = v
-        canvas[[0, -1], 1: -1] = h
+        canvas["char"][(0, 0, -1, -1), (0, -1, 0, -1)] = tl, tr, bl, br
+        canvas[["bold", "italic", "underline", "strikethrough"]][(0, 0, -1, -1), (0, -1, 0, -1)] = False
+        canvas[1: -1, [0, -1]] = style_char(v)
+        canvas[[0, -1], 1: -1] = style_char(h)
 
         if color_pair is not None:
             self.colors[[0, -1]] = color_pair
@@ -302,16 +303,16 @@ class TextWidget(Widget):
         Ensure column width of text in the canvas is equal to widget width.
 
         Rendering issues can occur when column width of text exceeds widget width.
-        To fix this, 0-width characters are replaced, then null characters are placed
-        after each full-width character.
+        To fix this, 0-width characters are replaced with the default character, then
+        empty characters are placed after each full-width character.
 
         Text added with `add_str` or `add_text` is already normalized.
         """
-        char_widths = self.character_width(self.canvas)
-        self.canvas[char_widths == 0] = self.default_char
-        self.canvas[:, -1][char_widths[:, -1] == 2] = self.default_char
+        char_widths = self.character_width(self.canvas["char"])
+        self.canvas[char_widths == 0] = style_char(self.default_char)
+        self.canvas[:, -1][char_widths[:, -1] == 2] = style_char(self.default_char)
         for x in range(self.width - 1):
-            self.canvas[:, x + 1][self.character_width(self.canvas[:, x]) == 2] = "\0"
+            self.canvas[:, x + 1][self.character_width(self.canvas["char"][:, x]) == 2] = style_char("")
 
     def add_str(
         self,
@@ -366,7 +367,7 @@ class TextWidget(Widget):
         """
         if self.is_transparent:
             source_view = self.canvas[source]
-            visible = np.isin(source_view, (" ", "⠀"), invert=True)  # Whitespace isn't painted if transparent.
+            visible = np.isin(source_view["char"], (" ", "⠀"), invert=True)  # Whitespace isn't painted if transparent.
 
             canvas_view[visible] = source_view[visible]
             colors_view[visible] = self.colors[source][visible]

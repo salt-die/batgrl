@@ -14,6 +14,7 @@ from nurses_2.app import App
 from nurses_2.colors import rainbow_gradient, ColorPair, BLACK
 from nurses_2.io import MouseButton
 from nurses_2.widgets.particle_field.text_field import TextParticleField
+from nurses_2.widgets.widget_data_structures import Char
 
 LOGO = """
                    _.gj8888888lkoz.,_
@@ -205,7 +206,9 @@ class MyApp(App):
         particle_positions = np.argwhere(chars != " ")
         pys, pxs = particle_positions.T
 
-        particle_chars = chars[pys, pxs]
+        particles = chars[pys, pxs]
+        particle_chars = np.zeros_like(particles, dtype=Char)
+        particle_chars["char"] = particles
 
         particle_properties = dict(
             indices=colors[pys, pxs],

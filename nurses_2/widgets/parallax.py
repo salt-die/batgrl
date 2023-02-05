@@ -7,9 +7,9 @@ from pathlib import Path
 import numpy as np
 
 from ..clamp import clamp
-from .graphic_widget_data_structures import Interpolation, read_texture
+from .graphic_widget_data_structures import Interpolation
 from .image import Image
-from .widget import Widget, subscribable
+from .widget import Widget, subscribable, style_char
 
 __all__ = "Interpolation", "Parallax"
 
@@ -300,7 +300,7 @@ class Parallax(Widget):
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         if not self.is_transparent:
             if self.background_char is not None:
-                canvas_view[:] = self.background_char
+                canvas_view[:] = style_char(self.background_char)
 
             if self.background_color_pair is not None:
                 colors_view[:] = self.background_color_pair

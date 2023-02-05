@@ -5,7 +5,7 @@ import numpy as np
 
 from ..colors import ColorPair
 from ..data_structures import *
-from .widget import Widget
+from .widget import Widget, style_char
 
 
 class _Root(Widget):
@@ -35,10 +35,10 @@ class _Root(Widget):
         """
         h, w = self._size
 
-        self.env_out.erase_screen()
-        self.env_out.flush()
+        #self.env_out.erase_screen()  # TODO: Remove erase_screen
+        #self.env_out.flush()
 
-        self._last_canvas = np.full((h, w), self.background_char, dtype=object)
+        self._last_canvas = np.full((h, w), style_char(self.background_char))
         self._last_colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
 
         self.canvas = self._last_canvas.copy()
@@ -47,7 +47,6 @@ class _Root(Widget):
         self._redraw_all = True
 
         # Buffer arrays to re-use in the `render` method:
-        self._char_diffs = np.zeros_like(self.canvas, dtype=bool)
         self._color_diffs = np.zeros_like(self.colors, dtype=bool)
         self._reduced_color_diffs = np.zeros_like(self.canvas, dtype=bool)
 
@@ -101,7 +100,7 @@ class _Root(Widget):
         colors = self.colors
 
         # Erase canvas:
-        canvas[:] = self.background_char
+        canvas[:] = style_char(self.background_char)
         colors[:, :] = self.background_color_pair
 
         height, width = canvas.shape
@@ -112,13 +111,12 @@ class _Root(Widget):
             ys, xs = np.indices((height, width)).reshape(2, height * width)
             self._redraw_all = False
         else:
-            char_diffs = self._char_diffs
             color_diffs = self._color_diffs
             reduced_color_diffs = self._reduced_color_diffs
 
             # Find differences between current render and last render:
             # (`(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)` with buffers.)
-            np.not_equal(self._last_canvas, canvas, out=char_diffs)
+            char_diffs = self._last_canvas != canvas
             np.not_equal(self._last_colors, colors, out=color_diffs)
             np.any(color_diffs, axis=-1, out=reduced_color_diffs)
             np.logical_or(char_diffs, reduced_color_diffs, out=char_diffs)
@@ -129,11 +127,18 @@ class _Root(Widget):
         write = env_out._buffer.append
 
         write("\x1b7")  # Save cursor
-        for y, x, (fr, fg, fb, br, bg, bb), char in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
+        for y, x, (fr, fg, fb, br, bg, bb), (char, bold, italic, underline, strikethrough) in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
+            if char == "":
+                continue
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
-                f"\x1b[0;38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
-                f"{char}"  # A single unicode grapheme with optional pre- and post-pended style ansi escapes.
+                "\x1b[0;"  # Reset
+                f"{'1;' if bold else ''}"
+                f"{'3;' if italic else ''}"
+                f"{'4;' if underline else ''}"
+                f"{'9;' if strikethrough else ''}"
+                f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
+                f"{char}"
             )
         write("\x1b8")  # Restore cursor
         env_out.flush()

@@ -19,6 +19,6 @@ run_widget_as_app(
         ylabel="Y Values",
         legend_labels=("Before", "During", "After"),
         size_hint=(1.0, 1.0),
-        background_color_pair=DEFAULT_COLOR_THEME.primary_dark_color_pair,
+        background_color_pair=DEFAULT_COLOR_THEME.primary,
     )
 )

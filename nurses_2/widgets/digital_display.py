@@ -383,15 +383,15 @@ class DigitalDisplay(TextWidget):
         self.on_color_pair = on_color_pair
 
         self._display = TextWidget(size=(7, 8), default_char=self.default_char)
-        canvas = self._display.canvas
+        chars = self._display.canvas["char"]
 
-        canvas[[0, 6], 1: 6] = canvas[3, 1: 3] = canvas[3, 4: 6] = "━"
-        canvas[1: 3,  [0, 3, 6]] = canvas[4: 6, [0, 3, 6]] = "┃"
-        canvas[(1, 2, 4, 5), (1, 2, 4, 5)] = "\\"
-        canvas[(1, 2, 4, 5), (5, 4, 2, 1)] = "/"
-        canvas[6, 7] = "●"
+        chars[[0, 6], 1: 6] = chars[3, 1: 3] = chars[3, 4: 6] = "━"
+        chars[1: 3,  [0, 3, 6]] = chars[4: 6, [0, 3, 6]] = "┃"
+        chars[(1, 2, 4, 5), (1, 2, 4, 5)] = "\\"
+        chars[(1, 2, 4, 5), (5, 4, 2, 1)] = "/"
+        chars[6, 7] = "●"
 
-        self._where_segments = canvas != self.default_char
+        self._where_segments = chars != self.default_char
         self._display.colors[self._where_segments] = off_color_pair
 
         self.add_widget(self._display)

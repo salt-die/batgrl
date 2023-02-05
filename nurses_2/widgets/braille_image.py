@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 from ._binary_to_braille import binary_to_braille
-from .text_widget import TextWidget
+from .text_widget import TextWidget, style_char
 
 
 class BrailleImage(TextWidget):
@@ -211,7 +211,7 @@ class BrailleImage(TextWidget):
     def on_size(self):
         h, w = self._size
 
-        self.canvas = np.full((h, w), self.default_char, dtype=object)
+        self.canvas = np.full((h, w), style_char(self.default_char))
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self._load_texture()
@@ -237,7 +237,7 @@ class BrailleImage(TextWidget):
         average_lightness = np.average(lightness, axis=(2, 3))
         where_dots = lightness > average_lightness[..., None, None]
 
-        self.canvas = binary_to_braille(where_dots)
+        self.canvas["char"] = binary_to_braille(where_dots)
 
         ndots = where_dots.sum(axis=(2, 3))
         ndots_neg = 8 - ndots

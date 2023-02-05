@@ -247,7 +247,7 @@ class KeyboardWidget(RainbowBehavior, TextWidget):
         else:
             showkey.pos = pos
             showkey.size = size
-            showkey.canvas[:] = " "
+            showkey.canvas["char"][:] = " "
             showkey.add_border(**HEAVY_BORDER)
             showkey.is_visible = True
         self._show_mods(mods, key in SHIFTS)
@@ -290,13 +290,13 @@ class MouseWidget(RainbowBehavior, TextWidget):
 
         if event_type is MouseEventType.SCROLL_UP:
             self._wheel.is_visible = True
-            self._wheel.canvas[1, 1] = "↑"
+            self._wheel.canvas["char"][1, 1] = "↑"
         elif event_type is MouseEventType.SCROLL_DOWN:
             self._wheel.is_visible = True
-            self._wheel.canvas[1, 1] = "↓"
+            self._wheel.canvas["char"][1, 1] = "↓"
         elif button is MouseButton.MIDDLE:
             self._wheel.is_visible = True
-            self._wheel.canvas[1, 1] = " "
+            self._wheel.canvas["char"][1, 1] = " "
         elif button is MouseButton.LEFT:
             self._left_button.is_visible = True
         elif button is MouseButton.RIGHT:

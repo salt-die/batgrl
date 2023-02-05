@@ -6,9 +6,6 @@ from wcwidth import wcswidth, wcwidth
 
 __all__ = "add_text",
 
-RESET = "\x1b[0m"
-STYLE_ANSI = BOLD, ITALIC, UNDERLINE, STRIKETHROUGH = "\x1b[1m", "\x1b[3m", "\x1b[4m", "\x1b[9m"
-
 def add_text(
     canvas: np.ndarray,
     text: str,
@@ -52,10 +49,6 @@ def add_text(
     ):
         raise IndexError(f"Text does not fit in canvas.")
 
-    styles = bold, italic, underline, strikethrough
-    PREPEND = "".join(ansi for style, ansi in zip(styles, STYLE_ANSI) if style)
-    POSTPEND = RESET if PREPEND else ""
-
     for text_line, canvas_line in zip(text_lines, canvas):
         i = 0
         for letter in text_line:
@@ -66,7 +59,7 @@ def add_text(
             if width == 0:
                 continue
             if width == 2 and i + 1 < columns:
-                canvas_line[i + 1] = "\0"  # Null character
+                canvas_line[i + 1] = ""
 
-            canvas_line[i] = f"{PREPEND}{letter}{POSTPEND}"
+            canvas_line[i] = letter, bold, italic, underline, strikethrough
             i += width

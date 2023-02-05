@@ -248,7 +248,7 @@ class LinePlot(Widget):
             anchor=Anchor.BOTTOM_LEFT,
             **text_kwargs
         )
-        self._tick_corner.canvas[0, -1] = "└"
+        self._tick_corner.canvas["char"][0, -1] = "└"
 
         self.plot.add_widgets(
             self._scrollview,
