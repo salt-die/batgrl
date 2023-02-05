@@ -11,7 +11,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.io import MouseButton
-from nurses_2.widgets.particle_field.graphic_field import GraphicParticleField
+from nurses_2.widgets.graphic_field import GraphicParticleField
 from nurses_2.widgets.image import Image
 
 HEIGHT, WIDTH = 18, 36

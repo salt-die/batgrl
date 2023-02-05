@@ -1,3 +1,0 @@
-"""
-Particle field widgets.
-"""

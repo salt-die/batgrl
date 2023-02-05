@@ -13,7 +13,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import rainbow_gradient, ColorPair, BLACK
 from nurses_2.io import MouseButton
-from nurses_2.widgets.particle_field.text_field import TextParticleField
+from nurses_2.widgets.text_field import TextParticleField
 from nurses_2.widgets.widget_data_structures import Char
 
 LOGO = """

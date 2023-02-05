@@ -5,7 +5,7 @@ A particle field specializes in handling many single "pixel" children.
 """
 import numpy as np
 
-from ..widget import Widget, style_char
+from .widget import Widget, style_char
 
 __all__ = "TextParticleField",
 
