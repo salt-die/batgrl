@@ -300,6 +300,7 @@ class BrailleVideoPlayer(TextWidget):
     def on_size(self):
         h, w = self.size
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
+        self.canvas = np.full((h, w), style_char(self.default_char))
 
         if self._current_frame is not None:
             upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > 0
@@ -309,8 +310,6 @@ class BrailleVideoPlayer(TextWidget):
             if self.enable_shading:
                 grays_normalized = cv2.resize(self._current_frame, (w, h)) / 255
                 self.colors[..., :3] = (grays_normalized[..., None] * self.default_fg_color).astype(np.uint8)
-        else:
-            self.canvas = np.full((h, w), style_char(self.default_char))
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
