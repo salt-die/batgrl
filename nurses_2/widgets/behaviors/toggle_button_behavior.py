@@ -73,7 +73,7 @@ class ToggleButtonBehavior(ButtonBehavior):
     on_release:
         Triggered when a button is released.
     """
-    __toggled = WeakValueDictionary()
+    _toggle_groups = WeakValueDictionary()
 
     def __init__(
         self,
@@ -89,13 +89,13 @@ class ToggleButtonBehavior(ButtonBehavior):
         if (
             group is not None and
             toggle_state is ToggleState.OFF and
-            ToggleButtonBehavior.__toggled.get(group) is None and
+            ToggleButtonBehavior._toggle_groups.get(group) is None and
             not allow_no_selection
         ):
             # If a group requires a selection, the first member of the group
             # will be forced on and initial toggle state will be ignored.
             toggle_state = ToggleState.ON
-            ToggleButtonBehavior.__toggled[group] = self
+            ToggleButtonBehavior._toggle_groups[group] = self
 
         super().__init__(**kwargs)
 
@@ -124,17 +124,17 @@ class ToggleButtonBehavior(ButtonBehavior):
         if toggle_state is ToggleState.ON:
             if (
                 self.group is not None and
-                (last_on := ToggleButtonBehavior.__toggled[self.group]) is not None and
+                (last_on := ToggleButtonBehavior._toggle_groups.get(self.group)) is not None and
                 last_on is not self  # last condition should only be false if initialized in the "on" state
             ):
                 last_on._toggle_state = ToggleState.OFF
                 last_on.update_off()
                 last_on.on_toggle()
-                ToggleButtonBehavior.__toggled[self.group] = self
+            ToggleButtonBehavior._toggle_groups[self.group] = self
             self.update_on()
         else:
-            if self.group is not None:
-                del ToggleButtonBehavior.__toggled[self.group]
+            if self.group is not None and ToggleButtonBehavior._toggle_groups.get(self.group) is self:
+                del ToggleButtonBehavior._toggle_groups[self.group]
             self.update_off()
 
         self.on_toggle()
