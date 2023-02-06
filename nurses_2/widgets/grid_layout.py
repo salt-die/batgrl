@@ -118,6 +118,8 @@ class GridLayout(Widget):
 
     Attributes
     ----------
+    minimum_grid_size : Size
+        Minimum grid size needed to show all children.
     grid_rows : int
         Number of rows.
     grid_columns : int
