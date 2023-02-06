@@ -16,6 +16,7 @@ from .widget import Widget, Anchor, Point
 
 __all__ = (
     "Menu",
+    "MenuBar",
     "MenuItem",
 )
 
