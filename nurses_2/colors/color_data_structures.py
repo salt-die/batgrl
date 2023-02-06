@@ -244,6 +244,8 @@ class ColorTheme(NamedTuple):
     ----------
     primary : ColorPair
         Primary color pair.
+    panel : ColorPair
+        Text panel color pair.
     button_normal : ColorPair
         Button color pair.
     button_hover : ColorPair
@@ -275,6 +277,8 @@ class ColorTheme(NamedTuple):
     ----------
     primary : ColorPair
         Primary color pair.
+    panel : ColorPair
+        Text panel color pair.
     button_normal : ColorPair
         Button color pair.
     button_hover : ColorPair
@@ -310,6 +314,7 @@ class ColorTheme(NamedTuple):
         Return first index of value.
     """
     primary: ColorPair
+    panel: ColorPair
     button_normal: ColorPair
     button_hover: ColorPair
     button_press: ColorPair

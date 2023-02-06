@@ -85,6 +85,7 @@ BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)
 
 DEFAULT_COLOR_THEME = ColorTheme(
     primary=ColorPair.from_hexes("F6A7A9", "070C25"),
+    panel=ColorPair.from_hexes("4D67FF", "070C25"),
     button_normal=ColorPair.from_hexes("DDE4ED", "2A3CA0"),
     button_hover=ColorPair.from_hexes("FFF0F6", "3248C0"),
     button_press=ColorPair.from_hexes("FFF0F6", "c4a219"),
