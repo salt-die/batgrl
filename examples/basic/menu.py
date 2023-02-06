@@ -1,6 +1,5 @@
 from nurses_2.app import App
-from nurses_2.widgets.button import Button
-from nurses_2.widgets.menu import Menu
+from nurses_2.widgets.menu import MenuBar
 from nurses_2.widgets.text_widget import TextWidget
 
 class MyApp(App):
@@ -18,7 +17,7 @@ class MyApp(App):
             return inner
 
         # These "keybinds" aren't implemented.
-        menu_dict = {
+        file_menu = {
             ("New File", "Ctrl+N"): add_label("New File"),
             ("Open File...", "Ctrl+O"): add_label("Open File..."),
             ("Save", "Ctrl+S"): add_label("Save"),
@@ -31,20 +30,18 @@ class MyApp(App):
             },
         }
 
+        edit_menu = {
+            ("Undo", "Ctrl+Z"): add_label("Undo"),
+            ("Redo", "Ctrl+Y"): add_label("Redo"),
+            ("Cut", "Ctrl+X"): add_label("Cut"),
+            ("Copy", "Ctrl+C"): add_label("Copy"),
+            ("Paste", "Ctrl+V"): add_label("Paste"),
+        }
+
         self.add_widget(label)
-        self.add_widgets(Menu.from_dict_of_dicts(menu_dict, pos=(2, 0)))
+        self.add_widgets(MenuBar.from_iterable((("File", file_menu), ("Edit", edit_menu)), pos=(2, 0)))
 
-        root_menu = self.children[-1]
-        root_menu.is_enabled = False
-        root_menu.children[1].item_disabled = True
-
-        def toggle_root_menu():
-            if root_menu.is_enabled:
-                root_menu.close_menu()
-            else:
-                root_menu.open_menu()
-
-        self.add_widget(Button(label="File", callback=toggle_root_menu, pos=(1, 0), size=(1, 6)))
+        self.children[-2].children[1].item_disabled = True
 
 
 MyApp(title="Menu Example").run()
