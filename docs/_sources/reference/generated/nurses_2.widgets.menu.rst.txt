@@ -24,6 +24,7 @@ nurses\_2.widgets.menu
    .. autosummary::
    
       Menu
+      MenuBar
       MenuItem
    
    

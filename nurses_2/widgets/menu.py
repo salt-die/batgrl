@@ -3,7 +3,7 @@ A menu widget.
 """
 from collections.abc import Callable, Iterator, Iterable
 from inspect import signature
-from typing import Optional, Union, Self
+from typing import Optional, Union
 
 from wcwidth import wcswidth
 
@@ -738,7 +738,7 @@ class Menu(GridLayout):
         pos: Point=Point(0, 0),
         close_on_release: bool=True,
         close_on_click: bool=True,
-    ) -> Iterator[Self]:
+    ) -> Iterator[Widget]:
         """
         Create and yield menus from a dict of dicts. Callables should either have no arguments
         for a normal menu item, or one argument for a toggle menu item.
