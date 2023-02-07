@@ -292,10 +292,10 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     def on_size(self):
         super().on_size()
 
-        if self.width > self._pad.width:
-            self._pad.width = self.width
-        elif self.width < self._pad.width:
-            self._pad.width = max(self.width, max(self._line_lengths) + 1)
+        if self.port_width > self._pad.width:
+            self._pad.width = self.port_width
+        elif self.port_width < self._pad.width:
+            self._pad.width = max(self.port_width, max(self._line_lengths) + 1)
 
         self._highlight_selection()
 
@@ -320,7 +320,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         pad = self._pad
         pad.canvas[:] = style_char(" ")
         pad.height = len(lines)
-        pad.width = max(max(self._line_lengths) + 1, self.width)
+        pad.width = max(max(self._line_lengths) + 1, self.port_width)
 
         add_text(pad.canvas, text)
 
@@ -344,7 +344,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         elif rel_y < 0:
             self._scroll_up(-rel_y)
 
-        max_x = self.width - (self.show_vertical_bar and 2) - 1
+        max_x = self.port_width - 1
         if (rel_x := x + self._pad.x) > max_x:
             self._scroll_right(rel_x - max_x)
         elif rel_x < 0:
@@ -518,8 +518,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._line_lengths[y] = x
         self._line_lengths.insert(y + 1, len_line)
 
-        if pad.width > self.width:
-            pad.width = max(self.width, max(self._line_lengths) + 1)
+        if pad.width > self.port_width:
+            pad.width = max(self.port_width, max(self._line_lengths) + 1)
 
         self.cursor = y + 1, 0
 
