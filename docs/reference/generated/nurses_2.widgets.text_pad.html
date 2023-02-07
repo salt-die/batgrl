@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.text_pad &#8212; Python 0.18.1 documentation</title>
+    <title>nurses_2.widgets.text_pad &#8212; Python 0.18.2 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.18.1 documentation</p>
+    <p class="title logo__title">Python 0.18.2 documentation</p>
   
 </a>
     
@@ -634,15 +634,8 @@ widget is not transparent.</p>
 </dd>
 </dl>
 </dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The cursor for text input widgets is the real terminal cursor. Because the terminal cursor isn’t subject to
-the painter’s algorithm for rendering widgets, it’s possible for a text input widget to be covered by
-another widget, but the cursor still be visible. This may be resolved in the future by attaching clipping
-regions to widgets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><dl class="simple">
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl class="simple">
 <dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>The textpad’s text.</p>
 </dd>
 <dt><strong>ptf_on_focus</strong><span class="classifier">bool</span></dt><dd><p>Pull widget to front when it gains focus.</p>
@@ -1126,13 +1119,13 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_pad.TextPad.on_blur">
 <span class="sig-name descname"><span class="pre">on_blur</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_pad.TextPad.on_blur" title="Permalink to this definition">#</a></dt>
-<dd><p>Move or hide terminal cursor to match position of <cite>self.cursor</cite>.</p>
+<dd><p>Called when widget loses focus.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_pad.TextPad.on_focus">
 <span class="sig-name descname"><span class="pre">on_focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_pad.TextPad.on_focus" title="Permalink to this definition">#</a></dt>
-<dd><p>Move or hide terminal cursor to match position of <cite>self.cursor</cite>.</p>
+<dd><p>Called when widget gains focus.</p>
 </dd></dl>
 
 <dl class="py method">

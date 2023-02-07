@@ -9,8 +9,8 @@ from .scroll_view import ScrollView
 from .text_widget import TextWidget, Point, add_text, style_char
 
 # TODO: Add an Undo stack.
-# TODO: Fix backspace/delete over full-width characters.
-# TODO: Move across words keybinds.
+# TODO: Fix backspace/delete/select over full-width characters.
+# TODO: Move-across-word keybinds.
 
 
 class TextPad(Themable, FocusBehavior, ScrollView):
@@ -259,13 +259,6 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         Recursively remove all children.
     destroy:
         Destroy this widget and all descendents.
-
-    Notes
-    -----
-    The cursor for text input widgets is the real terminal cursor. Because the terminal cursor isn't subject to
-    the painter's algorithm for rendering widgets, it's possible for a text input widget to be covered by
-    another widget, but the cursor still be visible. This may be resolved in the future by attaching clipping
-    regions to widgets.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -273,17 +266,21 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self.selection_highlight = lerp_colors(primary.bg_color, WHITE, 1/10)
         self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
 
-        self._cursor = self._prev_cursor = Point(0, 0)
+        self._prev_cursor_pos = Point(0, 0)
         self._last_x = None
         self._selection_start = self._selection_end = None
         self._line_lengths = [0]
 
+        self._cursor = TextWidget(size=(1, 1), is_enabled=False)
         self._pad = TextWidget(size=(1, 1))
+        self._pad.add_widget(self._cursor)
         self.view = self._pad
 
     def update_theme(self):
         primary = self.color_theme.primary
 
+        self._cursor.colors[:] = primary.reversed()
+        self._cursor.default_color_pair = primary.reversed()
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
         self.background_color_pair = primary
@@ -292,65 +289,21 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
         self._highlight_selection()
 
-    def on_add(self):
-        # To keep real cursor's position in-sync with virtual cursor's absolute position,
-        # subscribe to every ancestor's `pos` property.
-        self.subscribe(self._pad, "pos", self._update_cursor)
-        self.subscribe(self, "pos", self._update_cursor)
-
-        for ancestor in self.walk(reverse=True):
-            if ancestor is not self.root:
-                self.subscribe(ancestor, "pos", self._update_cursor)
-
-        super().on_add()
-
-    def on_remove(self):
-        self.unsubscribe(self._pad, "pos")
-        self.unsubscribe(self, "pos")
-
-        for ancestor in self.walk(reverse=True):
-            if ancestor is not self.root:
-                self.unsubscribe(ancestor, "pos")
-
-        super().on_remove()
-
     def on_size(self):
         super().on_size()
 
         if self.width > self._pad.width:
-                self._pad.width = self.width
+            self._pad.width = self.width
         elif self.width < self._pad.width:
             self._pad.width = max(self.width, max(self._line_lengths) + 1)
 
         self._highlight_selection()
 
-    def _update_cursor(self):
-        """
-        Move or hide terminal cursor to match position of `self.cursor`.
-        """
-        out = self.root.env_out
+    def on_focus(self):
+        self._cursor.is_enabled = True
 
-        if not self.is_focused:
-            out.hide_cursor()
-            return
-
-        py, px = self._pad.absolute_pos
-        cy, cx = self._cursor
-        cursor = y, x = py + cy, px + cx
-
-        if (
-            self._pad.collides_point(cursor)
-            and not (self.show_vertical_bar and self._vertical_bar.collides_point(cursor))
-            and not (self.show_horizontal_bar and self._horizontal_bar.collides_point(cursor))
-        ):
-            out._buffer.append(f"\x1b[{y + 1};{x + 1}H")  # Move cursor.
-            out.show_cursor()
-        else:
-            out.hide_cursor()
-
-    on_focus = _update_cursor
-
-    on_blur = _update_cursor
+    def on_blur(self):
+        self._cursor.is_enabled = False
 
     @property
     def text(self) -> str:
@@ -373,7 +326,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     @property
     def cursor(self) -> Point:
-        return self._cursor
+        return self._cursor.pos
 
     @cursor.setter
     def cursor(self, cursor: Point):
@@ -381,8 +334,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         After setting cursor position, move pad so that cursor is visible.
         """
         y, x = cursor
-        self._prev_cursor = self._cursor
-        self._cursor = Point(y, x)
+        self._prev_cursor_pos = self._cursor.pos
+        self._cursor.pos = Point(y, x)
+        self._cursor.canvas[0, 0] = self._pad.canvas[y, x]
 
         max_y = self.height - (self.show_horizontal_bar and 1) - 1
         if (rel_y := y + self._pad.y) > max_y:
@@ -396,7 +350,6 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         elif rel_x < 0:
             self._scroll_left(-rel_x)
 
-        self._update_cursor()
         self._update_selection()
 
     @property
@@ -472,9 +425,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     def _update_selection(self):
         if self.has_selection:
-            if self._prev_cursor == self._selection_start:
+            if self._prev_cursor_pos == self._selection_start:
                 self._selection_start = self.cursor
-            elif self._prev_cursor == self._selection_end:
+            elif self._prev_cursor_pos == self._selection_end:
                 self._selection_end = self.cursor
 
             if self._selection_start > self._selection_end:
@@ -484,7 +437,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     def move_cursor_left(self, n: int=1):
         self._last_x = None
-        y, x = self._cursor
+        y, x = self._cursor.pos
 
         while n > 0:
             to_start = clamp(n, 0, x)
@@ -502,7 +455,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     def move_cursor_right(self, n: int=1):
         self._last_x = None
-        y, x = self._cursor
+        y, x = self._cursor.pos
 
         while n > 0:
             to_end = clamp(n, 0, self._line_lengths[y] - x)
@@ -519,7 +472,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self.cursor = y, x
 
     def move_cursor_up(self, n: int=1):
-        y, x = self._cursor
+        y, x = self._cursor.pos
 
         if self._last_x is None or y == x == 0:
             self._last_x = x
@@ -533,7 +486,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self.cursor = y, x
 
     def move_cursor_down(self, n: int=1):
-        y, x = self._cursor
+        y, x = self._cursor.pos
         ey, ex = self.end_text_point
 
         if self._last_x is None or y == ey and x == ex:
