@@ -29,6 +29,7 @@
 
    nurses_2.widgets.animation
    nurses_2.widgets.behaviors
+   nurses_2.widgets.box_image
    nurses_2.widgets.braille_image
    nurses_2.widgets.braille_video_player
    nurses_2.widgets.button
