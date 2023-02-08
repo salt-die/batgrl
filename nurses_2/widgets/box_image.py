@@ -1,18 +1,18 @@
 """
-An image painted with braille unicode characters.
+An image painted with box unicode characters.
 """
 from pathlib import Path
 
 import cv2
 import numpy as np
 
-from ._binary_to_char import binary_to_braille
+from ._binary_to_char import binary_to_box
 from .text_widget import TextWidget, style_char
 
 
-class BrailleImage(TextWidget):
+class BoxImage(TextWidget):
     """
-    An image painted with braille unicode characters.
+    An image painted with box unicode characters.
 
     Parameters
     ----------
@@ -220,37 +220,37 @@ class BrailleImage(TextWidget):
         h, w = self.size
 
         img = cv2.imread(str(self.path.absolute()), cv2.IMREAD_COLOR)
-        img_bgr = cv2.resize(img, (2 * w, 4 * h))
+        img_bgr = cv2.resize(img, (2 * w, 2 * h))
 
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
         img_hls = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HLS)
 
-        rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 4, w, 2, 3), 1, 2)
-        hls_sectioned = np.swapaxes(img_hls.reshape(h, 4, w, 2, 3), 1, 2)
+        rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 2, w, 2, 3), 1, 2)
+        hls_sectioned = np.swapaxes(img_hls.reshape(h, 2, w, 2, 3), 1, 2)
 
-        # First, find the average lightness of each 4x2 section of the image (`average_lightness`).
-        # Braille dots are placed where the lightness is greater than `average_lightness`.
+        # First, find the average lightness of each 2x2 section of the image (`average_lightness`).
+        # Boxes are placed where the lightness is greater than `average_lightness`.
         # The background color will be the average of the colors darker than `average_lightness`.
         # The foreground color will be the average of the colors lighter than `average_lightness`.
 
         lightness = hls_sectioned[..., 1]
         average_lightness = np.average(lightness, axis=(2, 3))
-        where_dots = lightness > average_lightness[..., None, None]
+        where_boxes = lightness > average_lightness[..., None, None]
 
-        self.canvas["char"] = binary_to_braille(where_dots)
+        self.canvas["char"] = binary_to_box(where_boxes)
 
-        ndots = where_dots.sum(axis=(2, 3))
-        ndots_neg = 8 - ndots
+        nboxes = where_boxes.sum(axis=(2, 3))
+        nboxes_neg = 4 - nboxes
 
         background = rgb_sectioned.copy()
-        background[where_dots] = 0
+        background[where_boxes] = 0
         with np.errstate(divide="ignore", invalid="ignore"):
-            bg = background.sum(axis=(2, 3)) / ndots_neg[..., None]  # average of colors darker than `average_lightness`
+            bg = background.sum(axis=(2, 3)) / nboxes_neg[..., None]  # average of colors darker than `average_lightness`
 
         foreground = rgb_sectioned.copy()
-        foreground[~where_dots] = 0
+        foreground[~where_boxes] = 0
         with np.errstate(divide="ignore", invalid="ignore"):
-            fg = foreground.sum(axis=(2, 3)) / ndots[..., None]  # average of colors lighter than `average_lightness`
+            fg = foreground.sum(axis=(2, 3)) / nboxes[..., None]  # average of colors lighter than `average_lightness`
 
         self.colors[..., :3] = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg)
         self.colors[..., 3:] = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg)
