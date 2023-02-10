@@ -96,6 +96,7 @@ class App(ABC):
         render_interval: float=0.0,
         color_theme: ColorTheme=DEFAULT_COLOR_THEME,
         asciicast_path: Path | None=None,
+        log_file: Path | None=None,
     ):
         self.root = None
 
@@ -106,6 +107,7 @@ class App(ABC):
         self.render_interval = render_interval
         self.color_theme = color_theme
         self.asciicast_path = asciicast_path
+        self.log_file = log_file
 
     @property
     def color_theme(self) -> ColorTheme:
@@ -136,7 +138,11 @@ class App(ABC):
         except asyncio.CancelledError:
             pass
         finally:
-            print(defer_stderr.getvalue(), file=sys.stderr, end="")
+            if self.log_file:
+                with open(self.log_file, "w") as log:
+                    print(defer_stderr.getvalue(), file=log, end="")
+            else:
+                print(defer_stderr.getvalue(), file=sys.stderr, end="")
 
     def exit(self):
         """
