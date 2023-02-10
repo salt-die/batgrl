@@ -283,7 +283,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._cursor.default_color_pair = primary.reversed()
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
-        self.background_color_pair = primary
+        self.background_color_pair = primary.bg_color * 2
 
         self.selection_highlight = lerp_colors(primary.bg_color, WHITE, 1/10)
         self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
