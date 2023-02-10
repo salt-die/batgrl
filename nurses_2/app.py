@@ -96,7 +96,7 @@ class App(ABC):
         render_interval: float=0.0,
         color_theme: ColorTheme=DEFAULT_COLOR_THEME,
         asciicast_path: Path | None=None,
-        log_file: str | None=None,
+        log_file: Path | None=None,
     ):
         self.root = None
 
