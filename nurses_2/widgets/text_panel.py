@@ -7,6 +7,8 @@ from .widget import Widget, Size
 # TODO: Set text with limited markdown.
 
 
+Padding = (int, int)
+
 class TextPanel(Themable, TextWidget):
     """
     A widget for static multi-line text.
@@ -19,8 +21,8 @@ class TextPanel(Themable, TextWidget):
     ----------
     text : str, default: ""
         Panel text.
-    padding : int, default: 1
-        Padding around panel text.
+    padding : Padding, default: (1, 1)
+        Padding around panel text (on y and on x).
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -66,8 +68,8 @@ class TextPanel(Themable, TextWidget):
     ----------
     text : str, default: ""
         Panel text.
-    padding : int, default: 1
-        Padding around panel text.
+    padding : Padding, default: (1, 1)
+        Padding around panel text (on y and on x).
     min_size : Size
         Minimum size needed to show all text.
     text_container : TextWidget
@@ -206,7 +208,7 @@ class TextPanel(Themable, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, *, text: str="", padding: int=1, **kwargs):
+    def __init__(self, *, text: str="", padding: Padding=(1, 1), **kwargs):
         super().__init__(**kwargs)
         self._panel = Widget()
         self.text_container = TextWidget()
@@ -220,11 +222,11 @@ class TextPanel(Themable, TextWidget):
         return self._padding
 
     @padding.setter
-    def padding(self, padding: int):
+    def padding(self, padding: Padding):
         self._padding = padding
         h, w = self.size
-        self._panel.size = h - 2 * padding, w - 2 * padding
-        self._panel.pos = padding, padding
+        self._panel.size = h - 2 * padding[0], w - 2 * padding[1]
+        self._panel.pos = padding[0], padding[1]
 
     @property
     def text(self) -> str:
@@ -245,13 +247,13 @@ class TextPanel(Themable, TextWidget):
         """
         pad = self._padding
         h, w = self.text_container.size
-        return Size(h + 2 * pad, w + 2 * pad)
+        return Size(h + 2 * pad[0], w + 2 * pad[1])
 
     def on_size(self):
         super().on_size()
         h, w = self.size
         padding = self._padding
-        self._panel.size = h - 2 * padding, w - 2 * padding
+        self._panel.size = h - 2 * padding[0], w - 2 * padding[1]
 
     def update_theme(self):
         panel = self.color_theme.panel
