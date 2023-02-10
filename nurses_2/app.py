@@ -49,6 +49,8 @@ class App(ABC):
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
         the asciicast format -- doing so will corrupt the recording.
+    log_file : Path | None, default: None
+        If provided, stderr is written to this path.
 
     Attributes
     ----------
@@ -67,6 +69,8 @@ class App(ABC):
         Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable` widgets.
     asciicast_path : Path | None
         Path where asciicast recording will be saved.
+    log_file : Path | None, default: None
+        Path where stderr is saved.
     root : _Root | None
         Root of widget tree.
     children : list[Widget]
