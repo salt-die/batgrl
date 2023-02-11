@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.menu &#8212; Python 0.18.4 documentation</title>
+    <title>nurses_2.widgets.menu &#8212; Python 0.18.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.18.4 documentation</p>
+    <p class="title logo__title">Python 0.18.5 documentation</p>
   
 </a>
     
@@ -665,9 +665,9 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>close_on_release</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, close the menu when an item is selected.</p>
+<dt><strong>close_on_release</strong><span class="classifier">bool</span></dt><dd><p>If true, close the menu when an item is selected.</p>
 </dd>
-<dt><strong>close_on_click</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, close the menu when a click doesn’t collide with it.</p>
+<dt><strong>close_on_click</strong><span class="classifier">bool</span></dt><dd><p>If true, close the menu when a click doesn’t collide with it.</p>
 </dd>
 <dt><strong>grid_rows</strong><span class="classifier">int</span></dt><dd><p>Number of rows.</p>
 </dd>
@@ -890,11 +890,6 @@ when the widget’s parent’s size changes.</p>
 <dd><p>Bottom of widget in parent’s reference frame.</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.bottom_padding">
-<span class="sig-name descname"><span class="pre">bottom_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.bottom_padding" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.center">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.center" title="Permalink to this definition">#</a></dt>
@@ -1023,11 +1018,6 @@ for a normal menu item, or one argument for a toggle menu item.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.left" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.left_padding">
-<span class="sig-name descname"><span class="pre">left_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.left_padding" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.max_height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.max_height" title="Permalink to this definition">#</a></dt>
@@ -1106,6 +1096,26 @@ for a normal menu item, or one argument for a toggle menu item.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.padding_bottom">
+<span class="sig-name descname"><span class="pre">padding_bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.padding_bottom" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.padding_left">
+<span class="sig-name descname"><span class="pre">padding_left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.padding_left" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.padding_right">
+<span class="sig-name descname"><span class="pre">padding_right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.padding_right" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.padding_top">
+<span class="sig-name descname"><span class="pre">padding_top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.padding_top" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.parent">
 <span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.parent" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1156,11 +1166,6 @@ for a normal menu item, or one argument for a toggle menu item.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.right" title="Permalink to this definition">#</a></dt>
 <dd><p>Right side of widget in parent’s reference frame.</p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.right_padding">
-<span class="sig-name descname"><span class="pre">right_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.right_padding" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.root">
@@ -1213,11 +1218,6 @@ for a normal menu item, or one argument for a toggle menu item.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.top">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.top" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.Menu.top_padding">
-<span class="sig-name descname"><span class="pre">top_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.Menu.top_padding" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1314,7 +1314,7 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.menu.</span></span><span class="sig-name descname"><span class="pre">MenuBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.grid_layout.html#nurses_2.widgets.grid_layout.Orientation" title="nurses_2.widgets.grid_layout.Orientation"><span class="pre">nurses_2.widgets.grid_layout.Orientation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Orientation.LR_BT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.menu.</span></span><span class="sig-name descname"><span class="pre">MenuBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.grid_layout.html#nurses_2.widgets.grid_layout.Orientation" title="nurses_2.widgets.grid_layout.Orientation"><span class="pre">nurses_2.widgets.grid_layout.Orientation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Orientation.LR_BT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_spacing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.grid_layout.html#nurses_2.widgets.grid_layout.GridLayout" title="nurses_2.widgets.grid_layout.GridLayout"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.grid_layout.GridLayout</span></code></a></p>
 <p>A menu bar.</p>
 <p>A menu bar is meant to be constructed with the class method <a class="reference internal" href="#nurses_2.widgets.menu.MenuBar.from_iterable" title="nurses_2.widgets.menu.MenuBar.from_iterable"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_iterable()</span></code></a>.
@@ -1382,9 +1382,9 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>close_on_release</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, close the menu when an item is selected.</p>
+<dt><strong>close_on_release</strong><span class="classifier">bool</span></dt><dd><p>If true, close the menu when an item is selected.</p>
 </dd>
-<dt><strong>close_on_click</strong><span class="classifier">bool, default: True</span></dt><dd><p>If true, close the menu when a click doesn’t collide with it.</p>
+<dt><strong>close_on_click</strong><span class="classifier">bool</span></dt><dd><p>If true, close the menu when a click doesn’t collide with it.</p>
 </dd>
 <dt><strong>grid_rows</strong><span class="classifier">int</span></dt><dd><p>Number of rows.</p>
 </dd>
@@ -1607,11 +1607,6 @@ when the widget’s parent’s size changes.</p>
 <dd><p>Bottom of widget in parent’s reference frame.</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.bottom_padding">
-<span class="sig-name descname"><span class="pre">bottom_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.bottom_padding" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.center">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.center" title="Permalink to this definition">#</a></dt>
@@ -1723,11 +1718,6 @@ when the widget’s parent’s size changes.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.left" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.left_padding">
-<span class="sig-name descname"><span class="pre">left_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.left_padding" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.max_height">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.max_height" title="Permalink to this definition">#</a></dt>
@@ -1800,6 +1790,26 @@ when the widget’s parent’s size changes.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.padding_bottom">
+<span class="sig-name descname"><span class="pre">padding_bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.padding_bottom" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.padding_left">
+<span class="sig-name descname"><span class="pre">padding_left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.padding_left" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.padding_right">
+<span class="sig-name descname"><span class="pre">padding_right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.padding_right" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.padding_top">
+<span class="sig-name descname"><span class="pre">padding_top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.padding_top" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.parent">
 <span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.parent" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1850,11 +1860,6 @@ when the widget’s parent’s size changes.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.right" title="Permalink to this definition">#</a></dt>
 <dd><p>Right side of widget in parent’s reference frame.</p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.right_padding">
-<span class="sig-name descname"><span class="pre">right_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.right_padding" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.root">
@@ -1907,11 +1912,6 @@ when the widget’s parent’s size changes.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.top">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.top" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.menu.MenuBar.top_padding">
-<span class="sig-name descname"><span class="pre">top_padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.menu.MenuBar.top_padding" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2074,13 +2074,13 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>left_label</strong><span class="classifier">str, default: “”</span></dt><dd><p>Left label of menu item.</p>
+<dt><strong>left_label</strong><span class="classifier">str</span></dt><dd><p>Left label of menu item.</p>
 </dd>
-<dt><strong>right_label</strong><span class="classifier">str, default: “”</span></dt><dd><p>Right label of menu item.</p>
+<dt><strong>right_label</strong><span class="classifier">str</span></dt><dd><p>Right label of menu item.</p>
 </dd>
-<dt><strong>item_disabled</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, item will not be selectable in menu.</p>
+<dt><strong>item_disabled</strong><span class="classifier">bool</span></dt><dd><p>If true, item will not be selectable in menu.</p>
 </dd>
-<dt><strong>item_callback</strong><span class="classifier">Callable[[], None] | Callable[[ToggleState], None], default: lambda: None</span></dt><dd><p>Callback when item is selected. For toggle items, the callable should have a
+<dt><strong>item_callback</strong><span class="classifier">Callable[[], None] | Callable[[ToggleState], None]</span></dt><dd><p>Callback when item is selected. For toggle items, the callable should have a
 single argument that will be the current state of the item.</p>
 </dd>
 <dt><strong>submenu: Menu | None</strong></dt><dd><p>If provided, menu item will open submenu on hover.</p>

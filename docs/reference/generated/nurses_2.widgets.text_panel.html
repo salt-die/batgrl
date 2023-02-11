@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.text_panel &#8212; Python 0.18.4 documentation</title>
+    <title>nurses_2.widgets.text_panel &#8212; Python 0.18.5 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.18.4 documentation</p>
+    <p class="title logo__title">Python 0.18.5 documentation</p>
   
 </a>
     
@@ -563,14 +563,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel" title="nurses_2.widgets.text_panel.TextPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextPanel</span></code></a>(*[, text, padding])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel" title="nurses_2.widgets.text_panel.TextPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextPanel</span></code></a>(*[, text, padding_y, padding_x])</p></td>
 <td><p>A widget for static multi-line text.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.text_panel.</span></span><span class="sig-name descname"><span class="pre">TextPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.text_panel.</span></span><span class="sig-name descname"><span class="pre">TextPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.text_widget.html#nurses_2.widgets.text_widget.TextWidget" title="nurses_2.widgets.text_widget.TextWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_widget.TextWidget</span></code></a></p>
 <p>A widget for static multi-line text.</p>
 <p>Text can be set by setting the <cite>text</cite> attribute. The read-only attribute <a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.min_size" title="nurses_2.widgets.text_panel.TextPanel.min_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_size</span></code></a> is
@@ -581,7 +581,9 @@ panel, e.g., <code class="docutils literal notranslate"><span class="pre">my_pan
 <dd class="field-odd"><dl class="simple">
 <dt><strong>text</strong><span class="classifier">str, default: “”</span></dt><dd><p>Panel text.</p>
 </dd>
-<dt><strong>padding</strong><span class="classifier">int, default: 1</span></dt><dd><p>Padding around panel text.</p>
+<dt><strong>padding_y: int, default: 1</strong></dt><dd><p>Padding on top and bottom of panel.</p>
+</dd>
+<dt><strong>padding_x: int, default: 1</strong></dt><dd><p>Padding on the left and right of panel.</p>
 </dd>
 <dt><strong>default_char</strong><span class="classifier">str, default: ” “</span></dt><dd><p>Default background character. This should be a single unicode half-width grapheme.</p>
 </dd>
@@ -627,9 +629,11 @@ widget is not transparent.</p>
 </dd>
 <dt class="field-even">Attributes</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>text</strong><span class="classifier">str, default: “”</span></dt><dd><p>Panel text.</p>
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Panel text.</p>
 </dd>
-<dt><strong>padding</strong><span class="classifier">int, default: 1</span></dt><dd><p>Padding around panel text.</p>
+<dt><strong>padding_y: int</strong></dt><dd><p>Padding on top and bottom of panel.</p>
+</dd>
+<dt><strong>padding_x: int</strong></dt><dd><p>Padding on the left and right of panel.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.min_size" title="nurses_2.widgets.text_panel.TextPanel.min_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_size</span></code></a><span class="classifier">Size</span></dt><dd><p>Minimum size needed for panel to show all text.</p>
 </dd>
@@ -639,9 +643,9 @@ widget is not transparent.</p>
 </dd>
 <dt><strong>colors</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>The array of color pairs for each character in <code class="xref py py-attr docutils literal notranslate"><span class="pre">canvas</span></code>.</p>
 </dd>
-<dt><strong>default_char</strong><span class="classifier">str, default: ” “</span></dt><dd><p>Default background character.</p>
+<dt><strong>default_char</strong><span class="classifier">str</span></dt><dd><p>Default background character.</p>
 </dd>
-<dt><strong>default_color_pair</strong><span class="classifier">ColorPair, default: WHITE_ON_BLACK</span></dt><dd><p>Default color pair of widget.</p>
+<dt><strong>default_color_pair</strong><span class="classifier">ColorPair</span></dt><dd><p>Default color pair of widget.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.default_fg_color" title="nurses_2.widgets.text_panel.TextPanel.default_fg_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_fg_color</span></code></a><span class="classifier">Color</span></dt><dd><p>The default foreground color.</p>
 </dd>
@@ -1065,8 +1069,13 @@ empty characters are placed after each full-width character.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.padding">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.padding" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.padding_x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">padding_x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.padding_x" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.padding_y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">padding_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.padding_y" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
