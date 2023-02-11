@@ -221,8 +221,10 @@ class TextPanel(Themable, TextWidget):
 
         self.add_widget(self._panel)
 
-        self.padding_y = padding_y
-        self.padding_x = padding_x
+        self._padding_y = clamp(padding_y, 0, None)
+        self._padding_x = clamp(padding_x, 0, None)
+        self._update_padding()
+
         self.text = text
 
     @property
