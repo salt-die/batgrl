@@ -19,8 +19,10 @@ class TextPanel(Themable, TextWidget):
     ----------
     text : str, default: ""
         Panel text.
-    padding : int, default: 1
-        Padding around panel text.
+    padding_y: int, default: 1
+        Padding on top and bottom (y axis)
+    padding_x: int, default: 1
+        Padding on the sides (x axis)
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -66,8 +68,10 @@ class TextPanel(Themable, TextWidget):
     ----------
     text : str, default: ""
         Panel text.
-    padding : int, default: 1
-        Padding around panel text.
+    padding_y: int, default: 1
+        Padding on top and bottom (y axis)
+    padding_x: int, default: 1
+        Padding on the sides (x axis)
     min_size : Size
         Minimum size needed to show all text.
     text_container : TextWidget
@@ -206,25 +210,43 @@ class TextPanel(Themable, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, *, text: str="", padding: int=1, **kwargs):
+    def __init__(self, *, text: str="", padding_y: int=1, padding_x: int=1, **kwargs):
         super().__init__(**kwargs)
+
+        if padding < 0 or padding_y < 0 or padding_x < 0:
+            raise ValueError(f"padding should be non-negative")
+
         self._panel = Widget()
         self.text_container = TextWidget()
         self._panel.add_widget(self.text_container)
         self.add_widget(self._panel)
-        self.padding = padding
+        self.padding_y = padding_y
+        self.padding_x = padding_x
         self.text = text
 
     @property
-    def padding(self) -> int:
-        return self._padding
+    def padding_y(self) -> int:
+        return self._padding[0]
 
-    @padding.setter
-    def padding(self, padding: int):
-        self._padding = padding
+    @padding_y.setter
+    def padding_y(self, padding_y: int):
+        self._padding = padding_y, self.padding[1]
+        self.update_padding()
+
+    @property
+    def padding_x(self) -> int:
+        return self._padding[1]
+
+    @padding_x.setter
+    def padding_x(self, padding_x: int):
+        self._padding = self.padding[0], padding_x
+        self.update_padding()
+
+    def update_padding(self):
         h, w = self.size
-        self._panel.size = h - 2 * padding, w - 2 * padding
-        self._panel.pos = padding, padding
+
+        self._panel.size = h - 2 * self._padding[0], w - 2 * self._padding[1]
+        self._panel.pos = self._padding[0], self._padding[1]
 
     @property
     def text(self) -> str:
@@ -243,15 +265,15 @@ class TextPanel(Themable, TextWidget):
         """
         Minimum size needed for panel to show all text.
         """
-        pad = self._padding
+        padding = self._padding
         h, w = self.text_container.size
-        return Size(h + 2 * pad, w + 2 * pad)
+        return Size(h + 2 * padding[0], w + 2 * padding[1])
 
     def on_size(self):
         super().on_size()
         h, w = self.size
         padding = self._padding
-        self._panel.size = h - 2 * padding, w - 2 * padding
+        self._panel.size = h - 2 * padding[0], w - 2 * padding[1]
 
     def update_theme(self):
         panel = self.color_theme.panel
