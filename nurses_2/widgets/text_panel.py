@@ -245,9 +245,9 @@ class TextPanel(Themable, TextWidget):
         """
         Minimum size needed for panel to show all text.
         """
-        pad = self._padding
+        padding = self._padding
         h, w = self.text_container.size
-        return Size(h + 2 * pad[0], w + 2 * pad[1])
+        return Size(h + 2 * padding[0], w + 2 * padding[1])
 
     def on_size(self):
         super().on_size()
