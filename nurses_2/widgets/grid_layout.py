@@ -67,13 +67,13 @@ class GridLayout(Widget):
     orientation : Orientation, default: Orientation.LR_BT
         The orientation of the grid. Describes how the grid fills as children are added. The
         default is left-to-right then top-to-bottom.
-    left_padding : int, default: 0
+    padding_left : int, default: 0
         Padding on left side of grid.
-    right_padding : int, default: 0
+    padding_right : int, default: 0
         Padding on right side of grid.
-    top_padding : int, default: 0
+    padding_top : int, default: 0
         Padding at the top of grid.
-    bottom_padding : int, default: 0
+    padding_bottom : int, default: 0
         Padding at the bottom of grid.
     horizontal_spacing : int, default: 0
         Horizontal spacing between children.
@@ -126,13 +126,13 @@ class GridLayout(Widget):
         Number of columns.
     orientation : Orientation
         The orientation of the grid.
-    left_padding : int
+    padding_left : int
         Padding on left side of grid.
-    right_padding : int
+    padding_right : int
         Padding on right side of grid.
-    top_padding : int
+    padding_top : int
         Padding at the top of grid.
-    bottom_padding : int
+    padding_bottom : int
         Padding at the bottom of grid.
     horizontal_spacing : int
         Horizontal spacing between children.
@@ -265,13 +265,13 @@ class GridLayout(Widget):
 
     orientation: Orientation = _RepositionProperty()
 
-    left_padding: int = _RepositionProperty()
+    padding_left: int = _RepositionProperty()
 
-    right_padding: int = _RepositionProperty()
+    padding_right: int = _RepositionProperty()
 
-    top_padding: int = _RepositionProperty()
+    padding_top: int = _RepositionProperty()
 
-    bottom_padding: int = _RepositionProperty()
+    padding_bottom: int = _RepositionProperty()
 
     horizontal_spacing: int = _RepositionProperty()
 
@@ -283,10 +283,10 @@ class GridLayout(Widget):
         grid_columns: int=1,
         *,
         orientation: Orientation=Orientation.LR_BT,
-        left_padding: int=0,
-        right_padding: int=0,
-        top_padding: int=0,
-        bottom_padding: int=0,
+        padding_left: int=0,
+        padding_right: int=0,
+        padding_top: int=0,
+        padding_bottom: int=0,
         horizontal_spacing: int=0,
         vertical_spacing: int=0,
         **kwargs
@@ -294,10 +294,10 @@ class GridLayout(Widget):
         self._grid_rows = grid_rows
         self._grid_columns = grid_columns
         self._orientation = orientation
-        self._left_padding = left_padding
-        self._right_padding = right_padding
-        self._top_padding = top_padding
-        self._bottom_padding = bottom_padding
+        self._padding_left = padding_left
+        self._padding_right = padding_right
+        self._padding_top = padding_top
+        self._padding_bottom = padding_bottom
         self._horizontal_spacing = horizontal_spacing
         self._vertical_spacing = vertical_spacing
         self._minimum_grid_size = Size(0, 0)
@@ -368,10 +368,10 @@ class GridLayout(Widget):
     def _reposition_children(self):
         rows, cols = self.grid_rows, self.grid_columns
 
-        lp = self.left_padding
-        rp = self.right_padding
-        tp = self.top_padding
-        bp = self.bottom_padding
+        lp = self.padding_left
+        rp = self.padding_right
+        tp = self.padding_top
+        bp = self.padding_bottom
         vs = self.vertical_spacing
         hs = self.horizontal_spacing
 
