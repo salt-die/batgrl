@@ -19,8 +19,6 @@ class TextPanel(Themable, TextWidget):
     ----------
     text : str, default: ""
         Panel text.
-    padding : int, default: 1
-        Padding around panel text
     padding_y: int, default: 1
         Padding on top and bottom (y axis)
     padding_x: int, default: 1
@@ -70,8 +68,6 @@ class TextPanel(Themable, TextWidget):
     ----------
     text : str, default: ""
         Panel text.
-    padding : int, default: 1
-        Padding around panel text
     padding_y: int, default: 1
         Padding on top and bottom (y axis)
     padding_x: int, default: 1
@@ -214,7 +210,7 @@ class TextPanel(Themable, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, *, text: str="", padding: int=1, padding_y: int=1, padding_x: int=1, **kwargs):
+    def __init__(self, *, text: str="", padding_y: int=1, padding_x: int=1, **kwargs):
         super().__init__(**kwargs)
 
         if padding < 0 or padding_y < 0 or padding_x < 0:
@@ -224,20 +220,9 @@ class TextPanel(Themable, TextWidget):
         self.text_container = TextWidget()
         self._panel.add_widget(self.text_container)
         self.add_widget(self._panel)
-        self.padding = padding
-        self.padding_y = padding_y # | Take precedence over `padding`
-        self.padding_x = padding_x # |
-        self.update_padding()
+        self.padding_y = padding_y
+        self.padding_x = padding_x
         self.text = text
-
-    @property
-    def padding(self) -> int:
-        return self._padding
-
-    @padding.setter
-    def padding(self, padding: int):
-        self._padding = padding, padding
-        self.update_padding()
 
     @property
     def padding_y(self) -> int:
