@@ -62,9 +62,9 @@ class Button(Themable, ButtonBehavior, Widget):
 
     Attributes
     ----------
-    label : str, default: ""
+    label : str
         Button label.
-    callback : Callable[[], None], default: lambda: None
+    callback : Callable[[], None]
         Called when button is released.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.

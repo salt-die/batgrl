@@ -132,7 +132,7 @@ class FlatToggle(Widget):
     ----------
     callback : Callable[[ToggleState], None]
         Toggle button callback.
-    toggle_background: Color, default: BLACK
+    toggle_background: Color
         Background color of toggle.
     size : Size
         Size of widget.

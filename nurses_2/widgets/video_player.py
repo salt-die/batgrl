@@ -78,7 +78,7 @@ class VideoPlayer(GraphicWidget):
     ----------
     source : Path | str | int
         A path, URL, or capturing device (by index) of the video.
-    loop : bool, default: True
+    loop : bool
         If true, video will restart after last frame.
     is_device : bool
         If true, video is from a video capturing device.

@@ -73,9 +73,9 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     ----------
     text : str
         The textbox's text.
-    enter_callback : Callable | None, default: None
+    enter_callback : Callable | None
         Called when textbox has focus and `enter` is pressed.
-    max_chars : int | None, default: None
+    max_chars : int | None
         Maximum allowed number of characters in textbox.
     ptf_on_focus : bool
         Pull widget to front when it gains focus.
@@ -83,11 +83,11 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         Return True if widget has focus.
     any_focused : bool
         Return True if any widget has focus.
-    is_grabbable : bool, default: True
+    is_grabbable : bool
         If False, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
+    disable_ptf : bool
         If True, widget will not be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
+    mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
         True if widget is grabbed.

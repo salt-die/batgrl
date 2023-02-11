@@ -78,13 +78,13 @@ class BrailleVideoPlayer(TextWidget):
     ----------
     source : Path | str | int
         A path, URL, or capturing device (by index) of the video.
-    loop : bool, default: True
+    loop : bool
         If true, video will restart after last frame.
-    gray_threshold : int, default: 127
+    gray_threshold : int
         Pixel values over this threshold in the source video will be rendered.
-    enable_shading : bool, default: False
+    enable_shading : bool
         If true, foreground will be set to `default_fg_color` multiplied by the normalized grays from the source.
-    invert_colors : bool, default: False
+    invert_colors : bool
         If true, colors in the source are inverted before video is rendered.
     is_device : bool
         If true, video is from a video capturing device.
@@ -92,9 +92,9 @@ class BrailleVideoPlayer(TextWidget):
         The array of characters for the widget.
     colors : numpy.ndarray
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str, default: " "
+    default_char : str
         Default background character.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
+    default_color_pair : ColorPair
         Default color pair of widget.
     default_fg_color : Color
         The default foreground color.

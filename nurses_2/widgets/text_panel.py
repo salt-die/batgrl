@@ -20,9 +20,9 @@ class TextPanel(Themable, TextWidget):
     text : str, default: ""
         Panel text.
     padding_y: int, default: 1
-        Padding on top and bottom (y axis)
+        Padding on top and bottom of panel.
     padding_x: int, default: 1
-        Padding on the sides (x axis)
+        Padding on the left and right of panel.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -66,12 +66,12 @@ class TextPanel(Themable, TextWidget):
 
     Attributes
     ----------
-    text : str, default: ""
+    text : str
         Panel text.
-    padding_y: int, default: 1
-        Padding on top and bottom (y axis)
-    padding_x: int, default: 1
-        Padding on the sides (x axis)
+    padding_y: int
+        Padding on top and bottom of panel.
+    padding_x: int
+        Padding on the left and right of panel.
     min_size : Size
         Minimum size needed to show all text.
     text_container : TextWidget
@@ -80,9 +80,9 @@ class TextPanel(Themable, TextWidget):
         The array of characters for the widget.
     colors : numpy.ndarray
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str, default: " "
+    default_char : str
         Default background character.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
+    default_color_pair : ColorPair
         Default color pair of widget.
     default_fg_color : Color
         The default foreground color.

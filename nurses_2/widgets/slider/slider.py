@@ -86,7 +86,7 @@ class Slider(TextWidget):
         True if slider value can be changed.
     callback : Callable
         Single argument callable called with new value of slider when slider is updated.
-    slider_char : str, default: "▬"
+    slider_char : str
         Character used to draw the slider.
     proportion : float
         Current proportion of slider.
@@ -96,9 +96,9 @@ class Slider(TextWidget):
         The array of characters for the widget.
     colors : numpy.ndarray
         The array of color pairs for each character in `canvas`.
-    default_char : str, default: " "
+    default_char : str
         Default background character.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
+    default_color_pair : ColorPair
         Default color pair of widget.
     default_fg_color : Color
         The default foreground color.

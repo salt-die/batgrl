@@ -72,9 +72,9 @@ class ProgressBar(Themable, TextWidget):
         The array of characters for the widget.
     colors : numpy.ndarray
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str, default: " "
+    default_char : str
         Default background character.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
+    default_color_pair : ColorPair
         Default color pair of widget.
     default_fg_color : Color
         The default foreground color.

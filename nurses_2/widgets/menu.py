@@ -97,13 +97,13 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
     Attributes
     ----------
-    left_label : str, default: ""
+    left_label : str
         Left label of menu item.
-    right_label : str, default: ""
+    right_label : str
         Right label of menu item.
-    item_disabled : bool, default: False
+    item_disabled : bool
         If true, item will not be selectable in menu.
-    item_callback : Callable[[], None] | Callable[[ToggleState], None], default: lambda: None
+    item_callback : Callable[[], None] | Callable[[ToggleState], None]
         Callback when item is selected. For toggle items, the callable should have a
         single argument that will be the current state of the item.
     submenu: Menu | None
@@ -438,9 +438,9 @@ class Menu(GridLayout):
 
     Attributes
     ----------
-    close_on_release : bool, default: True
+    close_on_release : bool
         If true, close the menu when an item is selected.
-    close_on_click : bool, default: True
+    close_on_click : bool
         If true, close the menu when a click doesn't collide with it.
     grid_rows : int
         Number of rows.
@@ -919,9 +919,9 @@ class MenuBar(GridLayout):
 
     Attributes
     ----------
-    close_on_release : bool, default: True
+    close_on_release : bool
         If true, close the menu when an item is selected.
-    close_on_click : bool, default: True
+    close_on_click : bool
         If true, close the menu when a click doesn't collide with it.
     grid_rows : int
         Number of rows.
