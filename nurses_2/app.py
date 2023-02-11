@@ -69,7 +69,7 @@ class App(ABC):
         Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable` widgets.
     asciicast_path : Path | None
         Path where asciicast recording will be saved.
-    log_file : Path | None, default: None
+    log_file : Path | None
         Path where stderr is saved.
     root : _Root | None
         Root of widget tree.
