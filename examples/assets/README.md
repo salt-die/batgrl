@@ -6,3 +6,4 @@ Asset Attribution
 * `pixel_python.png` found at http://pixelartmaker.com/art/7b0362cb47512cb.
 * `bluestone.png` and `greystone.png` come from Wolfenstein 3D and are copyright by ID Software.
 * `isometric_demo.png` is modified from the original found at [OneLoneCoder's PixelGameEngine Repo](https://github.com/OneLoneCoder/olcPixelGameEngine) and is licensed under [OLC-3](https://github.com/OneLoneCoder/olcPixelGameEngine/blob/master/LICENCE.md).
+* `fallout_terminal.png` comes from the Fallout series and is copyright by Bethesda.
