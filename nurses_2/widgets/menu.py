@@ -387,13 +387,13 @@ class Menu(GridLayout):
     orientation : Orientation, default: Orientation.LR_BT
         The orientation of the grid. Describes how the grid fills as children are added. The
         default is left-to-right then top-to-bottom.
-    left_padding : int, default: 0
+    padding_left : int, default: 0
         Padding on left side of grid.
-    right_padding : int, default: 0
+    padding_right : int, default: 0
         Padding on right side of grid.
-    top_padding : int, default: 0
+    padding_top : int, default: 0
         Padding at the top of grid.
-    bottom_padding : int, default: 0
+    padding_bottom : int, default: 0
         Padding at the bottom of grid.
     horizontal_spacing : int, default: 0
         Horizontal spacing between children.
@@ -448,13 +448,13 @@ class Menu(GridLayout):
         Number of columns.
     orientation : Orientation
         The orientation of the grid.
-    left_padding : int
+    padding_left : int
         Padding on left side of grid.
-    right_padding : int
+    padding_right : int
         Padding on right side of grid.
-    top_padding : int
+    padding_top : int
         Padding at the top of grid.
-    bottom_padding : int
+    padding_bottom : int
         Padding at the bottom of grid.
     horizontal_spacing : int
         Horizontal spacing between children.
