@@ -8,7 +8,14 @@ import numpy as np
 
 __all__ = "Char", "style_char", "SizeHint", "PosHint", "Rect", "Anchor", "Easing"
 
-Char = np.dtype([("char", "U1"), ("bold", "?"), ("italic", "?"), ("underline", "?"), ("strikethrough", "?")])
+Char = np.dtype([
+    ("char", "U1"),
+    ("bold", "?"),
+    ("italic", "?"),
+    ("underline", "?"),
+    ("strikethrough", "?"),
+    ("overline", "?")
+])
 """Data type of canvas arrays."""
 
 
@@ -18,6 +25,7 @@ def style_char(
     italic: bool=False,
     underline: bool=False,
     strikethrough: bool=False,
+    overline: bool=False,
 ) -> np.ndarray:
     """
     Return a zero-dimensional `Char` array.
@@ -34,8 +42,10 @@ def style_char(
         Whether char is underlined.
     strikethrough : bool, default: False
         Whether char is strikethrough.
+    overline : bool, default: False
+        Whether char is overlined.
     """
-    return np.array((char, bold, italic, underline, strikethrough), dtype=Char)
+    return np.array((char, bold, italic, underline, strikethrough, overline), dtype=Char)
 
 
 class SizeHint(NamedTuple):

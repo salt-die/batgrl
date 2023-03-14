@@ -315,6 +315,7 @@ class TextWidget(Widget):
         italic: bool=False,
         underline: bool=False,
         strikethrough: bool=False,
+        overline: bool=False,
         truncate_str: bool=False,
     ):
         """
@@ -335,6 +336,8 @@ class TextWidget(Widget):
             Whether text is underlined.
         strikethrough : bool, default: False
             Whether text is strikethrough.
+        overline : bool, default: False
+            Whether text is overlined.
         truncate_str : bool, default: False
             If false, an `IndexError` is raised if the text would not fit on canvas.
 
@@ -350,6 +353,7 @@ class TextWidget(Widget):
             italic=italic,
             underline=underline,
             strikethrough=strikethrough,
+            overline=overline,
             truncate_text=truncate_str,
         )
 

@@ -124,7 +124,9 @@ class _Root(Widget):
         write = env_out._buffer.append
 
         write("\x1b7")  # Save cursor
-        for y, x, (fr, fg, fb, br, bg, bb), (char, bold, italic, underline, strikethrough) in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
+        for y, x, color_pair, style in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
+            fr, fg, fb, br, bg, bb = color_pair
+            char, bold, italic, underline, strikethrough, overline = style
             if char == "":
                 continue
             write(
@@ -134,6 +136,7 @@ class _Root(Widget):
                 f"{'3;' if italic else ''}"
                 f"{'4;' if underline else ''}"
                 f"{'9;' if strikethrough else ''}"
+                f"{'53;' if overline else ''}"
                 f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
                 f"{char}"
             )

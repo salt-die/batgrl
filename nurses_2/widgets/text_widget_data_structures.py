@@ -16,6 +16,7 @@ def add_text(
     italic: bool=False,
     underline: bool=False,
     strikethrough: bool=False,
+    overline: bool=False,
     truncate_text: bool=False,
 ):
     """
@@ -37,6 +38,8 @@ def add_text(
         Whether text is underlined.
     strikethrough : bool, default: False
         Whether text is strikethrough.
+    overline : bool, default: False
+        Whether text is overlined.
     truncate_text : bool, default: False
         For text that doesn't fit on canvas, truncate text if true else raise an `IndexError`.
     """
@@ -63,7 +66,7 @@ def add_text(
             if width == 2 and i + 1 < columns:
                 canvas_line[i + 1] = ""
 
-            canvas_line[i] = letter, bold, italic, underline, strikethrough
+            canvas_line[i] = letter, bold, italic, underline, strikethrough, overline
             i += width
 
 
