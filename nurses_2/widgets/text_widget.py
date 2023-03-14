@@ -271,20 +271,25 @@ class TextWidget(Widget):
             Border color pair if not None.
         """
         BORDER_STYLES = dict(
-            light=  "┌┐│─└┘",
-            heavy=  "┏┓┃━┗┛",
-            double= "╔╗║═╚╝",
-            curved= "╭╮│─╰╯",
-            ascii=  "++|-++",
+            light=  "┌┐││──└┘",
+            heavy=  "┏┓┃┃━━┗┛",
+            double= "╔╗║║══╚╝",
+            curved= "╭╮││──╰╯",
+            ascii=  "++||--++",
+            outer=  "▛▜▌▐▀▄▙▟",
+            inner=  "▗▖▐▌▄▀▝▘",
         )
-        tl, tr, v, h, bl, br = BORDER_STYLES[style]
+        tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]
 
         canvas = self.canvas
-        canvas["char"][(0, 0, -1, -1), (0, -1, 0, -1)] = tl, tr, bl, br
-        canvas["bold"][(0, 0, -1, -1), (0, -1, 0, -1)] = bold
-        canvas[["italic", "underline", "strikethrough"]][(0, 0, -1, -1), (0, -1, 0, -1)] = False
-        canvas[1: -1, [0, -1]] = style_char(v, bold=bold)
-        canvas[[0, -1], 1: -1] = style_char(h, bold=bold)
+        canvas[0, 0] = style_char(tl, bold=bold)
+        canvas[0, -1] = style_char(tr, bold=bold)
+        canvas[1:-1, 0] = style_char(lv, bold=bold)
+        canvas[1:-1, -1] = style_char(rv, bold=bold)
+        canvas[0, 1:-1] = style_char(th, bold=bold)
+        canvas[-1, 1:-1] = style_char(bh, bold=bold)
+        canvas[-1, 0] = style_char(bl, bold=bold)
+        canvas[-1, -1] = style_char(br, bold=bold)
 
         if color_pair is not None:
             self.colors[[0, -1]] = color_pair

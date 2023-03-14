@@ -75,10 +75,12 @@ class Border(str, Enum):
     Border styles for :meth:`nurses_2.text_widget.TextWidget.add_border`.
 
     :class:`Borders` is one of `"light"`, `"heavy"`, `"double"`, `"curved"`,
-    `"ascii"`.
+    `"ascii"`, `"outer"`, `"inner"`.
     """
     LIGHT = "light"
     HEAVY = "heavy"
     DOUBLE = "double"
     CURVED = "curved"
     ASCII = "ascii"
+    OUTER = "outer"
+    INNER = "inner"
