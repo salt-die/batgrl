@@ -16,8 +16,8 @@ class _Root(Widget):
     """
     def __init__(
         self,
-        app: "App",
-        env_out: "Vt100_Output",
+        app,
+        env_out,
         background_char: str,
         background_color_pair: ColorPair,
     ):
