@@ -13,6 +13,12 @@ nurses\_2.widgets.slider
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Slider
+   
    
 
    
@@ -20,13 +26,4 @@ nurses\_2.widgets.slider
    
 
 
-
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :recursive:
-
-   nurses_2.widgets.slider.handle
-   nurses_2.widgets.slider.slider
 
