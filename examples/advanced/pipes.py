@@ -81,14 +81,14 @@ class Pipes(TextWidget):
             await asyncio.gather(*(self.pipe() for _ in range(self.npipes)))
 
     async def pipe(self):
-        start = monotonic()
+        end = monotonic() + 10
         sleep = .02 + random() * .05
         color = randrange(255), randrange(255), randrange(255)
         y, x = randrange(self.height), randrange(self.width)
         last_dir = randrange(4)
         pipe_chars = choice([HEAVY, CURVY])
 
-        while monotonic() < start + 10:
+        while monotonic() < end:
             self.canvas[y, x]["char"] = pipe_chars[last_dir]
             self.colors[y, x, :3] = color
             await asyncio.sleep(sleep)
