@@ -249,12 +249,7 @@ class Slider(GrabbableBehavior, TextWidget):
         self._min = min
         self._max = max
 
-        self._handle = TextWidget(
-            size=(1, 1),
-            pos_hint=(.5, None),
-            anchor="center",
-            default_color_pair=self.default_color_pair,
-        )
+        self._handle = TextWidget(size=(1, 1), pos_hint=(.5, None), anchor="center")
         self.add_widget(self._handle)
         self.handle_color_pair = handle_color_pair or self.default_color_pair
         self.handle_char = handle_char
