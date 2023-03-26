@@ -8,6 +8,9 @@ from nurses_2.widgets.slider import Slider
 
 GREEN_ON_BLACK = ColorPair.from_colors(GREEN, BLACK)
 GREEN_ON_WHITE = ColorPair.from_colors(GREEN, WHITE)
+BLUE_ON_BLACK = ColorPair.from_colors(BLUE, BLACK)
+BLUE_ON_WHITE = ColorPair.from_colors(BLUE, WHITE)
+
 
 
 class MyApp(App):
@@ -21,7 +24,7 @@ class MyApp(App):
             pos=(2, 0),
             min=0,
             max=100,
-            handle_color=BLUE,
+            handle_color_pair=BLUE_ON_BLACK,
             callback=lambda value: display.add_str(f"{round(value, 3):<10}", (0, 16)),
             fill_color=RED,
             default_color_pair=GREEN_ON_BLACK,
@@ -31,7 +34,7 @@ class MyApp(App):
             pos=(3, 0),
             min=-20,
             max=50,
-            handle_color=BLUE,
+            handle_color_pair=BLUE_ON_WHITE,
             callback=lambda value: display.add_str(f"{round(value, 3):<10}", (1, 16)),
             fill_color=RED,
             default_color_pair=GREEN_ON_WHITE,
