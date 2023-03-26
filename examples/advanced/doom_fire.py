@@ -57,7 +57,7 @@ FIRE_PALETTE = np.array([
 MAX_STRENGTH = len(FIRE_PALETTE) - 1
 SLIDER_DEFAULT = ColorPair(215, 103, 15, 0, 0, 0)
 SLIDER_FILL = Color(159, 47, 7)
-SLIDER_HANDLE = Color(239, 239, 199)
+SLIDER_HANDLE = ColorPair(239, 239, 199, 0, 0, 0)
 
 
 class DoomFire(GraphicWidget):
@@ -146,7 +146,7 @@ class DoomFireApp(App):
             callback=slider_update,
             default_color_pair=SLIDER_DEFAULT,
             fill_color=SLIDER_FILL,
-            handle_color=SLIDER_HANDLE,
+            handle_color_pair=SLIDER_HANDLE,
         )
 
         slider_container = Widget(size=(2, 38), pos_hint=(0, .5), anchor=Anchor.TOP_CENTER)
