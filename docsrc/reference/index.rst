@@ -11,9 +11,12 @@ nurses_2 Reference
    :toctree: generated
    :recursive:
 
-   app
    colors
-   data_structures
    io.input.events
    io.input.keys
    widgets
+   app
+   clamp
+   data_structures
+   easings
+   fonts
