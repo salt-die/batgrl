@@ -55,8 +55,10 @@ class ButtonBehavior:
     """
     def __init__(self, *, always_release=False, **kwargs):
         super().__init__(**kwargs)
-
         self.always_release = always_release
+
+    def on_add(self):
+        super().on_add()
         self._normal()
 
     def _normal(self):
