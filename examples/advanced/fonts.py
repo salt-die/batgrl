@@ -125,9 +125,8 @@ class DripApp(App):
         button_canvas = LITTLE_FONT.render_text(" PLAY\nAGAIN?")
         banner_canvas = BIG_FONT.render_text("YOU DIED")
 
-        h, w = button_canvas.shape
         button = TextButton(
-            size=(h, w),
+            size=button_canvas.shape,
             pos=(10, 0),
             pos_hint=(None, .5),
             anchor="center",
