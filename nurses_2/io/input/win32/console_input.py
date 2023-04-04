@@ -137,9 +137,7 @@ def events():
     """
     input_records = (INPUT_RECORD * 1024)()
 
-    windll.kernel32.ReadConsoleInputW(
-        STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0))
-    )
+    windll.kernel32.ReadConsoleInputW(STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0)))
 
     for ir in input_records:
         match ev := getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
