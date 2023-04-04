@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.text_widget &#8212; Python 0.18.8 documentation</title>
+    <title>nurses_2.widgets.text_widget &#8212; Python 0.18.9 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.18.8 documentation</p>
+    <p class="title logo__title">Python 0.18.9 documentation</p>
   
 </a>
     
@@ -718,67 +718,70 @@ widget is not transparent.</p>
 <tr class="row-odd"><td><p><strong>add_str:</strong></p></td>
 <td><p>Add a single line of text to the canvas.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_size:</strong></p></td>
+<tr class="row-even"><td><p><strong>set_text:</strong></p></td>
+<td><p>Resize widget to fit text, erase canvas, then fill canvas with text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_size:</strong></p></td>
 <td><p>Called when widget is resized.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>apply_hints:</strong></p></td>
+<tr class="row-even"><td><p><strong>apply_hints:</strong></p></td>
 <td><p>Apply size and pos hints.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>to_local:</strong></p></td>
+<tr class="row-odd"><td><p><strong>to_local:</strong></p></td>
 <td><p>Convert point in absolute coordinates to local coordinates.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>collides_point:</strong></p></td>
+<tr class="row-even"><td><p><strong>collides_point:</strong></p></td>
 <td><p>True if point is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>collides_widget:</strong></p></td>
+<tr class="row-odd"><td><p><strong>collides_widget:</strong></p></td>
 <td><p>True if other is within widget’s bounding box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>add_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>add_widget:</strong></p></td>
 <td><p>Add a child widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>add_widgets:</strong></p></td>
+<tr class="row-odd"><td><p><strong>add_widgets:</strong></p></td>
 <td><p>Add multiple child widgets.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>remove_widget:</strong></p></td>
+<tr class="row-even"><td><p><strong>remove_widget:</strong></p></td>
 <td><p>Remove a child widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>pull_to_front:</strong></p></td>
+<tr class="row-odd"><td><p><strong>pull_to_front:</strong></p></td>
 <td><p>Move to end of widget stack so widget is drawn last.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>walk_from_root:</strong></p></td>
+<tr class="row-even"><td><p><strong>walk_from_root:</strong></p></td>
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>walk:</strong></p></td>
+<tr class="row-odd"><td><p><strong>walk:</strong></p></td>
 <td><p>Yield all descendents (or ancestors if <cite>reverse</cite> is True).</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
+<tr class="row-even"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>unsubscribe:</strong></p></td>
+<tr class="row-odd"><td><p><strong>unsubscribe:</strong></p></td>
 <td><p>Unsubscribe to a widget property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_key:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_key:</strong></p></td>
 <td><p>Handle key press event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_mouse:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_mouse:</strong></p></td>
 <td><p>Handle mouse event.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_paste:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_paste:</strong></p></td>
 <td><p>Handle paste event.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>tween:</strong></p></td>
+<tr class="row-odd"><td><p><strong>tween:</strong></p></td>
 <td><p>Sequentially update a widget property over time.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>on_add:</strong></p></td>
+<tr class="row-even"><td><p><strong>on_add:</strong></p></td>
 <td><p>Called after a widget is added to widget tree.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>on_remove:</strong></p></td>
+<tr class="row-odd"><td><p><strong>on_remove:</strong></p></td>
 <td><p>Called before widget is removed from widget tree.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>prolicide:</strong></p></td>
+<tr class="row-even"><td><p><strong>prolicide:</strong></p></td>
 <td><p>Recursively remove all children.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>destroy:</strong></p></td>
+<tr class="row-odd"><td><p><strong>destroy:</strong></p></td>
 <td><p>Destroy this widget and all descendents.</p></td>
 </tr>
 </tbody>
@@ -837,7 +840,7 @@ from the right or bottom of canvas (like negative indices).</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_widget.add_text</span></code></dt><dd><p>Add multiple lines of text on an arbitrary <cite>numpy.ndarray</cite> or view.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_widget.add_text</span></code></dt><dd><p>Add multiple lines of text to a view of a canvas.</p>
 </dd>
 </dl>
 </div>
@@ -1093,6 +1096,37 @@ empty characters are placed after each full-width character.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.text_widget.TextWidget.rows">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.text_widget.TextWidget.rows" title="Permalink to this definition">#</a></dt>
 <dd><p>Height of widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.text_widget.TextWidget.set_text">
+<span class="sig-name descname"><span class="pre">set_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_widget.TextWidget.set_text" title="Permalink to this definition">#</a></dt>
+<dd><p>Resize widget to fit text, erase canvas, then fill canvas with text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
+</dd>
+<dt><strong>bold</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is bold.</p>
+</dd>
+<dt><strong>italic</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is italic.</p>
+</dd>
+<dt><strong>underline</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is underlined.</p>
+</dd>
+<dt><strong>strikethrough</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is strikethrough.</p>
+</dd>
+<dt><strong>overline</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether text is overlined.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_widget.add_text</span></code></dt><dd><p>Add multiple lines of text to a view of a canvas.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py property">

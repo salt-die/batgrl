@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.text_widget_data_structures &#8212; Python 0.18.8 documentation</title>
+    <title>nurses_2.widgets.text_widget_data_structures &#8212; Python 0.18.9 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.18.8 documentation</p>
+    <p class="title logo__title">Python 0.18.9 documentation</p>
   
 </a>
     
@@ -563,7 +563,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.text_widget_data_structures.add_text" title="nurses_2.widgets.text_widget_data_structures.add_text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_text</span></code></a>(canvas, text, *[, bold, italic, ...])</p></td>
-<td><p>Add multiline text to a <cite>numpy.ndarray</cite> or view.</p></td>
+<td><p>Add multiple lines of text to a view of a canvas.</p></td>
 </tr>
 </tbody>
 </table>
@@ -626,12 +626,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_widget_data_structures.add_text">
 <span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.text_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">add_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">canvas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">italic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">underline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strikethrough</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncate_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_widget_data_structures.add_text" title="Permalink to this definition">#</a></dt>
-<dd><p>Add multiline text to a <cite>numpy.ndarray</cite> or view.</p>
+<dd><p>Add multiple lines of text to a view of a canvas.</p>
 <p>Text is added starting at first index in canvas. Every new line is added on a new row.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>canvas</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>A 1- or 2-dimensional numpy array of python strings.</p>
+<dt><strong>canvas</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>A 1- or 2-dimensional view of a <cite>TextWidget</cite> canvas.</p>
 </dd>
 <dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
 </dd>
