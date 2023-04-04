@@ -64,7 +64,7 @@ def add_text(
             if width == 0:
                 continue
             if width == 2 and i + 1 < columns:
-                canvas_line[i + 1] = ""
+                canvas_line[i + 1] = "", bold, italic, underline, strikethrough, overline
 
             canvas_line[i] = letter, bold, italic, underline, strikethrough, overline
             i += width
