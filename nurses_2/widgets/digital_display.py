@@ -4,7 +4,7 @@ A 7x8 14-segment (plus decimal point) display widget.
 import numpy as np
 
 from ..colors import Color, ColorPair, BLACK
-from .text_widget import TextWidget, Size
+from .text_widget import TextWidget
 
 DIM_GREEN = Color.from_hex("062b0f")
 BRIGHT_GREEN = Color.from_hex("33e860")
@@ -311,6 +311,8 @@ class DigitalDisplay(TextWidget):
         Ensure column width of text in the canvas is equal to widget width.
     add_str:
         Add a single line of text to the canvas.
+    set_text:
+        Resize widget to fit text, erase canvas, then fill canvas with text.
     on_size:
         Called when widget is resized.
     apply_hints:

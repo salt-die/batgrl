@@ -161,6 +161,8 @@ class TextWidget(Widget):
         Ensure column width of text in the canvas is equal to widget width.
     add_str:
         Add a single line of text to the canvas.
+    set_text:
+        Resize widget to fit text, erase canvas, then fill canvas with text.
     on_size:
         Called when widget is resized.
     apply_hints:
@@ -348,7 +350,7 @@ class TextWidget(Widget):
 
         See Also
         --------
-        text_widget.add_text : Add multiple lines of text on an arbitrary `numpy.ndarray` or view.
+        text_widget.add_text : Add multiple lines of text to a view of a canvas.
         """
         y, x = pos
         add_text(
@@ -360,6 +362,53 @@ class TextWidget(Widget):
             strikethrough=strikethrough,
             overline=overline,
             truncate_text=truncate_str,
+        )
+
+    def set_text(
+        self,
+        text: str,
+        *,
+        bold: bool=False,
+        italic: bool=False,
+        underline: bool=False,
+        strikethrough: bool=False,
+        overline: bool=False,
+    ):
+        """
+        Resize widget to fit text, erase canvas, then fill canvas with text.
+
+        Parameters
+        ----------
+        text : str
+            Text to add to canvas.
+        bold : bool, default: False
+            Whether text is bold.
+        italic : bool, default: False
+            Whether text is italic.
+        underline : bool, default: False
+            Whether text is underlined.
+        strikethrough : bool, default: False
+            Whether text is strikethrough.
+        overline : bool, default: False
+            Whether text is overlined.
+
+        See Also
+        --------
+        text_widget.add_text : Add multiple lines of text to a view of a canvas.
+        """
+        lines = text.splitlines()
+        height = len(lines)
+        width = max(map(wcswidth, lines), default=0)
+        self.size = height, width
+        self.canvas[:] = style_char(self.default_char)
+        add_text(
+            self.canvas,
+            text,
+            bold=bold,
+            italic=italic,
+            underline=underline,
+            strikethrough=strikethrough,
+            overline=overline,
         )
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):

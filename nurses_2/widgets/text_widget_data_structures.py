@@ -20,14 +20,14 @@ def add_text(
     truncate_text: bool=False,
 ):
     """
-    Add multiline text to a `numpy.ndarray` or view.
+    Add multiple lines of text to a view of a canvas.
 
     Text is added starting at first index in canvas. Every new line is added on a new row.
 
     Parameters
     ----------
     canvas : numpy.ndarray
-        A 1- or 2-dimensional numpy array of python strings.
+        A 1- or 2-dimensional view of a `TextWidget` canvas.
     text : str
         Text to add to canvas.
     bold : bool, default: False

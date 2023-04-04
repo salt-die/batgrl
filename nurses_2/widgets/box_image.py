@@ -152,6 +152,8 @@ class BoxImage(TextWidget):
         Ensure column width of text in the canvas is equal to widget width.
     add_str:
         Add a single line of text to the canvas.
+    set_text:
+        Resize widget to fit text, erase canvas, then fill canvas with text.
     on_size:
         Called when widget is resized.
     apply_hints:
