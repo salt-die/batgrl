@@ -24,6 +24,7 @@ import re
 import zipfile
 
 import numpy as np
+from wcwidth import wcswidth, wcwidth
 
 __all__ = "FullLayout", "FIGFont",
 
@@ -242,15 +243,28 @@ class FIGFont:
         height = figinfo["height"]
 
         def consume_char() -> np.ndarray | None:
-            char_lines = list(ENDMARKS_RE.sub("", line) for line in islice(it, height))
+            char_lines = [ENDMARKS_RE.sub("", line) for line in islice(it, height)]
             if len(char_lines) < height:
                 return None
 
-            width = max(len(line) for line in char_lines)
+            width = max(wcswidth(line) for line in char_lines)
+            if width < 0:
+                return None
 
             char = np.full((height, width), " ")
             for i, line in enumerate(char_lines):
-                char[i, :len(line)] = list(line)
+                j = 0
+                for subchar in line:
+                    cwidth = wcwidth(subchar)
+                    if cwidth == 0:
+                        continue
+
+                    char[i, j] = subchar
+
+                    if cwidth == 2:
+                        char[i, j + 1] = ""
+
+                    j += cwidth
 
             return char
 
@@ -286,7 +300,7 @@ class FIGFont:
         """
         Height of characters in this font.
         """
-        return next(iter(self.font.values())).shape[0]
+        return next(v for v in self.font.values() if v is not None).shape[0]
 
     def print(self, text: str):
         """
