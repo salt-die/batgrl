@@ -3,22 +3,16 @@ Parse and create events for each input record from a win32 console.
 """
 from collections import OrderedDict
 
-try:
-    from ctypes.wintypes import DWORD
-    from ctypes import byref, windll
-    from ...win32_types import (
-        INPUT_RECORD,
-        KEY_EVENT_RECORD,
-        MOUSE_EVENT_RECORD,
-        STD_INPUT_HANDLE,
-        WINDOW_BUFFER_SIZE_RECORD,
-        EventTypes,
-    )
-except ModuleNotFoundError:
-    # Assign arbitrary types so file is importable on linux for auto-documentation.
-    DWORD = type(None)
-    KEY_EVENT_RECORD = type(None)
-    MOUSE_EVENT_RECORD = type(None)
+from ctypes.wintypes import DWORD
+from ctypes import byref, windll
+from ...win32_types import (
+    INPUT_RECORD,
+    KEY_EVENT_RECORD,
+    MOUSE_EVENT_RECORD,
+    STD_INPUT_HANDLE,
+    WINDOW_BUFFER_SIZE_RECORD,
+    EventTypes,
+)
 
 from ....data_structures import Point, Size
 from ..events import (

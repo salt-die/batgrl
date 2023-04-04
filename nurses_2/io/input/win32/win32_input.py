@@ -4,19 +4,15 @@ Win32 Input.
 from asyncio import get_event_loop
 from contextlib import contextmanager
 
-try:
-    from ctypes import byref, windll
-    from ctypes.wintypes import BOOL, DWORD, HANDLE
+from ctypes import byref, windll
+from ctypes.wintypes import BOOL, DWORD, HANDLE
 
-    from ...win32_types import STD_INPUT_HANDLE, SECURITY_ATTRIBUTES
-    from .console_input import events
-except ModuleNotFoundError:
-    # This file needs to be importable on linux for auto-documentation.
-    pass
+from ...win32_types import STD_INPUT_HANDLE, SECURITY_ATTRIBUTES
+from .console_input import events
 
 __all__ = (
     "attach",
-    "raw_input",
+    "raw_mode",
     "events",
 )
 

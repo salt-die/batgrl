@@ -6,12 +6,8 @@ import os
 import signal
 import sys
 
-try:
-    import termios
-    import tty
-except ModuleNotFoundError:
-    # This file needs to be importable on windows for auto-documentation.
-    pass
+import termios
+import tty
 
 from contextlib import contextmanager
 
