@@ -3,7 +3,7 @@ Support for loading and rendering text with FIGfonts.
 
 A FIGfont is a file which describes how to render ascii art from
 normal text. `FIGFont.render_text` will render the ascii art into a numpy
-array that can be copied into a `nurses_2` canvas. Use `FIGFont.print`
+array that can be copied into a `TextWidget` canvas. Use `FIGFont.print`
 to preview the rendered text in stdout.
 
 References:
@@ -429,7 +429,7 @@ class FIGFont:
             if b in low and a in high:
                 return a
 
-        ab = a + b
+        ab = b + a if self.reverse_text else a + b
         if self.layout & FullLayout.Pair and ab in {"[]", "][", "()", ")(", "{}", "}{"}:
             return "|"
 
