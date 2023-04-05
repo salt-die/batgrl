@@ -64,7 +64,7 @@ class GridLayout(Widget):
         Number of rows.
     grid_columns : int, default: 1
         Number of columns.
-    orientation : Orientation, default: Orientation.LR_BT
+    orientation : Orientation, default: Orientation.LR_TB
         The orientation of the grid. Describes how the grid fills as children are added. The
         default is left-to-right then top-to-bottom.
     padding_left : int, default: 0
@@ -282,7 +282,7 @@ class GridLayout(Widget):
         grid_rows: int=1,
         grid_columns: int=1,
         *,
-        orientation: Orientation=Orientation.LR_BT,
+        orientation: Orientation=Orientation.LR_TB,
         padding_left: int=0,
         padding_right: int=0,
         padding_top: int=0,
