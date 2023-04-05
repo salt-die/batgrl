@@ -10,6 +10,7 @@ from nurses_2.widgets.widget import Widget
 
 COLUMNS = 2
 
+
 class SpinnersApp(App):
     async def on_start(self):
         sv = ScrollView(
