@@ -51,6 +51,7 @@
    nurses_2.widgets.shadow_caster
    nurses_2.widgets.slider
    nurses_2.widgets.split_layout
+   nurses_2.widgets.text_animation
    nurses_2.widgets.text_field
    nurses_2.widgets.text_pad
    nurses_2.widgets.text_panel
