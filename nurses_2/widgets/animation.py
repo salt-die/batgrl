@@ -87,6 +87,10 @@ class Animation(Widget):
 
     Attributes
     ----------
+    frames : list[Image]
+        Frames of the animation.
+    frame_durations : list[int | float]
+        Time each frame is displayed.
     loop : bool
         If true, animation is restarted after last frame.
     reverse : bool
