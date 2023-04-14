@@ -5,13 +5,13 @@ import cv2
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import rainbow_gradient
+from nurses_2.colors import Color
+from nurses_2.easings import lerp
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.image import Image
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BACKGROUND = ASSETS / "loudypixelsky.png"
-RAINBOW = rainbow_gradient(12)
 POINTS = np.array([
     [-1, -1, -1],
     [-1, -1,  1],
@@ -26,7 +26,11 @@ LINES = [
     [0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3],
     [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7],
 ]
-RADIUS = 3**.5  # The cube of points is inscribed in a circle with this radius
+R, G, B = Color.from_hex("4ce05d")
+RADIUS = 3**.5 # The cube of points is inscribed in a circle with this radius
+DIAMETER = 2 * RADIUS
+MIN_BRIGHTNESS = .15
+MAX_BRIGHTNESS = 1.0
 
 def rotate_x(theta):
     cos = np.cos(theta)
@@ -58,6 +62,11 @@ def rotate_z(theta):
         [   0,   0, 1],
     ])
 
+def darken(depth):
+    normalized_depth = (depth + RADIUS) / DIAMETER
+    brightness = lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, normalized_depth)
+    return int(brightness * R), int(brightness * G), int(brightness * B), 255
+
 
 class SpinningCube(GraphicWidget):
     def on_add(self):
@@ -71,6 +80,7 @@ class SpinningCube(GraphicWidget):
     async def spin_forever(self):
         x_angle = y_angle = z_angle = 0
 
+
         while True:
             self.texture[:] = self.default_color
 
@@ -83,18 +93,14 @@ class SpinningCube(GraphicWidget):
             depths = points[:, 2]
 
             lines = []
-            for (a, b), (r, g, bl) in zip(LINES, RAINBOW):
-                # Darkness of the line will depend on its depth.
-                average_depth = (depths[a] + depths[b]) / 2
-                normalized_depth = (average_depth + RADIUS) / (2 * RADIUS)
-                min_darkness = .15
-                darkness = min_darkness + normalized_depth * (1 - min_darkness)
-                new_color = int(darkness * r), int(darkness * g), int(darkness * bl), 255
+            for a, b in LINES:
+                depth = (depths[a] + depths[b]) / 2
+
                 lines.append((
                     points_2D[a],
                     points_2D[b],
-                    new_color,
-                    darkness,
+                    darken(depth),
+                    depth,
                 ))
             lines.sort(key=lambda p: p[3])
 
