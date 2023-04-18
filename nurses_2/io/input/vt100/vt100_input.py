@@ -32,7 +32,7 @@ def attach(callback):
     loop = asyncio.get_event_loop()
     loop.add_reader(stdin, callback)
 
-    def on_resize(signum, stack):
+    def on_resize(*_):
         w, h = os.get_terminal_size()
         _EVENTS.append(Size(h, w))
         loop.call_soon_threadsafe(callback)
@@ -50,29 +50,24 @@ def attach(callback):
 def raw_mode():
     stdin = sys.stdin.fileno()
     attrs_before = termios.tcgetattr(stdin)
+    attrs_raw = termios.tcgetattr(stdin)
+    attrs_raw[tty.LFLAG] &= ~(
+        termios.ECHO
+        | termios.ICANON
+        | termios.IEXTEN
+        | termios.ISIG
+    )
+    attrs_raw[tty.IFLAG] &= ~(
+        termios.IXON
+        | termios.IXOFF
+        | termios.ICRNL
+        | termios.INLCR
+        | termios.IGNCR
+    )
+    attrs_raw[tty.CC][termios.VMIN] = 1
 
     try:
-        attrs_raw = termios.tcgetattr(stdin)
-
-        attrs_raw[tty.LFLAG] &= ~(
-            termios.ECHO
-            | termios.ICANON
-            | termios.IEXTEN
-            | termios.ISIG
-        )
-
-        attrs_raw[tty.IFLAG] &= ~(
-            termios.IXON
-            | termios.IXOFF
-            | termios.ICRNL
-            | termios.INLCR
-            | termios.IGNCR
-        )
-
-        attrs_raw[tty.CC][termios.VMIN] = 1
-
         termios.tcsetattr(stdin, termios.TCSANOW, attrs_raw)
-
         yield
 
     finally:
