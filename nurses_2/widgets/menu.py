@@ -25,7 +25,7 @@ NESTED_SUFFIX = " ▶"
 CHECK_OFF = "□"
 CHECK_ON = "▣"
 
-def nargs(callable: Callable):
+def nargs(callable: Callable) -> int:
     """
     Return the number of arguments of `callable`.
     """
