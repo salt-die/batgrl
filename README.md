@@ -1,4 +1,4 @@
-# nurses_2 - Terminal Graphics
+# nurses_2 - terminal graphics
 
 A widgetful and async-centric library for creating graphical applications in the terminal.
 
