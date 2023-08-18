@@ -79,6 +79,9 @@ class FocusBehavior:
         """
         Focus widget.
         """
+        if not self.is_enabled:
+            return
+
         ancestors = WeakSet(
             ancestor
             for ancestor in self.walk(reverse=True)
