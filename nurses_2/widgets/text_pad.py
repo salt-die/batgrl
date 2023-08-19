@@ -1,3 +1,6 @@
+"""
+A text-pad widget for multiline editable text.
+"""
 from wcwidth import wcswidth
 
 from ..clamp import clamp

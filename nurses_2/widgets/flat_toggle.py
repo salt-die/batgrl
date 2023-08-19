@@ -1,3 +1,6 @@
+"""
+An animated toggle button widget.
+"""
 import asyncio
 
 from collections.abc import Callable, Hashable

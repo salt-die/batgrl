@@ -1,8 +1,9 @@
-from wcwidth import wcswidth
-
+"""
+A widget for static multi-line text.
+"""
 from ..clamp import clamp
 from .behaviors.themable import Themable
-from .text_widget import TextWidget, add_text
+from .text_widget import TextWidget
 from .widget import Widget, Size
 
 # TODO: Set text with limited markdown.

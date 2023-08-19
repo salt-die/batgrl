@@ -1,3 +1,6 @@
+"""
+A video player that renders to braille unicode characters in grayscale.
+"""
 import asyncio
 import atexit
 import time

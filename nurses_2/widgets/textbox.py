@@ -1,3 +1,6 @@
+"""
+A textbox widget for single-line editable text.
+"""
 from collections.abc import Callable
 
 from wcwidth import wcswidth
