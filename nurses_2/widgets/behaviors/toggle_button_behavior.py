@@ -1,17 +1,13 @@
 """
 Toggle button behavior for a widget.
 """
-from enum import Enum
 from collections.abc import Hashable
+from enum import Enum
 from weakref import WeakValueDictionary
 
 from .button_behavior import ButtonBehavior, ButtonState
 
-__all__ = (
-    "ButtonState",
-    "ToggleState",
-    "ToggleButtonBehavior",
-)
+__all__ = "ButtonState", "ToggleState", "ToggleButtonBehavior"
 
 
 class ToggleState(str, Enum):
