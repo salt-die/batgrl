@@ -56,6 +56,7 @@ class ButtonBehavior:
     def __init__(self, *, always_release=False, **kwargs):
         super().__init__(**kwargs)
         self.always_release = always_release
+        self.state = ButtonState.NORMAL
 
     def on_add(self):
         super().on_add()
