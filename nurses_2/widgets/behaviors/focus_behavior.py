@@ -15,15 +15,8 @@ class FocusBehavior:
     or by clicking on them. When a widget is focused, all focusable ancestors
     also gain focus.
 
-    Parameters
-    ----------
-    ptf_on_focus : bool, default: True
-        Pull widget to front when it gains focus.
-
     Attributes
     ----------
-    ptf_on_focus : bool
-        Pull widget to front when it gains focus.
     is_focused : bool
         Return True if widget has focus.
     any_focused : bool
@@ -47,8 +40,7 @@ class FocusBehavior:
     __focus_widgets: deque[ReferenceType] = deque()
     __focused = WeakSet()
 
-    def __init__(self, ptf_on_focus=True, **kwargs):
-        self.ptf_on_focus = ptf_on_focus
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def on_add(self):
@@ -96,9 +88,6 @@ class FocusBehavior:
             blurred.on_blur()
 
         for needs_focus in ancestors - focused:
-            if needs_focus.ptf_on_focus:
-                needs_focus.pull_to_front()
-
             needs_focus.on_focus()
 
         focus_widgets = FocusBehavior.__focus_widgets

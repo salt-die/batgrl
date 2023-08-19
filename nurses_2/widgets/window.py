@@ -52,8 +52,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     ----------
     title : str, default: ""
         Title of window.
-    ptf_on_focus : bool, default: True
-        Pull widget to front when it gains focus.
     allow_vertical_resize : bool, default: True
         Allow vertical resize.
     allow_horizontal_resize : bool, default: True
@@ -118,8 +116,6 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
         The windowed widget.
     title : str
         Title of window.
-    ptf_on_focus : bool
-        Pull widget to front when it gains focus.
     is_focused : bool
         Return True if widget has focus.
     any_focused : bool
@@ -382,6 +378,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
     def on_focus(self):
         self.update_theme()
+        self.pull_to_front()
 
     def on_blur(self):
         self.update_theme()

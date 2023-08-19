@@ -21,8 +21,6 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
     Parameters
     ----------
-    ptf_on_focus : bool, default: True
-        Pull widget to front when it gains focus.
     allow_vertical_scroll : bool, default: True
         Allow vertical scrolling.
     allow_horizontal_scroll : bool, default: True
@@ -86,8 +84,6 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     ----------
     text : str
         The textpad's text.
-    ptf_on_focus : bool
-        Pull widget to front when it gains focus.
     is_focused : bool
         Return True if widget has focus.
     any_focused : bool
