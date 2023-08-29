@@ -14,6 +14,10 @@ class TextParticleField(Widget):
     """
     A text particle field.
 
+    A particle field specializes in rendering many single "pixel" children by
+    setting particle positions, chars, and color pairs. This is more efficient than
+    rendering many 1x1 widgets.
+
     Parameters
     ----------
     particle_positions : np.ndarray | None=None, default: None
@@ -225,12 +229,18 @@ class TextParticleField(Widget):
         return len(self.particle_positions)
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        if not self.is_transparent:
+            if self.background_char is not None:
+                canvas_view[:] = style_char(self.background_char)
+
+            if self.background_color_pair is not None:
+                colors_view[:] = self.background_color_pair
+
         vert_slice, hori_slice = source
         t = vert_slice.start
         h = vert_slice.stop - t
         l = hori_slice.start
         w = hori_slice.stop - l
-
         pos = self.particle_positions - (t, l)
         where_inbounds = np.nonzero((((0, 0) <= pos) & (pos < (h, w))).all(axis=1))
         local_ys, local_xs = pos[where_inbounds].T
