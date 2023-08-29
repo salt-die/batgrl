@@ -639,18 +639,18 @@ to preview the rendered text in stdout.</p>
 <p class="rubric">Methods</p>
 <table class="table">
 <colgroup>
-<col style="width: 24%" />
-<col style="width: 76%" />
+<col style="width: 26%" />
+<col style="width: 74%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>from_path:</strong></p></td>
 <td><p>Load a FIGFont from a path.</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>render_text:</strong></p></td>
-<td><p>Render given text as ascii art in a 2D numpy array.</p></td>
+<tr class="row-even"><td><p><strong>render_array:</strong></p></td>
+<td><p>Render text as ascii art into a 2D “&lt;U1” ndarray.</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>print:</strong></p></td>
-<td><p>Print rendered text.</p></td>
+<tr class="row-odd"><td><p><strong>render_str:</strong></p></td>
+<td><p>Render text as ascii art into a multiline string.</p></td>
 </tr>
 </tbody>
 </table>
@@ -697,21 +697,15 @@ to preview the rendered text in stdout.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.print">
-<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.fonts.FIGFont.print" title="Permalink to this definition">#</a></dt>
-<dd><p>Print rendered text.</p>
+<dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.render_array">
+<span class="sig-name descname"><span class="pre">render_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.fonts.FIGFont.render_array" title="Permalink to this definition">#</a></dt>
+<dd><p>Render text as ascii art into a 2D “&lt;U1” ndarray.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.render_line">
-<span class="sig-name descname"><span class="pre">render_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.fonts.FIGFont.render_line" title="Permalink to this definition">#</a></dt>
-<dd><p>Render a single line of text.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.render_text">
-<span class="sig-name descname"><span class="pre">render_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.fonts.FIGFont.render_text" title="Permalink to this definition">#</a></dt>
-<dd><p>Render given text as ascii art in a 2D numpy array.</p>
+<dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.render_str">
+<span class="sig-name descname"><span class="pre">render_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#nurses_2.fonts.FIGFont.render_str" title="Permalink to this definition">#</a></dt>
+<dd><p>Render text as ascii art into a multiline string.</p>
 </dd></dl>
 
 <dl class="py attribute">
