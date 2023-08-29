@@ -122,8 +122,8 @@ class TextButton(ButtonBehavior, TextWidget):
 
 class DripApp(App):
     async def on_start(self):
-        button_canvas = LITTLE_FONT.render_text(" PLAY\nAGAIN?")
-        banner_canvas = BIG_FONT.render_text("YOU DIED")
+        button_canvas = LITTLE_FONT.render_array(" PLAY\nAGAIN?")
+        banner_canvas = BIG_FONT.render_array("YOU DIED")
 
         button = TextButton(
             size=button_canvas.shape,

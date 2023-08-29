@@ -153,12 +153,11 @@ class FIGFont:
     from_path:
         Load a FIGFont from a path.
 
-    render_text:
-        Render given text as ascii art in a 2D numpy array.
+    render_array:
+        Render text as ascii art into a 2D "<U1" ndarray.
 
-    print:
-        Print rendered text.
-
+    render_str:
+        Render text as ascii art into a multiline string.
     """
 
     hardblank: str = "$"
@@ -302,69 +301,6 @@ class FIGFont:
         """
         return next(v for v in self.font.values() if v is not None).shape[0]
 
-    def print(self, text: str):
-        """
-        Print rendered text.
-        """
-        print("\n".join("".join(line) for line in self.render_text(text)))
-
-    def render_text(self, text: str) -> np.ndarray:
-        """
-        Render given text as ascii art in a 2D numpy array.
-        """
-        lines = list(map(self.render_line, text.splitlines()))
-        max_width = max(line.shape[1] for line in lines)
-        for i, line in enumerate(lines):
-            if line.shape[1] != max_width:
-                lines[i] = np.pad(
-                    line,
-                    ((0, 0), (0, max_width - line.shape[1])),
-                    constant_values=" ",
-                )
-
-        # TODO: Add vertical smushing.
-
-        return np.concatenate(lines, axis=0)
-
-    def render_line(self, line: str) -> np.ndarray:
-        """
-        Render a single line of text.
-        """
-        buffer, prev_char_width = np.zeros((self.height, 0), dtype=str), 0
-        for char in line:
-            buffer, prev_char_width = self._add_char(buffer, prev_char_width, char)
-
-        buffer[buffer == self.hardblank] = " "
-        return buffer
-
-    def _add_char(self, buffer: np.ndarray, prev_char_width: int, char: str) -> tuple[np.ndarray, int]:
-        """
-        Add a character to the line buffer.
-        """
-        fig_char = self.font.get(char, self.font.get("\x00"))
-        if fig_char is None:
-            return buffer, 0
-        else:
-            fig_char = fig_char.copy()
-
-        if self.layout:
-            fig_char = self._trim_char(fig_char)
-        current_char_width = fig_char.shape[1]
-        a, b = (fig_char, buffer) if self.reverse_text else (buffer, fig_char)
-
-        # If characters are wide enough and any smushing rule (controlled or universal) is enabled,
-        # attempt to smush the last column of a with the first column of b.
-        if (
-            prev_char_width >= 2 and
-            current_char_width >= 2 and
-            self.layout & 191 and
-            (c := self._smush(a[:, -1], b[:, 0]))
-        ):
-            a[:, -1] = c
-            b = b[:, 1:]
-
-        return np.concatenate((a, b), axis=1), current_char_width
-
     def _trim_char(self, fig_char: np.ndarray) -> np.ndarray:
         """
         Remove leading and trailing whitespace.
@@ -376,19 +312,6 @@ class FIGFont:
             fig_char = fig_char[:, :-1]
 
         return fig_char
-
-    def _smush(self, a: np.ndarray, b: np.ndarray) -> list[str] | None:
-        """
-        Attempt to smush two columns of sub-characters. If smushing
-        fails, return None, else return the smushed column as a list of characters.
-        """
-        c = []
-        for sub_a, sub_b in zip(a, b):
-            if sub_c := self._smush_subchar(sub_a, sub_b):
-                c.append(sub_c)
-            else:
-                return
-        return c
 
     def _smush_subchar(self, a: str, b: str) -> str | None:
         """
@@ -454,3 +377,79 @@ class FIGFont:
                 return "Y"
             if ab == "><":
                 return "X"
+
+    def _smush(self, a: np.ndarray, b: np.ndarray) -> list[str] | None:
+        """
+        Attempt to smush two columns of sub-characters. If smushing
+        fails, return None, else return the smushed column as a list of characters.
+        """
+        c = []
+        for sub_a, sub_b in zip(a, b):
+            if sub_c := self._smush_subchar(sub_a, sub_b):
+                c.append(sub_c)
+            else:
+                return
+        return c
+
+    def _add_char(self, buffer: np.ndarray, prev_char_width: int, char: str) -> tuple[np.ndarray, int]:
+        """
+        Add a character to the line buffer.
+        """
+        fig_char = self.font.get(char, self.font.get("\x00"))
+        if fig_char is None:
+            return buffer, 0
+        else:
+            fig_char = fig_char.copy()
+
+        if self.layout:
+            fig_char = self._trim_char(fig_char)
+        current_char_width = fig_char.shape[1]
+        a, b = (fig_char, buffer) if self.reverse_text else (buffer, fig_char)
+
+        # If characters are wide enough and any smushing rule (controlled or universal) is enabled,
+        # attempt to smush the last column of a with the first column of b.
+        if (
+            prev_char_width >= 2 and
+            current_char_width >= 2 and
+            self.layout & 191 and
+            (c := self._smush(a[:, -1], b[:, 0]))
+        ):
+            a[:, -1] = c
+            b = b[:, 1:]
+
+        return np.concatenate((a, b), axis=1), current_char_width
+
+    def _render_line(self, line: str) -> np.ndarray:
+        """
+        Render a single line of text.
+        """
+        buffer, prev_char_width = np.zeros((self.height, 0), dtype=str), 0
+        for char in line:
+            buffer, prev_char_width = self._add_char(buffer, prev_char_width, char)
+
+        buffer[buffer == self.hardblank] = " "
+        return buffer
+
+    def render_array(self, text: str) -> np.ndarray:
+        """
+        Render text as ascii art into a 2D "<U1" ndarray.
+        """
+        lines = list(map(self._render_line, text.splitlines()))
+        max_width = max(line.shape[1] for line in lines)
+        for i, line in enumerate(lines):
+            if line.shape[1] != max_width:
+                lines[i] = np.pad(
+                    line,
+                    ((0, 0), (0, max_width - line.shape[1])),
+                    constant_values=" ",
+                )
+
+        # TODO: Add vertical smushing.
+
+        return np.concatenate(lines, axis=0)
+
+    def render_str(self, text: str) -> str:
+        """
+        Render text as ascii art into a multiline string.
+        """
+        return "\n".join("".join(line) for line in self.render_text(text))
