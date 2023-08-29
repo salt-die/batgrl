@@ -68,8 +68,8 @@ class Parallax(Widget):
         will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
-    is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+    is_transparent : bool, default: True
+        If false, :attr:`alpha` and alpha channels are ignored.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -219,15 +219,16 @@ class Parallax(Widget):
         speeds: Sequence[float] | None=None,
         alpha: float=1.0,
         interpolation: Interpolation=Interpolation.LINEAR,
+        is_transparent: bool=True,
         **kwargs
     ):
-        super().__init__(**kwargs)
-
         if path is None:
             self.layers = []
         else:
             paths = sorted(path.iterdir(), key=lambda file: file.name)
-            self.layers = [Image(path=path, size=self.size) for path in paths]
+            self.layers = [Image(path=path) for path in paths]
+
+        super().__init__(is_transparent=True, **kwargs)
 
         self.speeds = _check_layer_speeds(self.layers, speeds)
         self.alpha = alpha
@@ -241,7 +242,23 @@ class Parallax(Widget):
         self._otextures = [layer.texture for layer in self.layers]
 
     @property
+    def is_transparent(self) -> bool:
+        """
+        If false, `alpha` and alpha channels are ignored.
+        """
+        return self._is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, transparent: bool):
+        self._is_transparent = transparent
+        for layer in self.layers:
+            layer.is_transparent = True
+
+    @property
     def alpha(self) -> float:
+        """
+        Transparency of widget if :attr:`is_transparent` is true.
+        """
         return self._alpha
 
     @alpha.setter
@@ -253,6 +270,9 @@ class Parallax(Widget):
 
     @property
     def interpolation(self) -> Interpolation:
+        """
+        Interpolation used when widget is resized.
+        """
         return self._interpolation
 
     @interpolation.setter
@@ -298,13 +318,6 @@ class Parallax(Widget):
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        if not self.is_transparent:
-            if self.background_char is not None:
-                canvas_view[:] = style_char(self.background_char)
-
-            if self.background_color_pair is not None:
-                colors_view[:] = self.background_color_pair
-
         for layer in self.layers:
             layer.render(canvas_view, colors_view, source)
 
