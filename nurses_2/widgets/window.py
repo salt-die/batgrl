@@ -47,6 +47,8 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     A movable, resizable window widget.
 
     The view can be set with the :attr:`view` property, e.g., ``my_window.view = some_widget``.
+    Added views will have their size hints reset to (None, None). Views are resized as the
+    window is resized.
 
     Parameters
     ----------
@@ -98,7 +100,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+        If false, :attr:`alpha` and alpha channels are ignored.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -330,6 +332,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
 
         if view is not None:
             view.pos = 2, 2
+            view.size_hint = None, None
             self.add_widget(view)
             self.on_size()
 
