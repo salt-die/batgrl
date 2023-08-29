@@ -15,6 +15,7 @@ from nurses_2.colors import rainbow_gradient, ColorPair, BLACK
 from nurses_2.io import MouseButton
 from nurses_2.widgets.text_field import TextParticleField
 from nurses_2.widgets.widget_data_structures import Char
+from nurses_2.widgets.widget import Widget
 
 LOGO = """
                    _.gj8888888lkoz.,_
@@ -226,9 +227,12 @@ class MyApp(App):
             particle_chars=particle_chars,
             particle_color_pairs=particle_color_pairs,
             particle_properties=particle_properties,
+            is_transparent=True,
         )
 
-        self.add_widget(field)
+        # This background to show off field transparency.
+        bg = Widget(size_hint=(1.0, .5), background_color_pair=(0, 0, 0, 25, 25, 25))
+        self.add_widgets(bg, field)
 
 
 MyApp(title="Exploding Logo Example").run()

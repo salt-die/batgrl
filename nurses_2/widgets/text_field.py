@@ -53,7 +53,8 @@ class TextParticleField(Widget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+        If true, background_char, background_color_pair, :attr:`particle_color_pairs`
+        background colors, and whitespace in :attr:`particle_chars` won't be painted.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -229,6 +230,14 @@ class TextParticleField(Widget):
         return len(self.particle_positions)
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        vert_slice, hori_slice = source
+        t = vert_slice.start
+        h = vert_slice.stop - t
+        l = hori_slice.start
+        w = hori_slice.stop - l
+        pos = self.particle_positions - (t, l)
+        inbounds = (((0, 0) <= pos) & (pos < (h, w))).all(axis=1)
+
         if not self.is_transparent:
             if self.background_char is not None:
                 canvas_view[:] = style_char(self.background_char)
@@ -236,16 +245,13 @@ class TextParticleField(Widget):
             if self.background_color_pair is not None:
                 colors_view[:] = self.background_color_pair
 
-        vert_slice, hori_slice = source
-        t = vert_slice.start
-        h = vert_slice.stop - t
-        l = hori_slice.start
-        w = hori_slice.stop - l
-        pos = self.particle_positions - (t, l)
-        where_inbounds = np.nonzero((((0, 0) <= pos) & (pos < (h, w))).all(axis=1))
-        local_ys, local_xs = pos[where_inbounds].T
+            where_inbounds = np.nonzero(inbounds)
+            local_ys, local_xs = pos[where_inbounds].T
+            colors_view[local_ys, local_xs] = self.particle_color_pairs[where_inbounds]
+        else:
+            where_inbounds = np.nonzero(inbounds & np.isin(self.particle_chars["char"], (" ", "⠀"), invert=True))
+            local_ys, local_xs = pos[where_inbounds].T
+            colors_view[..., :3][local_ys, local_xs] = self.particle_color_pairs[..., :3][where_inbounds]
 
         canvas_view[local_ys, local_xs] = self.particle_chars[where_inbounds]
-        colors_view[local_ys, local_xs] = self.particle_color_pairs[where_inbounds]
-
         self.render_children(source, canvas_view, colors_view)

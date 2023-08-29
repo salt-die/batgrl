@@ -58,7 +58,7 @@ class TextWidget(Widget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, whitespace in text widget won't be painted.
+        If true, background color and whitespace in text widget won't be painted.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -420,7 +420,7 @@ class TextWidget(Widget):
             visible = np.isin(source_view["char"], (" ", "⠀"), invert=True)
 
             canvas_view[visible] = source_view[visible]
-            colors_view[visible] = self.colors[source][visible]
+            colors_view[..., :3][visible] = self.colors[..., :3][source][visible]
         else:
             canvas_view[:] = self.canvas[source]
             colors_view[:] = self.colors[source]

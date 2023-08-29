@@ -50,7 +50,7 @@ class TextAnimation(Widget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, whitespace in text animation won't be painted.
+        If true, background color and whitespace in text animation won't be painted.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -218,7 +218,7 @@ class TextAnimation(Widget):
     @property
     def is_transparent(self) -> bool:
         """
-        If true, whitespace in text animation won't be painted.
+        If true, background color and whitespace in text animation won't be painted.
         """
         return self._is_transparent
 
@@ -283,13 +283,6 @@ class TextAnimation(Widget):
         self._i = len(self.frames) - 1 if self.reverse else 0
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        if not self.is_transparent:
-            if self.background_char is not None:
-                canvas_view[:] = style_char(self.background_char)
-
-            if self.background_color_pair is not None:
-                colors_view[:] = self.background_color_pair
-
         if self.frames:
             frame = self.frames[self._i]
             vert_slice, hori_slice = source
