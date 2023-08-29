@@ -68,7 +68,7 @@ class GraphicWidget(Widget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+        If false, :attr:`alpha` and alpha channels are ignored.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -229,6 +229,9 @@ class GraphicWidget(Widget):
 
     @property
     def alpha(self) -> float:
+        """
+        Transparency of widget if :attr:`is_transparent` is true.
+        """
         return self._alpha
 
     @alpha.setter
@@ -247,6 +250,9 @@ class GraphicWidget(Widget):
 
     @property
     def interpolation(self) -> Interpolation:
+        """
+        Interpolation used when widget is resized.
+        """
         return self._interpolation
 
     @interpolation.setter
