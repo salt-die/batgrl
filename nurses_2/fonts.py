@@ -452,4 +452,4 @@ class FIGFont:
         """
         Render text as ascii art into a multiline string.
         """
-        return "\n".join("".join(line) for line in self.render_text(text))
+        return "\n".join("".join(line) for line in self.render_array(text))
