@@ -618,7 +618,7 @@ will have precedent over <a class="reference internal" href="#nurses_2.widgets.t
 </dd>
 <dt><strong>anchor</strong><span class="classifier">Anchor, default: Anchor.TOP_LEFT</span></dt><dd><p>The point of the widget attached to <a class="reference internal" href="#nurses_2.widgets.tiled_image.TiledImage.pos_hint" title="nurses_2.widgets.tiled_image.TiledImage.pos_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pos_hint</span></code></a>.</p>
 </dd>
-<dt><strong>is_transparent</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, background_char and background_color_pair won’t be painted.</p>
+<dt><strong>is_transparent</strong><span class="classifier">bool, default: False</span></dt><dd><p>If false, <a class="reference internal" href="#nurses_2.widgets.tiled_image.TiledImage.alpha" title="nurses_2.widgets.tiled_image.TiledImage.alpha"><code class="xref py py-attr docutils literal notranslate"><span class="pre">alpha</span></code></a> and alpha channels are ignored.</p>
 </dd>
 <dt><strong>is_visible</strong><span class="classifier">bool, default: True</span></dt><dd><p>If false, widget won’t be painted, but still dispatched.</p>
 </dd>
@@ -641,9 +641,9 @@ texture immediately.</p>
 </dd>
 <dt><strong>default_color</strong><span class="classifier">AColor</span></dt><dd><p>Default texture color.</p>
 </dd>
-<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Transparency of widget if <code class="xref py py-attr docutils literal notranslate"><span class="pre">is_transparent</span></code> is true.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.tiled_image.TiledImage.alpha" title="nurses_2.widgets.tiled_image.TiledImage.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Transparency of widget if <code class="xref py py-attr docutils literal notranslate"><span class="pre">is_transparent</span></code> is true.</p>
 </dd>
-<dt><strong>interpolation</strong><span class="classifier">Interpolation</span></dt><dd><p>Interpolation used when widget is resized.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.tiled_image.TiledImage.interpolation" title="nurses_2.widgets.tiled_image.TiledImage.interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolation</span></code></a><span class="classifier">Interpolation</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
 <dt><a class="reference internal" href="#nurses_2.widgets.tiled_image.TiledImage.size" title="nurses_2.widgets.tiled_image.TiledImage.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -812,7 +812,8 @@ texture immediately.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.tiled_image.TiledImage.alpha">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#nurses_2.widgets.tiled_image.TiledImage.alpha" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Transparency of widget if <code class="xref py py-attr docutils literal notranslate"><span class="pre">is_transparent</span></code> is true.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.tiled_image.TiledImage.anchor">
@@ -907,7 +908,8 @@ when the widget’s parent’s size changes.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.tiled_image.TiledImage.interpolation">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interpolation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.widgets.graphic_widget_data_structures.html#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></em><a class="headerlink" href="#nurses_2.widgets.tiled_image.TiledImage.interpolation" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Interpolation used when widget is resized.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.tiled_image.TiledImage.left">
