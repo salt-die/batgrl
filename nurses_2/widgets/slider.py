@@ -62,7 +62,7 @@ class Slider(GrabbableBehavior, TextWidget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+        If true, whitespace in text widget won't be painted.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True

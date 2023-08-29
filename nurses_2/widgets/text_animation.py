@@ -50,7 +50,7 @@ class TextAnimation(Widget):
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+        If true, whitespace in text animation won't be painted.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -201,19 +201,32 @@ class TextAnimation(Widget):
         reverse: bool=False,
         **kwargs
     ):
-        super().__init__(**kwargs)
-
         self.frames = []
         if frames is not None:
             for frame in frames:
                 self.frames.append(TextWidget())
                 self.frames[-1].set_text(frame)
 
+        super().__init__(**kwargs)
+
         self.frame_durations = _check_frame_durations(self.frames, frame_durations)
         self.loop = loop
         self.reverse = reverse
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
+
+    @property
+    def is_transparent(self) -> bool:
+        """
+        If true, whitespace in text animation won't be painted.
+        """
+        return self._is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, transparent: bool):
+        self._is_transparent = transparent
+        for frame in self.frames:
+            frame.is_transparent = transparent
 
     def on_remove(self):
         self.pause()
