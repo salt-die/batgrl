@@ -14,6 +14,11 @@ class GraphicParticleField(Widget):
     """
     A graphic particle field.
 
+    A particle field specializes in rendering many single "pixel" children by
+    setting particle positions, colors, and alphas. (Note that alpha channel
+    of particle colors and particle alphas are independent and both control
+    particle transparency.) This is more efficient than rendering many 1x1 widgets.
+
     Parameters
     ----------
     particle_positions : np.ndarray | None=None, default: None
