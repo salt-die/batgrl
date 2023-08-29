@@ -54,8 +54,8 @@ class GraphicParticleField(Widget):
         will have precedent over :attr:`pos`.
     anchor : Anchor, default: Anchor.TOP_LEFT
         The point of the widget attached to :attr:`pos_hint`.
-    is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+    is_transparent : bool, default: True
+        If false, :attr:`particle_alphas` and alpha channels are ignored.
     is_visible : bool, default: True
         If false, widget won't be painted, but still dispatched.
     is_enabled : bool, default: True
@@ -199,9 +199,10 @@ class GraphicParticleField(Widget):
         particle_colors: np.ndarray | None=None,
         particle_alphas: np.ndarray | None=None,
         particle_properties: dict[str, np.ndarray]=None,
+        is_transparent: bool=True,
         **kwargs
     ):
-        super().__init__(**kwargs)
+        super().__init__(is_transparent=is_transparent, **kwargs)
 
         if particle_positions is None:
             self.particle_positions = np.zeros((0, 2), dtype=int)
