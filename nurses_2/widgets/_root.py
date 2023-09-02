@@ -83,7 +83,8 @@ class _Root(Widget):
         return point
 
     def collides_point(self, point: Point) -> bool:
-        return 0 <= point.y < self.height and 0 <= point.x < self.width
+        y, x = point
+        return 0 <= y < self.height and 0 <= x < self.width
 
     def render(self):
         """
