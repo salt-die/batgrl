@@ -105,8 +105,8 @@ class _Root(Widget):
         self.render_children((slice(0, height), slice(0, width)), canvas, colors)
 
         if self._redraw_all:
-            ys, xs = np.indices((height, width)).reshape(2, height * width)
             self._redraw_all = False
+            ys, xs = np.indices((height, width)).reshape(2, height * width)
         else:
             color_diffs = self._color_diffs
             reduced_color_diffs = self._reduced_color_diffs
@@ -123,15 +123,14 @@ class _Root(Widget):
         env_out = self.env_out
         write = env_out._buffer.append
 
-        write("\x1b7")  # Save cursor
-        for y, x, color_pair, style in zip(ys, xs, colors[ys, xs], canvas[ys, xs]):
-            fr, fg, fb, br, bg, bb = color_pair
+        for y, x, style, color_pair in zip(ys, xs, canvas[ys, xs], colors[ys, xs]):
             char, bold, italic, underline, strikethrough, overline = style
             if char == "":
                 continue
+            fr, fg, fb, br, bg, bb = color_pair
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
-                "\x1b[0;"  # Reset
+                "\x1b["
                 f"{'1;' if bold else ''}"
                 f"{'3;' if italic else ''}"
                 f"{'4;' if underline else ''}"
@@ -140,5 +139,4 @@ class _Root(Widget):
                 f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
                 f"{char}"
             )
-        write("\x1b8")  # Restore cursor
         env_out.flush()
