@@ -384,25 +384,23 @@ class DigitalDisplay(TextWidget):
         self.off_color_pair = off_color_pair
         self.on_color_pair = on_color_pair
 
-        self._display = TextWidget(size=(7, 8), default_char=self.default_char)
-        chars = self._display.canvas["char"]
-
-        chars[[0, 6], 1: 6] = chars[3, 1: 3] = chars[3, 4: 6] = "━"
-        chars[1: 3,  [0, 3, 6]] = chars[4: 6, [0, 3, 6]] = "┃"
-        chars[(1, 2, 4, 5), (1, 2, 4, 5)] = "\\"
-        chars[(1, 2, 4, 5), (5, 4, 2, 1)] = "/"
-        chars[6, 7] = "●"
-
-        self._where_segments = chars != self.default_char
-        self._display.colors[self._where_segments] = off_color_pair
-
+        self._display = TextWidget(default_color_pair=off_color_pair)
+        self._display.set_text(
+            " ━━━━━  \n"
+            "┃\ ┃ /┃ \n"
+            "┃ \┃/ ┃ \n"
+            " ━━ ━━  \n"
+            "┃ /┃\ ┃ \n"
+            "┃/ ┃ \┃ \n"
+            " ━━━━━ ●"
+        )
         self.add_widget(self._display)
 
     def show_char(self, char: str):
         if char not in _CHAR_TO_SEGMENTS:
             raise ValueError(f"{char} is not an ascii character")
 
-        self._display.colors[self._where_segments] = self.off_color_pair
+        self._display.colors[:] = self.off_color_pair
 
         for segment in _CHAR_TO_SEGMENTS[char]:
             setattr(self, segment, True)
