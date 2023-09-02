@@ -304,10 +304,7 @@ class Raycaster(GraphicWidget):
         step = self._steps[column]
         sides = self._sides[column]
 
-        ###########
         # Casting #
-        ###########
-
         for _ in range(self.HOPS):
             side = 0 if sides[0] < sides[1] else 1
             sides[side] += delta[side]
@@ -329,25 +326,20 @@ class Raycaster(GraphicWidget):
 
         self._column_distances[column] = distance
 
-        #############
         # Rendering #
-        #############
-
         texture = self.texture[:, ::-1]
         height = texture.shape[0]
 
         column_height = int(height / distance) if distance else 1000  # 1000 == infinity, roughly
 
         # Start and end y-coordinates of column.
-        ########################################
-        half_height = height >> 1              #
-        half_column = column_height >> 1       #
-        if half_column > half_height:          #
-            half_column = half_height          #
-                                               #
-        start = half_height - half_column      #
-        end = half_height + half_column        #
-        ########################################
+        half_height = height >> 1
+        half_column = column_height >> 1
+        if half_column > half_height:
+            half_column = half_height
+
+        start = half_height - half_column
+        end = half_height + half_column
 
         wall_texture = (self.wall_textures if side else self.light_wall_textures)[texture_index - 1]
         tex_h, tex_w, _ = wall_texture.shape
@@ -361,21 +353,19 @@ class Raycaster(GraphicWidget):
             tex_x = tex_w - tex_x - 1
 
         # Interpolate texture onto column
-        ############################################################
-        drawn_height = end - start                                 #
-        offset = (column_height - drawn_height) / 2                #
-        ratio = tex_h / column_height                              #
-        texture_start = offset * ratio                             #
-        texture_end = (offset + drawn_height) * ratio              #
-        tex_ys = np.linspace(                                      #
-            texture_start,                                         #
-            texture_end,                                           #
-            num=drawn_height,                                      #
-            endpoint=False,                                        #
-            dtype=int                                              #
-        )                                                          #
-        texture_column = wall_texture[tex_ys, tex_x].astype(float) #
-        ############################################################
+        drawn_height = end - start
+        offset = (column_height - drawn_height) / 2
+        ratio = tex_h / column_height
+        texture_start = offset * ratio
+        texture_end = (offset + drawn_height) * ratio
+        tex_ys = np.linspace(
+            texture_start,
+            texture_end,
+            num=drawn_height,
+            endpoint=False,
+            dtype=int
+        )
+        texture_column = wall_texture[tex_ys, tex_x].astype(float)
 
         # Darken colors further away.
         texture_column *= np.e ** (-distance * .05)
@@ -385,56 +375,54 @@ class Raycaster(GraphicWidget):
         texture[start: end, column] = texture_column
 
         # Render floor and ceiling.
-        ###################################################################################
-        ceiling = self.ceiling                                                            #
-        floor = self.floor                                                                #
-                                                                                          #
-        if ceiling is None and floor is None:                                             #
-            texture[:start, column] = self.ceiling_color                                  #
-            texture[end:, column] = self.floor_color                                      #
-            return                                                                        #
-                                                                                          #
-        # Buffer views                                                                    #
-        floor_pos = self._floor_pos                                                       #
-        weights = self._weights[half_column:]                                             #
-        tex_frac = self._tex_frac[half_column:]                                           #
-        tex_frac_2 = self._tex_frac_2[half_column:]                                       #
-        tex_int = self._tex_int[half_column:]                                             #
-                                                                                          #
-        # Floor position                                                                  #
-        if side == 0:                                                                     #
-            facing = float(ray_angle[0] < 0), wall_x                                      #
-        else:                                                                             #
-            facing = wall_x, float(ray_angle[1] < 0)                                      #
-        np.add(ray_pos, facing, out=floor_pos)                                            #
-                                                                                          #
-        # Horizontal distances of floor / ceiling                                         #
-        np.divide(self._distances[half_column:], distance, out=weights[:, 0])             #
-        weights[:, 1] = weights[:, 0]                                                     #
-                                                                                          #
-        # Texture coordinates                                                             #
-        # (weights * floor_pos + (1 - weights) * camera_pos) % 1                          #
-        np.multiply(weights, floor_pos, out=tex_frac)                                     #
-        np.subtract(1.0, weights, out=weights)                                            #
-        np.multiply(weights, camera_pos, out=tex_frac_2)                                  #
-        np.add(tex_frac, tex_frac_2, out=tex_frac)                                        #
-        np.mod(tex_frac, 1.0, out=tex_frac)                                               #
-                                                                                          #
-        # Paint ceiling                                                                   #
-        if ceiling is not None:                                                           #
-            # Note reversed order of texture coordinates from floor                       #
-            np.multiply(ceiling.shape[:2], tex_frac[::-1], out=tex_int, casting="unsafe") #
-            texture[:start, column] = ceiling[tex_int[:, 0], tex_int[:, 1]]               #
-        else:                                                                             #
-            texture[:start, column] = self.ceiling_color                                  #
-                                                                                          #
-        # Paint floor                                                                     #
-        if floor is not None:                                                             #
-            np.multiply(floor.shape[:2], tex_frac, out=tex_int, casting="unsafe")         #
-            texture[end:, column] = floor[tex_int[:, 0], tex_int[:, 1]]                   #
-        else:                                                                             #
-            texture[end:, column] = self.floor_color                                      #
-        ###################################################################################
+        ceiling = self.ceiling
+        floor = self.floor
+
+        if ceiling is None and floor is None:
+            texture[:start, column] = self.ceiling_color
+            texture[end:, column] = self.floor_color
+            return
+
+        # Buffer views
+        floor_pos = self._floor_pos
+        weights = self._weights[half_column:]
+        tex_frac = self._tex_frac[half_column:]
+        tex_frac_2 = self._tex_frac_2[half_column:]
+        tex_int = self._tex_int[half_column:]
+
+        # Floor position
+        if side == 0:
+            facing = float(ray_angle[0] < 0), wall_x
+        else:
+            facing = wall_x, float(ray_angle[1] < 0)
+        np.add(ray_pos, facing, out=floor_pos)
+
+        # Horizontal distances of floor / ceiling
+        np.divide(self._distances[half_column:], distance, out=weights[:, 0])
+        weights[:, 1] = weights[:, 0]
+
+        # Texture coordinates
+        # (weights * floor_pos + (1 - weights) * camera_pos) % 1
+        np.multiply(weights, floor_pos, out=tex_frac)
+        np.subtract(1.0, weights, out=weights)
+        np.multiply(weights, camera_pos, out=tex_frac_2)
+        np.add(tex_frac, tex_frac_2, out=tex_frac)
+        np.mod(tex_frac, 1.0, out=tex_frac)
+
+        # Paint ceiling
+        if ceiling is None:
+            texture[:start, column] = self.ceiling_color
+        else:
+            # Note reversed order of texture coordinates from floor
+            np.multiply(ceiling.shape[:2], tex_frac[::-1], out=tex_int, casting="unsafe")
+            texture[:start, column] = ceiling[tex_int[:, 0], tex_int[:, 1]]
+
+        # Paint floor
+        if floor is None:
+            texture[end:, column] = self.floor_color
+        else:
+            np.multiply(floor.shape[:2], tex_frac, out=tex_int, casting="unsafe")
+            texture[end:, column] = floor[tex_int[:, 0], tex_int[:, 1]]
 
     def cast_sprites(self):
         """
@@ -458,11 +446,13 @@ class Raycaster(GraphicWidget):
         # Camera Inverse used to calculate transformed position of sprites.
         cam_inv = np.linalg.inv(-camera.plane)
 
-        for sprite in sprites:  # Draw each sprite from furthest to closest.
+        # Draw each sprite from furthest to closest.
+        for sprite in sprites:
             # Transformed position of sprites due to camera position
             y, x = sprite.relative @ cam_inv
 
-            if y <= 0:  # Sprite is behind camera, don't draw it.
+            if y <= 0:
+                # Sprite is behind camera, don't draw it.
                 continue
 
             # Sprite x-position on screen
@@ -470,7 +460,8 @@ class Raycaster(GraphicWidget):
 
             sprite_height = int(h / y)
             sprite_width = int(half_w / y)
-            if sprite_height == 0 or sprite_width == 0:  # Sprite too small.
+            if sprite_height == 0 or sprite_width == 0:
+                # Sprite too small.
                 continue
 
             start_x = clamp(sprite_x - sprite_width // 2, 0, w)
@@ -515,34 +506,29 @@ class Raycaster(GraphicWidget):
             texture[start_y: end_y, columns, :3] = sprite_rgb
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        # Bring in to locals
-        #######################################
-        camera = self.camera                  #
-        pos_frac = self._pos_frac             #
-        rotated_angles = self._rotated_angles #
-        deltas = self._deltas                 #
-        steps = self._steps                   #
-        sides = self._sides                   #
-        multiply = np.multiply                #
-        cast_ray = self.cast_ray              #
-        #######################################
+        camera = self.camera
+        pos_frac = self._pos_frac
+        rotated_angles = self._rotated_angles
+        deltas = self._deltas
+        steps = self._steps
+        sides = self._sides
+        multiply = np.multiply
+        cast_ray = self.cast_ray
 
         # Early calculations on rays can be vectorized:
-        ############################################################
-        np.dot(self._ray_angles, camera.plane, out=rotated_angles) #
-                                                                   #
-        with np.errstate(divide="ignore"):                         #
-            np.true_divide(1.0, rotated_angles, out=deltas)        #
-        np.absolute(deltas, out=deltas)                            #
-                                                                   #
-        np.sign(rotated_angles, out=steps, casting="unsafe")       #
-                                                                   #
-        np.heaviside(steps, 1.0, out=sides)                        #
-        np.mod(camera.pos, 1.0, out=pos_frac)                      #
-        np.subtract(sides, pos_frac, out=sides)                    #
-        multiply(sides, steps, out=sides)                          #
-        multiply(sides, deltas, out=sides)                         #
-        ############################################################
+        np.dot(self._ray_angles, camera.plane, out=rotated_angles)
+
+        with np.errstate(divide="ignore"):
+            np.true_divide(1.0, rotated_angles, out=deltas)
+        np.absolute(deltas, out=deltas)
+
+        np.sign(rotated_angles, out=steps, casting="unsafe")
+
+        np.heaviside(steps, 1.0, out=sides)
+        np.mod(camera.pos, 1.0, out=pos_frac)
+        np.subtract(sides, pos_frac, out=sides)
+        multiply(sides, steps, out=sides)
+        multiply(sides, deltas, out=sides)
 
         for column in range(self.width):
             cast_ray(column)
