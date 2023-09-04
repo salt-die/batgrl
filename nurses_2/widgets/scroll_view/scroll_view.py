@@ -433,7 +433,7 @@ class ScrollView(GrabbableBehavior, Widget):
     def _scroll_down(self, n=1):
         self._scroll_up(-n)
 
-    def on_mouse(self, mouse_event: MouseEvent):
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         if (
             self.scrollwheel_enabled
             and self.collides_point(mouse_event.position)
