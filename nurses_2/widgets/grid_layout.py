@@ -363,39 +363,41 @@ class GridLayout(Widget):
         """
         Return the minimum grid size to show all children.
         """
-        return self._minimum_grid_size
+        nrows, ncols = self.grid_rows, self.grid_columns
+        if nrows == 0 or ncols == 0:
+            return Size(0, 0)
+
+        bottom = (
+            self.padding_top +
+            sum(self._row_height(i) for i in range(nrows)) +
+            self.vertical_spacing * (nrows - 1) +
+            self.padding_bottom
+        )
+        right = (
+            self.padding_left +
+            sum(self._col_width(i) for i in range(ncols)) +
+            self.horizontal_spacing * (ncols - 1) +
+            self.padding_right
+        )
+
+        return Size(bottom, right)
 
     def _reposition_children(self):
-        rows, cols = self.grid_rows, self.grid_columns
-
-        lp = self.padding_left
-        rp = self.padding_right
-        tp = self.padding_top
-        bp = self.padding_bottom
-        vs = self.vertical_spacing
-        hs = self.horizontal_spacing
-
-        children = self.children
-        index_at = self.index_at
-
-        row_height = self._row_height
-        col_width = self._col_width
+        if self.grid_rows == 0 or self.grid_columns == 0:
+            return
 
         row_tops = tuple(accumulate(
-            tp if i == 0 else row_height(i - 1) + vs for i in range(rows)
+            self.padding_top if i == 0 else self._row_height(i - 1) + self.vertical_spacing
+            for i in range(self.grid_rows)
         ))
         col_lefts = tuple(accumulate(
-            lp if i == 0 else col_width(i - 1) + hs for i in range(cols)
+            self.padding_left if i == 0 else self._col_width(i - 1) + self.horizontal_spacing
+            for i in range(self.grid_columns)
         ))
 
-        for row, col in product(range(rows), range(cols)):
-            if (i := index_at(row, col)) < len(self.children):
-                children[i].pos = row_tops[row], col_lefts[col]
-
-        self._minimum_grid_size = Size(
-            row_tops[-1] + row_height(rows - 1) + bp,
-            col_lefts[-1] + col_width(cols - 1) + rp,
-        )
+        for row, col in product(range(self.grid_rows), range(self.grid_columns)):
+            if (i := self.index_at(row, col)) < len(self.children):
+                self.children[i].pos = row_tops[row], col_lefts[col]
 
     def add_widget(self, widget):
         if len(self.children) >= self.grid_rows * self.grid_columns:
