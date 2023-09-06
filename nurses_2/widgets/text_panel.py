@@ -13,9 +13,9 @@ class TextPanel(Themable, TextWidget):
     """
     A widget for static multi-line text.
 
-    Text can be set by setting the `text` attribute. The read-only attribute :attr:`min_size` is
-    the minimum size the panel must be to show all text. This can be used to set the size of the
-    panel, e.g., ``my_panel.size = my_panel.min_size``.
+    Text can be set by setting the `text` attribute. The read-only attribute :attr:`minimum_panel_size`
+    is the minimum size the panel must be to show all text. This can be used to set the size of the
+    panel, e.g., ``my_panel.size = my_panel.minimum_panel_size``.
 
     Parameters
     ----------
@@ -74,7 +74,7 @@ class TextPanel(Themable, TextWidget):
         Padding on top and bottom of panel.
     padding_x: int
         Padding on the left and right of panel.
-    min_size : Size
+    minimum_panel_size : Size
         Minimum size needed to show all text.
     text_container : TextWidget
         Child widget that contains the panel text.
@@ -263,7 +263,7 @@ class TextPanel(Themable, TextWidget):
         self.text_container.set_text(text)
 
     @property
-    def min_size(self) -> Size:
+    def minimum_panel_size(self) -> Size:
         """
         Minimum size needed for panel to show all text.
         """

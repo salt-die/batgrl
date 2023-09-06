@@ -16,7 +16,7 @@ To say that for destruction ice
 Is also great
 And would suffice.
 """
-panel.size = panel.min_size
+panel.size = panel.minimum_panel_size
 panel.text_container.canvas[0]["bold"] = True
 panel.text_container.canvas[:2]["italic"] = True
 panel.add_border()
