@@ -35,8 +35,8 @@ class ShadowCaster(GraphicWidget):
     camera : Camera
         A camera that determines the visible portion of the map.
     tile_colors : list[AColor] | None, default: None
-        A value `n` in the map will be colored `tile_color[n]`. If `None`,
-        `tile_colors` will be set to `[AGRAY, AWHITE]`.
+        A value `n` in the map will be colored ``tile_colors[n]``. If ``None``,
+        `tile_colors` will be set to ``[AGRAY, AWHITE]``.
     light_sources : list[LightSource] | None, default: None
         Position of each light source. If `None`, `light_sources` will be set to an
         empty list.
@@ -49,7 +49,7 @@ class ShadowCaster(GraphicWidget):
     smoothing : float, default: 1.0 / 3.0
         Smoothness of shadow edges. This value will be clamped between `0` and `1`.
     not_visible_blocks : bool, default: True
-        If `True`, all not-visible cells will be treated as opaque.
+        If true, all not-visible cells will be treated as opaque.
     restrictiveness : Restrictiveness, default: Restrictiveness.MODERATE
         Restrictiveness of casting algorithm.
     default_color : AColor, default: AColor(0, 0, 0, 0)
@@ -103,7 +103,7 @@ class ShadowCaster(GraphicWidget):
     camera : Camera
         A camera that determines the visible portion of the map.
     tile_colors : list[AColor]
-        A value `n` in the map will be colored `tile_color[n]`.
+        A value `n` in the map will be colored ``tile_colors[n]``.
     light_sources : list[LightSource]
         Position of each light source.
     ambient_light : LightIntensity
@@ -115,7 +115,7 @@ class ShadowCaster(GraphicWidget):
     smoothing : float
         Smoothness of shadow edges.
     not_visible_blocks : bool
-        If `True`, all not-visible cells will be treated as opaque.
+        If true, all not-visible cells will be treated as opaque.
     restrictiveness : Restrictiveness
         Restrictiveness of casting algorithm.
     texture : numpy.ndarray
@@ -225,7 +225,7 @@ class ShadowCaster(GraphicWidget):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

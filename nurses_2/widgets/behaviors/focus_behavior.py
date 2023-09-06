@@ -18,9 +18,9 @@ class FocusBehavior:
     Attributes
     ----------
     is_focused : bool
-        Return True if widget has focus.
+        True if widget has focus.
     any_focused : bool
-        Return True if any widget has focus.
+        True if any widget has focus.
 
     Methods
     -------
@@ -56,14 +56,14 @@ class FocusBehavior:
     @property
     def is_focused(self) -> bool:
         """
-        Return True if widget has focus.
+        True if widget has focus.
         """
         return self in FocusBehavior.__focused
 
     @property
     def any_focused(self) -> bool:
         """
-        Return True if any widget has focus.
+        True if any widget has focus.
         """
         return bool(FocusBehavior.__focused)
 

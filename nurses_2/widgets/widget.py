@@ -238,7 +238,7 @@ class Widget:
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:
@@ -659,7 +659,7 @@ class Widget:
 
     def collides_point(self, point: Point) -> bool:
         """
-        Return True if point is within widget's bounding box.
+        True if point is within widget's bounding box.
         """
         # These conditions are separated as they both require
         # recursive calls up the widget tree and we'd like to
@@ -672,7 +672,7 @@ class Widget:
 
     def collides_widget(self, other: "Widget") -> bool:
         """
-        Return True if some part of `other` is within bounding box.
+        True if some part of `other` is within bounding box.
         """
         self_top, self_left = self.absolute_pos
         self_bottom = self_top + self.height
@@ -738,7 +738,7 @@ class Widget:
 
     def walk(self, reverse: bool=False):
         """
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
         """
         if reverse:
             if self.parent:
@@ -774,14 +774,14 @@ class Widget:
     def unsubscribe(self, source: "Widget", attr: str) -> Callable[[], None] | None:
         """
         Unsubscribe to a widget event and return the callable that was subscribed
-        to the event or `None` if subscription isn't found.
+        to the event or ``None`` if subscription isn't found.
         """
         setter = getattr(type(source), attr).fset
         return setter.instances[source].pop(self, None)
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Dispatch key press until handled. (A key press is handled if a handler returns True.)
+        Dispatch key press until handled. (A key press is handled if a handler returns ``True``.)
         """
         return (
             any(
@@ -794,7 +794,7 @@ class Widget:
 
     def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)
+        Dispatch mouse event until handled. (A mouse event is handled if a handler returns ``True``.)
         """
         return (
             any(
@@ -807,7 +807,7 @@ class Widget:
 
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Dispatch paste event until handled. (A paste event is handled if a handler returns True.)
+        Dispatch paste event until handled. (A paste event is handled if a handler returns ``True``.)
         """
         return (
             any(
@@ -820,17 +820,17 @@ class Widget:
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Handle key press event. (Handled key presses should return True else False or None).
+        Handle key press event. (Handled key presses should return ``True`` else ``False`` or ``None``).
         """
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Handle mouse event. (Handled mouse events should return True else False or None).
+        Handle mouse event. (Handled mouse events should return ``True`` else ``False`` or ``None``).
         """
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Handle paste event. (Handled paste events should return True else False or None).
+        Handle paste event. (Handled paste events should return ``True`` else ``False`` or ``None``).
         """
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):

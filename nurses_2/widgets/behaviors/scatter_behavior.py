@@ -16,9 +16,9 @@ class ScatterBehavior(GrabbableBehavior):
     disable_child_ptf : bool, default: False
         If true, child widgets won't be pulled-to-front when clicked.
     is_grabbable : bool, default: True
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
 
     Attributes
     ----------
@@ -27,9 +27,9 @@ class ScatterBehavior(GrabbableBehavior):
     disable_child_ptf : bool
         If true, child widgets won't be pulled-to-front when clicked.
     is_grabbable : bool
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point

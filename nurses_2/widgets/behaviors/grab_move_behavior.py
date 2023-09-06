@@ -18,9 +18,9 @@ class GrabMoveBehavior(GrabbableBehavior):
     allow_horizontal_translation : bool, default: True
         Allow horizontal translation.
     is_grabbable : bool, default: True
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
 
     Attributes
     ----------
@@ -31,9 +31,9 @@ class GrabMoveBehavior(GrabbableBehavior):
     allow_horizontal_translation : bool
         Allow horizontal translation.
     is_grabbable : bool
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point

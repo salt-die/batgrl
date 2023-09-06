@@ -177,7 +177,7 @@ class FileChooser(Themable, ScrollView):
     directories_only : bool, default: False
         If true, show only directories in the file view.
     show_hidden : bool, default: True
-        If False, hidden files won't be rendered.
+        If false, hidden files won't be rendered.
     select_callback : Callable[[Path], None], default: lambda path: None
         Called with path of selected node when node is double-clicked
         or `enter` is pressed.
@@ -201,9 +201,9 @@ class FileChooser(Themable, ScrollView):
     horizontal_proportion : float, default: 0.0
         Horizontal scroll position as a proportion of total.
     is_grabbable : bool, default: True
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -248,7 +248,7 @@ class FileChooser(Themable, ScrollView):
     directories_only : bool
         If true, show only directories in the file view.
     show_hidden : bool
-        If False, hidden files won't be rendered.
+        If false, hidden files won't be rendered.
     select_callback : Callable[[Path], None]
         Called with path of selected node when node is double-clicked
         or `enter` is pressed.
@@ -274,9 +274,9 @@ class FileChooser(Themable, ScrollView):
     view : Widget | None
         The scroll view's child.
     is_grabbable : bool
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -383,7 +383,7 @@ class FileChooser(Themable, ScrollView):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

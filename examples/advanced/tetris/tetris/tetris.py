@@ -341,7 +341,7 @@ class Tetris(Image):
 
     def collides(self, offset, piece, orientation=None):
         """
-        Return True if piece collides with stack or boundaries of matrix
+        True if piece collides with stack or boundaries of matrix
         with given offset (from it's current position) and orientation.
         """
         if orientation is None:

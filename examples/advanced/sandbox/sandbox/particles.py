@@ -164,7 +164,7 @@ class Element(ABC):
 
     def update_neighbors(self):
         """
-        Update all neighbors or until `update_neighbor` returns True.
+        Update all neighbors or until `update_neighbor` returns true.
         """
         for neighbor in self.neighbors():
             if self.update_neighbor(neighbor):
@@ -177,7 +177,7 @@ class Element(ABC):
         """
         Update neighbor.
 
-        Return True to stop updating.
+        Return true to stop updating.
         """
 
     @abstractmethod
@@ -208,7 +208,7 @@ class MovingElement(Element):
     """
     def _move(self, dy, dx):
         """
-        Try to move vertically by dy and horizontally by dx.  Return True if successful.
+        Try to move vertically by dy and horizontally by dx.  True if successful.
         """
         world = self.world
         h, w = world.shape  # height, width
@@ -246,7 +246,7 @@ class MovingElement(Element):
 
     def update_neighbor(self, neighbor):
         """
-        Default implementation.  Return False.
+        Default implementation.  Returns ``False``.
         """
         return False
 

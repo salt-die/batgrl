@@ -119,9 +119,9 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     title : str
         Title of window.
     is_focused : bool
-        Return True if widget has focus.
+        True if widget has focus.
     any_focused : bool
-        Return True if any widget has focus.
+        True if any widget has focus.
     allow_vertical_resize : bool
         Allow vertical resize.
     allow_horizontal_resize : bool
@@ -252,7 +252,7 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

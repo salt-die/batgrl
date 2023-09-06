@@ -23,41 +23,41 @@ class ToggleState(str, Enum):
 class ToggleButtonBehavior(ButtonBehavior):
     """
     Toggle button behavior for widgets. Without a group, toggle button's states switch
-    between "on" and "off" when pressed. With a group, only a single button in the group can
+    between on and off when pressed. With a group, only a single button in the group can
     be in the "on" state at a time.
 
     Parameters
     ----------
     group : None | Hashable, default: None
-        If a group is provided, only one button in a group can be in the "on" state.
+        If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool, default: False
-        If a group is provided, setting this to True allows no selection, i.e.,
+        If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
         Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
-        is `False` this value will be ignored if all buttons would be "off".
+        is false this value will be ignored if all buttons would be off.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
 
     Attributes
     ----------
     group : None | Hashable
-        If a group is provided, only one button in a group can be in the "on" state.
+        If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool
-        If true and button is in a group, every button can be in the "off" state.
+        If true and button is in a group, every button can be in the off state.
     toggle_state : ToggleState
         Toggle state of button.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
-        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+        Current button state. One of normal, hover or down.
 
     Methods
     -------
     update_off:
-        Paint the "off" state.
+        Paint the off state.
     update_on:
-        Paint the "on" state.
+        Paint the on state.
     on_toggle:
         Called when the toggle state changes.
     update_normal:

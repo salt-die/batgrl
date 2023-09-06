@@ -232,7 +232,7 @@ class GridLayout(Widget):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

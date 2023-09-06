@@ -84,7 +84,7 @@ class Windows10_Output(Vt100_Output):
 
 def is_vt100_enabled():
     """
-    Return True if VT100 escape sequences are supported.
+    True if VT100 escape sequences are supported.
     """
     # Get original console mode.
     original_mode = DWORD(0)

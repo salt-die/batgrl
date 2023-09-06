@@ -35,9 +35,9 @@ class ScrollView(GrabbableBehavior, Widget):
     horizontal_proportion : float, default: 0.0
         Horizontal scroll position as a proportion of total.
     is_grabbable : bool, default: True
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -100,9 +100,9 @@ class ScrollView(GrabbableBehavior, Widget):
     view : Widget | None
         The scroll view's child.
     is_grabbable : bool
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -209,7 +209,7 @@ class ScrollView(GrabbableBehavior, Widget):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

@@ -27,15 +27,15 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     placeholder : str, default: ""
         Placeholder text for textbox.
     hide_input : bool, default: False
-        If True, input is hidden with :attr:`hide_char`.
+        If true, input is hidden with :attr:`hide_char`.
     hide_char : str, default: "*"
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None, default: None
         Maximum allowed number of characters in textbox.
     is_grabbable : bool, default: True
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     mouse_button : MouseButton, default: MouseButton.LEFT
         Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
@@ -82,19 +82,19 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     placeholder : str
         Placeholder text for textbox.
     hide_input : bool
-        If True, input is hidden with :attr:`hide_char`.
+        If true, input is hidden with :attr:`hide_char`.
     hide_char : str
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None
         Maximum allowed number of characters in textbox.
     is_focused : bool
-        Return True if widget has focus.
+        Return true if widget has focus.
     any_focused : bool
-        Return True if any widget has focus.
+        Return true if any widget has focus.
     is_grabbable : bool
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool

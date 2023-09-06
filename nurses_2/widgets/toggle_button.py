@@ -31,11 +31,11 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     group : None | Hashable, default: None
         If a group is provided, only one button in a group can be in the "on" state.
     allow_no_selection : bool, default: False
-        If a group is provided, setting this to True allows no selection, i.e.,
+        If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
         Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
-        is `False` this value will be ignored if all buttons would be "off".
+        is false this value will be ignored if all buttons would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     size : Size, default: Size(10, 10)
@@ -199,7 +199,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:

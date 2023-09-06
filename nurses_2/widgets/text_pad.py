@@ -42,9 +42,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     horizontal_proportion : float, default: 0.0
         Horizontal scroll position as a proportion of total.
     is_grabbable : bool, default: True
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -87,9 +87,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     text : str
         The textpad's text.
     is_focused : bool
-        Return True if widget has focus.
+        True if widget has focus.
     any_focused : bool
-        Return True if any widget has focus.
+        True if any widget has focus.
     view : Widget | None
         The scrolled widget.
     allow_vertical_scroll : bool
@@ -113,9 +113,9 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     view : Widget | None
         The scroll view's child.
     is_grabbable : bool
-        If False, grabbable behavior is disabled.
+        If false, grabbable behavior is disabled.
     disable_ptf : bool
-        If True, widget will not be pulled to front when grabbed.
+        If true, widget will not be pulled to front when grabbed.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -236,7 +236,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     walk_from_root:
         Yield all descendents of root widget.
     walk:
-        Yield all descendents (or ancestors if `reverse` is True).
+        Yield all descendents (or ancestors if `reverse` is true).
     subscribe:
         Subscribe to a widget property.
     unsubscribe:
