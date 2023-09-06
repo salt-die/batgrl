@@ -4,7 +4,6 @@ A text-pad widget for multiline editable text.
 from wcwidth import wcswidth
 
 from ..clamp import clamp
-from ..colors import lerp_colors, WHITE
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.themable import Themable
