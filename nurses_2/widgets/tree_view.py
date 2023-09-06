@@ -247,11 +247,11 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
 
     def _repaint(self):
         if self.is_selected:
-            self.colors[:] = self.color_theme.item_selected
+            self.colors[:] = self.color_theme.menu_item_selected
         elif self.state is ButtonState.NORMAL:
             self.colors[:] = self.color_theme.primary
         elif self.state is ButtonState.HOVER:
-            self.colors[:] = self.color_theme.item_hover
+            self.colors[:] = self.color_theme.menu_item_hover
 
     def on_size(self):
         super().on_size()

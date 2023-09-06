@@ -261,10 +261,6 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        primary = self.color_theme.primary
-        self.selection_highlight = lerp_colors(primary.bg_color, WHITE, 1/10)
-        self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
-
         self._prev_cursor_pos = Point(0, 0)
         self._last_x = None
         self._selection_start = self._selection_end = None
@@ -282,10 +278,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._cursor.default_color_pair = primary.reversed()
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
-        self.background_color_pair = primary.bg_color * 2
+        self.background_color_pair = primary
 
-        self.selection_highlight = lerp_colors(primary.bg_color, WHITE, 1/10)
-        self.line_highlight = lerp_colors(primary.bg_color, WHITE, 1/40)
         self._highlight_selection()
 
     def on_size(self):
@@ -409,18 +403,18 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         if self._selection_start != self._selection_end:
             sy, sx = self._selection_start
             ey, ex = self._selection_end
-            highlight = self.selection_highlight
+            highlight = self.color_theme.pad_selection_highlight
             ll = self._line_lengths
 
             if ey > sy:
-                colors[sy, sx: ll[sy], 3:] = highlight
-                colors[ey, :ex, 3:] = highlight
+                colors[sy, sx: ll[sy]] = highlight
+                colors[ey, :ex] = highlight
                 for i in range(sy + 1, ey):
-                    colors[i, :ll[i], 3:] = highlight
+                    colors[i, :ll[i]] = highlight
             else:
-                colors[sy, sx: ex, 3:] = highlight
+                colors[sy, sx: ex] = highlight
         else:  # If no selection or selection is empty, add line highlight.
-            colors[self.cursor.y, :, 3:] = self.line_highlight
+            colors[self.cursor.y, :] = self.color_theme.pad_line_highlight
 
     def _update_selection(self):
         if self.has_selection:

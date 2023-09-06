@@ -370,14 +370,14 @@ class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
             self._titlebar._label.default_color_pair = title_color
             self._titlebar._label.colors[:] = title_color
 
-            self.border_color = self.color_theme.border_normal
+            self.border_color = self.color_theme.window_border_normal
         else:
             title_color = self.color_theme.titlebar_inactive
             self._titlebar.background_color_pair = title_color
             self._titlebar._label.default_color_pair = title_color
             self._titlebar._label.colors[:] = title_color
 
-            self.border_color = self.color_theme.border_inactive
+            self.border_color = self.color_theme.window_border_inactive
 
     def on_focus(self):
         self.update_theme()

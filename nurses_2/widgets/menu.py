@@ -286,11 +286,11 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
     def _repaint(self):
         if self.item_disabled:
-            color = self.color_theme.item_disabled
+            color = self.color_theme.menu_item_disabled
         elif self.state is ButtonState.NORMAL:
             color = self.color_theme.primary
         elif self.state is ButtonState.HOVER or self.state is ButtonState.DOWN:
-            color = self.color_theme.item_hover
+            color = self.color_theme.menu_item_hover
 
         self.background_color_pair = color
         self.left_label.colors[:] = color
@@ -817,7 +817,7 @@ class _MenuButton(Themable, ToggleButtonBehavior, TextWidget):
 
     def _repaint(self):
         if self.state is not ButtonState.NORMAL or self.toggle_state is ToggleState.ON:
-            color_pair = self.color_theme.item_hover
+            color_pair = self.color_theme.menu_item_hover
         else:
             color_pair = self.color_theme.primary
 
