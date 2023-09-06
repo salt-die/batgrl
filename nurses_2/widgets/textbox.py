@@ -5,13 +5,12 @@ from collections.abc import Callable
 
 from wcwidth import wcswidth
 
-from ..colors import lerp_colors, WHITE
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.themable import Themable
-from .text_widget import TextWidget
-from .widget import Widget, style_char
+from .text_widget import TextWidget, style_char
+from .widget import Widget, intersection, Rect
 
 
 class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
@@ -22,9 +21,15 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
 
     Parameters
     ----------
-    enter_callback : Callable | None, default: None
+    enter_callback : Callable[[Textbox], None] | None, default: None
         If provided, called when textbox has focus and `enter` is pressed.
         The widget will be passed as first argument to the callback.
+    placeholder : str, default: ""
+        Placeholder text for textbox.
+    hide_input : bool, default: False
+        If True, input is hidden with :attr:`hide_char`.
+    hide_char : str, default: "*"
+        Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None, default: None
         Maximum allowed number of characters in textbox.
     is_grabbable : bool, default: True
@@ -74,8 +79,12 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     ----------
     text : str
         The textbox's text.
-    enter_callback : Callable | None
-        Called when textbox has focus and `enter` is pressed.
+    placeholder : str
+        Placeholder text for textbox.
+    hide_input : bool
+        If True, input is hidden with :attr:`hide_char`.
+    hide_char : str
+        Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None
         Maximum allowed number of characters in textbox.
     is_focused : bool
@@ -230,45 +239,49 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, enter_callback: Callable | None=None, max_chars: int | None=None, **kwargs):
+    def __init__(
+        self,
+        enter_callback: Callable[["Textbox"], None] | None=None,
+        placeholder: str="",
+        hide_input: bool=False,
+        hide_char: str="*",
+        max_chars: int | None=None,
+        **kwargs
+    ):
         super().__init__(**kwargs)
-
-        self.enter_callback = enter_callback
-        self.max_chars = max_chars
 
         self._prev_cursor_x = 0
         self._selection_start = self._selection_end = None
         self._line_length = 0
 
+        self._placeholder_widget = TextWidget()
+        self._placeholder_widget.set_text(placeholder)
         self._cursor = TextWidget(size=(1, 1), is_enabled=False)
-        self._box = TextWidget(size=(1, 1))
-        self._box.add_widget(self._cursor)
-        self.add_widget(self._box)
+        self._box = TextWidget(size=self._placeholder_widget.size)
+        self._box.add_widgets(self._placeholder_widget, self._cursor)
 
-    def update_theme(self):
-        primary = self.color_theme.primary
+        self.add_widgets(self._box)
 
-        self._cursor.colors[:] = primary.reversed()
-        self._cursor.default_color_pair = primary.reversed()
-        self._box.colors[:] = primary
-        self._box.default_color_pair = primary
-        self.background_color_pair = primary
+        self.enter_callback = enter_callback
+        self.placeholder = placeholder
+        self.hide_input = hide_input
+        self.hide_char = hide_char
+        self.max_chars = max_chars
 
-        self.selection_hightlight = lerp_colors(primary.bg_color, WHITE, 1/10)
-        self._highlight_selection()
+    @property
+    def placeholder(self) -> str:
+        return self._placeholder
 
-    def on_size(self):
-        if self.width > self._box.width:
-            self._box.width = self.width
-        elif self.width < self._box.width:
-            self._box.width = max(self.width, self._line_length + 1)
-        self._highlight_selection()
-
-    def on_focus(self):
-        self._cursor.is_enabled = True
-
-    def on_blur(self):
-        self._cursor.is_enabled = False
+    @placeholder.setter
+    def placeholder(self, placeholder: str):
+        self._placeholder = placeholder
+        self._placeholder_widget.set_text(placeholder)
+        self._placeholder_widget.colors[:] = self.color_theme.textbox_placeholder
+        if self._line_length == 0 and placeholder:
+            self._placeholder_widget.is_enabled = True
+            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
+        else:
+            self._placeholder_widget.is_enabled = False
 
     @property
     def text(self) -> str:
@@ -283,6 +296,8 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         box.canvas[:] = style_char(" ")
         box.width = max(self._line_length + 1, self.width)
         box.add_str(text)
+        if self._line_length == 0 and self._placeholder:
+            self._placeholder_widget.is_enabled = True
         self.cursor = self._line_length
 
     @property
@@ -296,7 +311,12 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         """
         self._prev_cursor_x = self._cursor.x
         self._cursor.x = cursor
-        self._cursor.canvas[0, 0] = self._box.canvas[0, cursor]
+        if self._line_length == 0 and self._placeholder:
+            self._placeholder_widget.is_enabled = True
+            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
+        else:
+            self._placeholder_widget.is_enabled = False
+            self._cursor.canvas[0, 0] = self._box.canvas[0, cursor]
 
         max_x = self.width - 1
         if (rel_x := cursor + self._box.x) > max_x:
@@ -309,6 +329,53 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     @property
     def has_selection(self) -> bool:
         return self._selection_start is not None and self._selection_end is not None
+
+    def update_theme(self):
+        primary = self.color_theme.textbox_primary
+
+        self.background_color_pair = primary
+        self._placeholder_widget.colors[:] = self.color_theme.textbox_placeholder
+        self._box.colors[:] = primary
+        self._box.default_color_pair = primary
+        self._cursor.colors[:] = primary.reversed()
+
+        self._highlight_selection()
+
+    def on_size(self):
+        self._input_hider.size = self.size
+
+        if self.width > self._box.width:
+            self._box.width = self.width
+        elif self.width < self._box.width:
+            self._box.width = max(self.width, self._line_length + 1)
+        self._highlight_selection()
+
+    def on_focus(self):
+        self._cursor.is_enabled = True
+
+    def on_blur(self):
+        self._cursor.is_enabled = False
+
+    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+        """
+        Paint region given by source into canvas_view and colors_view.
+        """
+        super().render(canvas_view, colors_view, source)
+
+        if self.hide_input and not self._placeholder_widget.is_enabled:
+            vert, hori = source
+            srctop = vert.start
+            srcbot = vert.stop
+            srcleft = hori.start
+            srcright = hori.stop
+
+            intersect = intersection(
+                Rect(0, 1, 0, min(self._line_length + self._box.left, self.width)),
+                Rect(srctop, srcbot, srcleft, srcright),
+            )
+            if intersect is not None:
+                src, _ = intersect
+                canvas_view[src] = style_char(self.hide_char)
 
     def select(self):
         if not self.has_selection:
@@ -333,7 +400,6 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         box.canvas[0, new_len:] = style_char(box.default_char)
 
         self.unselect()
-
         self.cursor = start
 
     def _highlight_selection(self):
@@ -344,7 +410,7 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
             start = self._selection_start
             end = self._selection_end
 
-            colors[0, start: end, 3:] = self.selection_hightlight
+            colors[0, start: end] = self.color_theme.textbox_selection_highlight
 
     def _update_selection(self):
         if self.has_selection:

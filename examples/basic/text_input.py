@@ -58,26 +58,26 @@ class TextPadApp(App):
             textbox.text = ""
 
         # Note that `enter_callback` expects a callable with the textbox as the only argument.
-        textbox = Textbox(pos=(1, 1), size=(1, 31), enter_callback=enter_callback, max_chars=50)
+        textbox = Textbox(
+            pos=(1, 3),
+            size=(1, 31),
+            enter_callback=enter_callback,
+            placeholder="Search...",
+            max_chars=50,
+        )
 
-        primary = DEFAULT_COLOR_THEME.primary
-
-        border = TextWidget(pos=(1, 0), size=(3, 33), default_color_pair=primary)
-        border.add_border()
-        border.add_widget(textbox)
-
-        label = TextWidget(pos_hint=(None, .5), anchor="top_center", size=(1, 7), default_color_pair=primary)
-        label.add_str("Textbox")
-
-        container = Widget(
-            size=(4, 33),
+        border = TextWidget(
+            pos=(1, 0),
+            size=(3, 35),
             pos_hint=(None, .5),
             anchor="top_center",
-            background_color_pair=primary,
+            default_color_pair=DEFAULT_COLOR_THEME.textbox_primary,
         )
-        container.add_widgets(label, border)
+        border.add_border()
+        border.add_str("🔍", pos=(1, 1))
+        border.add_widget(textbox)
 
-        self.add_widgets(window, container)
+        self.add_widgets(window, border)
 
 
 TextPadApp().run()
