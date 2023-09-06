@@ -278,6 +278,12 @@ class ColorTheme(NamedTuple):
         Text pad line highlight color pair.
     pad_selection_highlight : ColorPair
         Text pad selection highlight color pair.
+    textbox_primary : ColorPair
+        Textbox primary color pair.
+    textbox_selection_highlight : ColorPair
+        Textbox selection highlight color pair.
+    textbox_placeholder : ColorPair
+        Textbox placeholder text color pair.
     panel : ColorPair
         Text panel color pair.
     button_normal : ColorPair
@@ -329,6 +335,12 @@ class ColorTheme(NamedTuple):
         Text pad line highlight color pair.
     pad_selection_highlight : ColorPair
         Text pad selection highlight color pair.
+    textbox_primary : ColorPair
+        Textbox primary color pair.
+    textbox_selection_highlight : ColorPair
+        Textbox selection highlight color pair.
+    textbox_placeholder : ColorPair
+        Textbox placeholder text color pair.
     panel : ColorPair
         Text panel color pair.
     button_normal : ColorPair
@@ -384,6 +396,9 @@ class ColorTheme(NamedTuple):
     primary: ColorPair
     pad_line_highlight: ColorPair
     pad_selection_highlight: ColorPair
+    textbox_primary: ColorPair
+    textbox_selection_highlight: ColorPair
+    textbox_placeholder: ColorPair
     panel: ColorPair
     button_normal: ColorPair
     button_hover: ColorPair
@@ -413,6 +428,9 @@ class ColorTheme(NamedTuple):
         panel: str,
         pad_line_highlight: str,
         pad_selection_highlight: str,
+        textbox_primary: str,
+        textbox_selection_highlight: str,
+        textbox_placeholder: str,
         button_normal: str,
         button_hover: str,
         button_press: str,
@@ -443,10 +461,16 @@ class ColorTheme(NamedTuple):
         ----------
         primary : str
             Hex code for primary color pair.
-        pad_line_highlight : ColorPair
-            Text pad line highlight color pair.
-        pad_selection_highlight : ColorPair
-            Text pad selection highlight color pair.
+        pad_line_highlight : str
+            Hex code for text pad line highlight color pair.
+        pad_selection_highlight : str
+            Hex code for text pad selection highlight color pair.
+        textbox_primary : str
+            Hex code for textbox primary color pair.
+        textbox_selection_highlight : str
+            Hex code for textbox selection highlight color pair.
+        textbox_placeholder : str
+            Hex code for textbox placeholder text color pair.
         panel : str
             Hex code for text panel color pair.
         button_normal : str
@@ -455,12 +479,12 @@ class ColorTheme(NamedTuple):
             Hex code for hovored button color pair.
         button_press : str
             Hex code for pressed button color pair.
-        menu_item_hover : ColorPair
-            Hovered menu item color pair.
-        menu_item_selected : ColorPair
-            Selected menu item color pair.
-        menu_item_disabled : ColorPair
-            Disabled menu item color pair.
+        menu_item_hover : str
+            Hex code for hovered menu item color pair.
+        menu_item_selected : str
+            Hex code for selected menu item color pair.
+        menu_item_disabled : str
+            Hex code for disabled menu item color pair.
         titlebar_normal : str
             Hex code for titlebar color pair.
         titlebar_inactive : str
@@ -477,7 +501,7 @@ class ColorTheme(NamedTuple):
             Hex code for hovered scrollbar indicator color.
         scrollbar_indicator_press : str
             Hex code for pressed scrollbar indicator color.
-        data_table_sort_indicator : ColorPair
+        data_table_sort_indicator : str
             Hex code for color pair of sort indicator for a column label in a data table.
         data_table_hover : str
             Hex code for color pair of hovered items in a data table.
@@ -494,6 +518,9 @@ class ColorTheme(NamedTuple):
             ColorPair.from_hex(primary),
             ColorPair.from_hex(pad_line_highlight),
             ColorPair.from_hex(pad_selection_highlight),
+            ColorPair.from_hex(textbox_primary),
+            ColorPair.from_hex(textbox_selection_highlight),
+            ColorPair.from_hex(textbox_placeholder),
             ColorPair.from_hex(panel),
             ColorPair.from_hex(button_normal),
             ColorPair.from_hex(button_hover),
