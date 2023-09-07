@@ -748,7 +748,7 @@ class DataTable(Themable, ScrollView):
             row.size = row.minimum_grid_size
         self._table.size = self._table.minimum_grid_size
 
-    def add_column(self, label: str, column: None | Sequence[T] | tuple[Sequence[T], ColumnStyle]=None) -> int:
+    def add_column(self, label: str, column: None | Sequence[T] | ColumnStyle | tuple[Sequence[T], ColumnStyle]=None) -> int:
         """
         Add a column to the data table.
 
@@ -756,7 +756,7 @@ class DataTable(Themable, ScrollView):
         ----------
         label : str
             The column label.
-        column : None | Sequence[T] | tuple[Sequence[T], ColumnStyle], default: None
+        column : None | Sequence[T] | ColumnStyle | tuple[Sequence[T], ColumnStyle], default: None
             Column data or a two-tuple of (data, ColumnStyle).
 
         Returns
@@ -768,6 +768,8 @@ class DataTable(Themable, ScrollView):
             case None:
                 column_data = []
                 column_style = ColumnStyle()
+            case ColumnStyle() as column_style:
+                column_data = []
             case column_data, ColumnStyle() as column_style:
                 pass
             case column_data:
