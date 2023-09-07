@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.text_panel &#8212; Python 0.19.0 documentation</title>
+    <title>nurses_2.widgets.text_panel &#8212; Python 0.20.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.19.0 documentation</p>
+    <p class="title logo__title">Python 0.20.0 documentation</p>
   
 </a>
     
@@ -266,6 +266,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.color_picker.html">
      nurses_2.widgets.color_picker
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.data_table.html">
+     nurses_2.widgets.data_table
     </a>
    </li>
    <li class="toctree-l2">
@@ -582,9 +587,9 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.text_panel.</span></span><span class="sig-name descname"><span class="pre">TextPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.text_widget.html#nurses_2.widgets.text_widget.TextWidget" title="nurses_2.widgets.text_widget.TextWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_widget.TextWidget</span></code></a></p>
 <p>A widget for static multi-line text.</p>
-<p>Text can be set by setting the <cite>text</cite> attribute. The read-only attribute <a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.min_size" title="nurses_2.widgets.text_panel.TextPanel.min_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_size</span></code></a> is
-the minimum size the panel must be to show all text. This can be used to set the size of the
-panel, e.g., <code class="docutils literal notranslate"><span class="pre">my_panel.size</span> <span class="pre">=</span> <span class="pre">my_panel.min_size</span></code>.</p>
+<p>Text can be set by setting the <cite>text</cite> attribute. The read-only attribute <a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.minimum_panel_size" title="nurses_2.widgets.text_panel.TextPanel.minimum_panel_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">minimum_panel_size</span></code></a>
+is the minimum size the panel must be to show all text. This can be used to set the size of the
+panel, e.g., <code class="docutils literal notranslate"><span class="pre">my_panel.size</span> <span class="pre">=</span> <span class="pre">my_panel.minimum_panel_size</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -644,7 +649,7 @@ widget is not transparent.</p>
 </dd>
 <dt><strong>padding_x: int</strong></dt><dd><p>Padding on the left and right of panel.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.min_size" title="nurses_2.widgets.text_panel.TextPanel.min_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min_size</span></code></a><span class="classifier">Size</span></dt><dd><p>Minimum size needed for panel to show all text.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.minimum_panel_size" title="nurses_2.widgets.text_panel.TextPanel.minimum_panel_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum_panel_size</span></code></a><span class="classifier">Size</span></dt><dd><p>Minimum size needed for panel to show all text.</p>
 </dd>
 <dt><strong>text_container</strong><span class="classifier">TextWidget</span></dt><dd><p>Child widget that contains the panel text.</p>
 </dd>
@@ -784,7 +789,7 @@ widget is not transparent.</p>
 <td><p>Yield all descendents of root widget.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>walk:</strong></p></td>
-<td><p>Yield all descendents (or ancestors if <cite>reverse</cite> is True).</p></td>
+<td><p>Yield all descendents (or ancestors if <cite>reverse</cite> is true).</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>subscribe:</strong></p></td>
 <td><p>Subscribe to a widget property.</p></td>
@@ -934,18 +939,18 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.collides_point">
 <span class="sig-name descname"><span class="pre">collides_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.collides_point" title="Permalink to this definition">#</a></dt>
-<dd><p>Return True if point is within widget’s bounding box.</p>
+<dd><p>True if point is within widget’s bounding box.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.collides_widget">
 <span class="sig-name descname"><span class="pre">collides_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.collides_widget" title="Permalink to this definition">#</a></dt>
-<dd><p>Return True if some part of <cite>other</cite> is within bounding box.</p>
+<dd><p>True if some part of <cite>other</cite> is within bounding box.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.color_theme">
-<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">panel=ColorPair(fg_red=77,</span> <span class="pre">fg_green=103,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">button_normal=ColorPair(fg_red=221,</span> <span class="pre">fg_green=228,</span> <span class="pre">fg_blue=237,</span> <span class="pre">bg_red=42,</span> <span class="pre">bg_green=60,</span> <span class="pre">bg_blue=160),</span> <span class="pre">button_hover=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=50,</span> <span class="pre">bg_green=72,</span> <span class="pre">bg_blue=192),</span> <span class="pre">button_press=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=196,</span> <span class="pre">bg_green=162,</span> <span class="pre">bg_blue=25),</span> <span class="pre">item_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">item_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">item_disabled=ColorPair(fg_red=39,</span> <span class="pre">fg_green=43,</span> <span class="pre">fg_blue=64,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_normal=ColorPair(fg_red=255,</span> <span class="pre">fg_green=224,</span> <span class="pre">fg_blue=223,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_inactive=ColorPair(fg_red=125,</span> <span class="pre">fg_green=107,</span> <span class="pre">fg_blue=113,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">border_normal=AColor(red=18,</span> <span class="pre">green=33,</span> <span class="pre">blue=98,</span> <span class="pre">alpha=255),</span> <span class="pre">border_inactive=AColor(red=40,</span> <span class="pre">green=44,</span> <span class="pre">blue=62,</span> <span class="pre">alpha=255),</span> <span class="pre">scrollbar=Color(red=7,</span> <span class="pre">green=12,</span> <span class="pre">blue=37),</span> <span class="pre">scrollbar_indicator_normal=Color(red=14,</span> <span class="pre">green=24,</span> <span class="pre">blue=67),</span> <span class="pre">scrollbar_indicator_hover=Color(red=17,</span> <span class="pre">green=30,</span> <span class="pre">blue=79),</span> <span class="pre">scrollbar_indicator_press=Color(red=23,</span> <span class="pre">green=40,</span> <span class="pre">blue=104))</span></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.color_theme" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">pad_line_highlight=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=12,</span> <span class="pre">bg_green=14,</span> <span class="pre">bg_blue=48),</span> <span class="pre">pad_selection_highlight=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=71),</span> <span class="pre">textbox_primary=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">textbox_selection_highlight=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=71),</span> <span class="pre">textbox_placeholder=ColorPair(fg_red=42,</span> <span class="pre">fg_green=58,</span> <span class="pre">fg_blue=146,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">panel=ColorPair(fg_red=77,</span> <span class="pre">fg_green=103,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">button_normal=ColorPair(fg_red=221,</span> <span class="pre">fg_green=228,</span> <span class="pre">fg_blue=237,</span> <span class="pre">bg_red=42,</span> <span class="pre">bg_green=60,</span> <span class="pre">bg_blue=160),</span> <span class="pre">button_hover=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=50,</span> <span class="pre">bg_green=72,</span> <span class="pre">bg_blue=192),</span> <span class="pre">button_press=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=196,</span> <span class="pre">bg_green=162,</span> <span class="pre">bg_blue=25),</span> <span class="pre">menu_item_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">menu_item_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">menu_item_disabled=ColorPair(fg_red=39,</span> <span class="pre">fg_green=43,</span> <span class="pre">fg_blue=64,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_normal=ColorPair(fg_red=255,</span> <span class="pre">fg_green=224,</span> <span class="pre">fg_blue=223,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_inactive=ColorPair(fg_red=125,</span> <span class="pre">fg_green=107,</span> <span class="pre">fg_blue=113,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">window_border_normal=AColor(red=18,</span> <span class="pre">green=33,</span> <span class="pre">blue=98,</span> <span class="pre">alpha=255),</span> <span class="pre">window_border_inactive=AColor(red=40,</span> <span class="pre">green=44,</span> <span class="pre">blue=62,</span> <span class="pre">alpha=255),</span> <span class="pre">scrollbar=Color(red=7,</span> <span class="pre">green=12,</span> <span class="pre">blue=37),</span> <span class="pre">scrollbar_indicator_normal=Color(red=14,</span> <span class="pre">green=24,</span> <span class="pre">blue=67),</span> <span class="pre">scrollbar_indicator_hover=Color(red=17,</span> <span class="pre">green=30,</span> <span class="pre">blue=79),</span> <span class="pre">scrollbar_indicator_press=Color(red=23,</span> <span class="pre">green=40,</span> <span class="pre">blue=104),</span> <span class="pre">data_table_sort_indicator=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">data_table_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">data_table_stripe=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=11,</span> <span class="pre">bg_green=18,</span> <span class="pre">bg_blue=56),</span> <span class="pre">data_table_stripe_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=74),</span> <span class="pre">data_table_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">data_table_selected_hover=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=31,</span> <span class="pre">bg_blue=94))</span></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.color_theme" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -974,19 +979,19 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.dispatch_key">
 <span class="sig-name descname"><span class="pre">dispatch_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><span class="pre">nurses_2.io.input.events.KeyEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.dispatch_key" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns True.)</p>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.dispatch_mouse">
 <span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.dispatch_mouse" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns True.)</p>
+<dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.dispatch_paste" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns True.)</p>
+<dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1025,15 +1030,15 @@ when the widget’s parent’s size changes.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.min_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.min_size" title="Permalink to this definition">#</a></dt>
-<dd><p>Minimum size needed for panel to show all text.</p>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.min_width">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.min_width" title="Permalink to this definition">#</a></dt>
 <dd><p>The minimum width of widget set due to <a class="reference internal" href="#nurses_2.widgets.text_panel.TextPanel.size_hint" title="nurses_2.widgets.text_panel.TextPanel.size_hint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">size_hint</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.minimum_panel_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">minimum_panel_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></em><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.minimum_panel_size" title="Permalink to this definition">#</a></dt>
+<dd><p>Minimum size needed for panel to show all text.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1055,19 +1060,19 @@ empty characters are placed after each full-width character.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.on_key">
 <span class="sig-name descname"><span class="pre">on_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><span class="pre">nurses_2.io.input.events.KeyEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.on_key" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle key press event. (Handled key presses should return True else False or None).</p>
+<dd><p>Handle key press event. (Handled key presses should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.on_mouse">
 <span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseEvent" title="nurses_2.io.input.events.MouseEvent"><span class="pre">nurses_2.io.input.events.MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.on_mouse" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle mouse event. (Handled mouse events should return True else False or None).</p>
+<dd><p>Handle mouse event. (Handled mouse events should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.on_paste" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle paste event. (Handled paste events should return True else False or None).</p>
+<dd><p>Handle paste event. (Handled paste events should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1264,7 +1269,7 @@ relevant hints aren’t <cite>None</cite> to start.</p>
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.unsubscribe">
 <span class="sig-name descname"><span class="pre">unsubscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.unsubscribe" title="Permalink to this definition">#</a></dt>
 <dd><p>Unsubscribe to a widget event and return the callable that was subscribed
-to the event or <cite>None</cite> if subscription isn’t found.</p>
+to the event or <code class="docutils literal notranslate"><span class="pre">None</span></code> if subscription isn’t found.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1276,7 +1281,7 @@ to the event or <cite>None</cite> if subscription isn’t found.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.text_panel.TextPanel.walk">
 <span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.text_panel.TextPanel.walk" title="Permalink to this definition">#</a></dt>
-<dd><p>Yield all descendents (or ancestors if <cite>reverse</cite> is True).</p>
+<dd><p>Yield all descendents (or ancestors if <cite>reverse</cite> is true).</p>
 </dd></dl>
 
 <dl class="py method">

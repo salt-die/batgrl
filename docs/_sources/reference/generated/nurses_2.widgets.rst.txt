@@ -34,6 +34,7 @@
    nurses_2.widgets.braille_video_player
    nurses_2.widgets.button
    nurses_2.widgets.color_picker
+   nurses_2.widgets.data_table
    nurses_2.widgets.digital_display
    nurses_2.widgets.file_chooser
    nurses_2.widgets.flat_toggle
