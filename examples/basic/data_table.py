@@ -26,8 +26,8 @@ class TableApp(App):
             **common_kwargs
         )
         table_2.top = table_1.bottom + 1
-        for column in TABLE:
-            table_2.add_column(column, ColumnStyle(alignment="center", padding=3))
+        for column_label in TABLE:
+            table_2.add_column(column_label, style=ColumnStyle(alignment="center", padding=3))
         for i in range(len(TABLE["Name"])):
             table_2.add_row([column[i] for column in TABLE.values()])
 

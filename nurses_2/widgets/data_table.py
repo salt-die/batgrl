@@ -3,7 +3,7 @@ A data table widget.
 """
 from enum import Enum
 from collections.abc import Callable, Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import count
 from typing import Protocol, TypeVar
 
@@ -302,6 +302,11 @@ class DataTable(Themable, ScrollView):
 
     Parameters
     ----------
+    data : dict[str, Sequence[T]] | None=None, default: None
+        If given, construct a data table from this data. To gain more
+        control over column styling use :meth:`add_column`.
+    default_style : ColumnStyle | None, default: None
+        Default style for new columns.
     select_items : SelectItems, default: SelectItems.Row
         Determines which items are selected when data table is clicked.
     zebra_stripes : bool, default: True
@@ -369,6 +374,8 @@ class DataTable(Themable, ScrollView):
 
     Attributes
     ----------
+    default_style : ColumnStyle
+        Default style for new columns.
     select_items : SelectItems
         Which items are selected when data table is clicked.
     zebra_stripes : bool
@@ -547,7 +554,8 @@ class DataTable(Themable, ScrollView):
 
     def __init__(
         self,
-        data: dict[str, Sequence[T] | tuple[Sequence[T], ColumnStyle]] | None=None,
+        data: dict[str, Sequence[T]] | None=None,
+        default_style: ColumnStyle | None=None,
         select_items: SelectItems=SelectItems.ROW,
         zebra_stripes: bool=True,
         allow_sorting: bool=True,
@@ -571,6 +579,8 @@ class DataTable(Themable, ScrollView):
         self._table.add_widget(self._column_labels)
         self.view = self._table
 
+        self.default_style = default_style or ColumnStyle()
+        """Default style for new columns."""
         self._select_items = select_items
         """Determines which items are selected when data table is clicked."""
         self._zebra_stripes = zebra_stripes
@@ -580,7 +590,7 @@ class DataTable(Themable, ScrollView):
 
         if data is not None:
             for label, column in data.items():
-                self.add_column(label, column)
+                self.add_column(label, data=column)
 
     def _repaint_cells(self):
         for row in self._table.children[1:]:
@@ -755,7 +765,7 @@ class DataTable(Themable, ScrollView):
             row.size = row.minimum_grid_size
         self._table.size = self._table.minimum_grid_size
 
-    def add_column(self, label: str, column: None | Sequence[T] | ColumnStyle | tuple[Sequence[T], ColumnStyle]=None) -> int:
+    def add_column(self, label: str, data: Sequence[T] | None=None, style: ColumnStyle | None=None) -> int:
         """
         Add a column to the data table.
 
@@ -763,40 +773,36 @@ class DataTable(Themable, ScrollView):
         ----------
         label : str
             The column label.
-        column : None | Sequence[T] | ColumnStyle | tuple[Sequence[T], ColumnStyle], default: None
-            Column data or a two-tuple of (data, ColumnStyle).
+        data : Sequence[T] | None, default: None
+            Column data.
+        style : ColumnStyle | None, default: None
+            Column style. Uses :attr:`default_style` by default.
 
         Returns
         -------
         int
             Column ID. This ID can be used to remove the column.
         """
-        match column:
-            case None:
-                column_data = []
-                column_style = ColumnStyle()
-            case ColumnStyle() as column_style:
-                column_data = []
-            case column_data, ColumnStyle() as column_style:
-                pass
-            case column_data:
-                column_style = ColumnStyle()
+        if data is None:
+            data = []
+        if style is None:
+            style = replace(self.default_style)
 
         column_id = next(self._IDS)
         self._column_ids.append(column_id)
-        self._column_styles[column_id] = column_style
+        self._column_styles[column_id] = style
 
         column_label = _ColumnLabel(
             data_table=self,
             column_id=column_id,
             label=label,
-            allow_sorting=self.allow_sorting and column_style.allow_sorting,
+            allow_sorting=self.allow_sorting and style.allow_sorting,
         )
         self._column_labels.grid_columns += 1
         self._column_labels.add_widget(column_label)
 
         striped = self.zebra_stripes and len(self._column_labels.children) % 2 == 0
-        for i, data in enumerate(column_data, start=1):
+        for i, data in enumerate(data, start=1):
             if i < len(self._table.children):
                 current_row = self._table.children[i]
                 row_id = current_row.children[0].row_id
