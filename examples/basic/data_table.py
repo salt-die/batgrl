@@ -11,6 +11,7 @@ TABLE = {
     "Country": ["United States", "United States", "Canada", "New Zealand", "United Kingdom"],
 }
 
+
 class TableApp(App):
     async def on_start(self):
         common_kwargs = dict(
@@ -31,5 +32,6 @@ class TableApp(App):
             table_2.add_row([column[i] for column in TABLE.values()])
 
         self.add_widgets(table_1, table_2)
+
 
 TableApp(title="Data Table Example").run()
