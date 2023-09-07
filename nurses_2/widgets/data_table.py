@@ -1,8 +1,12 @@
+"""
+A data table widget.
+"""
 from enum import Enum
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from itertools import count
 from typing import Protocol, TypeVar
+
 from wcwidth import wcswidth
 
 from ..io import MouseEvent
@@ -53,7 +57,7 @@ class ColumnStyle:
 
     Parameters
     ----------
-    render : str, default: str
+    render : Callable[[T], str] | None, default: None
         A callable that renders column data into a string. Uses the
         built-in `str` by default.
     alignment : Alignment, default: Alignment.LEFT
@@ -67,7 +71,7 @@ class ColumnStyle:
 
     Attributes
     ----------
-    render : str
+    render : Callable[[T], str]
         A callable that renders column data into a string.
     alignment : Alignment
         Alignment of the column.
@@ -78,7 +82,7 @@ class ColumnStyle:
     allow_sorting : bool
         Whether sorting is allowed for column.
     """
-    render: Callable[[T], str] = str
+    render: Callable[[T], str] | None = None
     """
     A callable that renders column data into a string. Uses the built-in `str` by default.
     """
@@ -98,6 +102,9 @@ class ColumnStyle:
     """
     Whether sorting is allowed for column.
     """
+    def __post_init__(self):
+        if self.render is None:
+            self.render = str
 
 class _SortState(str, Enum):
     """
@@ -290,13 +297,12 @@ class _DataCell(_CellBase):
 
 
 class DataTable(Themable, ScrollView):
-    _IDS = count()
     """
     A data table widget.
 
     Parameters
     ----------
-    select_items : SelectItem, default: SelectItem.Row
+    select_items : SelectItems, default: SelectItems.Row
         Determines which items are selected when data table is clicked.
     zebra_stripes : bool, default: True
         Whether alternate rows are colored differently.
@@ -363,7 +369,7 @@ class DataTable(Themable, ScrollView):
 
     Attributes
     ----------
-    select_items : SelectItem
+    select_items : SelectItems
         Which items are selected when data table is clicked.
     zebra_stripes : bool
         Whether alternate rows are colored differently.
@@ -537,6 +543,7 @@ class DataTable(Themable, ScrollView):
     destroy:
         Destroy this widget and all descendents.
     """
+    _IDS = count()
 
     def __init__(
         self,
