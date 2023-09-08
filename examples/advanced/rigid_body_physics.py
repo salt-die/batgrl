@@ -31,7 +31,7 @@ BOX_SIZE = W, H = Vec2d(9, 9)
 BOX_MASS = .1
 BALL_MASS = 100
 BALL_RADIUS = 6
-GROUND_LEVEL = 0
+GROUND_LEVEL = 12
 
 BOX_CENTER = HW, HH = W // 2, H // 2
 BOX_POINTS = np.array([[0, 0], [0, W], [0, H], [W, H]]).reshape(-1, 1, 2)
@@ -148,8 +148,8 @@ class PhysicsApp(App):
             for j in range(3 - i):
                 body = pymunk.Body(BOX_MASS, pymunk.moment_for_box(BOX_MASS, BOX_SIZE))
                 body.position = (
-                    1.3 * BOX_SIZE.x * i + GROUND_LEVEL + 5,
-                    1.3 * BOX_SIZE.y * j + 10,
+                    1.3 * BOX_SIZE.x * i + 20,
+                    1.3 * BOX_SIZE.y * j + GROUND_LEVEL,
                 )
                 box = pymunk.Poly.create_box(body, size=BOX_SIZE)
                 box.elasticity = 0.3
