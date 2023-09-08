@@ -2,9 +2,9 @@
 A data table widget.
 """
 from enum import Enum
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
-from itertools import count
+from itertools import count, islice
 from typing import Protocol, TypeVar
 
 from wcwidth import wcswidth
@@ -589,20 +589,8 @@ class DataTable(Themable, ScrollView):
         """Whether columns can be sorted."""
 
         if data is not None:
-            for label, column in data.items():
-                self.add_column(label, data=column)
-
-    def _repaint_cells(self):
-        for row in self._table.children[1:]:
-            for i, cell in enumerate(row.children):
-                cell.striped = self.zebra_stripes and i % 2 == 1
-                self._paint_cell_normal(cell)
-
-        column_id = self._hover_column_id
-        row_id = self._hover_row_id
-        self._hover_column_id = -1
-        self._hover_row_id = -1
-        self._update_hover(column_id, row_id)
+            for label, column_data in data.items():
+                self.add_column(label, data=column_data)
 
     @property
     def select_items(self) -> SelectItems:
@@ -615,7 +603,7 @@ class DataTable(Themable, ScrollView):
     def select_items(self, select_items: SelectItems):
         select_items = SelectItems(select_items)
         self._select_items = select_items
-        for row in self._table.children[1:]:
+        for row in self._iter_rows():
             for cell in row.children:
                 cell.selected = False
         self._repaint_cells()
@@ -684,6 +672,18 @@ class DataTable(Themable, ScrollView):
         else:
             cell.colors[:] = self.color_theme.primary
 
+    def _repaint_cells(self):
+        for row in self._iter_rows():
+            for i, cell in enumerate(row.children):
+                cell.striped = self.zebra_stripes and i % 2 == 1
+                self._paint_cell_normal(cell)
+
+        column_id = self._hover_column_id
+        row_id = self._hover_row_id
+        self._hover_column_id = -1
+        self._hover_row_id = -1
+        self._update_hover(column_id, row_id)
+
     def _update_hover(self, column_id: int=-1, row_id: int=-1):
         cell: _DataCell
 
@@ -741,7 +741,7 @@ class DataTable(Themable, ScrollView):
     def _sort(self, column_id: int, sort_state: _SortState):
         column_index = self._column_ids.index(column_id)
         sorted_rows = sorted(
-            self._table.children[1:],
+            self._iter_rows(),
             key=lambda row: row.children[column_index].data,
             reverse=sort_state is _SortState.DESCENDING,
         )
@@ -765,9 +765,20 @@ class DataTable(Themable, ScrollView):
             row.size = row.minimum_grid_size
         self._table.size = self._table.minimum_grid_size
 
+        # Remove hovered rows/columns:
+        self._hover_column_id = -1
+        self._hover_row_id = -1
+        self._repaint_cells()
+
+    def _iter_rows(self):
+        return islice(self._table.children, 1, None)
+
     def add_column(self, label: str, data: Sequence[T] | None=None, style: ColumnStyle | None=None) -> int:
         """
         Add a column to the data table.
+
+        If this is the first column added to the table, a row will be added for each item in `data`.
+        Otherwise, the number of items in data must be equal to the number of rows in the table.
 
         Parameters
         ----------
@@ -781,10 +792,12 @@ class DataTable(Themable, ScrollView):
         Returns
         -------
         int
-            Column ID. This ID can be used to remove the column.
+            Column id. This id can be used to remove the column.
         """
         if data is None:
             data = []
+        if self._column_ids and len(data) != len(self._rows):
+            raise ValueError("Number of items in column data inconsistent with number of rows.")
         if style is None:
             style = replace(self.default_style)
 
@@ -801,26 +814,24 @@ class DataTable(Themable, ScrollView):
         self._column_labels.grid_columns += 1
         self._column_labels.add_widget(column_label)
 
-        striped = self.zebra_stripes and len(self._column_labels.children) % 2 == 0
-        for i, data in enumerate(data, start=1):
-            if i < len(self._table.children):
-                current_row = self._table.children[i]
-                row_id = current_row.children[0].row_id
-            else:
-                current_row = GridLayout(grid_rows=1, grid_columns=0, orientation=Orientation.LR_BT)
+        if len(self._column_ids) == 1:
+            self._table.grid_rows += len(data)
+            for item in data:
                 row_id = next(self._IDS)
-                self._rows[row_id] = current_row
-                self._table.grid_rows += 1
-                self._table.add_widget(current_row)
-
-            current_cell = _DataCell(data_table=self, column_id=column_id, data=data, row_id=row_id, striped=striped)
-            current_row.grid_columns += 1
-            current_row.add_widget(current_cell)
+                row = GridLayout(grid_rows=1, grid_columns=1, orientation=Orientation.LR_BT)
+                row.add_widget(_DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id))
+                self._rows[row_id] = row
+                self._table.add_widget(row)
+        else:
+            for item, row in zip(data, self._iter_rows()):
+                row_id = row.children[0].row_id
+                row.grid_columns += 1
+                row.add_widget(_DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id))
 
         self._fix_sizes()
         return column_id
 
-    def add_row(self, row: Iterable[SupportsLessThan]) -> int:
+    def add_row(self, data: Sequence[SupportsLessThan]) -> int:
         """
         Add a row to the data table.
 
@@ -829,36 +840,26 @@ class DataTable(Themable, ScrollView):
 
         Parameters
         ----------
-        row : Iterable[SupportsLessThan]
-            The row to add.
+        data : Sequence[SupportsLessThan]
+            The row data.
 
         Returns
         -------
         int
-            Row ID. This ID can be used to remove the row.
+            Row id. This id can be used to remove the row.
         """
-        if not self._column_labels.children:
-            raise IndexError("No columns")
+        if not self._column_ids or len(data) != len(self._column_ids):
+            raise ValueError("Number of items in row data inconsistent with number of columns.")
 
-        row_layout = GridLayout(grid_rows=1, grid_columns=0, orientation=Orientation.LR_BT)
         row_id = next(self._IDS)
+        row_layout = GridLayout(grid_rows=1, grid_columns=len(data), orientation=Orientation.LR_BT)
+        row_layout.add_widgets(
+            _DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id)
+            for column_id, item in zip(self._column_ids, data)
+        )
         self._rows[row_id] = row_layout
         self._table.grid_rows += 1
         self._table.add_widget(row_layout)
-
-        column_label: _ColumnLabel
-        for i, (column_label, row_item) in enumerate(zip(self._column_labels.children, row, strict=True)):
-            striped = self.zebra_stripes and i % 2 == 1
-            cell = _DataCell(
-                data_table=self,
-                column_id=column_label.column_id,
-                data=row_item,
-                row_id=row_id,
-                striped=striped,
-            )
-            row_layout.grid_columns += 1
-            row_layout.add_widget(cell)
-
         self._fix_sizes()
         return row_id
 
@@ -874,18 +875,12 @@ class DataTable(Themable, ScrollView):
             The id of the column to remove.
         """
 
-        if column_id == self._hover_column_id:
-            self._hover_column_id = -1
-
         column_index = self._column_ids.index(column_id)
         del self._column_ids[column_index]
         for row in self._table.children:
             row.remove_widget(row.children[column_index])
             row.grid_columns -= 1
-            row._reposition_children()
-        self._table._reposition_children()
         self._fix_sizes()
-        self._repaint_cells()
 
     def remove_row(self, row_id: int):
         """
@@ -898,13 +893,9 @@ class DataTable(Themable, ScrollView):
         row_id : int
             The id of the row to remove.
         """
-        if row_id == self._hover_row_id:
-            self._hover_row_id = -1
-
         row = self._rows.pop(row_id)
         self._table.remove_widget(row)
         self._table.grid_rows -= 1
-        self._table._reposition_children()
         self._fix_sizes()
 
     def row_id_from_index(self, index: int):
@@ -916,7 +907,7 @@ class DataTable(Themable, ScrollView):
         index : int
             Index of row in table.
         """
-        return self._table.children[index - 1].children[0].row_id
+        return self._table.children[index + 1].children[0].row_id
 
     def column_id_from_index(self, index: int):
         """
