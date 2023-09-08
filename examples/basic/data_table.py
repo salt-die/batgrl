@@ -23,11 +23,12 @@ class TableApp(App):
             select_items="column",
             zebra_stripes=False,
             allow_sorting=False,
+            default_style=ColumnStyle(alignment="center", padding=3),
             **common_kwargs
         )
         table_2.top = table_1.bottom + 1
         for column_label in TABLE:
-            table_2.add_column(column_label, style=ColumnStyle(alignment="center", padding=3))
+            table_2.add_column(column_label)
         for i in range(len(TABLE["Name"])):
             table_2.add_row([column[i] for column in TABLE.values()])
 
