@@ -1,18 +1,33 @@
 """
 A text-pad widget for multiline editable text.
 """
+from functools import wraps
+
 from wcwidth import wcswidth
 
-from ..clamp import clamp
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focus_behavior import FocusBehavior
 from .behaviors.themable import Themable
 from .scroll_view import ScrollView
 from .text_widget import TextWidget, Point, add_text, style_char
 
-# TODO: Add an Undo stack.
-# TODO: Fix backspace/delete/select over full-width characters.
-# TODO: Move-across-word keybinds.
+WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
+
+def undoable(method):
+    """
+    Adds textpad text to the undo stack if a method modifies it.
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        before_text = self.text
+        before_cursor = self.cursor
+        method(self, *args, **kwargs)
+        after_text = self.text
+        if before_text != after_text:
+            self._undo_stack.append((before_text, before_cursor))
+            self._redo_stack.clear()
+
+    return wrapper
 
 
 class TextPad(Themable, FocusBehavior, ScrollView):
@@ -264,6 +279,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._last_x = None
         self._selection_start = self._selection_end = None
         self._line_lengths = [0]
+        self._undo_stack = []
+        self._redo_stack = []
 
         self._cursor = TextWidget(size=(1, 1), is_enabled=False)
         self._pad = TextWidget(size=(1, 1))
@@ -297,15 +314,34 @@ class TextPad(Themable, FocusBehavior, ScrollView):
     def on_blur(self):
         self._cursor.is_enabled = False
 
+    def undo(self):
+        if self._undo_stack:
+            self._redo_stack.append((self.text, self.cursor))
+            text, cursor = self._undo_stack.pop()
+            self._update_text(text)
+            self.cursor = cursor
+
+    def redo(self):
+        if self._redo_stack:
+            self._undo_stack.append((self.text, self.cursor))
+            text, cursor = self._redo_stack.pop()
+            self._update_text(text)
+            self.cursor = cursor
+
     @property
     def text(self) -> str:
         return "\n".join(
-            "".join(row[:nchars])
-            for row, nchars in zip(self._pad.canvas["char"], self._line_lengths)
+            "".join(row[:line_length])
+            for row, line_length in zip(self._pad.canvas["char"], self._line_lengths)
         )
 
     @text.setter
     def text(self, text: str):
+        self._undo_stack.clear()
+        self._redo_stack.clear()
+        self._update_text(text)
+
+    def _update_text(self, text: str):
         lines = text.splitlines()
         self._line_lengths = list(map(wcswidth, lines))
 
@@ -432,16 +468,19 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         y, x = self._cursor.pos
 
         while n > 0:
-            to_start = clamp(n, 0, x)
-            n -= to_start
-            x -= to_start
+            text_before_cursor = "".join(self._pad.canvas["char"][y, :x])
+            nchars_before_cursor = len(text_before_cursor)
+            if n <= nchars_before_cursor:
+                x = wcswidth(text_before_cursor[:-n])
+                break
 
             if y == 0:
+                x = 0
                 break
-            elif n > 0:
-                y -= 1
-                n -= 1
-                x = self._line_lengths[y]
+
+            y -= 1
+            x = self._line_lengths[y]
+            n -= nchars_before_cursor + 1
 
         self.cursor = y, x
 
@@ -450,16 +489,19 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         y, x = self._cursor.pos
 
         while n > 0:
-            to_end = clamp(n, 0, self._line_lengths[y] - x)
-            n -= to_end
-            x += to_end
+            text_after_cursor = "".join(self._pad.canvas["char"][y, x:self._line_lengths[y]])
+            nchars_after_cursor = len(text_after_cursor)
+            if n <= nchars_after_cursor:
+                x += wcswidth(text_after_cursor[:n])
+                break
 
             if y == self.end_text_point.y:
+                x = self._line_lengths[y]
                 break
-            elif n > 0:
-                y += 1
-                n -= 1
-                x = 0
+
+            y += 1
+            n -= nchars_after_cursor + 1
+            x = 0
 
         self.cursor = y, x
 
@@ -492,6 +534,44 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
         self.cursor = y, x
 
+    def move_word_left(self):
+        last_x = self.cursor.x
+        first_char_found = False
+        while True:
+            self.move_cursor_left()
+            if self.cursor.x == last_x:
+                break
+
+            last_x = self.cursor.x
+
+            current_char = self._pad.canvas[self.cursor]["char"]
+            if not first_char_found:
+                if not current_char.isspace():
+                    first_char_found = True
+                    is_word_char = current_char in WORD_CHARS
+            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                self.move_cursor_right()
+                break
+
+    def move_word_right(self):
+        last_x = self.cursor.x
+        first_char_found = False
+        while True:
+            self.move_cursor_right()
+            if self.cursor.x == last_x:
+                break
+
+            last_x = self.cursor.x
+
+            current_char = self._pad.canvas[self.cursor]["char"]
+            if not first_char_found:
+                if not current_char.isspace():
+                    first_char_found = True
+                    is_word_char = current_char in WORD_CHARS
+            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                break
+
+    @undoable
     def _enter(self):
         self.delete_selection()
 
@@ -515,6 +595,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
         self.cursor = y + 1, 0
 
+    @undoable
     def _tab(self):
         self.delete_selection()
 
@@ -530,26 +611,18 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
         self.cursor = y, x + 4
 
+    @undoable
     def _backspace(self):
         if not self.has_selection:
             self.select()
-            y, x = self.cursor
-            if x > 0:
-                self._selection_start = y, x - 1
-            elif y > 0:
-                self._selection_start = y - 1, self._line_lengths[y - 1]
-
+            self.move_cursor_left()
         self.delete_selection()
 
+    @undoable
     def _delete(self):
         if not self.has_selection:
             self.select()
-            y, x = self.cursor
-            if x < self._line_lengths[y]:
-                self._selection_end = y, x + 1
-            elif y < self.end_text_point.y:
-                self._selection_end = y + 1, 0
-
+            self.move_cursor_right()
         self.delete_selection()
 
     def _left(self):
@@ -567,6 +640,14 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             self.cursor = select_end
         else:
             self.move_cursor_right()
+
+    def _ctrl_left(self):
+        self.unselect()
+        self.move_word_left()
+
+    def _ctrl_right(self):
+        self.unselect()
+        self.move_word_right()
 
     def _up(self):
         if self.has_selection:
@@ -613,6 +694,14 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self.select()
         self.move_cursor_right()
 
+    def _shift_ctrl_left(self):
+        self.select()
+        self.move_word_left()
+
+    def _shift_ctrl_right(self):
+        self.select()
+        self.move_word_right()
+
     def _shift_up(self):
         self.select()
         self.move_cursor_up()
@@ -645,6 +734,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         else:
             self.blur()
 
+    @undoable
     def _ascii(self, key):
         self.delete_selection()
         y, x = self.cursor
@@ -666,6 +756,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         (Key.Delete, Mods.NO_MODS): _delete,
         (Key.Left, Mods.NO_MODS): _left,
         (Key.Right, Mods.NO_MODS): _right,
+        (Key.Left, Mods(False, True, False)): _ctrl_left,
+        (Key.Right, Mods(False, True, False)): _ctrl_right,
         (Key.Up, Mods.NO_MODS): _up,
         (Key.Down, Mods.NO_MODS): _down,
         (Key.PageUp, Mods.NO_MODS): _pgup,
@@ -674,6 +766,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         (Key.End, Mods.NO_MODS): _end,
         (Key.Left, Mods(False, False, True)): _shift_left,
         (Key.Right, Mods(False, False, True)): _shift_right,
+        (Key.Left, Mods(False, True, True)): _shift_ctrl_left,
+        (Key.Right, Mods(False, True, True)): _shift_ctrl_right,
         (Key.Up, Mods(False, False, True)): _shift_up,
         (Key.Down, Mods(False, False, True)): _shift_down,
         (Key.PageUp, Mods(False, False, True)): _shift_pgup,
@@ -681,6 +775,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         (Key.Home, Mods(False, False, True)): _shift_home,
         (Key.End, Mods(False, False, True)): _shift_end,
         (Key.Escape, Mods.NO_MODS): _escape,
+        ("z", Mods(False, True, False)): undo,
+        ("z", Mods(False, True, True)): redo,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
@@ -696,6 +792,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
 
         return True
 
+    @undoable
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         if not self.is_focused:
             return
@@ -724,6 +821,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             first, *lines, last = paste_lines
             newlines = len(lines) + 1
             len_last = wcswidth(last)
+            last_y = y + newlines
 
             pad.height += newlines
             pad.canvas[y + newlines + 1:] = pad.canvas[y + 1: -newlines]
@@ -732,7 +830,7 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
                 ll.insert(i, wcswidth(line))
-            ll.insert(i + 1, len_last + len(line_remaining))
+            ll.insert(last_y, len_last + wcswidth("".join(line_remaining["char"])))
 
             max_width = max(ll)
             if max_width >= pad.width:
@@ -742,11 +840,11 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             for i, line in enumerate(lines, start=y + 1):
                 pad.add_str(line.ljust(pad.width), (i, 0))
 
-            pad.add_str(last, (i + 1, 0))
-            pad.canvas[i + 1, len_last: ll[i + 1]] = line_remaining
-            pad.canvas[i + 1, ll[i + 1]:] = style_char(pad.default_char)
+            pad.add_str(last, (last_y, 0))
+            pad.canvas[last_y, len_last: ll[last_y]] = line_remaining
+            pad.canvas[last_y, ll[last_y]:] = style_char(pad.default_char)
 
-            self.cursor = i + 1, len_last
+            self.cursor = last_y, len_last
 
         return True
 
@@ -784,3 +882,8 @@ class TextPad(Themable, FocusBehavior, ScrollView):
             elif x >= w:
                 if cx < self._line_lengths[cy]:
                     self.move_cursor_right()
+
+    def ungrab(self, mouse_event):
+        super().ungrab(mouse_event)
+        if self._selection_start == self._selection_end:
+            self.unselect()

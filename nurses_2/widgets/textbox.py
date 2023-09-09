@@ -12,6 +12,8 @@ from .behaviors.themable import Themable
 from .text_widget import TextWidget, style_char
 from .widget import Widget, intersection, Rect
 
+WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
+
 
 class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     """
@@ -425,10 +427,57 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         self._highlight_selection()
 
     def move_cursor_left(self, n: int=1):
-        self.cursor = max(0, self._cursor.x - n)
+        text_before_cursor = "".join(self._box.canvas["char"][0, :self.cursor])
+        nchars_before_cursor = len(text_before_cursor)
+        if n <= nchars_before_cursor:
+            self.cursor = wcswidth(text_before_cursor[:-n])
+        else:
+            self.cursor = 0
 
     def move_cursor_right(self, n: int=1):
-        self.cursor = min(self._line_length, self._cursor.x + n)
+        text_after_cursor = "".join(self._box.canvas["char"][0, self.cursor:self._line_length])
+        nchars_after_cursor = len(text_after_cursor)
+        if n <= nchars_after_cursor:
+            self.cursor += wcswidth(text_after_cursor[:n])
+        else:
+            self.cursor = self._line_length
+
+    def move_word_left(self):
+        last_x = self.cursor
+        first_char_found = False
+        while True:
+            self.move_cursor_left()
+            if self.cursor == last_x:
+                break
+
+            last_x = self.cursor
+
+            current_char = self._box.canvas[0, self.cursor]["char"]
+            if not first_char_found:
+                if not current_char.isspace():
+                    first_char_found = True
+                    is_word_char = current_char in WORD_CHARS
+            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                self.move_cursor_right()
+                break
+
+    def move_word_right(self):
+        last_x = self.cursor
+        first_char_found = False
+        while True:
+            self.move_cursor_right()
+            if self.cursor == last_x:
+                break
+
+            last_x = self.cursor
+
+            current_char = self._box.canvas[0, self.cursor]["char"]
+            if not first_char_found:
+                if not current_char.isspace():
+                    first_char_found = True
+                    is_word_char = current_char in WORD_CHARS
+            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                break
 
     def _enter(self):
         if self.enter_callback is not None:
@@ -437,17 +486,13 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     def _backspace(self):
         if not self.has_selection:
             self.select()
-            if self.cursor > 0:
-                self._selection_start -= 1
-
+            self.move_cursor_left()
         self.delete_selection()
 
     def _delete(self):
         if not self.has_selection:
             self.select()
-            if self.cursor < self._line_length:
-                self._selection_end += 1
-
+            self.move_cursor_right()
         self.delete_selection()
 
     def _left(self):
@@ -466,6 +511,14 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         else:
             self.move_cursor_right()
 
+    def _ctrl_left(self):
+        self.unselect()
+        self.move_word_left()
+
+    def _ctrl_right(self):
+        self.unselect()
+        self.move_word_right()
+
     def _home(self):
         self.unselect()
         self.cursor = 0
@@ -481,6 +534,14 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
     def _shift_right(self):
         self.select()
         self.move_cursor_right()
+
+    def _shift_ctrl_left(self):
+        self.select()
+        self.move_word_left()
+
+    def _shift_ctrl_right(self):
+        self.select()
+        self.move_word_right()
 
     def _shift_home(self):
         self.select()
@@ -521,10 +582,14 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
         (Key.Delete, Mods.NO_MODS): _delete,
         (Key.Left, Mods.NO_MODS): _left,
         (Key.Right, Mods.NO_MODS): _right,
+        (Key.Left, Mods(False, True, False)): _ctrl_left,
+        (Key.Right, Mods(False, True, False)): _ctrl_right,
         (Key.Home, Mods.NO_MODS): _home,
         (Key.End, Mods.NO_MODS): _end,
         (Key.Left, Mods(False, False, True)): _shift_left,
         (Key.Right, Mods(False, False, True)): _shift_right,
+        (Key.Left, Mods(False, True, True)): _shift_ctrl_left,
+        (Key.Right, Mods(False, True, True)): _shift_ctrl_right,
         (Key.Home, Mods(False, False, True)): _shift_home,
         (Key.End, Mods(False, False, True)): _shift_end,
         (Key.Escape, Mods.NO_MODS): _escape,
@@ -599,3 +664,8 @@ class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
                 self.move_cursor_left()
             elif x >= self.width:
                 self.move_cursor_right()
+
+    def ungrab(self, mouse_event):
+        super().ungrab(mouse_event)
+        if self._selection_start == self._selection_end:
+            self.unselect()
