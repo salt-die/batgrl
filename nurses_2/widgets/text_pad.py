@@ -340,8 +340,10 @@ class TextPad(Themable, FocusBehavior, ScrollView):
         self._undo_stack.clear()
         self._redo_stack.clear()
         self._update_text(text)
+        self.cursor = self.end_text_point
 
     def _update_text(self, text: str):
+        self.unselect()
         lines = text.splitlines()
         self._line_lengths = list(map(wcswidth, lines))
 
