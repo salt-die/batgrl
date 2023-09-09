@@ -9,7 +9,7 @@ from nurses_2.clamp import clamp
 from nurses_2.colors import BLACK, WHITE, Color
 from nurses_2.widgets.widget import Widget
 from nurses_2.widgets.text_widget import TextWidget
-from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
+from nurses_2.widgets.behaviors.grabbable import Grabbable
 
 H = 11
 """Height of palette."""
@@ -52,7 +52,7 @@ def text_color(rgb) -> Color:
     return WHITE
 
 
-class Selector(GrabbableBehavior, TextWidget):
+class Selector(Grabbable, TextWidget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.indicator = TextWidget(size=(1, 1), default_color_pair=(255, 255, 255) * 2)

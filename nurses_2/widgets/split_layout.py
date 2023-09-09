@@ -3,7 +3,7 @@ Draggable horizontal and vertical split layouts.
 """
 from ..clamp import clamp
 from ..colors import AColor
-from .behaviors.grabbable_behavior import GrabbableBehavior
+from .behaviors.grabbable import Grabbable
 from .graphic_widget import GraphicWidget
 from .widget import Widget
 
@@ -12,7 +12,7 @@ __all__ = "HSplitLayout", "VSplitLayout",
 AGRAY = AColor(127, 127, 127, 127)
 
 
-class _Handle(GrabbableBehavior, GraphicWidget):
+class _Handle(Grabbable, GraphicWidget):
     def __init__(self, size_hint):
         super().__init__(
             size=(1, 1),

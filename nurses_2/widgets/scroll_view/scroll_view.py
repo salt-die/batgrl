@@ -3,12 +3,12 @@ A scrollable view widget.
 """
 from ...clamp import clamp
 from ...io import KeyEvent, MouseEventType, MouseEvent
-from ..behaviors.grabbable_behavior import GrabbableBehavior
-from ..widget import Widget, subscribable, Size
+from ..behaviors.grabbable import Grabbable
+from ..widget import Widget, subscribable
 from .scrollbars import _HorizontalBar, _VerticalBar
 
 
-class ScrollView(GrabbableBehavior, Widget):
+class ScrollView(Grabbable, Widget):
     """
     A scrollable view widget.
 

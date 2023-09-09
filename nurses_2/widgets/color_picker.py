@@ -21,7 +21,7 @@ from ..colors import (
     RED,
     WHITE,
 )
-from .behaviors.grabbable_behavior import GrabbableBehavior
+from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
 from .graphic_widget import GraphicWidget
@@ -35,7 +35,7 @@ GRAD = tuple(zip(GRAD, GRAD[1:]))
 WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
 
 
-class _ShadeSelector(GrabbableBehavior, GraphicWidget):
+class _ShadeSelector(Grabbable, GraphicWidget):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
 
@@ -99,7 +99,7 @@ class _ShadeSelector(GrabbableBehavior, GraphicWidget):
             self.update_swatch_label()
 
 
-class _HueSelector(GrabbableBehavior, GraphicWidget):
+class _HueSelector(Grabbable, GraphicWidget):
     def __init__(self, shade_selector, **kwargs):
         super().__init__(**kwargs)
         self.shade_selector = shade_selector

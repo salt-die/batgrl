@@ -8,10 +8,10 @@ from ..colors import Color, ColorPair
 from ..io import MouseEventType, MouseEvent
 from .text_widget import TextWidget
 from .widget import subscribable
-from .behaviors.grabbable_behavior import GrabbableBehavior
+from .behaviors.grabbable import Grabbable
 
 
-class Slider(GrabbableBehavior, TextWidget):
+class Slider(Grabbable, TextWidget):
     """
     A slider widget.
 

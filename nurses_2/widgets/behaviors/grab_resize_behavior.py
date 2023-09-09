@@ -3,13 +3,12 @@ Draggable resize behavior for a widget.
 """
 from ...clamp import clamp
 from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
-from ..widget import subscribable
-from .grabbable_behavior import GrabbableBehavior
+from .grabbable import Grabbable
 
 __all__ = "GrabResizeBehavior",
 
 
-class _Border(GrabbableBehavior, GraphicWidget):
+class _Border(Grabbable, GraphicWidget):
     def __init__(self, y_edge, x_edge):
         super().__init__(size=(1, 2), disable_ptf=True)
         self.y_edge = y_edge

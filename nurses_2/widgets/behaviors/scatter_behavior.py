@@ -2,10 +2,10 @@
 A scatter layout behavior for widgets.
 """
 from ...clamp import clamp
-from .grabbable_behavior import GrabbableBehavior
+from .grabbable import Grabbable
 
 
-class ScatterBehavior(GrabbableBehavior):
+class ScatterBehavior(Grabbable):
     """
     Scatter behavior allows a widget's children to be translated by dragging them.
 

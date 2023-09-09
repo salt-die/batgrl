@@ -3,12 +3,12 @@ Indicators for scroll view scrollbars.
 """
 from ...io import MouseEventType
 from ...clamp import clamp
-from ..behaviors.grabbable_behavior import GrabbableBehavior
+from ..behaviors.grabbable import Grabbable
 from ..behaviors.themable import Themable
 from ..widget import Widget
 
 
-class _IndicatorBehaviorBase(Themable, GrabbableBehavior, Widget):
+class _IndicatorBehaviorBase(Themable, Grabbable, Widget):
     """
     Common behavior for vertical and horizontal indicators.
     """

@@ -2,10 +2,10 @@
 Draggable behavior for a widget.
 """
 from ...clamp import clamp
-from .grabbable_behavior import GrabbableBehavior
+from .grabbable import Grabbable
 
 
-class Draggable(GrabbableBehavior):
+class Draggable(Grabbable):
     """
     Draggable behavior for a widget. Translate a widget by clicking and dragging it.
 

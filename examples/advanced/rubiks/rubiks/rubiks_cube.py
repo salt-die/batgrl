@@ -6,7 +6,7 @@ import numpy as np
 from numpy.linalg import norm
 
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.behaviors.grabbable_behavior import GrabbableBehavior
+from nurses_2.widgets.behaviors.grabbable import Grabbable
 
 from . import rotation
 from .camera import Camera
@@ -17,7 +17,7 @@ ROTATION_FRAME_DURATION = .08
 QUARTER_TURN = np.pi / 2
 
 
-class RubiksCube(GrabbableBehavior, GraphicWidget):
+class RubiksCube(Grabbable, GraphicWidget):
     """
     A 3-dimensional Rubik's Cube.
     """

@@ -7,7 +7,7 @@ from wcwidth import wcswidth
 from ..clamp import clamp
 from ..colors import AColor
 from .behaviors.focusable import Focusable
-from .behaviors.grabbable_behavior import GrabbableBehavior
+from .behaviors.grabbable import Grabbable
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
@@ -17,7 +17,7 @@ from .widget import Widget, Anchor
 __all__ = "Window",
 
 
-class _TitleBar(GrabbableBehavior, Widget):
+class _TitleBar(Grabbable, Widget):
     def __init__(self):
         super().__init__(pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" ")
 

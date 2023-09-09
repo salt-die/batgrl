@@ -5,7 +5,7 @@ from ...data_structures import Point
 from ...io import MouseEventType, MouseButton
 
 
-class GrabbableBehavior:
+class Grabbable:
     """
     Grabbable behavior for a widget. Mouse down events that collide with widget will "grab"
     it, calling :meth:`grab`. While grabbed, each mouse event will call :meth:`grab_update`
