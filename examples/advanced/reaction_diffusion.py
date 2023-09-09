@@ -8,7 +8,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import Color, BLACK, ColorPair
-from nurses_2.widgets.behaviors.grab_move_behavior import GrabMoveBehavior
+from nurses_2.widgets.behaviors.draggable import Draggable
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.slider import Slider
 from nurses_2.widgets.text_widget import TextWidget
@@ -25,7 +25,7 @@ BLUE_ON_BLACK = ColorPair.from_colors(BLUE, BLACK)
 GREEN_ON_BLACK = ColorPair.from_colors(GREEN, BLACK)
 
 
-class MoveMe(GrabMoveBehavior, Widget):
+class MoveMe(Draggable, Widget):
     ...
 
 

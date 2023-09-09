@@ -5,7 +5,7 @@ from ...clamp import clamp
 from .grabbable_behavior import GrabbableBehavior
 
 
-class GrabMoveBehavior(GrabbableBehavior):
+class Draggable(GrabbableBehavior):
     """
     Draggable behavior for a widget. Translate a widget by clicking and dragging it.
 

@@ -4,11 +4,11 @@ Legend for :class:`nurses_2.widgets.line_plot.LinePlot`.
 from wcwidth import wcswidth
 
 from ...colors import Color
-from ..behaviors.grab_move_behavior import GrabMoveBehavior
+from ..behaviors.draggable import Draggable
 from ..text_widget import TextWidget
 
 
-class _Legend(GrabMoveBehavior, TextWidget):
+class _Legend(Draggable, TextWidget):
     def __init__(self, labels: list[str], colors: list[Color], **kwargs):
         height = len(labels) + 2
         width = 6 + max(map(wcswidth, labels))
