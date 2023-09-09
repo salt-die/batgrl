@@ -22,9 +22,10 @@ class ToggleState(str, Enum):
 
 class ToggleButtonBehavior(ButtonBehavior):
     """
-    Toggle button behavior for widgets. Without a group, toggle button's states switch
-    between on and off when pressed. With a group, only a single button in the group can
-    be in the "on" state at a time.
+    Toggle button behavior for widgets.
+
+    Without a group, toggle button's states switch between on and off when pressed.
+    With a group, only a single button in the group can be in the "on" state at a time.
 
     Parameters
     ----------

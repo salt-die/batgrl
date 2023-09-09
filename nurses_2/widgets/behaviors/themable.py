@@ -8,11 +8,13 @@ from ...colors import DEFAULT_COLOR_THEME
 
 class Themable(ABC):
     """
-    Themable widgets share a color theme. They must implement
-    :meth:`update_theme` which paints the widget with current theme.
+    Themable behavior for a widget.
 
-    Whenever the running app's theme is changed, all :class:`Themable` widgets'
-    theme will be updated.
+    Themable widgets share a color theme. They must implement :meth:`update_theme`
+    which paints the widget with current theme.
+
+    Whenever the running app's theme is changed, `update_theme` will be called
+    for all :class:`Themable` widgets.
 
     Methods
     -------
