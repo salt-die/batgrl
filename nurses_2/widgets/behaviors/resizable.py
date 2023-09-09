@@ -5,7 +5,7 @@ from ...clamp import clamp
 from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
 from .grabbable import Grabbable
 
-__all__ = "GrabResizeBehavior",
+__all__ = "Resizable",
 
 
 class _Border(Grabbable, GraphicWidget):
@@ -82,11 +82,11 @@ class _Border(Grabbable, GraphicWidget):
         super().on_remove()
 
 
-class GrabResizeBehavior:
+class Resizable:
     """
-    Draggable resize behavior for a widget. Resize a widget by clicking its border
-    and dragging it. Widget dimensions won't be resized smaller than :attr:`min_height`
-    or :attr:`min_width`.
+    Draggable resize behavior for a widget. Resize a widget by clicking its border and
+    dragging it. Widget dimensions won't be resized smaller than :attr:`grab_resize_min_height`
+    or :attr:`grab_resize_min_width`.
 
     Parameters
     ----------
