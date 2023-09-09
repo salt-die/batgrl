@@ -1,7 +1,7 @@
-nurses\_2.widgets.behaviors.scatter\_behavior
+nurses\_2.widgets.behaviors.movable\_children
 =============================================
 
-.. automodule:: nurses_2.widgets.behaviors.scatter_behavior
+.. automodule:: nurses_2.widgets.behaviors.movable_children
 
    
    
@@ -17,7 +17,7 @@ nurses\_2.widgets.behaviors.scatter\_behavior
 
    .. autosummary::
    
-      ScatterBehavior
+      MovableChildren
    
    
 

@@ -9,6 +9,12 @@ nurses\_2.widgets.text\_pad
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      undoable
+   
    
 
    

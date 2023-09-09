@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.textbox &#8212; Python 0.20.0 documentation</title>
+    <title>nurses_2.widgets.textbox &#8212; Python 0.21.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.20.0 documentation</p>
+    <p class="title logo__title">Python 0.21.0 documentation</p>
   
 </a>
     
@@ -207,28 +207,28 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html">
-       nurses_2.widgets.behaviors.focus_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.focusable.html">
+       nurses_2.widgets.behaviors.focusable
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.grab_move_behavior.html">
-       nurses_2.widgets.behaviors.grab_move_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable.html">
+       nurses_2.widgets.behaviors.grabbable
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html">
-       nurses_2.widgets.behaviors.grab_resize_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.movable.html">
+       nurses_2.widgets.behaviors.movable
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html">
-       nurses_2.widgets.behaviors.grabbable_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.movable_children.html">
+       nurses_2.widgets.behaviors.movable_children
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.scatter_behavior.html">
-       nurses_2.widgets.behaviors.scatter_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.resizable.html">
+       nurses_2.widgets.behaviors.resizable
       </a>
      </li>
      <li class="toctree-l3">
@@ -585,7 +585,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.textbox.Textbox">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.textbox.</span></span><span class="sig-name descname"><span class="pre">Textbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enter_callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nurses_2.widgets.textbox.Textbox" title="nurses_2.widgets.textbox.Textbox"><span class="pre">Textbox</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_char</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.textbox.Textbox" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html#nurses_2.widgets.behaviors.focus_behavior.FocusBehavior" title="nurses_2.widgets.behaviors.focus_behavior.FocusBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.focus_behavior.FocusBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable_behavior.html#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.focusable.html#nurses_2.widgets.behaviors.focusable.Focusable" title="nurses_2.widgets.behaviors.focusable.Focusable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.focusable.Focusable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable.html#nurses_2.widgets.behaviors.grabbable.Grabbable" title="nurses_2.widgets.behaviors.grabbable.Grabbable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.grabbable.Grabbable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
 <p>A textbox widget for single-line editable text.</p>
 <p>Supports pasting, mouse selection, and cursor navigation.</p>
 <dl class="field-list simple">
@@ -1085,6 +1085,16 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.textbox.Textbox.move_cursor_right">
 <span class="sig-name descname"><span class="pre">move_cursor_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.textbox.Textbox.move_cursor_right" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.textbox.Textbox.move_word_left">
+<span class="sig-name descname"><span class="pre">move_word_left</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.textbox.Textbox.move_word_left" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nurses_2.widgets.textbox.Textbox.move_word_right">
+<span class="sig-name descname"><span class="pre">move_word_right</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.textbox.Textbox.move_word_right" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

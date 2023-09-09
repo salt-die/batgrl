@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.behaviors.grabbable_behavior &#8212; Python 0.20.0 documentation</title>
+    <title>nurses_2.widgets.behaviors.grabbable &#8212; Python 0.21.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -35,8 +35,8 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="nurses_2.widgets.behaviors.scatter_behavior" href="nurses_2.widgets.behaviors.scatter_behavior.html" />
-    <link rel="prev" title="nurses_2.widgets.behaviors.grab_resize_behavior" href="nurses_2.widgets.behaviors.grab_resize_behavior.html" />
+    <link rel="next" title="nurses_2.widgets.behaviors.movable" href="nurses_2.widgets.behaviors.movable.html" />
+    <link rel="prev" title="nurses_2.widgets.behaviors.focusable" href="nurses_2.widgets.behaviors.focusable.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="None">
   </head>
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.20.0 documentation</p>
+    <p class="title logo__title">Python 0.21.0 documentation</p>
   
 </a>
     
@@ -207,28 +207,28 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.focus_behavior.html">
-       nurses_2.widgets.behaviors.focus_behavior
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.grab_move_behavior.html">
-       nurses_2.widgets.behaviors.grab_move_behavior
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.grab_resize_behavior.html">
-       nurses_2.widgets.behaviors.grab_resize_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.focusable.html">
+       nurses_2.widgets.behaviors.focusable
       </a>
      </li>
      <li class="toctree-l3 current active">
       <a class="current reference internal" href="#">
-       nurses_2.widgets.behaviors.grabbable_behavior
+       nurses_2.widgets.behaviors.grabbable
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.behaviors.scatter_behavior.html">
-       nurses_2.widgets.behaviors.scatter_behavior
+      <a class="reference internal" href="nurses_2.widgets.behaviors.movable.html">
+       nurses_2.widgets.behaviors.movable
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.movable_children.html">
+       nurses_2.widgets.behaviors.movable_children
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="nurses_2.widgets.behaviors.resizable.html">
+       nurses_2.widgets.behaviors.resizable
       </a>
      </li>
      <li class="toctree-l3">
@@ -567,8 +567,8 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="module-nurses_2.widgets.behaviors.grabbable_behavior">
-<span id="nurses-2-widgets-behaviors-grabbable-behavior"></span><h1>nurses_2.widgets.behaviors.grabbable_behavior<a class="headerlink" href="#module-nurses_2.widgets.behaviors.grabbable_behavior" title="Permalink to this headline">#</a></h1>
+  <section id="module-nurses_2.widgets.behaviors.grabbable">
+<span id="nurses-2-widgets-behaviors-grabbable"></span><h1>nurses_2.widgets.behaviors.grabbable<a class="headerlink" href="#module-nurses_2.widgets.behaviors.grabbable" title="Permalink to this headline">#</a></h1>
 <p>Grabbable behavior for a widget.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
@@ -577,23 +577,23 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrabbableBehavior</span></code></a>(*[, is_grabbable, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable" title="nurses_2.widgets.behaviors.grabbable.Grabbable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grabbable</span></code></a>(*[, is_grabbable, disable_ptf, ...])</p></td>
 <td><p>Grabbable behavior for a widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grabbable_behavior.</span></span><span class="sig-name descname"><span class="pre">GrabbableBehavior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_grabbable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_ptf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouse_button</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseButton" title="nurses_2.io.input.events.MouseButton"><span class="pre">nurses_2.io.input.events.MouseButton</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MouseButton.LEFT</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.behaviors.grabbable.</span></span><span class="sig-name descname"><span class="pre">Grabbable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_grabbable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_ptf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouse_button</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.MouseButton" title="nurses_2.io.input.events.MouseButton"><span class="pre">nurses_2.io.input.events.MouseButton</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MouseButton.LEFT</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Grabbable behavior for a widget. Mouse down events that collide with widget will “grab”
-it, calling <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab()</span></code></a>. While grabbed, each mouse event will call <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab_update()</span></code></a>
-until the widget is ungrabbed, i.e., a mouse up event is received (which calls
-<a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ungrab()</span></code></a>).</p>
-<p>To customize grabbable behavior, implement any of <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab()</span></code></a>, <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab_update()</span></code></a>,
-or <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ungrab()</span></code></a>.</p>
-<p>For convenience, the change in mouse position is available through <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mouse_dyx</span></code></a>,
-<a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mouse_dy</span></code></a>, and <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mouse_dx</span></code></a>.</p>
+<p>Grabbable behavior for a widget.</p>
+<p>Mouse down events that collide with the widget will “grab” it, calling <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.grab" title="nurses_2.widgets.behaviors.grabbable.Grabbable.grab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab()</span></code></a>.
+While grabbed, each mouse event will call <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.grab_update" title="nurses_2.widgets.behaviors.grabbable.Grabbable.grab_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab_update()</span></code></a> until the widget is
+ungrabbed, i.e., a mouse up event is received (which calls <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.ungrab" title="nurses_2.widgets.behaviors.grabbable.Grabbable.ungrab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ungrab()</span></code></a>).</p>
+<p>To customize grabbable behavior, implement any of <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.grab" title="nurses_2.widgets.behaviors.grabbable.Grabbable.grab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab()</span></code></a>, <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.grab_update" title="nurses_2.widgets.behaviors.grabbable.Grabbable.grab_update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">grab_update()</span></code></a>,
+or <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.ungrab" title="nurses_2.widgets.behaviors.grabbable.Grabbable.ungrab"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ungrab()</span></code></a>.</p>
+<p>For convenience, the change in mouse position is available through <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dyx" title="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dyx"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mouse_dyx</span></code></a>,
+<a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dy" title="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mouse_dy</span></code></a>, and <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dx" title="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dx"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mouse_dx</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -615,11 +615,11 @@ or <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_beh
 </dd>
 <dt><strong>is_grabbed</strong><span class="classifier">bool</span></dt><dd><p>True if widget is grabbed.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dyx</span></code></a><span class="classifier">Point</span></dt><dd><p>Last change in mouse position.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dyx" title="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dyx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dyx</span></code></a><span class="classifier">Point</span></dt><dd><p>Last change in mouse position.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dy</span></code></a><span class="classifier">int</span></dt><dd><p>Vertical change in mouse position.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dy" title="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dy</span></code></a><span class="classifier">int</span></dt><dd><p>Vertical change in mouse position.</p>
 </dd>
-<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx" title="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dx</span></code></a><span class="classifier">int</span></dt><dd><p>Horizontal change in mouse position.</p>
+<dt><a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dx" title="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mouse_dx</span></code></a><span class="classifier">int</span></dt><dd><p>Horizontal change in mouse position.</p>
 </dd>
 </dl>
 </dd>
@@ -643,48 +643,48 @@ or <a class="reference internal" href="#nurses_2.widgets.behaviors.grabbable_beh
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab">
-<span class="sig-name descname"><span class="pre">grab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.grab">
+<span class="sig-name descname"><span class="pre">grab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.grab" title="Permalink to this definition">#</a></dt>
 <dd><p>Grab widget.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update">
-<span class="sig-name descname"><span class="pre">grab_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.grab_update" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.grab_update">
+<span class="sig-name descname"><span class="pre">grab_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.grab_update" title="Permalink to this definition">#</a></dt>
 <dd><p>Update grabbed widget with incoming mouse event.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.is_grabbed">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_grabbed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.is_grabbed" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.is_grabbed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_grabbed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.is_grabbed" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dx" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dx">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dx" title="Permalink to this definition">#</a></dt>
 <dd><p>Horizontal change in mouse position.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dy" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dy" title="Permalink to this definition">#</a></dt>
 <dd><p>Vertical change in mouse position.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dyx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.mouse_dyx" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dyx">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mouse_dyx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></em><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.mouse_dyx" title="Permalink to this definition">#</a></dt>
 <dd><p>Last change in mouse position.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.on_mouse">
-<span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.on_mouse" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.on_mouse">
+<span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.on_mouse" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab">
-<span class="sig-name descname"><span class="pre">ungrab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable_behavior.GrabbableBehavior.ungrab" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nurses_2.widgets.behaviors.grabbable.Grabbable.ungrab">
+<span class="sig-name descname"><span class="pre">ungrab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.behaviors.grabbable.Grabbable.ungrab" title="Permalink to this definition">#</a></dt>
 <dd><p>Ungrab widget.</p>
 </dd></dl>
 
