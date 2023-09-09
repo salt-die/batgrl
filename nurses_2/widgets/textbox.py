@@ -6,7 +6,7 @@ from collections.abc import Callable
 from wcwidth import wcswidth
 
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
-from .behaviors.focus_behavior import FocusBehavior
+from .behaviors.focusable import Focusable
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, style_char
@@ -15,7 +15,7 @@ from .widget import Widget, intersection, Rect
 WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
 
-class Textbox(Themable, FocusBehavior, GrabbableBehavior, Widget):
+class Textbox(Themable, Focusable, GrabbableBehavior, Widget):
     """
     A textbox widget for single-line editable text.
 

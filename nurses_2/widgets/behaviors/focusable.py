@@ -7,7 +7,7 @@ from weakref import ref, ReferenceType, WeakSet
 from ...io import MouseEventType, Key
 
 
-class FocusBehavior:
+class Focusable:
     """
     Focus behavior for a widget.
 
@@ -45,12 +45,12 @@ class FocusBehavior:
 
     def on_add(self):
         super().on_add()
-        FocusBehavior.__focus_widgets.append(ref(self))
+        Focusable.__focus_widgets.append(ref(self))
         self.focus()
 
     def on_remove(self):
         self.blur()
-        FocusBehavior.__focus_widgets.remove(ref(self))
+        Focusable.__focus_widgets.remove(ref(self))
         super().on_remove()
 
     @property
@@ -58,14 +58,14 @@ class FocusBehavior:
         """
         True if widget has focus.
         """
-        return self in FocusBehavior.__focused
+        return self in Focusable.__focused
 
     @property
     def any_focused(self) -> bool:
         """
         True if any widget has focus.
         """
-        return bool(FocusBehavior.__focused)
+        return bool(Focusable.__focused)
 
     def focus(self):
         """
@@ -77,12 +77,12 @@ class FocusBehavior:
         ancestors = WeakSet(
             ancestor
             for ancestor in self.walk(reverse=True)
-            if isinstance(ancestor, FocusBehavior)
+            if isinstance(ancestor, Focusable)
         )
         ancestors.add(self)
 
-        focused = FocusBehavior.__focused
-        FocusBehavior.__focused = ancestors
+        focused = Focusable.__focused
+        Focusable.__focused = ancestors
 
         for blurred in focused - ancestors:
             blurred.on_blur()
@@ -90,7 +90,7 @@ class FocusBehavior:
         for needs_focus in ancestors - focused:
             needs_focus.on_focus()
 
-        focus_widgets = FocusBehavior.__focus_widgets
+        focus_widgets = Focusable.__focus_widgets
         while (widget := focus_widgets[0]()) is not self:
             if widget is None:
                 focus_widgets.popleft()
@@ -103,18 +103,18 @@ class FocusBehavior:
         """
         if self.is_focused:
             for ancestor in self.walk(reverse=True):
-                if isinstance(ancestor, FocusBehavior):
+                if isinstance(ancestor, Focusable):
                     ancestor.focus()
                     return
 
-            FocusBehavior.__focused.remove(self)
+            Focusable.__focused.remove(self)
             self.on_blur()
 
     def focus_next(self):
         """
         Focus next focusable widget.
         """
-        focus_widgets = FocusBehavior.__focus_widgets
+        focus_widgets = Focusable.__focus_widgets
 
         if self.any_focused:
             focus_widgets.rotate(-1)
@@ -133,7 +133,7 @@ class FocusBehavior:
         """
         Focus previous focusable widget.
         """
-        focus_widgets = FocusBehavior.__focus_widgets
+        focus_widgets = Focusable.__focus_widgets
 
         if self.any_focused:
             focus_widgets.rotate(1)

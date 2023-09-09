@@ -6,7 +6,7 @@ from wcwidth import wcswidth
 
 from ..clamp import clamp
 from ..colors import AColor
-from .behaviors.focus_behavior import FocusBehavior
+from .behaviors.focusable import Focusable
 from .behaviors.grabbable_behavior import GrabbableBehavior
 from .behaviors.grab_resize_behavior import GrabResizeBehavior
 from .behaviors.themable import Themable
@@ -42,7 +42,7 @@ class _TitleBar(GrabbableBehavior, Widget):
         self.parent.left += self.mouse_dx
 
 
-class Window(Themable, FocusBehavior, GrabResizeBehavior, GraphicWidget):
+class Window(Themable, Focusable, GrabResizeBehavior, GraphicWidget):
     """
     A movable, resizable window widget.
 

@@ -6,7 +6,7 @@ from functools import wraps
 from wcwidth import wcswidth
 
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
-from .behaviors.focus_behavior import FocusBehavior
+from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
 from .scroll_view import ScrollView
 from .text_widget import TextWidget, Point, add_text, style_char
@@ -30,7 +30,7 @@ def undoable(method):
     return wrapper
 
 
-class TextPad(Themable, FocusBehavior, ScrollView):
+class TextPad(Themable, Focusable, ScrollView):
     """
     A text-pad widget for multiline editable text.
 
