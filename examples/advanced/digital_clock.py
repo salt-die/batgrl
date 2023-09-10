@@ -2,12 +2,18 @@ import asyncio
 import time
 
 from nurses_2.app import App
-from nurses_2.widgets.digital_display import DigitalDisplay, BRIGHT_GREEN_ON_BLACK
+from nurses_2.widgets.digital_display import BRIGHT_GREEN_ON_BLACK, DigitalDisplay
 from nurses_2.widgets.text_widget import TextWidget
 
 
 class DigitalClock(TextWidget):
-    def __init__(self, pos=(0, 0), twelve_hour=False, default_color_pair=BRIGHT_GREEN_ON_BLACK, **kwargs):
+    def __init__(
+        self,
+        pos=(0, 0),
+        twelve_hour=False,
+        default_color_pair=BRIGHT_GREEN_ON_BLACK,
+        **kwargs,
+    ):
         super().__init__(
             size=(7, 52),
             pos=pos,
@@ -30,7 +36,7 @@ class DigitalClock(TextWidget):
         self._update_task.cancel()
 
     def _formatted_time(self):
-        hours, minutes, seconds = time.localtime()[3: 6]
+        hours, minutes, seconds = time.localtime()[3:6]
 
         if self.twelve_hour:
             hours %= 12
@@ -51,6 +57,7 @@ class TestDisplay(DigitalDisplay):
     """
     Display any key pressed.
     """
+
     def on_key(self, key_event):
         key = key_event.key
         if isinstance(key, str) and len(key) == 1:

@@ -6,7 +6,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .graphic_widget import GraphicWidget, Interpolation, read_texture
+from .graphic_widget import GraphicWidget, Interpolation
+from .graphic_widget_data_structures import read_texture
 
 __all__ = "GraphicWidget", "Interpolation"
 

@@ -14,7 +14,7 @@ class MyApp(App):
         for i in range(500):
             horizontal_bar.progress = (i + 1) / 500
             vertical_bar.progress = (i + 1) / 500
-            await asyncio.sleep(.1)
+            await asyncio.sleep(0.1)
 
 
 MyApp(title="Progress Bar Example").run()

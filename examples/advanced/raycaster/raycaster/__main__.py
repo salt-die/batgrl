@@ -39,15 +39,15 @@ class MyApp(App):
         raycaster = Raycaster(
             map=MAP,
             camera=Camera(),
-            wall_textures=[ AnimatedTexture(textures) ],
-            light_wall_textures=[ AnimatedTexture(textures, lighten=True) ],
+            wall_textures=[AnimatedTexture(textures)],
+            light_wall_textures=[AnimatedTexture(textures, lighten=True)],
             sprites=[
                 Sprite(pos=(2.5, 2.5), texture_idx=0),
                 Sprite(pos=(2.5, 7.5), texture_idx=0),
                 Sprite(pos=(7.5, 7.5), texture_idx=0),
                 Sprite(pos=(7.5, 2.5), texture_idx=0),
             ],
-            sprite_textures=[ read_texture(SPRITE) ],
+            sprite_textures=[read_texture(SPRITE)],
             ceiling=read_texture(CEILING),
             floor=read_texture(FLOOR),
             size_hint=(1.0, 1.0),

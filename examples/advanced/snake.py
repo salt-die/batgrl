@@ -5,24 +5,24 @@ Move snake with arrow keys. Pause with `space`.
 """
 import asyncio
 from collections import deque
-from itertools import product, cycle
+from itertools import cycle, product
 from pathlib import Path
 from random import choice
 
 from nurses_2.app import App
-from nurses_2.colors import AColor, ARED, AWHITE, gradient, rainbow_gradient
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
 from nurses_2.widgets.animation import Animation
-
+from nurses_2.widgets.graphic_widget import GraphicWidget
 
 ASSETS = Path(__file__).parent.parent / "assets"
 SPINNER = ASSETS / "spinner"
 HEIGHT, WIDTH = 20, 20
 SNAKE_START = HEIGHT // 2, WIDTH // 2
 SNAKE_START_2 = HEIGHT // 2 + 1, WIDTH // 2
-TICK_DURATION = .12
+TICK_DURATION = 0.12
 RAINBOW_GRADIENT = rainbow_gradient(40, color_type=AColor)
 APPLE_GRADIENT = cycle(gradient(ARED, AWHITE, 5) + gradient(AWHITE, ARED, 20))
+
 
 def inbounds(pos):
     y, x = pos
@@ -124,12 +124,12 @@ class SnakeApp(App):
     async def on_start(self):
         kwargs = dict(
             size=(HEIGHT // 2, WIDTH),
-            pos_hint=(.5, .5),
+            pos_hint=(0.5, 0.5),
             anchor="center",
         )
 
-        background = Animation(path=SPINNER, alpha=.5, **kwargs)
-        background.play()
+        background = Animation(path=SPINNER, alpha=0.5, **kwargs)
+        # background.play()
         snake = Snake(**kwargs)
 
         self.add_widgets(background, snake)

@@ -1,6 +1,6 @@
 from nurses_2.app import App
-from nurses_2.colors import rainbow_gradient, Color, ColorPair, BLACK
-from nurses_2.widgets.text_widget import TextWidget, Border
+from nurses_2.colors import BLACK, Color, ColorPair, rainbow_gradient
+from nurses_2.widgets.text_widget import Border, TextWidget
 
 border_colors = [
     ColorPair.from_colors(fg, BLACK)

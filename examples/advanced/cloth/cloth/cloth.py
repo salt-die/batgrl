@@ -11,7 +11,7 @@ from .mesh import Mesh
 
 
 class Cloth(GraphicWidget):
-    def __init__(self, mesh_size: Size, scale=5, mesh_color: AColor=AWHITE, **kwargs):
+    def __init__(self, mesh_size: Size, scale=5, mesh_color: AColor = AWHITE, **kwargs):
         super().__init__(**kwargs)
 
         self.mesh = Mesh(mesh_size, nanchors=5)
@@ -26,7 +26,9 @@ class Cloth(GraphicWidget):
         self.texture = np.full((h * 2, w, 4), self.default_color, dtype=np.uint8)
 
         # Center the nodes horizontally in the widget with following offset:
-        self.h_offset = (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j
+        self.h_offset = (
+            (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j
+        )
 
     def step(self):
         """
@@ -73,6 +75,6 @@ class Cloth(GraphicWidget):
             magnitude = abs(force_direction)
             if magnitude != 0:
                 force_normal = force_direction / magnitude
-                node.acceleration -= .01 * force_normal
+                node.acceleration -= 0.01 * force_normal
 
         return True

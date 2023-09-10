@@ -12,55 +12,77 @@ from nurses_2.widgets.image import Image
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BACKGROUND = ASSETS / "loudypixelsky.png"
-POINTS = np.array([
-    [-1, -1, -1],
-    [-1, -1,  1],
-    [-1,  1, -1],
-    [-1,  1,  1],
-    [ 1, -1, -1],
-    [ 1, -1,  1],
-    [ 1,  1, -1],
-    [ 1,  1,  1],
-])
+POINTS = np.array(
+    [
+        [-1, -1, -1],
+        [-1, -1, 1],
+        [-1, 1, -1],
+        [-1, 1, 1],
+        [1, -1, -1],
+        [1, -1, 1],
+        [1, 1, -1],
+        [1, 1, 1],
+    ]
+)
 LINES = [
-    [0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3],
-    [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7],
+    [0, 1],
+    [0, 2],
+    [0, 4],
+    [1, 3],
+    [1, 5],
+    [2, 3],
+    [2, 6],
+    [3, 7],
+    [4, 5],
+    [4, 6],
+    [5, 7],
+    [6, 7],
 ]
 R, G, B = Color.from_hex("4ce05d")
-RADIUS = 3**.5 # The cube of points is inscribed in a circle with this radius
+RADIUS = 3**0.5  # The cube of points is inscribed in a circle with this radius
 DIAMETER = 2 * RADIUS
-MIN_BRIGHTNESS = .15
+MIN_BRIGHTNESS = 0.15
 MAX_BRIGHTNESS = 1.0
+
 
 def rotate_x(theta):
     cos = np.cos(theta)
     sin = np.sin(theta)
 
-    return np.array([
-        [1,    0,   0],
-        [0,  cos, sin],
-        [0, -sin, cos],
-    ])
+    return np.array(
+        [
+            [1, 0, 0],
+            [0, cos, sin],
+            [0, -sin, cos],
+        ]
+    )
+
 
 def rotate_y(theta):
     cos = np.cos(theta)
     sin = np.sin(theta)
 
-    return np.array([
-        [cos, 0, -sin],
-        [  0, 1,    0],
-        [sin, 0,  cos],
-    ])
+    return np.array(
+        [
+            [cos, 0, -sin],
+            [0, 1, 0],
+            [sin, 0, cos],
+        ]
+    )
+
 
 def rotate_z(theta):
     cos = np.cos(theta)
     sin = np.sin(theta)
 
-    return np.array([
-        [ cos, sin, 0],
-        [-sin, cos, 0],
-        [   0,   0, 1],
-    ])
+    return np.array(
+        [
+            [cos, sin, 0],
+            [-sin, cos, 0],
+            [0, 0, 1],
+        ]
+    )
+
 
 def darken(depth):
     normalized_depth = (depth + RADIUS) / DIAMETER
@@ -80,7 +102,6 @@ class SpinningCube(GraphicWidget):
     async def spin_forever(self):
         x_angle = y_angle = z_angle = 0
 
-
         while True:
             self.texture[:] = self.default_color
 
@@ -96,20 +117,22 @@ class SpinningCube(GraphicWidget):
             for a, b in LINES:
                 depth = (depths[a] + depths[b]) / 2
 
-                lines.append((
-                    points_2D[a],
-                    points_2D[b],
-                    darken(depth),
-                    depth,
-                ))
+                lines.append(
+                    (
+                        points_2D[a],
+                        points_2D[b],
+                        darken(depth),
+                        depth,
+                    )
+                )
             lines.sort(key=lambda p: p[3])
 
             for a, b, color, _ in lines:
                 cv2.line(self.texture, a, b, color, 2)
 
-            x_angle += .001333
-            y_angle += .002
-            z_angle += .002666
+            x_angle += 0.001333
+            y_angle += 0.002
+            z_angle += 0.002666
 
             await asyncio.sleep(0)
 

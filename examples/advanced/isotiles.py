@@ -5,8 +5,9 @@ from time import monotonic
 import nurses_2.colors as colors
 from nurses_2.app import App
 from nurses_2.colors import AWHITE
-from nurses_2.io import MouseEvent, MouseEventType, MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget, Point, Size, read_texture, composite
+from nurses_2.io import MouseButton, MouseEvent, MouseEventType
+from nurses_2.widgets.graphic_widget import GraphicWidget, Point, Size
+from nurses_2.widgets.graphic_widget_data_structures import composite, read_texture
 from nurses_2.widgets.scroll_view import ScrollView
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -19,12 +20,12 @@ TILE_SIZE = TH, TW = Size(20, 40)
 
 TILE_SHEET = read_texture(TILES_PATH)
 HIGHLIGHTED_TILE = TILE_SHEET[:TH, :TW]
-BLANK_TILE       = TILE_SHEET[:TH, TW:2 * TW]
-GRASS_TILE       = TILE_SHEET[:TH, 2 * TW:3 * TW]
-BODGE_TILE       = TILE_SHEET[:TH, 3 * TW:]
-TREE_TILE        = TILE_SHEET[TH:, :TW]
-TREE_2_TILE      = TILE_SHEET[TH:, TW:2 * TW]
-SAND_TILE        = TILE_SHEET[2 * TH:, 2 * TW:3 * TW]
+BLANK_TILE = TILE_SHEET[:TH, TW : 2 * TW]
+GRASS_TILE = TILE_SHEET[:TH, 2 * TW : 3 * TW]
+BODGE_TILE = TILE_SHEET[:TH, 3 * TW :]
+TREE_TILE = TILE_SHEET[TH:, :TW]
+TREE_2_TILE = TILE_SHEET[TH:, TW : 2 * TW]
+SAND_TILE = TILE_SHEET[2 * TH :, 2 * TW : 3 * TW]
 WATER_TILES = [
     read_texture(path)
     for path in sorted(WATER_TILE_PATH.iterdir(), key=lambda file: file.name)
@@ -67,7 +68,7 @@ class WorldWidget(GraphicWidget):
 
     async def _update_world(self):
         while True:
-            await asyncio.sleep(1/12)
+            await asyncio.sleep(1 / 12)
             self.paint_world()
 
     def paint_world(self):
@@ -87,17 +88,20 @@ class WorldWidget(GraphicWidget):
                     if (y, x) == self.selected_tile:
                         composite(HIGHLIGHTED_TILE, self.texture, uv)
 
-                    composite(tile, self.texture, (uv[0] - TILE_SIZE.height, uv[1]), mask_mode=True)
+                    composite(
+                        tile,
+                        self.texture,
+                        (uv[0] - TILE_SIZE.height, uv[1]),
+                        mask_mode=True,
+                    )
                 else:
                     composite(tile, self.texture, uv, mask_mode=True)
                     if (y, x) == self.selected_tile:
                         composite(HIGHLIGHTED_TILE, self.texture, uv)
 
-
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        if (
-            mouse_event.button is MouseButton.MIDDLE
-            or not self.collides_point(mouse_event.position)
+        if mouse_event.button is MouseButton.MIDDLE or not self.collides_point(
+            mouse_event.position
         ):
             return
 

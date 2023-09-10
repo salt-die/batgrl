@@ -1,6 +1,6 @@
 from nurses_2.widgets.text_widget import TextWidget
 
-from .unicode_chars import LIGHT_BOX, HEAVY_BOX
+from .unicode_chars import HEAVY_BOX, LIGHT_BOX
 
 
 class Grid(TextWidget):
@@ -19,16 +19,16 @@ class Grid(TextWidget):
 
         canvas["char"][::vs] = h
         canvas["char"][:, ::hs] = v
-        canvas["char"][vs: -vs: vs, hs: -hs: hs] = mm
+        canvas["char"][vs:-vs:vs, hs:-hs:hs] = mm
 
         # Top
-        canvas["char"][0, hs: -hs: hs] = tm
+        canvas["char"][0, hs:-hs:hs] = tm
         # Bottom
-        canvas["char"][-1, hs: -hs: hs] = bm
+        canvas["char"][-1, hs:-hs:hs] = bm
         # Left
-        canvas["char"][vs: -vs: vs, 0] = ml
+        canvas["char"][vs:-vs:vs, 0] = ml
         # Right
-        canvas["char"][vs: -vs: vs, -1] = mr
+        canvas["char"][vs:-vs:vs, -1] = mr
 
         # Corners
         canvas["char"][0, 0] = tl
@@ -40,4 +40,4 @@ class Grid(TextWidget):
     def cell_center_indices(self):
         vs, hs = self.V_SPACING, self.H_SPACING
 
-        return slice(vs//2, None, vs), slice(hs//2, None, hs)
+        return slice(vs // 2, None, vs), slice(hs // 2, None, hs)

@@ -1,9 +1,8 @@
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.textbox import Textbox
 from nurses_2.widgets.text_pad import TextPad
 from nurses_2.widgets.text_widget import TextWidget
-from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.textbox import Textbox
 from nurses_2.widgets.window import Window
 
 JABBERWOCKY = """
@@ -54,10 +53,10 @@ class TextPadApp(App):
         window.view = tp
         tp.text = JABBERWOCKY
 
+        # `enter_callback` expects a callable with the textbox as the only argument.
         def enter_callback(textbox):
             textbox.text = ""
 
-        # Note that `enter_callback` expects a callable with the textbox as the only argument.
         textbox = Textbox(
             pos=(1, 3),
             size=(1, 31),
@@ -69,7 +68,7 @@ class TextPadApp(App):
         border = TextWidget(
             pos=(1, 0),
             size=(3, 35),
-            pos_hint=(None, .5),
+            pos_hint=(None, 0.5),
             anchor="top_center",
             default_color_pair=DEFAULT_COLOR_THEME.textbox_primary,
         )

@@ -5,15 +5,15 @@ from random import randrange
 import numpy as np
 from numpy.linalg import norm
 
-from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.behaviors.grabbable import Grabbable
+from nurses_2.widgets.graphic_widget import GraphicWidget
 
 from . import rotation
 from .camera import Camera
 from .cube import Cube
 
 ROTATION_FRAMES = 15
-ROTATION_FRAME_DURATION = .08
+ROTATION_FRAME_DURATION = 0.08
 QUARTER_TURN = np.pi / 2
 
 
@@ -21,12 +21,8 @@ class RubiksCube(Grabbable, GraphicWidget):
     """
     A 3-dimensional Rubik's Cube.
     """
-    def __init__(
-        self,
-        *,
-        aspect_ratio=True,
-        **kwargs
-    ):
+
+    def __init__(self, *, aspect_ratio=True, **kwargs):
         super().__init__(**kwargs)
 
         self._ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
@@ -35,7 +31,7 @@ class RubiksCube(Grabbable, GraphicWidget):
 
         self.camera = Camera()
         self.cubes = np.array(
-            list(map( Cube, product((-1, 0, 1), (1, 0, -1), (1, 0, -1)) )),
+            list(map(Cube, product((-1, 0, 1), (1, 0, -1), (1, 0, -1)))),
             dtype=object,
         ).reshape(3, 3, 3)
 
@@ -176,7 +172,9 @@ class RubiksCube(Grabbable, GraphicWidget):
 
     def grab_update(self, mouse_event):
         # Horizontal movement rotates around vertical axis and vice-versa.
-        alpha = np.pi * -self.mouse_dy / self.height  # vertical movement flipped, world coordinates opposite screen coordinates
+        alpha = (
+            np.pi * -self.mouse_dy / self.height
+        )  # vertical movement flipped, world coordinates opposite screen coordinates
         self.camera.rotate_x(alpha)
 
         beta = np.pi * self.mouse_dx / self.width

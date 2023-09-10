@@ -5,20 +5,23 @@ Requires `pymunk`
 """
 import asyncio
 from enum import Enum
+from math import ceil, degrees
 from pathlib import Path
-from math import degrees, ceil
 
 import cv2
-
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import AColor, AWHITE
-from nurses_2.widgets.graphic_widget import GraphicWidget, read_texture, composite, resize_texture
-from nurses_2.widgets.image import Image
-
 import pymunk
 from pymunk.vec2d import Vec2d
+
+from nurses_2.app import App
+from nurses_2.colors import AWHITE, AColor
+from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphic_widget_data_structures import (
+    composite,
+    read_texture,
+    resize_texture,
+)
+from nurses_2.widgets.image import Image
 
 
 class RenderMode(str, Enum):
@@ -28,7 +31,7 @@ class RenderMode(str, Enum):
 
 
 BOX_SIZE = W, H = Vec2d(9, 9)
-BOX_MASS = .1
+BOX_MASS = 0.1
 BALL_MASS = 100
 BALL_RADIUS = 6
 GROUND_LEVEL = 12
@@ -50,10 +53,10 @@ class SpaceRenderer(GraphicWidget):
     def __init__(
         self,
         space: pymunk.Space,
-        dt: float=.01,
-        render_mode: RenderMode=RenderMode.SPRITE,
-        shape_color: AColor=AWHITE,
-        **kwargs
+        dt: float = 0.01,
+        render_mode: RenderMode = RenderMode.SPRITE,
+        shape_color: AColor = AWHITE,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.space = space
@@ -91,7 +94,12 @@ class SpaceRenderer(GraphicWidget):
                 if self.render_mode is not RenderMode.SPRITE:
                     a = shape.a.rotated(shape.body.angle) + shape.body.position
                     b = shape.b.rotated(shape.body.angle) + shape.body.position
-                    cv2.line(self.texture, to_tex_coords(a), to_tex_coords(b), self.shape_color)
+                    cv2.line(
+                        self.texture,
+                        to_tex_coords(a),
+                        to_tex_coords(b),
+                        self.shape_color,
+                    )
             elif isinstance(shape, pymunk.shapes.Poly):
                 if self.render_mode is RenderMode.SPRITE:
                     angle = degrees(shape.body.angle)
@@ -111,30 +119,54 @@ class SpaceRenderer(GraphicWidget):
                     x, y = to_tex_coords(shape.body.position + (-box_hw, box_hh))
                     composite(src, self.texture, (y, x))
                 else:
-                    vertices = np.array([
-                        to_tex_coords(vertex.rotated(shape.body.angle) + shape.body.position)
-                        for vertex in shape.get_vertices()
-                    ])
+                    vertices = np.array(
+                        [
+                            to_tex_coords(
+                                vertex.rotated(shape.body.angle) + shape.body.position
+                            )
+                            for vertex in shape.get_vertices()
+                        ]
+                    )
                     if self.render_mode is RenderMode.FILL:
                         cv2.fillPoly(self.texture, [vertices], color=self.shape_color)
                     else:
-                        cv2.polylines(self.texture, [vertices], isClosed=True, color=self.shape_color)
+                        cv2.polylines(
+                            self.texture,
+                            [vertices],
+                            isClosed=True,
+                            color=self.shape_color,
+                        )
             elif isinstance(shape, pymunk.shapes.Circle):
                 if self.render_mode is RenderMode.SPRITE:
                     angle == degrees(shape.body.angle)
                     rot = cv2.getRotationMatrix2D(BALL_CENTER, angle, 1)
                     src = cv2.warpAffine(BALL, rot, BALL_SIZE)
-                    x, y = to_tex_coords(shape.body.position + (-BALL_RADIUS, BALL_RADIUS))
+                    x, y = to_tex_coords(
+                        shape.body.position + (-BALL_RADIUS, BALL_RADIUS)
+                    )
                     composite(src, self.texture, (y, x))
                 else:
                     pos = shape.body.position
                     center = to_tex_coords(pos)
                     circle_edge = pos + Vec2d(shape.radius, 0).rotated(shape.body.angle)
                     if self.render_mode is RenderMode.FILL:
-                        cv2.circle(self.texture, center, round(shape.radius), self.shape_color, -1)
+                        cv2.circle(
+                            self.texture,
+                            center,
+                            round(shape.radius),
+                            self.shape_color,
+                            -1,
+                        )
                     else:
-                        cv2.circle(self.texture, center, round(shape.radius), self.shape_color)
-                        cv2.line(self.texture, center, to_tex_coords(circle_edge), self.shape_color)
+                        cv2.circle(
+                            self.texture, center, round(shape.radius), self.shape_color
+                        )
+                        cv2.line(
+                            self.texture,
+                            center,
+                            to_tex_coords(circle_edge),
+                            self.shape_color,
+                        )
 
 
 class PhysicsApp(App):
@@ -157,7 +189,9 @@ class PhysicsApp(App):
                 space.add(body, box)
 
         # Ball
-        body = pymunk.Body(BALL_MASS, pymunk.moment_for_circle(BALL_MASS, 0, BALL_RADIUS))
+        body = pymunk.Body(
+            BALL_MASS, pymunk.moment_for_circle(BALL_MASS, 0, BALL_RADIUS)
+        )
         body.position = 100, 30
         body.velocity = -75, 5
         body.angular_velocity = -5
@@ -167,7 +201,9 @@ class PhysicsApp(App):
         space.add(body, ball)
 
         # Ground
-        segment = pymunk.Segment(space.static_body, (0, GROUND_LEVEL), (540, GROUND_LEVEL), 1)
+        segment = pymunk.Segment(
+            space.static_body, (0, GROUND_LEVEL), (540, GROUND_LEVEL), 1
+        )
         segment.elasticity = 1
         segment.friction = 1.0
         space.add(segment)
@@ -178,7 +214,9 @@ class PhysicsApp(App):
         segment.friction = 1.0
         space.add(segment)
 
-        space_renderer = SpaceRenderer(space, render_mode="sprite", dt=.03, size_hint=(1.0, 1.0))
+        space_renderer = SpaceRenderer(
+            space, render_mode="sprite", dt=0.03, size_hint=(1.0, 1.0)
+        )
         space_renderer.run_simulation()
 
         background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))

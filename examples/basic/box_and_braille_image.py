@@ -10,8 +10,10 @@ PATH_TO_IMAGE = ASSETS / "loudypixelsky.png"
 
 class ImageApp(App):
     async def on_start(self):
-        box_image = BoxImage(path=PATH_TO_IMAGE, size_hint=(1.0, .5))
-        braille_image = BrailleImage(path=PATH_TO_IMAGE, size_hint=(1.0, .5), pos_hint=(None, .5))
+        box_image = BoxImage(path=PATH_TO_IMAGE, size_hint=(1.0, 0.5))
+        braille_image = BrailleImage(
+            path=PATH_TO_IMAGE, size_hint=(1.0, 0.5), pos_hint=(None, 0.5)
+        )
         self.add_widgets(box_image, braille_image)
 
 

@@ -17,7 +17,7 @@ from nurses_2.widgets.image import Image
 HEIGHT, WIDTH = 18, 36
 POWER = 2
 MAX_PARTICLE_SPEED = 10
-FRICTION = .99
+FRICTION = 0.99
 PERCENTS = tuple(np.linspace(0, 1, 30))
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_BACKGROUND = ASSETS / "background.png"
@@ -52,19 +52,20 @@ class PokeParticleField(GraphicParticleField):
         self.particle_positions[:] = real_positions.astype(int)
 
     def on_mouse(self, mouse_event):
-        if (
-            mouse_event.button is MouseButton.LEFT
-            and self.collides_point(mouse_event.position)
-         ):
+        if mouse_event.button is MouseButton.LEFT and self.collides_point(
+            mouse_event.position
+        ):
             y, x = self.to_local(mouse_event.position)
             y *= 2
 
             relative_distances = self.particle_positions - (y, x)
 
-            distances_sq = (relative_distances ** 2).sum(axis=1)
+            distances_sq = (relative_distances**2).sum(axis=1)
             distances_sq[distances_sq == 0] = 1
 
-            self.particle_properties["velocities"] += POWER * relative_distances / distances_sq[:, None]
+            self.particle_properties["velocities"] += (
+                POWER * relative_distances / distances_sq[:, None]
+            )
 
             if self._update_task.done():
                 self._reset_task.cancel()
@@ -84,7 +85,7 @@ class PokeParticleField(GraphicParticleField):
 
         while True:
             speeds = np.linalg.norm(velocities, axis=1)
-            if (speeds < .001).all():
+            if (speeds < 0.001).all():
                 return
 
             speed_mask = speeds > MAX_PARTICLE_SPEED
@@ -106,15 +107,15 @@ class PokeParticleField(GraphicParticleField):
             bottom = ys >= h
             right = xs >= w
 
-            ys[top]    *= -1
-            xs[left]   *= -1
+            ys[top] *= -1
+            xs[left] *= -1
             ys[bottom] = 2 * h - ys[bottom]
-            xs[right]  = 2 * w - xs[right]
+            xs[right] = 2 * w - xs[right]
 
-            vys[top]    *= -1
-            vxs[left]   *= -1
+            vys[top] *= -1
+            vxs[left] *= -1
             vys[bottom] *= -1
-            vxs[right]  *= -1
+            vxs[right] *= -1
 
             try:
                 await asyncio.sleep(0)
@@ -165,7 +166,7 @@ class MyApp(App):
             particle_positions=particle_positions,
             particle_colors=logo.texture[pys, pxs],
             particle_properties=particle_properties,
-            particle_alphas=np.full(len(particle_positions), .7),
+            particle_alphas=np.full(len(particle_positions), 0.7),
             is_transparent=True,
         )
 

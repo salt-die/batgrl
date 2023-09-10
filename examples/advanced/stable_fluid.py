@@ -5,29 +5,33 @@ import asyncio
 from itertools import cycle
 
 import numpy as np
-from scipy.ndimage import map_coordinates, convolve
+from scipy.ndimage import convolve, map_coordinates
 
-from nurses_2.colors import rainbow_gradient, ABLACK
-from nurses_2.io import MouseEvent, MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.app import run_widget_as_app
+from nurses_2.colors import ABLACK, rainbow_gradient
+from nurses_2.io import MouseButton, MouseEvent
+from nurses_2.widgets.graphic_widget import GraphicWidget
 
-DIF_KERNEL = np.array([-.5, 0.0, .5])
+DIF_KERNEL = np.array([-0.5, 0.0, 0.5])
 GRAD_KERNEL = np.array([-1.0, 0.0, 1.0])
-GAUSSIAN_KERNEL = np.array([
-    [.0625, .125, .0625],
-    [ .125,  .25,  .125],
-    [.0625, .125, .0625],
-])
-PRESSURE_KERNEL = np.array([
-    [0.0, .25, 0.0],
-    [.25, 0.0, .25],
-    [0.0, .25, 0.0],
-])
+GAUSSIAN_KERNEL = np.array(
+    [
+        [0.0625, 0.125, 0.0625],
+        [0.125, 0.25, 0.125],
+        [0.0625, 0.125, 0.0625],
+    ]
+)
+PRESSURE_KERNEL = np.array(
+    [
+        [0.0, 0.25, 0.0],
+        [0.25, 0.0, 0.25],
+        [0.0, 0.25, 0.0],
+    ]
+)
 CURL = 5.0
 POKE_RADIUS = 3.0
-DISSIPATION = .99
-PRESSURE = .1
+DISSIPATION = 0.99
+PRESSURE = 0.1
 PRESSURE_ITERATIONS = 10
 RAINBOW_COLORS = cycle(rainbow_gradient(100))
 EPSILON = np.finfo(float).eps
@@ -59,9 +63,8 @@ class StableFluid(GraphicWidget):
         """
         Add dye on click.
         """
-        if (
-            mouse_event.button is MouseButton.NO_BUTTON
-            or not self.collides_point(mouse_event.position)
+        if mouse_event.button is MouseButton.NO_BUTTON or not self.collides_point(
+            mouse_event.position
         ):
             return False
 
@@ -80,7 +83,7 @@ class StableFluid(GraphicWidget):
             self.velocity[0] -= ry / d
             self.velocity[1] -= rx / d
 
-        poke_force = np.e**(-d / POKE_RADIUS)
+        poke_force = np.e ** (-d / POKE_RADIUS)
         self.dye += np.moveaxis(poke_force[..., None] * next(RAINBOW_COLORS), -1, 0)
 
         return True
@@ -107,8 +110,8 @@ class StableFluid(GraphicWidget):
 
             vorticity = np.stack((vort_x, vort_y))
 
-            # Negating `vort_y`` and using `vorticity=np.stack((vort_y, vort_x))` creates
-            # a more swirly effect, but there are line artifacts.
+            # Negating `vort_y`` and using `vorticity=np.stack((vort_y, vort_x))`
+            # creates a more swirly effect, but there are line artifacts.
 
             vorticity /= np.linalg.norm(vorticity, axis=0) + EPSILON
             vorticity *= curl * CURL
@@ -117,7 +120,7 @@ class StableFluid(GraphicWidget):
 
             # Pressure Solver
             #################
-            div = .25 * (div_y + div_x)
+            div = 0.25 * (div_y + div_x)
 
             pressure = np.full_like(div_y, PRESSURE)
             for _ in range(PRESSURE_ITERATIONS):

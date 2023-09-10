@@ -26,7 +26,7 @@ class SpinnersApp(App):
         )
 
         for name, frames in SPINNERS.items():
-            label = TextWidget(pos_hint=(.5, None), anchor="left_center")
+            label = TextWidget(pos_hint=(0.5, None), anchor="left_center")
             label.set_text(f"{name}: ")
 
             animation = TextAnimation(pos=(0, label.right), frames=frames)

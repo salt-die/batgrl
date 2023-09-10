@@ -1,5 +1,5 @@
 import asyncio
-from random import random, randrange, choice
+from random import choice, random, randrange
 from time import monotonic
 
 from nurses_2.app import run_widget_as_app
@@ -43,8 +43,9 @@ HEAVY = {
     (3, 3): "━",
 }
 
+
 class Pipes(TextWidget):
-    def __init__(self, npipes: int=5, **kwargs):
+    def __init__(self, npipes: int = 5, **kwargs):
         super().__init__(**kwargs)
         self._npipes = npipes
 
@@ -82,7 +83,7 @@ class Pipes(TextWidget):
 
     async def pipe(self):
         end = monotonic() + 10
-        sleep = .02 + random() * .05
+        sleep = 0.02 + random() * 0.05
         color = randrange(255), randrange(255), randrange(255)
         y, x = randrange(self.height), randrange(self.width)
         last_dir = randrange(4)

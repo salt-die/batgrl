@@ -1,9 +1,9 @@
-from random import choice, randrange, sample
 from pathlib import Path
+from random import choice, randrange, sample
 
 import numpy as np
 
-from nurses_2.io import MouseEventType, MouseButton
+from nurses_2.io import MouseButton, MouseEventType
 from nurses_2.widgets.text_widget import TextWidget
 
 from .colors import DEFAULT_COLOR_PAIR
@@ -12,11 +12,16 @@ NOISE = np.array(list("!\"#$%'()*+,-./:;<>?@[\\]^_`{|}="))
 
 WORD_COUNT = 17
 WORD_LENGTH = 9
+
+
 def create_word_list() -> list[str]:
     path = Path(__file__).parent / "words.txt"
     words = path.read_text().splitlines()
     return [word for word in words if len(word) == WORD_LENGTH]
+
+
 WORDS = create_word_list()
+
 
 def memory_to_pos(i):
     y, x = divmod(i, 12)
@@ -26,6 +31,7 @@ def memory_to_pos(i):
     else:
         x += 7
     return y, x
+
 
 def pos_to_memory(pos):
     y, x = pos
@@ -47,7 +53,7 @@ class MemoryWidget(TextWidget):
 
     def init_memory(self):
         # Memory addresses
-        start_address = randrange(0, 0xfe38, 12)
+        start_address = randrange(0, 0xFE38, 12)
         for i in range(34):
             self.add_str(
                 f"0x{start_address + 12 * i:04X}",
@@ -99,10 +105,10 @@ class MemoryWidget(TextWidget):
             for j in range(start, end):
                 self.colors[memory_to_pos(j)] = DEFAULT_COLOR_PAIR.reversed()
 
-            guess = self.memory[start: end]
+            guess = self.memory[start:end]
             if (
-                mouse_event.button is MouseButton.LEFT and
-                mouse_event.event_type is MouseEventType.MOUSE_DOWN
+                mouse_event.button is MouseButton.LEFT
+                and mouse_event.event_type is MouseEventType.MOUSE_DOWN
             ):
                 self.output.attempt(guess)
             else:

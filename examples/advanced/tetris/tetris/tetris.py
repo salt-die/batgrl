@@ -7,21 +7,23 @@ from random import shuffle
 import numpy as np
 
 from nurses_2.colors import AWHITE
-from nurses_2.widgets.graphic_widget import composite, GraphicWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphic_widget_data_structures import composite
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.text_widget import TextWidget
 
 from .matrix import MatrixWidget
 from .modal_screen import ModalScreen
-from .tetrominoes import TETROMINOS, ARIKA_TETROMINOS, Orientation
+from .tetrominoes import ARIKA_TETROMINOS, TETROMINOS, Orientation
 
 MAX_LEVEL = 20
-FLASH_DELAY = .1
-LOCK_DOWN_DELAY = .5
+FLASH_DELAY = 0.1
+LOCK_DOWN_DELAY = 0.5
 MOVE_RESET = 15
 QUEUE_ID = count()
 ASSETS = Path(__file__).parent.parent.parent.parent / "assets"
 TETRIS_BACKGROUND_PATH = ASSETS / "loudypixelsky.png"
+
 
 def gravity(level):
     """
@@ -31,7 +33,8 @@ def gravity(level):
     --------
     https://harddrop.com/wiki/Tetris_Worlds
     """
-    return (0.8 - ((level - 1) * 0.007))**(level - 1)
+    return (0.8 - ((level - 1) * 0.007)) ** (level - 1)
+
 
 def tetromino_generator(tetrominos):
     """
@@ -42,16 +45,19 @@ def tetromino_generator(tetrominos):
         shuffle(bag)
         yield from bag
 
+
 def setup_background(widget):
-    t = widget.top
-    l = widget.left
-    b = widget.bottom
-    r = widget.right
+    top = widget.top
+    left = widget.left
+    bottom = widget.bottom
+    right = widget.right
 
     if isinstance(widget.parent, Image):
-        widget.colors[..., 3:] = widget.parent.texture[2 * t + 1: 2 * b: 2, l: r, :3] // 2
+        widget.colors[..., 3:] = (
+            widget.parent.texture[2 * top + 1 : 2 * bottom : 2, left:right, :3] // 2
+        )
     else:
-        widget.colors[..., 3:] = widget.parent.colors[t: b, l: r, 3:] // 2
+        widget.colors[..., 3:] = widget.parent.colors[top:bottom, left:right, 3:] // 2
 
 
 class Piece(GraphicWidget):
@@ -103,74 +109,74 @@ class Tetris(Image):
             "pos": (BORDER_WIDTH, 2 * BORDER_WIDTH),
         }
 
-        bsize = bh, bw = 4 + 2 * BORDER_WIDTH, 8 + 4 * BORDER_WIDTH  # border size; border height, border width
+        bsize = bh, bw = (
+            4 + 2 * BORDER_WIDTH,
+            8 + 4 * BORDER_WIDTH,
+        )  # border size; border height, border width
         h, w = matrix_size
 
-        t, b, l, r = SPACING, h - (bh + SPACING), SPACING, 3 * SPACING + bw + 2 * w  # offsets for border widgets
+        # offsets for border widgets
+        top = SPACING
+        bottom = h - (bh + SPACING)
+        left = SPACING
+        right = 3 * SPACING + bw + 2 * w
 
         super().__init__(
             size=(h, 4 * SPACING + 2 * bw + 2 * w),
             path=TETRIS_BACKGROUND_PATH,
             **kwargs,
         )
-        self.tetromino_generator = tetromino_generator(ARIKA_TETROMINOS if arika else TETROMINOS)
+        self.tetromino_generator = tetromino_generator(
+            ARIKA_TETROMINOS if arika else TETROMINOS
+        )
         self._level = 0
         self.is_paused = False
 
         # Setup HELD display
-        ##################################################
-        held_border = TextWidget(size=bsize, pos=(t, l)) #
-        held_border.add_str(f"{'HOLD':^{bsize[1]}}")    #
-        held_space = TextWidget(**display_geometry)      #
-                                                         #
-        held_border.add_widget(held_space)               #
-        ##################################################
+        held_border = TextWidget(size=bsize, pos=(top, left))
+        held_border.add_str(f"{'HOLD':^{bsize[1]}}")
+        held_space = TextWidget(**display_geometry)
+
+        held_border.add_widget(held_space)
 
         # Setup NEXT display
-        ##################################################
-        next_border = TextWidget(size=bsize, pos=(t, r)) #
-        next_border.add_str(f"{'NEXT':^{bsize[1]}}")    #
-        next_space = TextWidget(**display_geometry)      #
-                                                         #
-        next_border.add_widget(next_space)               #
-        ##################################################
+        next_border = TextWidget(size=bsize, pos=(top, right))
+        next_border.add_str(f"{'NEXT':^{bsize[1]}}")
+        next_space = TextWidget(**display_geometry)
+        next_border.add_widget(next_space)
 
         # Setup SCORE display
-        #####################################################
-        score_border = TextWidget(size=bsize, pos=(b, l))   #
-        score_border.add_str(f"{'SCORE':^{bsize[1]}}")     #
-        self.score_display = TextWidget(**display_geometry) #
-                                                            #
-        score_border.add_widget(self.score_display)         #
-        #####################################################
+        score_border = TextWidget(size=bsize, pos=(bottom, left))
+        score_border.add_str(f"{'SCORE':^{bsize[1]}}")
+        self.score_display = TextWidget(**display_geometry)
+        score_border.add_widget(self.score_display)
 
         # Setup LEVEL Display
-        #####################################################
-        level_border = TextWidget(size=bsize, pos=(b, r))   #
-        level_border.add_str(f"{'LEVEL':^{bsize[1]}}")     #
-        self.level_display = TextWidget(**display_geometry) #
-                                                            #
-        level_border.add_widget(self.level_display)         #
-        #####################################################
+        level_border = TextWidget(size=bsize, pos=(bottom, right))
+        level_border.add_str(f"{'LEVEL':^{bsize[1]}}")
+        self.level_display = TextWidget(**display_geometry)
+
+        level_border.add_widget(self.level_display)
 
         self.add_widgets(held_border, next_border, score_border, level_border)
 
         for widget in self.walk():
             setup_background(widget)
 
-        self.held_piece = Piece(pos_hint=(.5, .5), anchor="center", is_enabled=False)
+        self.held_piece = Piece(pos_hint=(0.5, 0.5), anchor="center", is_enabled=False)
         held_space.add_widget(self.held_piece)
 
-        self.next_piece = Piece(pos_hint=(.5, .5), anchor="center", is_enabled=False)
+        self.next_piece = Piece(pos_hint=(0.5, 0.5), anchor="center", is_enabled=False)
         next_space.add_widget(self.next_piece)
 
-        # matrix is a boolean array where True values indicate that a mino exists in that location.
         self.matrix = np.zeros(matrix_size, dtype=np.bool8)
-        # matrix_widget is the visual representation of matrix
+        """Bool array representation of mino positions."""
         self.matrix_widget = MatrixWidget(size=(h, 2 * w), pos=(0, 2 * SPACING + bw))
+        """The "matrix", where minos land."""
+
         self.on_size()
 
-        self.ghost_piece = Piece(alpha=.33, is_enabled=False)
+        self.ghost_piece = Piece(alpha=0.33, is_enabled=False)
         self.current_piece = Piece(is_enabled=False)
         self.matrix_widget.add_widgets(self.ghost_piece, self.current_piece)
 
@@ -200,7 +206,7 @@ class Tetris(Image):
             # Darken background behind matrix.
             left = self.matrix_widget.left
             right = self.matrix_widget.right
-            self.texture[:, left: right, :3] //= 3
+            self.texture[:, left:right, :3] //= 3
 
     def new_game(self):
         self._game_task.cancel()
@@ -315,7 +321,10 @@ class Tetris(Image):
 
         if from_held:
             if held_piece.is_enabled:
-                current_piece.tetromino, held_piece.tetromino = held_piece.tetromino, current_piece.tetromino
+                current_piece.tetromino, held_piece.tetromino = (
+                    held_piece.tetromino,
+                    current_piece.tetromino,
+                )
             else:
                 held_piece.tetromino = current_piece.tetromino
                 current_piece.tetromino = next_piece.tetromino
@@ -390,7 +399,7 @@ class Tetris(Image):
         """
         Move current piece. Returns true if the move was successful else false.
         """
-        current_piece =self.current_piece
+        current_piece = self.current_piece
 
         if not self.collides((dy, dx), current_piece):
             if dy == 1:
@@ -433,7 +442,12 @@ class Tetris(Image):
         ).T
         self.matrix[ys, xs] = 1
 
-        composite(current_piece.texture, self.matrix_widget.texture, (2 * y, x), mask_mode=True)
+        composite(
+            current_piece.texture,
+            self.matrix_widget.texture,
+            (2 * y, x),
+            mask_mode=True,
+        )
         task_name = str(next(QUEUE_ID))
         self._clear_lines_queue.append(
             asyncio.create_task(self.clear_lines(task_name), name=task_name)
@@ -465,12 +479,12 @@ class Tetris(Image):
         matrix_lines = np.kron(completed_lines, [True, True])
         old_texture = matrix_texture[matrix_lines].copy()
 
-        delay = FLASH_DELAY * .95**(self.level - 1)
+        delay = FLASH_DELAY * 0.95 ** (self.level - 1)
         for _ in range(10):
             matrix_texture[matrix_lines] = AWHITE
             await asyncio.sleep(delay)
 
-            delay *= .8
+            delay *= 0.8
             matrix_texture[matrix_lines] = old_texture
             await asyncio.sleep(delay)
 
@@ -479,8 +493,8 @@ class Tetris(Image):
         matrix[nlines:] = matrix[~completed_lines]
         matrix[:nlines] = 0
 
-        matrix_texture[2 * nlines:] = matrix_texture[~matrix_lines]
-        matrix_texture[:2 * nlines] = 0
+        matrix_texture[2 * nlines :] = matrix_texture[~matrix_lines]
+        matrix_texture[: 2 * nlines] = 0
 
         self.update_ghost_position()
         self.update_score(nlines)
@@ -495,8 +509,8 @@ class Tetris(Image):
         if lines >= self.lines_to_next_level:
             self.level += 1
             self.lines_to_next_level = 5 * self.level
-            self.gravity = max(.05, gravity(self.level))
-            self.lock_down_delay = max(.05, .95**(self.level - 1) * LOCK_DOWN_DELAY)
+            self.gravity = max(0.05, gravity(self.level))
+            self.lock_down_delay = max(0.05, 0.95 ** (self.level - 1) * LOCK_DOWN_DELAY)
         else:
             self.lines_to_next_level -= lines
 

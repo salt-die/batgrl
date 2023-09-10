@@ -3,11 +3,11 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import Color, ColorPair, BLACK, WHITE_ON_BLACK
+from nurses_2.colors import BLACK, WHITE_ON_BLACK, Color, ColorPair
 from nurses_2.io import MouseButton
-from nurses_2.widgets.text_widget import TextWidget
-from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor
+from nurses_2.widgets.graphic_widget import Anchor, GraphicWidget
 from nurses_2.widgets.slider import Slider
+from nurses_2.widgets.text_widget import TextWidget
 
 from .solver import SPHSolver
 
@@ -39,9 +39,8 @@ class SPH(GraphicWidget):
         return False
 
     def on_mouse(self, mouse_event):
-        if (
-            mouse_event.button is MouseButton.NO_BUTTON
-            or not self.collides_point(mouse_event.position)
+        if mouse_event.button is MouseButton.NO_BUTTON or not self.collides_point(
+            mouse_event.position
         ):
             return False
 
@@ -51,7 +50,8 @@ class SPH(GraphicWidget):
         relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
 
         self.sph_solver.state[:, 2:4] += (
-            1e2 * relative_positions
+            1e2
+            * relative_positions
             / np.linalg.norm(relative_positions, axis=-1, keepdims=True)
         )
 
@@ -81,12 +81,12 @@ class SPHApp(App):
     async def on_start(self):
         height, width = 26, 51
         slider_settings = (
-            ("H", "Smoothing Length", .4, 3.5),
+            ("H", "Smoothing Length", 0.4, 3.5),
             ("GAS_CONST", "Gas Constant", 500.0, 4000.0),
             ("REST_DENS", "Rest Density", 150.0, 500.0),
             ("VISC", "Viscosity", 0.0, 5000.0),
             ("MASS", "Mass", 10.0, 500.0),
-            ("DT", "DT", .001, .03),
+            ("DT", "DT", 0.001, 0.03),
             ("GRAVITY", "Gravity", 0.0, 1e5),
             ("WIDTH", "Width", 5, width),
         )
@@ -94,7 +94,7 @@ class SPHApp(App):
 
         container = TextWidget(
             size=(height, width),
-            pos_hint=(.5, .5),
+            pos_hint=(0.5, 0.5),
             anchor=Anchor.CENTER,
             default_color_pair=WHITE_ON_BLACK,
         )
@@ -113,6 +113,7 @@ class SPHApp(App):
                 else:
                     value = f"{v:.4}"
                 container.add_str(f"{caption}: {value}".ljust(width // 2), (y, x))
+
             return update
 
         container.add_widget(fluid)

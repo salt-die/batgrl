@@ -1,13 +1,13 @@
 import asyncio
 
-import numpy as np
 import cv2
+import numpy as np
 
-from nurses_2.widgets.widget import Widget
-from nurses_2.widgets.text_widget import TextWidget, Anchor, Point
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
+from nurses_2.widgets.text_widget import Anchor, Point, TextWidget
+from nurses_2.widgets.widget import Widget
 
-from .colors import FLAG_COLOR, DATA_BAR
+from .colors import DATA_BAR, FLAG_COLOR
 from .count import Count
 from .grid import Grid
 from .minefield import Minefield
@@ -42,13 +42,13 @@ class MineSweeper(Widget):
             pos=pos,
             size=(V_SPACING * h + 2, H_SPACING * w + 1),
             background_color_pair=DATA_BAR,
-            **kwargs
+            **kwargs,
         )
 
         self.timer = TextWidget(
             size=(1, 20),
             anchor=Anchor.TOP_RIGHT,
-            pos_hint=(None, .95),
+            pos_hint=(None, 0.95),
             default_color_pair=DATA_BAR,
         )
         self.timer.add_str("Time Elapsed:")
@@ -56,7 +56,7 @@ class MineSweeper(Widget):
 
         self.mines_left = TextWidget(
             size=(1, 10),
-            pos_hint=(None, .05),
+            pos_hint=(None, 0.05),
             default_color_pair=DATA_BAR,
         )
         self.mines_left.add_str("Mines:")
@@ -65,7 +65,7 @@ class MineSweeper(Widget):
             size=(1, 2),
             default_color_pair=DATA_BAR,
             anchor=Anchor.CENTER,
-            pos_hint=(None, .5),
+            pos_hint=(None, 0.5),
         )
 
         self.add_widgets(self.mines_left, self.timer, self.reset_button)
@@ -117,9 +117,13 @@ class MineSweeper(Widget):
 
         if not win:
             self.reset_button.add_str(KNOCKED_OUT)
-            count.canvas["char"][(count.canvas["char"] == BOMB) & (minefield.canvas["char"] != FLAG)] = EXPLODED
+            count.canvas["char"][
+                (count.canvas["char"] == BOMB) & (minefield.canvas["char"] != FLAG)
+            ] = EXPLODED
 
-            bad_flags = (count.canvas["char"] != BOMB) & (minefield.canvas["char"] == FLAG)
+            bad_flags = (count.canvas["char"] != BOMB) & (
+                minefield.canvas["char"] == FLAG
+            )
             count.canvas["char"][bad_flags] = BAD_FLAG
             count.colors[bad_flags, :3] = FLAG_COLOR
         else:
@@ -131,7 +135,7 @@ class MineSweeper(Widget):
 
         for _ in range(NMINES):
             while True:
-                location =RNG.integers(h), RNG.integers(w)
+                location = RNG.integers(h), RNG.integers(w)
                 if minefield[location] == 0:
                     minefield[location] = 1
                     break

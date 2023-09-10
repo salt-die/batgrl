@@ -9,50 +9,52 @@ from nurses_2.app import App
 from nurses_2.clamp import clamp
 from nurses_2.colors import Color, ColorPair
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.text_widget import TextWidget, Anchor
-from nurses_2.widgets.widget import Widget
 from nurses_2.widgets.slider import Slider
+from nurses_2.widgets.text_widget import Anchor, TextWidget
+from nurses_2.widgets.widget import Widget
 
-FIRE_PALETTE = np.array([
-    [  0,   0,   0,   0],
-    [  7,   7,   7, 255],
-    [ 31,   7,   7, 255],
-    [ 47,  15,   7, 255],
-    [ 71,  15,   7, 255],
-    [ 87,  23,   7, 255],
-    [103,  31,   7, 255],
-    [119,  31,   7, 255],
-    [143,  39,   7, 255],
-    [159,  47,   7, 255],
-    [175,  63,   7, 255],
-    [191,  71,   7, 255],
-    [199,  71,   7, 255],
-    [223,  79,   7, 255],
-    [223,  87,   7, 255],
-    [223,  87,   7, 255],
-    [215,  95,   7, 255],
-    [215,  95,   7, 255],
-    [215, 103,  15, 255],
-    [207, 111,  15, 255],
-    [207, 119,  15, 255],
-    [207, 127,  15, 255],
-    [207, 135,  23, 255],
-    [199, 135,  23, 255],
-    [199, 143,  23, 255],
-    [199, 151,  31, 255],
-    [191, 159,  31, 255],
-    [191, 159,  31, 255],
-    [191, 167,  39, 255],
-    [191, 167,  39, 255],
-    [191, 175,  47, 255],
-    [183, 175,  47, 255],
-    [183, 183,  47, 255],
-    [183, 183,  55, 255],
-    [207, 207, 111, 255],
-    [223, 223, 159, 255],
-    [239, 239, 199, 255],
-    [255, 255, 255, 255],
-])
+FIRE_PALETTE = np.array(
+    [
+        [0, 0, 0, 0],
+        [7, 7, 7, 255],
+        [31, 7, 7, 255],
+        [47, 15, 7, 255],
+        [71, 15, 7, 255],
+        [87, 23, 7, 255],
+        [103, 31, 7, 255],
+        [119, 31, 7, 255],
+        [143, 39, 7, 255],
+        [159, 47, 7, 255],
+        [175, 63, 7, 255],
+        [191, 71, 7, 255],
+        [199, 71, 7, 255],
+        [223, 79, 7, 255],
+        [223, 87, 7, 255],
+        [223, 87, 7, 255],
+        [215, 95, 7, 255],
+        [215, 95, 7, 255],
+        [215, 103, 15, 255],
+        [207, 111, 15, 255],
+        [207, 119, 15, 255],
+        [207, 127, 15, 255],
+        [207, 135, 23, 255],
+        [199, 135, 23, 255],
+        [199, 143, 23, 255],
+        [199, 151, 31, 255],
+        [191, 159, 31, 255],
+        [191, 159, 31, 255],
+        [191, 167, 39, 255],
+        [191, 167, 39, 255],
+        [191, 175, 47, 255],
+        [183, 175, 47, 255],
+        [183, 183, 47, 255],
+        [183, 183, 55, 255],
+        [207, 207, 111, 255],
+        [223, 223, 159, 255],
+        [239, 239, 199, 255],
+        [255, 255, 255, 255],
+    ]
+)
 
 MAX_STRENGTH = len(FIRE_PALETTE) - 1
 SLIDER_DEFAULT = ColorPair(215, 103, 15, 0, 0, 0)
@@ -104,7 +106,9 @@ class DoomFire(GraphicWidget):
 
         decay = np.random.randint(0, 4, self._fire_values.shape)
 
-        decay_2_else_no_change = np.where(decay == 2, roll_up_left_left, self._fire_values)
+        decay_2_else_no_change = np.where(
+            decay == 2, roll_up_left_left, self._fire_values
+        )
         decay_1_else_above = np.where(decay == 1, roll_up_left, decay_2_else_no_change)
         self._fire_values = np.where(decay == 0, roll_up, decay_1_else_above)
 
@@ -128,7 +132,7 @@ class DoomFireApp(App):
 
         strength_label = TextWidget(
             size=(1, 22),
-            pos_hint=(None, .5),
+            pos_hint=(None, 0.5),
             anchor=Anchor.TOP_CENTER,
             default_color_pair=SLIDER_DEFAULT,
         )
@@ -149,7 +153,9 @@ class DoomFireApp(App):
             handle_color_pair=SLIDER_HANDLE,
         )
 
-        slider_container = Widget(size=(2, 38), pos_hint=(0, .5), anchor=Anchor.TOP_CENTER)
+        slider_container = Widget(
+            size=(2, 38), pos_hint=(0, 0.5), anchor=Anchor.TOP_CENTER
+        )
         slider_container.add_widgets(strength_label, slider)
         self.add_widgets(doomfire, slider_container)
 

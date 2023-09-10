@@ -11,11 +11,11 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.colors import rainbow_gradient, ColorPair, BLACK
+from nurses_2.colors import BLACK, ColorPair, rainbow_gradient
 from nurses_2.io import MouseButton
 from nurses_2.widgets.text_field import TextParticleField
-from nurses_2.widgets.widget_data_structures import Char
 from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.widget_data_structures import Char
 
 LOGO = """
                    _.gj8888888lkoz.,_
@@ -50,15 +50,17 @@ HEIGHT, WIDTH = 28, 56
 
 POWER = 2
 MAX_PARTICLE_SPEED = 10
-FRICTION = .99
+FRICTION = 0.99
 
 NCOLORS = 100
-RAINBOW = np.array([
-    list(ColorPair.from_colors(fg_color, BLACK))
-    for fg_color in rainbow_gradient(NCOLORS)
-])
-BLUE_INDEX = round(.65 * NCOLORS)
-YELLOW_INDEX = round(.1 * NCOLORS)
+RAINBOW = np.array(
+    [
+        list(ColorPair.from_colors(fg_color, BLACK))
+        for fg_color in rainbow_gradient(NCOLORS)
+    ]
+)
+BLUE_INDEX = round(0.65 * NCOLORS)
+YELLOW_INDEX = round(0.1 * NCOLORS)
 
 COLOR_CHANGE_SPEED = 5
 PERCENTS = tuple(np.linspace(0, 1, 30))
@@ -91,17 +93,18 @@ class PokeParticleField(TextParticleField):
         self.particle_positions[:] = real_positions.astype(int)
 
     def on_mouse(self, mouse_event):
-        if (
-            mouse_event.button is MouseButton.LEFT
-            and self.collides_point(mouse_event.position)
-         ):
+        if mouse_event.button is MouseButton.LEFT and self.collides_point(
+            mouse_event.position
+        ):
             y, x = self.to_local(mouse_event.position)
             relative_distances = self.particle_positions - (y, x)
 
-            distances_sq = (relative_distances ** 2).sum(axis=1)
+            distances_sq = (relative_distances**2).sum(axis=1)
             distances_sq[distances_sq == 0] = 1
 
-            self.particle_properties["velocities"] += POWER * relative_distances / distances_sq[:, None]
+            self.particle_properties["velocities"] += (
+                POWER * relative_distances / distances_sq[:, None]
+            )
 
             if self._update_task.done():
                 self._reset_task.cancel()
@@ -123,12 +126,14 @@ class PokeParticleField(TextParticleField):
 
         while True:
             speeds = np.linalg.norm(velocities, axis=1)
-            if (speeds < .001).all():
+            if (speeds < 0.001).all():
                 return
 
             clipped_speeds = np.clip(speeds, None, MAX_PARTICLE_SPEED)
 
-            color_indices = (color_indices + clipped_speeds * COLOR_CHANGE_SPEED).astype(int) % NCOLORS
+            color_indices = (
+                color_indices + clipped_speeds * COLOR_CHANGE_SPEED
+            ).astype(int) % NCOLORS
             color_pairs[:] = RAINBOW[color_indices]
 
             speed_mask = speeds > MAX_PARTICLE_SPEED
@@ -149,15 +154,15 @@ class PokeParticleField(TextParticleField):
             bottom = ys >= h
             right = xs >= w
 
-            ys[top]    *= -1
-            xs[left]   *= -1
+            ys[top] *= -1
+            xs[left] *= -1
             ys[bottom] = 2 * h - ys[bottom]
-            xs[right]  = 2 * w - xs[right]
+            xs[right] = 2 * w - xs[right]
 
-            vys[top]    *= -1
-            vxs[left]   *= -1
+            vys[top] *= -1
+            vxs[left] *= -1
             vys[bottom] *= -1
-            vxs[right]  *= -1
+            vxs[right] *= -1
 
             try:
                 await asyncio.sleep(0)
@@ -187,7 +192,9 @@ class PokeParticleField(TextParticleField):
             real[:] = percent_left * start + percent * end
             pos[:] = real.astype(int)
 
-            indices[:] = (percent_left * start_indices + percent * end_indices).astype(int)
+            indices[:] = (percent_left * start_indices + percent * end_indices).astype(
+                int
+            )
             color_pairs[:] = RAINBOW[indices]
 
             try:
@@ -199,10 +206,12 @@ class PokeParticleField(TextParticleField):
 class MyApp(App):
     async def on_start(self):
         colors = np.full((HEIGHT, WIDTH), BLUE_INDEX)
-        colors[-7:] = colors[-13: -7, -41:] = YELLOW_INDEX
-        colors[-14, -17:] = colors[-20: -14, -15:] = YELLOW_INDEX
+        colors[-7:] = colors[-13:-7, -41:] = YELLOW_INDEX
+        colors[-14, -17:] = colors[-20:-14, -15:] = YELLOW_INDEX
 
-        chars = np.array([list(line + " " * (WIDTH - len(line))) for line in LOGO.splitlines()])
+        chars = np.array(
+            [list(line + " " * (WIDTH - len(line))) for line in LOGO.splitlines()]
+        )
 
         particle_positions = np.argwhere(chars != " ")
         pys, pxs = particle_positions.T
@@ -219,7 +228,9 @@ class MyApp(App):
             velocities=np.zeros((len(particle_positions), 2), dtype=float),
         )
 
-        particle_color_pairs = np.array(RAINBOW[particle_properties["indices"]], dtype=np.uint8)
+        particle_color_pairs = np.array(
+            RAINBOW[particle_properties["indices"]], dtype=np.uint8
+        )
 
         field = PokeParticleField(
             size_hint=(1.0, 1.0),
@@ -231,7 +242,7 @@ class MyApp(App):
         )
 
         # This background to show off field transparency.
-        bg = Widget(size_hint=(1.0, .5), background_color_pair=(0, 0, 0, 25, 25, 25))
+        bg = Widget(size_hint=(1.0, 0.5), background_color_pair=(0, 0, 0, 25, 25, 25))
         self.add_widgets(bg, field)
 
 

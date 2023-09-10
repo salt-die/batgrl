@@ -1,10 +1,9 @@
 import asyncio
-
 from pathlib import Path
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.colors import AWHITE, ABLACK
-from nurses_2.io import MouseEventType, MouseButton
+from nurses_2.colors import ABLACK, AWHITE
+from nurses_2.io import MouseButton, MouseEventType
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.graphic_widget_data_structures import read_texture, resize_texture
 
@@ -34,7 +33,7 @@ class _SlidingPiece(GraphicWidget):
                     self.parent._sliding = True
                     asyncio.create_task(
                         self.tween(
-                            duration=.5,
+                            duration=0.5,
                             on_complete=lambda: setattr(self.parent, "_sliding", False),
                             pos=(ey * self.height, ex * self.width),
                         )
@@ -60,7 +59,9 @@ class SlidingPuzzle(GraphicWidget):
                 else:
                     piece = _SlidingPiece(size=(h, w), pos=(y * h, x * w))
                     piece._grid_pos = y, x
-                    piece.texture[:] = sprite[piece.top * 2:piece.bottom * 2, piece.left: piece.right]
+                    piece.texture[:] = sprite[
+                        piece.top * 2 : piece.bottom * 2, piece.left : piece.right
+                    ]
                     piece.texture[0] = piece.texture[:, 0] = AWHITE
                     piece.texture[-1] = piece.texture[:, -1] = ABLACK
                     self._grid[y, x] = piece

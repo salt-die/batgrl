@@ -1,7 +1,7 @@
 import numpy as np
 
-from .node import Node
 from .link import Link
+from .node import Node
 
 
 class Mesh:
@@ -10,12 +10,11 @@ class Mesh:
 
         # Create a grid of nodes.
         nodes = [
-            [Node(position=complex(y, x)) for x in range(width)]
-            for y in range(height)
+            [Node(position=complex(y, x)) for x in range(width)] for y in range(height)
         ]
 
         # Link adjacent nodes.
-        links = [ ]
+        links = []
         for y in range(height):
             for x in range(width):
                 a = nodes[y][x]

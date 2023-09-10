@@ -19,7 +19,7 @@ class Link:
         if stretch > 0:
             # Typical calculation is `direction * stretch / (a.mass + b.mass)`,
             # but nodes have implicit mass of 1.
-            momentum = direction * stretch * .5
+            momentum = direction * stretch * 0.5
 
             a.acceleration += momentum
             b.acceleration -= momentum

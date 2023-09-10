@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 from numpy.linalg import norm
 
-from .face_colors import FACE_COLORS, SELECTED_COLORS
 from . import rotation
+from .face_colors import FACE_COLORS, SELECTED_COLORS
 
 
 class Camera:
@@ -43,9 +43,9 @@ class Camera:
 
         self.camera_matrix = np.array(
             [
-                [self.FX,     0.0, self.CX],
-                [    0.0, self.FY, self.CY],
-                [    0.0,     0.0,     1.0],
+                [self.FX, 0.0, self.CX],
+                [0.0, self.FY, self.CY],
+                [0.0, 0.0, 1.0],
             ]
         )
 
@@ -116,7 +116,7 @@ class Camera:
         )
 
         # Translate to center and scale to image:
-        points_2d += .5
+        points_2d += 0.5
         points_2d *= w, h
 
         vertices_2d = self._POINTS_2D_INT_BUFFER
@@ -125,14 +125,25 @@ class Camera:
         pos = self.pos
         normals = np.matmul(cube.normals, pos, out=self._NORMALS_BUFFER)
 
-        it = zip(normals, cube.face_pos, cube.faces, SELECTED_COLORS if cube.is_selected else FACE_COLORS)
+        it = zip(
+            normals,
+            cube.face_pos,
+            cube.faces,
+            SELECTED_COLORS if cube.is_selected else FACE_COLORS,
+        )
 
-        faces = [(face_pos, face, color) for normal, face_pos, face, color in it if normal > 0]
+        faces = [
+            (face_pos, face, color)
+            for normal, face_pos, face, color in it
+            if normal > 0
+        ]
         faces = [(norm(face_pos - pos), face, color) for face_pos, face, color in faces]
 
         # Sort faces by distance to camera.
         faces.sort(key=lambda tup: tup[0], reverse=True)
 
         for distance, face, (r, g, b, a) in faces:
-            p = np.e ** -(distance * .2)
-            cv2.fillConvexPoly(image, vertices_2d[face], (int(p * r), int(p * g), int(p * b), a))
+            p = np.e ** -(distance * 0.2)
+            cv2.fillConvexPoly(
+                image, vertices_2d[face], (int(p * r), int(p * g), int(p * b), a)
+            )

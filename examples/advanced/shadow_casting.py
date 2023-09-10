@@ -7,16 +7,17 @@ from itertools import cycle
 import numpy as np
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.colors import gradient, WHITE, BLUE, ACYAN, AMAGENTA
+from nurses_2.colors import ACYAN, AMAGENTA, BLUE, WHITE, gradient
 from nurses_2.io import MouseEventType
 from nurses_2.widgets.shadow_caster import (
     AGRAY,
     Camera,
-    Point,
     LightIntensity,
     LightSource,
+    Point,
     ShadowCaster,
 )
+
 MAP = """
 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 1000000000000000011000000000000000000000000000000000000000000000000000000000000000001
@@ -65,14 +66,13 @@ MAP = """
 1000000000000000000000000000000000000000000000000000000000000000000000000000000000001
 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 """
-MAP = np.array([
-    [int(i) for i in line]
-    for line in MAP[1:].splitlines()
-])
-WHITE_TO_BLUE = cycle(map(
-    LightIntensity.from_color,
-    gradient(WHITE, BLUE, 10) + gradient(BLUE, WHITE, 10),
-))
+MAP = np.array([[int(i) for i in line] for line in MAP[1:].splitlines()])
+WHITE_TO_BLUE = cycle(
+    map(
+        LightIntensity.from_color,
+        gradient(WHITE, BLUE, 10) + gradient(BLUE, WHITE, 10),
+    )
+)
 
 
 class MyShadowCaster(ShadowCaster):
@@ -91,11 +91,12 @@ class MyShadowCaster(ShadowCaster):
             await asyncio.sleep(0)
 
     def on_mouse(self, mouse_event):
-        if (
-            mouse_event.event_type is MouseEventType.MOUSE_MOVE
-            and self.collides_point(mouse_event.position)
+        if mouse_event.event_type is MouseEventType.MOUSE_MOVE and self.collides_point(
+            mouse_event.position
         ):
-            self.light_sources[0].coords = self.to_map_coords(self.to_local(mouse_event.position))
+            self.light_sources[0].coords = self.to_map_coords(
+                self.to_local(mouse_event.position)
+            )
 
     def on_key(self, key_event):
         y, x = self.camera.pos
@@ -122,7 +123,7 @@ run_widget_as_app(
         camera=Camera((0, 0), (50, 50)),
         tile_colors=[AGRAY, ACYAN, AMAGENTA],
         light_sources=[LightSource()],
-        ambient_light=.1,
+        ambient_light=0.1,
         radius=40,
     )
 )

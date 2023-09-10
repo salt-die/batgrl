@@ -45,7 +45,7 @@ class ShowIOEvents(TextWidget):
 
         lines = dedent(text.format(*event)).splitlines()
         for i, line in enumerate(lines):
-            self.add_str(line.ljust(self.width)[:self.width], (i, 0))
+            self.add_str(line.ljust(self.width)[: self.width], (i, 0))
 
 
 run_widget_as_app(ShowIOEvents(size_hint=(1.0, 1.0)))

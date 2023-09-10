@@ -2,13 +2,25 @@
 An example usage of data tables.
 """
 from nurses_2.app import App
-from nurses_2.widgets.data_table import DataTable, ColumnStyle
+from nurses_2.widgets.data_table import ColumnStyle, DataTable
 
 TABLE = {
-    "Name": ["George Lucas", "Steven Spielberg", "James Cameron", "Peter Jackson", "Ridley Scott"],
+    "Name": [
+        "George Lucas",
+        "Steven Spielberg",
+        "James Cameron",
+        "Peter Jackson",
+        "Ridley Scott",
+    ],
     "Net Worth (Millions)": [7_620, 5_410, 700, 450, 400],
     "Age": [75, 74, 66, 58, 82],
-    "Country": ["United States", "United States", "Canada", "New Zealand", "United Kingdom"],
+    "Country": [
+        "United States",
+        "United States",
+        "Canada",
+        "New Zealand",
+        "United Kingdom",
+    ],
 }
 
 
@@ -24,7 +36,7 @@ class TableApp(App):
             zebra_stripes=False,
             allow_sorting=False,
             default_style=ColumnStyle(alignment="center", padding=3),
-            **common_kwargs
+            **common_kwargs,
         )
         table_2.top = table_1.bottom + 1
         for column_label in TABLE:

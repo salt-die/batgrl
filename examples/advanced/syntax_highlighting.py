@@ -5,16 +5,16 @@ Requires `pygments>=2.14`.
 
 `add_syntax_highlighting` may be included in `nurses_2` in the future.
 """
-from wcwidth import wcswidth
-
 from pygments.lexer import Lexer
-from pygments.style import Style
 from pygments.lexers import get_lexer_by_name
+from pygments.style import Style
 from pygments.styles import get_style_by_name
+from wcwidth import wcswidth
 
 from nurses_2.app import App
 from nurses_2.colors import Color
 from nurses_2.widgets.text_widget import TextWidget
+
 
 def add_syntax_highlighting(text_widget: TextWidget, lexer: Lexer, style: Style):
     """
@@ -47,12 +47,12 @@ def add_syntax_highlighting(text_widget: TextWidget, lexer: Lexer, style: Style)
         token_style = style.style_for_token(ttype)
         end = x + wcswidth(value)
         if token_style["color"]:
-            colors[y, x: end, :3] = Color.from_hex(token_style["color"])
+            colors[y, x:end, :3] = Color.from_hex(token_style["color"])
         if token_style["bgcolor"]:
-            colors[y, x: end, 3:] = Color.from_hex(token_style["bgcolor"])
-        canvas[y, x: end]["bold"] = token_style["bold"]
-        canvas[y, x: end]["italic"] = token_style["italic"]
-        canvas[y, x: end]["underline"] = token_style["underline"]
+            colors[y, x:end, 3:] = Color.from_hex(token_style["bgcolor"])
+        canvas[y, x:end]["bold"] = token_style["bold"]
+        canvas[y, x:end]["italic"] = token_style["italic"]
+        canvas[y, x:end]["underline"] = token_style["underline"]
         x = end
 
 
@@ -69,6 +69,7 @@ class SyntaxApp(App):
 
 SyntaxApp().run()
 """
+
 
 class SyntaxApp(App):
     async def on_start(self):

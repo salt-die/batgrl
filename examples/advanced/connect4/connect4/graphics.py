@@ -3,13 +3,14 @@ from itertools import cycle
 
 import cv2
 
-from nurses_2.colors import TRANSPARENT, AWHITE, AColor, gradient
+from nurses_2.colors import AWHITE, TRANSPARENT, AColor, gradient
 from nurses_2.widgets.graphic_widget import GraphicWidget, Size
 from nurses_2.widgets.grid_layout import GridLayout
 
 BOARD_COLOR = AColor.from_hex("4bade5")
 SELECTED_COLOR = AColor(*(2 * (i // 3) + (255 // 3) for i in BOARD_COLOR))
 CHECKER_SIZE = Size(6, 13)
+
 
 def x_to_column(x):
     """
@@ -24,6 +25,7 @@ class BoardPiece(GraphicWidget):
     """
     A single square of a Connect4 board.
     """
+
     def __init__(self):
         super().__init__(size=CHECKER_SIZE, default_color=BOARD_COLOR)
 
@@ -63,12 +65,11 @@ class Checker(GraphicWidget):
 
     async def _flash(self):
         flash_gradient = cycle(
-            gradient(self._color, AWHITE, 20)
-            + gradient(AWHITE, self._color, 10)
+            gradient(self._color, AWHITE, 20) + gradient(AWHITE, self._color, 10)
         )
         for self.texture[:] in flash_gradient:
             try:
-                await asyncio.sleep(.05)
+                await asyncio.sleep(0.05)
             except asyncio.CancelledError:
                 break
 

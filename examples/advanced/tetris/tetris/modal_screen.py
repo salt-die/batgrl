@@ -2,13 +2,17 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.colors import BLACK, Color, gradient, ColorPair
-from nurses_2.widgets.text_widget import TextWidget, Anchor
+from nurses_2.colors import BLACK, Color, ColorPair, gradient
+from nurses_2.widgets.text_widget import Anchor, TextWidget
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")
-GRADIENT = gradient(ColorPair.from_colors(DARK_PURPLE, BLACK), ColorPair.from_colors(LIGHT_PURPLE, BLACK), 9)
-LINE_GLOW_DURATION = .09
+GRADIENT = gradient(
+    ColorPair.from_colors(DARK_PURPLE, BLACK),
+    ColorPair.from_colors(LIGHT_PURPLE, BLACK),
+    9,
+)
+LINE_GLOW_DURATION = 0.09
 
 ONE = """
   ▄▄▄▄
@@ -18,7 +22,9 @@ ONE = """
   █   █
   █   █
   █▄▄▄█
-""".splitlines()[1:]
+""".splitlines()[
+    1:
+]
 
 TWO = """
  ▄▄▄▄▄▄▄
@@ -28,7 +34,9 @@ TWO = """
 █ ▄▄▄▄▄▄█
 █ █▄▄▄▄▄
 █▄▄▄▄▄▄▄█
-""".splitlines()[1:]
+""".splitlines()[
+    1:
+]
 
 THREE = """
  ▄▄▄▄▄▄▄
@@ -38,7 +46,9 @@ THREE = """
 █▄▄▄    █
  ▄▄▄█   █
 █▄▄▄▄▄▄▄█
-""".splitlines()[1:]
+""".splitlines()[
+    1:
+]
 
 GAME_OVER = """
  ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄
@@ -48,7 +58,9 @@ GAME_OVER = """
 █  █ █  █      █       █    ▄▄▄█  █  █▄█  █       █    ▄▄▄█    ▄▄  █
 █  █▄▄█ █  ▄   █ ██▄██ █   █▄▄▄   █       ██     ██   █▄▄▄█   █  █ █
 █▄▄▄▄▄▄▄█▄█ █▄▄█▄█   █▄█▄▄▄▄▄▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█▄▄▄█  █▄█
-""".splitlines()[1:]
+""".splitlines()[
+    1:
+]
 
 PAUSED = """
            ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄
@@ -58,14 +70,16 @@ PAUSED = """
           █    ▄▄▄█      █       █▄▄▄▄▄  █    ▄▄▄█ █▄█   █
           █   █   █  ▄   █       █▄▄▄▄▄█ █   █▄▄▄█       █
           █▄▄▄█   █▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄█
-""".splitlines()[1:]
+""".splitlines()[
+    1:
+]
 
 
 class ModalScreen(TextWidget):
     def __init__(
         self,
         anchor=Anchor.CENTER,
-        pos_hint=(.5, .5),
+        pos_hint=(0.5, 0.5),
         is_enabled=False,
         **kwargs,
     ):
@@ -131,11 +145,13 @@ class ModalScreen(TextWidget):
                 start, stop, _ = slice(max(0, h - 3 - i), max(0, h - i)).indices(h)
                 lines = stop - start
 
-                colors[start: stop, :, :3].T[:] = colors[start: stop, :, :3].T // alpha[:lines] + white[:lines]
+                colors[start:stop, :, :3].T[:] = (
+                    colors[start:stop, :, :3].T // alpha[:lines] + white[:lines]
+                )
 
                 try:
                     await asyncio.sleep(LINE_GLOW_DURATION)
                 except asyncio.CancelledError:
                     return
                 finally:
-                    colors[start: stop] = buffer[start: stop]
+                    colors[start:stop] = buffer[start:stop]

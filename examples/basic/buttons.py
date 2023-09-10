@@ -3,10 +3,10 @@ Button showcase.
 """
 from nurses_2.app import App
 from nurses_2.widgets.button import Button
+from nurses_2.widgets.flat_toggle import FlatToggle
 from nurses_2.widgets.grid_layout import GridLayout, Orientation
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
-from nurses_2.widgets.flat_toggle import FlatToggle
 
 
 class MyApp(App):
@@ -16,11 +16,14 @@ class MyApp(App):
         def button_callback(i):
             def callback():
                 display.add_str(f"Button {i + 1} pressed!".ljust(20))
+
             return callback
 
         def toggle_button_callback(i):
             def callback(state):
-                display.add_str(f"Button {i + 1} {'un' if state is ToggleState.OFF else ''}toggled!".ljust(20))
+                prefix = "un" if state is ToggleState.OFF else ""
+                display.add_str(f"Button {i + 1} {prefix}toggled!".ljust(20))
+
             return callback
 
         grid_layout = GridLayout(
@@ -43,7 +46,11 @@ class MyApp(App):
 
         # Independent toggle buttons
         grid_layout.add_widgets(
-            ToggleButton(size=(1, 12), label=f"Button {i + 1}", callback=toggle_button_callback(i))
+            ToggleButton(
+                size=(1, 12),
+                label=f"Button {i + 1}",
+                callback=toggle_button_callback(i),
+            )
             for i in range(5, 10)
         )
 
@@ -75,7 +82,8 @@ class MyApp(App):
 
         # Grouped flat toggles
         flat_grid.add_widgets(
-            FlatToggle(group="b", callback=toggle_button_callback(i)) for i in range(20, 25)
+            FlatToggle(group="b", callback=toggle_button_callback(i))
+            for i in range(20, 25)
         )
 
         flat_grid.size = flat_grid.minimum_grid_size

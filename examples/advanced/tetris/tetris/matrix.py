@@ -22,9 +22,9 @@ class MatrixWidget(Effect, GraphicWidget):
 
         while True:
             level = self.parent.level
-            glow = np.linspace(0, min(1, .05 * level), 30)
+            glow = np.linspace(0, min(1, 0.05 * level), 30)
 
-            brighten_delay = .04 * .8 ** level
+            brighten_delay = 0.04 * 0.8**level
             darken_delay = 2 * brighten_delay
             sleep = 20 * darken_delay
 
@@ -39,5 +39,9 @@ class MatrixWidget(Effect, GraphicWidget):
     def apply_effect(self, canvas_view, colors_view, source: tuple[slice, slice]):
         glow = self._glow
         visible = self.texture[..., 3] == 255
-        colors_view[..., :3][visible[::2]] = (colors_view[..., :3][visible[::2]] * (1 - glow) + glow * 255).astype(int)
-        colors_view[..., 3:][visible[1::2]] = (colors_view[..., 3:][visible[1::2]] * (1 - glow) + glow * 255).astype(int)
+        colors_view[..., :3][visible[::2]] = (
+            colors_view[..., :3][visible[::2]] * (1 - glow) + glow * 255
+        ).astype(int)
+        colors_view[..., 3:][visible[1::2]] = (
+            colors_view[..., 3:][visible[1::2]] * (1 - glow) + glow * 255
+        ).astype(int)

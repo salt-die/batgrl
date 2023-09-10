@@ -90,87 +90,90 @@ MOUSE_MOVE = """\
   \             /
    '-..______.-'
 """
-SHIFTS = dict(zip(
-    r'~!@#$%^&*()_+{}|:"<>?ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-    r"`1234567890-=[]\;',./abcdefghijklmnopqrstuvwxyz",
-))
+SHIFTS = dict(
+    zip(
+        r'~!@#$%^&*()_+{}|:"<>?ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        r"`1234567890-=[]\;',./abcdefghijklmnopqrstuvwxyz",
+    )
+)
 KEYS = {
     # KEY             POS      SIZE
-    Key.Escape:    (( 2,  3), (3,  5)),
-    Key.F1:        (( 2, 12), (3,  5)),
-    Key.F2:        (( 2, 16), (3,  5)),
-    Key.F3:        (( 2, 20), (3,  5)),
-    Key.F4:        (( 2, 24), (3,  5)),
-    Key.F5:        (( 2, 31), (3,  5)),
-    Key.F6:        (( 2, 35), (3,  5)),
-    Key.F7:        (( 2, 39), (3,  5)),
-    Key.F8:        (( 2, 43), (3,  5)),
-    Key.F9:        (( 2, 50), (3,  5)),
-    Key.F10:       (( 2, 54), (3,  5)),
-    Key.F11:       (( 2, 58), (3,  5)),
-    Key.F12:       (( 2, 62), (3,  5)),
-    "`":           (( 5,  3), (4,  5)),
-    "1":           (( 5,  7), (4,  5)),
-    "2":           (( 5, 11), (4,  5)),
-    "3":           (( 5, 15), (4,  5)),
-    "4":           (( 5, 19), (4,  5)),
-    "5":           (( 5, 23), (4,  5)),
-    "6":           (( 5, 27), (4,  5)),
-    "7":           (( 5, 31), (4,  5)),
-    "8":           (( 5, 35), (4,  5)),
-    "9":           (( 5, 39), (4,  5)),
-    "0":           (( 5, 43), (4,  5)),
-    "-":           (( 5, 47), (4,  5)),
-    "=":           (( 5, 51), (4,  5)),
-    Key.Backspace: (( 5, 55), (4, 12)),
-    Key.Insert:    (( 5, 69), (4,  6)),
-    Key.Home:      (( 5, 74), (4,  6)),
-    Key.PageUp:    (( 5, 79), (4,  6)),
-    Key.Tab:       (( 8,  3), (4,  7)),
-    "q":           (( 8,  9), (4,  5)),
-    "w":           (( 8, 13), (4,  5)),
-    "e":           (( 8, 17), (4,  5)),
-    "r":           (( 8, 21), (4,  5)),
-    "t":           (( 8, 25), (4,  5)),
-    "y":           (( 8, 29), (4,  5)),
-    "u":           (( 8, 33), (4,  5)),
-    "i":           (( 8, 37), (4,  5)),
-    "o":           (( 8, 41), (4,  5)),
-    "p":           (( 8, 45), (4,  5)),
-    "[":           (( 8, 49), (4,  5)),
-    "]":           (( 8, 53), (4,  5)),
-    "\\":          (( 8, 57), (4, 10)),
-    Key.Delete:    (( 8, 69), (4,  6)),
-    Key.End:       (( 8, 74), (4,  6)),
-    Key.PageDown:  (( 8, 79), (4,  6)),
-    "a":           ((11, 10), (4,  5)),
-    "s":           ((11, 14), (4,  5)),
-    "d":           ((11, 18), (4,  5)),
-    "f":           ((11, 22), (4,  5)),
-    "g":           ((11, 26), (4,  5)),
-    "h":           ((11, 30), (4,  5)),
-    "j":           ((11, 34), (4,  5)),
-    "k":           ((11, 38), (4,  5)),
-    "l":           ((11, 42), (4,  5)),
-    ";":           ((11, 46), (4,  5)),
-    "'":           ((11, 50), (4,  5)),
-    Key.Enter:     ((11, 54), (4, 13)),
-    "z":           ((14, 11), (4,  5)),
-    "x":           ((14, 15), (4,  5)),
-    "c":           ((14, 19), (4,  5)),
-    "v":           ((14, 23), (4,  5)),
-    "b":           ((14, 27), (4,  5)),
-    "n":           ((14, 31), (4,  5)),
-    "m":           ((14, 35), (4,  5)),
-    ",":           ((14, 39), (4,  5)),
-    ".":           ((14, 43), (4,  5)),
-    "/":           ((14, 47), (4,  5)),
-    Key.Up:        ((14, 74), (4,  6)),
-    " ":           ((17, 18), (4, 29)),
-    Key.Left:      ((17, 69), (4,  6)),
-    Key.Down:      ((17, 74), (4,  6)),
-    Key.Right:     ((17, 79), (4,  6)),
+    Key.Escape: ((2, 3), (3, 5)),
+    Key.F1: ((2, 12), (3, 5)),
+    Key.F2: ((2, 16), (3, 5)),
+    Key.F3: ((2, 20), (3, 5)),
+    Key.F4: ((2, 24), (3, 5)),
+    Key.F5: ((2, 31), (3, 5)),
+    Key.F6: ((2, 35), (3, 5)),
+    Key.F7: ((2, 39), (3, 5)),
+    Key.F8: ((2, 43), (3, 5)),
+    Key.F9: ((2, 50), (3, 5)),
+    Key.F10: ((2, 54), (3, 5)),
+    Key.F11: ((2, 58), (3, 5)),
+    Key.F12: ((2, 62), (3, 5)),
+    "`": ((5, 3), (4, 5)),
+    "1": ((5, 7), (4, 5)),
+    "2": ((5, 11), (4, 5)),
+    "3": ((5, 15), (4, 5)),
+    "4": ((5, 19), (4, 5)),
+    "5": ((5, 23), (4, 5)),
+    "6": ((5, 27), (4, 5)),
+    "7": ((5, 31), (4, 5)),
+    "8": ((5, 35), (4, 5)),
+    "9": ((5, 39), (4, 5)),
+    "0": ((5, 43), (4, 5)),
+    "-": ((5, 47), (4, 5)),
+    "=": ((5, 51), (4, 5)),
+    Key.Backspace: ((5, 55), (4, 12)),
+    Key.Insert: ((5, 69), (4, 6)),
+    Key.Home: ((5, 74), (4, 6)),
+    Key.PageUp: ((5, 79), (4, 6)),
+    Key.Tab: ((8, 3), (4, 7)),
+    "q": ((8, 9), (4, 5)),
+    "w": ((8, 13), (4, 5)),
+    "e": ((8, 17), (4, 5)),
+    "r": ((8, 21), (4, 5)),
+    "t": ((8, 25), (4, 5)),
+    "y": ((8, 29), (4, 5)),
+    "u": ((8, 33), (4, 5)),
+    "i": ((8, 37), (4, 5)),
+    "o": ((8, 41), (4, 5)),
+    "p": ((8, 45), (4, 5)),
+    "[": ((8, 49), (4, 5)),
+    "]": ((8, 53), (4, 5)),
+    "\\": ((8, 57), (4, 10)),
+    Key.Delete: ((8, 69), (4, 6)),
+    Key.End: ((8, 74), (4, 6)),
+    Key.PageDown: ((8, 79), (4, 6)),
+    "a": ((11, 10), (4, 5)),
+    "s": ((11, 14), (4, 5)),
+    "d": ((11, 18), (4, 5)),
+    "f": ((11, 22), (4, 5)),
+    "g": ((11, 26), (4, 5)),
+    "h": ((11, 30), (4, 5)),
+    "j": ((11, 34), (4, 5)),
+    "k": ((11, 38), (4, 5)),
+    "l": ((11, 42), (4, 5)),
+    ";": ((11, 46), (4, 5)),
+    "'": ((11, 50), (4, 5)),
+    Key.Enter: ((11, 54), (4, 13)),
+    "z": ((14, 11), (4, 5)),
+    "x": ((14, 15), (4, 5)),
+    "c": ((14, 19), (4, 5)),
+    "v": ((14, 23), (4, 5)),
+    "b": ((14, 27), (4, 5)),
+    "n": ((14, 31), (4, 5)),
+    "m": ((14, 35), (4, 5)),
+    ",": ((14, 39), (4, 5)),
+    ".": ((14, 43), (4, 5)),
+    "/": ((14, 47), (4, 5)),
+    Key.Up: ((14, 74), (4, 6)),
+    " ": ((17, 18), (4, 29)),
+    Key.Left: ((17, 69), (4, 6)),
+    Key.Down: ((17, 74), (4, 6)),
+    Key.Right: ((17, 79), (4, 6)),
 }
+
 
 def rainbow(texture):
     """
@@ -178,10 +181,12 @@ def rainbow(texture):
     """
     h, w, _ = texture.shape
     ys, xs = np.indices((h, w), dtype=float)
-    ys -= .5 * h
-    xs -= .5 * w
+    ys -= 0.5 * h
+    xs -= 0.5 * w
 
-    colors = .5 + .5 * np.cos(np.arctan2(xs, ys)[..., None] + 3.0 * monotonic() + (0, 23, 21))
+    colors = 0.5 + 0.5 * np.cos(
+        np.arctan2(xs, ys)[..., None] + 3.0 * monotonic() + (0, 23, 21)
+    )
     texture[..., :3] = (colors * 255).astype(int)
 
 
@@ -206,12 +211,12 @@ class KeyboardWidget(RainbowBehavior, TextWidget):
         add_text(self.canvas, KEYBOARD)
         common = dict(is_visible=False, is_transparent=True)
         self._key_border = TextWidget(**common)
-        self._lshift = TextWidget(pos=(14,  3), size=(4,  9), **common)
+        self._lshift = TextWidget(pos=(14, 3), size=(4, 9), **common)
         self._rshift = TextWidget(pos=(14, 51), size=(4, 16), **common)
-        self._lctrl  = TextWidget(pos=(17,  3), size=(4,  6), **common)
-        self._rctrl  = TextWidget(pos=(17, 56), size=(4, 11), **common)
-        self._lalt   = TextWidget(pos=(17, 13), size=(4,  6), **common)
-        self._ralt   = TextWidget(pos=(17, 46), size=(4,  6), **common)
+        self._lctrl = TextWidget(pos=(17, 3), size=(4, 6), **common)
+        self._rctrl = TextWidget(pos=(17, 56), size=(4, 11), **common)
+        self._lalt = TextWidget(pos=(17, 13), size=(4, 6), **common)
+        self._ralt = TextWidget(pos=(17, 46), size=(4, 6), **common)
 
         self.add_widgets(
             self._lshift,
@@ -307,11 +312,14 @@ class MouseWidget(RainbowBehavior, TextWidget):
 
 class InputApp(App):
     async def on_start(self):
-        keyboard = KeyboardWidget(pos_hint=(.5, 0), anchor="left_center")
-        mouse = MouseWidget(pos_hint=(.5, 1.0), anchor="right_center")
+        keyboard = KeyboardWidget(pos_hint=(0.5, 0), anchor="left_center")
+        mouse = MouseWidget(pos_hint=(0.5, 1.0), anchor="right_center")
 
-        container_size = max(keyboard.height, mouse.height), keyboard.width + mouse.width + 2
-        container = Widget(size=container_size, pos_hint=(.5, .5), anchor="center")
+        container_size = (
+            max(keyboard.height, mouse.height),
+            keyboard.width + mouse.width + 2,
+        )
+        container = Widget(size=container_size, pos_hint=(0.5, 0.5), anchor="center")
         container.add_widgets(keyboard, mouse)
         self.add_widget(container)
 

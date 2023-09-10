@@ -1,17 +1,18 @@
-from pathlib import Path
 from itertools import cycle
+from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.text_widget import TextWidget, Anchor
+from nurses_2.widgets.text_widget import Anchor, TextWidget
 from nurses_2.widgets.widget_data_structures import Easing
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "logo_solo_flat_256.png"
 
 ALPHAS = cycle((0.1, 1.0))
-POS_HINTS = cycle(((0.0, 0.0), (.5, .5)))
-SIZE_HINTS = cycle(((.25, .25), (.5, .5)))
+POS_HINTS = cycle(((0.0, 0.0), (0.5, 0.5)))
+SIZE_HINTS = cycle(((0.25, 0.25), (0.5, 0.5)))
+
 
 class MyApp(App):
     async def on_start(self):
@@ -21,7 +22,7 @@ class MyApp(App):
             pos_hint=next(POS_HINTS),
         )
 
-        label = TextWidget(size=(1, 30), pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
+        label = TextWidget(size=(1, 30), pos_hint=(None, 0.5), anchor=Anchor.TOP_CENTER)
 
         self.add_widgets(logo, label)
 

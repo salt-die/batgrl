@@ -14,15 +14,15 @@ class MyApp(App):
         background = Image(size_hint=(1.0, 1.0), path=PATH_TO_BACKGROUND)
 
         logo_flat = Image(
-            size_hint=(.5, .5),
+            size_hint=(0.5, 0.5),
             path=PATH_TO_LOGO_FLAT,
         )
 
         logo_full = Image(
-            size_hint=(.5, .5),
-            pos_hint=(.5, .5),
+            size_hint=(0.5, 0.5),
+            pos_hint=(0.5, 0.5),
             path=PATH_TO_LOGO_FULL,
-            alpha=.8,
+            alpha=0.8,
         )
 
         self.add_widgets(background, logo_flat, logo_full)

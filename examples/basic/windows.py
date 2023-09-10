@@ -22,7 +22,7 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class MyApp(App):
     async def on_start(self):
-        window_kwargs = dict(size=(25, 50), border_alpha=.7, alpha=.7)
+        window_kwargs = dict(size=(25, 50), border_alpha=0.7, alpha=0.7)
 
         animation = Animation(path=CAVEMAN_PATH, interpolation=Interpolation.NEAREST)
         window_1 = Window(title=CAVEMAN_PATH.name, **window_kwargs)
@@ -36,7 +36,12 @@ class MyApp(App):
 
         window_4 = Window(title="Line Plot", **window_kwargs)
         window_4.view = LinePlot(
-            XS, YS_1, XS, YS_2, XS, YS_3,
+            XS,
+            YS_1,
+            XS,
+            YS_2,
+            XS,
+            YS_3,
             xlabel="X Values",
             ylabel="Y Values",
             legend_labels=("Before", "During", "After"),

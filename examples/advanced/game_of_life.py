@@ -6,18 +6,20 @@ Press `r` to reset. Click to create new live cells with random colors.
 import asyncio
 
 import numpy as np
-from cv2 import filter2D, BORDER_CONSTANT
+from cv2 import BORDER_CONSTANT, filter2D
 
 from nurses_2.app import run_widget_as_app
 from nurses_2.io import MouseButton
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
-KERNEL = np.array([
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-])
-UPDATE_SPEED = .1
+KERNEL = np.array(
+    [
+        [1, 1, 1],
+        [1, 0, 1],
+        [1, 1, 1],
+    ]
+)
+UPDATE_SPEED = 0.1
 
 
 class Life(GraphicWidget):
@@ -44,7 +46,9 @@ class Life(GraphicWidget):
 
     async def _update(self):
         while True:
-            neighbors = filter2D(self.universe.astype(np.uint8), -1, KERNEL, borderType=BORDER_CONSTANT)
+            neighbors = filter2D(
+                self.universe.astype(np.uint8), -1, KERNEL, borderType=BORDER_CONSTANT
+            )
             still_alive = self.universe & np.isin(neighbors, (2, 3))
             new_borns = ~self.universe & (neighbors == 3)
             self.universe = new_borns | still_alive
@@ -63,15 +67,16 @@ class Life(GraphicWidget):
                 return True
 
     def on_mouse(self, mouse_event):
-        if (
-            mouse_event.button is not MouseButton.NO_BUTTON
-            and self.collides_point(mouse_event.position)
+        if mouse_event.button is not MouseButton.NO_BUTTON and self.collides_point(
+            mouse_event.position
         ):
             h, w = self.to_local(mouse_event.position)
             h *= 2
 
-            self.universe[h - 1: h + 3, w - 1: w + 2] = 1
-            self.texture[h - 1: h + 3, w - 1: w + 2, :3] = np.random.randint(0, 256, 3)
+            self.universe[h - 1 : h + 3, w - 1 : w + 2] = 1
+            self.texture[h - 1 : h + 3, w - 1 : w + 2, :3] = np.random.randint(
+                0, 256, 3
+            )
 
 
 run_widget_as_app(Life(size_hint=(1.0, 1.0)))

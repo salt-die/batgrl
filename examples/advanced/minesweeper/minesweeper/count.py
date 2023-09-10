@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from .colors import *
+from .colors import COUNT, EIGHT, FIVE, FOUR, ONE, SEVEN, SIX, THREE, TWO, ZERO
 from .grid import Grid
 from .unicode_chars import BOMB
 
@@ -10,6 +10,7 @@ from .unicode_chars import BOMB
 @np.vectorize
 def stringify(n):
     return " " if n == 0 else str(n)
+
 
 @partial(np.vectorize, otypes=[np.uint8, np.uint8, np.uint8])
 def colorify(n):
@@ -29,9 +30,10 @@ def colorify(n):
 
 class Count(Grid):
     """
-    A widget that displays the number of adjacent bombs of each cell. This widget will be
-    initially hidden by the `MineField` widget.
+    A widget that displays the number of adjacent bombs of each cell. This widget will
+    be initially hidden by the `MineField` widget.
     """
+
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
             size=count.shape,
@@ -43,6 +45,6 @@ class Count(Grid):
 
         self.canvas["char"][v_center, h_center] = stringify(count)
         self.canvas["char"][v_center, h_center][minefield == 1] = BOMB
-        self.normalize_canvas()  # Empty characters (`''`) are inserted after the full-width `BOMB`s.
+        self.normalize_canvas()  # Fix spacing after full-width `BOMB` glyphs.
 
         self.colors[v_center, h_center, :3] = np.dstack(colorify(count))

@@ -1,7 +1,7 @@
 from itertools import product
 
-import numpy as np
 import cv2
+import numpy as np
 
 from nurses_2.io import MouseButton, MouseEventType
 
@@ -14,6 +14,7 @@ class Minefield(Grid):
     """
     A grid that becomes transparent when clicked revealing the counts underneath.
     """
+
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
             size=count.shape,
@@ -73,11 +74,16 @@ class Minefield(Grid):
             if not self._pressed_cell:
                 return False
 
-            if (
-                self._cell_from_pos(position) == self._pressed_cell
-                and self._pressed_button in (MouseButton.LEFT, MouseButton.MIDDLE)
+            if self._cell_from_pos(
+                position
+            ) == self._pressed_cell and self._pressed_button in (
+                MouseButton.LEFT,
+                MouseButton.MIDDLE,
             ):
-               self.reveal_cell(self._pressed_cell, reveal_neighbors=self._pressed_button == MouseButton.MIDDLE)
+                self.reveal_cell(
+                    self._pressed_cell,
+                    reveal_neighbors=self._pressed_button == MouseButton.MIDDLE,
+                )
 
             self._release()
 

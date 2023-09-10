@@ -1,4 +1,4 @@
-from nurses_2.colors import ColorPair, Color, BLACK
+from nurses_2.colors import BLACK, Color, ColorPair
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.widget import Widget
@@ -8,11 +8,11 @@ from .particles import Element
 MENU_BACKGROUND_COLOR = Color(222, 224, 127)  # Mustard
 
 
-
 class ElementButton(ButtonBehavior, TextWidget):
     """
     Button which selects an element when pressed and updates the element display.
     """
+
     def __init__(self, pos, element):
         self.element = element
 
@@ -46,12 +46,15 @@ class ButtonContainer(Widget):
     """
     Container widget of `ElementButton`s.
     """
+
     def __init__(self):
         nelements = len(Element.all_elements)
 
         super().__init__(
             size=(3 * nelements + 1, 8),
-            background_color_pair=ColorPair.from_colors(MENU_BACKGROUND_COLOR, MENU_BACKGROUND_COLOR),
+            background_color_pair=ColorPair.from_colors(
+                MENU_BACKGROUND_COLOR, MENU_BACKGROUND_COLOR
+            ),
         )
 
         for i, element in enumerate(Element.all_elements.values()):

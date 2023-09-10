@@ -79,7 +79,7 @@ class Output(TextWidget):
         self._slow_add_task = asyncio.create_task(self._slow_add_str(s))
 
     async def _slow_add_str(self, s):
-        self.add_str(f"█".ljust(12), pos=(-1, 1))
+        self.add_str("█".ljust(12), pos=(-1, 1))
         for i, char in enumerate(s):
-            await asyncio.sleep(.04)
+            await asyncio.sleep(0.04)
             self.add_str(char + "█", pos=(-1, 1 + i))

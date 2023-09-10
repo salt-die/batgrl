@@ -16,9 +16,13 @@ class MyApp(App):
         image_bl = Image(path=PATH_TO_LOGO_FULL, size_hint=(1.0, 1.0))
         image_br = Image(path=PATH_TO_LOGO_FLAT, size_hint=(1.0, 1.0))
 
-        split_layout = HSplitLayout(split_row=10, min_split_height=3, size_hint=(1.0, 1.0))
+        split_layout = HSplitLayout(
+            split_row=10, min_split_height=3, size_hint=(1.0, 1.0)
+        )
         top_split_layout = VSplitLayout(split_col=10, size_hint=(1.0, 1.0))
-        bottom_split_layout = VSplitLayout(split_col=10, size_hint=(1.0, 1.0), anchor_left_pane=False)
+        bottom_split_layout = VSplitLayout(
+            split_col=10, size_hint=(1.0, 1.0), anchor_left_pane=False
+        )
 
         split_layout.top_pane.add_widget(top_split_layout)
         split_layout.bottom_pane.add_widget(bottom_split_layout)

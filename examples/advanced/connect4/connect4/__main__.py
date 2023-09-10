@@ -3,12 +3,12 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.colors import AYELLOW, ARED
+from nurses_2.colors import ARED, AYELLOW
 from nurses_2.io import MouseEventType
-from nurses_2.widgets.widget import Widget
 from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.widget import Widget
 
-from .graphics import CHECKER_SIZE, x_to_column, Checker, Board
+from .graphics import CHECKER_SIZE, Board, Checker, x_to_column
 
 GAME_OVER_MESSAGE = "{} wins! Press `r` to play again."
 DRAW_MESSAGE = "It's a draw! Press 'r' to play again."
@@ -22,12 +22,13 @@ class Connect4(Widget):
         self._board = Board()
         h, w = self._board.size
 
-        super().__init__(size=(h + 2, w),
-            pos_hint=(.5, .5),
+        super().__init__(
+            size=(h + 2, w),
+            pos_hint=(0.5, 0.5),
             anchor="center",
         )
 
-        self._label = TextWidget(size=(1, 10), pos_hint=(None, .5), anchor="center")
+        self._label = TextWidget(size=(1, 10), pos_hint=(None, 0.5), anchor="center")
         self.add_widgets(self._board, self._label)
 
     def on_add(self):
@@ -92,17 +93,17 @@ class Connect4(Widget):
         board = self._board_array
 
         # Look down
-        if row + 3 < 6 and (board[row: row + 4, col] == player).all():
+        if row + 3 < 6 and (board[row : row + 4, col] == player).all():
             return tuple((row + i, col) for i in range(4))
 
         # Look right
         for x in (col - i for i in range(3) if col - i >= 0):
-            if x + 3 < 7 and (board[row, x: x + 4] == player).all():
+            if x + 3 < 7 and (board[row, x : x + 4] == player).all():
                 return tuple((row, x + j) for j in range(4))
 
         # Look left
         for x in (col + i for i in range(3) if col + i < 7):
-            if x - 3 >= 0 and (board[row, x - 3: x + 1] == player).all():
+            if x - 3 >= 0 and (board[row, x - 3 : x + 1] == player).all():
                 return tuple((row, x - 3 + j) for j in range(4))
 
         # Look on the up-left, up-right, down-left, down-right diagonals.
@@ -122,7 +123,7 @@ class Connect4(Widget):
         board = self._board_array
 
         for y, x in ((row - y_step * i, column - x_step * i) for i in range(3)):
-            #Check that both ends of the diagonal are in bounds.
+            # Check that both ends of the diagonal are in bounds.
             if not (
                 0 <= y < 6
                 and 0 <= y + 3 * y_step < 6
@@ -148,7 +149,9 @@ class Connect4(Widget):
             if (row := (5 - len(self._columns[col]))) == -1:
                 self.display_message(COLUMN_FULL_MESSAGE)
                 self._label_task = asyncio.create_task(
-                    self.display_message_after(TURN_MESSAGE.format(self.current_player), 2)
+                    self.display_message_after(
+                        TURN_MESSAGE.format(self.current_player), 2
+                    )
                 )
                 return
 

@@ -10,7 +10,9 @@ from .memory import MemoryWidget
 from .modal import Modal
 from .output import Output
 
-TERMINAL = Path(__file__).parent.parent.parent.parent / "assets" / "fallout_terminal.png"
+TERMINAL = (
+    Path(__file__).parent.parent.parent.parent / "assets" / "fallout_terminal.png"
+)
 HEADER = """\
 ROBCO INDUSTRIES <TM> TERMLINK PROTOCOL
 ENTER PASSWORD NOW
@@ -43,7 +45,9 @@ class HackApp(App):
 
         modal.memory = memory
 
-        terminal = Image(path=TERMINAL, size=(36, 63), pos_hint=(.5, .5), anchor="center")
+        terminal = Image(
+            path=TERMINAL, size=(36, 63), pos_hint=(0.5, 0.5), anchor="center"
+        )
         container = BOLDCRT(
             size=(22, 53),
             pos=(5, 5),

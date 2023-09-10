@@ -7,9 +7,9 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.clamp import clamp
 from nurses_2.colors import BLACK, WHITE, Color
-from nurses_2.widgets.widget import Widget
-from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.behaviors.grabbable import Grabbable
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.widget import Widget
 
 H = 11
 """Height of palette."""
@@ -29,6 +29,7 @@ SATURATIONS = 249, 218, 187, 156, 125
 VIBRANCES = 250, 189, 128, 67, 15
 """Vibrances of each color in the palette. """
 
+
 def hues():
     """
     Hue selector colors.
@@ -37,17 +38,19 @@ def hues():
     hsv[0, :, 0] = np.arange(0, 180, 180 // W)
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
+
 def to_hex(rgb) -> str:
     """
     Convert a RGB color to a hex string.
     """
     return "".join(hex(channel)[2:].zfill(2) for channel in rgb)
 
+
 def text_color(rgb) -> Color:
     """
     Return text color depending on brightness of rgb.
     """
-    if rgb @ (.2126, .7152, .0722) > 255 / 2:
+    if rgb @ (0.2126, 0.7152, 0.0722) > 255 / 2:
         return BLACK
     return WHITE
 
@@ -64,7 +67,9 @@ class Selector(Grabbable, TextWidget):
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        self.indicator.x = clamp(self.to_local(mouse_event.position).x, 0, self.width - 1)
+        self.indicator.x = clamp(
+            self.to_local(mouse_event.position).x, 0, self.width - 1
+        )
         if self.callback:
             self.callback()
 
@@ -94,7 +99,11 @@ class PaletteApp(App):
             slope = hue_slopes[slope_selector.indicator.x]
             palette_hsv = np.zeros((1, 5, 3), np.uint8)
             for i in range(5):
-                palette_hsv[0, i] = (start_hue + i * slope) % 180, SATURATIONS[i], VIBRANCES[i]
+                palette_hsv[0, i] = (
+                    (start_hue + i * slope) % 180,
+                    SATURATIONS[i],
+                    VIBRANCES[i],
+                )
             palette_rgb = cv2.cvtColor(palette_hsv, cv2.COLOR_HSV2RGB)
 
             # Paint palette and add hex codes.
@@ -103,19 +112,19 @@ class PaletteApp(App):
                 x = w * i
                 rgb = palette_rgb[0, i]
 
-                palette.colors[:, x: x + w, 3:] = rgb
+                palette.colors[:, x : x + w, 3:] = rgb
 
                 offset = (w - 6) // 2
                 if offset >= 0:
                     offset += x
-                    palette.colors[H // 2, offset: offset + 6, :3] = text_color(rgb)
+                    palette.colors[H // 2, offset : offset + 6, :3] = text_color(rgb)
                     palette.add_str(to_hex(rgb).upper(), pos=(H // 2, offset))
 
         update_palette()
 
         hue_selector.callback = slope_selector.callback = update_palette
 
-        container = Widget(size=(H + 2, W), pos_hint=(.5, .5), anchor="center")
+        container = Widget(size=(H + 2, W), pos_hint=(0.5, 0.5), anchor="center")
         container.add_widgets(hue_selector, slope_selector, palette)
         self.add_widget(container)
 

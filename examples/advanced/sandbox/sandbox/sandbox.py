@@ -2,13 +2,14 @@ from functools import partial
 
 import numpy as np
 
-from nurses_2.colors import ColorPair, ABLACK
+from nurses_2.colors import ABLACK, ColorPair
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget, Anchor, Size
+from nurses_2.widgets.graphic_widget import Anchor, GraphicWidget, Size
 from nurses_2.widgets.text_widget import TextWidget
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air
+
 
 @partial(np.vectorize, otypes=[np.uint8, np.uint8, np.uint8])
 def particles_to_colors(particle):
@@ -22,8 +23,11 @@ class Sandbox(GraphicWidget):
     """
     Sandbox widget.
     """
+
     def __init__(self, size: Size):
-        super().__init__(size=size, anchor=Anchor.CENTER, pos_hint=(.5, .5), default_color=ABLACK)
+        super().__init__(
+            size=size, anchor=Anchor.CENTER, pos_hint=(0.5, 0.5), default_color=ABLACK
+        )
 
     def on_add(self):
         super().on_add()
@@ -56,9 +60,8 @@ class Sandbox(GraphicWidget):
         super().render(canvas_view, colors_view, source)
 
     def on_mouse(self, mouse_event):
-        if (
-            mouse_event.button != MouseButton.LEFT
-            or not self.collides_point(mouse_event.position)
+        if mouse_event.button != MouseButton.LEFT or not self.collides_point(
+            mouse_event.position
         ):
             return
 

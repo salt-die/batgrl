@@ -6,7 +6,7 @@ from .tetris import Tetris
 
 class TetrisApp(App):
     async def on_start(self):
-        tetris = Tetris(pos_hint=(.5, .5), anchor=Anchor.CENTER)
+        tetris = Tetris(pos_hint=(0.5, 0.5), anchor=Anchor.CENTER)
 
         self.add_widget(tetris)
 

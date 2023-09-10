@@ -7,16 +7,17 @@ import asyncio
 from itertools import cycle
 from random import choice, random
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.colors import gradient, AColor, AWHITE
+from nurses_2.colors import AWHITE, AColor, gradient
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
 GREEN = AColor.from_hex("0bbf23")
 BLUE = AColor.from_hex("0b38bf")
 PLAYER_GRADIENT = cycle(gradient(BLUE, AWHITE, 50) + gradient(AWHITE, BLUE, 50))
+
 
 def _path_yx(a, b):
     """
@@ -53,7 +54,7 @@ class Labyrinth(GraphicWidget):
 
     async def _new_level_soon(self):
         try:
-            await asyncio.sleep(.1)
+            await asyncio.sleep(0.1)
         except asyncio.CancelledError:
             pass
         else:
@@ -68,7 +69,7 @@ class Labyrinth(GraphicWidget):
 
         self.grid_graph = gg = nx.grid_graph(((w - 1) // 2, (h - 1) // 2))
         for e in gg.edges:
-            gg.edges[e]['weight'] = random()
+            gg.edges[e]["weight"] = random()
 
         self.maze = maze = nx.algorithms.minimum_spanning_tree(gg)
         self.nodes = list(self.maze.nodes)
@@ -79,7 +80,9 @@ class Labyrinth(GraphicWidget):
         )
 
         self.texture[:] = self._texture_gradient
-        self.texture[-1] = self.texture[:, w - 1 + w % 2:] = 0  # Extra line of pixels removed.
+        self.texture[-1] = self.texture[
+            :, w - 1 + w % 2 :
+        ] = 0  # Extra line of pixels removed.
         self.texture[(1, -3), (0, w % 2 - 2)] = 0  # Ends of maze.
 
         for y, x in maze.nodes:
@@ -91,7 +94,7 @@ class Labyrinth(GraphicWidget):
         while True:
             if not self._suspend_tasks:
                 self.texture[self.player] = next(PLAYER_GRADIENT)
-            await asyncio.sleep(.03)
+            await asyncio.sleep(0.03)
 
     async def _step_reconfigure(self):
         while True:

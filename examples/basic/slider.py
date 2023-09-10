@@ -2,15 +2,14 @@
 Example slider widget.
 """
 from nurses_2.app import App
-from nurses_2.colors import BLUE, GREEN, BLACK, RED, WHITE, ColorPair
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.colors import BLACK, BLUE, GREEN, RED, WHITE, ColorPair
 from nurses_2.widgets.slider import Slider
+from nurses_2.widgets.text_widget import TextWidget
 
 GREEN_ON_BLACK = ColorPair.from_colors(GREEN, BLACK)
 GREEN_ON_WHITE = ColorPair.from_colors(GREEN, WHITE)
 BLUE_ON_BLACK = ColorPair.from_colors(BLUE, BLACK)
 BLUE_ON_WHITE = ColorPair.from_colors(BLUE, WHITE)
-
 
 
 class MyApp(App):

@@ -7,9 +7,12 @@ class AnimatedTexture:
     """
     An animated texture.
     """
+
     def __init__(self, textures, animation_speed=0.0, lighten=False):
         if lighten:
-            self.textures = [(63 + .75 * texture).astype(np.uint8) for texture in textures]
+            self.textures = [
+                (63 + 0.75 * texture).astype(np.uint8) for texture in textures
+            ]
         else:
             self.textures = textures
 

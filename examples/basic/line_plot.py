@@ -12,9 +12,12 @@ YS_3 = np.random.randint(0, 100, 20)
 
 run_widget_as_app(
     LinePlot(
-        XS, YS_1,
-        XS, YS_2,
-        XS, YS_3,
+        XS,
+        YS_1,
+        XS,
+        YS_2,
+        XS,
+        YS_3,
         xlabel="X Values",
         ylabel="Y Values",
         legend_labels=("Before", "During", "After"),
