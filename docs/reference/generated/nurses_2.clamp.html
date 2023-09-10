@@ -569,7 +569,7 @@
                 
   <section id="module-nurses_2.clamp">
 <span id="nurses-2-clamp"></span><h1>nurses_2.clamp<a class="headerlink" href="#module-nurses_2.clamp" title="Permalink to this headline">#</a></h1>
-<p>Clamp a value between min and max.</p>
+<p>Clamp a value between a min and a max.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
 <colgroup>
@@ -578,14 +578,33 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.clamp.clamp" title="nurses_2.clamp.clamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clamp</span></code></a>(value, min, max)</p></td>
-<td><p>Clamp a value between min and max.</p></td>
+<td><p>If <cite>value</cite> is less than <cite>min</cite>, returns <cite>min</cite>; otherwise if <cite>max</cite> is less than <cite>value</cite>, returns <cite>max</cite>; otherwise returns <cite>value</cite>.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.clamp.clamp">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.clamp.</span></span><span class="sig-name descname"><span class="pre">clamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.clamp.clamp" title="Permalink to this definition">#</a></dt>
-<dd><p>Clamp a value between min and max.</p>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.clamp.</span></span><span class="sig-name descname"><span class="pre">clamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numbers.Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numbers.Real</span></span></span><a class="headerlink" href="#nurses_2.clamp.clamp" title="Permalink to this definition">#</a></dt>
+<dd><p>If <cite>value</cite> is less than <cite>min</cite>, returns <cite>min</cite>; otherwise if <cite>max</cite> is less than
+<cite>value</cite>, returns <cite>max</cite>; otherwise returns <cite>value</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>value</strong><span class="classifier">Real</span></dt><dd><p>Value to clamp.</p>
+</dd>
+<dt><strong>min</strong><span class="classifier">Real | None</span></dt><dd><p>Minimum of clamped value.</p>
+</dd>
+<dt><strong>max</strong><span class="classifier">Real | None</span></dt><dd><p>Maximum of clamped value.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>Real</dt><dd><p>A value between <cite>min</cite> and <cite>max</cite>, inclusive.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
