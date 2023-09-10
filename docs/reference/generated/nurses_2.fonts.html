@@ -616,7 +616,8 @@ will render the ascii art into a multiline string.</p>
 </dd>
 <dt><strong>layout</strong><span class="classifier">FullLayout, default: FullLayout.Universal</span></dt><dd><p>Controls how characters are fitted in rendered text.</p>
 </dd>
-<dt><strong>reverse_universal_smush</strong><span class="classifier">bool, default: False</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of latest).</p>
+<dt><strong>reverse_universal_smush</strong><span class="classifier">bool, default: False</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of
+latest).</p>
 </dd>
 <dt><strong>font</strong><span class="classifier">dict[str, np.ndarray], default: {}</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
 </dd>
@@ -632,7 +633,8 @@ will render the ascii art into a multiline string.</p>
 </dd>
 <dt><strong>layout</strong><span class="classifier">FullLayout.Universal</span></dt><dd><p>Controls how characters are fitted in rendered text.</p>
 </dd>
-<dt><strong>reverse_universal_smush</strong><span class="classifier">bool</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of latest).</p>
+<dt><strong>reverse_universal_smush</strong><span class="classifier">bool</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of
+latest).</p>
 </dd>
 <dt><strong>font</strong><span class="classifier">dict[str, np.ndarray]</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
 </dd>
@@ -722,7 +724,8 @@ will render the ascii art into a multiline string.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.reverse_universal_smush">
 <span class="sig-name descname"><span class="pre">reverse_universal_smush</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#nurses_2.fonts.FIGFont.reverse_universal_smush" title="Permalink to this definition">#</a></dt>
-<dd><p>If set to true univeral smushing will display earliest sub-character (instead of latest).</p>
+<dd><p>If set to true univeral smushing will display earliest sub-character (instead of
+latest).</p>
 </dd></dl>
 
 </dd></dl>
@@ -735,7 +738,8 @@ will render the ascii art into a multiline string.</p>
 <ul>
 <li><p>FullWidth</p>
 <blockquote>
-<div><p>Each character occupies the full width or height of its arrangement of sub-characters.</p>
+<div><p>Each character occupies the full width or height of its arrangement of
+sub-characters.</p>
 </div></blockquote>
 </li>
 <li><p>Kerning</p>
@@ -746,7 +750,8 @@ will render the ascii art into a multiline string.</p>
 <li><p>Smushing</p>
 <blockquote>
 <div><p>Each character is moved one step closer after they touch, so that they overlap.
-Additional smushing rules determine which sub-character is used for each overlap.</p>
+Additional smushing rules determine which sub-character is used for each
+overlap.</p>
 </div></blockquote>
 </li>
 </ul>
@@ -760,7 +765,8 @@ Additional smushing rules determine which sub-character is used for each overlap
 <li><p>Universal</p>
 <blockquote>
 <div><p>The sub-character from the earlier character is replaced by the sub-character
-from the later character. (This behavior can be reversed with <cite>reverse_universal_smush</cite>)</p>
+from the later character. (This behavior can be reversed with
+<cite>reverse_universal_smush</cite>)</p>
 </div></blockquote>
 </li>
 </ul>
@@ -768,25 +774,27 @@ from the later character. (This behavior can be reversed with <cite>reverse_univ
 <ul>
 <li><p>Equal</p>
 <blockquote>
-<div><p>Two sub-characters are smushed into a single sub-character if they are equal (except for hardblanks).</p>
+<div><p>Two sub-characters are smushed into a single sub-character if they are equal
+(except for hardblanks).</p>
 </div></blockquote>
 </li>
 <li><p>Underscore</p>
 <blockquote>
-<div><p>An underscore (<cite>“_”</cite>) will be replaced by any of: <cite>“|”</cite>, <cite>“/”</cite>, <cite>“&quot;</cite>, <cite>“[”</cite>, <cite>“]”</cite>, <cite>“{”</cite>, <cite>“}”</cite>,
-<cite>“(”</cite>, <cite>“)”</cite>, <cite>“&lt;”</cite>, <cite>“&gt;”</cite>.</p>
+<div><p>An underscore (<cite>“_”</cite>) will be replaced by any of: <cite>“|”</cite>, <cite>“/”</cite>, <cite>“&quot;</cite>, <cite>“[”</cite>,
+<cite>“]”</cite>, <cite>“{”</cite>, <cite>“}”</cite>, <cite>“(”</cite>, <cite>“)”</cite>, <cite>“&lt;”</cite>, <cite>“&gt;”</cite>.</p>
 </div></blockquote>
 </li>
 <li><p>Hierarchy</p>
 <blockquote>
-<div><p>A hierarchy of six classes is used: <cite>“|”</cite>, <cite>“/”</cite>, <cite>“[]”</cite>, <cite>“{}”</cite>, <cite>“()”</cite>, and <cite>“&lt;&gt;”</cite>. When
-two sub-characters are from different classes, the latter class will be used.</p>
+<div><p>A hierarchy of six classes is used: <cite>“|”</cite>, <cite>“/”</cite>, <cite>“[]”</cite>, <cite>“{}”</cite>, <cite>“()”</cite>, and
+<cite>“&lt;&gt;”</cite>. When two sub-characters are from different classes, the latter class
+will be used.</p>
 </div></blockquote>
 </li>
 <li><p>Pair</p>
 <blockquote>
-<div><p>Replaces opposite brackets (<cite>“[]”</cite> or <cite>“][”</cite>), braces (<cite>“{}”</cite> or <cite>“}{”</cite>), and parentheses
-(<cite>“()”</cite> or <cite>“)(”</cite>) with a vertical bar (<cite>“|”</cite>).</p>
+<div><p>Replaces opposite brackets (<cite>“[]”</cite> or <cite>“][”</cite>), braces (<cite>“{}”</cite> or <cite>“}{”</cite>), and
+parentheses (<cite>“()”</cite> or <cite>“)(”</cite>) with a vertical bar (<cite>“|”</cite>).</p>
 </div></blockquote>
 </li>
 <li><p>BigX</p>

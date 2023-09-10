@@ -254,8 +254,8 @@ color is not used.</p>
 
 <span class="kn">from</span> <span class="nn">nurses_2.app</span> <span class="kn">import</span> <span class="n">App</span>
 <span class="kn">from</span> <span class="nn">nurses_2.colors</span> <span class="kn">import</span> <span class="n">GREEN</span><span class="p">,</span> <span class="n">BLUE</span><span class="p">,</span> <span class="n">WHITE</span><span class="p">,</span> <span class="n">ColorPair</span>
-<span class="kn">from</span> <span class="nn">nurses_2.widgets.widget</span> <span class="kn">import</span> <span class="n">Widget</span>
 <span class="kn">from</span> <span class="nn">nurses_2.widgets.text_widget</span> <span class="kn">import</span> <span class="n">TextWidget</span>
+<span class="kn">from</span> <span class="nn">nurses_2.widgets.widget</span> <span class="kn">import</span> <span class="n">Widget</span>
 
 <span class="n">FIELD_HEIGHT</span> <span class="o">=</span> <span class="mi">25</span>
 <span class="n">FIELD_WIDTH</span> <span class="o">=</span> <span class="mi">100</span>
@@ -355,25 +355,31 @@ in the middle of each half of the play field. Add the following to your <cite>on
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">divider</span> <span class="o">=</span> <span class="n">Widget</span><span class="p">(</span>
     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
     <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-    <span class="n">pos_hint</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">.5</span><span class="p">),</span>
+    <span class="n">pos_hint</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
     <span class="n">background_color_pair</span><span class="o">=</span><span class="n">WHITE_ON_BLUE</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">left_score_label</span> <span class="o">=</span> <span class="n">TextWidget</span><span class="p">(</span>
     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
     <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">pos_hint</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">.25</span><span class="p">),</span>
+    <span class="n">pos_hint</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>
     <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">right_score_label</span> <span class="o">=</span> <span class="n">TextWidget</span><span class="p">(</span>
     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
     <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">pos_hint</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">.75</span><span class="p">),</span>
+    <span class="n">pos_hint</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">),</span>
     <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">game_field</span><span class="o">.</span><span class="n">add_widgets</span><span class="p">(</span><span class="n">left_paddle</span><span class="p">,</span> <span class="n">right_paddle</span><span class="p">,</span> <span class="n">divider</span><span class="p">,</span> <span class="n">left_score_label</span><span class="p">,</span> <span class="n">right_score_label</span><span class="p">)</span>
+<span class="n">game_field</span><span class="o">.</span><span class="n">add_widgets</span><span class="p">(</span>
+    <span class="n">left_paddle</span><span class="p">,</span>
+    <span class="n">right_paddle</span><span class="p">,</span>
+    <span class="n">divider</span><span class="p">,</span>
+    <span class="n">left_score_label</span><span class="p">,</span>
+    <span class="n">right_score_label</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">game_field</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -402,17 +408,17 @@ called when the widget is added to the widget tree.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span> <span class="o">=</span> <span class="n">FIELD_WIDTH</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_velocity</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_velocity</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="mf">.04</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="mf">0.04</span>
 
     <span class="k">def</span> <span class="nf">bounce_paddle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paddle</span><span class="p">:</span> <span class="n">Widget</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span> <span class="o">-=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_velocity</span>
         <span class="n">x_sgn</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_velocity</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="n">center_y</span> <span class="o">=</span> <span class="n">paddle</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">y</span>
-        <span class="n">intersect</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">paddle</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">center_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mf">.95</span><span class="p">),</span> <span class="o">-</span><span class="mf">.95</span><span class="p">)</span>
+        <span class="n">intersect</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">paddle</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">center_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.95</span><span class="p">)</span>
         <span class="n">normalized</span> <span class="o">=</span> <span class="n">intersect</span> <span class="o">/</span> <span class="n">center_y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y_velocity</span> <span class="o">=</span> <span class="o">-</span><span class="n">normalized</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">x_velocity</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_sgn</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">normalized</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_velocity</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_sgn</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">normalized</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">.5</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">-</span> <span class="mf">.001</span><span class="p">)</span>
 
@@ -464,7 +470,13 @@ called when the widget is added to the widget tree.</p>
     <span class="n">background_color_pair</span><span class="o">=</span><span class="n">WHITE_ON_BLUE</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">game_field</span><span class="o">.</span><span class="n">add_widgets</span><span class="p">(</span><span class="n">left_paddle</span><span class="p">,</span> <span class="n">right_paddle</span><span class="p">,</span> <span class="n">divider</span><span class="p">,</span> <span class="n">left_score_label</span><span class="p">,</span> <span class="n">right_score_label</span><span class="p">,</span> <span class="n">ball</span><span class="p">)</span>
+    <span class="n">game_field</span><span class="o">.</span><span class="n">add_widgets</span><span class="p">(</span>
+    <span class="n">left_paddle</span><span class="p">,</span>
+    <span class="n">right_paddle</span><span class="p">,</span>
+    <span class="n">divider</span><span class="p">,</span>
+    <span class="n">left_score_label</span><span class="p">,</span>
+    <span class="n">right_score_label</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">game_field</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -39,8 +39,8 @@ color is not used.
 
     from nurses_2.app import App
     from nurses_2.colors import GREEN, BLUE, WHITE, ColorPair
-    from nurses_2.widgets.widget import Widget
     from nurses_2.widgets.text_widget import TextWidget
+    from nurses_2.widgets.widget import Widget
 
     FIELD_HEIGHT = 25
     FIELD_WIDTH = 100
@@ -150,25 +150,31 @@ in the middle of each half of the play field. Add the following to your `on_star
     divider = Widget(
         size=(1, 1),
         size_hint=(1.0, None),
-        pos_hint=(None, .5),
+        pos_hint=(None, 0.5),
         background_color_pair=WHITE_ON_BLUE,
     )
 
     left_score_label = TextWidget(
         size=(1, 5),
         pos=(1, 1),
-        pos_hint=(None, .25),
+        pos_hint=(None, 0.25),
         anchor="center",
     )
 
     right_score_label = TextWidget(
         size=(1, 5),
         pos=(1, 1),
-        pos_hint=(None, .75),
+        pos_hint=(None, 0.75),
         anchor="center",
     )
 
-    game_field.add_widgets(left_paddle, right_paddle, divider, left_score_label, right_score_label)
+    game_field.add_widgets(
+        left_paddle,
+        right_paddle,
+        divider,
+        left_score_label,
+        right_score_label,
+    )
     self.add_widget(game_field)
 
 The `anchor` keyword argument is used for position hints to specify which point the of the widget
@@ -199,17 +205,17 @@ called when the widget is added to the widget tree.
             self.x_pos = FIELD_WIDTH / 2 - 1
             self.y_velocity = 0.0
             self.x_velocity = 1.0
-            self.speed = .04
+            self.speed = 0.04
 
         def bounce_paddle(self, paddle: Widget):
             self.x_pos -= 2 * self.x_velocity
             x_sgn = 1 if self.x_velocity > 0 else -1
 
             center_y = paddle.center.y
-            intersect = max(min(paddle.y + center_y - self.y, .95), -.95)
+            intersect = max(min(paddle.y + center_y - self.y, 0.95), -0.95)
             normalized = intersect / center_y
             self.y_velocity = -normalized
-            self.x_velocity = -x_sgn * (1 - normalized**2)**.5
+            self.x_velocity = -x_sgn * (1 - normalized**2) ** .5
 
             self.speed = max(0, self.speed - .001)
 
@@ -263,7 +269,13 @@ Finally, add the ball to the game field.
         background_color_pair=WHITE_ON_BLUE,
     )
 
-    game_field.add_widgets(left_paddle, right_paddle, divider, left_score_label, right_score_label, ball)
+        game_field.add_widgets(
+        left_paddle,
+        right_paddle,
+        divider,
+        left_score_label,
+        right_score_label,
+    )
     self.add_widget(game_field)
 
 Running the file now should give a complete pong game! Nice!

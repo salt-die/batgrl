@@ -587,9 +587,9 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.window.</span></span><span class="sig-name descname"><span class="pre">Window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.focusable.html#nurses_2.widgets.behaviors.focusable.Focusable" title="nurses_2.widgets.behaviors.focusable.Focusable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.focusable.Focusable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.behaviors.resizable.html#nurses_2.widgets.behaviors.resizable.Resizable" title="nurses_2.widgets.behaviors.resizable.Resizable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.resizable.Resizable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
 <p>A movable, resizable window widget.</p>
-<p>The view can be set with the <a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> property, e.g., <code class="docutils literal notranslate"><span class="pre">my_window.view</span> <span class="pre">=</span> <span class="pre">some_widget</span></code>.
-Added views will have their size hints reset to (None, None). Views are resized as the
-window is resized.</p>
+<p>The view can be set with the <a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> property, e.g.,
+<code class="docutils literal notranslate"><span class="pre">my_window.view</span> <span class="pre">=</span> <span class="pre">some_widget</span></code>. Added views will have their size hints reset to
+(None, None). Views are resized as the window is resized.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -611,8 +611,8 @@ width will never be less than 6 + column width of title.</p>
 </dd>
 <dt><strong>default_color</strong><span class="classifier">AColor, default: AColor(0, 0, 0, 0)</span></dt><dd><p>Default texture color.</p>
 </dd>
-<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-value. (0 &lt;= alpha &lt;= 1.0)</p>
+<dt><strong>alpha</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>If widget is transparent, the alpha channel of the underlying texture will be
+multiplied by this value. (0 &lt;= alpha &lt;= 1.0)</p>
 </dd>
 <dt><strong>interpolation</strong><span class="classifier">Interpolation, default: Interpolation.LINEAR</span></dt><dd><p>Interpolation used when widget is resized.</p>
 </dd>
@@ -656,11 +656,9 @@ widget is not transparent.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If not given or too small, <a class="reference internal" href="#nurses_2.widgets.window.Window.grab_resize_min_height" title="nurses_2.widgets.window.Window.grab_resize_min_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grab_resize_min_height</span></code></a> and <a class="reference internal" href="#nurses_2.widgets.window.Window.grab_resize_min_width" title="nurses_2.widgets.window.Window.grab_resize_min_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grab_resize_min_width</span></code></a> will
-be set large enough so that the border and title are visible.</p>
-<p>As the window is resized, the <a class="reference internal" href="#nurses_2.widgets.window.Window.view" title="nurses_2.widgets.window.Window.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> will be resized to fit within the window’s borders,
-but non-<cite>None</cite> size hints of the view are still respected which can have unexpected results.
-It is recommended to use views with no size hints.</p>
+<p>If not given or too small, <a class="reference internal" href="#nurses_2.widgets.window.Window.grab_resize_min_height" title="nurses_2.widgets.window.Window.grab_resize_min_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grab_resize_min_height</span></code></a> and
+<a class="reference internal" href="#nurses_2.widgets.window.Window.grab_resize_min_width" title="nurses_2.widgets.window.Window.grab_resize_min_width"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grab_resize_min_width</span></code></a> will be set large enough so that the border and title
+are visible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
@@ -978,19 +976,22 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_key">
 <span class="sig-name descname"><span class="pre">dispatch_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><span class="pre">nurses_2.io.input.events.KeyEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_key" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
+<dd><p>Dispatch key press until handled. (A key press is handled if a handler returns
+<code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_mouse">
 <span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_mouse" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
+<dd><p>Dispatch mouse event until handled. (A mouse event is handled if a handler
+returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.dispatch_paste">
 <span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.dispatch_paste" title="Permalink to this definition">#</a></dt>
-<dd><p>Dispatch paste event until handled. (A paste event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
+<dd><p>Dispatch paste event until handled. (A paste event is handled if a handler
+returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1095,19 +1096,22 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_key">
 <span class="sig-name descname"><span class="pre">on_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_key" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle key press event. (Handled key presses should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<dd><p>Handle key press event. (Handled key presses should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else
+<code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_mouse">
 <span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_mouse" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle mouse event. (Handled mouse events should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<dd><p>Handle mouse event. (Handled mouse events should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code>
+or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.on_paste">
 <span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.PasteEvent" title="nurses_2.io.input.events.PasteEvent"><span class="pre">nurses_2.io.input.events.PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.window.Window.on_paste" title="Permalink to this definition">#</a></dt>
-<dd><p>Handle paste event. (Handled paste events should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
+<dd><p>Handle paste event. (Handled paste events should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else <code class="docutils literal notranslate"><span class="pre">False</span></code>
+or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1201,7 +1205,8 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.subscribe">
 <span class="sig-name descname"><span class="pre">subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><span class="pre">nurses_2.widgets.widget.Widget</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.subscribe" title="Permalink to this definition">#</a></dt>
-<dd><p>Subscribe to a widget property. When property is modified, <cite>action</cite> will be called.</p>
+<dd><p>Subscribe to a widget property. When property is modified, <cite>action</cite> will be
+called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1241,7 +1246,8 @@ when the widget’s parent’s size changes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.window.Window.tween">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tween</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">easing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.widgets.widget_data_structures.html#nurses_2.widgets.widget_data_structures.Easing" title="nurses_2.widgets.widget_data_structures.Easing"><span class="pre">nurses_2.widgets.widget_data_structures.Easing</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Easing.LINEAR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_complete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.window.Window.tween" title="Permalink to this definition">#</a></dt>
-<dd><p>Coroutine that sequentially updates widget properties over a duration (in seconds).</p>
+<dd><p>Coroutine that sequentially updates widget properties over a duration (in
+seconds).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1255,8 +1261,9 @@ when the widget’s parent’s size changes.</p>
 </dd>
 <dt><strong>on_complete</strong><span class="classifier">Callable | None, default: None</span></dt><dd><p>Called when tween completes.</p>
 </dd>
-<dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s position
-to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-argument:
+<dt><strong>**properties</strong><span class="classifier">dict[str, int | float | Sequence[int] | Sequence[float | None]]</span></dt><dd><p>Widget properties’ target values. E.g., to smoothly tween a widget’s
+position to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a
+keyword-argument:
 <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">widget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=Easing.OUT_BOUNCE)</span></code></p>
 </dd>
 </dl>
@@ -1264,9 +1271,9 @@ to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a keyword-
 </dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Running several tweens on the same properties concurrently will probably result in unexpected
-behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size or pos hints, make sure the
-relevant hints aren’t <cite>None</cite> to start.</p>
+<p>Running several tweens on the same properties concurrently will probably result
+in unexpected behavior. <cite>tween</cite> won’t work for ndarray types. If tweening size
+or pos hints, make sure the relevant hints aren’t <cite>None</cite> to start.</p>
 </div>
 </dd></dl>
 
