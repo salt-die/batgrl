@@ -14,7 +14,7 @@ import numpy as np
 from ._binary_to_char import binary_to_braille
 from .text_widget import TextWidget, style_char
 
-__all__ = "BrailleVideo",
+__all__ = ("BrailleVideoPlayer",)
 
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
@@ -33,11 +33,13 @@ class BrailleVideoPlayer(TextWidget):
     gray_threshold : int, default: 127
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool, default: False
-        If true, foreground will be set to `default_fg_color` multiplied by the normalized grays from the source.
+        If true, foreground will be set to `default_fg_color` multiplied by the
+        normalized grays from the source.
     invert_colors : bool, default: False
         Invert the colors in the source before rendering.
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     size : Size, default: Size(10, 10)
@@ -86,7 +88,8 @@ class BrailleVideoPlayer(TextWidget):
     gray_threshold : int
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool
-        If true, foreground will be set to `default_fg_color` multiplied by the normalized grays from the source.
+        If true, foreground will be set to `default_fg_color` multiplied by the
+        normalized grays from the source.
     invert_colors : bool
         If true, colors in the source are inverted before video is rendered.
     is_device : bool
@@ -233,15 +236,16 @@ class BrailleVideoPlayer(TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
         source: Path | str | int,
-        loop: bool=True,
-        gray_threshold: int=127,
-        enable_shading: bool=False,
-        invert_colors: bool=False,
-        **kwargs
+        loop: bool = True,
+        gray_threshold: int = 127,
+        enable_shading: bool = False,
+        invert_colors: bool = False,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self._current_frame = None
@@ -280,9 +284,10 @@ class BrailleVideoPlayer(TextWidget):
         source = self.source
 
         if _IS_WSL and self.is_device:
-            # Problem: WSL doesn't support most USB devices (yet?), and trying to open one
-            # with cv2 will pollute the terminal with cv2 errors (which can't be redirected
-            # without duping file descriptors -- though this may be done sometime in the future).
+            # Problem: WSL doesn't support most USB devices (yet?), and trying to open
+            # one with cv2 will pollute the terminal with cv2 errors (which can't be
+            # redirected without duping file descriptors -- though this may be done
+            # sometime in the future).
             # Solution: Prevent the error.
             warnings.warn("device not available on WSL")
             self._resource = None
@@ -314,7 +319,9 @@ class BrailleVideoPlayer(TextWidget):
 
             if self.enable_shading:
                 grays_normalized = cv2.resize(self._current_frame, (w, h)) / 255
-                self.colors[..., :3] = (grays_normalized[..., None] * self.default_fg_color).astype(np.uint8)
+                self.colors[..., :3] = (
+                    grays_normalized[..., None] * self.default_fg_color
+                ).astype(np.uint8)
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -345,9 +352,13 @@ class BrailleVideoPlayer(TextWidget):
 
             if self.enable_shading:
                 grays_normalized = cv2.resize(self._current_frame, (w, h)) / 255
-                self.colors[..., :3] = (grays_normalized[..., None] * self.default_fg_color).astype(np.uint8)
+                self.colors[..., :3] = (
+                    grays_normalized[..., None] * self.default_fg_color
+                ).astype(np.uint8)
 
-            upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
+            upscaled = (
+                cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
+            )
             sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
             self.canvas["char"][:] = binary_to_braille(sectioned)
 

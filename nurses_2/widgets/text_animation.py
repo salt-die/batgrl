@@ -6,7 +6,7 @@ from collections.abc import Iterable, Sequence
 
 from .animation import _check_frame_durations
 from .text_widget import TextWidget
-from .widget import Widget, style_char, intersection
+from .widget import Widget, intersection
 from .widget_data_structures import Rect
 
 
@@ -192,14 +192,15 @@ class TextAnimation(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
-        frames: Iterable[str] | None=None,
-        frame_durations: float | Sequence[float]=1/12,
-        loop: bool=True,
-        reverse: bool=False,
-        **kwargs
+        frames: Iterable[str] | None = None,
+        frame_durations: float | Sequence[float] = 1 / 12,
+        loop: bool = True,
+        reverse: bool = False,
+        **kwargs,
     ):
         self.frames = []
         if frames is not None:
@@ -286,10 +287,14 @@ class TextAnimation(Widget):
         if self.frames:
             frame = self.frames[self._i]
             vert_slice, hori_slice = source
-            dest_rect = Rect(vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop)
+            dest_rect = Rect(
+                vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop
+            )
             source_rect = Rect(frame.top, frame.bottom, frame.left, frame.right)
             if (slices := intersection(dest_rect, source_rect)) is not None:
                 dest_slice, source_slice = slices
-                frame.render(canvas_view[dest_slice], colors_view[dest_slice], source_slice)
+                frame.render(
+                    canvas_view[dest_slice], colors_view[dest_slice], source_slice
+                )
 
         self.render_children(source, canvas_view, colors_view)

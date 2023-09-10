@@ -31,6 +31,7 @@ class Point(NamedTuple):
     index:
         Return first index of value.
     """
+
     y: int
     x: int
 
@@ -64,6 +65,7 @@ class Size(NamedTuple):
     index:
         Return first index of value.
     """
+
     height: int
     width: int
 

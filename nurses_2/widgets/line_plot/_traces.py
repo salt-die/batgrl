@@ -8,7 +8,7 @@ import numpy as np
 from ...colors import Color, rainbow_gradient
 from ...easings import lerp
 from .._binary_to_char import binary_to_braille
-from ..text_widget import TextWidget, Anchor, style_char
+from ..text_widget import Anchor, TextWidget, style_char
 
 TICK_WIDTH = 11
 TICK_HALF = TICK_WIDTH // 2
@@ -21,14 +21,16 @@ class _Traces(TextWidget):
     def __init__(
         self,
         *points: list[float] | np.ndarray,
-        xmin: float | None=None,
-        xmax: float | None=None,
-        ymin: float | None=None,
-        ymax: float | None=None,
-        line_colors: list[Color] | None=None,
+        xmin: float | None = None,
+        xmax: float | None = None,
+        ymin: float | None = None,
+        ymax: float | None = None,
+        line_colors: list[Color] | None = None,
         **kwargs,
     ):
-        self.x_ticks = TextWidget(pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT, **kwargs)
+        self.x_ticks = TextWidget(
+            pos_hint=(1.0, None), anchor=Anchor.BOTTOM_LEFT, **kwargs
+        )
         self.y_ticks = TextWidget(**kwargs)
 
         super().__init__(**kwargs)
@@ -43,7 +45,9 @@ class _Traces(TextWidget):
         self.ymin = min(ys.min() for ys in self.all_ys) if ymin is None else ymin
         self.ymax = max(ys.max() for ys in self.all_ys) if ymax is None else ymax
 
-        self.line_colors = rainbow_gradient(len(self.all_xs)) if line_colors is None else line_colors
+        self.line_colors = (
+            rainbow_gradient(len(self.all_xs)) if line_colors is None else line_colors
+        )
         if len(self.line_colors) != len(self.all_xs):
             raise ValueError("number of plots inconsistent with number of colors")
 
@@ -72,10 +76,16 @@ class _Traces(TextWidget):
         self.canvas = np.full((h, w), style_char(self.default_char))
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
-        canvas_view = self.canvas[:-VERTICAL_HALF, TICK_HALF:-TICK_HALF - TICK_WIDTH % 2]
-        colors_view = self.colors[:-VERTICAL_HALF, TICK_HALF:-TICK_HALF - TICK_WIDTH % 2, :3]
+        canvas_view = self.canvas[
+            :-VERTICAL_HALF, TICK_HALF : -TICK_HALF - TICK_WIDTH % 2
+        ]
+        colors_view = self.colors[
+            :-VERTICAL_HALF, TICK_HALF : -TICK_HALF - TICK_WIDTH % 2, :3
+        ]
 
-        for xs, ys, color in zip(self.all_xs, self.all_ys, self.line_colors, strict=True):
+        for xs, ys, color in zip(
+            self.all_xs, self.all_ys, self.line_colors, strict=True
+        ):
             plot = np.zeros((h4, w2), dtype=np.uint8)
 
             scaled_ys = h4 - h4 * (ys - ymin) / y_length
@@ -120,7 +130,7 @@ class _Traces(TextWidget):
 
         last_tick_column = -TICK_HALF - 1 - TICK_WIDTH % 2
         x_ticks.add_str("┐", (0, last_tick_column))
-        x_ticks.canvas["char"][0, last_tick_column + 1:] = x_ticks.default_char
+        x_ticks.canvas["char"][0, last_tick_column + 1 :] = x_ticks.default_char
 
         x_ticks.apply_hints()  # Ensure x-ticks are moved to the bottom of plot.
 

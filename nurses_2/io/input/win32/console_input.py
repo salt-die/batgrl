@@ -2,9 +2,10 @@
 Parse and create events for each input record from a win32 console.
 """
 from collections import OrderedDict
-
-from ctypes.wintypes import DWORD
 from ctypes import byref, windll
+from ctypes.wintypes import DWORD
+
+from ....data_structures import Point, Size
 from ...win32_types import (
     INPUT_RECORD,
     KEY_EVENT_RECORD,
@@ -13,16 +14,14 @@ from ...win32_types import (
     WINDOW_BUFFER_SIZE_RECORD,
     EventTypes,
 )
-
-from ....data_structures import Point, Size
 from ..events import (
     Key,
-    Mods,
     KeyEvent,
+    Mods,
     MouseButton,
     MouseEventType,
-    _PartialMouseEvent,
     PasteEvent,
+    _PartialMouseEvent,
 )
 from .key_codes import KEY_CODES
 
@@ -40,6 +39,7 @@ _INT_TO_KEYS = {
 _PRESSED_KEYS = OrderedDict.fromkeys([0])
 _TEXT: list[str] = []
 
+
 def _handle_mods(key_state: DWORD) -> Mods:
     """
     Return `Mods` from an event's `ControlKeyState`.
@@ -52,6 +52,7 @@ def _handle_mods(key_state: DWORD) -> Mods:
     ctrl = bool(key_state & CTRL_PRESSED)
     shift = bool(key_state & SHIFT_PRESSED)
     return Mods(alt, ctrl, shift)
+
 
 def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent:
     """
@@ -69,6 +70,7 @@ def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent:
         return KeyEvent(key, mods)
     else:
         _TEXT.append(ev.uChar.UnicodeChar)
+
 
 def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     """
@@ -113,6 +115,7 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
         _handle_mods(ev.ControlKeyState),
     )
 
+
 def _purge_text():
     """
     Key events are first collected into _TEXT to determine if a paste event has occurred.
@@ -120,7 +123,9 @@ def _purge_text():
     if not _TEXT:
         return
 
-    chars = "".join(_TEXT).encode("utf-16", "surrogatepass").decode("utf-16")  # Merge surrogate pairs.
+    chars = (
+        "".join(_TEXT).encode("utf-16", "surrogatepass").decode("utf-16")
+    )  # Merge surrogate pairs.
     _TEXT.clear()
 
     if len(chars) > 2 or not chars.isascii():  # Heuristic for detecting paste event.
@@ -128,6 +133,7 @@ def _purge_text():
     else:
         for char in chars:
             yield KeyEvent(Key.Enter if char == "\n" else char, Mods.NO_MODS)
+
 
 def events():
     """
@@ -137,7 +143,9 @@ def events():
     """
     input_records = (INPUT_RECORD * 1024)()
 
-    windll.kernel32.ReadConsoleInputW(STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0)))
+    windll.kernel32.ReadConsoleInputW(
+        STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0))
+    )
 
     for ir in input_records:
         match ev := getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):

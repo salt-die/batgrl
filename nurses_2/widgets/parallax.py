@@ -9,9 +9,10 @@ import numpy as np
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
-from .widget import Widget, subscribable, style_char
+from .widget import Widget, subscribable
 
 __all__ = "Interpolation", "Parallax"
+
 
 def _check_layer_speeds(layers, speeds):
     """
@@ -212,15 +213,16 @@ class Parallax(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
-        path: Path | None=None,
-        speeds: Sequence[float] | None=None,
-        alpha: float=1.0,
-        interpolation: Interpolation=Interpolation.LINEAR,
-        is_transparent: bool=True,
-        **kwargs
+        path: Path | None = None,
+        speeds: Sequence[float] | None = None,
+        alpha: float = 1.0,
+        interpolation: Interpolation = Interpolation.LINEAR,
+        is_transparent: bool = True,
+        **kwargs,
     ):
         if path is None:
             self.layers = []
@@ -314,7 +316,9 @@ class Parallax(Widget):
             self._otextures,
             self.layers,
         ):
-            rolls = -round(speed * self._vertical_offset), -round(speed * self._horizontal_offset)
+            rolls = -round(speed * self._vertical_offset), -round(
+                speed * self._horizontal_offset
+            )
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
@@ -328,8 +332,8 @@ class Parallax(Widget):
         cls,
         textures: Iterable[np.ndarray],
         *,
-        speeds: Sequence[float] | None=None,
-        **kwargs
+        speeds: Sequence[float] | None = None,
+        **kwargs,
     ) -> "Parallax":
         """
         Create an :class:`Parallax` from an iterable of uint8 rgba ndarray.
@@ -340,7 +344,7 @@ class Parallax(Widget):
                 texture,
                 size=parallax.size,
                 alpha=parallax.alpha,
-                interpolation=parallax.interpolation
+                interpolation=parallax.interpolation,
             )
             for texture in textures
         ]
@@ -349,11 +353,7 @@ class Parallax(Widget):
 
     @classmethod
     def from_images(
-        cls,
-        images: Iterable[Image],
-        *,
-        speeds: Sequence[float] | None=None,
-        **kwargs
+        cls, images: Iterable[Image], *, speeds: Sequence[float] | None = None, **kwargs
     ) -> "Parallax":
         """
         Create an :class:`Parallax` from an iterable of :class:`Image`.

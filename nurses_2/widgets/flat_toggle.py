@@ -2,10 +2,9 @@
 An animated toggle button widget.
 """
 import asyncio
-
 from collections.abc import Callable, Hashable
 
-from ..colors import Color, GREEN, BLACK
+from ..colors import BLACK, GREEN, Color
 from ..data_structures import Point
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .text_widget import TextWidget, add_text
@@ -17,10 +16,12 @@ LIGHT_GREY = Color.from_hex("666666")
 
 
 class _AnimatedToggle(ToggleButtonBehavior, TextWidget):
-    def __init__(self, group, allow_no_selection, toggle_state, always_release, bg_color):
+    def __init__(
+        self, group, allow_no_selection, toggle_state, always_release, bg_color
+    ):
         super().__init__(
             size=(3, 4),
-            pos_hint=(.5, .5),
+            pos_hint=(0.5, 0.5),
             anchor="center",
             group=group,
             allow_no_selection=allow_no_selection,
@@ -60,7 +61,7 @@ class _AnimatedToggle(ToggleButtonBehavior, TextWidget):
         for i in r:
             self._animation_progess = i
             self.canvas["char"][1, 1:3] = HORIZONTAL_BLOCKS[i]
-            await asyncio.sleep(.05)
+            await asyncio.sleep(0.05)
 
         self.parent.callback(self.toggle_state)
 
@@ -88,8 +89,9 @@ class FlatToggle(Widget):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
-        is false this value will be ignored if all buttons would be "off".
+        Initial toggle state of button. If button is in a group and
+        :attr:`allow_no_selection` is false this value will be ignored if all buttons
+        would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
         size : Size, default: Size(10, 10)
@@ -251,17 +253,18 @@ class FlatToggle(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
-        size: Point=Point(3, 4),
-        callback: Callable[[ToggleState], None]=lambda state: None,
-        toggle_background_color: Color=BLACK,
-        group: None | Hashable=None,
-        allow_no_selection: bool=False,
-        toggle_state: ToggleState=ToggleState.OFF,
-        always_release: bool=False,
-        **kwargs
+        size: Point = Point(3, 4),
+        callback: Callable[[ToggleState], None] = lambda state: None,
+        toggle_background_color: Color = BLACK,
+        group: None | Hashable = None,
+        allow_no_selection: bool = False,
+        toggle_state: ToggleState = ToggleState.OFF,
+        always_release: bool = False,
+        **kwargs,
     ):
         super().__init__(size=size, **kwargs)
 

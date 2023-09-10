@@ -4,7 +4,7 @@ A widget for static multi-line text.
 from ..clamp import clamp
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
-from .widget import Widget, Size
+from .widget import Size, Widget
 
 # TODO: Set text with limited markdown.
 
@@ -13,9 +13,10 @@ class TextPanel(Themable, TextWidget):
     """
     A widget for static multi-line text.
 
-    Text can be set by setting the `text` attribute. The read-only attribute :attr:`minimum_panel_size`
-    is the minimum size the panel must be to show all text. This can be used to set the size of the
-    panel, e.g., ``my_panel.size = my_panel.minimum_panel_size``.
+    Text can be set by setting the `text` attribute. The read-only attribute
+    :attr:`minimum_panel_size` is the minimum size the panel must be to show all text.
+    This can be used to set the size of the panel, e.g.,
+    ``my_panel.size = my_panel.minimum_panel_size``.
 
     Parameters
     ----------
@@ -26,7 +27,8 @@ class TextPanel(Themable, TextWidget):
     padding_x: int, default: 1
         Padding on the left and right of panel.
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     size : Size, default: Size(10, 10)
@@ -214,7 +216,10 @@ class TextPanel(Themable, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, *, text: str="", padding_y: int=1, padding_x: int=1, **kwargs):
+
+    def __init__(
+        self, *, text: str = "", padding_y: int = 1, padding_x: int = 1, **kwargs
+    ):
         super().__init__(**kwargs)
 
         self.text_container = TextWidget()

@@ -1,8 +1,8 @@
 """
 Indicators for scroll view scrollbars.
 """
-from ...io import MouseEventType
 from ...clamp import clamp
+from ...io import MouseEventType
 from ..behaviors.grabbable import Grabbable
 from ..behaviors.themable import Themable
 from ..widget import Widget
@@ -12,6 +12,7 @@ class _IndicatorBehaviorBase(Themable, Grabbable, Widget):
     """
     Common behavior for vertical and horizontal indicators.
     """
+
     def __init__(self):
         super().__init__(size=(1, 2))
 
@@ -46,12 +47,14 @@ class _VerticalIndicator(_IndicatorBehaviorBase):
     def update_size_pos(self):
         bar = self.parent
         scroll_view = bar.parent
-        if scroll_view.view == None:
+        if scroll_view.view is None:
             view_height = 1
         else:
             view_height = scroll_view.view.height
 
-        self.height = clamp(int(scroll_view.port_height ** 2 / view_height), 1, scroll_view.port_height)
+        self.height = clamp(
+            int(scroll_view.port_height**2 / view_height), 1, scroll_view.port_height
+        )
         self.y = round(scroll_view.vertical_proportion * bar.fill_height)
 
     def on_add(self):
@@ -82,12 +85,14 @@ class _HorizontalIndicator(_IndicatorBehaviorBase):
     def update_size_pos(self):
         bar = self.parent
         scroll_view = bar.parent
-        if scroll_view.view == None:
+        if scroll_view.view is None:
             view_width = 1
         else:
             view_width = scroll_view.view.width
 
-        self.width = clamp(int(scroll_view.port_width ** 2 / view_width), 2, scroll_view.port_width)
+        self.width = clamp(
+            int(scroll_view.port_width**2 / view_width), 2, scroll_view.port_width
+        )
         self.x = round(scroll_view.horizontal_proportion * bar.fill_width)
 
     def on_add(self):

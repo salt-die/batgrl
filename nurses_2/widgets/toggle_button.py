@@ -6,8 +6,12 @@ from collections.abc import Callable
 from wcwidth import wcswidth
 
 from .behaviors.themable import Themable
-from .behaviors.toggle_button_behavior import ButtonState, ToggleState, ToggleButtonBehavior
-from .text_widget import TextWidget, Anchor
+from .behaviors.toggle_button_behavior import (
+    ButtonState,
+    ToggleButtonBehavior,
+    ToggleState,
+)
+from .text_widget import Anchor, TextWidget
 from .widget import Widget
 
 CHECK_OFF = "□ "
@@ -34,8 +38,9 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
-        is false this value will be ignored if all buttons would be "off".
+        Initial toggle state of button. If button is in a group and
+        :attr:`allow_no_selection` is false this value will be ignored if all buttons
+        would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     size : Size, default: Size(10, 10)
@@ -221,17 +226,18 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
         background_char=" ",
-        label: str="",
-        callback: Callable[[ToggleState], None]=lambda state: None,
+        label: str = "",
+        callback: Callable[[ToggleState], None] = lambda state: None,
         **kwargs,
     ):
-        self.normal_color_pair = (0, ) * 6  # Temporary assignment
+        self.normal_color_pair = (0,) * 6  # Temporary assignment
 
-        self._label_widget = TextWidget(pos_hint=(.5, 0), anchor=Anchor.LEFT_CENTER)
+        self._label_widget = TextWidget(pos_hint=(0.5, 0), anchor=Anchor.LEFT_CENTER)
 
         self.callback = callback  # This must be set before `super().__init__`.
 
@@ -275,15 +281,23 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
         self._label_widget.add_str(text)
 
     def update_hover(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.color_theme.button_hover
+        self.background_color_pair = self._label_widget.colors[
+            :
+        ] = self.color_theme.button_hover
 
     def update_down(self):
-        self.background_color_pair = self._label_widget.colors[:] =  self.color_theme.button_press
+        self.background_color_pair = self._label_widget.colors[
+            :
+        ] = self.color_theme.button_press
 
     def update_normal(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.color_theme.button_normal
+        self.background_color_pair = self._label_widget.colors[
+            :
+        ] = self.color_theme.button_normal
 
     def on_toggle(self):
-        if self._label_widget.parent is not None:  # This will be false during initialization.
+        if (
+            self._label_widget.parent is not None
+        ):  # This will be false during initialization.
             self.label = self.label  # Update radio button/checkbox
         self.callback(self.toggle_state)

@@ -3,6 +3,7 @@ Clamp a value between min and max.
 """
 from numbers import Real
 
+
 def clamp(value, min: Real | None, max: Real | None):
     """
     Clamp a value between min and max.

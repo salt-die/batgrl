@@ -8,7 +8,7 @@ import numpy as np
 
 from ...colors import Color
 from ...data_structures import Point, Size
-from ..widget import intersection, Rect
+from ..widget import Rect, intersection
 
 
 class Camera:
@@ -32,6 +32,7 @@ class Camera:
     Submap values for areas of the camera that are out-of-bounds of the map
     will be zero.
     """
+
     __slots__ = "pos", "size"
 
     def __init__(self, pos: Point, size: Size):
@@ -44,13 +45,13 @@ class Camera:
         """
         submap = np.zeros(self.size, dtype=np.uint8)
 
-        mh, mw = map.shape
-        h, w = self.size
-        t, l = self.pos
-        b, r = h + t, w + l
+        map_height, map_width = map.shape
+        height, width = self.size
+        top, left = self.pos
+        bottom, right = height + top, width + left
 
-        dest = Rect(t, b, l, r)
-        source = Rect(0, mh, 0, mw)
+        dest = Rect(top, bottom, left, right)
+        source = Rect(0, map_height, 0, map_width)
 
         if (slices := intersection(dest, source)) is not None:
             dest_slice, source_slice = slices
@@ -84,6 +85,7 @@ class Interval(NamedTuple):
     index:
         Return first index of value.
     """
+
     start: float
     end: float
 
@@ -127,6 +129,7 @@ class LightIntensity(NamedTuple):
     index:
         Return first index of value.
     """
+
     r: float
     g: float
     b: float
@@ -162,6 +165,7 @@ class Coordinates(NamedTuple):
     index:
         Return first index of value.
     """
+
     y: float
     x: float
 
@@ -186,12 +190,13 @@ class LightSource:
         Intensity of light source. If set with a :class:`nurses_2.colors.Color`, it will
         be converted to an intensity with :meth:`LightIntensity.from_color`.
     """
+
     __slots__ = "coords", "_intensity"
 
     def __init__(
         self,
-        coords: Coordinates=Coordinates(0.0, 0.0),
-        intensity: Color | LightIntensity=LightIntensity(0.0, 0.0, 0.0),
+        coords: Coordinates = Coordinates(0.0, 0.0),
+        intensity: Color | LightIntensity = LightIntensity(0.0, 0.0, 0.0),
     ):
         self.coords = coords
         self.intensity = intensity
@@ -219,6 +224,7 @@ class Restrictiveness(str, Enum):
     either end must be visible. For "restrictive", all points in the
     interval must be visible.
     """
+
     PERMISSIVE = "permissive"
     MODERATE = "moderate"
     RESTRICTIVE = "restrictive"

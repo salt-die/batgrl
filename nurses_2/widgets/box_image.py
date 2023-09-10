@@ -19,7 +19,8 @@ class BoxImage(TextWidget):
     path : pathlib.Path
         Path to image.
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     size : Size, default: Size(10, 10)
@@ -197,6 +198,7 @@ class BoxImage(TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(self, *, path: Path, **kwargs):
         super().__init__(**kwargs)
         self.path = path
@@ -230,10 +232,11 @@ class BoxImage(TextWidget):
         rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 2, w, 2, 3), 1, 2)
         hls_sectioned = np.swapaxes(img_hls.reshape(h, 2, w, 2, 3), 1, 2)
 
-        # First, find the average lightness of each 2x2 section of the image (`average_lightness`).
-        # Boxes are placed where the lightness is greater than `average_lightness`.
-        # The background color will be the average of the colors darker than `average_lightness`.
-        # The foreground color will be the average of the colors lighter than `average_lightness`.
+        # First, find the average lightness of each 2x2 section of the image
+        # (`average_lightness`). Boxes are placed where the lightness is greater than
+        # `average_lightness`. The background color will be the average of the colors
+        # darker than `average_lightness`. The foreground color will be the average of
+        # the colors lighter than `average_lightness`.
 
         lightness = hls_sectioned[..., 1]
         average_lightness = np.average(lightness, axis=(2, 3))
@@ -247,12 +250,16 @@ class BoxImage(TextWidget):
         background = rgb_sectioned.copy()
         background[where_boxes] = 0
         with np.errstate(divide="ignore", invalid="ignore"):
-            bg = background.sum(axis=(2, 3)) / nboxes_neg[..., None]  # average of colors darker than `average_lightness`
+            bg = (
+                background.sum(axis=(2, 3)) / nboxes_neg[..., None]
+            )  # average of colors darker than `average_lightness`
 
         foreground = rgb_sectioned.copy()
         foreground[~where_boxes] = 0
         with np.errstate(divide="ignore", invalid="ignore"):
-            fg = foreground.sum(axis=(2, 3)) / nboxes[..., None]  # average of colors lighter than `average_lightness`
+            fg = (
+                foreground.sum(axis=(2, 3)) / nboxes[..., None]
+            )  # average of colors lighter than `average_lightness`
 
         self.colors[..., :3] = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg)
         self.colors[..., 3:] = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg)

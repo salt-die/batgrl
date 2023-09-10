@@ -7,7 +7,7 @@ from wcwidth import wcswidth
 
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .text_widget import TextWidget, Anchor
+from .text_widget import Anchor, TextWidget
 from .widget import Widget
 
 
@@ -194,15 +194,16 @@ class Button(Themable, ButtonBehavior, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
         background_char=" ",
-        label: str="",
-        callback: Callable[[], None]=lambda: None,
+        label: str = "",
+        callback: Callable[[], None] = lambda: None,
         **kwargs,
     ):
-        self._label_widget = TextWidget(pos_hint=(.5, .5), anchor=Anchor.CENTER)
+        self._label_widget = TextWidget(pos_hint=(0.5, 0.5), anchor=Anchor.CENTER)
 
         super().__init__(background_char=background_char, **kwargs)
 
@@ -235,10 +236,16 @@ class Button(Themable, ButtonBehavior, Widget):
         self.callback()
 
     def update_hover(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.color_theme.button_hover
+        self.background_color_pair = self._label_widget.colors[
+            :
+        ] = self.color_theme.button_hover
 
     def update_down(self):
-        self.background_color_pair = self._label_widget.colors[:] =  self.color_theme.button_press
+        self.background_color_pair = self._label_widget.colors[
+            :
+        ] = self.color_theme.button_press
 
     def update_normal(self):
-        self.background_color_pair = self._label_widget.colors[:] = self.color_theme.button_normal
+        self.background_color_pair = self._label_widget.colors[
+            :
+        ] = self.color_theme.button_normal

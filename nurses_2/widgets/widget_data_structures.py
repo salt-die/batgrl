@@ -8,24 +8,26 @@ import numpy as np
 
 __all__ = "Char", "style_char", "SizeHint", "PosHint", "Rect", "Anchor", "Easing"
 
-Char = np.dtype([
-    ("char", "U1"),
-    ("bold", "?"),
-    ("italic", "?"),
-    ("underline", "?"),
-    ("strikethrough", "?"),
-    ("overline", "?")
-])
+Char = np.dtype(
+    [
+        ("char", "U1"),
+        ("bold", "?"),
+        ("italic", "?"),
+        ("underline", "?"),
+        ("strikethrough", "?"),
+        ("overline", "?"),
+    ]
+)
 """Data type of canvas arrays."""
 
 
 def style_char(
     char: str,
-    bold: bool=False,
-    italic: bool=False,
-    underline: bool=False,
-    strikethrough: bool=False,
-    overline: bool=False,
+    bold: bool = False,
+    italic: bool = False,
+    underline: bool = False,
+    strikethrough: bool = False,
+    overline: bool = False,
 ) -> np.ndarray:
     """
     Return a zero-dimensional `Char` array.
@@ -45,7 +47,9 @@ def style_char(
     overline : bool, default: False
         Whether char is overlined.
     """
-    return np.array((char, bold, italic, underline, strikethrough, overline), dtype=Char)
+    return np.array(
+        (char, bold, italic, underline, strikethrough, overline), dtype=Char
+    )
 
 
 class SizeHint(NamedTuple):
@@ -75,6 +79,7 @@ class SizeHint(NamedTuple):
     index:
         Return first index of value.
     """
+
     height: float | None
     width: float | None
 
@@ -106,6 +111,7 @@ class PosHint(NamedTuple):
     index:
         Return first index of value.
     """
+
     y: float | None
     x: float | None
 
@@ -143,6 +149,7 @@ class Rect(NamedTuple):
     index:
         Return first index of value.
     """
+
     top: int
     bottom: int
     left: int
@@ -157,6 +164,7 @@ class Anchor(str, Enum):
     `"top_left"`, `"top_center"`, `"top_right"`, `"bottom_left"`,
     `"bottom_center"`, `"bottom_right"`.
     """
+
     CENTER = "center"
     LEFT_CENTER = "left_center"
     RIGHT_CENTER = "right_center"
@@ -172,6 +180,7 @@ class Easing(str, Enum):
     """
     Easings for :meth:`nurses_2.widgets.Widget.tween`.
     """
+
     LINEAR = "linear"
     IN_QUAD = "in_quad"
     OUT_QUAD = "out_quad"

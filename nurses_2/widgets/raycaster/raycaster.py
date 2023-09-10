@@ -6,7 +6,7 @@ import numpy as np
 from ...clamp import clamp
 from ...colors import BLACK, Color
 from ..graphic_widget import GraphicWidget
-from .protocols import Map, Camera, Texture
+from .protocols import Camera, Map, Texture
 from .sprite import Sprite
 
 
@@ -17,14 +17,15 @@ class Raycaster(GraphicWidget):
     Parameters
     ----------
     map : Map
-        An array-like with non-zero entries n indicating walls with texture `wall_textures[n - 1]`.
+        An array-like with non-zero entries n indicating walls with texture
+        `wall_textures[n - 1]`.
     camera : Camera
         A view in the map.
     wall_textures : List[Texture]
         Textures for walls.
     light_wall_textures : list[Texture] | None, default: None
-        If provided, walls north/south face will use textures in :attr:`light_wall_textures`
-        instead of :attr:`wall_textures`.
+        If provided, walls north/south face will use textures in
+        :attr:`light_wall_textures` instead of :attr:`wall_textures`.
     sprites : list[Sprite] | None, default: None
         List of sprites.
     sprite_textures : list[Texture] | None, default: None
@@ -40,8 +41,8 @@ class Raycaster(GraphicWidget):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        If widget is transparent, the alpha channel of the underlying texture will be
+        multiplied by this value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -84,7 +85,8 @@ class Raycaster(GraphicWidget):
     Attributes
     ----------
     map : Map
-        An array-like with non-zero entries n indicating walls with texture `wall_textures[n - 1]`.
+        An array-like with non-zero entries n indicating walls with texture
+        `wall_textures[n - 1]`.
     camera : Camera
         A view in the map.
     wall_textures : List[Texture]
@@ -227,6 +229,7 @@ class Raycaster(GraphicWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     HOPS = 20  # How far rays are cast.
 
     def __init__(
@@ -235,13 +238,13 @@ class Raycaster(GraphicWidget):
         map: Map,
         camera: Camera,
         wall_textures: list[Texture] | None,
-        light_wall_textures: list[Texture] | None=None,
-        sprites: list[Sprite] | None=None,
-        sprite_textures: list[Texture] | None=None,
-        ceiling: Texture | None=None,
-        ceiling_color: Color=BLACK,
-        floor: Texture | None=None,
-        floor_color: Color=BLACK,
+        light_wall_textures: list[Texture] | None = None,
+        sprites: list[Sprite] | None = None,
+        sprite_textures: list[Texture] | None = None,
+        ceiling: Texture | None = None,
+        ceiling_color: Color = BLACK,
+        floor: Texture | None = None,
+        floor_color: Color = BLACK,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -274,7 +277,9 @@ class Raycaster(GraphicWidget):
         angles[:, 1] = np.linspace(-1, 1, w)
 
         # Precalculate distances for ceiling and floor textures
-        self._distances = distances = np.linspace(1e-10, h, num=h, endpoint=False, dtype=float)
+        self._distances = distances = np.linspace(
+            1e-10, h, num=h, endpoint=False, dtype=float
+        )
         np.divide(h, distances, out=distances, dtype=float)
 
         # Buffers
@@ -315,9 +320,7 @@ class Raycaster(GraphicWidget):
                 # Note that distance of wall to camera is not used
                 # as it would result in a "fish-eye" effect.
                 distance = (
-                    ray_pos[side]
-                    - camera_pos[side]
-                    + (0 if step[side] == 1 else 1)
+                    ray_pos[side] - camera_pos[side] + (0 if step[side] == 1 else 1)
                 ) / ray_angle[side]
                 break
 
@@ -330,7 +333,9 @@ class Raycaster(GraphicWidget):
         texture = self.texture[:, ::-1]
         height = texture.shape[0]
 
-        column_height = int(height / distance) if distance else 1000  # 1000 == infinity, roughly
+        column_height = (
+            int(height / distance) if distance else 1000
+        )  # 1000 == infinity, roughly
 
         # Start and end y-coordinates of column.
         half_height = height >> 1
@@ -341,7 +346,9 @@ class Raycaster(GraphicWidget):
         start = half_height - half_column
         end = half_height + half_column
 
-        wall_texture = (self.wall_textures if side else self.light_wall_textures)[texture_index - 1]
+        wall_texture = (self.wall_textures if side else self.light_wall_textures)[
+            texture_index - 1
+        ]
         tex_h, tex_w, _ = wall_texture.shape
 
         # Exactly where wall was hit by ray as a percentage of its width.
@@ -359,20 +366,16 @@ class Raycaster(GraphicWidget):
         texture_start = offset * ratio
         texture_end = (offset + drawn_height) * ratio
         tex_ys = np.linspace(
-            texture_start,
-            texture_end,
-            num=drawn_height,
-            endpoint=False,
-            dtype=int
+            texture_start, texture_end, num=drawn_height, endpoint=False, dtype=int
         )
         texture_column = wall_texture[tex_ys, tex_x].astype(float)
 
         # Darken colors further away.
-        texture_column *= np.e ** (-distance * .05)
+        texture_column *= np.e ** (-distance * 0.05)
         np.clip(texture_column, 0, 255, out=texture_column, casting="unsafe")
 
         # Paint column.
-        texture[start: end, column] = texture_column
+        texture[start:end, column] = texture_column
 
         # Render floor and ceiling.
         ceiling = self.ceiling
@@ -414,7 +417,9 @@ class Raycaster(GraphicWidget):
             texture[:start, column] = self.ceiling_color
         else:
             # Note reversed order of texture coordinates from floor
-            np.multiply(ceiling.shape[:2], tex_frac[::-1], out=tex_int, casting="unsafe")
+            np.multiply(
+                ceiling.shape[:2], tex_frac[::-1], out=tex_int, casting="unsafe"
+            )
             texture[:start, column] = ceiling[tex_int[:, 0], tex_int[:, 1]]
 
         # Paint floor
@@ -468,8 +473,8 @@ class Raycaster(GraphicWidget):
             end_x = clamp(sprite_x + sprite_width // 2, 0, w)
             columns = np.arange(start_x, end_x)
 
-            # Remove columns that are behind walls or off-screen:
-            # Buffered version of `(0 <= columns) & (columns <= w) & (y <= column_distances[columns])`
+            # Remove columns that are behind walls or off-screen; buffered version of:
+            #     (0 <= columns) & (columns <= w) & (y <= column_distances[columns])
             _where_buffer_1 = 0 <= columns
             _where_buffer_2 = columns <= w
             np.logical_and(_where_buffer_1, _where_buffer_2, out=_where_buffer_1)
@@ -494,16 +499,18 @@ class Raycaster(GraphicWidget):
             np.multiply(tex_xs, tex_width, out=tex_xs)
             np.divide(tex_xs, sprite_width, out=tex_xs)
 
-            sprite_rect = sprite_tex[rows.astype(int)][:, tex_xs.astype(int)].astype(float)
+            sprite_rect = sprite_tex[rows.astype(int)][:, tex_xs.astype(int)].astype(
+                float
+            )
             sprite_rgb = sprite_rect[..., :3]
-            tex_rect = texture[start_y: end_y, columns, :3]
+            tex_rect = texture[start_y:end_y, columns, :3]
 
             np.subtract(sprite_rgb, tex_rect, out=sprite_rgb)
             np.multiply(sprite_rgb, sprite_rect[..., 3, None], out=sprite_rgb)
             np.divide(sprite_rgb, 255, out=sprite_rgb)
             np.add(sprite_rgb, tex_rect, out=sprite_rgb)
 
-            texture[start_y: end_y, columns, :3] = sprite_rgb
+            texture[start_y:end_y, columns, :3] = sprite_rgb
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         camera = self.camera

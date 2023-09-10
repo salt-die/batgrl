@@ -7,7 +7,7 @@ import numpy as np
 
 from .widget import Widget, style_char
 
-__all__ = "TextParticleField",
+__all__ = ("TextParticleField",)
 
 
 class TextParticleField(Widget):
@@ -192,13 +192,14 @@ class TextParticleField(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        particle_positions: np.ndarray | None=None,
-        particle_chars: np.ndarray | None=None,
-        particle_color_pairs: np.ndarray | None=None,
-        particle_properties: dict[str, np.ndarray]=None,
-        **kwargs
+        particle_positions: np.ndarray | None = None,
+        particle_chars: np.ndarray | None = None,
+        particle_color_pairs: np.ndarray | None = None,
+        particle_properties: dict[str, np.ndarray] = None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -213,7 +214,9 @@ class TextParticleField(Widget):
             self.particle_chars = particle_chars
 
         if particle_color_pairs is None:
-            self.particle_color_pairs = np.zeros((len(self.particle_positions), 6), dtype=np.uint8)
+            self.particle_color_pairs = np.zeros(
+                (len(self.particle_positions), 6), dtype=np.uint8
+            )
         else:
             self.particle_color_pairs = particle_color_pairs
 
@@ -231,12 +234,12 @@ class TextParticleField(Widget):
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         vert_slice, hori_slice = source
-        t = vert_slice.start
-        h = vert_slice.stop - t
-        l = hori_slice.start
-        w = hori_slice.stop - l
-        pos = self.particle_positions - (t, l)
-        inbounds = (((0, 0) <= pos) & (pos < (h, w))).all(axis=1)
+        top = vert_slice.start
+        height = vert_slice.stop - top
+        left = hori_slice.start
+        width = hori_slice.stop - left
+        pos = self.particle_positions - (top, left)
+        inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
 
         if not self.is_transparent:
             if self.background_char is not None:
@@ -249,9 +252,13 @@ class TextParticleField(Widget):
             local_ys, local_xs = pos[where_inbounds].T
             colors_view[local_ys, local_xs] = self.particle_color_pairs[where_inbounds]
         else:
-            where_inbounds = np.nonzero(inbounds & np.isin(self.particle_chars["char"], (" ", "⠀"), invert=True))
+            where_inbounds = np.nonzero(
+                inbounds & np.isin(self.particle_chars["char"], (" ", "⠀"), invert=True)
+            )
             local_ys, local_xs = pos[where_inbounds].T
-            colors_view[..., :3][local_ys, local_xs] = self.particle_color_pairs[..., :3][where_inbounds]
+            colors_view[..., :3][local_ys, local_xs] = self.particle_color_pairs[
+                ..., :3
+            ][where_inbounds]
 
         canvas_view[local_ys, local_xs] = self.particle_chars[where_inbounds]
         self.render_children(source, canvas_view, colors_view)

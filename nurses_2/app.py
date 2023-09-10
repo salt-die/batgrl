@@ -4,24 +4,24 @@ Base for creating terminal applications.
 import asyncio
 import sys
 from abc import ABC, abstractmethod
-from io import StringIO
 from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
 from time import monotonic
 
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import (
-    _PartialMouseEvent,
     KeyEvent,
     MouseButton,
     MouseEvent,
     MouseEventType,
     PasteEvent,
+    _PartialMouseEvent,
     io,
 )
 from .widgets._root import _Root
 from .widgets.behaviors.themable import Themable
-from .widgets.widget import Widget, Size
+from .widgets.widget import Size, Widget
 
 __all__ = "App", "run_widget_as_app"
 
@@ -44,7 +44,8 @@ class App(ABC):
     render_interval : float, default: 0.0
         Seconds between screen renders.
     color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
-        Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable` widgets.
+        Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable`
+        widgets.
     asciicast_path : Path | None, default: None
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
@@ -66,7 +67,8 @@ class App(ABC):
     render_interval : float
         Seconds between screen renders.
     color_theme : ColorTheme
-        Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable` widgets.
+        Color theme used for :class:`nurses_2.widgets.behaviors.themable.Themable`
+        widgets.
     asciicast_path : Path | None
         Path where asciicast recording will be saved.
     log_file : Path | None
@@ -90,17 +92,18 @@ class App(ABC):
         Alias for :attr:`root.add_widgets`.
 
     """
+
     def __init__(
         self,
         *,
-        background_char: str=" ",
-        background_color_pair: ColorPair=BLACK_ON_BLACK,
-        title: str | None=None,
-        double_click_timeout: float=0.5,
-        render_interval: float=0.0,
-        color_theme: ColorTheme=DEFAULT_COLOR_THEME,
-        asciicast_path: Path | None=None,
-        log_file: Path | None=None,
+        background_char: str = " ",
+        background_color_pair: ColorPair = BLACK_ON_BLACK,
+        title: str | None = None,
+        double_click_timeout: float = 0.5,
+        render_interval: float = 0.0,
+        color_theme: ColorTheme = DEFAULT_COLOR_THEME,
+        asciicast_path: Path | None = None,
+        log_file: Path | None = None,
     ):
         self.root = None
 
@@ -179,7 +182,9 @@ class App(ABC):
             last_mouse_time = monotonic()
             last_mouse_nclicks = 0
 
-            def determine_nclicks(partial_mouse_event: _PartialMouseEvent) -> MouseEvent:
+            def determine_nclicks(
+                partial_mouse_event: _PartialMouseEvent,
+            ) -> MouseEvent:
                 """
                 Determine number of consecutive clicks for a :class:`_PartialMouseEvent`
                 and create a :class:`MouseEvent`.
@@ -263,6 +268,7 @@ def run_widget_as_app(widget: Widget):
     widget : Widget
         A widget to run as a full screen app.
     """
+
     class _DefaultApp(App):
         async def on_start(self):
             self.add_widget(widget)

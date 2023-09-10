@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 from ...clamp import clamp
-from ...colors import AColor, AWHITE
+from ...colors import AWHITE, AColor
 from ..graphic_widget import GraphicWidget, Point
 from .shadow_caster_data_structures import (
     Camera,
@@ -55,8 +55,8 @@ class ShadowCaster(GraphicWidget):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        If widget is transparent, the alpha channel of the underlying texture will be
+        multiplied by this value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -247,26 +247,27 @@ class ShadowCaster(GraphicWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         map: np.ndarray,
         camera: Camera,
-        tile_colors: list[AColor] | None=None,
-        light_sources: list[LightSource] | None=None,
-        ambient_light: LightIntensity=LightIntensity(0.0, 0.0, 0.0),
-        light_decay: Callable[[float], float]=lambda d: 1 if d == 0 else 1 / d,
-        radius: int=20,
-        smoothing: float=1.0/3.0,
-        not_visible_blocks: bool=True,
-        restrictiveness: Restrictiveness=Restrictiveness.MODERATE,
-        **kwargs
+        tile_colors: list[AColor] | None = None,
+        light_sources: list[LightSource] | None = None,
+        ambient_light: LightIntensity = LightIntensity(0.0, 0.0, 0.0),
+        light_decay: Callable[[float], float] = lambda d: 1 if d == 0 else 1 / d,
+        radius: int = 20,
+        smoothing: float = 1.0 / 3.0,
+        not_visible_blocks: bool = True,
+        restrictiveness: Restrictiveness = Restrictiveness.MODERATE,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.map = map
         self.camera = camera
         self.tile_colors = np.array(tile_colors or [AGRAY, AWHITE], dtype=np.uint8)
-        self.light_sources = light_sources or [ ]
+        self.light_sources = light_sources or []
         self.ambient_light = ambient_light
         self.light_decay = light_decay
         self.radius = radius
@@ -321,7 +322,7 @@ class ShadowCaster(GraphicWidget):
         light_decay = self.light_decay
         smooth_radius = self.radius + self.smoothing
 
-        obstructions = [ ]
+        obstructions = []
         for i in range(self.radius):
             if len(obstructions) == 1 and obstructions[0] == (0.0, 1.0):
                 return
@@ -402,7 +403,7 @@ class ShadowCaster(GraphicWidget):
         if a == b:
             obstructions.insert(a, Interval(start, end))
         else:
-            obstructions[a: b] = [Interval(start, end)]
+            obstructions[a:b] = [Interval(start, end)]
 
     def to_map_coords(self, point: Point) -> Coordinates:
         """

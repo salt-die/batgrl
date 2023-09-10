@@ -10,18 +10,20 @@ from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.resizable import Resizable
 from .behaviors.themable import Themable
-from .text_widget import TextWidget
 from .graphic_widget import GraphicWidget
-from .widget import Widget, Anchor
+from .text_widget import TextWidget
+from .widget import Anchor, Widget
 
-__all__ = "Window",
+__all__ = ("Window",)
 
 
 class _TitleBar(Grabbable, Widget):
     def __init__(self):
-        super().__init__(pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" ")
+        super().__init__(
+            pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" "
+        )
 
-        self._label = TextWidget(pos_hint=(None, .5), anchor=Anchor.TOP_CENTER)
+        self._label = TextWidget(pos_hint=(None, 0.5), anchor=Anchor.TOP_CENTER)
         self.add_widget(self._label)
 
     def on_add(self):
@@ -46,9 +48,9 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     """
     A movable, resizable window widget.
 
-    The view can be set with the :attr:`view` property, e.g., ``my_window.view = some_widget``.
-    Added views will have their size hints reset to (None, None). Views are resized as the
-    window is resized.
+    The view can be set with the :attr:`view` property, e.g.,
+    ``my_window.view = some_widget``. Added views will have their size hints reset to
+    (None, None). Views are resized as the window is resized.
 
     Parameters
     ----------
@@ -71,8 +73,8 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        If widget is transparent, the alpha channel of the underlying texture will be
+        multiplied by this value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -276,13 +278,11 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
 
     Notes
     -----
-    If not given or too small, :attr:`grab_resize_min_height` and :attr:`grab_resize_min_width` will
-    be set large enough so that the border and title are visible.
-
-    As the window is resized, the :attr:`view` will be resized to fit within the window's borders,
-    but non-`None` size hints of the view are still respected which can have unexpected results.
-    It is recommended to use views with no size hints.
+    If not given or too small, :attr:`grab_resize_min_height` and
+    :attr:`grab_resize_min_width` will be set large enough so that the border and title
+    are visible.
     """
+
     def __init__(self, title="", **kwargs):
         self._title = title
 
@@ -339,7 +339,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     def on_size(self):
         h, w = self._size
         self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
-        self.texture[4: -2, 2: -2] = self.default_color
+        self.texture[4:-2, 2:-2] = self.default_color
 
         if self._view is not None:
             if self._view.size_hint == (None, None):
@@ -362,7 +362,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
 
     def update_theme(self):
         self.default_color = AColor(*self.color_theme.primary.bg_color)
-        self.texture[4: -2, 2: -2] = self.default_color
+        self.texture[4:-2, 2:-2] = self.default_color
 
         if self.is_focused:
             title_color = self.color_theme.titlebar_normal
@@ -387,4 +387,6 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         self.update_theme()
 
     def dispatch_mouse(self, mouse_event):
-        return super().dispatch_mouse(mouse_event) or self.collides_point(mouse_event.position)
+        return super().dispatch_mouse(mouse_event) or self.collides_point(
+            mouse_event.position
+        )

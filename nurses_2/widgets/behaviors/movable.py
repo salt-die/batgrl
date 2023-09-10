@@ -52,13 +52,14 @@ class Movable(Grabbable):
     grab_update:
         Update widget with incoming mouse events while grabbed.
     """
+
     def __init__(
         self,
         *,
         disable_oob=False,
         allow_vertical_translation=True,
         allow_horizontal_translation=True,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.disable_oob = disable_oob

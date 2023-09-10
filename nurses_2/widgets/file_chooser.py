@@ -2,16 +2,16 @@
 A file chooser widget.
 """
 import platform
-from pathlib import Path
 from collections.abc import Callable
+from pathlib import Path
 
 from wcwidth import wcswidth
 
-from .scroll_view import ScrollView
-from .tree_view import TreeViewNode, TreeView
 from .behaviors.themable import Themable
+from .scroll_view import ScrollView
+from .tree_view import TreeView, TreeViewNode
 
-__all__ = "FileChooser",
+__all__ = ("FileChooser",)
 
 FILE_PREFIX = "  📄 "
 FOLDER_PREFIX = "▶ 📁 "
@@ -32,6 +32,7 @@ if platform.system() == "Windows":
         return attrs != -1 and bool(attrs & IS_HIDDEN)
 
 else:
+
     def _is_hidden(path: Path):
         return path.stem.startswith(".")
 
@@ -43,11 +44,13 @@ class _FileViewNode(TreeViewNode):
 
     @property
     def label(self) -> str:
-        return (
-            f"{NESTED_PREFIX * self.level}"
-            f"{FILE_PREFIX if self.path.is_file() else OPEN_FOLDER_PREFIX if self.is_open else FOLDER_PREFIX}"
-            f"{self.path.name}"
-        )
+        if self.path.is_file():
+            prefix = FILE_PREFIX
+        elif self.is_open:
+            prefix = OPEN_FOLDER_PREFIX
+        else:
+            prefix = FOLDER_PREFIX
+        return f"{NESTED_PREFIX * self.level}{prefix}{self.path.name}"
 
     def _toggle_update(self):
         if not self.child_nodes:
@@ -76,9 +79,9 @@ class _FileView(TreeView):
     def __init__(
         self,
         root_node: _FileViewNode,
-        directories_only: bool=False,
-        show_hidden: bool=True,
-        select_callback: Callable[[Path], None]=lambda path: None,
+        directories_only: bool = False,
+        show_hidden: bool = True,
+        select_callback: Callable[[Path], None] = lambda path: None,
         **kwargs,
     ):
         self.directories_only = directories_only
@@ -405,14 +408,15 @@ class FileChooser(Themable, ScrollView):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        root_dir: Path | None=None,
-        directories_only: bool=False,
-        show_hidden: bool=True,
-        select_callback: Callable[[Path], None]=lambda path: None,
+        root_dir: Path | None = None,
+        directories_only: bool = False,
+        show_hidden: bool = True,
+        select_callback: Callable[[Path], None] = lambda path: None,
         arrow_keys_enabled=False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(arrow_keys_enabled=arrow_keys_enabled, **kwargs)
         path = root_dir or Path()

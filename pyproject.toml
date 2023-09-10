@@ -35,3 +35,9 @@ exclude = [
     "examples**",
     "preview_images**",
 ]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"

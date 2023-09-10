@@ -21,6 +21,7 @@ class Themable(ABC):
     update_theme:
         Paint the widget with current theme.
     """
+
     color_theme = DEFAULT_COLOR_THEME
 
     def on_add(self):

@@ -16,17 +16,20 @@ Fonts:
     * http://www.figlet.org/fontdb.cgi
     * https://github.com/salt-die/fig-fonts
 """
+import re
+import zipfile
 from dataclasses import dataclass, field, fields
 from enum import IntFlag
 from itertools import islice
 from pathlib import Path
-import re
-import zipfile
 
 import numpy as np
 from wcwidth import wcswidth, wcwidth
 
-__all__ = "FullLayout", "FIGFont",
+__all__ = (
+    "FullLayout",
+    "FIGFont",
+)
 
 
 class FullLayout(IntFlag):
@@ -35,7 +38,8 @@ class FullLayout(IntFlag):
 
     * FullWidth
 
-        Each character occupies the full width or height of its arrangement of sub-characters.
+        Each character occupies the full width or height of its arrangement of
+        sub-characters.
 
     * Kerning
 
@@ -44,7 +48,8 @@ class FullLayout(IntFlag):
     * Smushing
 
         Each character is moved one step closer after they touch, so that they overlap.
-        Additional smushing rules determine which sub-character is used for each overlap.
+        Additional smushing rules determine which sub-character is used for each
+        overlap.
 
     There are two types of smushing:
 
@@ -55,28 +60,31 @@ class FullLayout(IntFlag):
     * Universal
 
         The sub-character from the earlier character is replaced by the sub-character
-        from the later character. (This behavior can be reversed with `reverse_universal_smush`)
+        from the later character. (This behavior can be reversed with
+        `reverse_universal_smush`)
 
     The controlled smushing rules are:
 
     * Equal
 
-        Two sub-characters are smushed into a single sub-character if they are equal (except for hardblanks).
+        Two sub-characters are smushed into a single sub-character if they are equal
+        (except for hardblanks).
 
     * Underscore
 
-        An underscore (`"_"`) will be replaced by any of: `"|"`, `"/"`, `"\\"`, `"["`, `"]"`, `"{"`, `"}"`,
-        `"("`, `")"`, `"<"`, `">"`.
+        An underscore (`"_"`) will be replaced by any of: `"|"`, `"/"`, `"\\"`, `"["`,
+        `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
 
     * Hierarchy
 
-        A hierarchy of six classes is used: `"|"`, `"/\"`, `"[]"`, `"{}"`, `"()"`, and `"<>"`. When
-        two sub-characters are from different classes, the latter class will be used.
+        A hierarchy of six classes is used: `"|"`, `"/\"`, `"[]"`, `"{}"`, `"()"`, and
+        `"<>"`. When two sub-characters are from different classes, the latter class
+        will be used.
 
     * Pair
 
-        Replaces opposite brackets (`"[]"` or `"]["`), braces (`"{}"` or `"}{"`), and parentheses
-        (`"()"` or `")("`) with a vertical bar (`"|"`).
+        Replaces opposite brackets (`"[]"` or `"]["`), braces (`"{}"` or `"}{"`), and
+        parentheses (`"()"` or `")("`) with a vertical bar (`"|"`).
 
     * BigX
 
@@ -87,20 +95,23 @@ class FullLayout(IntFlag):
         Two hardblanks will be replaced with a single hardblank.
 
     """
-    FullWidth  =   0
-    Equal      =   1
-    Underscore =   2
-    Hierarchy  =   4
-    Pair       =   8
-    BigX       =  16
-    HardBlank  =  32
-    Kerning    =  64
-    Universal  = 128
+
+    FullWidth = 0
+    Equal = 1
+    Underscore = 2
+    Hierarchy = 4
+    Pair = 8
+    BigX = 16
+    HardBlank = 32
+    Kerning = 64
+    Universal = 128
     # TODO: Add vertical smushing.
 
     @classmethod
     def from_old_layout(cls, old_layout: int) -> "FullLayout":
-        return {-1: cls.FullWidth, 0: cls.Kerning}.get(old_layout, cls(old_layout | 128))
+        return {-1: cls.FullWidth, 0: cls.Kerning}.get(
+            old_layout, cls(old_layout | 128)
+        )
 
 
 @dataclass
@@ -120,7 +131,8 @@ class FIGFont:
         Controls how characters are fitted in rendered text.
 
     reverse_universal_smush : bool, default: False
-        If set to true univeral smushing will display earliest sub-character (instead of latest).
+        If set to true univeral smushing will display earliest sub-character (instead of
+        latest).
 
     font : dict[str, np.ndarray], default: {}
         A dictionary of characters to their ascii art representations.
@@ -140,7 +152,8 @@ class FIGFont:
         Controls how characters are fitted in rendered text.
 
     reverse_universal_smush : bool
-        If set to true univeral smushing will display earliest sub-character (instead of latest).
+        If set to true univeral smushing will display earliest sub-character (instead of
+        latest).
 
     font : dict[str, np.ndarray]
         A dictionary of characters to their ascii art representations.
@@ -177,7 +190,8 @@ class FIGFont:
 
     reverse_universal_smush: bool = False
     """
-    If set to true univeral smushing will display earliest sub-character (instead of latest).
+    If set to true univeral smushing will display earliest sub-character (instead of
+    latest).
     """
 
     font: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
@@ -210,7 +224,7 @@ class FIGFont:
             r"(?: \d+)?)?)?\s*$"
         )
         ENDMARKS_RE = re.compile(r"(\S)\1*\s*$")
-        NUMBER_RE = re.compile(f"^(0[0-7]*|0x[a-fA-F0-9]+|[1-9]\d*)(?:\s+\w*)?$")
+        NUMBER_RE = re.compile(r"^(0[0-7]*|0x[a-fA-F0-9]+|[1-9]\d*)(?:\s+\w*)?$")
 
         if zipfile.is_zipfile(path):
             with zipfile.ZipFile(path) as f:
@@ -235,8 +249,8 @@ class FIGFont:
         else:
             figinfo["layout"] = FullLayout(figinfo["layout"])
 
-        figinfo["comments"] = "\n".join(lines[:figinfo["comment_lines"]])
-        del lines[:figinfo["comment_lines"]]
+        figinfo["comments"] = "\n".join(lines[: figinfo["comment_lines"]])
+        del lines[: figinfo["comment_lines"]]
 
         it = iter(lines)
         height = figinfo["height"]
@@ -335,9 +349,9 @@ class FIGFont:
             return a if self.reverse_text ^ self.reverse_universal_smush else b
 
         if (
-            self.layout & FullLayout.HardBlank and
-            a == self.hardblank and
-            b == self.hardblank
+            self.layout & FullLayout.HardBlank
+            and a == self.hardblank
+            and b == self.hardblank
         ):
             return a
 
@@ -352,13 +366,15 @@ class FIGFont:
             smushes.append(("_", "|/\\[]{}()<>"))
 
         if self.layout & FullLayout.Hierarchy:
-            smushes.extend((
-                ("|", "|/\\[]{}()<>"),
-                ("\\/", "[]{}()<>"),
-                ("[]", "{}()<>"),
-                ("{}", "()<>"),
-                ("()", "<>"),
-            ))
+            smushes.extend(
+                (
+                    ("|", "|/\\[]{}()<>"),
+                    ("\\/", "[]{}()<>"),
+                    ("[]", "{}()<>"),
+                    ("{}", "()<>"),
+                    ("()", "<>"),
+                )
+            )
 
         for low, high in smushes:
             if a in low and b in high:
@@ -391,7 +407,9 @@ class FIGFont:
                 return
         return c
 
-    def _add_char(self, buffer: np.ndarray, prev_char_width: int, char: str) -> tuple[np.ndarray, int]:
+    def _add_char(
+        self, buffer: np.ndarray, prev_char_width: int, char: str
+    ) -> tuple[np.ndarray, int]:
         """
         Add a character to the line buffer.
         """
@@ -406,13 +424,13 @@ class FIGFont:
         current_char_width = fig_char.shape[1]
         a, b = (fig_char, buffer) if self.reverse_text else (buffer, fig_char)
 
-        # If characters are wide enough and any smushing rule (controlled or universal) is enabled,
-        # attempt to smush the last column of a with the first column of b.
+        # If characters are wide enough and any smushing rule (controlled or universal)
+        # is enabled, attempt to smush the last column of a with the first column of b.
         if (
-            prev_char_width >= 2 and
-            current_char_width >= 2 and
-            self.layout & 191 and
-            (c := self._smush(a[:, -1], b[:, 0]))
+            prev_char_width >= 2
+            and current_char_width >= 2
+            and self.layout & 191
+            and (c := self._smush(a[:, -1], b[:, 0]))
         ):
             a[:, -1] = c
             b = b[:, 1:]

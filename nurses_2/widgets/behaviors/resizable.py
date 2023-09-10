@@ -2,10 +2,10 @@
 Draggable resize behavior for a widget.
 """
 from ...clamp import clamp
-from ..graphic_widget import GraphicWidget, Size, AColor, TRANSPARENT
+from ..graphic_widget import TRANSPARENT, AColor, GraphicWidget, Size
 from .grabbable import Grabbable
 
-__all__ = "Resizable",
+__all__ = ("Resizable",)
 
 
 class _Border(Grabbable, GraphicWidget):
@@ -19,10 +19,14 @@ class _Border(Grabbable, GraphicWidget):
         y, x = self.to_local(mouse_event.position)
 
         if (
-            dy < 0 and y >= self.height - 1
-            or dy > 0 and y <= 0
-            or dx < 0 and x >= self.width - 1
-            or dx > 0 and x <= 0
+            dy < 0
+            and y >= self.height - 1
+            or dy > 0
+            and y <= 0
+            or dx < 0
+            and x >= self.width - 1
+            or dx > 0
+            and x <= 0
         ):
             return
 
@@ -40,10 +44,10 @@ class _Border(Grabbable, GraphicWidget):
         if new_size != parent.size:
             parent.size = new_size
 
-            if y_edge == - 1:
+            if y_edge == -1:
                 parent.top += h - parent.height
 
-            if x_edge == - 1:
+            if x_edge == -1:
                 parent.left += w - parent.width
 
     def _update_size_pos(self):
@@ -130,16 +134,17 @@ class Resizable:
     Borders are added as child widgets. Children added later may overlap or cover the borders.
     :meth:`pull_border_to_front` will correct this.
     """
+
     def __init__(
         self,
         *,
-        allow_vertical_resize: bool=True,
-        allow_horizontal_resize: bool=True,
-        grab_resize_min_height: int | None=None,
-        grab_resize_min_width: int | None=None,
-        border_alpha: float=1.0,
-        border_color: AColor=TRANSPARENT,
-        **kwargs
+        allow_vertical_resize: bool = True,
+        allow_horizontal_resize: bool = True,
+        grab_resize_min_height: int | None = None,
+        grab_resize_min_width: int | None = None,
+        border_alpha: float = 1.0,
+        border_color: AColor = TRANSPARENT,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.allow_vertical_resize = allow_vertical_resize

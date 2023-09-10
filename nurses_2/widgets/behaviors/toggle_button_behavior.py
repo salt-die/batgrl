@@ -16,6 +16,7 @@ class ToggleState(str, Enum):
 
     :class:`ToggleState` is one of "on", "off".
     """
+
     ON = "on"
     OFF = "off"
 
@@ -35,8 +36,9 @@ class ToggleButtonBehavior(ButtonBehavior):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
-        is false this value will be ignored if all buttons would be off.
+        Initial toggle state of button. If button is in a group and
+        :attr:`allow_no_selection` is false this value will be ignored if all buttons
+        would be off.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
 
@@ -70,24 +72,25 @@ class ToggleButtonBehavior(ButtonBehavior):
     on_release:
         Triggered when a button is released.
     """
+
     _toggle_groups = WeakValueDictionary()
 
     def __init__(
         self,
-        group: None | Hashable=None,
-        allow_no_selection: bool=False,
-        toggle_state: ToggleState=ToggleState.OFF,
-        **kwargs
+        group: None | Hashable = None,
+        allow_no_selection: bool = False,
+        toggle_state: ToggleState = ToggleState.OFF,
+        **kwargs,
     ):
         self.group = group
         self.allow_no_selection = allow_no_selection
         self._toggle_state = ToggleState.OFF
 
         if (
-            group is not None and
-            toggle_state is ToggleState.OFF and
-            ToggleButtonBehavior._toggle_groups.get(group) is None and
-            not allow_no_selection
+            group is not None
+            and toggle_state is ToggleState.OFF
+            and ToggleButtonBehavior._toggle_groups.get(group) is None
+            and not allow_no_selection
         ):
             # If a group requires a selection, the first member of the group
             # will be forced on and initial toggle state will be ignored.
@@ -106,13 +109,10 @@ class ToggleButtonBehavior(ButtonBehavior):
     def toggle_state(self, toggle_state: ToggleState):
         toggle_state = ToggleState(toggle_state)
 
-        if (
-            self._toggle_state is toggle_state
-            or (
-                self.group is not None
-                and toggle_state is ToggleState.OFF
-                and not self.allow_no_selection
-            )
+        if self._toggle_state is toggle_state or (
+            self.group is not None
+            and toggle_state is ToggleState.OFF
+            and not self.allow_no_selection
         ):
             return
 
@@ -120,9 +120,11 @@ class ToggleButtonBehavior(ButtonBehavior):
 
         if toggle_state is ToggleState.ON:
             if (
-                self.group is not None and
-                (last_on := ToggleButtonBehavior._toggle_groups.get(self.group)) is not None and
-                last_on is not self  # last condition should only be false if initialized in the "on" state
+                self.group is not None
+                and (last_on := ToggleButtonBehavior._toggle_groups.get(self.group))
+                is not None
+                and last_on
+                is not self  # last condition is false if initialized in the "on" state
             ):
                 last_on._toggle_state = ToggleState.OFF
                 last_on.update_off()
@@ -130,14 +132,19 @@ class ToggleButtonBehavior(ButtonBehavior):
             ToggleButtonBehavior._toggle_groups[self.group] = self
             self.update_on()
         else:
-            if self.group is not None and ToggleButtonBehavior._toggle_groups.get(self.group) is self:
+            if (
+                self.group is not None
+                and ToggleButtonBehavior._toggle_groups.get(self.group) is self
+            ):
                 del ToggleButtonBehavior._toggle_groups[self.group]
             self.update_off()
 
         self.on_toggle()
 
     def _down(self):
-        self.toggle_state = ToggleState.OFF if self.toggle_state is ToggleState.ON else ToggleState.ON
+        self.toggle_state = (
+            ToggleState.OFF if self.toggle_state is ToggleState.ON else ToggleState.ON
+        )
         super()._down()
 
     def update_off(self):

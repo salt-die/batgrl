@@ -8,6 +8,7 @@ class Sprite:
     """
     A sprite for a raycaster.
     """
+
     __slots__ = "pos", "texture_idx", "_relative", "distance"
 
     def __init__(self, pos: np.ndarray, texture_idx: int):

@@ -4,8 +4,7 @@ Functions for creating color gradients.
 import numpy as np
 
 from ..easings import lerp
-from .color_data_structures import *
-from .colors import ColorPair
+from .color_data_structures import AColor, Color, ColorPair
 
 __all__ = (
     "rainbow_gradient",
@@ -13,7 +12,10 @@ __all__ = (
     "gradient",
 )
 
-def rainbow_gradient(n: int, *, color_type: type[Color] | type[AColor]=Color) -> list[Color | AColor]:
+
+def rainbow_gradient(
+    n: int, *, color_type: type[Color] | type[AColor] = Color
+) -> list[Color | AColor]:
     """
     Return a rainbow gradient of `n` colors.
 
@@ -29,16 +31,13 @@ def rainbow_gradient(n: int, *, color_type: type[Color] | type[AColor]=Color) ->
     THETA = TAU / n
 
     return [
-        color_type(
-            *(int(j) for j in (np.sin(THETA * i + OFFSETS) * 127 + 128))
-        )
+        color_type(*(int(j) for j in (np.sin(THETA * i + OFFSETS) * 127 + 128)))
         for i in range(n)
     ]
 
+
 def lerp_colors(
-    start: Color | AColor | ColorPair,
-    end: Color | AColor | ColorPair,
-    p: float
+    start: Color | AColor | ColorPair, end: Color | AColor | ColorPair, p: float
 ) -> Color | AColor | ColorPair:
     """
     Linear interpolation from `start` to `end` with proportion `p`.
@@ -52,14 +51,11 @@ def lerp_colors(
     p : float
         Proportion from start to end.
     """
-    return type(start)(
-        *(round(lerp(a, b, p)) for a, b in zip(start, end))
-    )
+    return type(start)(*(round(lerp(a, b, p)) for a, b in zip(start, end)))
+
 
 def gradient(
-    start: Color | AColor | ColorPair,
-    end: Color | AColor | ColorPair,
-    ncolors: int
+    start: Color | AColor | ColorPair, end: Color | AColor | ColorPair, ncolors: int
 ) -> list[Color | AColor | ColorPair]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.

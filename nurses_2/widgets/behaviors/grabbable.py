@@ -2,7 +2,7 @@
 Grabbable behavior for a widget.
 """
 from ...data_structures import Point
-from ...io import MouseEventType, MouseButton
+from ...io import MouseButton, MouseEventType
 
 
 class Grabbable:
@@ -16,8 +16,8 @@ class Grabbable:
     To customize grabbable behavior, implement any of :meth:`grab`, :meth:`grab_update`,
     or :meth:`ungrab`.
 
-    For convenience, the change in mouse position is available through :attr:`mouse_dyx`,
-    :attr:`mouse_dy`, and :attr:`mouse_dx`.
+    For convenience, the change in mouse position is available through
+    :attr:`mouse_dyx`, :attr:`mouse_dy`, and :attr:`mouse_dx`.
 
     Parameters
     ----------
@@ -54,13 +54,14 @@ class Grabbable:
     grab_update:
         Update widget with incoming mouse events while grabbed.
     """
+
     def __init__(
         self,
         *,
-        is_grabbable: bool=True,
-        disable_ptf: bool=False,
-        mouse_button: MouseButton=MouseButton.LEFT,
-        **kwargs
+        is_grabbable: bool = True,
+        disable_ptf: bool = False,
+        mouse_button: MouseButton = MouseButton.LEFT,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 

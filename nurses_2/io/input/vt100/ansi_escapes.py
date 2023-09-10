@@ -1,16 +1,16 @@
 """
 Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
 """
-from ..events import Key, Mods, KeyEvent
+from ..events import Key, KeyEvent, Mods
 
-NO_MODS           = Mods.NO_MODS
-ALT               = Mods(True , False, False)
-CONTROL           = Mods(False, True , False)
-SHIFT             = Mods(False, False, True )
-ALT_CONTROL       = Mods(True , True , False)
-ALT_SHIFT         = Mods(True , False, True )
-CONTROL_SHIFT     = Mods(False, True , True )
-ALT_CONTROL_SHIFT = Mods(True , True , True )
+NO_MODS = Mods.NO_MODS
+ALT = Mods(True, False, False)
+CONTROL = Mods(False, True, False)
+SHIFT = Mods(False, False, True)
+ALT_CONTROL = Mods(True, True, False)
+ALT_SHIFT = Mods(True, False, True)
+CONTROL_SHIFT = Mods(False, True, True)
+ALT_CONTROL_SHIFT = Mods(True, True, True)
 
 ANSI_ESCAPES = {
     "\x00": KeyEvent(" ", CONTROL),
@@ -47,7 +47,6 @@ ANSI_ESCAPES = {
     "\x1e": KeyEvent("^", CONTROL),
     "\x1f": KeyEvent("-", CONTROL),
     "\x7f": KeyEvent(Key.Backspace, NO_MODS),  # Not KeyEvent("h", CONTROL) on WSL
-
     "\x1b[1~": KeyEvent(Key.Home, NO_MODS),
     "\x1b[2~": KeyEvent(Key.Insert, NO_MODS),
     "\x1b[3~": KeyEvent(Key.Delete, NO_MODS),
@@ -57,9 +56,8 @@ ANSI_ESCAPES = {
     "\x1b[7~": KeyEvent(Key.Home, NO_MODS),
     "\x1b[8~": KeyEvent(Key.End, NO_MODS),
     "\x1b[Z": KeyEvent(Key.Tab, SHIFT),
-    "\x1b\x09": KeyEvent(Key.Tab, SHIFT),
+    # "\x1b\x09": KeyEvent(Key.Tab, SHIFT),
     "\x1b[~": KeyEvent(Key.Tab, SHIFT),
-
     "\x1bOP": KeyEvent(Key.F1, NO_MODS),
     "\x1bOQ": KeyEvent(Key.F2, NO_MODS),
     "\x1bOR": KeyEvent(Key.F3, NO_MODS),

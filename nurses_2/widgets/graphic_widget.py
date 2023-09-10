@@ -7,11 +7,11 @@ import cv2
 import numpy as np
 
 from ..clamp import clamp
-from ..colors import AColor, TRANSPARENT
-from ..data_structures import *
-from .graphic_widget_data_structures import *
+from ..colors import TRANSPARENT, AColor
+from ..data_structures import Point, Size
+from .graphic_widget_data_structures import Interpolation
 from .widget import Widget, subscribable
-from .widget_data_structures import *
+from .widget_data_structures import Anchor, Easing, PosHint, SizeHint, style_char
 
 __all__ = (
     "AColor",
@@ -30,17 +30,18 @@ class GraphicWidget(Widget):
     """
     Base for graphic widgets.
 
-    Graphic widgets are widgets that are rendered entirely with the upper half block character, "▀".
-    Graphic widgets' color information is stored in a uint8 RGBA array, :attr:`texture`. Note that the
-    height of :attr:`texture` is twice the height of the widget.
+    Graphic widgets are widgets that are rendered entirely with the upper half block
+    character, "▀". Graphic widgets' color information is stored in a uint8 RGBA array,
+    :attr:`texture`. Note that the height of :attr:`texture` is twice the height of the
+    widget.
 
     Parameters
     ----------
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        If widget is transparent, the alpha channel of the underlying texture will be
+        multiplied by this value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -206,12 +207,13 @@ class GraphicWidget(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        is_transparent: bool=True,
-        default_color: AColor=TRANSPARENT,
-        alpha: float=1.0,
-        interpolation: Interpolation=Interpolation.LINEAR,
+        is_transparent: bool = True,
+        default_color: AColor = TRANSPARENT,
+        alpha: float = 1.0,
+        interpolation: Interpolation = Interpolation.LINEAR,
         **kwargs,
     ):
         super().__init__(is_transparent=is_transparent, **kwargs)
@@ -268,8 +270,8 @@ class GraphicWidget(Widget):
         b = 2 * vert_slice.stop
 
         texture = self.texture
-        even_rows = texture[t: b: 2, hori_slice]
-        odd_rows = texture[t + 1: b: 2, hori_slice]
+        even_rows = texture[t:b:2, hori_slice]
+        odd_rows = texture[t + 1 : b : 2, hori_slice]
 
         foreground = colors_view[..., :3]
         background = colors_view[..., 3:]

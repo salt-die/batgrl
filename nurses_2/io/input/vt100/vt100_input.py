@@ -5,20 +5,19 @@ import asyncio
 import os
 import signal
 import sys
-
 import termios
 import tty
-
 from contextlib import contextmanager
 
 from ....data_structures import Size
-from .console_input import events, _EVENTS
+from .console_input import _EVENTS, events
 
 __all__ = (
     "attach",
     "raw_mode",
     "events",
 )
+
 
 @contextmanager
 def attach(callback):
@@ -46,23 +45,17 @@ def attach(callback):
         loop.remove_reader(stdin)
         signal.signal(signal.SIGWINCH, signal.SIG_DFL)
 
+
 @contextmanager
 def raw_mode():
     stdin = sys.stdin.fileno()
     attrs_before = termios.tcgetattr(stdin)
     attrs_raw = termios.tcgetattr(stdin)
     attrs_raw[tty.LFLAG] &= ~(
-        termios.ECHO
-        | termios.ICANON
-        | termios.IEXTEN
-        | termios.ISIG
+        termios.ECHO | termios.ICANON | termios.IEXTEN | termios.ISIG
     )
     attrs_raw[tty.IFLAG] &= ~(
-        termios.IXON
-        | termios.IXOFF
-        | termios.ICRNL
-        | termios.INLCR
-        | termios.IGNCR
+        termios.IXON | termios.IXOFF | termios.ICRNL | termios.INLCR | termios.IGNCR
     )
     attrs_raw[tty.CC][termios.VMIN] = 1
 

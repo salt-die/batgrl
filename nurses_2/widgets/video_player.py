@@ -33,8 +33,8 @@ class VideoPlayer(GraphicWidget):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        If widget is transparent, the alpha channel of the underlying texture will be
+        multiplied by this value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -214,19 +214,18 @@ class VideoPlayer(GraphicWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
         source: Path | str | int,
-        loop: bool=True,
+        loop: bool = True,
         default_color=ABLACK,
         is_transparent=False,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
-            default_color=default_color,
-            is_transparent=is_transparent,
-            **kwargs
+            default_color=default_color, is_transparent=is_transparent, **kwargs
         )
         self._current_frame = None
         self._resource = None
@@ -261,9 +260,8 @@ class VideoPlayer(GraphicWidget):
         source = self.source
 
         if _IS_WSL and self.is_device:
-            # Problem: WSL doesn't support most USB devices (yet?), and trying to open one
-            # with cv2 will pollute the terminal with cv2 errors (which can't be redirected
-            # without duping file descriptors -- though this may be done sometime in the future).
+            # Problem: WSL doesn't support most USB devices (yet?), and trying to open
+            # one with cv2 will pollute the terminal with cv2 errors.
             # Solution: Prevent the error.
             warnings.warn("device not available on WSL")
             self._resource = None
@@ -318,7 +316,7 @@ class VideoPlayer(GraphicWidget):
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            self.texture[..., :3] =  cv2.resize(
+            self.texture[..., :3] = cv2.resize(
                 self._current_frame,
                 (self.width, 2 * self.height),
                 interpolation=Interpolation._to_cv_enum[self.interpolation],

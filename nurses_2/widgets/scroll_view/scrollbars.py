@@ -2,9 +2,9 @@
 Scrollbars for a scroll view.
 """
 from ...io import MouseEventType
-from ..widget import Widget
 from ..behaviors.themable import Themable
-from .indicators import _VerticalIndicator, _HorizontalIndicator
+from ..widget import Widget
+from .indicators import _HorizontalIndicator, _VerticalIndicator
 
 
 class _VerticalBar(Themable, Widget):
@@ -37,11 +37,7 @@ class _VerticalBar(Themable, Widget):
         """
         Height of the scroll bar minus the height of the indicator.
         """
-        return (
-            self.height
-            - self.indicator.height
-            - self.parent.show_horizontal_bar
-        )
+        return self.height - self.indicator.height - self.parent.show_horizontal_bar
 
     def on_mouse(self, mouse_event):
         if (
@@ -89,11 +85,7 @@ class _HorizontalBar(Themable, Widget):
         """
         Width of the scroll bar minus the width of the indicator.
         """
-        return (
-            self.width
-            - self.indicator.width
-            - self.parent.show_vertical_bar * 2
-        )
+        return self.width - self.indicator.width - self.parent.show_vertical_bar * 2
 
     def on_mouse(self, mouse_event):
         if (

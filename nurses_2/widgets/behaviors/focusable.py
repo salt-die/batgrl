@@ -2,9 +2,9 @@
 Focus behavior for a widget.
 """
 from collections import deque
-from weakref import ref, ReferenceType, WeakSet
+from weakref import ReferenceType, WeakSet, ref
 
-from ...io import MouseEventType, Key
+from ...io import Key, MouseEventType
 
 
 class Focusable:
@@ -37,6 +37,7 @@ class Focusable:
     on_blur:
         Called when widget loses focus.
     """
+
     __focus_widgets: deque[ReferenceType] = deque()
     __focused = WeakSet()
 

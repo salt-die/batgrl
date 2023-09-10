@@ -5,10 +5,10 @@ from collections.abc import Callable
 
 from ..clamp import clamp
 from ..colors import Color, ColorPair
-from ..io import MouseEventType, MouseEvent
+from ..io import MouseEvent, MouseEventType
+from .behaviors.grabbable import Grabbable
 from .text_widget import TextWidget
 from .widget import subscribable
-from .behaviors.grabbable import Grabbable
 
 
 class Slider(Grabbable, TextWidget):
@@ -26,7 +26,8 @@ class Slider(Grabbable, TextWidget):
     callback : Callable | None, default: None
         Single argument callable called with new value of slider when slider is updated.
     handle_color_pair : ColorPair | None, default: None
-        Color pair of slider handle. If None, handle color pair is :attr:`default_color_pair`.
+        Color pair of slider handle. If None, handle color pair is
+        :attr:`default_color_pair`.
     handle_char : str, default: "█"
         Character used for slider handle.
     fill_color: Color | None, default: None
@@ -36,7 +37,8 @@ class Slider(Grabbable, TextWidget):
     slider_enabled : bool, default: True
         Whether slider value can be changed.
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     pos : Point, default: Point(0, 0)
@@ -230,20 +232,21 @@ class Slider(Grabbable, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
         min: float,
         max: float,
-        start_value: float | None=None,
-        callback: Callable | None=None,
-        handle_color_pair: ColorPair | None=None,
+        start_value: float | None = None,
+        callback: Callable | None = None,
+        handle_color_pair: ColorPair | None = None,
         handle_char: str = "█",
-        fill_color: Color | None=None,
-        fill_char: str="▬",
-        slider_enabled: bool=True,
+        fill_color: Color | None = None,
+        fill_char: str = "▬",
+        slider_enabled: bool = True,
         **kwargs,
-        ):
+    ):
         super().__init__(**kwargs)
 
         if min >= max:
@@ -251,7 +254,7 @@ class Slider(Grabbable, TextWidget):
         self._min = min
         self._max = max
 
-        self._handle = TextWidget(size=(1, 1), pos_hint=(.5, None), anchor="center")
+        self._handle = TextWidget(size=(1, 1), pos_hint=(0.5, None), anchor="center")
         self.add_widget(self._handle)
         self.handle_color_pair = handle_color_pair or self.default_color_pair
         self.handle_char = handle_char

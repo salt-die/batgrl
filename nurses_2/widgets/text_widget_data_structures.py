@@ -8,21 +8,23 @@ from wcwidth import wcswidth, wcwidth
 
 __all__ = "add_text", "Border"
 
+
 def add_text(
     canvas: np.ndarray,
     text: str,
     *,
-    bold: bool=False,
-    italic: bool=False,
-    underline: bool=False,
-    strikethrough: bool=False,
-    overline: bool=False,
-    truncate_text: bool=False,
+    bold: bool = False,
+    italic: bool = False,
+    underline: bool = False,
+    strikethrough: bool = False,
+    overline: bool = False,
+    truncate_text: bool = False,
 ):
     """
     Add multiple lines of text to a view of a canvas.
 
-    Text is added starting at first index in canvas. Every new line is added on a new row.
+    Text is added starting at first index in canvas. Every new line is added on a new
+    row.
 
     Parameters
     ----------
@@ -41,7 +43,8 @@ def add_text(
     overline : bool, default: False
         Whether text is overlined.
     truncate_text : bool, default: False
-        For text that doesn't fit on canvas, truncate text if true else raise an `IndexError`.
+        For text that doesn't fit on canvas, truncate text if true else raise an
+        `IndexError`.
     """
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
@@ -49,10 +52,9 @@ def add_text(
 
     text_lines = text.splitlines()
     if not truncate_text and (
-        len(text_lines) > rows or
-        max(map(wcswidth, text_lines), default=0) > columns
+        len(text_lines) > rows or max(map(wcswidth, text_lines), default=0) > columns
     ):
-        raise IndexError(f"Text does not fit in canvas.")
+        raise IndexError("Text does not fit in canvas.")
 
     for text_line, canvas_line in zip(text_lines, canvas):
         i = 0
@@ -64,7 +66,14 @@ def add_text(
             if width == 0:
                 continue
             if width == 2 and i + 1 < columns:
-                canvas_line[i + 1] = "", bold, italic, underline, strikethrough, overline
+                canvas_line[i + 1] = (
+                    "",
+                    bold,
+                    italic,
+                    underline,
+                    strikethrough,
+                    overline,
+                )
 
             canvas_line[i] = letter, bold, italic, underline, strikethrough, overline
             i += width
@@ -77,6 +86,7 @@ class Border(str, Enum):
     :class:`Borders` is one of `"light"`, `"heavy"`, `"double"`, `"curved"`,
     `"ascii"`, `"outer"`, `"inner"`.
     """
+
     LIGHT = "light"
     HEAVY = "heavy"
     DOUBLE = "double"

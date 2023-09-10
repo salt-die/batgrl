@@ -3,7 +3,7 @@ A 7x8 14-segment (plus decimal point) display widget.
 """
 import numpy as np
 
-from ..colors import Color, ColorPair, BLACK
+from ..colors import BLACK, Color, ColorPair
 from .text_widget import TextWidget
 
 DIM_GREEN = Color.from_hex("062b0f")
@@ -119,7 +119,9 @@ class _Segment:
         return (instance._display.colors[self.slice] == instance.on_color_pair).all()
 
     def __set__(self, instance, value):
-        instance._display.colors[self.slice] = instance.on_color_pair if value else instance.off_color_pair
+        instance._display.colors[self.slice] = (
+            instance.on_color_pair if value else instance.off_color_pair
+        )
 
 
 class DigitalDisplay(TextWidget):
@@ -144,7 +146,8 @@ class DigitalDisplay(TextWidget):
     on_color_pair : ColorPair, default: BRIGHT_GREEN_ON_BLACK
         Color pair of on segments.
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     size : Size, default: Size(10, 10)
@@ -356,27 +359,27 @@ class DigitalDisplay(TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    a  = _Segment(np.s_[0, 1: 6])
-    b  = _Segment(np.s_[1: 3, 6])
-    c  = _Segment(np.s_[4: 6, 6])
-    d  = _Segment(np.s_[6, 1: 6])
-    e  = _Segment(np.s_[4: 6,  0])
-    f  = _Segment(np.s_[1: 3,  0])
-    g1 = _Segment(np.s_[3, 1: 3])
-    g2 = _Segment(np.s_[3, 4: 6])
-    h  = _Segment(((1, 2), (1, 2)))
-    i  = _Segment(np.s_[1: 3, 3])
-    j  = _Segment(((1, 2), (5, 4)))
-    k  = _Segment(((4, 5), (2, 1)))
-    l  = _Segment(np.s_[4: 6, 3])
-    m  = _Segment(((4, 5), (4, 5)))
+    a = _Segment(np.s_[0, 1:6])
+    b = _Segment(np.s_[1:3, 6])
+    c = _Segment(np.s_[4:6, 6])
+    d = _Segment(np.s_[6, 1:6])
+    e = _Segment(np.s_[4:6, 0])
+    f = _Segment(np.s_[1:3, 0])
+    g1 = _Segment(np.s_[3, 1:3])
+    g2 = _Segment(np.s_[3, 4:6])
+    h = _Segment(((1, 2), (1, 2)))
+    i = _Segment(np.s_[1:3, 3])
+    j = _Segment(((1, 2), (5, 4)))
+    k = _Segment(((4, 5), (2, 1)))
+    l = _Segment(np.s_[4:6, 3])  # noqa
+    m = _Segment(((4, 5), (4, 5)))
     dp = _Segment(np.s_[6, 7:8])
 
     def __init__(
         self,
         *,
-        off_color_pair: ColorPair=DIM_GREEN_ON_BLACK,
-        on_color_pair: ColorPair=BRIGHT_GREEN_ON_BLACK,
+        off_color_pair: ColorPair = DIM_GREEN_ON_BLACK,
+        on_color_pair: ColorPair = BRIGHT_GREEN_ON_BLACK,
         **kwargs,
     ):
         super().__init__(**kwargs)

@@ -1,7 +1,7 @@
 """
 A menu widget.
 """
-from collections.abc import Callable, Iterator, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from inspect import signature
 from typing import Optional, Union
 
@@ -9,10 +9,14 @@ from wcwidth import wcswidth
 
 from ..io import MouseEventType
 from .behaviors.themable import Themable
-from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState, ButtonState
+from .behaviors.toggle_button_behavior import (
+    ButtonState,
+    ToggleButtonBehavior,
+    ToggleState,
+)
 from .grid_layout import GridLayout, Orientation
 from .text_widget import TextWidget
-from .widget import Widget, Anchor, Point
+from .widget import Anchor, Point, Widget
 
 __all__ = (
     "Menu",
@@ -20,10 +24,14 @@ __all__ = (
     "MenuItem",
 )
 
-MenuDict = dict[tuple[str, str], Union[Callable[[], None], Callable[[ToggleState], None], "MenuDict"]]
+MenuDict = dict[
+    tuple[str, str],
+    Union[Callable[[], None], Callable[[ToggleState], None], "MenuDict"],
+]
 NESTED_SUFFIX = " ▶"
 CHECK_OFF = "□"
 CHECK_ON = "▣"
+
 
 def nargs(callable: Callable) -> int:
     """
@@ -54,8 +62,9 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and :attr:`allow_no_selection`
-        is false this value will be ignored if all buttons would be "off".
+        Initial toggle state of button. If button is in a group and
+        :attr:`allow_no_selection` is false this value will be ignored if all buttons
+        would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
         size : Size, default: Size(10, 10)
@@ -251,17 +260,18 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         Recursively remove all children.
     destroy:
         Destroy this widget and all descendents.
-    """
+    """  # noqa: E501
+
     def __init__(
         self,
-        left_label: str="",
-        right_label: str="",
-        item_disabled: bool=False,
-        item_callback: Callable[[], None]=lambda: None,
-        submenu: Optional["Menu"]=None,
-        **kwargs
+        left_label: str = "",
+        right_label: str = "",
+        item_disabled: bool = False,
+        item_callback: Callable[[], None] = lambda: None,
+        submenu: Optional["Menu"] = None,
+        **kwargs,
     ):
-        self.normal_color_pair = (0, ) * 6  # Temporary assignment
+        self.normal_color_pair = (0,) * 6  # Temporary assignment
 
         self._item_disabled = item_disabled
 
@@ -385,8 +395,8 @@ class Menu(GridLayout):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: Orientation.LR_BT
-        The orientation of the grid. Describes how the grid fills as children are added. The
-        default is left-to-right then top-to-bottom.
+        The orientation of the grid. Describes how the grid fills as children are added.
+        The default is left-to-right then top-to-bottom.
     padding_left : int, default: 0
         Padding on left side of grid.
     padding_right : int, default: 0
@@ -583,12 +593,13 @@ class Menu(GridLayout):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        close_on_release: bool=True,
-        close_on_click: bool=True,
+        close_on_release: bool = True,
+        close_on_click: bool = True,
         orientation=Orientation.TB_LR,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(orientation=orientation, **kwargs)
 
@@ -597,7 +608,7 @@ class Menu(GridLayout):
 
         self._parent_menu = None
         self._current_selection = -1
-        self._submenus = [ ]
+        self._submenus = []
         self._menu_button = None
 
     def open_menu(self):
@@ -613,7 +624,10 @@ class Menu(GridLayout):
         self.is_enabled = False
         self._current_selection = -1
 
-        if self._menu_button is not None and self._menu_button.toggle_state is ToggleState.ON:
+        if (
+            self._menu_button is not None
+            and self._menu_button.toggle_state is ToggleState.ON
+        ):
             self._menu_button._toggle_state = ToggleState.OFF
             self._menu_button.update_off()
 
@@ -638,7 +652,10 @@ class Menu(GridLayout):
             and self.close_on_click
             and not (
                 self.collides_point(mouse_event.position)
-                or any(submenu.collides_point(mouse_event.position) for submenu in self._submenus)
+                or any(
+                    submenu.collides_point(mouse_event.position)
+                    for submenu in self._submenus
+                )
             )
         ):
             self.close_menu()
@@ -697,23 +714,17 @@ class Menu(GridLayout):
                 return False
 
             case "left":
-                if (
-                    self._current_selection != -1
-                    and (
-                        (submenu := self.children[self._current_selection].submenu)
-                        and submenu.is_enabled
-                    )
+                if self._current_selection != -1 and (
+                    (submenu := self.children[self._current_selection].submenu)
+                    and submenu.is_enabled
                 ):
-                        submenu.close_menu()
-                        return True
+                    submenu.close_menu()
+                    return True
 
             case "right":
-                if (
-                    self._current_selection != -1
-                    and (
-                        (submenu := self.children[self._current_selection].submenu)
-                        and not submenu.is_enabled
-                    )
+                if self._current_selection != -1 and (
+                    (submenu := self.children[self._current_selection].submenu)
+                    and not submenu.is_enabled
                 ):
                     submenu.open_menu()
                     if submenu.children:
@@ -722,7 +733,11 @@ class Menu(GridLayout):
                     return True
 
             case "enter":
-                if self._current_selection != -1 and (child := self.children[self._current_selection]).submenu is None:
+                if (
+                    self._current_selection != -1
+                    and (child := self.children[self._current_selection]).submenu
+                    is None
+                ):
                     if (n := nargs(child.item_callback)) == 0:
                         child.on_release()
                     elif n == 1:
@@ -735,13 +750,13 @@ class Menu(GridLayout):
     def from_dict_of_dicts(
         cls,
         menu: MenuDict,
-        pos: Point=Point(0, 0),
-        close_on_release: bool=True,
-        close_on_click: bool=True,
+        pos: Point = Point(0, 0),
+        close_on_release: bool = True,
+        close_on_click: bool = True,
     ) -> Iterator[Widget]:
         """
-        Create and yield menus from a dict of dicts. Callables should either have no arguments
-        for a normal menu item, or one argument for a toggle menu item.
+        Create and yield menus from a dict of dicts. Callables should either have no
+        arguments for a normal menu item, or one argument for a toggle menu item.
 
         Parameters
         ----------
@@ -761,7 +776,8 @@ class Menu(GridLayout):
                 + wcswidth(left_label)
                 + 7
                 + isinstance(callable_or_dict, dict) * 2
-            ) for (right_label, left_label), callable_or_dict in menu.items()
+            )
+            for (right_label, left_label), callable_or_dict in menu.items()
         )
         menu_widget = cls(
             grid_rows=height,
@@ -802,7 +818,9 @@ class Menu(GridLayout):
                         size=(1, width),
                     )
                 case _:
-                    raise TypeError(f"expected Callable or dict, got {type(callable_or_dict)}")
+                    raise TypeError(
+                        f"expected Callable or dict, got {type(callable_or_dict)}"
+                    )
 
             menu_widget.add_widget(menu_item)
 
@@ -811,7 +829,9 @@ class Menu(GridLayout):
 
 class _MenuButton(Themable, ToggleButtonBehavior, TextWidget):
     def __init__(self, label, menu, group):
-        super().__init__(size=(1, wcswidth(label) + 2), group=group, allow_no_selection=True)
+        super().__init__(
+            size=(1, wcswidth(label) + 2), group=group, allow_no_selection=True
+        )
         self.add_str(f" {label} ")
         self._menu = menu
 
@@ -866,8 +886,8 @@ class MenuBar(GridLayout):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: Orientation.LR_BT
-        The orientation of the grid. Describes how the grid fills as children are added. The
-        default is left-to-right then top-to-bottom.
+        The orientation of the grid. Describes how the grid fills as children are added.
+        The default is left-to-right then top-to-bottom.
     left_padding : int, default: 0
         Padding on left side of grid.
     right_padding : int, default: 0
@@ -1069,17 +1089,19 @@ class MenuBar(GridLayout):
     def from_iterable(
         cls,
         iter: Iterable[tuple[str, MenuDict]],
-        pos: Point=Point(0, 0),
-        close_on_release: bool=True,
-        close_on_click: bool=True,
+        pos: Point = Point(0, 0),
+        close_on_release: bool = True,
+        close_on_click: bool = True,
     ) -> Iterator[Widget]:
         """
-        Create and yield a menu bar and menus from an iterable of `tuple[str, MenuDict]`.
+        Create and yield a menu bar and menus from an iterable of
+        `tuple[str, MenuDict]`.
 
         Parameters
         ----------
         iter : Iterable[tuple[str, MenuDict]]
-            An iterable of `tuple[str, MenuDict]` from which to create the menu bar and menus.
+            An iterable of `tuple[str, MenuDict]` from which to create the menu bar and
+            menus.
         pos : Point, default: Point(0, 0)
             Position of menu.
         close_on_release : bool, default: True
@@ -1107,7 +1129,9 @@ class MenuBar(GridLayout):
                 menu.is_enabled = False
                 yield menu
 
-            menu._menu_button = _MenuButton(menu_name, menu, id(menubar))  # Last menu yielded
+            menu._menu_button = _MenuButton(
+                menu_name, menu, id(menubar)
+            )  # Last menu yielded
             menubar.add_widget(menu._menu_button)
             x += menu._menu_button.width
 

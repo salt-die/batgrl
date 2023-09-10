@@ -8,8 +8,8 @@ import sys
 from codecs import getincrementaldecoder
 
 from ....data_structures import Point
-from ..events import Key, KeyEvent, _PartialMouseEvent, PasteEvent
-from .ansi_escapes import NO_MODS, ALT, ANSI_ESCAPES
+from ..events import Key, KeyEvent, PasteEvent, _PartialMouseEvent
+from .ansi_escapes import ALT, ANSI_ESCAPES, NO_MODS
 from .mouse_bindings import TERM_SGR, TYPICAL
 
 _EVENTS = []
@@ -17,6 +17,7 @@ MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<[\d;]+[mM]|M...)\Z")
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
 FILENO = sys.stdin.fileno()
 SELECT_ARGS = [FILENO], [], [], 0
+
 
 def read_stdin():
     """
@@ -29,6 +30,7 @@ def read_stdin():
         return DECODER.decode(os.read(FILENO, 1024))
     except OSError:
         return ""
+
 
 def _create_mouse_event(data):
     """
@@ -58,6 +60,7 @@ def _create_mouse_event(data):
     if mouse_info is not None:
         _EVENTS.append(_PartialMouseEvent(Point(y, x), *mouse_info))
 
+
 def _find_longest_match(data):
     """
     Iteratively look for key matches in data.
@@ -84,7 +87,7 @@ def _find_longest_match(data):
                         return ""
                     case i:
                         _EVENTS.append(PasteEvent(suffix[:i]))
-                        return suffix[i + 6:]
+                        return suffix[i + 6 :]
 
             case KeyEvent.ESCAPE if suffix and suffix not in ANSI_ESCAPES:
                 if len(suffix) == 1:  # alt + character
@@ -100,6 +103,7 @@ def _find_longest_match(data):
 
     _EVENTS.append(KeyEvent(prefix, NO_MODS))
     return suffix
+
 
 def events():
     """

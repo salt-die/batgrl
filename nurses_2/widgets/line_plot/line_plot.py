@@ -2,16 +2,15 @@
 A 2D line plot widget.
 """
 import numpy as np
-
 from wcwidth import wcswidth
 
-from ...colors import Color, WHITE_ON_BLACK
+from ...colors import WHITE_ON_BLACK, Color
 from ...io import MouseEvent, MouseEventType
-from ..text_widget import TextWidget, SizeHint, Anchor, add_text
 from ..scroll_view import ScrollView
+from ..text_widget import Anchor, SizeHint, TextWidget, add_text
 from ..widget import Widget
 from ._legend import _Legend
-from ._traces import _Traces, TICK_WIDTH, TICK_HALF
+from ._traces import TICK_HALF, TICK_WIDTH, _Traces
 
 PLOT_SIZES = [SizeHint(x, x) for x in (1.0, 1.25, 1.75, 2.75, 5.0)]
 
@@ -194,17 +193,18 @@ class LinePlot(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *points: list[float] | np.ndarray,
-        xmin: float | None=None,
-        xmax: float | None=None,
-        ymin: float | None=None,
-        ymax: float | None=None,
-        xlabel: str | None=None,
-        ylabel: str | None=None,
-        legend_labels: list[str] | None=None,
-        line_colors: list[Color] | None=None,
+        xmin: float | None = None,
+        xmax: float | None = None,
+        ymin: float | None = None,
+        ymax: float | None = None,
+        xlabel: str | None = None,
+        ylabel: str | None = None,
+        legend_labels: list[str] | None = None,
+        line_colors: list[Color] | None = None,
         background_char=" ",
         **kwargs,
     ):
@@ -231,7 +231,7 @@ class LinePlot(Widget):
             ymin=ymin,
             ymax=ymax,
             line_colors=line_colors,
-            **text_kwargs
+            **text_kwargs,
         )
 
         self._scrollview = ScrollView(
@@ -246,7 +246,7 @@ class LinePlot(Widget):
             size=(2, TICK_WIDTH),
             pos_hint=(1.0, None),
             anchor=Anchor.BOTTOM_LEFT,
-            **text_kwargs
+            **text_kwargs,
         )
         self._tick_corner.canvas["char"][0, -1] = "└"
 
@@ -279,9 +279,7 @@ class LinePlot(Widget):
                 raise ValueError("number of labels inconsistent with number of plots")
 
             self.legend = _Legend(
-                legend_labels,
-                self._traces.line_colors,
-                **text_kwargs
+                legend_labels, self._traces.line_colors, **text_kwargs
             )
             self.add_widget(self.legend)
         else:
@@ -303,10 +301,15 @@ class LinePlot(Widget):
         scrollview.size = max(1, plot.height - 2), max(1, plot.width - TICK_WIDTH)
 
         hint_y, hint_x = PLOT_SIZES[self._trace_size_hint]
-        self._traces.size = round(scrollview.height * hint_y), round(scrollview.width * hint_x)
+        self._traces.size = round(scrollview.height * hint_y), round(
+            scrollview.width * hint_x
+        )
 
         if has_xlabel:
-            xlabel.pos = h - 1, scrollview.width // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel
+            xlabel.pos = (
+                h - 1,
+                scrollview.width // 2 - xlabel.width // 2 + TICK_WIDTH + has_ylabel,
+            )
 
         if has_ylabel:
             ylabel.top = scrollview.height // 2 - ylabel.height // 2
@@ -322,7 +325,9 @@ class LinePlot(Widget):
 
         match mouse_event.event_type:
             case MouseEventType.SCROLL_UP:
-                self._trace_size_hint = min(self._trace_size_hint + 1, len(PLOT_SIZES) - 1)
+                self._trace_size_hint = min(
+                    self._trace_size_hint + 1, len(PLOT_SIZES) - 1
+                )
             case MouseEventType.SCROLL_DOWN:
                 self._trace_size_hint = max(0, self._trace_size_hint - 1)
             case _:

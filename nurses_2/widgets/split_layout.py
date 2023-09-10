@@ -7,7 +7,10 @@ from .behaviors.grabbable import Grabbable
 from .graphic_widget import GraphicWidget
 from .widget import Widget
 
-__all__ = "HSplitLayout", "VSplitLayout",
+__all__ = (
+    "HSplitLayout",
+    "VSplitLayout",
+)
 
 AGRAY = AColor(127, 127, 127, 127)
 
@@ -23,7 +26,8 @@ class _Handle(Grabbable, GraphicWidget):
     def on_mouse(self, mouse_event):
         self.is_visible = (
             self.is_grabbable
-            and self.is_grabbed or self.collides_point(mouse_event.position)
+            and self.is_grabbed
+            or self.collides_point(mouse_event.position)
         )
         return super().on_mouse(mouse_event)
 
@@ -50,8 +54,8 @@ class _VSplitHandle(_Handle):
 
 class HSplitLayout(Widget):
     """
-    A horizontal split layout. Add widgets to the :attr:`top_pane` or :attr:`bottom_pane`,
-    e.g., ``my_hsplit.top_pane.add_widget(my_widget)``.
+    A horizontal split layout. Add widgets to the :attr:`top_pane` or
+    :attr:`bottom_pane`, e.g., ``my_hsplit.top_pane.add_widget(my_widget)``.
 
     Parameters
     ----------
@@ -236,14 +240,15 @@ class HSplitLayout(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        split_row: int=1,
-        min_split_height: int=1,
-        anchor_top_pane: bool=True,
-        split_resizable: bool=True,
-        handle_color: AColor=AGRAY,
-        **kwargs
+        split_row: int = 1,
+        min_split_height: int = 1,
+        anchor_top_pane: bool = True,
+        split_resizable: bool = True,
+        handle_color: AColor = AGRAY,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -255,6 +260,7 @@ class HSplitLayout(Widget):
 
         def adjust():
             self.bottom_pane.top = self.handle.top = self.top_pane.bottom
+
         self.handle.subscribe(self.top_pane, "size", adjust)
 
         self.add_widgets(self.top_pane, self.bottom_pane, self.handle)
@@ -506,14 +512,15 @@ class VSplitLayout(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        split_col: int=1,
-        min_split_width: int=1,
-        anchor_left_pane: bool=True,
-        split_resizable: bool=True,
-        handle_color: AColor=AGRAY,
-        **kwargs
+        split_col: int = 1,
+        min_split_width: int = 1,
+        anchor_left_pane: bool = True,
+        split_resizable: bool = True,
+        handle_color: AColor = AGRAY,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -525,6 +532,7 @@ class VSplitLayout(Widget):
 
         def adjust():
             self.right_pane.left = self.handle.left = self.left_pane.right
+
         self.handle.subscribe(self.left_pane, "size", adjust)
 
         self.add_widgets(self.left_pane, self.right_pane, self.handle)

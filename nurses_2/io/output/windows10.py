@@ -20,6 +20,7 @@ class Windows10_Output(Vt100_Output):
     """
     Windows 10 output.
     """
+
     def __init__(self, is_conemu_ansi, *args, **kwargs):
         if is_conemu_ansi:
             self._original_mode = None
@@ -28,7 +29,9 @@ class Windows10_Output(Vt100_Output):
             self._original_mode = DWORD(0)
 
             # Remember the previous console mode.
-            windll.kernel32.GetConsoleMode(STD_OUTPUT_HANDLE, byref(self._original_mode))
+            windll.kernel32.GetConsoleMode(
+                STD_OUTPUT_HANDLE, byref(self._original_mode)
+            )
 
             # Enable processing of vt100 sequences.
             windll.kernel32.SetConsoleMode(

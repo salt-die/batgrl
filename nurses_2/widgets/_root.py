@@ -4,7 +4,7 @@ Root widget.
 import numpy as np
 
 from ..colors import ColorPair
-from ..data_structures import *
+from ..data_structures import Point
 from .widget import Widget, style_char
 
 
@@ -14,6 +14,7 @@ class _Root(Widget):
 
     Instantiated only by :class:`nurses_2.app.App`.
     """
+
     def __init__(
         self,
         app,
@@ -22,7 +23,7 @@ class _Root(Widget):
         background_color_pair: ColorPair,
     ):
         self._app = app
-        self.children = [ ]
+        self.children = []
         self.env_out = env_out
         self.background_char = background_char
         self.background_color_pair = background_color_pair
@@ -36,7 +37,9 @@ class _Root(Widget):
         h, w = self._size
 
         self._last_canvas = np.full((h, w), style_char(self.background_char))
-        self._last_colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
+        self._last_colors = np.full(
+            (h, w, 6), self.background_color_pair, dtype=np.uint8
+        )
 
         self.canvas = self._last_canvas.copy()
         self.colors = self._last_colors.copy()
@@ -112,8 +115,8 @@ class _Root(Widget):
             color_diffs = self._color_diffs
             reduced_color_diffs = self._reduced_color_diffs
 
-            # Find differences between current render and last render:
-            # (`(last_canvas != canvas) | np.any(last_colors != colors, axis=-1)` with buffers.)
+            # Find differences between current render and last render; i.e.:
+            #     (last_canvas != canvas) | np.any(last_colors != colors, axis=-1)
             char_diffs = self._last_canvas != canvas
             np.not_equal(self._last_colors, colors, out=color_diffs)
             np.any(color_diffs, axis=-1, out=reduced_color_diffs)

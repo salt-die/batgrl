@@ -2,7 +2,7 @@
 A scrollable view widget.
 """
 from ...clamp import clamp
-from ...io import KeyEvent, MouseEventType, MouseEvent
+from ...io import KeyEvent, MouseEvent, MouseEventType
 from ..behaviors.grabbable import Grabbable
 from ..widget import Widget, subscribable
 from .scrollbars import _HorizontalBar, _VerticalBar
@@ -12,7 +12,8 @@ class ScrollView(Grabbable, Widget):
     """
     A scrollable view widget.
 
-    The view can be set with the :attr:`view` property, e.g., ``my_scrollview.view = some_widget``.
+    The view can be set with the :attr:`view` property, e.g.,
+    ``my_scrollview.view = some_widget``.
 
     Parameters
     ----------
@@ -231,6 +232,7 @@ class ScrollView(Grabbable, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         allow_vertical_scroll=True,
@@ -275,10 +277,6 @@ class ScrollView(Grabbable, Widget):
     @subscribable
     def show_horizontal_bar(self, show: bool):
         self._horizontal_bar.is_enabled = show
-
-    @property
-    def view(self) -> Widget | None:
-        return self._view
 
     @property
     def vertical_proportion(self):
@@ -346,7 +344,9 @@ class ScrollView(Grabbable, Widget):
         """
         Set the left-coordinate of the view.
         """
-        self._view.left = -round(self.horizontal_proportion * self.total_horizontal_distance)
+        self._view.left = -round(
+            self.horizontal_proportion * self.total_horizontal_distance
+        )
 
     def _set_view_pos(self):
         """
@@ -368,7 +368,9 @@ class ScrollView(Grabbable, Widget):
 
         if view is not None:
             self.add_widget(view)
-            self.children.insert(0, self.children.pop())  # Move view to top of view stack.
+            self.children.insert(
+                0, self.children.pop()
+            )  # Move view to top of view stack.
 
             h_ind = self._horizontal_bar.indicator
             v_ind = self._vertical_bar.indicator
@@ -418,7 +420,9 @@ class ScrollView(Grabbable, Widget):
             if self.total_horizontal_distance == 0:
                 self.horizontal_proportion = 0
             else:
-                self.horizontal_proportion = clamp((-self.view.left - n) / self.total_horizontal_distance, 0, 1)
+                self.horizontal_proportion = clamp(
+                    (-self.view.left - n) / self.total_horizontal_distance, 0, 1
+                )
 
     def _scroll_right(self, n=1):
         self._scroll_left(-n)
@@ -428,16 +432,15 @@ class ScrollView(Grabbable, Widget):
             if self.total_vertical_distance == 0:
                 self.vertical_proportion = 0
             else:
-                self.vertical_proportion = clamp((-self.view.top - n) / self.total_vertical_distance, 0, 1)
+                self.vertical_proportion = clamp(
+                    (-self.view.top - n) / self.total_vertical_distance, 0, 1
+                )
 
     def _scroll_down(self, n=1):
         self._scroll_up(-n)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        if (
-            self.scrollwheel_enabled
-            and self.collides_point(mouse_event.position)
-        ):
+        if self.scrollwheel_enabled and self.collides_point(mouse_event.position):
             match mouse_event.event_type:
                 case MouseEventType.SCROLL_UP:
                     self._scroll_up()

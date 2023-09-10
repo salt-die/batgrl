@@ -9,6 +9,7 @@ from .widget import Widget
 
 __all__ = "TreeViewNode", "TreeView"
 
+
 class TreeViewNode(Themable, ButtonBehavior, TextWidget):
     """
     A node of a :class:`TreeView`.
@@ -231,6 +232,7 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(self, is_leaf=True, **kwargs):
         self.is_leaf = is_leaf
 
@@ -238,10 +240,10 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         self.is_selected = False
 
         self.parent_node = None
-        self.child_nodes = [ ]
+        self.child_nodes = []
         self.level = -1
 
-        self.normal_color_pair = (0, ) * 6  # Temporary assignment
+        self.normal_color_pair = (0,) * 6  # Temporary assignment
 
         super().__init__(**kwargs)
 
@@ -508,6 +510,7 @@ class TreeView(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(self, root_node: TreeViewNode, **kwargs):
         self.selected_node = None
         self.root_node = root_node

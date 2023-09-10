@@ -4,11 +4,11 @@ A text widget.
 import numpy as np
 from wcwidth import wcswidth
 
-from ..colors import WHITE_ON_BLACK, ColorPair, Color
-from ..data_structures import *
-from .text_widget_data_structures import *
+from ..colors import WHITE_ON_BLACK, Color, ColorPair
+from ..data_structures import Point, Size
+from .text_widget_data_structures import Border, add_text
 from .widget import Widget
-from .widget_data_structures import *
+from .widget_data_structures import Anchor, Easing, PosHint, SizeHint, style_char
 
 __all__ = (
     "add_text",
@@ -30,7 +30,8 @@ class TextWidget(Widget):
     Parameters
     ----------
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     size : Size, default: Size(10, 10)
@@ -206,10 +207,11 @@ class TextWidget(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        default_char: str=" ",
-        default_color_pair: ColorPair=WHITE_ON_BLACK,
+        default_char: str = " ",
+        default_color_pair: ColorPair = WHITE_ON_BLACK,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -259,7 +261,12 @@ class TextWidget(Widget):
         """
         return wcswidth(char)
 
-    def add_border(self, style: Border=Border.LIGHT, bold: bool= False, color_pair: ColorPair | None=None,):
+    def add_border(
+        self,
+        style: Border = Border.LIGHT,
+        bold: bool = False,
+        color_pair: ColorPair | None = None,
+    ):
         """
         Add a text border.
 
@@ -273,13 +280,13 @@ class TextWidget(Widget):
             Border color pair if not None.
         """
         BORDER_STYLES = dict(
-            light=  "┌┐││──└┘",
-            heavy=  "┏┓┃┃━━┗┛",
-            double= "╔╗║║══╚╝",
-            curved= "╭╮││──╰╯",
-            ascii=  "++||--++",
-            outer=  "▛▜▌▐▀▄▙▟",
-            inner=  "▗▖▐▌▄▀▝▘",
+            light="┌┐││──└┘",
+            heavy="┏┓┃┃━━┗┛",
+            double="╔╗║║══╚╝",
+            curved="╭╮││──╰╯",
+            ascii="++||--++",
+            outer="▛▜▌▐▀▄▙▟",
+            inner="▗▖▐▌▄▀▝▘",
         )
         tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]
 
@@ -311,19 +318,21 @@ class TextWidget(Widget):
         self.canvas[char_widths == 0] = style_char(self.default_char)
         self.canvas[:, -1][char_widths[:, -1] == 2] = style_char(self.default_char)
         for x in range(self.width - 1):
-            self.canvas[:, x + 1][self.character_width(self.canvas["char"][:, x]) == 2] = style_char("")
+            self.canvas[:, x + 1][
+                self.character_width(self.canvas["char"][:, x]) == 2
+            ] = style_char("")
 
     def add_str(
         self,
         str: str,
-        pos: Point=Point(0, 0),
+        pos: Point = Point(0, 0),
         *,
-        bold: bool=False,
-        italic: bool=False,
-        underline: bool=False,
-        strikethrough: bool=False,
-        overline: bool=False,
-        truncate_str: bool=False,
+        bold: bool = False,
+        italic: bool = False,
+        underline: bool = False,
+        strikethrough: bool = False,
+        overline: bool = False,
+        truncate_str: bool = False,
     ):
         """
         Add a single line of text to the canvas at position `pos`.
@@ -368,11 +377,11 @@ class TextWidget(Widget):
         self,
         text: str,
         *,
-        bold: bool=False,
-        italic: bool=False,
-        underline: bool=False,
-        strikethrough: bool=False,
-        overline: bool=False,
+        bold: bool = False,
+        italic: bool = False,
+        underline: bool = False,
+        strikethrough: bool = False,
+        overline: bool = False,
     ):
         """
         Resize widget to fit text, erase canvas, then fill canvas with text.

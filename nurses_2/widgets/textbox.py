@@ -10,7 +10,7 @@ from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, style_char
-from .widget import Widget, intersection, Rect
+from .widget import Rect, Widget, intersection
 
 WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
@@ -241,14 +241,15 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        enter_callback: Callable[["Textbox"], None] | None=None,
-        placeholder: str="",
-        hide_input: bool=False,
-        hide_char: str="*",
-        max_chars: int | None=None,
-        **kwargs
+        enter_callback: Callable[["Textbox"], None] | None = None,
+        placeholder: str = "",
+        hide_input: bool = False,
+        hide_char: str = "*",
+        max_chars: int | None = None,
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -287,7 +288,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
 
     @property
     def text(self) -> str:
-        return "".join(self._box.canvas["char"][0, :self._line_length])
+        return "".join(self._box.canvas["char"][0, : self._line_length])
 
     @text.setter
     def text(self, text: str):
@@ -398,7 +399,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         len_end = self._line_length - end
         new_len = self._line_length = start + len_end
 
-        box.canvas[0, start: new_len] = box.canvas[0, end: end + len_end]
+        box.canvas[0, start:new_len] = box.canvas[0, end : end + len_end]
         box.canvas[0, new_len:] = style_char(box.default_char)
 
         self.unselect()
@@ -412,7 +413,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             start = self._selection_start
             end = self._selection_end
 
-            colors[0, start: end] = self.color_theme.textbox_selection_highlight
+            colors[0, start:end] = self.color_theme.textbox_selection_highlight
 
     def _update_selection(self):
         if self.has_selection:
@@ -422,20 +423,25 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
                 self._selection_end = self.cursor
 
             if self._selection_start > self._selection_end:
-                self._selection_start, self._selection_end = self._selection_end, self._selection_start
+                self._selection_start, self._selection_end = (
+                    self._selection_end,
+                    self._selection_start,
+                )
 
         self._highlight_selection()
 
-    def move_cursor_left(self, n: int=1):
-        text_before_cursor = "".join(self._box.canvas["char"][0, :self.cursor])
+    def move_cursor_left(self, n: int = 1):
+        text_before_cursor = "".join(self._box.canvas["char"][0, : self.cursor])
         nchars_before_cursor = len(text_before_cursor)
         if n <= nchars_before_cursor:
             self.cursor = wcswidth(text_before_cursor[:-n])
         else:
             self.cursor = 0
 
-    def move_cursor_right(self, n: int=1):
-        text_after_cursor = "".join(self._box.canvas["char"][0, self.cursor:self._line_length])
+    def move_cursor_right(self, n: int = 1):
+        text_after_cursor = "".join(
+            self._box.canvas["char"][0, self.cursor : self._line_length]
+        )
         nchars_after_cursor = len(text_after_cursor)
         if n <= nchars_after_cursor:
             self.cursor += wcswidth(text_after_cursor[:n])
@@ -571,7 +577,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         if self._line_length >= box.width:
             box.width = self._line_length + 1
 
-        box.canvas[0, x + 1:] = box.canvas[0, x: -1]
+        box.canvas[0, x + 1 :] = box.canvas[0, x:-1]
         box.canvas[0, x] = style_char(key)
 
         self.cursor = x + 1
@@ -622,8 +628,8 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         input_text = (
             "".join(box.canvas["char"][0, :x])
             + paste
-            + "".join(box.canvas["char"][0, x: self._line_length])
-        )[:self.max_chars]
+            + "".join(box.canvas["char"][0, x : self._line_length])
+        )[: self.max_chars]
 
         len_input = wcswidth(input_text)
 
@@ -639,9 +645,8 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         return True
 
     def grab(self, mouse_event):
-        if (
-            mouse_event.button is MouseButton.LEFT
-            and self._box.collides_point(mouse_event.position)
+        if mouse_event.button is MouseButton.LEFT and self._box.collides_point(
+            mouse_event.position
         ):
             super().grab(mouse_event)
 

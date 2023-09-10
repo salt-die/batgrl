@@ -3,8 +3,8 @@ Output for vt100 terminals.
 """
 import json
 import os
-import time
 import sys
+import time
 from pathlib import Path
 from sys import stdout
 
@@ -16,7 +16,7 @@ MAX_MEM_USAGE = 5_000_000
 class Vt100_Output:
     def __init__(self, asciicast_path: Path | None):
         self.term = os.environ.get("TERM", "")
-        self._buffer = [ ]
+        self._buffer = []
 
         self.asciicast_path = asciicast_path
 
@@ -39,7 +39,7 @@ class Vt100_Output:
 
         self.asciicast_path.write_text(json.dumps(metadata) + "\n")
 
-        self._asciicast_buffer = [ ]
+        self._asciicast_buffer = []
         self._initial_time = time.monotonic()
         self._mem_usage = 0
 
@@ -83,20 +83,10 @@ class Vt100_Output:
         self._buffer.append("\x1b[?1049l")
 
     def enable_mouse_support(self):
-        self._buffer.append(
-            "\x1b[?1000h"
-            "\x1b[?1003h"
-            "\x1b[?1015h"
-            "\x1b[?1006h"
-        )
+        self._buffer.append("\x1b[?1000h" "\x1b[?1003h" "\x1b[?1015h" "\x1b[?1006h")
 
     def disable_mouse_support(self):
-        self._buffer.append(
-            "\x1b[?1000l"
-            "\x1b[?1003l"
-            "\x1b[?1015l"
-            "\x1b[?1006l"
-        )
+        self._buffer.append("\x1b[?1000l" "\x1b[?1003l" "\x1b[?1015l" "\x1b[?1006l")
 
     def reset_attributes(self):
         self._buffer.append("\x1b[0m")

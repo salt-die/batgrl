@@ -2,7 +2,7 @@
 A grid layout widget.
 """
 from enum import Enum
-from itertools import product, accumulate
+from itertools import accumulate, product
 
 from .widget import Size, Widget
 
@@ -17,6 +17,7 @@ class Orientation(str, Enum):
     :class:`Orientation` is one of "lr-tb", "lr-bt", "rl-tb", "rl-bt", "tb-lr", "tb-rl",
     "bt-lr", "bt-rl".
     """
+
     LR_TB = "lr-tb"
     LR_BT = "lr-bt"
     RL_TB = "rl-tb"
@@ -51,11 +52,11 @@ class GridLayout(Widget):
 
     Notes
     -----
-    Re-ordering children (such as through :meth:`pull_to_front`) and calling :meth:`_reposition_children`
-    will change the positions of the children in the grid.
+    Re-ordering children (such as through :meth:`pull_to_front`) and calling
+    :meth:`_reposition_children` will change the positions of the children in the grid.
 
-    The read-only attribute :attr:`minimum_grid_size` is the minimum size the grid must be to show all
-    children. This can be used to set the size of the grid layout, e.g.,
+    The read-only attribute :attr:`minimum_grid_size` is the minimum size the grid must
+    be to show all children. This can be used to set the size of the grid layout, e.g.,
     ``my_grid.size = my_grid.minimum_grid_size``.
 
     Parameters
@@ -65,8 +66,8 @@ class GridLayout(Widget):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: Orientation.LR_TB
-        The orientation of the grid. Describes how the grid fills as children are added. The
-        default is left-to-right then top-to-bottom.
+        The orientation of the grid. Describes how the grid fills as children are added.
+        The default is left-to-right then top-to-bottom.
     padding_left : int, default: 0
         Padding on left side of grid.
     padding_right : int, default: 0
@@ -259,6 +260,7 @@ class GridLayout(Widget):
     ValueError
         If grid is full and :meth:`add_widget` is called.
     """
+
     grid_rows: int = _RepositionProperty()
 
     grid_columns: int = _RepositionProperty()
@@ -279,17 +281,17 @@ class GridLayout(Widget):
 
     def __init__(
         self,
-        grid_rows: int=1,
-        grid_columns: int=1,
+        grid_rows: int = 1,
+        grid_columns: int = 1,
         *,
-        orientation: Orientation=Orientation.LR_TB,
-        padding_left: int=0,
-        padding_right: int=0,
-        padding_top: int=0,
-        padding_bottom: int=0,
-        horizontal_spacing: int=0,
-        vertical_spacing: int=0,
-        **kwargs
+        orientation: Orientation = Orientation.LR_TB,
+        padding_left: int = 0,
+        padding_right: int = 0,
+        padding_top: int = 0,
+        padding_bottom: int = 0,
+        horizontal_spacing: int = 0,
+        vertical_spacing: int = 0,
+        **kwargs,
     ):
         self._grid_rows = grid_rows
         self._grid_columns = grid_columns
@@ -309,7 +311,8 @@ class GridLayout(Widget):
 
     def index_at(self, row: int, col: int) -> int:
         """
-        Return the index of the widget in :attr:`children` at a given row and column in the grid.
+        Return the index of the widget in :attr:`children` at a given row and column in
+        the grid.
         """
         rows = self.grid_rows
         cols = self.grid_columns
@@ -368,16 +371,16 @@ class GridLayout(Widget):
             return Size(0, 0)
 
         bottom = (
-            self.padding_top +
-            sum(self._row_height(i) for i in range(nrows)) +
-            self.vertical_spacing * (nrows - 1) +
-            self.padding_bottom
+            self.padding_top
+            + sum(self._row_height(i) for i in range(nrows))
+            + self.vertical_spacing * (nrows - 1)
+            + self.padding_bottom
         )
         right = (
-            self.padding_left +
-            sum(self._col_width(i) for i in range(ncols)) +
-            self.horizontal_spacing * (ncols - 1) +
-            self.padding_right
+            self.padding_left
+            + sum(self._col_width(i) for i in range(ncols))
+            + self.horizontal_spacing * (ncols - 1)
+            + self.padding_right
         )
 
         return Size(bottom, right)
@@ -386,14 +389,22 @@ class GridLayout(Widget):
         if self.grid_rows == 0 or self.grid_columns == 0:
             return
 
-        row_tops = tuple(accumulate(
-            self.padding_top if i == 0 else self._row_height(i - 1) + self.vertical_spacing
-            for i in range(self.grid_rows)
-        ))
-        col_lefts = tuple(accumulate(
-            self.padding_left if i == 0 else self._col_width(i - 1) + self.horizontal_spacing
-            for i in range(self.grid_columns)
-        ))
+        row_tops = tuple(
+            accumulate(
+                self.padding_top
+                if i == 0
+                else self._row_height(i - 1) + self.vertical_spacing
+                for i in range(self.grid_rows)
+            )
+        )
+        col_lefts = tuple(
+            accumulate(
+                self.padding_left
+                if i == 0
+                else self._col_width(i - 1) + self.horizontal_spacing
+                for i in range(self.grid_columns)
+            )
+        )
 
         for row, col in product(range(self.grid_rows), range(self.grid_columns)):
             if (i := self.index_at(row, col)) < len(self.children):

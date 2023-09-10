@@ -10,9 +10,10 @@ import numpy as np
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
-from .widget import Widget, subscribable, style_char
+from .widget import Widget, subscribable
 
-__all__ = "Animation", "Interpolaton"
+__all__ = "Animation", "Interpolation"
+
 
 def _check_frame_durations(frames, frame_durations):
     """
@@ -223,17 +224,18 @@ class Animation(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
-        path: Path | None=None,
-        frame_durations: float | Sequence[float]=1/12,
-        loop: bool=True,
-        reverse: bool=False,
-        alpha: float=1.0,
-        interpolation: Interpolation=Interpolation.LINEAR,
+        path: Path | None = None,
+        frame_durations: float | Sequence[float] = 1 / 12,
+        loop: bool = True,
+        reverse: bool = False,
+        alpha: float = 1.0,
+        interpolation: Interpolation = Interpolation.LINEAR,
         is_transparent: bool = True,
-        **kwargs
+        **kwargs,
     ):
         if path is None:
             self.frames = []
@@ -360,8 +362,8 @@ class Animation(Widget):
         cls,
         textures: Iterable[np.ndarray],
         *,
-        frame_durations: float | int | Sequence[float| int]=1/12,
-        **kwargs
+        frame_durations: float | int | Sequence[float | int] = 1 / 12,
+        **kwargs,
     ) -> "Animation":
         """
         Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
@@ -372,11 +374,13 @@ class Animation(Widget):
                 texture,
                 size=animation.size,
                 alpha=animation.alpha,
-                interpolation=animation.interpolation
+                interpolation=animation.interpolation,
             )
             for texture in textures
         ]
-        animation.frame_durations = _check_frame_durations(animation.frames, frame_durations)
+        animation.frame_durations = _check_frame_durations(
+            animation.frames, frame_durations
+        )
         return animation
 
     @classmethod
@@ -384,8 +388,8 @@ class Animation(Widget):
         cls,
         images: Iterable[Image],
         *,
-        frame_durations: float | int | Sequence[float| int]=1/12,
-        **kwargs
+        frame_durations: float | int | Sequence[float | int] = 1 / 12,
+        **kwargs,
     ) -> "Animation":
         """
         Create an :class:`Animation` from an iterable of :class:`Image`.
@@ -396,5 +400,7 @@ class Animation(Widget):
             image.interpolation = animation.interpolation
             image.size = animation.size
             image.alpha = animation.alpha
-        animation.frame_durations = _check_frame_durations(animation.frames, frame_durations)
+        animation.frame_durations = _check_frame_durations(
+            animation.frames, frame_durations
+        )
         return animation

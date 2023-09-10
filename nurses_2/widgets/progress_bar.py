@@ -21,7 +21,8 @@ class ProgressBar(Themable, TextWidget):
         If true, the bar will progress to the right, else
         the bar will progress upwards.
     default_char : str, default: " "
-        Default background character. This should be a single unicode half-width grapheme.
+        Default background character. This should be a single unicode half-width
+        grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
         Default color of widget.
     size : Size, default: Size(10, 10)
@@ -204,7 +205,8 @@ class ProgressBar(Themable, TextWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, is_horizontal: bool=True, **kwargs):
+
+    def __init__(self, is_horizontal: bool = True, **kwargs):
         super().__init__(**kwargs)
         self._is_horizontal = is_horizontal
         self._progress = 0.0
@@ -239,12 +241,14 @@ class ProgressBar(Themable, TextWidget):
 
         if self.is_horizontal:
             fill, partial = divmod(self.progress * self.width, 1)
-            fill_length, partial_index = int(fill), int(len(HORIZONTAL_BLOCKS) * partial)
+            fill_length, partial_index = int(fill), int(
+                len(HORIZONTAL_BLOCKS) * partial
+            )
             self.canvas["char"][:, :fill_length] = FULL_BLOCK
 
             if fill_length < self.width:
                 self.canvas["char"][:, fill_length] = HORIZONTAL_BLOCKS[partial_index]
-                self.canvas["char"][:, fill_length + 1:] = HORIZONTAL_BLOCKS[0]
+                self.canvas["char"][:, fill_length + 1 :] = HORIZONTAL_BLOCKS[0]
         else:
             fill, partial = divmod(self.progress * self.height, 1)
             fill_length, partial_index = int(fill), int(len(VERTICAL_BLOCKS) * partial)
@@ -252,5 +256,5 @@ class ProgressBar(Themable, TextWidget):
             chars[:fill_length] = FULL_BLOCK
 
             if fill_length < self.height:
-                chars[fill_length: fill_length + 1] = VERTICAL_BLOCKS[partial_index]
-                chars[fill_length + 1:] = VERTICAL_BLOCKS[0]
+                chars[fill_length : fill_length + 1] = VERTICAL_BLOCKS[partial_index]
+                chars[fill_length + 1 :] = VERTICAL_BLOCKS[0]

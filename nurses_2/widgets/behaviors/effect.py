@@ -21,6 +21,7 @@ class Effect(ABC):
     apply_effect:
         Apply an effect to the rendered views of a widget.
     """
+
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """
         Render normally then apply canvas and color effects.

@@ -6,20 +6,20 @@ from collections.abc import Callable
 import numpy as np
 
 from ..colors import (
-    Color,
-    ColorPair,
-    AColor,
-    gradient,
-    AWHITE,
     ABLACK,
-    ARED,
-    AYELLOW,
-    AGREEN,
-    ACYAN,
     ABLUE,
+    ACYAN,
+    AGREEN,
     AMAGENTA,
+    ARED,
+    AWHITE,
+    AYELLOW,
     RED,
     WHITE,
+    AColor,
+    Color,
+    ColorPair,
+    gradient,
 )
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
@@ -28,7 +28,7 @@ from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
 from .widget import Widget
 
-__all__ = "ColorPicker",
+__all__ = ("ColorPicker",)
 
 GRAD = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
 GRAD = tuple(zip(GRAD, GRAD[1:]))
@@ -307,11 +307,12 @@ class ColorPicker(Themable, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         background_char=" ",
-        ok_callback: Callable[[Color], None]=lambda color: None,
-        **kwargs
+        ok_callback: Callable[[Color], None] = lambda color: None,
+        **kwargs,
     ):
         super().__init__(background_char=background_char, **kwargs)
 
@@ -327,7 +328,9 @@ class ColorPicker(Themable, Widget):
                 label="OK",
                 size=(1, 6),
                 pos=(7, 1),
-                callback=lambda: ok_callback(self.color_swatch.background_color_pair.bg_color),
+                callback=lambda: ok_callback(
+                    self.color_swatch.background_color_pair.bg_color
+                ),
             )
         )
 

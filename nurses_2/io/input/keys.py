@@ -8,6 +8,7 @@ class Key(str, Enum):
     """
     Special keys.
     """
+
     Escape = "escape"
     Left = "left"
     Right = "right"

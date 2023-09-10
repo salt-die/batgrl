@@ -8,15 +8,23 @@ from time import monotonic
 from typing import Optional
 from weakref import WeakKeyDictionary
 
-from numpy.typing import NDArray
 import numpy as np
+from numpy.typing import NDArray
 
 from .. import easings
 from ..clamp import clamp
 from ..colors import ColorPair
-from ..data_structures import *
+from ..data_structures import Point, Size
 from ..io import KeyEvent, MouseEvent, PasteEvent
-from .widget_data_structures import *
+from .widget_data_structures import (
+    Anchor,
+    Char,
+    Easing,
+    PosHint,
+    Rect,
+    SizeHint,
+    style_char,
+)
 
 __all__ = (
     "subscribable",
@@ -29,6 +37,7 @@ __all__ = (
     "SizeHint",
     "Widget",
 )
+
 
 def subscribable(setter):
     """
@@ -48,6 +57,7 @@ def subscribable(setter):
 
     return wrapper
 
+
 def intersection(a: Rect, b: Rect):
     """
     Find the intersection of two rects and return the numpy slices that
@@ -63,10 +73,7 @@ def intersection(a: Rect, b: Rect):
     aright -= bleft
 
     if (
-        atop >= bheight
-        or abottom < 0
-        or aleft >= bwidth
-        or aright < 0
+        atop >= bheight or abottom < 0 or aleft >= bwidth or aright < 0
     ):  # Empty intersection.
         return
 
@@ -260,26 +267,27 @@ class Widget:
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
         *,
         size=Size(10, 10),
         pos=Point(0, 0),
-        size_hint: SizeHint=SizeHint(None, None),
-        min_width: int | None=None,
-        max_width: int | None=None,
-        min_height: int | None=None,
-        max_height: int | None=None,
-        pos_hint: PosHint=PosHint(None, None),
+        size_hint: SizeHint = SizeHint(None, None),
+        min_width: int | None = None,
+        max_width: int | None = None,
+        min_height: int | None = None,
+        max_height: int | None = None,
+        pos_hint: PosHint = PosHint(None, None),
         anchor=Anchor.TOP_LEFT,
-        is_transparent: bool=False,
-        is_visible: bool=True,
-        is_enabled: bool=True,
-        background_char: str | None=None,
-        background_color_pair: ColorPair | None=None,
+        is_transparent: bool = False,
+        is_visible: bool = True,
+        is_enabled: bool = True,
+        background_char: str | None = None,
+        background_color_pair: ColorPair | None = None,
     ):
         self.parent: Widget | None = None
-        self.children: list[Widget] = [ ]
+        self.children: list[Widget] = []
 
         h, w = size
         self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
@@ -736,7 +744,7 @@ class Widget:
             yield child
             yield from child.walk()
 
-    def walk(self, reverse: bool=False):
+    def walk(self, reverse: bool = False):
         """
         Yield all descendents (or ancestors if `reverse` is true).
         """
@@ -756,7 +764,8 @@ class Widget:
         action: Callable[[], None],
     ):
         """
-        Subscribe to a widget property. When property is modified, `action` will be called.
+        Subscribe to a widget property. When property is modified, `action` will be
+        called.
 
         Parameters
         ----------
@@ -781,56 +790,53 @@ class Widget:
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Dispatch key press until handled. (A key press is handled if a handler returns ``True``.)
+        Dispatch key press until handled. (A key press is handled if a handler returns
+        ``True``.)
         """
-        return (
-            any(
-                widget.dispatch_key(key_event)
-                for widget in reversed(self.children)
-                if widget.is_enabled
-            )
-            or self.on_key(key_event)
-        )
+        return any(
+            widget.dispatch_key(key_event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        ) or self.on_key(key_event)
 
     def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Dispatch mouse event until handled. (A mouse event is handled if a handler returns ``True``.)
+        Dispatch mouse event until handled. (A mouse event is handled if a handler
+        returns ``True``.)
         """
-        return (
-            any(
-                widget.dispatch_mouse(mouse_event)
-                for widget in reversed(self.children)
-                if widget.is_enabled
-            )
-            or self.on_mouse(mouse_event)
-        )
+        return any(
+            widget.dispatch_mouse(mouse_event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        ) or self.on_mouse(mouse_event)
 
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Dispatch paste event until handled. (A paste event is handled if a handler returns ``True``.)
+        Dispatch paste event until handled. (A paste event is handled if a handler
+        returns ``True``.)
         """
-        return (
-            any(
-                widget.dispatch_paste(paste_event)
-                for widget in reversed(self.children)
-                if widget.is_enabled
-            )
-            or self.on_paste(paste_event)
-        )
+        return any(
+            widget.dispatch_paste(paste_event)
+            for widget in reversed(self.children)
+            if widget.is_enabled
+        ) or self.on_paste(paste_event)
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Handle key press event. (Handled key presses should return ``True`` else ``False`` or ``None``).
+        Handle key press event. (Handled key presses should return ``True`` else
+        ``False`` or ``None``).
         """
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Handle mouse event. (Handled mouse events should return ``True`` else ``False`` or ``None``).
+        Handle mouse event. (Handled mouse events should return ``True`` else ``False``
+        or ``None``).
         """
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Handle paste event. (Handled paste events should return ``True`` else ``False`` or ``None``).
+        Handle paste event. (Handled paste events should return ``True`` else ``False``
+        or ``None``).
         """
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
@@ -846,29 +852,39 @@ class Widget:
 
         self.render_children(source, canvas_view, colors_view)
 
-    def render_children(self, destination: tuple[slice, slice], canvas_view: NDArray[Char], colors_view: NDArray[np.uint8]):
+    def render_children(
+        self,
+        destination: tuple[slice, slice],
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+    ):
         vert_slice, hori_slice = destination
-        dest = Rect(vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop)
+        dest = Rect(
+            vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop
+        )
 
         for child in self.children:
             if child.is_visible and child.is_enabled:
                 source = Rect(child.top, child.bottom, child.left, child.right)
                 if (slices := intersection(dest, source)) is not None:
                     dest_slice, source_slice = slices
-                    child.render(canvas_view[dest_slice], colors_view[dest_slice], source_slice)
+                    child.render(
+                        canvas_view[dest_slice], colors_view[dest_slice], source_slice
+                    )
 
     async def tween(
         self,
         *,
-        duration: float=1.0,
-        easing: Easing=Easing.LINEAR,
-        on_start: Callable | None=None,
-        on_progress: Callable | None=None,
-        on_complete: Callable | None=None,
+        duration: float = 1.0,
+        easing: Easing = Easing.LINEAR,
+        on_start: Callable | None = None,
+        on_progress: Callable | None = None,
+        on_complete: Callable | None = None,
         **properties: dict[str, int | float | Sequence[int] | Sequence[float | None]],
     ):
         """
-        Coroutine that sequentially updates widget properties over a duration (in seconds).
+        Coroutine that sequentially updates widget properties over a duration (in
+        seconds).
 
         Parameters
         ----------
@@ -883,15 +899,16 @@ class Widget:
         on_complete : Callable | None, default: None
             Called when tween completes.
         **properties : dict[str, int | float | Sequence[int] | Sequence[float | None]]
-            Widget properties' target values. E.g., to smoothly tween a widget's position
-            to (5, 10) over 2.5 seconds, specify the `pos` property as a keyword-argument:
+            Widget properties' target values. E.g., to smoothly tween a widget's
+            position to (5, 10) over 2.5 seconds, specify the `pos` property as a
+            keyword-argument:
             ``await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)``
 
         Warnings
         --------
-        Running several tweens on the same properties concurrently will probably result in unexpected
-        behavior. `tween` won't work for ndarray types. If tweening size or pos hints, make sure the
-        relevant hints aren't `None` to start.
+        Running several tweens on the same properties concurrently will probably result
+        in unexpected behavior. `tween` won't work for ndarray types. If tweening size
+        or pos hints, make sure the relevant hints aren't `None` to start.
         """
         end_time = monotonic() + duration
         start_values = tuple(getattr(self, attr) for attr in properties)
@@ -906,17 +923,21 @@ class Widget:
             for start_value, (prop, target) in zip(start_values, properties.items()):
                 match start_value:
                     case (int(), *_):  # Sequence[int]
-                        value = tuple((
-                            round(easings.lerp(i, j, p))
-                            for i, j in zip(start_value, target)
-                        ))
+                        value = tuple(
+                            (
+                                round(easings.lerp(i, j, p))
+                                for i, j in zip(start_value, target)
+                            )
+                        )
                     case int():
                         value = round(easings.lerp(start_value, target, p))
                     case (float() | None, *_):  # Sequence[float | None]
-                        value = tuple((
-                            None if i is None else easings.lerp(i, j, p)
-                            for i, j in zip(start_value, target)
-                        ))
+                        value = tuple(
+                            (
+                                None if i is None else easings.lerp(i, j, p)
+                                for i, j in zip(start_value, target)
+                            )
+                        )
                     case float():
                         value = easings.lerp(start_value, target, p)
 

@@ -7,8 +7,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from ..data_structures import *
-from .widget import intersection, Rect
+from ..data_structures import Point, Size
+from .widget import Rect, intersection
 
 __all__ = "Interpolation", "read_texture", "resize_texture", "composite"
 
@@ -20,6 +20,7 @@ class Interpolation(str, Enum):
     :class:`Interpolation` is one of `NEAREST`, `LINEAR`, `CUBIC`, `AREA`,
     `LANCZOS`.
     """
+
     NEAREST = "nearest"
     LINEAR = "linear"
     CUBIC = "cubic"
@@ -34,6 +35,7 @@ Interpolation._to_cv_enum = {
     Interpolation.LANCZOS: cv2.INTER_LANCZOS4,
     Interpolation.NEAREST: cv2.INTER_NEAREST,
 }
+
 
 def read_texture(path: Path) -> np.ndarray:
     """
@@ -54,7 +56,10 @@ def read_texture(path: Path) -> np.ndarray:
 
     return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
 
-def resize_texture(texture: np.ndarray, size: Size, interpolation: Interpolation=Interpolation.LINEAR) -> np.ndarray:
+
+def resize_texture(
+    texture: np.ndarray, size: Size, interpolation: Interpolation = Interpolation.LINEAR
+) -> np.ndarray:
     """
     Resize texture.
     """
@@ -65,7 +70,13 @@ def resize_texture(texture: np.ndarray, size: Size, interpolation: Interpolation
         interpolation=Interpolation._to_cv_enum[interpolation],
     )
 
-def composite(source: np.ndarray, dest: np.ndarray, pos: Point=Point(0, 0), mask_mode: bool=False):
+
+def composite(
+    source: np.ndarray,
+    dest: np.ndarray,
+    pos: Point = Point(0, 0),
+    mask_mode: bool = False,
+):
     """
     Composite source texture onto destination texture at given position.
 

@@ -1,9 +1,9 @@
 """
 A data table widget.
 """
-from enum import Enum
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
+from enum import Enum
 from itertools import count, islice
 from typing import Protocol, TypeVar
 
@@ -14,16 +14,17 @@ from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .grid_layout import GridLayout, Orientation
 from .scroll_view import ScrollView
-from .text_widget import TextWidget, Point
+from .text_widget import Point, TextWidget
 from .text_widget_data_structures import add_text
 
-__all__ = "SelectItems", "Alignment", " ColumnStyle", "DataTable"
+__all__ = "SelectItems", "Alignment", "ColumnStyle", "DataTable"
 
 
 class SelectItems(str, Enum):
     """
     Determines whether rows, columns or cells are selected in a data table.
     """
+
     CELL = "cell"
     ROW = "row"
     COLUMN = "column"
@@ -33,6 +34,7 @@ class Alignment(str, Enum):
     """
     Alignments of a column in a data table.
     """
+
     CENTER = "center"
     LEFT = "left"
     RIGHT = "right"
@@ -42,6 +44,7 @@ class SupportsLessThan(Protocol):
     """
     Supports the less than (`<`) operator.
     """
+
     def __lt__(self, other) -> bool:
         ...
 
@@ -82,9 +85,11 @@ class ColumnStyle:
     allow_sorting : bool
         Whether sorting is allowed for column.
     """
+
     render: Callable[[T], str] | None = None
     """
-    A callable that renders column data into a string. Uses the built-in `str` by default.
+    A callable that renders column data into a string. Uses the built-in `str` by
+    default.
     """
     alignment: Alignment = Alignment.LEFT
     """
@@ -102,14 +107,17 @@ class ColumnStyle:
     """
     Whether sorting is allowed for column.
     """
+
     def __post_init__(self):
         if self.render is None:
             self.render = str
+
 
 class _SortState(str, Enum):
     """
     Sorted state of a column in a data table.
     """
+
     NOT_SORTED = "↕"
     ASCENDING = "↑"
     DESCENDING = "↓"
@@ -127,6 +135,7 @@ class _CellBase(ButtonBehavior, TextWidget):
     """
     Base for cells in a data table.
     """
+
     def __init__(self, data_table: "DataTable", column_id: int, **kwargs):
         super().__init__(**kwargs)
         self.data_table = data_table
@@ -145,6 +154,7 @@ class _ColumnLabel(_CellBase):
     """
     A column label cell in a data table.
     """
+
     def __init__(self, label: str, allow_sorting: bool, **kwargs):
         super().__init__(**kwargs)
 
@@ -159,10 +169,10 @@ class _ColumnLabel(_CellBase):
         """Minimum allowed height of cells."""
         self.cell_min_width = max(
             (
-                max(wcswidth(line) for line in lines) +  # label width
-                _SORT_INDICATOR_SPACING +
-                _SORT_INDICATOR_WIDTH +
-                2 * self.style.padding
+                max(wcswidth(line) for line in lines)
+                + _SORT_INDICATOR_SPACING  # label width
+                + _SORT_INDICATOR_WIDTH
+                + 2 * self.style.padding
             ),
             self.style.min_width,
         )
@@ -170,7 +180,9 @@ class _ColumnLabel(_CellBase):
 
     @property
     def indicator_pos(self) -> Point:
-        return Point(self.height // 2, self.width - _SORT_INDICATOR_WIDTH - self.style.padding)
+        return Point(
+            self.height // 2, self.width - _SORT_INDICATOR_WIDTH - self.style.padding
+        )
 
     @property
     def sort_state(self) -> _SortState:
@@ -193,7 +205,9 @@ class _ColumnLabel(_CellBase):
     def allow_sorting(self, allow_sorting: bool):
         self._allow_sorting = allow_sorting and self.style.allow_sorting
         if allow_sorting:
-            self.colors[self.indicator_pos] = self.data_table.color_theme.data_table_sort_indicator
+            self.colors[
+                self.indicator_pos
+            ] = self.data_table.color_theme.data_table_sort_indicator
             self.canvas["char"][self.indicator_pos] = self._sort_state.value
         else:
             self.colors[self.indicator_pos] = self.data_table.color_theme.primary
@@ -207,15 +221,19 @@ class _ColumnLabel(_CellBase):
 
         align = _ALIGN_FORMATTER[self.style.alignment]
         padding = self.style.padding
-        content_width = self.width - 2 * padding - _SORT_INDICATOR_WIDTH - _SORT_INDICATOR_SPACING
+        content_width = (
+            self.width - 2 * padding - _SORT_INDICATOR_WIDTH - _SORT_INDICATOR_SPACING
+        )
         content = "\n".join(
             f"{line:{align}{content_width}}{' ' * _SORT_INDICATOR_SPACING}"
             for line in self.label.splitlines()
         )
-        add_text(self.canvas[:, padding:-_SORT_INDICATOR_WIDTH - padding], content)
+        add_text(self.canvas[:, padding : -_SORT_INDICATOR_WIDTH - padding], content)
 
         if self.allow_sorting:
-            self.colors[self.indicator_pos] = self.data_table.color_theme.data_table_sort_indicator
+            self.colors[
+                self.indicator_pos
+            ] = self.data_table.color_theme.data_table_sort_indicator
             self.canvas["char"][self.indicator_pos] = self._sort_state.value
 
     def update_hover(self):
@@ -243,7 +261,8 @@ class _DataCell(_CellBase):
     """
     A data cell in a data table.
     """
-    def __init__(self, data: T, row_id: int, striped: bool=False, **kwargs):
+
+    def __init__(self, data: T, row_id: int, striped: bool = False, **kwargs):
         super().__init__(**kwargs)
 
         self.data = data
@@ -255,8 +274,8 @@ class _DataCell(_CellBase):
         """Minimum allowed height of cell."""
         self.cell_min_width = max(
             (
-                max(wcswidth(line) for line in lines) +  # width of rendered data
-                2 * self.style.padding
+                max(wcswidth(line) for line in lines)
+                + 2 * self.style.padding  # width of rendered data
             ),
             self.style.min_width,
         )
@@ -286,7 +305,7 @@ class _DataCell(_CellBase):
             f"{line:{align}{content_width}}"
             for line in self.style.render(self.data).splitlines()
         )
-        add_text(self.canvas[:, padding:self.width - padding], content)
+        add_text(self.canvas[:, padding : self.width - padding], content)
 
     def update_hover(self):
         self.data_table._update_hover(self.column_id, self.row_id)
@@ -550,31 +569,38 @@ class DataTable(Themable, ScrollView):
     destroy:
         Destroy this widget and all descendents.
     """
+
     _IDS = count()
 
     def __init__(
         self,
-        data: dict[str, Sequence[T]] | None=None,
-        default_style: ColumnStyle | None=None,
-        select_items: SelectItems=SelectItems.ROW,
-        zebra_stripes: bool=True,
-        allow_sorting: bool=True,
-        **kwargs
+        data: dict[str, Sequence[T]] | None = None,
+        default_style: ColumnStyle | None = None,
+        select_items: SelectItems = SelectItems.ROW,
+        zebra_stripes: bool = True,
+        allow_sorting: bool = True,
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self._column_ids: list[int] = []
         """Column ids. Index of id corresponds to index of column in table."""
         self._column_styles: dict[int, ColumnStyle] = {}
         """Column id to column style."""
-        self._column_labels = GridLayout(grid_rows=1, grid_columns=0, orientation=Orientation.LR_TB)
+        self._column_labels = GridLayout(
+            grid_rows=1, grid_columns=0, orientation=Orientation.LR_TB
+        )
         """Grid layout containing column label cells."""
         self._rows: dict[int, GridLayout] = {}
         """Row id to grid layout for row."""
         self._hover_column_id = -1
-        """Column id of column that mouse is hovering or -1 if no columns are hovered."""
+        """Column id of column that mouse is hovering or -1 if no columns are
+        hovered.
+        """
         self._hover_row_id = -1
         """Row id of row that mouse is hovering or -1 if no columns are hovered."""
-        self._table = GridLayout(grid_rows=1, grid_columns=1, orientation=Orientation.TB_LR)
+        self._table = GridLayout(
+            grid_rows=1, grid_columns=1, orientation=Orientation.TB_LR
+        )
         """Grid layout of column label and row grid layouts."""
         self._table.add_widget(self._column_labels)
         self.view = self._table
@@ -642,7 +668,9 @@ class DataTable(Themable, ScrollView):
         for label in self._column_labels.children:
             label.default_color_pair = primary
             label.colors[:] = primary
-            label.colors[label.indicator_pos] = self.color_theme.data_table_sort_indicator
+            label.colors[
+                label.indicator_pos
+            ] = self.color_theme.data_table_sort_indicator
 
         cell: _DataCell
         for row in self._rows.values():
@@ -684,7 +712,7 @@ class DataTable(Themable, ScrollView):
         self._hover_row_id = -1
         self._update_hover(column_id, row_id)
 
-    def _update_hover(self, column_id: int=-1, row_id: int=-1):
+    def _update_hover(self, column_id: int = -1, row_id: int = -1):
         cell: _DataCell
 
         match self.select_items:
@@ -710,10 +738,14 @@ class DataTable(Themable, ScrollView):
                 if self._hover_column_id != column_id or self._hover_row_id != row_id:
                     if self._hover_column_id != -1 and self._hover_row_id != -1:
                         old_column_index = self._column_ids.index(self._hover_column_id)
-                        self._paint_cell_normal(self._rows[self._hover_row_id].children[old_column_index])
+                        self._paint_cell_normal(
+                            self._rows[self._hover_row_id].children[old_column_index]
+                        )
                     if column_id != -1 and row_id != -1:
                         new_column_index = self._column_ids.index(column_id)
-                        self._paint_cell_hover(self._rows[row_id].children[new_column_index])
+                        self._paint_cell_hover(
+                            self._rows[row_id].children[new_column_index]
+                        )
 
         self._hover_row_id = row_id
         self._hover_column_id = column_id
@@ -773,12 +805,18 @@ class DataTable(Themable, ScrollView):
     def _iter_rows(self):
         return islice(self._table.children, 1, None)
 
-    def add_column(self, label: str, data: Sequence[T] | None=None, style: ColumnStyle | None=None) -> int:
+    def add_column(
+        self,
+        label: str,
+        data: Sequence[T] | None = None,
+        style: ColumnStyle | None = None,
+    ) -> int:
         """
         Add a column to the data table.
 
-        If this is the first column added to the table, a row will be added for each item in `data`.
-        Otherwise, the number of items in data must be equal to the number of rows in the table.
+        If this is the first column added to the table, a row will be added for each
+        item in `data`. Otherwise, the number of items in data must be equal to the
+        number of rows in the table.
 
         Parameters
         ----------
@@ -797,7 +835,9 @@ class DataTable(Themable, ScrollView):
         if data is None:
             data = []
         if self._column_ids and len(data) != len(self._rows):
-            raise ValueError("Number of items in column data inconsistent with number of rows.")
+            raise ValueError(
+                "Number of items in column data inconsistent with number of rows."
+            )
         if style is None:
             style = replace(self.default_style)
 
@@ -818,15 +858,25 @@ class DataTable(Themable, ScrollView):
             self._table.grid_rows += len(data)
             for item in data:
                 row_id = next(self._IDS)
-                row = GridLayout(grid_rows=1, grid_columns=1, orientation=Orientation.LR_BT)
-                row.add_widget(_DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id))
+                row = GridLayout(
+                    grid_rows=1, grid_columns=1, orientation=Orientation.LR_BT
+                )
+                row.add_widget(
+                    _DataCell(
+                        data_table=self, column_id=column_id, data=item, row_id=row_id
+                    )
+                )
                 self._rows[row_id] = row
                 self._table.add_widget(row)
         else:
             for item, row in zip(data, self._iter_rows()):
                 row_id = row.children[0].row_id
                 row.grid_columns += 1
-                row.add_widget(_DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id))
+                row.add_widget(
+                    _DataCell(
+                        data_table=self, column_id=column_id, data=item, row_id=row_id
+                    )
+                )
 
         self._fix_sizes()
         return column_id
@@ -849,10 +899,14 @@ class DataTable(Themable, ScrollView):
             Row id. This id can be used to remove the row.
         """
         if not self._column_ids or len(data) != len(self._column_ids):
-            raise ValueError("Number of items in row data inconsistent with number of columns.")
+            raise ValueError(
+                "Number of items in row data inconsistent with number of columns."
+            )
 
         row_id = next(self._IDS)
-        row_layout = GridLayout(grid_rows=1, grid_columns=len(data), orientation=Orientation.LR_BT)
+        row_layout = GridLayout(
+            grid_rows=1, grid_columns=len(data), orientation=Orientation.LR_BT
+        )
         row_layout.add_widgets(
             _DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id)
             for column_id, item in zip(self._column_ids, data)

@@ -5,7 +5,11 @@ import asyncio
 
 from ..colors import lerp_colors
 from .behaviors.themable import Themable
-from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState, ButtonState
+from .behaviors.toggle_button_behavior import (
+    ButtonState,
+    ToggleButtonBehavior,
+    ToggleState,
+)
 from .text_widget import TextWidget
 from .widget import Widget
 
@@ -59,7 +63,7 @@ class _Tab(Themable, ToggleButtonBehavior, TextWidget):
         self.hover_color_pair = lerp_colors(
             self.color_theme.titlebar_normal,
             self.color_theme.titlebar_inactive,
-            .5,
+            0.5,
         )
         self._update()
 
@@ -229,6 +233,7 @@ class TabbedWidget(Themable, Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -238,13 +243,17 @@ class TabbedWidget(Themable, Widget):
         self.tab_bar = Widget(size_hint=(None, 1.0), size=(1, w))
 
         self.separator = TextWidget(size_hint=(None, 1.0), size=(1, w), pos=(1, 0))
+
         def _update_sep():
             self.separator.canvas["char"] = "━"
+
         self.separator.subscribe(self, "size", _update_sep)
 
         self.tab_window = Widget(size=(h - 2, w), pos=(2, 0))
+
         def _update_tabs():
             self.tab_window.size = self.height - 2, self.width
+
         self.tab_window.subscribe(self, "size", _update_tabs)
 
         self._tab_underline = TextWidget(pos=(1, 0), is_enabled=False)
@@ -253,7 +262,9 @@ class TabbedWidget(Themable, Widget):
         self._history = []  # Used to select the last viewed tab when a tab is removed.
         self._underline_task = None
 
-        self.add_widgets(self.tab_bar, self.separator, self._tab_underline, self.tab_window)
+        self.add_widgets(
+            self.tab_bar, self.separator, self._tab_underline, self.tab_window
+        )
 
     async def _animate_underline(self):
         underline = self._tab_underline
@@ -265,12 +276,12 @@ class TabbedWidget(Themable, Widget):
         i = underline.width // 2
         while i >= 0:
             underline.canvas["bold"][0, i:-i] = True
-            underline.colors[0, i + 1:-i - 1] = self.color_theme.titlebar_normal
+            underline.colors[0, i + 1 : -i - 1] = self.color_theme.titlebar_normal
             underline.canvas["char"] = "━"
             underline.canvas["char"][0, i] = "╸"
             underline.canvas["char"][0, -i - 1] = "╺"
             i -= 1
-            await asyncio.sleep(.03)
+            await asyncio.sleep(0.03)
 
     def _reposition_tabs(self):
         x = 1

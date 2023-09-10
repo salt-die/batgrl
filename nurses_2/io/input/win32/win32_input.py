@@ -3,11 +3,10 @@ Win32 Input.
 """
 from asyncio import get_event_loop
 from contextlib import contextmanager
-
 from ctypes import byref, windll
 from ctypes.wintypes import BOOL, DWORD, HANDLE
 
-from ...win32_types import STD_INPUT_HANDLE, SECURITY_ATTRIBUTES
+from ...win32_types import SECURITY_ATTRIBUTES, STD_INPUT_HANDLE
 from .console_input import events
 
 __all__ = (
@@ -15,6 +14,7 @@ __all__ = (
     "raw_mode",
     "events",
 )
+
 
 @contextmanager
 def attach(callback):
@@ -62,6 +62,7 @@ def attach(callback):
 
     finally:
         windll.kernel32.SetEvent(REMOVE_EVENT)
+
 
 @contextmanager
 def raw_mode():

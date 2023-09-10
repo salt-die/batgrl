@@ -42,9 +42,10 @@ class Color(NamedTuple):
     index:
         Return first index of value.
     """
-    red:   int
+
+    red: int
     green: int
-    blue:  int
+    blue: int
 
     @classmethod
     def from_hex(cls, hexcode: str):
@@ -103,9 +104,10 @@ class AColor(NamedTuple):
     index:
         Return first index of value.
     """
-    red:   int
+
+    red: int
     green: int
-    blue:  int
+    blue: int
     alpha: int = 255
 
     @classmethod
@@ -127,7 +129,7 @@ class AColor(NamedTuple):
             int(hexcode[:2], 16),
             int(hexcode[2:4], 16),
             int(hexcode[4:6], 16),
-            int(hexcode[6:] or "ff", 16)
+            int(hexcode[6:] or "ff", 16),
         )
 
 
@@ -184,12 +186,13 @@ class ColorPair(NamedTuple):
     reversed:
         Return a :class:`ColorPair` with the foreground and background reversed.
     """
-    fg_red:   int
+
+    fg_red: int
     fg_green: int
-    fg_blue:  int
-    bg_red:   int
+    fg_blue: int
+    bg_red: int
     bg_green: int
-    bg_blue:  int
+    bg_blue: int
 
     @classmethod
     def from_colors(cls, fg_color: Color | AColor, bg_color: Color | AColor):
@@ -393,6 +396,7 @@ class ColorTheme(NamedTuple):
     index:
         Return first index of value.
     """
+
     primary: ColorPair
     pad_line_highlight: ColorPair
     pad_selection_highlight: ColorPair
@@ -502,7 +506,8 @@ class ColorTheme(NamedTuple):
         scrollbar_indicator_press : str
             Hex code for pressed scrollbar indicator color.
         data_table_sort_indicator : str
-            Hex code for color pair of sort indicator for a column label in a data table.
+            Hex code for color pair of sort indicator for a column label in a data
+            table.
         data_table_hover : str
             Hex code for color pair of hovered items in a data table.
         data_table_stripe : str
@@ -513,7 +518,7 @@ class ColorTheme(NamedTuple):
             Hex code for color pair of selected items in a data table.
         data_table_selected_hover : str
             Hex code for color pair of selected, hovered items in a data table.
-        """
+        """  # noqa: E501
         return cls(
             ColorPair.from_hex(primary),
             ColorPair.from_hex(pad_line_highlight),

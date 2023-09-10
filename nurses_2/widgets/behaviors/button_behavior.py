@@ -14,6 +14,7 @@ class ButtonState(str, Enum):
 
     :class:`ButtonState` is one of "normal", "hover", "down".
     """
+
     NORMAL = "normal"
     HOVER = "hover"
     DOWN = "down"
@@ -53,6 +54,7 @@ class ButtonBehavior:
     on_release:
         Triggered when a button is released.
     """
+
     def __init__(self, *, always_release=False, **kwargs):
         super().__init__(**kwargs)
         self.always_release = always_release

@@ -10,6 +10,7 @@ class COORD(Structure):
     Struct in wincon.h
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx
     """
+
     _fields_ = [
         ("X", c_short),
         ("Y", c_short),
@@ -27,6 +28,7 @@ class KEY_EVENT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx
     """
+
     _fields_ = [
         ("KeyDown", c_long),
         ("RepeatCount", c_short),
@@ -41,6 +43,7 @@ class MOUSE_EVENT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx
     """
+
     _fields_ = [
         ("MousePosition", COORD),
         ("ButtonState", c_long),
@@ -53,6 +56,7 @@ class WINDOW_BUFFER_SIZE_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx
     """
+
     _fields_ = [("Size", COORD)]
 
 
@@ -60,6 +64,7 @@ class MENU_EVENT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx
     """
+
     _fields_ = [("CommandId", c_long)]
 
 
@@ -67,6 +72,7 @@ class FOCUS_EVENT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx
     """
+
     _fields_ = [("SetFocus", c_long)]
 
 
@@ -84,6 +90,7 @@ class INPUT_RECORD(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx
     """
+
     _fields_ = [("EventType", c_short), ("Event", EVENT_RECORD)]
 
 
@@ -98,6 +105,7 @@ EventTypes = {
 
 class SMALL_RECT(Structure):
     """struct in wincon.h."""
+
     _fields_ = [
         ("Left", c_short),
         ("Top", c_short),
@@ -108,6 +116,7 @@ class SMALL_RECT(Structure):
 
 class CONSOLE_SCREEN_BUFFER_INFO(Structure):
     """struct in wincon.h."""
+
     _fields_ = [
         ("dwSize", COORD),
         ("dwCursorPosition", COORD),
@@ -121,6 +130,7 @@ class SECURITY_ATTRIBUTES(Structure):
     """
     http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx
     """
+
     _fields_ = [
         ("nLength", DWORD),
         ("lpSecurityDescriptor", LPVOID),

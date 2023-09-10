@@ -7,7 +7,7 @@ import numpy as np
 
 from .widget import Widget, style_char
 
-__all__ = "GraphicParticleField",
+__all__ = ("GraphicParticleField",)
 
 
 class GraphicParticleField(Widget):
@@ -193,14 +193,15 @@ class GraphicParticleField(Widget):
     destroy:
         Destroy this widget and all descendents.
     """
+
     def __init__(
         self,
-        particle_positions: np.ndarray | None=None,
-        particle_colors: np.ndarray | None=None,
-        particle_alphas: np.ndarray | None=None,
-        particle_properties: dict[str, np.ndarray]=None,
-        is_transparent: bool=True,
-        **kwargs
+        particle_positions: np.ndarray | None = None,
+        particle_colors: np.ndarray | None = None,
+        particle_alphas: np.ndarray | None = None,
+        particle_properties: dict[str, np.ndarray] = None,
+        is_transparent: bool = True,
+        **kwargs,
     ):
         super().__init__(is_transparent=is_transparent, **kwargs)
 
@@ -210,7 +211,9 @@ class GraphicParticleField(Widget):
             self.particle_positions = particle_positions
 
         if particle_colors is None:
-            self.particle_colors = np.zeros((len(self.particle_positions), 4), dtype=np.uint8)
+            self.particle_colors = np.zeros(
+                (len(self.particle_positions), 4), dtype=np.uint8
+            )
         else:
             self.particle_colors = particle_colors
 
@@ -236,17 +239,21 @@ class GraphicParticleField(Widget):
         Paint region given by `source` into `canvas_view` and `colors_view`.
         """
         vert_slice, hori_slice = source
-        t = vert_slice.start
-        h = vert_slice.stop - t
-        l = hori_slice.start
-        w = hori_slice.stop - l
+        top = vert_slice.start
+        height = vert_slice.stop - top
+        left = hori_slice.start
+        width = hori_slice.stop - left
 
-        pos = self.particle_positions - (2 * t, l)
-        where_inbounds = np.nonzero((((0, 0) <= pos) & (pos < (2 * h, w))).all(axis=1))
+        pos = self.particle_positions - (2 * top, left)
+        where_inbounds = np.nonzero(
+            (((0, 0) <= pos) & (pos < (2 * height, width))).all(axis=1)
+        )
         local_ys, local_xs = pos[where_inbounds].T
 
         ch, cw, _ = colors_view.shape
-        texture_view = colors_view.reshape(ch, cw, 2, 3).swapaxes(1, 2).reshape(2 * ch, w, 3)
+        texture_view = (
+            colors_view.reshape(ch, cw, 2, 3).swapaxes(1, 2).reshape(2 * ch, width, 3)
+        )
         colors = self.particle_colors[where_inbounds]
         if not self.is_transparent:
             texture_view[local_ys, local_xs] = colors[..., :3]
@@ -254,12 +261,20 @@ class GraphicParticleField(Widget):
             mask = canvas_view != style_char("▀")
             colors_view[..., :3][mask] = colors_view[..., 3:][mask]
 
-            buffer = np.subtract(colors[:, :3], texture_view[local_ys, local_xs], dtype=float)
+            buffer = np.subtract(
+                colors[:, :3], texture_view[local_ys, local_xs], dtype=float
+            )
             buffer *= colors[:, 3, None]
             buffer *= self.particle_alphas[where_inbounds][:, None]
             buffer /= 255
-            texture_view[local_ys, local_xs] = (buffer + texture_view[local_ys, local_xs]).astype(np.uint8)
+            texture_view[local_ys, local_xs] = (
+                buffer + texture_view[local_ys, local_xs]
+            ).astype(np.uint8)
 
-        colors_view[:] = texture_view.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
+        colors_view[:] = (
+            texture_view.reshape(height, 2, width, 3)
+            .swapaxes(1, 2)
+            .reshape(height, width, 6)
+        )
         canvas_view[:] = style_char("▀")
         self.render_children(source, canvas_view, colors_view)

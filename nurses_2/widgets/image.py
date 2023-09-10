@@ -22,8 +22,8 @@ class Image(GraphicWidget):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If widget is transparent, the alpha channel of the underlying texture will be multiplied by this
-        value. (0 <= alpha <= 1.0)
+        If widget is transparent, the alpha channel of the underlying texture will be
+        multiplied by this value. (0 <= alpha <= 1.0)
     interpolation : Interpolation, default: Interpolation.LINEAR
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
@@ -194,7 +194,8 @@ class Image(GraphicWidget):
     destroy:
         Destroy this widget and all descendents.
     """
-    def __init__(self, *, path: Path | None=None, **kwargs):
+
+    def __init__(self, *, path: Path | None = None, **kwargs):
         self._otexture = np.zeros((2, 1, 4), dtype=np.uint8)
         super().__init__(**kwargs)
         self.path = path

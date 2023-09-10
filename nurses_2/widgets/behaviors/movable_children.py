@@ -1,5 +1,6 @@
 """
-Movable children behavior for a widget. Translate a widget's child by clicking and dragging them.
+Movable children behavior for a widget. Translate a widget's child by clicking and
+dragging them.
 """
 from ...clamp import clamp
 from .grabbable import Grabbable
@@ -49,6 +50,7 @@ class MovableChildren(Grabbable):
     grab_update:
         Update widget with incoming mouse events while grabbed.
     """
+
     def __init__(self, *, disable_child_oob=False, disable_child_ptf=False, **kwargs):
         super().__init__(**kwargs)
         self.disable_child_oob = disable_child_oob
