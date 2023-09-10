@@ -237,13 +237,13 @@ class Animation(Widget):
         is_transparent: bool = True,
         **kwargs,
     ):
-        if path is None:
-            self.frames = []
-        else:
-            paths = sorted(path.iterdir(), key=lambda file: file.name)
-            self.frames = [Image(path=path) for path in paths]
+        self.frames = []
 
         super().__init__(is_transparent=is_transparent, **kwargs)
+
+        if path is not None:
+            paths = sorted(path.iterdir(), key=lambda file: file.name)
+            self.frames = [Image(path=path, size=self.size) for path in paths]
 
         self.frame_durations = _check_frame_durations(self.frames, frame_durations)
         self.alpha = alpha
