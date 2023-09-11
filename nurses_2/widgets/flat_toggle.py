@@ -10,7 +10,7 @@ from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .text_widget import TextWidget, add_text
 from .widget import Widget
 
-HORIZONTAL_BLOCKS = "▊▋▌▍▎▏"
+TOGGLE_BLOCK = "▊▋▌▍▎▏"
 DARK_GREY = Color.from_hex("333333")
 LIGHT_GREY = Color.from_hex("666666")
 
@@ -60,7 +60,7 @@ class _AnimatedToggle(ToggleButtonBehavior, TextWidget):
 
         for i in r:
             self._animation_progess = i
-            self.canvas["char"][1, 1:3] = HORIZONTAL_BLOCKS[i]
+            self.canvas["char"][1, 1:3] = TOGGLE_BLOCK[i]
             await asyncio.sleep(0.05)
 
         self.parent.callback(self.toggle_state)
