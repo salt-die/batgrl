@@ -329,6 +329,8 @@ class ColorTheme(NamedTuple):
         Color pair of selected items in a data table.
     data_table_selected_hover : ColorPair
         Color pair of selected, hovered items in a data table.
+    progress_bar : ColorPair
+        Color pair of progress bar.
 
     Attributes
     ----------
@@ -386,6 +388,8 @@ class ColorTheme(NamedTuple):
         Color pair of selected items in a data table.
     data_table_selected_hover : ColorPair
         Color pair of selected, hovered items in a data table.
+    progress_bar : ColorPair
+        Color pair of progress bar.
 
     Methods
     -------
@@ -424,6 +428,7 @@ class ColorTheme(NamedTuple):
     data_table_stripe_hover: ColorPair
     data_table_selected: ColorPair
     data_table_selected_hover: ColorPair
+    progress_bar: ColorPair
 
     @classmethod
     def from_hexes(
@@ -455,6 +460,7 @@ class ColorTheme(NamedTuple):
         data_table_stripe_hover: str,
         data_table_selected: str,
         data_table_selected_hover: str,
+        progress_bar: str,
     ):
         """
         Return a ColorTheme using hex codes.
@@ -518,7 +524,9 @@ class ColorTheme(NamedTuple):
             Hex code for color pair of selected items in a data table.
         data_table_selected_hover : str
             Hex code for color pair of selected, hovered items in a data table.
-        """  # noqa: E501
+        progress_bar : ColorPair
+            Color pair of progress bar.
+        """
         return cls(
             ColorPair.from_hex(primary),
             ColorPair.from_hex(pad_line_highlight),
@@ -547,4 +555,5 @@ class ColorTheme(NamedTuple):
             ColorPair.from_hex(data_table_stripe_hover),
             ColorPair.from_hex(data_table_selected),
             ColorPair.from_hex(data_table_selected_hover),
+            ColorPair.from_hex(progress_bar),
         )

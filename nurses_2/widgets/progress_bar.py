@@ -1,25 +1,34 @@
 """
 A progress bar widget.
 """
-from ..clamp import clamp
-from .behaviors.themable import Themable
-from .text_widget import TextWidget
-from .widget import subscribable
+import asyncio
 
-FULL_BLOCK = "█"
-VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇"
-HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉"
+from ..clamp import clamp
+from ._smooth_bars import (
+    FULL_BLOCK,
+    HORIZONTAL_BLOCKS,
+    VERTICAL_BLOCKS,
+    create_horizontal_bar,
+    create_vertical_bar,
+)
+from .behaviors.themable import Themable
+from .text_widget import TextWidget, style_char
+from .widget import subscribable
 
 
 class ProgressBar(Themable, TextWidget):
     """
     A progress bar widget.
 
+    Setting :attr:`progress` to `None` will start a "loading" animation; otherwise
+    setting to a value between `0.0` and `1.0` will update the bar.
+
     Parameters
     ----------
+    animation_delay : float, default: 1/60
+        Time between loading animation updates.
     is_horizontal : bool, default: True
-        If true, the bar will progress to the right, else
-        the bar will progress upwards.
+        If true, the bar will progress to the right, else the bar will progress upwards.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
@@ -64,8 +73,11 @@ class ProgressBar(Themable, TextWidget):
 
     Attributes
     ----------
-    progress : float
-        Current progress as a value between `0.0` and `1.0`.
+    progress : float | None
+        Current progress as a value between `0.0` and `1.0` or `None. If `None`, then
+        progress bar will start a "loading" animation.
+    animation_delay : float
+        Time between loading animation updates.
     is_horizontal : bool
         If true, the bar will progress to the right, else
         the bar will progress upwards.
@@ -206,10 +218,13 @@ class ProgressBar(Themable, TextWidget):
         Destroy this widget and all descendents.
     """
 
-    def __init__(self, is_horizontal: bool = True, **kwargs):
+    def __init__(
+        self, is_horizontal: bool = True, animation_delay: float = 1 / 60, **kwargs
+    ):
         super().__init__(**kwargs)
+        self.animation_delay = animation_delay
         self._is_horizontal = is_horizontal
-        self._progress = 0.0
+        self._progress = None
 
     @property
     def progress(self) -> float:
@@ -218,8 +233,15 @@ class ProgressBar(Themable, TextWidget):
     @progress.setter
     @subscribable
     def progress(self, progress: float):
-        self._progress = clamp(progress, 0.0, 1.0)
-        self._update_canvas()
+        if getattr(self, "_loading_task", False):
+            self._loading_task.cancel()
+
+        if progress is None:
+            self._progress = progress
+            self._loading_task = asyncio.create_task(self._loading_animation())
+        else:
+            self._progress = clamp(progress, 0.0, 1.0)
+            self._repaint_progress_bar()
 
     @property
     def is_horizontal(self) -> bool:
@@ -228,33 +250,92 @@ class ProgressBar(Themable, TextWidget):
     @is_horizontal.setter
     def is_horizontal(self, is_horizontal: bool):
         self._is_horizontal = is_horizontal
-        self._update_canvas()
+        self.progress = self.progress  # Trigger a repaint by setting property.
+
+    def _paint_small_horizontal_bar(self, x, width, block):
+        chars = self.canvas["char"]
+        chars[:] = self.default_char
+        chars[:, x] = block
+        chars[:, x + 1 : x + 1 + width] = FULL_BLOCK
+        chars[:, x + 1 + width] = block
+
+        self.colors[:] = self.color_theme.progress_bar
+        self.colors[:, x] = self.color_theme.progress_bar.reversed()
+
+    def _paint_small_vertical_bar(self, y, height, block):
+        chars = self.canvas["char"][::-1]
+        chars[:] = self.default_char
+        chars[y] = block
+        chars[y + 1 : y + 1 + height] = FULL_BLOCK
+        chars[y + 1 + height] = block
+        self.colors[:] = self.color_theme.progress_bar
+        self.colors[::-1][y] = self.color_theme.progress_bar.reversed()
+
+    async def _loading_animation(self):
+        if (
+            self.is_horizontal
+            and self.width < 3
+            or not self.is_horizontal
+            and self.height < 3
+        ):
+            return
+
+        self.canvas[:] = style_char(self.default_char)
+
+        if self._is_horizontal:
+            bar_width = (self.width - 2) // 4
+            bar_xs = range(self.width - bar_width - 1)
+            while True:
+                for x in bar_xs:
+                    for block in HORIZONTAL_BLOCKS:
+                        self._paint_small_horizontal_bar(x, bar_width, block)
+                        await asyncio.sleep(self.animation_delay)
+                for x in bar_xs[::-1]:
+                    for block in reversed(HORIZONTAL_BLOCKS):
+                        self._paint_small_horizontal_bar(x, bar_width, block)
+                        await asyncio.sleep(self.animation_delay)
+        else:
+            bar_height = (self.height - 2) // 4
+            bar_ys = range(self.height - bar_height - 1)
+            while True:
+                for y in bar_ys:
+                    for block in VERTICAL_BLOCKS:
+                        self._paint_small_vertical_bar(y, bar_height, block)
+                        await asyncio.sleep(self.animation_delay)
+                for y in bar_ys[::-1]:
+                    for block in reversed(VERTICAL_BLOCKS):
+                        self._paint_small_vertical_bar(y, bar_height, block)
+                        await asyncio.sleep(self.animation_delay)
+
+    def on_add(self):
+        super().on_add()
+        self.progress = self.progress  # Trigger a repaint by setting property.
+
+    def on_remove(self):
+        super().on_remove()
+        if task := getattr(self, "_loading_task", False):
+            task.cancel()
 
     def on_size(self):
-        self._update_canvas()
+        super().on_size()
+        self.progress = self.progress  # Trigger a repaint by setting property.
 
     def update_theme(self):
-        self._update_canvas()
+        self.colors[:] = self.color_theme.progress_bar
+        self.default_color_pair = self.color_theme.progress_bar
 
-    def _update_canvas(self):
-        self.colors[:] = self.color_theme.button_normal
-
+    def _repaint_progress_bar(self):
+        self.canvas[:] = style_char(self.default_char)
         if self.is_horizontal:
-            fill, partial = divmod(self.progress * self.width, 1)
-            fill_length, partial_index = int(fill), int(
-                len(HORIZONTAL_BLOCKS) * partial
+            fill, fill_char, partial_char = create_horizontal_bar(
+                self.width, self.progress
             )
-            self.canvas["char"][:, :fill_length] = FULL_BLOCK
-
-            if fill_length < self.width:
-                self.canvas["char"][:, fill_length] = HORIZONTAL_BLOCKS[partial_index]
-                self.canvas["char"][:, fill_length + 1 :] = HORIZONTAL_BLOCKS[0]
+            self.canvas["char"][:, :fill] = fill_char
+            self.canvas["char"][:, fill] = partial_char
         else:
-            fill, partial = divmod(self.progress * self.height, 1)
-            fill_length, partial_index = int(fill), int(len(VERTICAL_BLOCKS) * partial)
+            fill, fill_char, partial_char = create_vertical_bar(
+                self.height, self.progress
+            )
             chars = self.canvas["char"][::-1]
-            chars[:fill_length] = FULL_BLOCK
-
-            if fill_length < self.height:
-                chars[fill_length : fill_length + 1] = VERTICAL_BLOCKS[partial_index]
-                chars[fill_length + 1 :] = VERTICAL_BLOCKS[0]
+            chars[:fill] = fill_char
+            chars[fill] = partial_char
