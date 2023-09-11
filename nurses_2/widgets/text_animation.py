@@ -4,6 +4,7 @@ A text animation widget.
 import asyncio
 from collections.abc import Iterable, Sequence
 
+from ..colors import WHITE_ON_BLACK, ColorPair
 from .animation import _check_frame_durations
 from .text_widget import TextWidget
 from .widget import Widget, intersection
@@ -21,6 +22,8 @@ class TextAnimation(Widget):
     frame_durations : float | int | Sequence[float| int], default: 1/12
         Time each frame is displayed. If a sequence is provided, it's length
         should be equal to number of frames.
+    animation_color_pair : ColorPair, default: WHITE_ON_BLACK
+        Color pair of animation.
     loop : bool, default: True
         If true, restart animation after last frame.
     reverse : bool, default: False
@@ -68,6 +71,8 @@ class TextAnimation(Widget):
         Frames of the animation.
     frame_durations : list[int | float]
         Time each frame is displayed.
+    animation_color_pair : ColorPair
+        Color pair of animation.
     loop : bool
         If true, animation is restarted after last frame.
     reverse : bool
@@ -198,6 +203,7 @@ class TextAnimation(Widget):
         *,
         frames: Iterable[str] | None = None,
         frame_durations: float | Sequence[float] = 1 / 12,
+        animation_color_pair: ColorPair = WHITE_ON_BLACK,
         loop: bool = True,
         reverse: bool = False,
         **kwargs,
@@ -211,10 +217,21 @@ class TextAnimation(Widget):
         super().__init__(**kwargs)
 
         self.frame_durations = _check_frame_durations(self.frames, frame_durations)
+        self.animation_color_pair = animation_color_pair
         self.loop = loop
         self.reverse = reverse
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
+
+    @property
+    def animation_color_pair(self) -> ColorPair:
+        return self._animation_color_pair
+
+    @animation_color_pair.setter
+    def animation_color_pair(self, animation_color_pair: ColorPair):
+        self._animation_color_pair = animation_color_pair
+        for frame in self.frames:
+            frame.colors[:] = animation_color_pair
 
     @property
     def is_transparent(self) -> bool:
