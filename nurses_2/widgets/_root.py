@@ -134,7 +134,7 @@ class _Root(Widget):
             fr, fg, fb, br, bg, bb = color_pair
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
-                "\x1b["
+                "\x1b[0;"  # Reset
                 f"{'1;' if bold else ''}"
                 f"{'3;' if italic else ''}"
                 f"{'4;' if underline else ''}"
