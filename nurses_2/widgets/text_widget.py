@@ -287,6 +287,7 @@ class TextWidget(Widget):
             ascii="++||--++",
             outer="▛▜▌▐▀▄▙▟",
             inner="▗▖▐▌▄▀▝▘",
+            thick="████▀▄██",
         )
         tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]
 
