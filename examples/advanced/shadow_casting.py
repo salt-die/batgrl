@@ -1,129 +1,234 @@
-"""
-Use arrow keys to move camera.
-"""
 import asyncio
-from itertools import cycle
+import math
+import random
+from itertools import chain
 
 import numpy as np
 
-from nurses_2.app import run_widget_as_app
-from nurses_2.colors import ACYAN, AMAGENTA, BLUE, WHITE, gradient
-from nurses_2.io import MouseEventType
+from nurses_2.app import App
+from nurses_2.clamp import clamp
+from nurses_2.colors import (
+    ACYAN,
+    AMAGENTA,
+    AWHITE,
+    BLACK,
+    BLUE,
+    DEFAULT_COLOR_THEME,
+    RED,
+    WHITE,
+    WHITE_ON_BLACK,
+    ColorPair,
+    gradient,
+)
+from nurses_2.widgets.behaviors.grabbable import Grabbable
+from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.shadow_caster import (
-    AGRAY,
     Camera,
     LightIntensity,
     LightSource,
-    Point,
+    Restrictiveness,
     ShadowCaster,
 )
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.toggle_button import ToggleButton
+from nurses_2.widgets.widget import Widget
 
-MAP = """
-1111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-1000000000000000011000000000000000000000000000000000000000000000000000000000000000001
-1001000000000000001100000000000000000000000000000000000000000000000000000000000000001
-1001001000000011111111111100000000000002222220000000000000000000000000000000000000001
-1001001000000011111111111100000000000000222200000000011000011001100000000000000000001
-1000000100000000000000000000000000000000222000000000011000011001100000000000000000001
-1110000100000000000001000000000002220000220000000000000000000000000000000000000000001
-1000000000011100011001000000000002220000000000000000000000000000000000000000010000001
-1000000000011100011001000000000022200000000000000000000000000000001111111111110000001
-1000000000011100000001000000022222222220000002222220000000000000000000000000010000001
-1110000000000000000001000000000000000000000001100000000000000000000000000000010000001
-1110010000000000000000000000000000000000000001100000000000000000000000000000010011001
-1110010000000111111100000000000000000000000001100000000000100000000000000000010011001
-1000010000000111111100000000000000000000000000000011111111100000000111111111110011001
-1110010001111111111100000000000000000000000000000010000000000000000000000000010000001
-1110010001111111111100000000022200222222000000000010000000000000011110000000010000001
-1000010001111111111100000000010000000001000000000010000000000000111000000000010000001
-1000010001100100110100000000010000000001000111111110000000000000001110000000010000001
-1000010000000000100100000000010000000001000100000000001100000000111000000000010000001
-1000010000000000000000000000010000000001000100000000011000000000001100000000010000001
-1000010000000000000000000000010000000001000100000000110000000000111000000000010000001
-1000011111111111111111111111110000000001111100000011000000000000011100000111111111111
-1000000110000000000000000000000000000000000000000011000000000001111000000000000000001
-1000000110000000000000000000000000000000000000000001100000000000011100000000000000001
-1000000011000000000000000000000000000000022222000000111000000000001110000000000000001
-1000000001100000001111111110000000000000002222200000001000000000011100000000000000001
-2000000022000000000000222222222200000000000222000000002000000000000000000000000000002
-2000000002200002220000000002222222200000000020000000002000000000000000000000000000002
-2000000022000000022220000000000022222222200000000000002000000000022222222222000000002
-2000000002200000000222200000000000022222220000000000002000000000020000000002000000002
-2000000000220000000000220022000000000022220000000000002000000000000000000002000000002
-2000000000022000000000022220000000000002200000000000002000000000010000000001000000001
-1000000000001100000000001100000000000001100000000000001000000000011111111111000000001
-1000000000000111111111111111110000000000110000000000000100000000000000000000000000001
-1000000000000000000000000000000000000001100000000000001000000000000000000000000000001
-1000000000011110000000000000000000000001111111111111111111111111111111000000000000001
-1000000001111111100000000000001111110001100000000000000000000000000000000000000000001
-1000011111111111111111100000001001100001100000000000000000000000000000000000000000001
-1000000000111111111110000000001001000000000000000000000000111000000000000000000000001
-1000000001111111110000000000001000000000000000000000000000011100000000000000000000001
-1000000000111110000000000002222222222222222222222222222222222200000000000000000000002
-2000000000022000000000000000000000000000222222222222222222222222222222222222000000002
-2000000000000000000000000000000000000000000000000000000000022222222222222220000000001
-1000000000000000000000000000000000000000000000000000000000000000000000000000000000001
-1000000000000000000000000000000000000000000000000000000000000000000000000000000000001
-1111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-"""
-MAP = np.array([[int(i) for i in line] for line in MAP[1:].splitlines()])
-WHITE_TO_BLUE = cycle(
-    map(
-        LightIntensity.from_color,
-        gradient(WHITE, BLUE, 10) + gradient(BLUE, WHITE, 10),
-    )
-)
+PANEL_WIDTH = 23
+WHITE_TO_RED = gradient(WHITE, RED, PANEL_WIDTH)
+WHITE_TO_BLUE = gradient(WHITE, BLUE, PANEL_WIDTH)
+BLACK_TO_WHITE = gradient(BLACK, WHITE, PANEL_WIDTH)
+PRIMARY = DEFAULT_COLOR_THEME.primary
+SLIDER_COLOR_PAIR = ColorPair.from_colors(WHITE, PRIMARY.bg_color)
 
 
-class MyShadowCaster(ShadowCaster):
-    def on_add(self):
-        super().on_add()
-        self._update_task = asyncio.create_task(self._update())
+class Selector(Grabbable, TextWidget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.indicator = TextWidget(
+            size=(1, 1), default_color_pair=WHITE_ON_BLACK.reversed()
+        )
+        self.add_widget(self.indicator)
+        self.callback = None
 
-    def on_remove(self):
-        super().on_remove()
-        self._update_task.cancel()
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+        self.grab_update(mouse_event)
 
-    async def _update(self):
+    def grab_update(self, mouse_event):
+        self.indicator.x = clamp(
+            self.to_local(mouse_event.position).x, 0, self.width - 1
+        )
+        if self.callback:
+            self.callback(self.indicator.x)
+
+
+class ShadowCasterApp(App):
+    async def on_start(self):
+        map_ = np.zeros((34, 34), int)
+
+        caster = ShadowCaster(
+            size=(17, 34),
+            anchor="center",
+            map=map_,
+            camera=Camera((0, 0), (34, 34)),
+            tile_colors=[AWHITE, ACYAN, AMAGENTA],
+            light_sources=[LightSource(intensity=WHITE), LightSource(intensity=WHITE)],
+            radius=40,
+            restrictiveness=Restrictiveness.PERMISSIVE,
+        )
+
+        label_kwargs = dict(default_color_pair=PRIMARY)
+        button_kwargs = dict(size=(1, PANEL_WIDTH), group=1)
+        slider_kwargs = dict(
+            default_char="▬",
+            size=(1, PANEL_WIDTH),
+            default_color_pair=SLIDER_COLOR_PAIR,
+        )
+
+        def make_toggle_callback(mode):
+            def callback(toggle_state):
+                if toggle_state == "on":
+                    caster.restrictiveness = mode
+
+            return callback
+
+        button_label = TextWidget(**label_kwargs)
+        button_label.set_text("Caster Restrictiveness:")
+
+        button_a = ToggleButton(
+            label="Permissive",
+            callback=make_toggle_callback(Restrictiveness.PERMISSIVE),
+            **button_kwargs,
+        )
+        button_b = ToggleButton(
+            label="Moderate",
+            callback=make_toggle_callback(Restrictiveness.MODERATE),
+            **button_kwargs,
+        )
+        button_c = ToggleButton(
+            label="Restrictive",
+            callback=make_toggle_callback(Restrictiveness.RESTRICTIVE),
+            **button_kwargs,
+        )
+
+        def make_slider_callback(light_source, colors):
+            def callback(i):
+                caster.light_sources[
+                    light_source
+                ].intensity = LightIntensity.from_color(colors[round(i)])
+
+            return callback
+
+        slider_a = Selector(**slider_kwargs)
+        slider_a.callback = make_slider_callback(0, WHITE_TO_RED)
+        slider_a.colors[..., :3] = WHITE_TO_RED
+
+        slider_b = Selector(**slider_kwargs)
+        slider_b.callback = make_slider_callback(1, WHITE_TO_BLUE)
+        slider_b.colors[..., :3] = WHITE_TO_BLUE
+
+        slider_c = Selector(**slider_kwargs)
+        slider_c.callback = lambda i: setattr(
+            caster, "ambient_light", LightIntensity.from_color(BLACK_TO_WHITE[i])
+        )
+        slider_c.colors[..., :3] = BLACK_TO_WHITE
+
+        slider_d = Selector(**slider_kwargs)
+        slider_d.callback = lambda i: setattr(caster, "radius", 10 + round(30 / 23 * i))
+        slider_d.indicator.x = slider_d.width - 1
+
+        label_a = TextWidget(**label_kwargs)
+        label_a.set_text("Light source A:")
+
+        label_b = TextWidget(**label_kwargs)
+        label_b.set_text("Light source B:")
+
+        label_c = TextWidget(**label_kwargs)
+        label_c.set_text("Ambient Light:")
+
+        label_d = TextWidget(**label_kwargs)
+        label_d.set_text("Radius:")
+
+        decay_label = TextWidget(**label_kwargs)
+        decay_label.set_text("Light Decay:")
+
+        def make_decay_callback(i):
+            decays = [
+                lambda d: 1 if d == 0 else 1 / d,
+                lambda d: math.exp(-0.1 * d),
+                lambda d: 1 if d == 0 else math.sin(d) / d,
+                lambda d: 1 if d == 0 else random.random() / d,
+            ]
+
+            def callback(state):
+                if state == "on":
+                    caster.light_decay = decays[i]
+
+            return callback
+
+        button_kwargs["group"] = 2
+        button_d = ToggleButton(
+            label="1 / d", callback=make_decay_callback(0), **button_kwargs
+        )
+        button_e = ToggleButton(
+            label="exp(-0.1 * d)", callback=make_decay_callback(1), **button_kwargs
+        )
+        button_f = ToggleButton(
+            label="sin(d) / d", callback=make_decay_callback(2), **button_kwargs
+        )
+        button_g = ToggleButton(
+            label="random() / d", callback=make_decay_callback(3), **button_kwargs
+        )
+
+        grid_layout = GridLayout(
+            grid_rows=17, grid_columns=1, pos=(0, caster.right + 1)
+        )
+        grid_layout.add_widgets(
+            button_label,
+            button_a,
+            button_b,
+            button_c,
+            label_a,
+            slider_a,
+            label_b,
+            slider_b,
+            label_c,
+            slider_c,
+            label_d,
+            slider_d,
+            decay_label,
+            button_d,
+            button_e,
+            button_f,
+            button_g,
+        )
+        grid_layout.size = grid_layout.minimum_grid_size
+
+        container = Widget(pos_hint=(0.5, 0.5), anchor="center", size=(17, 58))
+        container.add_widgets(caster, grid_layout)
+        self.add_widget(container)
+
+        theta = 0
         while True:
-            self.light_sources[0].intensity = next(WHITE_TO_BLUE)
-            self.cast_shadows()
-            await asyncio.sleep(0)
+            for i in chain(range(21), range(21)[::-1]):
+                # Move boxes
+                map_[:] = 0
+                map_[8:12, 5 + i : 5 + i + 4] = 1
+                map_[22:26, 25 - i : 25 - i + 4] = 2
 
-    def on_mouse(self, mouse_event):
-        if mouse_event.event_type is MouseEventType.MOUSE_MOVE and self.collides_point(
-            mouse_event.position
-        ):
-            self.light_sources[0].coords = self.to_map_coords(
-                self.to_local(mouse_event.position)
-            )
+                # Move light sources
+                theta = (theta + 0.1) % math.tau
+                caster.light_sources[0].coords = (
+                    18 * math.sin(theta) + 17,
+                    18 * math.cos(theta) + 17,
+                )
+                caster.light_sources[1].coords = (
+                    17 * math.cos(theta) + 17,
+                    17 * math.sin(theta) + 17,
+                )
+                caster.cast_shadows()
 
-    def on_key(self, key_event):
-        y, x = self.camera.pos
-
-        match key_event.key:
-            case "up":
-                self.camera.pos = Point(y - 1, x)
-            case "down":
-                self.camera.pos = Point(y + 1, x)
-            case "left":
-                self.camera.pos = Point(y, x - 1)
-            case "right":
-                self.camera.pos = Point(y, x + 1)
-            case _:
-                return False
-
-        return True
+                await asyncio.sleep(0.01)
 
 
-run_widget_as_app(
-    MyShadowCaster(
-        size_hint=(1.0, 1.0),
-        map=MAP,
-        camera=Camera((0, 0), (50, 50)),
-        tile_colors=[AGRAY, ACYAN, AMAGENTA],
-        light_sources=[LightSource()],
-        ambient_light=0.1,
-        radius=40,
-    )
-)
+ShadowCasterApp(background_color_pair=PRIMARY).run()
