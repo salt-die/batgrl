@@ -382,6 +382,11 @@ class LinePlot(Widget):
 
     @plot_color_pair.setter
     def plot_color_pair(self, plot_color_pair: ColorPair):
+        # Remove any widget transparency:
+        self.background_char = " "
+        self.background_color_pair = plot_color_pair
+        self.is_transparent = False
+
         self._plot_color_pair = plot_color_pair
 
         for child in self.walk():
