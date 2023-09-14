@@ -21,13 +21,16 @@ from .widget import Widget
 
 __all__ = ("LinePlot",)
 
-PLOT_ZOOM = [1.0, 1.25, 1.5, 2.0, 3.0]
 PLOT_MODES = Literal["braille", "box"]
+
+PLOT_ZOOM = [1.0, 1.25, 1.5, 2.0, 3.0]
 TICK_WIDTH = 11
-TICK_HALF = TICK_WIDTH // 2
 VERTICAL_SPACING = 5
-VERTICAL_HALF = VERTICAL_SPACING // 2
 PRECISION = 4
+
+# Derived
+TICK_HALF = TICK_WIDTH // 2
+VERTICAL_HALF = VERTICAL_SPACING // 2
 
 
 class _Legend(Movable, TextWidget):
