@@ -97,7 +97,7 @@ class Sparkline(TextWidget):
 
     Attributes
     ----------
-    data : NDArray
+    data : NDArray[np.float64]
         Data for the sparkline. This can be set with a `Sequence[Real]` or `None`, but
         will be converted into a (possibly empty) numpy array.
     min_color : Color
@@ -283,16 +283,16 @@ class Sparkline(TextWidget):
         """Color of the maximum value of the sparkline."""
         self.data = data
         # Following are set in `_build_sparkline`:
-        self._walls: NDArray
+        self._walls: NDArray[np.float64]
         """
         Boundaries for each bin. The `i`th bin starts at ``self._walls[i]`` and stops at
         ``self._walls[i + 1]``.
         """
-        self._mins: NDArray
+        self._mins: NDArray[np.float64]
         """Mininum of each bin."""
-        self._maxs: NDArray
+        self._maxs: NDArray[np.float64]
         """Maximum of each bin."""
-        self._means: NDArray
+        self._means: NDArray[np.float64]
         """Arithmetic mean of each bin."""
 
     @property
@@ -337,13 +337,13 @@ class Sparkline(TextWidget):
         self._build_sparkline()
 
     @property
-    def data(self) -> NDArray | None:
+    def data(self) -> NDArray[np.float64]:
         """Data for the sparkline."""
         return self._data
 
     @data.setter
     def data(self, data: Sequence[Real] | None):
-        self._data = np.array([]) if data is None else np.array(data)
+        self._data = np.array([]) if data is None else np.array(data, float)
         self._build_sparkline()
 
     def on_add(self):
