@@ -246,6 +246,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
 
     def __init__(
         self,
+        *,
         enter_callback: Callable[["Textbox"], None] | None = None,
         placeholder: str = "",
         hide_input: bool = False,

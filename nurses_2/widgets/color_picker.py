@@ -310,6 +310,7 @@ class ColorPicker(Themable, Widget):
 
     def __init__(
         self,
+        *,
         background_char=" ",
         ok_callback: Callable[[Color], None] = lambda color: None,
         **kwargs,

@@ -202,6 +202,7 @@ class TextParticleField(Widget):
 
     def __init__(
         self,
+        *,
         particle_positions: NDArray[np.int32] | None = None,
         particle_chars: NDArray[Char] | None = None,
         particle_color_pairs: NDArray[np.uint8] | None = None,

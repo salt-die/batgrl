@@ -372,6 +372,7 @@ class ShadowCaster(GraphicWidget):
 
     def __init__(
         self,
+        *,
         map: NDArray[np.uint32],
         camera: Camera,
         tile_colors: list[AColor] | None = None,

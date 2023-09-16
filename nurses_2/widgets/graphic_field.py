@@ -199,6 +199,7 @@ class GraphicParticleField(Widget):
 
     def __init__(
         self,
+        *,
         particle_positions: NDArray[np.int32] | None = None,
         particle_colors: NDArray[np.uint8] | None = None,
         particle_alphas: NDArray[np.float64] | None = None,

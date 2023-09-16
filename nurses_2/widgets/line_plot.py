@@ -300,6 +300,7 @@ class LinePlot(Widget):
 
     def __init__(
         self,
+        *,
         xs: Sequence[Sequence[Real]],
         ys: Sequence[Sequence[Real]],
         mode: Literal["box", "braille"] = "braille",

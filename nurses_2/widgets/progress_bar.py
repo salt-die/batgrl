@@ -219,7 +219,7 @@ class ProgressBar(Themable, TextWidget):
     """
 
     def __init__(
-        self, is_horizontal: bool = True, animation_delay: float = 1 / 60, **kwargs
+        self, *, is_horizontal: bool = True, animation_delay: float = 1 / 60, **kwargs
     ):
         super().__init__(**kwargs)
         self.animation_delay = animation_delay

@@ -264,6 +264,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
     def __init__(
         self,
+        *,
         left_label: str = "",
         right_label: str = "",
         item_disabled: bool = False,

@@ -283,7 +283,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     are visible.
     """
 
-    def __init__(self, title="", **kwargs):
+    def __init__(self, *, title="", **kwargs):
         self._title = title
 
         super().__init__(**kwargs)

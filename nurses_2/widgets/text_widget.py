@@ -211,6 +211,7 @@ class TextWidget(Widget):
 
     def __init__(
         self,
+        *,
         default_char: str = " ",
         default_color_pair: ColorPair = WHITE_ON_BLACK,
         **kwargs,

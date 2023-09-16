@@ -219,6 +219,7 @@ class GraphicWidget(Widget):
 
     def __init__(
         self,
+        *,
         is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,

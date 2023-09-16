@@ -411,6 +411,7 @@ class FileChooser(Themable, ScrollView):
 
     def __init__(
         self,
+        *,
         root_dir: Path | None = None,
         directories_only: bool = False,
         show_hidden: bool = True,

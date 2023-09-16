@@ -235,6 +235,7 @@ class ScrollView(Grabbable, Widget):
 
     def __init__(
         self,
+        *,
         allow_vertical_scroll=True,
         allow_horizontal_scroll=True,
         show_vertical_bar=True,

@@ -243,6 +243,7 @@ class HSplitLayout(Widget):
 
     def __init__(
         self,
+        *,
         split_row: int = 1,
         min_split_height: int = 1,
         anchor_top_pane: bool = True,

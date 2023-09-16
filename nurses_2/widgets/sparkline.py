@@ -247,6 +247,7 @@ class Sparkline(TextWidget):
 
     def __init__(
         self,
+        *,
         data: Sequence[Real] | None = None,
         min_color: Color = DEFAULT_MIN_COLOR,
         max_color: Color = DEFAULT_MAX_COLOR,

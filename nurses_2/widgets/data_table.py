@@ -558,6 +558,7 @@ class DataTable(Themable, ScrollView):
 
     def __init__(
         self,
+        *,
         data: dict[str, Sequence[T]] | None = None,
         default_style: ColumnStyle | None = None,
         select_items: Literal["cell", "row", "column"] = "row",
