@@ -22,13 +22,7 @@ from nurses_2.colors import (
 )
 from nurses_2.widgets.behaviors.grabbable import Grabbable
 from nurses_2.widgets.grid_layout import GridLayout
-from nurses_2.widgets.shadow_caster import (
-    Camera,
-    LightIntensity,
-    LightSource,
-    Restrictiveness,
-    ShadowCaster,
-)
+from nurses_2.widgets.shadow_caster import Camera, LightSource, ShadowCaster
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.toggle_button import ToggleButton
 from nurses_2.widgets.widget import Widget
@@ -72,9 +66,9 @@ class ShadowCasterApp(App):
             map=map_,
             camera=Camera((0, 0), (34, 34)),
             tile_colors=[AWHITE, ACYAN, AMAGENTA],
-            light_sources=[LightSource(intensity=WHITE), LightSource(intensity=WHITE)],
+            light_sources=[LightSource(), LightSource()],
             radius=40,
-            restrictiveness=Restrictiveness.PERMISSIVE,
+            restrictiveness="permissive",
         )
 
         label_kwargs = dict(default_color_pair=PRIMARY)
@@ -97,25 +91,23 @@ class ShadowCasterApp(App):
 
         button_a = ToggleButton(
             label="Permissive",
-            callback=make_toggle_callback(Restrictiveness.PERMISSIVE),
+            callback=make_toggle_callback("permissive"),
             **button_kwargs,
         )
         button_b = ToggleButton(
             label="Moderate",
-            callback=make_toggle_callback(Restrictiveness.MODERATE),
+            callback=make_toggle_callback("moderate"),
             **button_kwargs,
         )
         button_c = ToggleButton(
             label="Restrictive",
-            callback=make_toggle_callback(Restrictiveness.RESTRICTIVE),
+            callback=make_toggle_callback("restrictive"),
             **button_kwargs,
         )
 
         def make_slider_callback(light_source, colors):
             def callback(i):
-                caster.light_sources[
-                    light_source
-                ].intensity = LightIntensity.from_color(colors[round(i)])
+                caster.light_sources[light_source].color = colors[round(i)]
 
             return callback
 
@@ -129,7 +121,7 @@ class ShadowCasterApp(App):
 
         slider_c = Selector(**slider_kwargs)
         slider_c.callback = lambda i: setattr(
-            caster, "ambient_light", LightIntensity.from_color(BLACK_TO_WHITE[i])
+            caster, "ambient_light", BLACK_TO_WHITE[i]
         )
         slider_c.colors[..., :3] = BLACK_TO_WHITE
 
