@@ -24,6 +24,7 @@ from itertools import islice
 from pathlib import Path
 
 import numpy as np
+from numpy.typing import NDArray
 from wcwidth import wcswidth, wcwidth
 
 __all__ = (
@@ -134,7 +135,7 @@ class FIGFont:
         If set to true univeral smushing will display earliest sub-character (instead of
         latest).
 
-    font : dict[str, np.ndarray], default: {}
+    font : dict[str, NDArray[np.dtype("<U1")]], default: {}
         A dictionary of characters to their ascii art representations.
 
     comments : str, default: ""
@@ -155,7 +156,7 @@ class FIGFont:
         If set to true univeral smushing will display earliest sub-character (instead of
         latest).
 
-    font : dict[str, np.ndarray]
+    font : dict[str, NDArray[np.dtype("<U1")]]
         A dictionary of characters to their ascii art representations.
 
     comments : str
@@ -167,7 +168,7 @@ class FIGFont:
         Load a FIGFont from a path.
 
     render_array:
-        Render text as ascii art into a 2D "<U1" ndarray.
+        Render text as ascii art into a 2D "<U1" numpy array.
 
     render_str:
         Render text as ascii art into a multiline string.
@@ -194,7 +195,7 @@ class FIGFont:
     latest).
     """
 
-    font: dict[str, np.ndarray] = field(repr=False, default_factory=dict)
+    font: dict[str, NDArray[np.dtype("<U1")]] = field(repr=False, default_factory=dict)
     """
     A dictionary of characters to their ascii art representations.
     """
@@ -255,7 +256,7 @@ class FIGFont:
         it = iter(lines)
         height = figinfo["height"]
 
-        def consume_char() -> np.ndarray | None:
+        def consume_char() -> NDArray[np.dtype("<u1")] | None:
             char_lines = [ENDMARKS_RE.sub("", line) for line in islice(it, height)]
             if len(char_lines) < height:
                 return None
@@ -315,7 +316,9 @@ class FIGFont:
         """
         return next(v for v in self.font.values() if v is not None).shape[0]
 
-    def _trim_char(self, fig_char: np.ndarray) -> np.ndarray:
+    def _trim_char(
+        self, fig_char: NDArray[np.dtype("<U1")]
+    ) -> NDArray[np.dtype("<U1")]:
         """
         Remove leading and trailing whitespace.
         """
@@ -394,7 +397,9 @@ class FIGFont:
             if ab == "><":
                 return "X"
 
-    def _smush(self, a: np.ndarray, b: np.ndarray) -> list[str] | None:
+    def _smush(
+        self, a: NDArray[np.dtype("<U1")], b: NDArray[np.dtype("<U1")]
+    ) -> list[str] | None:
         """
         Attempt to smush two columns of sub-characters. If smushing
         fails, return None, else return the smushed column as a list of characters.
@@ -408,8 +413,8 @@ class FIGFont:
         return c
 
     def _add_char(
-        self, buffer: np.ndarray, prev_char_width: int, char: str
-    ) -> tuple[np.ndarray, int]:
+        self, buffer: NDArray[np.dtype("<U1")], prev_char_width: int, char: str
+    ) -> tuple[NDArray[np.dtype("<U1")], int]:
         """
         Add a character to the line buffer.
         """
@@ -437,7 +442,7 @@ class FIGFont:
 
         return np.concatenate((a, b), axis=1), current_char_width
 
-    def _render_line(self, line: str) -> np.ndarray:
+    def _render_line(self, line: str) -> NDArray[np.dtype("<U1")]:
         """
         Render a single line of text.
         """
@@ -448,9 +453,9 @@ class FIGFont:
         buffer[buffer == self.hardblank] = " "
         return buffer
 
-    def render_array(self, text: str) -> np.ndarray:
+    def render_array(self, text: str) -> NDArray[np.dtype("<U1")]:
         """
-        Render text as ascii art into a 2D "<U1" ndarray.
+        Render text as ascii art into a 2D "<U1" numpy array.
         """
         lines = list(map(self._render_line, text.splitlines()))
         max_width = max(line.shape[1] for line in lines)

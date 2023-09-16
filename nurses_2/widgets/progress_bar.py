@@ -81,9 +81,9 @@ class ProgressBar(Themable, TextWidget):
     is_horizontal : bool
         If true, the bar will progress to the right, else
         the bar will progress upwards.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.

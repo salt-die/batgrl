@@ -3,11 +3,18 @@ A text particle field.
 
 A particle field specializes in handling many single "pixel" children.
 """
-import numpy as np
+from typing import Any
 
-from .widget import Widget, style_char
+import numpy as np
+from numpy.typing import NDArray
+
+from .widget import Char, Widget, style_char
 
 __all__ = ("TextParticleField",)
+
+
+NDArray[np.float64]
+dict[str, NDArray[Any]]
 
 
 class TextParticleField(Widget):
@@ -20,13 +27,13 @@ class TextParticleField(Widget):
 
     Parameters
     ----------
-    particle_positions : np.ndarray | None=None, default: None
+    particle_positions : NDArray[np.int32] | None, default: None
         Positions of particles. Expect int array with shape `N, 2`.
-    particle_chars : np.ndarray | None=None, default: None
+    particle_chars : NDArray[Char] | None, default: None
         An array of characters. Expect a `Char` array with shape `N,`.
-    particle_color_pairs : np.ndarray | None=None, default: None
+    particle_color_pairs : NDArray[np.uint8] | None, default: None
         Color pairs of particles. Expect uint8 array with shape `N, 6`.
-    particle_properties : dict[str, np.ndarray]=None, default: None
+    particle_properties : dict[str, NDArray[Any]] | None, default: None
         Additional particle properties.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -70,13 +77,13 @@ class TextParticleField(Widget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : np.ndarray
+    particle_positions : NDArray[np.int32]
         Positions of particles.
-    particle_chars : np.ndarray
+    particle_chars : NDArray[Char]
         Characters of alphas.
-    particle_color_pairs : np.ndarray
+    particle_color_pairs : NDArray[np.uint8]
         Color pairs of particles.
-    particle_properties : dict[str, np.ndarray]
+    particle_properties : dict[str, NDArray[Any]]
         Additional particle properties.
     size : Size
         Size of widget.
@@ -195,10 +202,10 @@ class TextParticleField(Widget):
 
     def __init__(
         self,
-        particle_positions: np.ndarray | None = None,
-        particle_chars: np.ndarray | None = None,
-        particle_color_pairs: np.ndarray | None = None,
-        particle_properties: dict[str, np.ndarray] = None,
+        particle_positions: NDArray[np.int32] | None = None,
+        particle_chars: NDArray[Char] | None = None,
+        particle_color_pairs: NDArray[np.uint8] | None = None,
+        particle_properties: dict[str, NDArray[Any]] = None,
         **kwargs,
     ):
         super().__init__(**kwargs)

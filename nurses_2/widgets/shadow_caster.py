@@ -7,6 +7,7 @@ from typing import Literal
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 
 from ..clamp import clamp
 from ..colors import AWHITE, BLACK, WHITE, AColor, Color
@@ -62,7 +63,7 @@ class Camera:
     pos: Point
     size: Size
 
-    def get_submap(self, map: np.ndarray) -> np.ndarray:
+    def get_submap(self, map: NDArray[np.uint32]) -> NDArray[np.uint32]:
         """
         Get the section of a map visible by the camera.
         """
@@ -152,7 +153,7 @@ class ShadowCaster(GraphicWidget):
 
     Parameters
     ----------
-    map : numpy.ndarray
+    map : NDArray[np.uint32]
         A 2-d map. Non-zero values are walls.
     camera : Camera
         A camera that determines the visible portion of the map.
@@ -219,7 +220,7 @@ class ShadowCaster(GraphicWidget):
 
     Attributes
     ----------
-    map : numpy.ndarray
+    map : NDArray[np.uint32]
         A 2-d map. Non-zero values are walls.
     camera : Camera
         A camera that determines the visible portion of the map.
@@ -239,7 +240,7 @@ class ShadowCaster(GraphicWidget):
         Smoothness of shadow edges.
     not_visible_blocks : bool
         If true, all not-visible cells will be treated as opaque.
-    texture : numpy.ndarray
+    texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -371,7 +372,7 @@ class ShadowCaster(GraphicWidget):
 
     def __init__(
         self,
-        map: np.ndarray,
+        map: NDArray[np.uint32],
         camera: Camera,
         tile_colors: list[AColor] | None = None,
         light_sources: list[LightSource] | None = None,

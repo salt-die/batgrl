@@ -3,9 +3,12 @@ A graphic particle field.
 
 A particle field specializes in handling many single "pixel" children.
 """
-import numpy as np
+from typing import Any
 
-from .widget import Widget, style_char
+import numpy as np
+from numpy.typing import NDArray
+
+from .widget import Char, Widget, style_char
 
 __all__ = ("GraphicParticleField",)
 
@@ -21,14 +24,14 @@ class GraphicParticleField(Widget):
 
     Parameters
     ----------
-    particle_positions : np.ndarray | None=None, default: None
+    particle_positions : NDArray[np.int32] | None, default: None
         Positions of particles. Expect int array with shape `N, 2`.
-    particle_colors : np.ndarray | None=None, default: None
+    particle_colors : NDArray[np.uint8] | None, default: None
         Colors of particles. Expect uint8 array with shape `N, 4`.
-    particle_alphas : np.ndarray | None=None, default: None
+    particle_alphas : NDArray[np.float64] | None, default: None
         Alphas of particles. Expect float array of values between
         0 and 1 with shape `N,`.
-    particle_properties : dict[str, np.ndarray]=None, default: None
+    particle_properties : dict[str, NDArray[Any]] | None, default: None
         Additional particle properties.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -71,13 +74,13 @@ class GraphicParticleField(Widget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : np.ndarray
+    particle_positions : NDArray[np.int32]
         Positions of particles.
-    particle_colors : np.ndarray
+    particle_colors : NDArray[np.uint8]
         Colors of particles.
-    particle_alphas : np.ndarray
+    particle_alphas : NDArray[np.float64]
         Alphas of particles.
-    particle_properties : dict[str, np.ndarray]
+    particle_properties : dict[str, NDArray[Any]]
         Additional particle properties.
     size : Size
         Size of widget.
@@ -196,10 +199,10 @@ class GraphicParticleField(Widget):
 
     def __init__(
         self,
-        particle_positions: np.ndarray | None = None,
-        particle_colors: np.ndarray | None = None,
-        particle_alphas: np.ndarray | None = None,
-        particle_properties: dict[str, np.ndarray] = None,
+        particle_positions: NDArray[np.int32] | None = None,
+        particle_colors: NDArray[np.uint8] | None = None,
+        particle_alphas: NDArray[np.float64] | None = None,
+        particle_properties: dict[str, NDArray[Any]] = None,
         is_transparent: bool = True,
         **kwargs,
     ):
@@ -234,7 +237,12 @@ class GraphicParticleField(Widget):
         """
         return len(self.particle_positions)
 
-    def render(self, canvas_view, colors_view: np.ndarray, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         """
         Paint region given by `source` into `canvas_view` and `colors_view`.
         """

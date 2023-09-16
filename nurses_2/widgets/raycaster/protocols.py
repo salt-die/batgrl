@@ -4,6 +4,7 @@ Protocols for :class:`nurses_2.widgets.raycaster.Raycaster`.
 from typing import Literal, Protocol
 
 import numpy as np
+from numpy.typing import NDArray
 
 
 class Map(Protocol):
@@ -34,13 +35,15 @@ class Camera(Protocol):
     `float` and shapes (2,) and (2, 2) respectively.
     """
 
-    pos: np.ndarray  # shape: (2,), dtype: float
-    plane: np.ndarray  # shape: (2, 2), dtype: float
+    pos: NDArray[np.float64]
+    """Position of camera. Array should have shape `(2,)`."""
+    plane: NDArray[np.float64]
+    """Rotation of camera. Array should have shape `(2, 2)`."""
 
 
 class Texture(Protocol):
     """
-    A texture. Typically a np.ndarray.
+    A texture. Typically a numpy array.
 
     Notes
     -----

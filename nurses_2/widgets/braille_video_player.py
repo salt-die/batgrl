@@ -94,9 +94,9 @@ class BrailleVideoPlayer(TextWidget):
         If true, colors in the source are inverted before video is rendered.
     is_device : bool
         If true, video is from a video capturing device.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.

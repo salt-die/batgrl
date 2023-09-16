@@ -75,9 +75,9 @@ class TreeViewNode(Themable, ButtonBehavior, TextWidget):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.

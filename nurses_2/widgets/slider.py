@@ -98,9 +98,9 @@ class Slider(Grabbable, TextWidget):
         True if slider value can be changed.
     proportion : float
         Current proportion of slider.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in `canvas`.
     default_char : str
         Default background character.

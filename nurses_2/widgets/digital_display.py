@@ -223,9 +223,9 @@ class DigitalDisplay(TextWidget):
         If `m` segment of digital display is on.
     dp : bool
         If `dp` segment of digital display is on.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.

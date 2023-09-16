@@ -80,9 +80,9 @@ class TextPanel(Themable, TextWidget):
         Minimum size needed to show all text.
     text_container : TextWidget
         Child widget that contains the panel text.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.

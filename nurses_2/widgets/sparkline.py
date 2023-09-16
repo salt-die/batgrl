@@ -110,9 +110,9 @@ class Sparkline(TextWidget):
         Color pair for tooltip.
     highlight_color : Color
         Color of highlighted value of the sparkline.
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.
