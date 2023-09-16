@@ -1,23 +1,34 @@
 """
 A sprite class for :class:`nurses_2.widgets.raycaster.Raycaster`.
 """
+from dataclasses import dataclass, field
+
 import numpy as np
+from numpy.typing import NDArray
 
 
+@dataclass(slots=True)
 class Sprite:
     """
     A sprite for a raycaster.
     """
 
-    __slots__ = "pos", "texture_idx", "_relative", "distance"
+    pos: tuple[float, float]
+    """Position of sprite on map."""
 
-    def __init__(self, pos: np.ndarray, texture_idx: int):
-        self.pos = pos
-        self.texture_idx = texture_idx
-        self.relative = np.array([0.0, 0.0])
+    texture_idx: int
+    """Index of sprite texture."""
+
+    _relative: NDArray[np.float64] = field(
+        init=False, default_factory=lambda: np.zeros(2)
+    )
+
+    distance: np.float64 = field(init=False)
+    """Distance from camera, set when :attr:`relative` is set."""
 
     @property
     def relative(self):
+        """Vector from camera to sprite, set by the caster."""
         return self._relative
 
     @relative.setter
