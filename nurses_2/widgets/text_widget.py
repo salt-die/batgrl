@@ -8,8 +8,7 @@ from wcwidth import wcswidth
 from ..colors import WHITE_ON_BLACK, Color, ColorPair
 from ..data_structures import Point, Size
 from .text_widget_data_structures import Border, add_text
-from .widget import Widget
-from .widget_data_structures import Anchor, Char, Easing, PosHint, SizeHint, style_char
+from .widget import Anchor, Char, Easing, PosHint, SizeHint, Widget, style_char
 
 __all__ = (
     "add_text",

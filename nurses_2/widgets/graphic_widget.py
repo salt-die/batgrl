@@ -5,13 +5,22 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 
 from ..clamp import clamp
 from ..colors import TRANSPARENT, AColor
 from ..data_structures import Point, Size
 from .graphic_widget_data_structures import Interpolation
-from .widget import Widget, subscribable
-from .widget_data_structures import Anchor, Easing, PosHint, SizeHint, style_char
+from .widget import (
+    Anchor,
+    Char,
+    Easing,
+    PosHint,
+    SizeHint,
+    Widget,
+    style_char,
+    subscribable,
+)
 
 __all__ = (
     "AColor",
@@ -259,11 +268,16 @@ class GraphicWidget(Widget):
 
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
-        if interpolation not in {"nearest", "linear", "cubic", "area", "lanczos"}:
-            raise ValueError(f"{interpolation} is not a valid interpolation type.")
+        if interpolation not in Interpolation.__args__:
+            raise TypeError(f"{interpolation} is not a valid interpolation type.")
         self._interpolation = interpolation
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         """
         Paint region given by `source` into `canvas_view` and `colors_view`.
         """

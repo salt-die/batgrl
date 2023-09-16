@@ -3,6 +3,11 @@ Effects are behaviors that modify how a widget and its children are rendered.
 """
 from abc import ABC, abstractmethod
 
+import numpy as np
+from numpy.typing import NDArray
+
+from ..widget_data_structures import Char
+
 
 class Effect(ABC):
     """
@@ -22,7 +27,12 @@ class Effect(ABC):
         Apply an effect to the rendered views of a widget.
     """
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         """
         Render normally then apply canvas and color effects.
         """

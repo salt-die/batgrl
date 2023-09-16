@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
-from .widget import Widget, subscribable
+from .widget import Char, Widget, subscribable
 
 __all__ = ("Animation",)
 
@@ -352,7 +352,12 @@ class Animation(Widget):
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         if self.frames:
             self.frames[self._i].render(canvas_view, colors_view, source)
 

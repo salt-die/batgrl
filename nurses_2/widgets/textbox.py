@@ -3,6 +3,8 @@ A textbox widget for single-line editable text.
 """
 from collections.abc import Callable
 
+import numpy as np
+from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
@@ -10,7 +12,7 @@ from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, style_char
-from .widget import Rect, Widget, intersection
+from .widget import Char, Rect, Widget, intersection
 
 WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
@@ -359,7 +361,12 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
     def on_blur(self):
         self._cursor.is_enabled = False
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         """
         Paint region given by source into canvas_view and colors_view.
         """

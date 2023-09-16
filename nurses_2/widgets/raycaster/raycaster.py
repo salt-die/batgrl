@@ -2,10 +2,11 @@
 A raycaster widget.
 """
 import numpy as np
+from numpy.typing import NDArray
 
 from ...clamp import clamp
 from ...colors import BLACK, Color
-from ..graphic_widget import GraphicWidget
+from ..graphic_widget import Char, GraphicWidget
 from .protocols import Camera, Map, Texture
 from .sprite import Sprite
 
@@ -512,7 +513,12 @@ class Raycaster(GraphicWidget):
 
             texture[start_y:end_y, columns, :3] = sprite_rgb
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         camera = self.camera
         pos_frac = self._pos_frac
         rotated_angles = self._rotated_angles

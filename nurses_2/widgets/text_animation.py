@@ -4,11 +4,14 @@ A text animation widget.
 import asyncio
 from collections.abc import Iterable, Sequence
 
+import numpy as np
+from numpy.typing import NDArray
+
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .animation import _check_frame_durations
 from .text_widget import TextWidget
 from .widget import Widget, intersection
-from .widget_data_structures import Rect
+from .widget_data_structures import Char, Rect
 
 
 class TextAnimation(Widget):
@@ -300,7 +303,12 @@ class TextAnimation(Widget):
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         if self.frames:
             frame = self.frames[self._i]
             vert_slice, hori_slice = source

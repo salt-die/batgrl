@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
-from .widget import Widget, subscribable
+from .widget import Char, Widget, subscribable
 
 __all__ = ("Parallax",)
 
@@ -323,7 +323,12 @@ class Parallax(Widget):
             )
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         for layer in self.layers:
             layer.render(canvas_view, colors_view, source)
 

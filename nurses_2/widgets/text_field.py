@@ -239,7 +239,12 @@ class TextParticleField(Widget):
         """
         return len(self.particle_positions)
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         vert_slice, hori_slice = source
         top = vert_slice.start
         height = vert_slice.stop - top
