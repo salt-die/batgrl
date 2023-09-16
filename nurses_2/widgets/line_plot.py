@@ -86,18 +86,18 @@ class LinePlot(Widget):
     mode : Literal["braille", "box"], default: "braille"
         Determines which characters are used to draw the plot.
     min_x : Real | None, default: None
-        Minimum x-value of plot. If None, xmin will be minimum of all xs.
+        Minimum x-value of plot. If `None`, min_x will be minimum of all xs.
     max_x : Real | None, default: None
-        Maximum x-value of plot. If None, xmax will be maximum of all xs.
+        Maximum x-value of plot. If `None`, max_x will be maximum of all xs.
     min_y : Real | None, default: None
-        Minimum y-value of plot. If None, ymin will be minimum of all ys.
+        Minimum y-value of plot. If `None`, min_y will be minimum of all ys.
     max_y : Real | None, default: None
-        Maximum y-value of plot. If None, ymax will be maximum of all ys.
+        Maximum y-value of plot. If `None`, max_y will be maximum of all ys.
     line_colors : list[Color] | None, default: None
-        The color of each line plot. A rainbow gradient is used as default.
+        The color of each line plot. If `None`, a rainbow gradient is used.
     legend_labels : list[str] | None, default: None
         Labels for legend. If `None`, legend is hidden.
-    plot_color_pair : ColorPair = DEFAULT_COLOR_THEME.primary,
+    plot_color_pair : ColorPair, default: DEFAULT_COLOR_THEME.primary,
         Color of text in the plot.
     x_label : str | None, default: None
         Optional label for x-axis.
@@ -149,15 +149,15 @@ class LinePlot(Widget):
     mode : Literal["braille", "box"]
         Determines which characters are used to draw the plot.
     min_x : Real | None
-        Minimum x-value of plot.
+        Minimum x-value of plot. If `None`, min_x will be minimum of all xs.
     max_x : Real | None
-        Maximum x-value of plot.
+        Maximum x-value of plot. If `None`, max_x will be maximum of all xs.
     min_y : Real | None
-        Minimum y-value of plot.
+        Minimum y-value of plot. If `None`, min_y will be minimum of all ys.
     max_y : Real | None
-        Maximum y-value of plot.
+        Maximum y-value of plot. If `None`, max_y will be maximum of all ys.
     line_colors : list[Color] | None
-        The color of each line plot.
+        The color of each line plot. If `None`, a rainbow gradient is used.
     legend_labels : list[str] | None
         Labels for legend. If `None`, legend is hidden.
     plot_color_pair : ColorPair
