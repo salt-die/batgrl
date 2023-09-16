@@ -136,7 +136,7 @@ class Widget:
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
@@ -279,7 +279,7 @@ class Widget:
         min_height: int | None = None,
         max_height: int | None = None,
         pos_hint: PosHint = PosHint(None, None),
-        anchor=Anchor.TOP_LEFT,
+        anchor: Anchor = "center",
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
@@ -564,7 +564,9 @@ class Widget:
     @anchor.setter
     @subscribable
     def anchor(self, anchor: Anchor):
-        self._anchor = Anchor(anchor)
+        if anchor not in Anchor.__args__:
+            raise TypeError(f"{anchor} is not a valid Anchor")
+        self._anchor = anchor
         self.apply_hints()
 
     @property
@@ -633,24 +635,24 @@ class Widget:
             return
 
         match self.anchor:
-            case Anchor.TOP_LEFT:
-                offset_top, offset_left = 0, 0
-            case Anchor.TOP_RIGHT:
-                offset_top, offset_left = 0, self.width
-            case Anchor.BOTTOM_LEFT:
-                offset_top, offset_left = self.height, 0
-            case Anchor.BOTTOM_RIGHT:
-                offset_top, offset_left = self.height, self.width
-            case Anchor.CENTER:
+            case "center":
                 offset_top, offset_left = self.center
-            case Anchor.TOP_CENTER:
+            case "top":
                 offset_top, offset_left = 0, self.center.x
-            case Anchor.BOTTOM_CENTER:
+            case "bottom":
                 offset_top, offset_left = self.height, self.center.x
-            case Anchor.LEFT_CENTER:
+            case "left":
                 offset_top, offset_left = self.center.y, 0
-            case Anchor.RIGHT_CENTER:
+            case "right":
                 offset_top, offset_left = self.center.y, self.width
+            case "top-left":
+                offset_top, offset_left = 0, 0
+            case "top-right":
+                offset_top, offset_left = 0, self.width
+            case "bottom-left":
+                offset_top, offset_left = self.height, 0
+            case "bottom-right":
+                offset_top, offset_left = self.height, self.width
 
         if y_hint is not None:
             self.top = int(h * y_hint) - offset_top
@@ -839,7 +841,12 @@ class Widget:
         or ``None``).
         """
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         """
         Paint region given by `source` into `canvas_view` and `colors_view`.
         """
@@ -876,7 +883,7 @@ class Widget:
         self,
         *,
         duration: float = 1.0,
-        easing: Easing = Easing.LINEAR,
+        easing: Easing = "linear",
         on_start: Callable | None = None,
         on_progress: Callable | None = None,
         on_complete: Callable | None = None,
@@ -890,7 +897,7 @@ class Widget:
         ----------
         duration : float, default: 1.0
             The duration of the tween in seconds.
-        easing : Easing, default: Easing.LINEAR
+        easing : Easing, default: "linear"
             The easing used for tweening.
         on_start : Callable | None, default: None
             Called when tween starts.
@@ -902,13 +909,13 @@ class Widget:
             Widget properties' target values. E.g., to smoothly tween a widget's
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
             keyword-argument:
-            ``await widget.tween(pos=(5, 10), duration=2.5, easing=Easing.OUT_BOUNCE)``
+            ``await widget.tween(pos=(5, 10), duration=2.5, easing="out_bounce")``
 
         Warnings
         --------
         Running several tweens on the same properties concurrently will probably result
-        in unexpected behavior. `tween` won't work for ndarray types. If tweening size
-        or pos hints, make sure the relevant hints aren't `None` to start.
+        in unexpected behavior. `tween` won't work for numpy array types. If tweening
+        size or pos hints, make sure the relevant hints aren't `None` to start.
         """
         end_time = monotonic() + duration
         start_values = tuple(getattr(self, attr) for attr in properties)

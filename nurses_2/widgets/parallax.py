@@ -5,13 +5,14 @@ from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 import numpy as np
+from numpy.typing import NDArray
 
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
 from .widget import Widget, subscribable
 
-__all__ = "Interpolation", "Parallax"
+__all__ = ("Parallax",)
 
 
 def _check_layer_speeds(layers, speeds):
@@ -43,7 +44,7 @@ class Parallax(Widget):
         where `N` is the number of layers and `i` is the index of a layer.
     alpha : float, default: 1.0
         Transparency of the parallax.
-    interpolation : Interpolation, default: Interpolation.LINEAR
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -67,7 +68,7 @@ class Parallax(Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: True
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -167,7 +168,7 @@ class Parallax(Widget):
     Methods
     -------
     from_textures:
-        Create a :class:`Parallax` from an iterable of uint8 rgba ndarray.
+        Create a :class:`Parallax` from an iterable of uint8 RGBA numpy array.
     from_images:
         Create a :class:`Parallax` from an iterable of :class:`Image`.
     on_size:
@@ -220,7 +221,7 @@ class Parallax(Widget):
         path: Path | None = None,
         speeds: Sequence[float] | None = None,
         alpha: float = 1.0,
-        interpolation: Interpolation = Interpolation.LINEAR,
+        interpolation: Interpolation = "linear",
         is_transparent: bool = True,
         **kwargs,
     ):
@@ -230,7 +231,7 @@ class Parallax(Widget):
             paths = sorted(path.iterdir(), key=lambda file: file.name)
             self.layers = [Image(path=path) for path in paths]
 
-        super().__init__(is_transparent=True, **kwargs)
+        super().__init__(is_transparent=is_transparent, **kwargs)
 
         self.speeds = _check_layer_speeds(self.layers, speeds)
         self.alpha = alpha
@@ -279,7 +280,8 @@ class Parallax(Widget):
 
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
-        self._interpolation = Interpolation(interpolation)
+        if interpolation not in {"nearest", "linear", "cubic", "area", "lanczos"}:
+            raise ValueError(f"{interpolation} is not a valid interpolation type.")
         for layer in self.layers:
             layer.interpolation = interpolation
 
@@ -330,13 +332,13 @@ class Parallax(Widget):
     @classmethod
     def from_textures(
         cls,
-        textures: Iterable[np.ndarray],
+        textures: Iterable[NDArray[np.uint8]],
         *,
         speeds: Sequence[float] | None = None,
         **kwargs,
     ) -> "Parallax":
         """
-        Create an :class:`Parallax` from an iterable of uint8 rgba ndarray.
+        Create an :class:`Parallax` from an iterable of uint8 RGBA numpy array.
         """
         parallax = cls(**kwargs)
         parallax.layers = [

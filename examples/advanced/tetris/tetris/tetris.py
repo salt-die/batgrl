@@ -163,10 +163,10 @@ class Tetris(Image):
         for widget in self.walk():
             setup_background(widget)
 
-        self.held_piece = Piece(pos_hint=(0.5, 0.5), anchor="center", is_enabled=False)
+        self.held_piece = Piece(pos_hint=(0.5, 0.5), is_enabled=False)
         held_space.add_widget(self.held_piece)
 
-        self.next_piece = Piece(pos_hint=(0.5, 0.5), anchor="center", is_enabled=False)
+        self.next_piece = Piece(pos_hint=(0.5, 0.5), is_enabled=False)
         next_space.add_widget(self.next_piece)
 
         self.matrix = np.zeros(matrix_size, dtype=np.bool8)

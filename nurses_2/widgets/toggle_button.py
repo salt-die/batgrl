@@ -11,7 +11,7 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .text_widget import Anchor, TextWidget
+from .text_widget import TextWidget
 from .widget import Widget
 
 CHECK_OFF = "□ "
@@ -65,7 +65,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
@@ -237,7 +237,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     ):
         self.normal_color_pair = (0,) * 6  # Temporary assignment
 
-        self._label_widget = TextWidget(pos_hint=(0.5, 0), anchor=Anchor.LEFT_CENTER)
+        self._label_widget = TextWidget(pos_hint=(0.5, 0), anchor="left")
 
         self.callback = callback  # This must be set before `super().__init__`.
 

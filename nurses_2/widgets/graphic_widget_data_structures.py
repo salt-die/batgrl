@@ -1,45 +1,33 @@
 """
 Graphic widget data structures.
 """
-from enum import Enum
 from pathlib import Path
+from typing import Literal
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 
 from ..data_structures import Point, Size
 from .widget import Rect, intersection
 
 __all__ = "Interpolation", "read_texture", "resize_texture", "composite"
 
-
-class Interpolation(str, Enum):
-    """
-    Interpolation methods for resizing graphic widgets.
-
-    :class:`Interpolation` is one of `NEAREST`, `LINEAR`, `CUBIC`, `AREA`,
-    `LANCZOS`.
-    """
-
-    NEAREST = "nearest"
-    LINEAR = "linear"
-    CUBIC = "cubic"
-    AREA = "area"
-    LANCZOS = "lanczos"
-
+Interpolation = Literal["nearest", "linear", "cubic", "area", "lanczos"]
+"""Interpolation methods for resizing graphic widgets."""
 
 Interpolation._to_cv_enum = {
-    Interpolation.LINEAR: cv2.INTER_LINEAR,
-    Interpolation.CUBIC: cv2.INTER_CUBIC,
-    Interpolation.AREA: cv2.INTER_AREA,
-    Interpolation.LANCZOS: cv2.INTER_LANCZOS4,
-    Interpolation.NEAREST: cv2.INTER_NEAREST,
+    "linear": cv2.INTER_LINEAR,
+    "cubic": cv2.INTER_CUBIC,
+    "area": cv2.INTER_AREA,
+    "lanczos": cv2.INTER_LANCZOS4,
+    "nearest": cv2.INTER_NEAREST,
 }
 
 
-def read_texture(path: Path) -> np.ndarray:
+def read_texture(path: Path) -> NDArray[np.uint8]:
     """
-    Return a uint8 RBGA np.ndarray from a path to an image.
+    Return a uint8 RGBA numpy array from a path to an image.
     """
     image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
 
@@ -58,8 +46,8 @@ def read_texture(path: Path) -> np.ndarray:
 
 
 def resize_texture(
-    texture: np.ndarray, size: Size, interpolation: Interpolation = Interpolation.LINEAR
-) -> np.ndarray:
+    texture: NDArray[np.uint8], size: Size, interpolation: Interpolation = "linear"
+) -> NDArray[np.uint8]:
     """
     Resize texture.
     """
@@ -72,8 +60,8 @@ def resize_texture(
 
 
 def composite(
-    source: np.ndarray,
-    dest: np.ndarray,
+    source: NDArray[np.uint8],
+    dest: NDArray[np.uint8],
     pos: Point = Point(0, 0),
     mask_mode: bool = False,
 ):

@@ -4,7 +4,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.animation import Animation, Interpolation
+from nurses_2.widgets.animation import Animation
 from nurses_2.widgets.color_picker import ColorPicker
 from nurses_2.widgets.file_chooser import FileChooser
 from nurses_2.widgets.line_plot import LinePlot
@@ -24,7 +24,7 @@ class MyApp(App):
     async def on_start(self):
         window_kwargs = dict(size=(25, 50), border_alpha=0.7, alpha=0.7)
 
-        animation = Animation(path=CAVEMAN_PATH, interpolation=Interpolation.NEAREST)
+        animation = Animation(path=CAVEMAN_PATH, interpolation="nearest")
         window_1 = Window(title=CAVEMAN_PATH.name, **window_kwargs)
         window_1.view = animation
 
@@ -36,16 +36,12 @@ class MyApp(App):
 
         window_4 = Window(title="Line Plot", **window_kwargs)
         window_4.view = LinePlot(
-            XS,
-            YS_1,
-            XS,
-            YS_2,
-            XS,
-            YS_3,
-            xlabel="X Values",
-            ylabel="Y Values",
+            xs=[XS, XS, XS],
+            ys=[YS_1, YS_2, YS_3],
+            x_label="X Values",
+            y_label="Y Values",
             legend_labels=("Before", "During", "After"),
-            background_color_pair=DEFAULT_COLOR_THEME.primary,
+            plot_color_pair=DEFAULT_COLOR_THEME.primary,
         )
 
         self.add_widgets(window_1, window_2, window_3, window_4)

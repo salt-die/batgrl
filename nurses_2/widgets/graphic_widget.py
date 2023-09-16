@@ -42,7 +42,7 @@ class GraphicWidget(Widget):
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be
         multiplied by this value. (0 <= alpha <= 1.0)
-    interpolation : Interpolation, default: Interpolation.LINEAR
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -66,7 +66,7 @@ class GraphicWidget(Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -83,7 +83,7 @@ class GraphicWidget(Widget):
 
     Attributes
     ----------
-    texture : numpy.ndarray
+    texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -213,7 +213,7 @@ class GraphicWidget(Widget):
         is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
-        interpolation: Interpolation = Interpolation.LINEAR,
+        interpolation: Interpolation = "linear",
         **kwargs,
     ):
         super().__init__(is_transparent=is_transparent, **kwargs)
@@ -259,7 +259,9 @@ class GraphicWidget(Widget):
 
     @interpolation.setter
     def interpolation(self, interpolation: Interpolation):
-        self._interpolation = Interpolation(interpolation)
+        if interpolation not in {"nearest", "linear", "cubic", "area", "lanczos"}:
+            raise ValueError(f"{interpolation} is not a valid interpolation type.")
+        self._interpolation = interpolation
 
     def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
         """

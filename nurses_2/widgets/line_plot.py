@@ -125,7 +125,7 @@ class LinePlot(Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.

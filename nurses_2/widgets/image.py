@@ -5,11 +5,12 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 
 from .graphic_widget import GraphicWidget, Interpolation
 from .graphic_widget_data_structures import read_texture
 
-__all__ = "GraphicWidget", "Interpolation"
+__all__ = ("GraphicWidget",)
 
 
 class Image(GraphicWidget):
@@ -25,7 +26,7 @@ class Image(GraphicWidget):
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be
         multiplied by this value. (0 <= alpha <= 1.0)
-    interpolation : Interpolation, default: Interpolation.LINEAR
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -49,7 +50,7 @@ class Image(GraphicWidget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -69,7 +70,7 @@ class Image(GraphicWidget):
     path : pathlib.Path | None
         Path to image if image was loaded from a path. Setting the path
         immediately reloads the image.
-    texture : numpy.ndarray
+    texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.
@@ -149,7 +150,7 @@ class Image(GraphicWidget):
     Methods
     -------
     from_texture:
-        Create an :class:`Image` from a uint8 rgba ndarray.
+        Create an :class:`Image` from a uint8 RGBA numpy array.
     to_png:
         Write :attr:`texture` to provided path as a `png` image.
     on_size:
@@ -224,9 +225,9 @@ class Image(GraphicWidget):
         )
 
     @classmethod
-    def from_texture(cls, texture: np.ndarray, **kwargs) -> "Image":
+    def from_texture(cls, texture: NDArray[np.uint8], **kwargs) -> "Image":
         """
-        Create an :class:`Image` from a uint8 rgba ndarray.
+        Create an :class:`Image` from a uint8 RGBA numpy array.
         """
         kls = cls(**kwargs)
         kls._otexture = texture

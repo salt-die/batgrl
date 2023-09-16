@@ -1,16 +1,18 @@
 """
 Data structures for text widgets.
 """
-from enum import Enum
+from typing import Literal
 
-import numpy as np
+from numpy.typing import NDArray
 from wcwidth import wcswidth, wcwidth
+
+from .widget_data_structures import Char
 
 __all__ = "add_text", "Border"
 
 
 def add_text(
-    canvas: np.ndarray,
+    canvas: NDArray[Char],
     text: str,
     *,
     bold: bool = False,
@@ -28,7 +30,7 @@ def add_text(
 
     Parameters
     ----------
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         A 1- or 2-dimensional view of a `TextWidget` canvas.
     text : str
         Text to add to canvas.
@@ -79,19 +81,7 @@ def add_text(
             i += width
 
 
-class Border(str, Enum):
-    """
-    Border styles for :meth:`nurses_2.text_widget.TextWidget.add_border`.
-
-    :class:`Borders` is one of `"light"`, `"heavy"`, `"double"`, `"curved"`,
-    `"ascii"`, `"outer"`, `"inner"`, `"thick"`.
-    """
-
-    LIGHT = "light"
-    HEAVY = "heavy"
-    DOUBLE = "double"
-    CURVED = "curved"
-    ASCII = "ascii"
-    OUTER = "outer"
-    INNER = "inner"
-    EQUAL = "thick"
+Border = Literal[
+    "light", "heavy", "double", "curved", "ascii", "outer", "inner", "thick"
+]
+"""Border styles for :meth:`nurses_2.text_widget.TextWidget.add_border`."""

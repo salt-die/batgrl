@@ -2,17 +2,19 @@
 A text widget.
 """
 import numpy as np
+from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK, Color, ColorPair
 from ..data_structures import Point, Size
 from .text_widget_data_structures import Border, add_text
 from .widget import Widget
-from .widget_data_structures import Anchor, Easing, PosHint, SizeHint, style_char
+from .widget_data_structures import Anchor, Char, Easing, PosHint, SizeHint, style_char
 
 __all__ = (
     "add_text",
     "Anchor",
+    "Border",
     "ColorPair",
     "Easing",
     "Point",
@@ -56,7 +58,7 @@ class TextWidget(Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background color and whitespace in text widget won't be painted.
@@ -73,9 +75,9 @@ class TextWidget(Widget):
 
     Attributes
     ----------
-    canvas : numpy.ndarray
+    canvas : NDArray[Char]
         The array of characters for the widget.
-    colors : numpy.ndarray
+    colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
     default_char : str
         Default background character.
@@ -263,7 +265,7 @@ class TextWidget(Widget):
 
     def add_border(
         self,
-        style: Border = Border.LIGHT,
+        style: Border = "light",
         bold: bool = False,
         color_pair: ColorPair | None = None,
     ):
@@ -272,7 +274,7 @@ class TextWidget(Widget):
 
         Parameters
         ----------
-        style : Border, default: Border.LIGHT
+        style : Border, default: "light"
             Style of border. Default style uses light box-drawing characters.
         bold : bool, default: False
             Whether the border is bold.
@@ -421,7 +423,12 @@ class TextWidget(Widget):
             overline=overline,
         )
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(
+        self,
+        canvas_view: NDArray[Char],
+        colors_view: NDArray[np.uint8],
+        source: tuple[slice, slice],
+    ):
         """
         Paint region given by source into canvas_view and colors_view.
         """

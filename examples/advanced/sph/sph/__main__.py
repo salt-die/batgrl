@@ -5,7 +5,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import BLACK, WHITE_ON_BLACK, Color, ColorPair
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import Anchor, GraphicWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.slider import Slider
 from nurses_2.widgets.text_widget import TextWidget
 
@@ -95,7 +95,6 @@ class SPHApp(App):
         container = TextWidget(
             size=(height, width),
             pos_hint=(0.5, 0.5),
-            anchor=Anchor.CENTER,
             default_color_pair=WHITE_ON_BLACK,
         )
 

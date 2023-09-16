@@ -30,7 +30,6 @@ class Modal(Widget):
         self.message_box = TextWidget(
             size=(6, 20),
             pos_hint=(0.5, 0.5),
-            anchor="center",
             default_color_pair=DEFAULT_COLOR_PAIR,
         )
         self.message_box.add_border("heavy")

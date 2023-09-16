@@ -62,7 +62,6 @@ class ShadowCasterApp(App):
 
         caster = ShadowCaster(
             size=(17, 34),
-            anchor="center",
             map=map_,
             camera=Camera((0, 0), (34, 34)),
             tile_colors=[AWHITE, ACYAN, AMAGENTA],
@@ -196,7 +195,7 @@ class ShadowCasterApp(App):
         )
         grid_layout.size = grid_layout.minimum_grid_size
 
-        container = Widget(pos_hint=(0.5, 0.5), anchor="center", size=(17, 58))
+        container = Widget(pos_hint=(0.5, 0.5), size=(17, 58))
         container.add_widgets(caster, grid_layout)
         self.add_widget(container)
 

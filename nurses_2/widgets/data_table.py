@@ -5,39 +5,19 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
 from itertools import count, islice
-from typing import Protocol, TypeVar
+from typing import Literal, Protocol, TypeVar
 
 from wcwidth import wcswidth
 
 from ..io import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .grid_layout import GridLayout, Orientation
+from .grid_layout import GridLayout
 from .scroll_view import ScrollView
 from .text_widget import Point, TextWidget
 from .text_widget_data_structures import add_text
 
-__all__ = "SelectItems", "Alignment", "ColumnStyle", "DataTable"
-
-
-class SelectItems(str, Enum):
-    """
-    Determines whether rows, columns or cells are selected in a data table.
-    """
-
-    CELL = "cell"
-    ROW = "row"
-    COLUMN = "column"
-
-
-class Alignment(str, Enum):
-    """
-    Alignments of a column in a data table.
-    """
-
-    CENTER = "center"
-    LEFT = "left"
-    RIGHT = "right"
+__all__ = "ColumnStyle", "DataTable"
 
 
 class SupportsLessThan(Protocol):
@@ -63,8 +43,8 @@ class ColumnStyle:
     render : Callable[[T], str] | None, default: None
         A callable that renders column data into a string. Uses the
         built-in `str` by default.
-    alignment : Alignment, default: Alignment.LEFT
-        Alignment of the column. One of `"left"`, `"right"`, `"center"`.
+    alignment : Literal["center", "left", "right"], default: "left"
+        Alignment of the column.
     padding : int, default: 1
         Left and right padding of column.
     min_width : int, default: 0
@@ -76,7 +56,7 @@ class ColumnStyle:
     ----------
     render : Callable[[T], str]
         A callable that renders column data into a string.
-    alignment : Alignment
+    alignment : Literal["center", "left", "right"]
         Alignment of the column.
     padding : int
         Left and right padding of column.
@@ -91,9 +71,9 @@ class ColumnStyle:
     A callable that renders column data into a string. Uses the built-in `str` by
     default.
     """
-    alignment: Alignment = Alignment.LEFT
+    alignment: Literal["center", "left", "right"] = "left"
     """
-    Alignment of the column. One of `"left"`, `"right"`, `"center"`.
+    Alignment of the column.
     """
     padding: int = 1
     """
@@ -127,7 +107,11 @@ _SORT_INDICATOR_SPACING = 1
 """Spaces between column label text and sort indicator."""
 _SORT_INDICATOR_WIDTH = wcswidth(_SortState.NOT_SORTED.value)
 """Character width of sort indicator. (Indicator values should be same width.)"""
-_ALIGN_FORMATTER = {Alignment.CENTER: "^", Alignment.LEFT: "<", Alignment.RIGHT: ">"}
+_ALIGN_FORMATTER = {
+    "center": "^",
+    "left": "<",
+    "right": ">",
+}
 """Convert an alignment to f-string format specification."""
 
 
@@ -326,7 +310,7 @@ class DataTable(Themable, ScrollView):
         control over column styling use :meth:`add_column`.
     default_style : ColumnStyle | None, default: None
         Default style for new columns.
-    select_items : SelectItems, default: SelectItems.Row
+    select_items : Literal["cell", "row", "column"], default: "row"
         Determines which items are selected when data table is clicked.
     zebra_stripes : bool, default: True
         Whether alternate rows are colored differently.
@@ -376,7 +360,7 @@ class DataTable(Themable, ScrollView):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
@@ -395,7 +379,7 @@ class DataTable(Themable, ScrollView):
     ----------
     default_style : ColumnStyle
         Default style for new columns.
-    select_items : SelectItems
+    select_items : Literal["cell", "row", "column"]
         Which items are selected when data table is clicked.
     zebra_stripes : bool
         Whether alternate rows are colored differently.
@@ -576,7 +560,7 @@ class DataTable(Themable, ScrollView):
         self,
         data: dict[str, Sequence[T]] | None = None,
         default_style: ColumnStyle | None = None,
-        select_items: SelectItems = SelectItems.ROW,
+        select_items: Literal["cell", "row", "column"] = "row",
         zebra_stripes: bool = True,
         allow_sorting: bool = True,
         **kwargs,
@@ -587,7 +571,7 @@ class DataTable(Themable, ScrollView):
         self._column_styles: dict[int, ColumnStyle] = {}
         """Column id to column style."""
         self._column_labels = GridLayout(
-            grid_rows=1, grid_columns=0, orientation=Orientation.LR_TB
+            grid_rows=1, grid_columns=0, orientation="lr-tb"
         )
         """Grid layout containing column label cells."""
         self._rows: dict[int, GridLayout] = {}
@@ -598,9 +582,7 @@ class DataTable(Themable, ScrollView):
         """
         self._hover_row_id = -1
         """Row id of row that mouse is hovering or -1 if no columns are hovered."""
-        self._table = GridLayout(
-            grid_rows=1, grid_columns=1, orientation=Orientation.TB_LR
-        )
+        self._table = GridLayout(grid_rows=1, grid_columns=1, orientation="tb-lr")
         """Grid layout of column label and row grid layouts."""
         self._table.add_widget(self._column_labels)
         self.view = self._table
@@ -619,15 +601,15 @@ class DataTable(Themable, ScrollView):
                 self.add_column(label, data=column_data)
 
     @property
-    def select_items(self) -> SelectItems:
+    def select_items(self) -> Literal["cell", "row", "column"]:
         """
         Determines which items are selected when data table is clicked.
         """
         return self._select_items
 
     @select_items.setter
-    def select_items(self, select_items: SelectItems):
-        select_items = SelectItems(select_items)
+    def select_items(self, select_items: Literal["cell", "row", "column"]):
+        select_items = select_items
         self._select_items = select_items
         for row in self._iter_rows():
             for cell in row.children:
@@ -716,7 +698,7 @@ class DataTable(Themable, ScrollView):
         cell: _DataCell
 
         match self.select_items:
-            case SelectItems.ROW:
+            case "row":
                 if self._hover_row_id != row_id:
                     if self._hover_row_id != -1:
                         for cell in self._rows[self._hover_row_id].children:
@@ -724,7 +706,7 @@ class DataTable(Themable, ScrollView):
                     if row_id != -1:
                         for cell in self._rows[row_id].children:
                             self._paint_cell_hover(cell)
-            case SelectItems.COLUMN:
+            case "column":
                 if self._hover_column_id != column_id:
                     if self._hover_column_id != -1:
                         old_column_index = self._column_ids.index(self._hover_column_id)
@@ -734,7 +716,7 @@ class DataTable(Themable, ScrollView):
                         new_column_index = self._column_ids.index(column_id)
                         for row in self._rows.values():
                             self._paint_cell_hover(row.children[new_column_index])
-            case SelectItems.CELL:
+            case "cell":
                 if self._hover_column_id != column_id or self._hover_row_id != row_id:
                     if self._hover_column_id != -1 and self._hover_row_id != -1:
                         old_column_index = self._column_ids.index(self._hover_column_id)
@@ -754,17 +736,17 @@ class DataTable(Themable, ScrollView):
         cell: _DataCell
 
         match self.select_items:
-            case SelectItems.ROW:
+            case "row":
                 for cell in self._rows[self._hover_row_id].children:
                     cell.selected = not cell.selected
                     self._paint_cell_hover(cell)
-            case SelectItems.COLUMN:
+            case "column":
                 column_index = self._column_ids.index(self._hover_column_id)
                 for row in self._rows.values():
                     cell = row.children[column_index]
                     cell.selected = not cell.selected
                     self._paint_cell_hover(cell)
-            case SelectItems.CELL:
+            case "cell":
                 column_index = self._column_ids.index(self._hover_column_id)
                 cell = self._rows[self._hover_row_id].children[column_index]
                 cell.selected = not cell.selected
@@ -858,9 +840,7 @@ class DataTable(Themable, ScrollView):
             self._table.grid_rows += len(data)
             for item in data:
                 row_id = next(self._IDS)
-                row = GridLayout(
-                    grid_rows=1, grid_columns=1, orientation=Orientation.LR_BT
-                )
+                row = GridLayout(grid_rows=1, grid_columns=1, orientation="lr-bt")
                 row.add_widget(
                     _DataCell(
                         data_table=self, column_id=column_id, data=item, row_id=row_id
@@ -905,7 +885,7 @@ class DataTable(Themable, ScrollView):
 
         row_id = next(self._IDS)
         row_layout = GridLayout(
-            grid_rows=1, grid_columns=len(data), orientation=Orientation.LR_BT
+            grid_rows=1, grid_columns=len(data), orientation="lr-bt"
         )
         row_layout.add_widgets(
             _DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id)

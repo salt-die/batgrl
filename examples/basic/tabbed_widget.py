@@ -4,7 +4,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.animation import Animation, Interpolation
+from nurses_2.widgets.animation import Animation
 from nurses_2.widgets.color_picker import ColorPicker
 from nurses_2.widgets.file_chooser import FileChooser
 from nurses_2.widgets.line_plot import LinePlot
@@ -23,7 +23,7 @@ class TabApp(App):
         tabbed = TabbedWidget(size_hint=(1.0, 1.0))
 
         animation = Animation(
-            path=CAVEMAN_PATH, interpolation=Interpolation.NEAREST, size_hint=(1.0, 1.0)
+            path=CAVEMAN_PATH, interpolation="nearest", size_hint=(1.0, 1.0)
         )
         animation.play()
         tabbed.add_tab("Animation", animation)
@@ -34,16 +34,12 @@ class TabApp(App):
         tabbed.add_tab(
             "Line Plot",
             LinePlot(
-                XS,
-                YS_1,
-                XS,
-                YS_2,
-                XS,
-                YS_3,
-                xlabel="X Values",
-                ylabel="Y Values",
+                xs=[XS, XS, XS],
+                ys=[YS_1, YS_2, YS_3],
+                x_label="X Values",
+                y_label="Y Values",
                 legend_labels=("Before", "During", "After"),
-                background_color_pair=DEFAULT_COLOR_THEME.primary,
+                plot_color_pair=DEFAULT_COLOR_THEME.primary,
                 size_hint=(1.0, 1.0),
             ),
         )

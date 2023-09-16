@@ -4,14 +4,23 @@ import cv2
 import numpy as np
 
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text_widget import Anchor, Point, TextWidget
+from nurses_2.widgets.text_widget import Point, TextWidget
 from nurses_2.widgets.widget import Widget
 
 from .colors import DATA_BAR, FLAG_COLOR
 from .count import Count
 from .grid import Grid
 from .minefield import Minefield
-from .unicode_chars import *
+from .unicode_chars import (
+    BAD_FLAG,
+    BOMB,
+    COOL,
+    EXPLODED,
+    FLAG,
+    HAPPY,
+    KNOCKED_OUT,
+    SURPRISED,
+)
 
 SIZE = 16, 30
 NMINES = 99
@@ -47,7 +56,7 @@ class MineSweeper(Widget):
 
         self.timer = TextWidget(
             size=(1, 20),
-            anchor=Anchor.TOP_RIGHT,
+            anchor="top-right",
             pos_hint=(None, 0.95),
             default_color_pair=DATA_BAR,
         )
@@ -64,7 +73,6 @@ class MineSweeper(Widget):
         self.reset_button = ResetButton(
             size=(1, 2),
             default_color_pair=DATA_BAR,
-            anchor=Anchor.CENTER,
             pos_hint=(None, 0.5),
         )
 

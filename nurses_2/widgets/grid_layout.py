@@ -1,31 +1,29 @@
 """
 A grid layout widget.
 """
-from enum import Enum
 from itertools import accumulate, product
+from typing import Literal
 
 from .widget import Size, Widget
 
 __all__ = "GridLayout", "Orientation"
 
+Orientation = Literal[
+    "lr-tb",
+    "lr-bt",
+    "rl-tb",
+    "rl-bt",
+    "tb-lr",
+    "tb-rl",
+    "bt-lr",
+    "bt-rl",
+]
+"""
+Orientation of the grid.
 
-class Orientation(str, Enum):
-    """
-    Orientation of the grid.
-
-    As an example, the orientation `LR_TB` means left-to-right, then top-to-bottom.
-    :class:`Orientation` is one of "lr-tb", "lr-bt", "rl-tb", "rl-bt", "tb-lr", "tb-rl",
-    "bt-lr", "bt-rl".
-    """
-
-    LR_TB = "lr-tb"
-    LR_BT = "lr-bt"
-    RL_TB = "rl-tb"
-    RL_BT = "rl-bt"
-    TB_LR = "tb-lr"
-    TB_RL = "tb-rl"
-    BT_LR = "bt-lr"
-    BT_RL = "bt-rl"
+Describes how the grid fills as children are added. As an example, the orientation
+"lr-tb" means left-to-right, then top-to-bottom.
+"""
 
 
 class _RepositionProperty:
@@ -39,9 +37,6 @@ class _RepositionProperty:
         return getattr(instance, self.name)
 
     def __set__(self, instance, value):
-        if self.name == "_orientation":
-            value = Orientation(value)
-
         setattr(instance, self.name, value)
         instance._reposition_children()
 
@@ -65,7 +60,7 @@ class GridLayout(Widget):
         Number of rows.
     grid_columns : int, default: 1
         Number of columns.
-    orientation : Orientation, default: Orientation.LR_TB
+    orientation : Orientation, default: "lr-tb"
         The orientation of the grid. Describes how the grid fills as children are added.
         The default is left-to-right then top-to-bottom.
     padding_left : int, default: 0
@@ -102,7 +97,7 @@ class GridLayout(Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
@@ -265,8 +260,6 @@ class GridLayout(Widget):
 
     grid_columns: int = _RepositionProperty()
 
-    orientation: Orientation = _RepositionProperty()
-
     padding_left: int = _RepositionProperty()
 
     padding_right: int = _RepositionProperty()
@@ -284,7 +277,7 @@ class GridLayout(Widget):
         grid_rows: int = 1,
         grid_columns: int = 1,
         *,
-        orientation: Orientation = Orientation.LR_TB,
+        orientation: Orientation = "lr-tb",
         padding_left: int = 0,
         padding_right: int = 0,
         padding_top: int = 0,
@@ -306,6 +299,17 @@ class GridLayout(Widget):
 
         super().__init__(**kwargs)
 
+    @property
+    def orientation(self) -> Orientation:
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, orientation: Orientation):
+        if self._orientation not in Orientation.__args__:
+            raise TypeError(f"{orientation} is not a valid orientation.")
+        self._orientation = orientation
+        self._reposition_children()
+
     def on_size(self):
         self._reposition_children()
 
@@ -318,21 +322,21 @@ class GridLayout(Widget):
         cols = self.grid_columns
 
         match self.orientation:
-            case Orientation.LR_TB:
+            case "lr-tb":
                 return col + row * cols
-            case Orientation.LR_BT:
+            case "lr-bt":
                 return col + (rows - row - 1) * cols
-            case Orientation.RL_TB:
+            case "rl-tb":
                 return (cols - col - 1) + row * cols
-            case Orientation.RL_BT:
+            case "rl-bt":
                 return (cols - col - 1) + (rows - row - 1) * cols
-            case Orientation.TB_LR:
+            case "tb-lr":
                 return row + col * rows
-            case Orientation.TB_RL:
+            case "tb-rl":
                 return row + (cols - col - 1) * rows
-            case Orientation.BT_LR:
+            case "bt-lr":
                 return (rows - row - 1) + col * rows
-            case Orientation.BT_RL:
+            case "bt-rl":
                 return (rows - row - 1) + (cols - col - 1) * rows
 
     def _row_height(self, i: int) -> int:

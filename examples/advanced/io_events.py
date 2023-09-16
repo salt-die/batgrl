@@ -312,14 +312,14 @@ class MouseWidget(RainbowBehavior, TextWidget):
 
 class InputApp(App):
     async def on_start(self):
-        keyboard = KeyboardWidget(pos_hint=(0.5, 0), anchor="left_center")
-        mouse = MouseWidget(pos_hint=(0.5, 1.0), anchor="right_center")
+        keyboard = KeyboardWidget(pos_hint=(0.5, 0), anchor="left")
+        mouse = MouseWidget(pos_hint=(0.5, 1.0), anchor="right")
 
         container_size = (
             max(keyboard.height, mouse.height),
             keyboard.width + mouse.width + 2,
         )
-        container = Widget(size=container_size, pos_hint=(0.5, 0.5), anchor="center")
+        container = Widget(size=container_size, pos_hint=(0.5, 0.5))
         container.add_widgets(keyboard, mouse)
         self.add_widget(container)
 

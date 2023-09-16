@@ -4,7 +4,7 @@ Button showcase.
 from nurses_2.app import App
 from nurses_2.widgets.button import Button
 from nurses_2.widgets.flat_toggle import FlatToggle
-from nurses_2.widgets.grid_layout import GridLayout, Orientation
+from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
 
@@ -30,7 +30,7 @@ class MyApp(App):
             grid_rows=5,
             grid_columns=3,
             pos=(2, 0),
-            orientation=Orientation.TB_LR,
+            orientation="tb-lr",
             padding_left=1,
             padding_right=1,
             padding_top=1,
@@ -71,7 +71,7 @@ class MyApp(App):
             grid_rows=2,
             grid_columns=5,
             pos=(grid_layout.bottom, 7),
-            orientation=Orientation.LR_TB,
+            orientation="lr-tb",
             horizontal_spacing=1,
         )
 

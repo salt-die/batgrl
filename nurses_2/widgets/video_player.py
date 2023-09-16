@@ -14,7 +14,7 @@ import numpy as np
 from ..colors import ABLACK
 from .graphic_widget import GraphicWidget, Interpolation
 
-__all__ = "Interpolation", "VideoPlayer"
+__all__ = ("VideoPlayer",)
 
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
@@ -35,7 +35,7 @@ class VideoPlayer(GraphicWidget):
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be
         multiplied by this value. (0 <= alpha <= 1.0)
-    interpolation : Interpolation, default: Interpolation.LINEAR
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -59,7 +59,7 @@ class VideoPlayer(GraphicWidget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -82,7 +82,7 @@ class VideoPlayer(GraphicWidget):
         If true, video will restart after last frame.
     is_device : bool
         If true, video is from a video capturing device.
-    texture : numpy.ndarray
+    texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.

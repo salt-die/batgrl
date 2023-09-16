@@ -124,7 +124,7 @@ class PaletteApp(App):
 
         hue_selector.callback = slope_selector.callback = update_palette
 
-        container = Widget(size=(H + 2, W), pos_hint=(0.5, 0.5), anchor="center")
+        container = Widget(size=(H + 2, W), pos_hint=(0.5, 0.5))
         container.add_widgets(hue_selector, slope_selector, palette)
         self.add_widget(container)
 

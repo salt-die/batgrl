@@ -12,7 +12,7 @@ from .behaviors.resizable import Resizable
 from .behaviors.themable import Themable
 from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
-from .widget import Anchor, Widget
+from .widget import Widget
 
 __all__ = ("Window",)
 
@@ -23,7 +23,7 @@ class _TitleBar(Grabbable, Widget):
             pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" "
         )
 
-        self._label = TextWidget(pos_hint=(None, 0.5), anchor=Anchor.TOP_CENTER)
+        self._label = TextWidget(pos_hint=(None, 0.5), anchor="top")
         self.add_widget(self._label)
 
     def on_add(self):
@@ -75,7 +75,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be
         multiplied by this value. (0 <= alpha <= 1.0)
-    interpolation : Interpolation, default: Interpolation.LINEAR
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -99,7 +99,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -136,7 +136,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor
         Color of border.
-    texture : numpy.ndarray
+    texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.

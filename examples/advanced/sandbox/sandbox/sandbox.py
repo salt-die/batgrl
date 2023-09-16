@@ -4,7 +4,7 @@ import numpy as np
 
 from nurses_2.colors import ABLACK, ColorPair
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import Anchor, GraphicWidget, Size
+from nurses_2.widgets.graphic_widget import GraphicWidget, Size
 from nurses_2.widgets.text_widget import TextWidget
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
@@ -25,9 +25,7 @@ class Sandbox(GraphicWidget):
     """
 
     def __init__(self, size: Size):
-        super().__init__(
-            size=size, anchor=Anchor.CENTER, pos_hint=(0.5, 0.5), default_color=ABLACK
-        )
+        super().__init__(size=size, pos_hint=(0.5, 0.5), default_color=ABLACK)
 
     def on_add(self):
         super().on_add()
@@ -40,7 +38,6 @@ class Sandbox(GraphicWidget):
         self.display = TextWidget(
             size=(1, 9),
             pos=(1, 0),
-            anchor=Anchor.CENTER,
             pos_hint=(None, 0.5),
             default_color_pair=ColorPair.from_colors(Air.COLOR, MENU_BACKGROUND_COLOR),
         )

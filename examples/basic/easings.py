@@ -3,7 +3,7 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.text_widget import Anchor, TextWidget
+from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.widget_data_structures import Easing
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -22,11 +22,11 @@ class MyApp(App):
             pos_hint=next(POS_HINTS),
         )
 
-        label = TextWidget(size=(1, 30), pos_hint=(None, 0.5), anchor=Anchor.TOP_CENTER)
+        label = TextWidget(size=(1, 30), pos_hint=(None, 0.5), anchor="top")
 
         self.add_widgets(logo, label)
 
-        for easing in Easing:
+        for easing in Easing.__args__:
             label.add_str(f"{easing:^30}")
 
             await logo.tween(

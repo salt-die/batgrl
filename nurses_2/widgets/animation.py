@@ -6,13 +6,14 @@ from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 import numpy as np
+from numpy.typing import NDArray
 
 from ..clamp import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
 from .widget import Widget, subscribable
 
-__all__ = "Animation", "Interpolation"
+__all__ = ("Animation",)
 
 
 def _check_frame_durations(frames, frame_durations):
@@ -47,7 +48,7 @@ class Animation(Widget):
         If true, play animation in reverse.
     alpha : float, default: 1.0
         Transparency of the animation.
-    interpolation : Interpolation, default: Interpolation.Linear
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -71,7 +72,7 @@ class Animation(Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: True
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -178,7 +179,7 @@ class Animation(Widget):
     stop:
         Stop the animation and reset current frame.
     from_textures:
-        Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
+        Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
     from_images:
         Create an :class:`Animation` from an iterable of :class:`Image`.
     on_size:
@@ -233,7 +234,7 @@ class Animation(Widget):
         loop: bool = True,
         reverse: bool = False,
         alpha: float = 1.0,
-        interpolation: Interpolation = Interpolation.LINEAR,
+        interpolation: Interpolation = "linear",
         is_transparent: bool = True,
         **kwargs,
     ):
@@ -360,13 +361,13 @@ class Animation(Widget):
     @classmethod
     def from_textures(
         cls,
-        textures: Iterable[np.ndarray],
+        textures: Iterable[NDArray[np.uint8]],
         *,
         frame_durations: float | int | Sequence[float | int] = 1 / 12,
         **kwargs,
     ) -> "Animation":
         """
-        Create an :class:`Animation` from an iterable of uint8 rgba ndarray.
+        Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
         """
         animation = cls(**kwargs)
         animation.frames = [

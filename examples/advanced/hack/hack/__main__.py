@@ -45,9 +45,7 @@ class HackApp(App):
 
         modal.memory = memory
 
-        terminal = Image(
-            path=TERMINAL, size=(36, 63), pos_hint=(0.5, 0.5), anchor="center"
-        )
+        terminal = Image(path=TERMINAL, size=(36, 63), pos_hint=(0.5, 0.5))
         container = BOLDCRT(
             size=(22, 53),
             pos=(5, 5),

@@ -69,7 +69,7 @@ class TextPadApp(App):
             pos=(1, 0),
             size=(3, 35),
             pos_hint=(None, 0.5),
-            anchor="top_center",
+            anchor="top",
             default_color_pair=DEFAULT_COLOR_THEME.textbox_primary,
         )
         border.add_border()

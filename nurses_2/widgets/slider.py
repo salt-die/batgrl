@@ -61,7 +61,7 @@ class Slider(Grabbable, TextWidget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background color and whitespace in text widget won't be painted.
@@ -254,7 +254,7 @@ class Slider(Grabbable, TextWidget):
         self._min = min
         self._max = max
 
-        self._handle = TextWidget(size=(1, 1), pos_hint=(0.5, None), anchor="center")
+        self._handle = TextWidget(size=(1, 1), pos_hint=(0.5, None))
         self.add_widget(self._handle)
         self.handle_color_pair = handle_color_pair or self.default_color_pair
         self.handle_char = handle_char

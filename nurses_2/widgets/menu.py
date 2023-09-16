@@ -14,9 +14,9 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .grid_layout import GridLayout, Orientation
+from .grid_layout import GridLayout
 from .text_widget import TextWidget
-from .widget import Anchor, Point, Widget
+from .widget import Point, Widget
 
 __all__ = (
     "Menu",
@@ -89,7 +89,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
@@ -281,7 +281,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
         self.right_label = TextWidget(
             size=(1, wcswidth(right_label)),
             pos_hint=(None, 1.0),
-            anchor=Anchor.RIGHT_CENTER,
+            anchor="right",
         )
         self.right_label.add_str(right_label)
 
@@ -394,7 +394,7 @@ class Menu(GridLayout):
         Number of rows.
     grid_columns : int, default: 1
         Number of columns.
-    orientation : Orientation, default: Orientation.LR_BT
+    orientation : Orientation, default: "tb-lr"
         The orientation of the grid. Describes how the grid fills as children are added.
         The default is left-to-right then top-to-bottom.
     padding_left : int, default: 0
@@ -431,7 +431,7 @@ class Menu(GridLayout):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.
@@ -598,7 +598,7 @@ class Menu(GridLayout):
         self,
         close_on_release: bool = True,
         close_on_click: bool = True,
-        orientation=Orientation.TB_LR,
+        orientation="tb-lr",
         **kwargs,
     ):
         super().__init__(orientation=orientation, **kwargs)
@@ -885,7 +885,7 @@ class MenuBar(GridLayout):
         Number of rows.
     grid_columns : int, default: 1
         Number of columns.
-    orientation : Orientation, default: Orientation.LR_BT
+    orientation : Orientation, default: "lr-bt"
         The orientation of the grid. Describes how the grid fills as children are added.
         The default is left-to-right then top-to-bottom.
     left_padding : int, default: 0
@@ -922,7 +922,7 @@ class MenuBar(GridLayout):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If true, background_char and background_color_pair won't be painted.

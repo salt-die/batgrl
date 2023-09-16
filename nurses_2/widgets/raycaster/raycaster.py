@@ -43,7 +43,7 @@ class Raycaster(GraphicWidget):
     alpha : float, default: 1.0
         If widget is transparent, the alpha channel of the underlying texture will be
         multiplied by this value. (0 <= alpha <= 1.0)
-    interpolation : Interpolation, default: Interpolation.LINEAR
+    interpolation : Interpolation, default: "linear"
         Interpolation used when widget is resized.
     size : Size, default: Size(10, 10)
         Size of widget.
@@ -67,7 +67,7 @@ class Raycaster(GraphicWidget):
     pos_hint : PosHint, default: PosHint(None, None)
         Position as a proportion of parent's height and width. Non-None values
         will have precedent over :attr:`pos`.
-    anchor : Anchor, default: Anchor.TOP_LEFT
+    anchor : Anchor, default: "center"
         The point of the widget attached to :attr:`pos_hint`.
     is_transparent : bool, default: False
         If false, :attr:`alpha` and alpha channels are ignored.
@@ -105,7 +105,7 @@ class Raycaster(GraphicWidget):
         Floor texture.
     floor_color : Color
         Color of floor if no floor texture.
-    texture : numpy.ndarray
+    texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
         Default texture color.

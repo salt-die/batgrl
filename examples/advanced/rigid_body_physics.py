@@ -4,9 +4,9 @@ A rigid body physics simulation in the terminal!
 Requires `pymunk`
 """
 import asyncio
-from enum import Enum
 from math import ceil, degrees
 from pathlib import Path
+from typing import Literal
 
 import cv2
 import numpy as np
@@ -22,13 +22,6 @@ from nurses_2.widgets.graphic_widget_data_structures import (
     resize_texture,
 )
 from nurses_2.widgets.image import Image
-
-
-class RenderMode(str, Enum):
-    OUTLINE = "outline"
-    FILL = "fill"
-    SPRITE = "sprite"
-
 
 BOX_SIZE = W, H = Vec2d(9, 9)
 BOX_MASS = 0.1
@@ -54,14 +47,14 @@ class SpaceRenderer(GraphicWidget):
         self,
         space: pymunk.Space,
         dt: float = 0.01,
-        render_mode: RenderMode = RenderMode.SPRITE,
+        render_mode: Literal["outline", "fill", "sprite"] = "sprite",
         shape_color: AColor = AWHITE,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.space = space
         self.dt = dt
-        self.render_mode = RenderMode(render_mode)
+        self.render_mode = render_mode
         self.shape_color = shape_color
 
     def stop_simulation(self):
@@ -91,7 +84,7 @@ class SpaceRenderer(GraphicWidget):
 
         for shape in self.space.shapes:
             if isinstance(shape, pymunk.shapes.Segment):
-                if self.render_mode is not RenderMode.SPRITE:
+                if self.render_mode != "sprite":
                     a = shape.a.rotated(shape.body.angle) + shape.body.position
                     b = shape.b.rotated(shape.body.angle) + shape.body.position
                     cv2.line(
@@ -101,7 +94,7 @@ class SpaceRenderer(GraphicWidget):
                         self.shape_color,
                     )
             elif isinstance(shape, pymunk.shapes.Poly):
-                if self.render_mode is RenderMode.SPRITE:
+                if self.render_mode == "sprite":
                     angle = degrees(shape.body.angle)
                     rot = cv2.getRotationMatrix2D(BOX_CENTER, angle, 1)
                     box = cv2.boxPoints((BOX_CENTER, BOX_SIZE, angle))
@@ -127,7 +120,7 @@ class SpaceRenderer(GraphicWidget):
                             for vertex in shape.get_vertices()
                         ]
                     )
-                    if self.render_mode is RenderMode.FILL:
+                    if self.render_mode == "fill":
                         cv2.fillPoly(self.texture, [vertices], color=self.shape_color)
                     else:
                         cv2.polylines(
@@ -137,7 +130,7 @@ class SpaceRenderer(GraphicWidget):
                             color=self.shape_color,
                         )
             elif isinstance(shape, pymunk.shapes.Circle):
-                if self.render_mode is RenderMode.SPRITE:
+                if self.render_mode == "sprite":
                     angle == degrees(shape.body.angle)
                     rot = cv2.getRotationMatrix2D(BALL_CENTER, angle, 1)
                     src = cv2.warpAffine(BALL, rot, BALL_SIZE)
@@ -149,7 +142,7 @@ class SpaceRenderer(GraphicWidget):
                     pos = shape.body.position
                     center = to_tex_coords(pos)
                     circle_edge = pos + Vec2d(shape.radius, 0).rotated(shape.body.angle)
-                    if self.render_mode is RenderMode.FILL:
+                    if self.render_mode == "fill":
                         cv2.circle(
                             self.texture,
                             center,

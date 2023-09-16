@@ -5,7 +5,7 @@ import numpy as np
 
 from nurses_2.io import MouseButton, MouseEventType
 
-from .colors import *
+from .colors import FLAG_COLOR, HIDDEN, HIDDEN_REVERSED
 from .grid import Grid
 from .unicode_chars import FLAG
 
@@ -232,3 +232,12 @@ class Minefield(Grid):
         colors_view[visible] = self.colors[source][visible]
 
         self.render_children(source, canvas_view, colors_view)
+
+        if self.hidden_cells.sum() == self.nmines:
+            self._game_over(win=True)
+            return
+
+    def _game_over(self, win: bool):
+        self.hidden[:] = 0
+        self._is_gameover = True
+        self.parent.game_over(win=win)

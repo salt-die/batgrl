@@ -3,7 +3,7 @@ import asyncio
 import numpy as np
 
 from nurses_2.colors import BLACK, Color, ColorPair, gradient
-from nurses_2.widgets.text_widget import Anchor, TextWidget
+from nurses_2.widgets.text_widget import TextWidget
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")
@@ -78,14 +78,12 @@ PAUSED = """
 class ModalScreen(TextWidget):
     def __init__(
         self,
-        anchor=Anchor.CENTER,
         pos_hint=(0.5, 0.5),
         is_enabled=False,
         **kwargs,
     ):
         super().__init__(
             size=(10, 70),
-            anchor=anchor,
             pos_hint=pos_hint,
             is_enabled=is_enabled,
             **kwargs,

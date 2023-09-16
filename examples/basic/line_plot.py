@@ -46,7 +46,7 @@ class PlotApp(App):
         )
 
         container = Widget(
-            size=(2, BUTTON_WIDTH), pos_hint=(None, 1.0), anchor="top_right"
+            size=(2, BUTTON_WIDTH), pos_hint=(None, 1.0), anchor="top-right"
         )
         container.add_widgets(box_button, braille_button)
         self.add_widgets(plot, container)

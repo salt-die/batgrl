@@ -22,13 +22,9 @@ class Connect4(Widget):
         self._board = Board()
         h, w = self._board.size
 
-        super().__init__(
-            size=(h + 2, w),
-            pos_hint=(0.5, 0.5),
-            anchor="center",
-        )
+        super().__init__(size=(h + 2, w), pos_hint=(0.5, 0.5))
 
-        self._label = TextWidget(size=(1, 10), pos_hint=(None, 0.5), anchor="center")
+        self._label = TextWidget(size=(1, 10), pos_hint=(None, 0.5))
         self.add_widgets(self._board, self._label)
 
     def on_add(self):
