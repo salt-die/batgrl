@@ -27,7 +27,6 @@ from .widget_data_structures import (
 )
 
 __all__ = (
-    "subscribable",
     "Anchor",
     "ColorPair",
     "Easing",
@@ -36,6 +35,8 @@ __all__ = (
     "Size",
     "SizeHint",
     "Widget",
+    "style_char",
+    "subscribable",
 )
 
 
