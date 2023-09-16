@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.fonts &#8212; Python 0.23.0 documentation</title>
+    <title>nurses_2.fonts &#8212; Python 0.24.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -62,7 +62,7 @@
   
   
   
-    <p class="title logo__title">Python 0.23.0 documentation</p>
+    <p class="title logo__title">Python 0.24.0 documentation</p>
   
 </a>
     
@@ -386,27 +386,10 @@
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
      nurses_2.widgets.shadow_caster
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-    <label for="toctree-checkbox-6">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster.html">
-       nurses_2.widgets.shadow_caster.shadow_caster
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
-       nurses_2.widgets.shadow_caster.shadow_caster_data_structures
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.slider.html">
@@ -597,7 +580,7 @@ will render the ascii art into a multiline string.</p>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.fonts.FIGFont">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.fonts.</span></span><span class="sig-name descname"><span class="pre">FIGFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hardblank:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse_text:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout:</span> <span class="pre">nurses_2.fonts.FullLayout</span> <span class="pre">=</span> <span class="pre">FullLayout.Universal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse_universal_smush:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy.ndarray]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.fonts.FIGFont" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.fonts.</span></span><span class="sig-name descname"><span class="pre">FIGFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hardblank:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse_text:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout:</span> <span class="pre">nurses_2.fonts.FullLayout</span> <span class="pre">=</span> <span class="pre">FullLayout.Universal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse_universal_smush:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy.ndarray[typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpy.dtype[dtype('&lt;U1')]]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.fonts.FIGFont" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>An object representation of a FIGfont.</p>
 <dl class="field-list simple">
@@ -612,7 +595,7 @@ will render the ascii art into a multiline string.</p>
 <dt><strong>reverse_universal_smush</strong><span class="classifier">bool, default: False</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of
 latest).</p>
 </dd>
-<dt><strong>font</strong><span class="classifier">dict[str, np.ndarray], default: {}</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
+<dt><strong>font</strong><span class="classifier">dict[str, NDArray[np.dtype(“&lt;U1”)]], default: {}</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
 </dd>
 <dt><strong>comments</strong><span class="classifier">str, default: “”</span></dt><dd><p>Additional comments about this font.</p>
 </dd>
@@ -629,7 +612,7 @@ latest).</p>
 <dt><strong>reverse_universal_smush</strong><span class="classifier">bool</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of
 latest).</p>
 </dd>
-<dt><strong>font</strong><span class="classifier">dict[str, np.ndarray]</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
+<dt><strong>font</strong><span class="classifier">dict[str, NDArray[np.dtype(“&lt;U1”)]]</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
 </dd>
 <dt><strong>comments</strong><span class="classifier">str</span></dt><dd><p>Additional comments about this font.</p>
 </dd>
@@ -639,15 +622,15 @@ latest).</p>
 <p class="rubric">Methods</p>
 <table class="table">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 74%" />
+<col style="width: 24%" />
+<col style="width: 76%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>from_path:</strong></p></td>
 <td><p>Load a FIGFont from a path.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>render_array:</strong></p></td>
-<td><p>Render text as ascii art into a 2D “&lt;U1” ndarray.</p></td>
+<td><p>Render text as ascii art into a 2D “&lt;U1” numpy array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>render_str:</strong></p></td>
 <td><p>Render text as ascii art into a multiline string.</p></td>
@@ -662,7 +645,7 @@ latest).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.font">
-<span class="sig-name descname"><span class="pre">font</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.fonts.FIGFont.font" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">font</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">numpy.ndarray[typing.Any,</span> <span class="pre">numpy.dtype[dtype('&lt;U1')]]]</span></em><a class="headerlink" href="#nurses_2.fonts.FIGFont.font" title="Permalink to this definition">#</a></dt>
 <dd><p>A dictionary of characters to their ascii art representations.</p>
 </dd></dl>
 
@@ -698,8 +681,8 @@ latest).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.fonts.FIGFont.render_array">
-<span class="sig-name descname"><span class="pre">render_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.fonts.FIGFont.render_array" title="Permalink to this definition">#</a></dt>
-<dd><p>Render text as ascii art into a 2D “&lt;U1” ndarray.</p>
+<span class="sig-name descname"><span class="pre">render_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[typing.Any,</span> <span class="pre">numpy.dtype[dtype('&lt;U1')]]</span></span></span><a class="headerlink" href="#nurses_2.fonts.FIGFont.render_array" title="Permalink to this definition">#</a></dt>
+<dd><p>Render text as ascii art into a 2D “&lt;U1” numpy array.</p>
 </dd></dl>
 
 <dl class="py method">

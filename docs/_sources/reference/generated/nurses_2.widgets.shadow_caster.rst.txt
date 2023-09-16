@@ -13,6 +13,14 @@ nurses\_2.widgets.shadow\_caster
 
    
    
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Camera
+      LightSource
+      ShadowCaster
+   
    
 
    
@@ -20,13 +28,4 @@ nurses\_2.widgets.shadow\_caster
    
 
 
-
-.. rubric:: Modules
-
-.. autosummary::
-   :toctree:
-   :recursive:
-
-   nurses_2.widgets.shadow_caster.shadow_caster
-   nurses_2.widgets.shadow_caster.shadow_caster_data_structures
 

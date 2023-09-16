@@ -29,8 +29,6 @@ nurses\_2.widgets.widget\_data\_structures
 
    .. autosummary::
    
-      Anchor
-      Easing
       PosHint
       Rect
       SizeHint

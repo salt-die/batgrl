@@ -18,7 +18,6 @@ nurses\_2.widgets.grid\_layout
    .. autosummary::
    
       GridLayout
-      Orientation
    
    
 

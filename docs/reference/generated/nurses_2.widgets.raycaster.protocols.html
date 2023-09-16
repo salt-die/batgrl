@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.raycaster.protocols &#8212; Python 0.23.0 documentation</title>
+    <title>nurses_2.widgets.raycaster.protocols &#8212; Python 0.24.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.23.0 documentation</p>
+    <p class="title logo__title">Python 0.24.0 documentation</p>
   
 </a>
     
@@ -387,27 +387,10 @@
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
      nurses_2.widgets.shadow_caster
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-    <label for="toctree-checkbox-6">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster.html">
-       nurses_2.widgets.shadow_caster.shadow_caster
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
-       nurses_2.widgets.shadow_caster.shadow_caster_data_structures
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.slider.html">
@@ -591,13 +574,15 @@
 <cite>float</cite> and shapes (2,) and (2, 2) respectively.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.protocols.Camera.plane">
-<span class="sig-name descname"><span class="pre">plane</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.protocols.Camera.plane" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">plane</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.protocols.Camera.plane" title="Permalink to this definition">#</a></dt>
+<dd><p>Rotation of camera. Array should have shape <cite>(2, 2)</cite>.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.protocols.Camera.pos">
-<span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.protocols.Camera.pos" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.protocols.Camera.pos" title="Permalink to this definition">#</a></dt>
+<dd><p>Position of camera. Array should have shape <cite>(2,)</cite>.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -620,7 +605,7 @@
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.protocols.Texture">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.raycaster.protocols.</span></span><span class="sig-name descname"><span class="pre">Texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.raycaster.protocols.Texture" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
-<p>A texture. Typically a np.ndarray.</p>
+<p>A texture. Typically a numpy array.</p>
 <p class="rubric">Notes</p>
 <p>This protocol is provided to allow for, say, animated textures. The raycaster
 will function as long as <cite>shape</cite> and <cite>__getitem__</cite> work as expected.</p>

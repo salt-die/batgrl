@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.graphic_widget_data_structures &#8212; Python 0.23.0 documentation</title>
+    <title>nurses_2.widgets.graphic_widget_data_structures &#8212; Python 0.24.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.23.0 documentation</p>
+    <p class="title logo__title">Python 0.24.0 documentation</p>
   
 </a>
     
@@ -387,27 +387,10 @@
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
      nurses_2.widgets.shadow_caster
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-    <label for="toctree-checkbox-6">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster.html">
-       nurses_2.widgets.shadow_caster.shadow_caster
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
-       nurses_2.widgets.shadow_caster.shadow_caster_data_structures
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.slider.html">
@@ -574,75 +557,36 @@
 <td><p>Composite source texture onto destination texture at given position.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.read_texture" title="nurses_2.widgets.graphic_widget_data_structures.read_texture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_texture</span></code></a>(path)</p></td>
-<td><p>Return a uint8 RBGA np.ndarray from a path to an image.</p></td>
+<td><p>Return a uint8 RGBA numpy array from a path to an image.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.resize_texture" title="nurses_2.widgets.graphic_widget_data_structures.resize_texture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize_texture</span></code></a>(texture, size[, interpolation])</p></td>
 <td><p>Resize texture.</p></td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Classes</p>
-<table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Interpolation</span></code></a>(value)</p></td>
-<td><p>Interpolation methods for resizing graphic widgets.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
+<dl class="py data">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>Interpolation methods for resizing graphic widgets.</p>
-<p><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolation</span></code></a> is one of <cite>NEAREST</cite>, <cite>LINEAR</cite>, <cite>CUBIC</cite>, <cite>AREA</cite>,
-<cite>LANCZOS</cite>.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.AREA">
-<span class="sig-name descname"><span class="pre">AREA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'area'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.AREA" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.CUBIC">
-<span class="sig-name descname"><span class="pre">CUBIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cubic'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.CUBIC" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.LANCZOS">
-<span class="sig-name descname"><span class="pre">LANCZOS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lanczos'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.LANCZOS" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.LINEAR">
-<span class="sig-name descname"><span class="pre">LINEAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'linear'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.LINEAR" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.Interpolation.NEAREST">
-<span class="sig-name descname"><span class="pre">NEAREST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nearest'</span></em><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation.NEAREST" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">Interpolation</span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="Permalink to this definition">#</a></dt>
+<dd><p>Interpolation methods for resizing graphic widgets.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code>[‘nearest’, ‘linear’, ‘cubic’, ‘area’, ‘lanczos’]</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.composite">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">composite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Point(y=0,</span> <span class="pre">x=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.composite" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">composite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Point" title="nurses_2.data_structures.Point"><span class="pre">nurses_2.data_structures.Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Point(y=0,</span> <span class="pre">x=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.composite" title="Permalink to this definition">#</a></dt>
 <dd><p>Composite source texture onto destination texture at given position.</p>
 <p>If <cite>mask_mode</cite> is true, source alpha values less than 255 are ignored.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.read_texture">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">read_texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.read_texture" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a uint8 RBGA np.ndarray from a path to an image.</p>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">read_texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.read_texture" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a uint8 RGBA numpy array from a path to an image.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nurses_2.widgets.graphic_widget_data_structures.resize_texture">
-<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">resize_texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nurses_2.widgets.graphic_widget_data_structures.Interpolation" title="nurses_2.widgets.graphic_widget_data_structures.Interpolation"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.Interpolation</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Interpolation.LINEAR</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.resize_texture" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.graphic_widget_data_structures.</span></span><span class="sig-name descname"><span class="pre">resize_texture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.data_structures.html#nurses_2.data_structures.Size" title="nurses_2.data_structures.Size"><span class="pre">nurses_2.data_structures.Size</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'nearest'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cubic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'area'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lanczos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nurses_2.widgets.graphic_widget_data_structures.resize_texture" title="Permalink to this definition">#</a></dt>
 <dd><p>Resize texture.</p>
 </dd></dl>
 

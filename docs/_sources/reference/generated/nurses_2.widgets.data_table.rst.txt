@@ -17,10 +17,8 @@ nurses\_2.widgets.data\_table
 
    .. autosummary::
    
-      Alignment
       ColumnStyle
       DataTable
-      SelectItems
       SupportsLessThan
    
    

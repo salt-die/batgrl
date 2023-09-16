@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.raycaster.sprite &#8212; Python 0.23.0 documentation</title>
+    <title>nurses_2.widgets.raycaster.sprite &#8212; Python 0.24.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.23.0 documentation</p>
+    <p class="title logo__title">Python 0.24.0 documentation</p>
   
 </a>
     
@@ -387,27 +387,10 @@
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
      nurses_2.widgets.shadow_caster
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-    <label for="toctree-checkbox-6">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster.html">
-       nurses_2.widgets.shadow_caster.shadow_caster
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.shadow_caster.shadow_caster_data_structures.html">
-       nurses_2.widgets.shadow_caster.shadow_caster_data_structures
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.slider.html">
@@ -577,7 +560,7 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.sprite.Sprite">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.raycaster.sprite.</span></span><span class="sig-name descname"><span class="pre">Sprite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.raycaster.sprite.</span></span><span class="sig-name descname"><span class="pre">Sprite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A sprite for a raycaster.</p>
 <dl class="field-list simple">
@@ -585,30 +568,35 @@
 <dd class="field-odd"><dl class="simple">
 <dt><strong>distance</strong></dt><dd></dd>
 <dt><strong>pos</strong></dt><dd></dd>
-<dt><strong>relative</strong></dt><dd></dd>
+<dt><a class="reference internal" href="#nurses_2.widgets.raycaster.sprite.Sprite.relative" title="nurses_2.widgets.raycaster.sprite.Sprite.relative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relative</span></code></a></dt><dd><p>Vector from camera to sprite, set by the caster.</p>
+</dd>
 <dt><strong>texture_idx</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.sprite.Sprite.distance">
-<span class="sig-name descname"><span class="pre">distance</span></span><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.distance" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.float64</span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.distance" title="Permalink to this definition">#</a></dt>
+<dd><p>Distance from camera, set when <a class="reference internal" href="#nurses_2.widgets.raycaster.sprite.Sprite.relative" title="nurses_2.widgets.raycaster.sprite.Sprite.relative"><code class="xref py py-attr docutils literal notranslate"><span class="pre">relative</span></code></a> is set.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.sprite.Sprite.pos">
-<span class="sig-name descname"><span class="pre">pos</span></span><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.pos" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.pos" title="Permalink to this definition">#</a></dt>
+<dd><p>Position of sprite on map.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.sprite.Sprite.relative">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">relative</span></span><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.relative" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Vector from camera to sprite, set by the caster.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.raycaster.sprite.Sprite.texture_idx">
-<span class="sig-name descname"><span class="pre">texture_idx</span></span><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.texture_idx" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">texture_idx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.raycaster.sprite.Sprite.texture_idx" title="Permalink to this definition">#</a></dt>
+<dd><p>Index of sprite texture.</p>
+</dd></dl>
 
 </dd></dl>
 

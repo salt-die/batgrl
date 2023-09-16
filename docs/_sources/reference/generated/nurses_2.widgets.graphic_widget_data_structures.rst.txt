@@ -21,12 +21,6 @@ nurses\_2.widgets.graphic\_widget\_data\_structures
 
    
    
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Interpolation
-   
    
 
    
