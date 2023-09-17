@@ -256,7 +256,7 @@ class TabbedWidget(Themable, Widget):
 
         self.tab_window.subscribe(self, "size", _update_tabs)
 
-        self._tab_underline = TextWidget(pos=(1, 0), is_enabled=False)
+        self._tab_underline = TextWidget(size=(1, 1), pos=(1, 0), is_enabled=False)
 
         self._active_tab = None
         self._history = []  # Used to select the last viewed tab when a tab is removed.
