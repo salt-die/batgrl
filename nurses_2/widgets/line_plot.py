@@ -462,7 +462,7 @@ class LinePlot(Widget):
             round(self._scrollview.width * zoom),
         )
 
-        offset_h = self._traces.height - VERTICAL_HALF
+        offset_h = self._traces.height
         plot_right = self._traces.width - ceil(TICK_WIDTH / 2)
         offset_w = plot_right - TICK_HALF
 
@@ -477,8 +477,8 @@ class LinePlot(Widget):
         min_y = min(ys.min() for ys in self.ys) if self.min_y is None else self.min_y
         max_y = max(ys.max() for ys in self.ys) if self.max_y is None else self.max_y
 
-        canvas_view = self._traces.canvas[:-VERTICAL_HALF, TICK_HALF:plot_right]
-        colors_view = self._traces.colors[:-VERTICAL_HALF, TICK_HALF:plot_right, :3]
+        canvas_view = self._traces.canvas[:, TICK_HALF:plot_right]
+        colors_view = self._traces.colors[:, TICK_HALF:plot_right, :3]
 
         if self.line_colors is None:
             line_colors = rainbow_gradient(len(self.xs))
@@ -497,9 +497,9 @@ class LinePlot(Widget):
         for xs, ys, color in zip(self.xs, self.ys, line_colors, strict=True):
             plot = np.zeros((plot_h, plot_w), np.uint8)
 
-            scaled_ys = plot_h - plot_h * (ys - min_y) / y_delta
+            scaled_ys = plot_h * (ys - min_y) / y_delta
             scaled_xs = plot_w * (xs - min_x) / x_delta
-            coords = np.dstack((scaled_xs, scaled_ys)).astype(int)
+            coords = np.dstack((scaled_xs, plot_h - scaled_ys)).astype(int)
 
             cv2.polylines(plot, coords, isClosed=False, color=1)
 
@@ -522,7 +522,6 @@ class LinePlot(Widget):
         self._y_ticks.colors[:] = self.plot_color_pair
         self._y_ticks.left = has_y_label
         self._y_ticks.canvas["char"][:, :-1] = " "
-        self._y_ticks.canvas["char"][0, -1] = "┐"
         self._y_ticks.canvas["char"][1:, -1] = "│"
 
         self._x_ticks.size = 2, self._traces.width
@@ -541,6 +540,7 @@ class LinePlot(Widget):
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
                 (row, 0),
             )
+        self._y_ticks.canvas["char"][0, -1] = "┐"
 
         last_x = offset_w - 1
         for column in range(0, offset_w, TICK_WIDTH):
