@@ -25,23 +25,26 @@ class _Tab(Themable, ToggleButtonBehavior, TextWidget):
         self.set_text(title)
 
     def on_toggle(self):
-        if self.parent and self.toggle_state is ToggleState.ON:
+        if self.parent is None:
+            return
+        if self.toggle_state is ToggleState.ON:
+            self.content.is_enabled = True
+
             tabbed = self.parent.parent
 
             tabbed._history.remove(self.title)
             tabbed._history.append(self.title)
+
             tabbed._tab_underline.width = self.width + 2
             tabbed._tab_underline.x = self.x - 1
 
-            if tabbed._active_tab:
-                tabbed.tabs[tabbed._active_tab].content.is_enabled = False
             tabbed._active_tab = self.title
 
             if tabbed._underline_task is not None:
                 tabbed._underline_task.cancel()
             tabbed._underline_task = asyncio.create_task(tabbed._animate_underline())
-
-            self.content.is_enabled = True
+        else:
+            self.content.is_enabled = False
 
     def _update(self):
         if self.toggle_state is ToggleState.ON:
