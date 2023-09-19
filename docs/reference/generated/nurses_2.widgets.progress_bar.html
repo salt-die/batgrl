@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.progress_bar &#8212; Python 0.24.0 documentation</title>
+    <title>nurses_2.widgets.progress_bar &#8212; Python 0.24.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.24.0 documentation</p>
+    <p class="title logo__title">Python 0.24.1 documentation</p>
   
 </a>
     
@@ -184,6 +184,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.animation.html">
      nurses_2.widgets.animation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.bar_chart.html">
+     nurses_2.widgets.bar_chart
     </a>
    </li>
    <li class="toctree-l2 has-children">
@@ -553,14 +558,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar" title="nurses_2.widgets.progress_bar.ProgressBar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProgressBar</span></code></a>([is_horizontal, animation_delay])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar" title="nurses_2.widgets.progress_bar.ProgressBar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProgressBar</span></code></a>(*[, is_horizontal, animation_delay])</p></td>
 <td><p>A progress bar widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.progress_bar.ProgressBar">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.progress_bar.</span></span><span class="sig-name descname"><span class="pre">ProgressBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_horizontal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.016666666666666666</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.progress_bar.</span></span><span class="sig-name descname"><span class="pre">ProgressBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_horizontal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.016666666666666666</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.progress_bar.ProgressBar" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.text_widget.html#nurses_2.widgets.text_widget.TextWidget" title="nurses_2.widgets.text_widget.TextWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.text_widget.TextWidget</span></code></a></p>
 <p>A progress bar widget.</p>
 <p>Setting <a class="reference internal" href="#nurses_2.widgets.progress_bar.ProgressBar.progress" title="nurses_2.widgets.progress_bar.ProgressBar.progress"><code class="xref py py-attr docutils literal notranslate"><span class="pre">progress</span></code></a> to <cite>None</cite> will start a “loading” animation; otherwise

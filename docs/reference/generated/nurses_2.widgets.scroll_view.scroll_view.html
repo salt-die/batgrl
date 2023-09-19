@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.scroll_view.scroll_view &#8212; Python 0.24.0 documentation</title>
+    <title>nurses_2.widgets.scroll_view.scroll_view &#8212; Python 0.24.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.24.0 documentation</p>
+    <p class="title logo__title">Python 0.24.1 documentation</p>
   
 </a>
     
@@ -184,6 +184,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.animation.html">
      nurses_2.widgets.animation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.bar_chart.html">
+     nurses_2.widgets.bar_chart
     </a>
    </li>
    <li class="toctree-l2 has-children">
@@ -553,14 +558,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="nurses_2.widgets.scroll_view.scroll_view.ScrollView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScrollView</span></code></a>([allow_vertical_scroll, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="nurses_2.widgets.scroll_view.scroll_view.ScrollView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScrollView</span></code></a>(*[, allow_vertical_scroll, ...])</p></td>
 <td><p>A scrollable view widget.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.scroll_view.scroll_view.ScrollView">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.scroll_view.scroll_view.</span></span><span class="sig-name descname"><span class="pre">ScrollView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">allow_vertical_scroll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_horizontal_scroll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_vertical_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_horizontal_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_grabbable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scrollwheel_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_keys_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_proportion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_proportion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.scroll_view.scroll_view.</span></span><span class="sig-name descname"><span class="pre">ScrollView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_vertical_scroll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_horizontal_scroll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_vertical_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_horizontal_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_grabbable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scrollwheel_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_keys_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_proportion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_proportion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.grabbable.html#nurses_2.widgets.behaviors.grabbable.Grabbable" title="nurses_2.widgets.behaviors.grabbable.Grabbable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.grabbable.Grabbable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.widget.html#nurses_2.widgets.widget.Widget" title="nurses_2.widgets.widget.Widget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.widget.Widget</span></code></a></p>
 <p>A scrollable view widget.</p>
 <p>The view can be set with the <a class="reference internal" href="#nurses_2.widgets.scroll_view.scroll_view.ScrollView.view" title="nurses_2.widgets.scroll_view.scroll_view.ScrollView.view"><code class="xref py py-attr docutils literal notranslate"><span class="pre">view</span></code></a> property, e.g.,

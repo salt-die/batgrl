@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.shadow_caster &#8212; Python 0.24.0 documentation</title>
+    <title>nurses_2.widgets.shadow_caster &#8212; Python 0.24.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.24.0 documentation</p>
+    <p class="title logo__title">Python 0.24.1 documentation</p>
   
 </a>
     
@@ -184,6 +184,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.animation.html">
      nurses_2.widgets.animation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="nurses_2.widgets.bar_chart.html">
+     nurses_2.widgets.bar_chart
     </a>
    </li>
    <li class="toctree-l2 has-children">
@@ -558,7 +563,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.LightSource" title="nurses_2.widgets.shadow_caster.LightSource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LightSource</span></code></a>([coords, color])</p></td>
 <td><p>A light source.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.ShadowCaster" title="nurses_2.widgets.shadow_caster.ShadowCaster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShadowCaster</span></code></a>(map, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.ShadowCaster" title="nurses_2.widgets.shadow_caster.ShadowCaster"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShadowCaster</span></code></a>(*, map, ...)</p></td>
 <td><p>A restrictive precise angle shadowcaster.</p></td>
 </tr>
 </tbody>
@@ -671,7 +676,7 @@ interval must be visible.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.shadow_caster.ShadowCaster">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.</span></span><span class="sig-name descname"><span class="pre">ShadowCaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">map:</span> <span class="pre">numpy.ndarray[typing.Any,</span> <span class="pre">numpy.dtype[numpy.uint32]],</span> <span class="pre">camera:</span> <span class="pre">nurses_2.widgets.shadow_caster.Camera,</span> <span class="pre">tile_colors:</span> <span class="pre">typing.Optional[list[nurses_2.colors.color_data_structures.AColor]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">light_sources:</span> <span class="pre">typing.Optional[list[nurses_2.widgets.shadow_caster.LightSource]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ambient_light:</span> <span class="pre">nurses_2.colors.color_data_structures.Color</span> <span class="pre">=</span> <span class="pre">Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0),</span> <span class="pre">restrictiveness:</span> <span class="pre">typing.Literal['permissive',</span> <span class="pre">'moderate',</span> <span class="pre">'reestrictive']</span> <span class="pre">=</span> <span class="pre">'moderate',</span> <span class="pre">light_decay:</span> <span class="pre">collections.abc.Callable[[float],</span> <span class="pre">float]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ShadowCaster.&lt;lambda&gt;&gt;,</span> <span class="pre">radius:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20,</span> <span class="pre">smoothing:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.3333333333333333,</span> <span class="pre">not_visible_blocks:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.ShadowCaster" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.shadow_caster.</span></span><span class="sig-name descname"><span class="pre">ShadowCaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*,</span> <span class="pre">map:</span> <span class="pre">numpy.ndarray[typing.Any,</span> <span class="pre">numpy.dtype[numpy.uint32]],</span> <span class="pre">camera:</span> <span class="pre">nurses_2.widgets.shadow_caster.Camera,</span> <span class="pre">tile_colors:</span> <span class="pre">typing.Optional[list[nurses_2.colors.color_data_structures.AColor]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">light_sources:</span> <span class="pre">typing.Optional[list[nurses_2.widgets.shadow_caster.LightSource]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ambient_light:</span> <span class="pre">nurses_2.colors.color_data_structures.Color</span> <span class="pre">=</span> <span class="pre">Color(red=0,</span> <span class="pre">green=0,</span> <span class="pre">blue=0),</span> <span class="pre">restrictiveness:</span> <span class="pre">typing.Literal['permissive',</span> <span class="pre">'moderate',</span> <span class="pre">'reestrictive']</span> <span class="pre">=</span> <span class="pre">'moderate',</span> <span class="pre">light_decay:</span> <span class="pre">collections.abc.Callable[[float],</span> <span class="pre">float]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">ShadowCaster.&lt;lambda&gt;&gt;,</span> <span class="pre">radius:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20,</span> <span class="pre">smoothing:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.3333333333333333,</span> <span class="pre">not_visible_blocks:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.shadow_caster.ShadowCaster" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.graphic_widget.html#nurses_2.widgets.graphic_widget.GraphicWidget" title="nurses_2.widgets.graphic_widget.GraphicWidget"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.graphic_widget.GraphicWidget</span></code></a></p>
 <p>A restrictive precise angle shadowcaster.</p>
 <p><a class="reference internal" href="#nurses_2.widgets.shadow_caster.ShadowCaster.cast_shadows" title="nurses_2.widgets.shadow_caster.ShadowCaster.cast_shadows"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cast_shadows()</span></code></a> must be called to generate or update <code class="xref py py-attr docutils literal notranslate"><span class="pre">texture</span></code>.</p>
