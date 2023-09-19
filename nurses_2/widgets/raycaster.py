@@ -1,14 +1,103 @@
 """
 A raycaster widget.
 """
+from dataclasses import dataclass, field
+from typing import Literal, Protocol
+
 import numpy as np
 from numpy.typing import NDArray
 
-from ...clamp import clamp
-from ...colors import BLACK, Color
-from ..graphic_widget import Char, GraphicWidget
-from .protocols import Camera, Map, Texture
-from .sprite import Sprite
+from ..clamp import clamp
+from ..colors import BLACK, Color
+from .graphic_widget import Char, GraphicWidget
+
+
+@dataclass(slots=True)
+class Sprite:
+    """
+    A sprite for a raycaster.
+    """
+
+    pos: tuple[float, float]
+    """Position of sprite on map."""
+
+    texture_idx: int
+    """Index of sprite texture."""
+
+    _relative: NDArray[np.float64] = field(
+        init=False, default_factory=lambda: np.zeros(2)
+    )
+
+    distance: np.float64 = field(init=False)
+    """Distance from camera, set when :attr:`relative` is set."""
+
+    @property
+    def relative(self):
+        """Vector from camera to sprite, set by the caster."""
+        return self._relative
+
+    @relative.setter
+    def relative(self, value):
+        self._relative = value
+        self.distance = value @ value
+
+    def __lt__(self, other):
+        """
+        Sprites are ordered by their distance to camera.
+        """
+        return self.distance > other.distance
+
+
+class Map(Protocol):
+    """
+    Map with non-zero entries indicating walls.
+
+    Notes
+    -----
+    Wall value `n` will have nth texture in raycaster's texture array, e.g.,
+    `wall_textures[n - 1]`.
+    """
+
+    ndim: Literal[2]
+
+    def __getitem__(self, y, x):
+        """
+        Supports numpy indexing. Returns a non-negative integer.
+        """
+
+
+class Camera(Protocol):
+    """
+    A camera view.
+
+    Notes
+    -----
+    The renderer expects both `pos` and `plane` be numpy arrays with dtype
+    `float` and shapes (2,) and (2, 2) respectively.
+    """
+
+    pos: NDArray[np.float64]
+    """Position of camera. Array should have shape `(2,)`."""
+    plane: NDArray[np.float64]
+    """Rotation of camera. Array should have shape `(2, 2)`."""
+
+
+class Texture(Protocol):
+    """
+    A texture. Typically a numpy array.
+
+    Notes
+    -----
+    This protocol is provided to allow for, say, animated textures. The raycaster
+    will function as long as `shape` and `__getitem__` work as expected.
+    """
+
+    shape: tuple[int, int, Literal[4]]  # (height, width, rgba)
+
+    def __getitem__(self, key):
+        """
+        Supports numpy indexing. Return arrays or views with dtype `np.uint8`.
+        """
 
 
 class Raycaster(GraphicWidget):
