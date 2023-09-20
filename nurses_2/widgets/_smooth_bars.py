@@ -1,50 +1,75 @@
 """
 Characters and functions to create smooth bars.
 """
+from typing import Literal
+
 FULL_BLOCK = "█"
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
 HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
-UPPER_HALF_BLOCK = "▀"
 
 
-def create_vertical_bar(max_height: int, proportion: float) -> tuple[int, str, str]:
+def _create_smooth_bar(
+    blocks: Literal[" ▁▂▃▄▅▆▇█", " ▏▎▍▌▋▊▉█"],
+    max_length: int,
+    proportion: float,
+    offset: float,
+):
     """
-    Returns number of full blocks and the partial block needed to create a vertical
-    bar that fills `max_height` by `proportion`.
+    Create a smooth bar with given blocks.
     """
-    fill, partial = divmod(proportion * max_height, 1)
-    if fill == max_height:
-        return int(fill) - 1, FULL_BLOCK, FULL_BLOCK
-    index_partial = round(partial * (len(VERTICAL_BLOCKS) - 1))
-    return int(fill), FULL_BLOCK, VERTICAL_BLOCKS[index_partial]
+    if offset >= 1 or offset < 0:
+        raise ValueError(
+            f"Offset should greater than or equal to 0 and less than 1, but {offset} "
+            "was given."
+        )
 
+    fill, partial = divmod(proportion * max_length, 1)
+    fill = int(fill)
 
-def create_horizontal_bar(max_width: int, proportion: float) -> tuple[int, str, str]:
-    """
-    Returns number of full blocks and the partial block needed to create a horizontal
-    bar that fills `max_width` by `proportion`.
-    """
-    fill, partial = divmod(proportion * max_width, 1)
-    if fill == max_width:
-        return int(fill) - 1, FULL_BLOCK, FULL_BLOCK
-    index_partial = round(partial * (len(HORIZONTAL_BLOCKS) - 1))
-    return int(fill), FULL_BLOCK, HORIZONTAL_BLOCKS[index_partial]
+    if offset == 0.0:
+        if fill == max_length:
+            return (FULL_BLOCK,) * max_length
 
+        index_partial = round(partial * (len(blocks) - 1))
+        partial_block = blocks[index_partial]
+        return (*(FULL_BLOCK,) * fill, partial_block)
 
-def create_vertical_bar_offset_half(
-    max_height: int, proportion: float
-) -> tuple[str, int, str, str]:
-    """
-    Returns half block character for bottom of the bar, number of full blocks and the
-    full block character for the middle of the bar, and the partial block character
-    needed to create a vertical bar that fills `max_height` by `proportion`.
-    """
-    fill, partial = divmod(proportion * max_height, 1)
-    partial += 0.5
+    partial += offset
     if partial > 1:
         partial -= 1
     else:
         fill -= 1
 
-    index_partial = round(partial * (len(VERTICAL_BLOCKS) - 1))
-    return UPPER_HALF_BLOCK, int(fill), FULL_BLOCK, VERTICAL_BLOCKS[index_partial]
+    index_offset = round(offset * (len(blocks) - 1))
+    index_partial = round(partial * (len(blocks) - 1))
+    offset_block = blocks[index_offset]
+    partial_block = blocks[index_partial]
+    return (offset_block, *(FULL_BLOCK,) * fill, partial_block)
+
+
+def create_vertical_bar(
+    max_height: int, proportion: float, offset: float = 0.0
+) -> tuple[str, ...]:
+    """
+    Create a vertical bar that's some proportion of max_height at an offset.
+
+    Offset bars will return a minimum of 2 characters and the first character of the bar
+    should have it's colors reversed.
+    """
+    return _create_smooth_bar(VERTICAL_BLOCKS, max_height, proportion, offset)
+
+
+def create_horizontal_bar(
+    max_width: int, proportion: float, offset: float = 0.0
+) -> tuple[str, ...]:
+    """
+    Create a horizontal bar that's some proportion of max_width at an offset.
+    The first character of the bar should have it's colors reversed.
+
+    Offset bars will return a minimum of 2 characters and the first character of the bar
+    should have it's colors reversed.
+    """
+    return _create_smooth_bar(HORIZONTAL_BLOCKS, max_width, proportion, offset)
+
+
+# Remove - create_vertical_bar_offset_half

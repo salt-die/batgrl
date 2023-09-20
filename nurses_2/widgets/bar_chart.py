@@ -4,7 +4,7 @@ from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
 from ..easings import lerp
-from ._smooth_bars import create_vertical_bar_offset_half
+from ._smooth_bars import create_vertical_bar
 from .scroll_view import ScrollView
 from .text_widget import TextWidget, add_text
 from .widget import Widget
@@ -285,7 +285,7 @@ class BarChart(Widget):
     @property
     def chart_color_pair(self) -> ColorPair:
         """Color of text in the chart."""
-        return self._plot_color_pair
+        return self._chart_color_pair
 
     @chart_color_pair.setter
     def chart_color_pair(self, chart_color_pair: ColorPair):
@@ -294,7 +294,7 @@ class BarChart(Widget):
         self.background_color_pair = chart_color_pair
         self.is_transparent = False
 
-        self._plot_color_pair = chart_color_pair
+        self._chart_color_pair = chart_color_pair
 
         for child in self.walk():
             if isinstance(child, TextWidget):
@@ -343,7 +343,7 @@ class BarChart(Widget):
         max_y = max(self.data.values()) if self.max_y is None else self.max_y
 
         canvas_view = self._bars.canvas["char"][::-1]
-        colors_view = self._bars.colors[::-1, :, :3]
+        colors_view = self._bars.colors[::-1]
 
         # Regenerate Ticks
         self._y_ticks.size = h, TICK_WIDTH
@@ -362,7 +362,7 @@ class BarChart(Widget):
             )
             if self.show_grid_lines:
                 canvas_view[row, :-1] = "─"
-                colors_view[row] = self.grid_line_color
+                colors_view[row, :, :3] = self.grid_line_color
 
         bar_colors = (
             rainbow_gradient(nbars) if self.bar_colors is None else self.bar_colors
@@ -374,16 +374,11 @@ class BarChart(Widget):
             x1 = BAR_SPACING + (bar_width + BAR_SPACING) * i
             x2 = x1 + bar_width
             self._bars.add_str(label.center(bar_width), (h - 1, x1))
-            (
-                half_block,
-                full,
-                full_block,
-                partial_block,
-            ) = create_vertical_bar_offset_half(h - 3, (value - min_y) / y_delta)
-            canvas_view[2, x1:x2] = "▀"
-            canvas_view[3 : 3 + full, x1:x2] = full_block
-            canvas_view[3 + full, x1:x2] = partial_block
-            colors_view[2 : 3 + full + 1, x1:x2] = bar_colors[i]
+            smooth_bar = create_vertical_bar(h - 3, (value - min_y) / y_delta, 0.5)
+            canvas_view.T[x1:x2, 2 : 2 + len(smooth_bar)] = smooth_bar
+            colors_view[2, x1:x2, :3] = self.chart_color_pair.bg_color
+            colors_view[2, x1:x2, 3:] = bar_colors[i]
+            colors_view[3 : 2 + len(smooth_bar), x1:x2, :3] = bar_colors[i]
         canvas_view[1, :-1] = "─"
         canvas_view[1, -1] = "┐"
 

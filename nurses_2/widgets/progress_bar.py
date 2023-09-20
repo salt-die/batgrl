@@ -2,15 +2,10 @@
 A progress bar widget.
 """
 import asyncio
+from itertools import chain, cycle
 
 from ..clamp import clamp
-from ._smooth_bars import (
-    FULL_BLOCK,
-    HORIZONTAL_BLOCKS,
-    VERTICAL_BLOCKS,
-    create_horizontal_bar,
-    create_vertical_bar,
-)
+from ._smooth_bars import create_horizontal_bar, create_vertical_bar
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, style_char
 from .widget import subscribable
@@ -252,24 +247,32 @@ class ProgressBar(Themable, TextWidget):
         self._is_horizontal = is_horizontal
         self.progress = self.progress  # Trigger a repaint by setting property.
 
-    def _paint_small_horizontal_bar(self, x, width, block):
-        chars = self.canvas["char"]
-        chars[:] = self.default_char
-        chars[:, x] = block
-        chars[:, x + 1 : x + 1 + width] = FULL_BLOCK
-        chars[:, x + 1 + width] = block
+    def _paint_small_horizontal_bar(self, progress):
+        bar_width = max(1, (self.width - 1) // 2)
+        x, offset = divmod(progress * (self.width - bar_width), 1)
+        x = int(x)
+        smooth_bar = create_horizontal_bar(bar_width, 1, offset)
 
+        self.canvas[:] = style_char(self.default_char)
+        self.canvas["char"][:, x : x + len(smooth_bar)] = smooth_bar
         self.colors[:] = self.color_theme.progress_bar
-        self.colors[:, x] = self.color_theme.progress_bar.reversed()
+        if offset != 0:
+            self.colors[:, x] = self.color_theme.progress_bar.reversed()
 
-    def _paint_small_vertical_bar(self, y, height, block):
-        chars = self.canvas["char"][::-1]
-        chars[:] = self.default_char
-        chars[y] = block
-        chars[y + 1 : y + 1 + height] = FULL_BLOCK
-        chars[y + 1 + height] = block
+    def _paint_small_vertical_bar(self, progress):
+        bar_height = max(1, (self.height - 1) // 2)
+        y, offset = divmod(progress * (self.height - bar_height), 1)
+        y = int(y)
+        smooth_bar = create_vertical_bar(bar_height, 1, offset)
+
+        self.canvas[:] = style_char(self.default_char)
+        try:
+            self.canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
+        except Exception as e:
+            raise SystemExit(bar_height, progress, offset, smooth_bar) from e
         self.colors[:] = self.color_theme.progress_bar
-        self.colors[::-1][y] = self.color_theme.progress_bar.reversed()
+        if offset != 0:
+            self.colors[::-1][y] = self.color_theme.progress_bar.reversed()
 
     async def _loading_animation(self):
         if (
@@ -283,29 +286,15 @@ class ProgressBar(Themable, TextWidget):
         self.canvas[:] = style_char(self.default_char)
 
         if self._is_horizontal:
-            bar_width = (self.width - 2) // 4
-            bar_xs = range(self.width - bar_width - 1)
-            while True:
-                for x in bar_xs:
-                    for block in HORIZONTAL_BLOCKS:
-                        self._paint_small_horizontal_bar(x, bar_width, block)
-                        await asyncio.sleep(self.animation_delay)
-                for x in bar_xs[::-1]:
-                    for block in reversed(HORIZONTAL_BLOCKS):
-                        self._paint_small_horizontal_bar(x, bar_width, block)
-                        await asyncio.sleep(self.animation_delay)
+            HSTEPS = 8 * self.width
+            for i in cycle(chain(range(HSTEPS + 1), range(HSTEPS)[::-1])):
+                self._paint_small_horizontal_bar(i / HSTEPS)
+                await asyncio.sleep(self.animation_delay)
         else:
-            bar_height = (self.height - 2) // 4
-            bar_ys = range(self.height - bar_height - 1)
-            while True:
-                for y in bar_ys:
-                    for block in VERTICAL_BLOCKS:
-                        self._paint_small_vertical_bar(y, bar_height, block)
-                        await asyncio.sleep(self.animation_delay)
-                for y in bar_ys[::-1]:
-                    for block in reversed(VERTICAL_BLOCKS):
-                        self._paint_small_vertical_bar(y, bar_height, block)
-                        await asyncio.sleep(self.animation_delay)
+            VSTEPS = 8 * self.height
+            for i in cycle(chain(range(VSTEPS + 1), range(VSTEPS)[::-1])):
+                self._paint_small_vertical_bar(i / VSTEPS)
+                await asyncio.sleep(self.animation_delay)
 
     def on_add(self):
         super().on_add()
@@ -327,15 +316,8 @@ class ProgressBar(Themable, TextWidget):
     def _repaint_progress_bar(self):
         self.canvas[:] = style_char(self.default_char)
         if self.is_horizontal:
-            fill, fill_char, partial_char = create_horizontal_bar(
-                self.width, self.progress
-            )
-            self.canvas["char"][:, :fill] = fill_char
-            self.canvas["char"][:, fill] = partial_char
+            smooth_bar = create_horizontal_bar(self.width, self.progress)
+            self.canvas["char"][:, : len(smooth_bar)] = smooth_bar
         else:
-            fill, fill_char, partial_char = create_vertical_bar(
-                self.height, self.progress
-            )
-            chars = self.canvas["char"][::-1]
-            chars[:fill] = fill_char
-            chars[fill] = partial_char
+            smooth_bar = create_vertical_bar(self.height, self.progress)
+            self.canvas["char"][::-1][: len(smooth_bar)].T[:] = smooth_bar

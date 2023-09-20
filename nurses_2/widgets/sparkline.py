@@ -390,11 +390,8 @@ class Sparkline(TextWidget):
         self.canvas[:] = style_char(self.default_char)
         chars = self.canvas["char"][::-1]
         for i, bin_proportion in enumerate(bin_proportions):
-            fill, full_block, partial_block = create_vertical_bar(
-                self.height, bin_proportion
-            )
-            chars[:fill, i] = full_block
-            chars[fill, i] = partial_block
+            smooth_bar = create_vertical_bar(self.height, bin_proportion)
+            chars[: len(smooth_bar), i] = smooth_bar
             self.colors[:, i, :3] = lerp_colors(
                 self.min_color, self.max_color, bin_proportion
             )
