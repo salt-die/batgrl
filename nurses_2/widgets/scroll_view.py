@@ -1,11 +1,218 @@
 """
 A scrollable view widget.
 """
-from ...clamp import clamp
-from ...io import KeyEvent, MouseEvent, MouseEventType
-from ..behaviors.grabbable import Grabbable
-from ..widget import Widget, subscribable
-from .scrollbars import _HorizontalBar, _VerticalBar
+from ..clamp import clamp
+from ..io import KeyEvent, MouseEvent, MouseEventType
+from .behaviors.grabbable import Grabbable
+from .behaviors.themable import Themable
+from .widget import Widget, subscribable
+
+
+class _IndicatorBehaviorBase(Themable, Grabbable, Widget):
+    """
+    Common behavior for vertical and horizontal indicators.
+    """
+
+    def __init__(self):
+        super().__init__(size=(1, 2))
+
+    def update_theme(self):
+        self.background_color_pair = self.color_theme.scrollbar_indicator_normal * 2
+
+    def update_color(self, mouse_event):
+        if self.is_grabbed:
+            self.background_color_pair = self.color_theme.scrollbar_indicator_press * 2
+        elif self.collides_point(mouse_event.position):
+            self.background_color_pair = self.color_theme.scrollbar_indicator_hover * 2
+        else:
+            self.background_color_pair = self.color_theme.scrollbar_indicator_normal * 2
+
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+        self.update_color(mouse_event)
+
+    def ungrab(self, mouse_event):
+        super().ungrab(mouse_event)
+        self.update_color(mouse_event)
+
+    def on_mouse(self, mouse_event):
+        if super().on_mouse(mouse_event):
+            return True
+
+        if mouse_event.event_type == MouseEventType.MOUSE_MOVE:
+            self.update_color(mouse_event)
+
+
+class _VerticalIndicator(_IndicatorBehaviorBase):
+    def update_size_pos(self):
+        bar = self.parent
+        scroll_view = bar.parent
+        if scroll_view.view is None:
+            view_height = 1
+        else:
+            view_height = scroll_view.view.height
+
+        self.height = clamp(
+            int(scroll_view.port_height**2 / view_height), 1, scroll_view.port_height
+        )
+        self.y = round(scroll_view.vertical_proportion * bar.fill_height)
+
+    def on_add(self):
+        super().on_add()
+        scroll_view = self.parent.parent
+        self.update_size_pos()
+        self.subscribe(scroll_view, "size", self.update_size_pos)
+        self.subscribe(scroll_view, "vertical_proportion", self.update_size_pos)
+        self.subscribe(scroll_view, "show_horizontal_bar", self.update_size_pos)
+
+    def on_remove(self):
+        scroll_view = self.parent.parent
+        self.unsubscribe(scroll_view, "size")
+        self.unsubscribe(scroll_view, "vertical_proportion")
+        self.unsubscribe(scroll_view, "show_horizontal_bar")
+        super().on_remove()
+
+    def grab_update(self, mouse_event):
+        bar = self.parent
+        scroll_view = bar.parent
+        if bar.fill_height == 0:
+            scroll_view.vertical_proportion = 0
+        else:
+            scroll_view.vertical_proportion += self.mouse_dy / bar.fill_height
+
+
+class _HorizontalIndicator(_IndicatorBehaviorBase):
+    def update_size_pos(self):
+        bar = self.parent
+        scroll_view = bar.parent
+        if scroll_view.view is None:
+            view_width = 1
+        else:
+            view_width = scroll_view.view.width
+
+        self.width = clamp(
+            int(scroll_view.port_width**2 / view_width), 2, scroll_view.port_width
+        )
+        self.x = round(scroll_view.horizontal_proportion * bar.fill_width)
+
+    def on_add(self):
+        super().on_add()
+        scroll_view = self.parent.parent
+        self.update_size_pos()
+        self.subscribe(scroll_view, "size", self.update_size_pos)
+        self.subscribe(scroll_view, "horizontal_proportion", self.update_size_pos)
+        self.subscribe(scroll_view, "show_vertical_bar", self.update_size_pos)
+
+    def on_remove(self):
+        scroll_view = self.parent.parent
+        self.unsubscribe(scroll_view, "size")
+        self.unsubscribe(scroll_view, "horizontal_proportion")
+        self.unsubscribe(scroll_view, "show_vertical_bar")
+        super().on_remove()
+
+    def grab_update(self, mouse_event):
+        bar = self.parent
+        scroll_view = bar.parent
+        if bar.fill_width == 0:
+            scroll_view.horizontal_proportion = 0
+        else:
+            scroll_view.horizontal_proportion += self.mouse_dx / bar.fill_width
+
+
+class _VerticalBar(Themable, Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.indicator = _VerticalIndicator()
+        self.add_widget(self.indicator)
+        self.background_char = " "
+
+    def update_theme(self):
+        self.background_color_pair = self.color_theme.scrollbar * 2
+
+    def on_add(self):
+        super().on_add()
+
+        def update_size_pos():
+            h, w = self.parent.size
+            self.x = w - 2
+            self.height = h
+
+        update_size_pos()
+        self.subscribe(self.parent, "size", update_size_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        super().on_remove()
+
+    @property
+    def fill_height(self):
+        """
+        Height of the scroll bar minus the height of the indicator.
+        """
+        return self.height - self.indicator.height - self.parent.show_horizontal_bar
+
+    def on_mouse(self, mouse_event):
+        if (
+            mouse_event.event_type == MouseEventType.MOUSE_DOWN
+            and self.fill_height != 0
+            and self.collides_point(mouse_event.position)
+        ):
+            y = self.to_local(mouse_event.position).y
+            sv = self.parent
+
+            if not sv.show_horizontal_bar or y < self.height - 1:
+                sv.vertical_proportion = y / self.fill_height
+                self.indicator.grab(mouse_event)
+
+            return True
+
+
+class _HorizontalBar(Themable, Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.indicator = _HorizontalIndicator()
+        self.add_widget(self.indicator)
+        self.background_char = " "
+
+    def update_theme(self):
+        self.background_color_pair = self.color_theme.scrollbar * 2
+
+    def on_add(self):
+        super().on_add()
+
+        def update_size_pos():
+            h, w = self.parent.size
+            self.y = h - 1
+            self.width = w
+
+        update_size_pos()
+        self.subscribe(self.parent, "size", update_size_pos)
+
+    def on_remove(self):
+        self.unsubscribe(self.parent, "size")
+        super().on_remove()
+
+    @property
+    def fill_width(self):
+        """
+        Width of the scroll bar minus the width of the indicator.
+        """
+        return self.width - self.indicator.width - self.parent.show_vertical_bar * 2
+
+    def on_mouse(self, mouse_event):
+        if (
+            mouse_event.event_type == MouseEventType.MOUSE_DOWN
+            and self.fill_width != 0
+            and self.collides_point(mouse_event.position)
+        ):
+            x = self.to_local(mouse_event.position).x
+            sv = self.parent
+
+            if not sv.show_vertical_bar or x < self.width - 2:
+                sv.horizontal_proportion = x / self.fill_width
+                self.indicator.grab(mouse_event)
+
+            return True
 
 
 class ScrollView(Grabbable, Widget):
