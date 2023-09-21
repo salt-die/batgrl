@@ -192,21 +192,24 @@ class FileChooser(Themable, ScrollView):
         Show the vertical scrollbar.
     show_horizontal_bar : bool, default: True
         Show the horizontal scrollbar.
-    is_grabbable : bool, default: True
-        Allow moving scroll view by dragging mouse.
     scrollwheel_enabled : bool, default: True
         Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool, default: False
-        Allow scrolling with arrow keys. Navigating the file chooser with arrow keys
-        will be disabled if scrolling with arrow keys is enabled.
-    vertical_proportion : float, default: 0.0
-        Vertical scroll position as a proportion of total.
-    horizontal_proportion : float, default: 0.0
-        Horizontal scroll position as a proportion of total.
+    arrow_keys_enabled : bool, default: True
+        Allow scrolling with arrow keys.
+    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
+        Background color of scrollbar.
+    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
+        Scrollbar indicator normal color.
+    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
+        Scrollbar indicator hover color.
+    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
+        Scrollbar indicator press color.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -255,6 +258,8 @@ class FileChooser(Themable, ScrollView):
     select_callback : Callable[[Path], None]
         Called with path of selected node when node is double-clicked
         or `enter` is pressed.
+    view : Widget | None
+        The scrolled widget.
     allow_vertical_scroll : bool
         Allow vertical scrolling.
     allow_horizontal_scroll : bool
@@ -263,23 +268,28 @@ class FileChooser(Themable, ScrollView):
         Show the vertical scrollbar.
     show_horizontal_bar : bool
         Show the horizontal scrollbar.
-    is_grabbable : bool
-        Allow moving scroll view by dragging mouse.
     scrollwheel_enabled : bool
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool
-        Allow scrolling with arrow keys. Navigating the file chooser with arrow keys
-        will be disabled if scrolling with arrow keys is enabled.
+        Allow scrolling with arrow keys.
+    scrollbar_color : Color
+        Background color of scrollbar.
+    indicator_normal_color : Color
+        Scrollbar indicator normal color.
+    indicator_hover_color : Color
+        Scrollbar indicator hover color.
+    indicator_press_color : Color
+        Scrollbar indicator press color.
     vertical_proportion : float
         Vertical scroll position as a proportion of total.
     horizontal_proportion : float
         Horizontal scroll position as a proportion of total.
-    view : Widget | None
-        The scroll view's child.
     is_grabbable : bool
         If false, grabbable behavior is disabled.
     disable_ptf : bool
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton
+        Mouse button used for grabbing.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -337,7 +347,7 @@ class FileChooser(Themable, ScrollView):
     x_hint : float | None
         Horizontal position as a proportion of parent's size.
     anchor : Anchor
-        Determines which point is attached to `pos_hint`.
+        Determines which point is attached to :attr:`pos_hint`.
     background_char : str | None
         Background character.
     background_color_pair : ColorPair | None
@@ -434,7 +444,8 @@ class FileChooser(Themable, ScrollView):
 
     def on_size(self):
         super().on_size()
-        self._view.update_tree_layout()
+        if self._view is not None:
+            self._view.update_tree_layout()
 
     @property
     def directories_only(self):
