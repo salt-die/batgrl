@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>nurses_2.widgets.data_table &#8212; Python 0.24.1 documentation</title>
+    <title>nurses_2.widgets.data_table &#8212; Python 0.25.0 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -63,7 +63,7 @@
   
   
   
-    <p class="title logo__title">Python 0.24.1 documentation</p>
+    <p class="title logo__title">Python 0.25.0 documentation</p>
   
 </a>
     
@@ -338,59 +338,15 @@
      nurses_2.widgets.progress_bar
     </a>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.raycaster.html">
      nurses_2.widgets.raycaster
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-    <label for="toctree-checkbox-4">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.raycaster.protocols.html">
-       nurses_2.widgets.raycaster.protocols
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.raycaster.raycaster.html">
-       nurses_2.widgets.raycaster.raycaster
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.raycaster.sprite.html">
-       nurses_2.widgets.raycaster.sprite
-      </a>
-     </li>
-    </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.scroll_view.html">
      nurses_2.widgets.scroll_view
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-    <label for="toctree-checkbox-5">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.scroll_view.indicators.html">
-       nurses_2.widgets.scroll_view.indicators
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html">
-       nurses_2.widgets.scroll_view.scroll_view
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="nurses_2.widgets.scroll_view.scrollbars.html">
-       nurses_2.widgets.scroll_view.scrollbars
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="nurses_2.widgets.shadow_caster.html">
@@ -642,7 +598,7 @@ default.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nurses_2.widgets.data_table.</span></span><span class="sig-name descname"><span class="pre">DataTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nurses_2.widgets.data_table.ColumnStyle" title="nurses_2.widgets.data_table.ColumnStyle"><span class="pre">nurses_2.widgets.data_table.ColumnStyle</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select_items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'row'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'column'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'row'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zebra_stripes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_sorting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.scroll_view.scroll_view.html#nurses_2.widgets.scroll_view.scroll_view.ScrollView" title="nurses_2.widgets.scroll_view.scroll_view.ScrollView"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.scroll_view.scroll_view.ScrollView</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="nurses_2.widgets.behaviors.themable.html#nurses_2.widgets.behaviors.themable.Themable" title="nurses_2.widgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.behaviors.themable.Themable</span></code></a>, <a class="reference internal" href="nurses_2.widgets.scroll_view.html#nurses_2.widgets.scroll_view.ScrollView" title="nurses_2.widgets.scroll_view.ScrollView"><code class="xref py py-class docutils literal notranslate"><span class="pre">nurses_2.widgets.scroll_view.ScrollView</span></code></a></p>
 <p>A data table widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -666,19 +622,23 @@ control over column styling use <a class="reference internal" href="#nurses_2.wi
 </dd>
 <dt><strong>show_horizontal_bar</strong><span class="classifier">bool, default: True</span></dt><dd><p>Show the horizontal scrollbar.</p>
 </dd>
-<dt><strong>is_grabbable</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow moving scroll view by dragging mouse.</p>
-</dd>
 <dt><strong>scrollwheel_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow vertical scrolling with scrollwheel.</p>
 </dd>
 <dt><strong>arrow_keys_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Allow scrolling with arrow keys.</p>
 </dd>
-<dt><strong>vertical_proportion</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Vertical scroll position as a proportion of total.</p>
+<dt><strong>scrollbar_color</strong><span class="classifier">Color, default: DEFAULT_SCROLLBAR_COLOR</span></dt><dd><p>Background color of scrollbar.</p>
 </dd>
-<dt><strong>horizontal_proportion</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Horizontal scroll position as a proportion of total.</p>
+<dt><strong>indicator_normal_color</strong><span class="classifier">Color, default: DEFAULT_INDICATOR_NORMAL</span></dt><dd><p>Scrollbar indicator normal color.</p>
+</dd>
+<dt><strong>indicator_hover_color</strong><span class="classifier">Color, default: DEFAULT_INDICATOR_HOVER</span></dt><dd><p>Scrollbar indicator hover color.</p>
+</dd>
+<dt><strong>indicator_press_color</strong><span class="classifier">Color, default: DEFAULT_INDICATOR_PRESS</span></dt><dd><p>Scrollbar indicator press color.</p>
 </dd>
 <dt><strong>is_grabbable</strong><span class="classifier">bool, default: True</span></dt><dd><p>If false, grabbable behavior is disabled.</p>
 </dd>
 <dt><strong>disable_ptf</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, widget will not be pulled to front when grabbed.</p>
+</dd>
+<dt><strong>mouse_button</strong><span class="classifier">MouseButton, default: MouseButton.LEFT</span></dt><dd><p>Mouse button used for grabbing.</p>
 </dd>
 <dt><strong>size</strong><span class="classifier">Size, default: Size(10, 10)</span></dt><dd><p>Size of widget.</p>
 </dd>
@@ -738,21 +698,27 @@ widget is not transparent.</p>
 </dd>
 <dt><strong>show_horizontal_bar</strong><span class="classifier">bool</span></dt><dd><p>Show the horizontal scrollbar.</p>
 </dd>
-<dt><strong>is_grabbable</strong><span class="classifier">bool</span></dt><dd><p>Allow moving scroll view by dragging mouse.</p>
-</dd>
 <dt><strong>scrollwheel_enabled</strong><span class="classifier">bool</span></dt><dd><p>Allow vertical scrolling with scrollwheel.</p>
 </dd>
 <dt><strong>arrow_keys_enabled</strong><span class="classifier">bool</span></dt><dd><p>Allow scrolling with arrow keys.</p>
+</dd>
+<dt><strong>scrollbar_color</strong><span class="classifier">Color</span></dt><dd><p>Background color of scrollbar.</p>
+</dd>
+<dt><strong>indicator_normal_color</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar indicator normal color.</p>
+</dd>
+<dt><strong>indicator_hover_color</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar indicator hover color.</p>
+</dd>
+<dt><strong>indicator_press_color</strong><span class="classifier">Color</span></dt><dd><p>Scrollbar indicator press color.</p>
 </dd>
 <dt><strong>vertical_proportion</strong><span class="classifier">float</span></dt><dd><p>Vertical scroll position as a proportion of total.</p>
 </dd>
 <dt><strong>horizontal_proportion</strong><span class="classifier">float</span></dt><dd><p>Horizontal scroll position as a proportion of total.</p>
 </dd>
-<dt><strong>view</strong><span class="classifier">Widget | None</span></dt><dd><p>The scroll view’s child.</p>
-</dd>
 <dt><strong>is_grabbable</strong><span class="classifier">bool</span></dt><dd><p>If false, grabbable behavior is disabled.</p>
 </dd>
 <dt><strong>disable_ptf</strong><span class="classifier">bool</span></dt><dd><p>If true, widget will not be pulled to front when grabbed.</p>
+</dd>
+<dt><strong>mouse_button</strong><span class="classifier">MouseButton</span></dt><dd><p>Mouse button used for grabbing.</p>
 </dd>
 <dt><strong>is_grabbed</strong><span class="classifier">bool</span></dt><dd><p>True if widget is grabbed.</p>
 </dd>
@@ -1058,7 +1024,7 @@ when the widget’s parent’s size changes.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.color_theme">
-<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">pad_line_highlight=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=12,</span> <span class="pre">bg_green=14,</span> <span class="pre">bg_blue=48),</span> <span class="pre">pad_selection_highlight=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=71),</span> <span class="pre">textbox_primary=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">textbox_selection_highlight=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=71),</span> <span class="pre">textbox_placeholder=ColorPair(fg_red=42,</span> <span class="pre">fg_green=58,</span> <span class="pre">fg_blue=146,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">panel=ColorPair(fg_red=77,</span> <span class="pre">fg_green=103,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">button_normal=ColorPair(fg_red=221,</span> <span class="pre">fg_green=228,</span> <span class="pre">fg_blue=237,</span> <span class="pre">bg_red=42,</span> <span class="pre">bg_green=60,</span> <span class="pre">bg_blue=160),</span> <span class="pre">button_hover=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=50,</span> <span class="pre">bg_green=72,</span> <span class="pre">bg_blue=192),</span> <span class="pre">button_press=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=196,</span> <span class="pre">bg_green=162,</span> <span class="pre">bg_blue=25),</span> <span class="pre">menu_item_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">menu_item_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">menu_item_disabled=ColorPair(fg_red=39,</span> <span class="pre">fg_green=43,</span> <span class="pre">fg_blue=64,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_normal=ColorPair(fg_red=255,</span> <span class="pre">fg_green=224,</span> <span class="pre">fg_blue=223,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_inactive=ColorPair(fg_red=125,</span> <span class="pre">fg_green=107,</span> <span class="pre">fg_blue=113,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">window_border_normal=AColor(red=18,</span> <span class="pre">green=33,</span> <span class="pre">blue=98,</span> <span class="pre">alpha=255),</span> <span class="pre">window_border_inactive=AColor(red=40,</span> <span class="pre">green=44,</span> <span class="pre">blue=62,</span> <span class="pre">alpha=255),</span> <span class="pre">scrollbar=Color(red=7,</span> <span class="pre">green=12,</span> <span class="pre">blue=37),</span> <span class="pre">scrollbar_indicator_normal=Color(red=14,</span> <span class="pre">green=24,</span> <span class="pre">blue=67),</span> <span class="pre">scrollbar_indicator_hover=Color(red=17,</span> <span class="pre">green=30,</span> <span class="pre">blue=79),</span> <span class="pre">scrollbar_indicator_press=Color(red=23,</span> <span class="pre">green=40,</span> <span class="pre">blue=104),</span> <span class="pre">data_table_sort_indicator=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">data_table_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">data_table_stripe=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=11,</span> <span class="pre">bg_green=18,</span> <span class="pre">bg_blue=56),</span> <span class="pre">data_table_stripe_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=74),</span> <span class="pre">data_table_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">data_table_selected_hover=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=31,</span> <span class="pre">bg_blue=94),</span> <span class="pre">progress_bar=ColorPair(fg_red=255,</span> <span class="pre">fg_green=224,</span> <span class="pre">fg_blue=223,</span> <span class="pre">bg_red=42,</span> <span class="pre">bg_green=60,</span> <span class="pre">bg_blue=160))</span></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.color_theme" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">color_theme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">ColorTheme(primary=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">pad_line_highlight=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=12,</span> <span class="pre">bg_green=14,</span> <span class="pre">bg_blue=48),</span> <span class="pre">pad_selection_highlight=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=71),</span> <span class="pre">textbox_primary=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">textbox_selection_highlight=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=71),</span> <span class="pre">textbox_placeholder=ColorPair(fg_red=42,</span> <span class="pre">fg_green=58,</span> <span class="pre">fg_blue=146,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">panel=ColorPair(fg_red=77,</span> <span class="pre">fg_green=103,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">button_normal=ColorPair(fg_red=221,</span> <span class="pre">fg_green=228,</span> <span class="pre">fg_blue=237,</span> <span class="pre">bg_red=42,</span> <span class="pre">bg_green=60,</span> <span class="pre">bg_blue=160),</span> <span class="pre">button_hover=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=50,</span> <span class="pre">bg_green=72,</span> <span class="pre">bg_blue=192),</span> <span class="pre">button_press=ColorPair(fg_red=255,</span> <span class="pre">fg_green=240,</span> <span class="pre">fg_blue=246,</span> <span class="pre">bg_red=196,</span> <span class="pre">bg_green=162,</span> <span class="pre">bg_blue=25),</span> <span class="pre">menu_item_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">menu_item_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">menu_item_disabled=ColorPair(fg_red=39,</span> <span class="pre">fg_green=43,</span> <span class="pre">fg_blue=64,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_normal=ColorPair(fg_red=255,</span> <span class="pre">fg_green=224,</span> <span class="pre">fg_blue=223,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">titlebar_inactive=ColorPair(fg_red=125,</span> <span class="pre">fg_green=107,</span> <span class="pre">fg_blue=113,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">window_border_normal=AColor(red=18,</span> <span class="pre">green=33,</span> <span class="pre">blue=98,</span> <span class="pre">alpha=255),</span> <span class="pre">window_border_inactive=AColor(red=40,</span> <span class="pre">green=44,</span> <span class="pre">blue=62,</span> <span class="pre">alpha=255),</span> <span class="pre">data_table_sort_indicator=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=7,</span> <span class="pre">bg_green=12,</span> <span class="pre">bg_blue=37),</span> <span class="pre">data_table_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=52),</span> <span class="pre">data_table_stripe=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=11,</span> <span class="pre">bg_green=18,</span> <span class="pre">bg_blue=56),</span> <span class="pre">data_table_stripe_hover=ColorPair(fg_red=246,</span> <span class="pre">fg_green=167,</span> <span class="pre">fg_blue=169,</span> <span class="pre">bg_red=15,</span> <span class="pre">bg_green=24,</span> <span class="pre">bg_blue=74),</span> <span class="pre">data_table_selected=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=17,</span> <span class="pre">bg_green=31,</span> <span class="pre">bg_blue=94),</span> <span class="pre">data_table_selected_hover=ColorPair(fg_red=236,</span> <span class="pre">fg_green=243,</span> <span class="pre">fg_blue=255,</span> <span class="pre">bg_red=27,</span> <span class="pre">bg_green=36,</span> <span class="pre">bg_blue=75),</span> <span class="pre">progress_bar=ColorPair(fg_red=255,</span> <span class="pre">fg_green=224,</span> <span class="pre">fg_blue=223,</span> <span class="pre">bg_red=42,</span> <span class="pre">bg_green=60,</span> <span class="pre">bg_blue=160))</span></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.color_theme" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1144,6 +1110,21 @@ returns <code class="docutils literal notranslate"><span class="pre">True</span>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.indicator_hover_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">indicator_hover_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.indicator_hover_color" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.indicator_normal_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">indicator_normal_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.indicator_normal_color" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.indicator_press_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">indicator_press_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.indicator_press_color" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.is_grabbed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_grabbed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.is_grabbed" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1203,7 +1184,7 @@ returns <code class="docutils literal notranslate"><span class="pre">True</span>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.on_key">
-<span class="sig-name descname"><span class="pre">on_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><span class="pre">nurses_2.io.input.events.KeyEvent</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.on_key" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">on_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nurses_2.io.input.events.html#nurses_2.io.input.events.KeyEvent" title="nurses_2.io.input.events.KeyEvent"><span class="pre">nurses_2.io.input.events.KeyEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.on_key" title="Permalink to this definition">#</a></dt>
 <dd><p>Handle key press event. (Handled key presses should return <code class="docutils literal notranslate"><span class="pre">True</span></code> else
 <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
@@ -1348,6 +1329,11 @@ or <code class="docutils literal notranslate"><span class="pre">None</span></cod
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.scrollbar_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scrollbar_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="nurses_2.colors.color_data_structures.html#nurses_2.colors.color_data_structures.Color" title="nurses_2.colors.color_data_structures.Color"><span class="pre">nurses_2.colors.color_data_structures.Color</span></a></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.scrollbar_color" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.select_items">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select_items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'cell'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'row'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'column'</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.select_items" title="Permalink to this definition">#</a></dt>
 <dd><p>Determines which items are selected when data table is clicked.</p>
@@ -1408,13 +1394,13 @@ called.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.total_horizontal_distance">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_horizontal_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.total_horizontal_distance" title="Permalink to this definition">#</a></dt>
-<dd><p>Return difference between child width and scrollview width.</p>
+<dd><p>The distance the view can scroll horizontally.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nurses_2.widgets.data_table.DataTable.total_vertical_distance">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_vertical_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#nurses_2.widgets.data_table.DataTable.total_vertical_distance" title="Permalink to this definition">#</a></dt>
-<dd><p>Return difference between child height and scrollview height.</p>
+<dd><p>The distance the view can scroll vertically.</p>
 </dd></dl>
 
 <dl class="py method">
