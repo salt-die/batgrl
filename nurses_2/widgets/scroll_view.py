@@ -2,217 +2,180 @@
 A scrollable view widget.
 """
 from ..clamp import clamp
+from ..colors import Color
 from ..io import KeyEvent, MouseEvent, MouseEventType
+from ._smooth_bars import create_horizontal_bar, create_vertical_bar
 from .behaviors.grabbable import Grabbable
-from .behaviors.themable import Themable
+from .text_widget import TextWidget
 from .widget import Widget, subscribable
 
+DEFAULT_SCROLLBAR_COLOR = Color.from_hex("070C25")
+DEFAULT_INDICATOR_NORMAL = Color.from_hex("0E1843")
+DEFAULT_INDICATOR_HOVER = Color.from_hex("111E4F")
+DEFAULT_INDICATOR_PRESS = Color.from_hex("172868")
 
-class _IndicatorBehaviorBase(Themable, Grabbable, Widget):
-    """
-    Common behavior for vertical and horizontal indicators.
-    """
+
+class _ScrollBarBase(Grabbable, TextWidget):
+    length: int
 
     def __init__(self):
         super().__init__(size=(1, 2))
+        self.indicator_proportion: float = 1.0
+        self.indicator_progress: float = 0.0
+        self.is_hovered = False
 
-    def update_theme(self):
-        self.background_color_pair = self.color_theme.scrollbar_indicator_normal * 2
+    @property
+    def indicator_proportion(self) -> float:
+        return self._indicator_proportion
 
-    def update_color(self, mouse_event):
+    @indicator_proportion.setter
+    def indicator_proportion(self, indicator_porportion: float):
+        self._indicator_proportion = indicator_porportion
+        self._set_indicator_length()
+
+    @property
+    def fill_length(self) -> float:
+        """The length the indicator can travel."""
+        return self.length - self.indicator_length
+
+    def paint_indicator(self) -> tuple[Color, int, float]:
+        sv: ScrollView = self.parent
+
         if self.is_grabbed:
-            self.background_color_pair = self.color_theme.scrollbar_indicator_press * 2
-        elif self.collides_point(mouse_event.position):
-            self.background_color_pair = self.color_theme.scrollbar_indicator_hover * 2
+            indicator_color = sv._indicator_press_color
+        elif self.is_hovered:
+            indicator_color = sv._indicator_hover_color
         else:
-            self.background_color_pair = self.color_theme.scrollbar_indicator_normal * 2
+            indicator_color = sv._indicator_normal_color
+
+        self.canvas["char"] = " "
+
+        self.colors[..., :3] = indicator_color
+        self.colors[..., 3:] = sv._scrollbar_color
+
+        start, offset = divmod(self.indicator_progress * self.fill_length, 1)
+        start = int(start)
+        # Round offset to the nearest 1/8th.
+        offset = round(offset * 8) / 8
+        if offset == 1:
+            offset -= 1
+            start += 1
+
+        return indicator_color, start, offset
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
-        self.update_color(mouse_event)
+        self.is_hovered = True
 
     def ungrab(self, mouse_event):
         super().ungrab(mouse_event)
-        self.update_color(mouse_event)
+        self.paint_indicator()
+
+
+class _VerticalScrollbar(_ScrollBarBase):
+    @property
+    def length(self) -> int:
+        return self.height
+
+    def _set_indicator_length(self):
+        self.indicator_length = clamp(
+            2, round(self.indicator_proportion * self.length), self.length
+        )
+
+    def paint_indicator(self):
+        indicator_color, start, offset = super().paint_indicator()
+
+        sv: ScrollView = self.parent
+        smooth_bar = create_vertical_bar(
+            self.indicator_length, 1, offset, reversed=True
+        )
+        stop = start + len(smooth_bar)
+        self.canvas["char"][start:stop].T[:] = smooth_bar
+
+        y_offset = offset != 0
+        self.colors[start + y_offset : stop, :, :3] = sv._scrollbar_color
+        self.colors[start + y_offset : stop, :, 3:] = indicator_color
 
     def on_mouse(self, mouse_event):
+        old_hovered = self.is_hovered
+
+        y, x = self.to_local(mouse_event.position)
+        start = round(self.indicator_progress * self.fill_length, 1)
+        self.is_hovered = 0 <= x < 2 and start <= y < start + self.indicator_length
+
         if super().on_mouse(mouse_event):
             return True
 
-        if mouse_event.event_type == MouseEventType.MOUSE_MOVE:
-            self.update_color(mouse_event)
+        if old_hovered != self.is_hovered:
+            self.paint_indicator()
 
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
 
-class _VerticalIndicator(_IndicatorBehaviorBase):
-    def update_size_pos(self):
-        bar = self.parent
-        scroll_view = bar.parent
-        if scroll_view.view is None:
-            view_height = 1
+        sv: ScrollView = self.parent
+        if self.fill_length == 0:
+            sv.vertical_proportion = 0
         else:
-            view_height = scroll_view.view.height
-
-        self.height = clamp(
-            int(scroll_view.port_height**2 / view_height), 1, scroll_view.port_height
-        )
-        self.y = round(scroll_view.vertical_proportion * bar.fill_height)
-
-    def on_add(self):
-        super().on_add()
-        scroll_view = self.parent.parent
-        self.update_size_pos()
-        self.subscribe(scroll_view, "size", self.update_size_pos)
-        self.subscribe(scroll_view, "vertical_proportion", self.update_size_pos)
-        self.subscribe(scroll_view, "show_horizontal_bar", self.update_size_pos)
-
-    def on_remove(self):
-        scroll_view = self.parent.parent
-        self.unsubscribe(scroll_view, "size")
-        self.unsubscribe(scroll_view, "vertical_proportion")
-        self.unsubscribe(scroll_view, "show_horizontal_bar")
-        super().on_remove()
+            sv.vertical_proportion = self.to_local(mouse_event.position).y / self.length
 
     def grab_update(self, mouse_event):
-        bar = self.parent
-        scroll_view = bar.parent
-        if bar.fill_height == 0:
-            scroll_view.vertical_proportion = 0
+        sv: ScrollView = self.parent
+        if self.fill_length == 0:
+            sv.vertical_proportion = 0
         else:
-            scroll_view.vertical_proportion += self.mouse_dy / bar.fill_height
+            sv.vertical_proportion += self.mouse_dy / self.fill_length
 
 
-class _HorizontalIndicator(_IndicatorBehaviorBase):
-    def update_size_pos(self):
-        bar = self.parent
-        scroll_view = bar.parent
-        if scroll_view.view is None:
-            view_width = 1
-        else:
-            view_width = scroll_view.view.width
+class _HorizontalScrollbar(_ScrollBarBase):
+    @property
+    def length(self):
+        return self.width
 
-        self.width = clamp(
-            int(scroll_view.port_width**2 / view_width), 2, scroll_view.port_width
+    def _set_indicator_length(self):
+        self.indicator_length = clamp(
+            4, round(self.indicator_proportion * self.length), self.length
         )
-        self.x = round(scroll_view.horizontal_proportion * bar.fill_width)
 
-    def on_add(self):
-        super().on_add()
-        scroll_view = self.parent.parent
-        self.update_size_pos()
-        self.subscribe(scroll_view, "size", self.update_size_pos)
-        self.subscribe(scroll_view, "horizontal_proportion", self.update_size_pos)
-        self.subscribe(scroll_view, "show_vertical_bar", self.update_size_pos)
+    def paint_indicator(self):
+        indicator_color, start, offset = super().paint_indicator()
 
-    def on_remove(self):
-        scroll_view = self.parent.parent
-        self.unsubscribe(scroll_view, "size")
-        self.unsubscribe(scroll_view, "horizontal_proportion")
-        self.unsubscribe(scroll_view, "show_vertical_bar")
-        super().on_remove()
+        sv: ScrollView = self.parent
+        smooth_bar = create_horizontal_bar(self.indicator_length, 1, offset)
+        self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
+        if offset != 0:
+            self.colors[:, start, :3] = sv._scrollbar_color
+            self.colors[:, start, 3:] = indicator_color
+
+    def on_mouse(self, mouse_event):
+        old_hovered = self.is_hovered
+
+        y, x = self.to_local(mouse_event.position)
+        start = round(self.indicator_progress * self.fill_length, 1)
+        self.is_hovered = y == 0 and start <= x < start + self.indicator_length
+
+        if super().on_mouse(mouse_event):
+            return True
+
+        if old_hovered != self.is_hovered:
+            self.paint_indicator()
+
+    def grab(self, mouse_event):
+        super().grab(mouse_event)
+
+        sv: ScrollView = self.parent
+        if self.fill_length == 0:
+            sv.horizontal_proportion = 0
+        else:
+            sv.horizontal_proportion = (
+                self.to_local(mouse_event.position).x / self.length
+            )
 
     def grab_update(self, mouse_event):
-        bar = self.parent
-        scroll_view = bar.parent
-        if bar.fill_width == 0:
-            scroll_view.horizontal_proportion = 0
+        sv: ScrollView = self.parent
+        if self.fill_length == 0:
+            sv.horizontal_proportion = 0
         else:
-            scroll_view.horizontal_proportion += self.mouse_dx / bar.fill_width
-
-
-class _VerticalBar(Themable, Widget):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.indicator = _VerticalIndicator()
-        self.add_widget(self.indicator)
-        self.background_char = " "
-
-    def update_theme(self):
-        self.background_color_pair = self.color_theme.scrollbar * 2
-
-    def on_add(self):
-        super().on_add()
-
-        def update_size_pos():
-            h, w = self.parent.size
-            self.x = w - 2
-            self.height = h
-
-        update_size_pos()
-        self.subscribe(self.parent, "size", update_size_pos)
-
-    def on_remove(self):
-        self.unsubscribe(self.parent, "size")
-        super().on_remove()
-
-    @property
-    def fill_height(self):
-        """
-        Height of the scroll bar minus the height of the indicator.
-        """
-        return self.height - self.indicator.height - self.parent.show_horizontal_bar
-
-    def on_mouse(self, mouse_event):
-        if (
-            mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.fill_height != 0
-            and self.collides_point(mouse_event.position)
-        ):
-            y = self.to_local(mouse_event.position).y
-            sv = self.parent
-
-            if not sv.show_horizontal_bar or y < self.height - 1:
-                sv.vertical_proportion = y / self.fill_height
-                self.indicator.grab(mouse_event)
-
-            return True
-
-
-class _HorizontalBar(Themable, Widget):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.indicator = _HorizontalIndicator()
-        self.add_widget(self.indicator)
-        self.background_char = " "
-
-    def update_theme(self):
-        self.background_color_pair = self.color_theme.scrollbar * 2
-
-    def on_add(self):
-        super().on_add()
-
-        def update_size_pos():
-            h, w = self.parent.size
-            self.y = h - 1
-            self.width = w
-
-        update_size_pos()
-        self.subscribe(self.parent, "size", update_size_pos)
-
-    def on_remove(self):
-        self.unsubscribe(self.parent, "size")
-        super().on_remove()
-
-    @property
-    def fill_width(self):
-        """
-        Width of the scroll bar minus the width of the indicator.
-        """
-        return self.width - self.indicator.width - self.parent.show_vertical_bar * 2
-
-    def on_mouse(self, mouse_event):
-        if (
-            mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.fill_width != 0
-            and self.collides_point(mouse_event.position)
-        ):
-            x = self.to_local(mouse_event.position).x
-            sv = self.parent
-
-            if not sv.show_vertical_bar or x < self.width - 2:
-                sv.horizontal_proportion = x / self.fill_width
-                self.indicator.grab(mouse_event)
-
-            return True
+            sv.horizontal_proportion += self.mouse_dx / self.fill_length
 
 
 class ScrollView(Grabbable, Widget):
@@ -232,20 +195,24 @@ class ScrollView(Grabbable, Widget):
         Show the vertical scrollbar.
     show_horizontal_bar : bool, default: True
         Show the horizontal scrollbar.
-    is_grabbable : bool, default: True
-        Allow moving scroll view by dragging mouse.
     scrollwheel_enabled : bool, default: True
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool, default: True
         Allow scrolling with arrow keys.
-    vertical_proportion : float, default: 0.0
-        Vertical scroll position as a proportion of total.
-    horizontal_proportion : float, default: 0.0
-        Horizontal scroll position as a proportion of total.
+    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
+        Background color of scrollbar.
+    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
+        Scrollbar indicator normal color.
+    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
+        Scrollbar indicator hover color.
+    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
+        Scrollbar indicator press color.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
         Size of widget.
     pos : Point, default: Point(0, 0)
@@ -295,22 +262,28 @@ class ScrollView(Grabbable, Widget):
         Show the vertical scrollbar.
     show_horizontal_bar : bool
         Show the horizontal scrollbar.
-    is_grabbable : bool
-        Allow moving scroll view by dragging mouse.
     scrollwheel_enabled : bool
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool
         Allow scrolling with arrow keys.
+    scrollbar_color : Color
+        Background color of scrollbar.
+    indicator_normal_color : Color
+        Scrollbar indicator normal color.
+    indicator_hover_color : Color
+        Scrollbar indicator hover color.
+    indicator_press_color : Color
+        Scrollbar indicator press color.
     vertical_proportion : float
         Vertical scroll position as a proportion of total.
     horizontal_proportion : float
         Horizontal scroll position as a proportion of total.
-    view : Widget | None
-        The scroll view's child.
     is_grabbable : bool
         If false, grabbable behavior is disabled.
     disable_ptf : bool
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton
+        Mouse button used for grabbing.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -443,30 +416,46 @@ class ScrollView(Grabbable, Widget):
     def __init__(
         self,
         *,
-        allow_vertical_scroll=True,
-        allow_horizontal_scroll=True,
-        show_vertical_bar=True,
-        show_horizontal_bar=True,
-        is_grabbable=True,
-        scrollwheel_enabled=True,
-        arrow_keys_enabled=True,
-        vertical_proportion=0.0,
-        horizontal_proportion=0.0,
+        allow_vertical_scroll: bool = True,
+        allow_horizontal_scroll: bool = True,
+        show_vertical_bar: bool = True,
+        show_horizontal_bar: bool = True,
+        scrollwheel_enabled: bool = True,
+        arrow_keys_enabled: bool = True,
+        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
+        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
+        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
+        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.allow_vertical_scroll = allow_vertical_scroll
         self.allow_horizontal_scroll = allow_horizontal_scroll
-        self.is_grabbable = is_grabbable
         self.scrollwheel_enabled = scrollwheel_enabled
         self.arrow_keys_enabled = arrow_keys_enabled
-        self._vertical_proportion = clamp(vertical_proportion, 0, 1)
-        self._horizontal_proportion = clamp(horizontal_proportion, 0, 1)
-        self._view = None
-        self._vertical_bar = _VerticalBar(is_enabled=show_vertical_bar)
-        self._horizontal_bar = _HorizontalBar(is_enabled=show_horizontal_bar)
 
-        self.add_widgets(self._vertical_bar, self._horizontal_bar)
+        self._scrollbar_color = scrollbar_color
+        self._indicator_normal_color = indicator_normal_color
+        self._indicator_hover_color = indicator_hover_color
+        self._indicator_press_color = indicator_press_color
+
+        self._vertical_proportion = 0
+        self._horizontal_proportion = 0
+        self._corner = Widget(
+            size=(1, 2),
+            pos_hint=(1.0, 1.0),
+            anchor="bottom-right",
+            background_color_pair=scrollbar_color * 2,
+            is_enabled=show_horizontal_bar and show_vertical_bar,
+        )
+        self._vertical_bar = _VerticalScrollbar()
+        self._horizontal_bar = _HorizontalScrollbar()
+        self._view = None
+
+        self.add_widgets(self._corner, self._vertical_bar, self._horizontal_bar)
+
+        self.show_horizontal_bar = show_horizontal_bar
+        self.show_vertical_bar = show_vertical_bar
 
     @property
     def show_vertical_bar(self) -> bool:
@@ -476,6 +465,7 @@ class ScrollView(Grabbable, Widget):
     @subscribable
     def show_vertical_bar(self, show: bool):
         self._vertical_bar.is_enabled = show
+        self.on_size()
 
     @property
     def show_horizontal_bar(self) -> bool:
@@ -485,6 +475,44 @@ class ScrollView(Grabbable, Widget):
     @subscribable
     def show_horizontal_bar(self, show: bool):
         self._horizontal_bar.is_enabled = show
+        self.on_size()
+
+    @property
+    def scrollbar_color(self) -> Color:
+        return self._scrollbar_color
+
+    @scrollbar_color.setter
+    def scrollbar_color(self, scrollbar_color: Color):
+        self._scrollbar_color = scrollbar_color
+        self._corner.background_color_pair = scrollbar_color * 2
+        self._update_port_and_scrollbar()
+
+    @property
+    def indicator_normal_color(self) -> Color:
+        return self._indicator_normal_color
+
+    @indicator_normal_color.setter
+    def indicator_normal_color(self, indicator_normal_color: Color):
+        self._indicator_normal_color = indicator_normal_color
+        self._update_port_and_scrollbar()
+
+    @property
+    def indicator_hover_color(self) -> Color:
+        return self._indicator_hover_color
+
+    @indicator_hover_color.setter
+    def indicator_hover_color(self, indicator_hover_color: Color):
+        self._indicator_hover_color = indicator_hover_color
+        self._update_port_and_scrollbar()
+
+    @property
+    def indicator_press_color(self) -> Color:
+        return self._indicator_press_color
+
+    @indicator_press_color.setter
+    def indicator_press_color(self, indicator_press_color: Color):
+        self._indicator_press_color = indicator_press_color
+        self._update_port_and_scrollbar()
 
     @property
     def vertical_proportion(self):
@@ -498,7 +526,7 @@ class ScrollView(Grabbable, Widget):
                 self._vertical_proportion = 0
             else:
                 self._vertical_proportion = clamp(value, 0, 1)
-                self._set_view_top()
+                self._update_port_and_scrollbar()
 
     @property
     def horizontal_proportion(self):
@@ -512,7 +540,7 @@ class ScrollView(Grabbable, Widget):
                 self._horizontal_proportion = 0
             else:
                 self._horizontal_proportion = clamp(value, 0, 1)
-                self._set_view_left()
+                self._update_port_and_scrollbar()
 
     @property
     def port_height(self) -> int:
@@ -524,44 +552,40 @@ class ScrollView(Grabbable, Widget):
 
     @property
     def total_vertical_distance(self) -> int:
-        """
-        Return difference between child height and scrollview height.
-        """
-        if self._view is None:
-            return 0
-
-        return max(0, self._view.height - self.port_height)
+        """The distance the view can scroll vertically."""
+        return 0 if self._view is None else max(0, self._view.height - self.port_height)
 
     @property
     def total_horizontal_distance(self) -> int:
-        """
-        Return difference between child width and scrollview width.
-        """
+        """The distance the view can scroll horizontally."""
+        return 0 if self._view is None else max(0, self._view.width - self.port_width)
+
+    def _update_port_and_scrollbar(self):
+        """Move port and repaint scrollbar."""
         if self._view is None:
-            return 0
-
-        return max(0, self._view.width - self.port_width)
-
-    def _set_view_top(self):
-        """
-        Set the top-coordinate of the view.
-        """
-        self._view.top = -round(self.vertical_proportion * self.total_vertical_distance)
-
-    def _set_view_left(self):
-        """
-        Set the left-coordinate of the view.
-        """
-        self._view.left = -round(
-            self.horizontal_proportion * self.total_horizontal_distance
-        )
-
-    def _set_view_pos(self):
-        """
-        Set position of the view.
-        """
-        self._set_view_top()
-        self._set_view_left()
+            self._vertical_bar.indicator_proportion = 1.0
+            self._vertical_bar.indicator_progress = 0
+            self._vertical_bar.paint_indicator()
+            self._horizontal_bar.indicator_proportion = 1.0
+            self._horizontal_bar.indicator_progress = 0
+            self._horizontal_bar.paint_indicator()
+        else:
+            self._view.top = -round(
+                self.vertical_proportion * self.total_vertical_distance
+            )
+            self._view.left = -round(
+                self.horizontal_proportion * self.total_horizontal_distance
+            )
+            self._vertical_bar.indicator_proportion = clamp(
+                self.port_height / self.view.height, 0, 1
+            )
+            self._vertical_bar.indicator_progress = self.vertical_proportion
+            self._vertical_bar.paint_indicator()
+            self._horizontal_bar.indicator_proportion = clamp(
+                self.port_width / self.view.width, 0, 1
+            )
+            self._horizontal_bar.indicator_progress = self.horizontal_proportion
+            self._horizontal_bar.paint_indicator()
 
     @property
     def view(self) -> Widget | None:
@@ -576,32 +600,25 @@ class ScrollView(Grabbable, Widget):
 
         if view is not None:
             self.add_widget(view)
-            self.children.insert(
-                0, self.children.pop()
-            )  # Move view to top of view stack.
-
-            h_ind = self._horizontal_bar.indicator
-            v_ind = self._vertical_bar.indicator
-            self.subscribe(view, "size", self._set_view_pos)
-            h_ind.subscribe(view, "size", h_ind.update_size_pos)
-            v_ind.subscribe(view, "size", v_ind.update_size_pos)
-
-            self._set_view_pos()
+            self.children.insert(0, self.children.pop())  # Move view below scrollbars.
+            self.subscribe(view, "size", self._update_port_and_scrollbar)
+            self._update_port_and_scrollbar()
 
     def remove_widget(self, widget: Widget):
         if widget is self._view:
             self._view = None
             self.unsubscribe(widget, "size")
-            self._horizontal_bar.indicator.unsubscribe(widget, "size")
-            self._vertical_bar.indicator.unsubscribe(widget, "size")
 
         super().remove_widget(widget)
 
     def on_size(self):
-        if self._view is not None:
-            self._set_view_pos()
+        self._vertical_bar.height = self.height - self.show_horizontal_bar
+        self._vertical_bar.left = self.width - 2
+        self._horizontal_bar.width = self.width - 2 * self.show_vertical_bar
+        self._horizontal_bar.top = self.height - 1
+        self._update_port_and_scrollbar()
 
-    def on_key(self, key_event: KeyEvent):
+    def on_key(self, key_event: KeyEvent) -> bool | None:
         if not self.arrow_keys_enabled:
             return False
 

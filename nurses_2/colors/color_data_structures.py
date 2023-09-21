@@ -309,14 +309,6 @@ class ColorTheme(NamedTuple):
         Border color.
     window_border_inactive : AColor
         Inactive border color.
-    scrollbar : Color
-        Scrollbar color.
-    scrollbar_indicator_normal : Color
-        Scrollbar indicator color.
-    scrollbar_indicator_hover : Color
-        Hovered scrollbar indicator color.
-    scrollbar_indicator_press : Color
-        Pressed scrollbar indicator color.
     data_table_sort_indicator : ColorPair
         Color pair of sort indicator for a column label in a data table.
     data_table_hover : ColorPair
@@ -368,14 +360,6 @@ class ColorTheme(NamedTuple):
         Border color.
     window_border_inactive : AColor
         Inactive border color.
-    scrollbar : Color
-        Scrollbar color.
-    scrollbar_indicator_normal : Color
-        Scrollbar indicator color.
-    scrollbar_indicator_hover : Color
-        Hovered scrollbar indicator color.
-    scrollbar_indicator_press : Color
-        Pressed scrollbar indicator color.
     data_table_sort_indicator : ColorPair
         Color pair of sort indicator for a column label in a data table.
     data_table_hover : ColorPair
@@ -418,10 +402,6 @@ class ColorTheme(NamedTuple):
     titlebar_inactive: ColorPair
     window_border_normal: AColor
     window_border_inactive: AColor
-    scrollbar: Color
-    scrollbar_indicator_normal: Color
-    scrollbar_indicator_hover: Color
-    scrollbar_indicator_press: Color
     data_table_sort_indicator: ColorPair
     data_table_hover: ColorPair
     data_table_stripe: ColorPair
@@ -450,10 +430,6 @@ class ColorTheme(NamedTuple):
         titlebar_inactive: str,
         window_border_normal: str,
         window_border_inactive: str,
-        scrollbar: str,
-        scrollbar_indicator_normal: str,
-        scrollbar_indicator_hover: str,
-        scrollbar_indicator_press: str,
         data_table_sort_indicator: str,
         data_table_hover: str,
         data_table_stripe: str,
@@ -503,14 +479,6 @@ class ColorTheme(NamedTuple):
             Hex code for border color.
         window_border_inactive : str
             Hex code for inactive border color.
-        scrollbar : str
-            Hex code for scrollbar color.
-        scrollbar_indicator_normal : str
-            Hex code for scrollbar indicator color.
-        scrollbar_indicator_hover : str
-            Hex code for hovered scrollbar indicator color.
-        scrollbar_indicator_press : str
-            Hex code for pressed scrollbar indicator color.
         data_table_sort_indicator : str
             Hex code for color pair of sort indicator for a column label in a data
             table.
@@ -545,10 +513,6 @@ class ColorTheme(NamedTuple):
             ColorPair.from_hex(titlebar_inactive),
             AColor.from_hex(window_border_normal),
             AColor.from_hex(window_border_inactive),
-            Color.from_hex(scrollbar),
-            Color.from_hex(scrollbar_indicator_normal),
-            Color.from_hex(scrollbar_indicator_hover),
-            Color.from_hex(scrollbar_indicator_press),
             ColorPair.from_hex(data_table_sort_indicator),
             ColorPair.from_hex(data_table_hover),
             ColorPair.from_hex(data_table_stripe),
