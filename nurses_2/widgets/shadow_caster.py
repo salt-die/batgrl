@@ -26,10 +26,9 @@ The restrictiveness of the shadow caster.
 
 :class:`Restrictiveness` is one of "permissive", "moderate", "restrictive".
 
-For "permissive", any interval is visible as long as any of it's start,
-center, or end points are visible. For "moderate", the center and
-either end must be visible. For "restrictive", all points in the
-interval must be visible.
+For "permissive", any interval is visible as long as any of it's start, center, or end
+points are visible. For "moderate", the center and either end must be visible. For
+"restrictive", all points in the interval must be visible.
 """
 
 
