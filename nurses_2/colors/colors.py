@@ -105,8 +105,8 @@ DEFAULT_COLOR_THEME = ColorTheme.from_hexes(
     data_table_hover="F6A7A9111834",
     data_table_stripe="F6A7A90B1238",
     data_table_stripe_hover="F6A7A90F184A",
-    data_table_selected="ECF3FF1B244B",
-    data_table_selected_hover="ECF3FF111F5E",
+    data_table_selected="ECF3FF111F5E",
+    data_table_selected_hover="ECF3FF1B244B",
     progress_bar="FFE0DF2A3CA0",
 )
 """Default color theme."""
