@@ -34,8 +34,8 @@ _INT_TO_KEYS = {
     2: MouseButton.RIGHT,
     4: MouseButton.MIDDLE,
 }
-# Last mouse button pressed is needed to get behavior consistent with linux mouse handling.
-# OrderedDict is being used as an ordered-set.
+# Last mouse button pressed is needed to get behavior consistent with linux mouse
+# handling. OrderedDict is being used as an ordered-set.
 _PRESSED_KEYS = OrderedDict.fromkeys([0])
 _TEXT: list[str] = []
 
@@ -82,13 +82,15 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     MOUSE_WHEELED = 0x0004
     last_button_state = sum(_PRESSED_KEYS)
 
-    # On windows, simultaneous mouse button presses are communicated through ev.ButtonState.
-    # Linux only passes the last button pressed through ansi codes. To get behavior consistent with
-    # linux, the last mouse button pressed is determined from the last button state, the current
-    # button state, and the order mouse buttons were pressed (stored in _PRESSED_KEYS).
+    # On windows, simultaneous mouse button presses are communicated through
+    # ev.ButtonState. Linux only passes the last button pressed through ansi codes. To
+    # get behavior consistent with linux, the last mouse button pressed is determined
+    # from the last button state, the current button state, and the order mouse buttons
+    # were pressed (stored in _PRESSED_KEYS).
 
-    # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent with
-    # linux mouse-handling we determine double/triple-clicks with `nurses_2.app.App`.
+    # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent
+    # with linux mouse-handling we determine double/triple-clicks with
+    # `nurses_2.app.App`.
     if ev.EventFlags & MOUSE_MOVED:
         event_type = MouseEventType.MOUSE_MOVE
         button_state = next(reversed(_PRESSED_KEYS))  # Last button pressed.
@@ -118,7 +120,8 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
 
 def _purge_text():
     """
-    Key events are first collected into _TEXT to determine if a paste event has occurred.
+    Key events are first collected into _TEXT to determine if a paste event has
+    occurred.
     """
     if not _TEXT:
         return
