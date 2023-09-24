@@ -1,8 +1,8 @@
-from ctypes import Structure, Union, c_char, c_long, c_short, c_ulong, windll
-from ctypes.wintypes import BOOL, DWORD, HANDLE, LPVOID, WCHAR, WORD
+from ctypes import Structure, Union, windll
+from ctypes.wintypes import BOOL, CHAR, DWORD, HANDLE, LONG, LPVOID, SHORT, WCHAR
 
-STD_INPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(c_ulong(-10)))
-STD_OUTPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(c_ulong(-11)))
+STD_INPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(DWORD(-10)))
+STD_OUTPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(DWORD(-11)))
 
 
 class COORD(Structure):
@@ -12,14 +12,14 @@ class COORD(Structure):
     """
 
     _fields_ = [
-        ("X", c_short),
-        ("Y", c_short),
+        ("X", SHORT),
+        ("Y", SHORT),
     ]
 
 
 class UNICODE_OR_ASCII(Union):
     _fields_ = [
-        ("AsciiChar", c_char),
+        ("AsciiChar", CHAR),
         ("UnicodeChar", WCHAR),
     ]
 
@@ -30,12 +30,12 @@ class KEY_EVENT_RECORD(Structure):
     """
 
     _fields_ = [
-        ("KeyDown", c_long),
-        ("RepeatCount", c_short),
-        ("VirtualKeyCode", c_short),
-        ("VirtualScanCode", c_short),
+        ("KeyDown", LONG),
+        ("RepeatCount", SHORT),
+        ("VirtualKeyCode", SHORT),
+        ("VirtualScanCode", SHORT),
         ("uChar", UNICODE_OR_ASCII),
-        ("ControlKeyState", c_long),
+        ("ControlKeyState", LONG),
     ]
 
 
@@ -46,9 +46,9 @@ class MOUSE_EVENT_RECORD(Structure):
 
     _fields_ = [
         ("MousePosition", COORD),
-        ("ButtonState", c_long),
-        ("ControlKeyState", c_long),
-        ("EventFlags", c_long),
+        ("ButtonState", LONG),
+        ("ControlKeyState", LONG),
+        ("EventFlags", LONG),
     ]
 
 
@@ -65,7 +65,7 @@ class MENU_EVENT_RECORD(Structure):
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx
     """
 
-    _fields_ = [("CommandId", c_long)]
+    _fields_ = [("CommandId", LONG)]
 
 
 class FOCUS_EVENT_RECORD(Structure):
@@ -73,7 +73,7 @@ class FOCUS_EVENT_RECORD(Structure):
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx
     """
 
-    _fields_ = [("SetFocus", c_long)]
+    _fields_ = [("SetFocus", LONG)]
 
 
 class EVENT_RECORD(Union):
@@ -91,39 +91,7 @@ class INPUT_RECORD(Structure):
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx
     """
 
-    _fields_ = [("EventType", c_short), ("Event", EVENT_RECORD)]
-
-
-EventTypes = {
-    1: "KeyEvent",
-    2: "MouseEvent",
-    4: "WindowBufferSizeEvent",
-    8: "MenuEvent",
-    16: "FocusEvent",
-}
-
-
-class SMALL_RECT(Structure):
-    """struct in wincon.h."""
-
-    _fields_ = [
-        ("Left", c_short),
-        ("Top", c_short),
-        ("Right", c_short),
-        ("Bottom", c_short),
-    ]
-
-
-class CONSOLE_SCREEN_BUFFER_INFO(Structure):
-    """struct in wincon.h."""
-
-    _fields_ = [
-        ("dwSize", COORD),
-        ("dwCursorPosition", COORD),
-        ("wAttributes", WORD),
-        ("srWindow", SMALL_RECT),
-        ("dwMaximumWindowSize", COORD),
-    ]
+    _fields_ = [("EventType", SHORT), ("Event", EVENT_RECORD)]
 
 
 class SECURITY_ATTRIBUTES(Structure):

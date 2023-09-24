@@ -1,7 +1,6 @@
 """
 Data structures for input and output.
 """
-import os
 import platform
 import sys
 from contextlib import contextmanager
@@ -40,16 +39,12 @@ def _create_io(asciicast_path: Path | None):
     if platform.system() == "Windows":
         from .output.windows10 import Windows10_Output, is_vt100_enabled
 
-        is_conemu_ansi = os.environ.get("ConEmuANSI") == "ON"
-
-        if not is_conemu_ansi and not is_vt100_enabled():
+        if not is_vt100_enabled():
             raise RuntimeError("nurses_2 not supported on non-vt100 enabled terminals")
 
         from .input.win32 import win32_input
 
-        return win32_input, Windows10_Output(
-            is_conemu_ansi=is_conemu_ansi, asciicast_path=asciicast_path
-        )
+        return win32_input, Windows10_Output(asciicast_path=asciicast_path)
 
     else:
         from .input.vt100 import vt100_input
