@@ -2,6 +2,7 @@
 Parse and create events for each input record from a win32 console.
 """
 from collections import OrderedDict
+from collections.abc import Iterable
 from ctypes import byref, windll
 from ctypes.wintypes import DWORD
 
@@ -11,8 +12,6 @@ from ...win32_types import (
     KEY_EVENT_RECORD,
     MOUSE_EVENT_RECORD,
     STD_INPUT_HANDLE,
-    WINDOW_BUFFER_SIZE_RECORD,
-    EventTypes,
 )
 from ..events import (
     Key,
@@ -25,10 +24,8 @@ from ..events import (
 )
 from .key_codes import KEY_CODES
 
+_EVENT_TYPES = {1: "KeyEvent", 2: "MouseEvent", 4: "WindowBufferSizeEvent"}
 _INT_TO_KEYS = {
-    # FROM_LEFT_1ST_BUTTON_PRESSED = 0x0001
-    # RIGHTMOST_BUTTON_PRESSED = 0x0002
-    # FROM_LEFT_2ND_BUTTON_PRESSED = 0x0004
     0: MouseButton.NO_BUTTON,
     1: MouseButton.LEFT,
     2: MouseButton.RIGHT,
@@ -44,17 +41,17 @@ def _handle_mods(key_state: DWORD) -> Mods:
     """
     Return `Mods` from an event's `ControlKeyState`.
     """
-    ALT_PRESSED = 0x0001 | 0x0002  # left alt or right alt
-    CTRL_PRESSED = 0x0004 | 0x0008  # left ctrl or right ctrl
-    SHIFT_PRESSED = 0x0010
-
-    alt = bool(key_state & ALT_PRESSED)
-    ctrl = bool(key_state & CTRL_PRESSED)
-    shift = bool(key_state & SHIFT_PRESSED)
+    # Magic numbers are:
+    # LEFT_ALT | RIGHT_ALT => 0x0001 | 0x0002 => 0x0003
+    # LEFT_CTRL | RIGHT_CTRL => 0x0004 | 0x0008 => 0x000C
+    # SHIFT is 0x0010
+    alt = bool(key_state & 0x0003)
+    ctrl = bool(key_state & 0x000C)
+    shift = bool(key_state & 0x0010)
     return Mods(alt, ctrl, shift)
 
 
-def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent:
+def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent | None:
     """
     Return a `KeyEvent` or add a character to _TEXT from a `KEY_EVENT_RECORD`.
     """
@@ -78,23 +75,21 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
 
     Reference: https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str
     """
-    MOUSE_MOVED = 0x0001
-    MOUSE_WHEELED = 0x0004
     last_button_state = sum(_PRESSED_KEYS)
 
-    # On windows, simultaneous mouse button presses are communicated through
-    # ev.ButtonState. Linux only passes the last button pressed through ansi codes. To
-    # get behavior consistent with linux, the last mouse button pressed is determined
-    # from the last button state, the current button state, and the order mouse buttons
-    # were pressed (stored in _PRESSED_KEYS).
+    # On linux, for simultaneous button presses, only the most recent button pressed or
+    # released is given. On windows, simultaneous mouse button presses are communicated
+    # through ev.ButtonState. To get behavior roughly consistent with linux, the most
+    # recent mouse button pressed is determined from the last button state, the current
+    # button state, and the order mouse buttons were pressed (stored in _PRESSED_KEYS).
 
     # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent
     # with linux mouse-handling we determine double/triple-clicks with
     # `nurses_2.app.App`.
-    if ev.EventFlags & MOUSE_MOVED:
+    if ev.EventFlags & 0x0001:  # 0x0001 is mouse moved flag
         event_type = MouseEventType.MOUSE_MOVE
         button_state = next(reversed(_PRESSED_KEYS))  # Last button pressed.
-    elif ev.EventFlags & MOUSE_WHEELED:
+    elif ev.EventFlags & 0x0004:  # 0x0004 is mouse wheeled flag
         if ev.ButtonState > 0:
             event_type = MouseEventType.SCROLL_UP
         else:
@@ -118,10 +113,12 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     )
 
 
-def _purge_text():
+def _purge_text() -> Iterable[PasteEvent | KeyEvent]:
     """
-    Key events are first collected into _TEXT to determine if a paste event has
-    occurred.
+    While generating events, key events are collected into _TEXT to determine if a paste
+    event has occurred. If there many key events or there are non-ascii character keys,
+    this function yields a single PasteEvent. Otherwise yields KeyEvents from _TEXT.
+    _TEXT is cleared afterwards.
     """
     if not _TEXT:
         return
@@ -138,7 +135,7 @@ def _purge_text():
             yield KeyEvent(Key.Enter if char == "\n" else char, Mods.NO_MODS)
 
 
-def events():
+def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
     """
     Yield input events.
 
@@ -151,18 +148,23 @@ def events():
     )
 
     for ir in input_records:
-        match ev := getattr(ir.Event, EventTypes.get(ir.EventType, ""), None):
-            case KEY_EVENT_RECORD() if ev.KeyDown:
-                if (key := _handle_key(ev)) is not None:
-                    yield from _purge_text()
-                    yield key
+        if ir.EventType not in _EVENT_TYPES:
+            continue
 
-            case MOUSE_EVENT_RECORD():
-                yield from _purge_text()
-                yield _handle_mouse(ev)
+        ev = getattr(ir.Event, _EVENT_TYPES[ir.EventType])
 
-            case WINDOW_BUFFER_SIZE_RECORD():
-                yield from _purge_text()
-                yield Size(ev.Size.Y, ev.Size.X)
+        if isinstance(ev, KEY_EVENT_RECORD):
+            if ev.KeyDown:
+                output = _handle_key(ev)
+            else:
+                output = None
+        elif isinstance(ev, MOUSE_EVENT_RECORD):
+            output = _handle_mouse(ev)
+        else:
+            output = Size(ev.Size.Y, ev.Size.X)
+
+        if output is not None:
+            yield from _purge_text()
+            yield output
 
     yield from _purge_text()

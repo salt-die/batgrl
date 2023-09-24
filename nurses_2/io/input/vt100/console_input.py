@@ -1,38 +1,45 @@
 """
-Parse and create events from a VT100 input stream.
+Parse and create events from a VT100 input stream. Note size events aren't parsed from
+ansi and so are added separately to `_EVENTS` once input is active in the event loop.
 """
 import os
 import re
 import select
 import sys
 from codecs import getincrementaldecoder
+from collections.abc import Iterable
 
-from ....data_structures import Point
+from ....data_structures import Point, Size
 from ..events import Key, KeyEvent, PasteEvent, _PartialMouseEvent
 from .ansi_escapes import ALT, ANSI_ESCAPES, NO_MODS
 from .mouse_bindings import TERM_SGR, TYPICAL
 
-_EVENTS = []
-MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<[\d;]+[mM]|M...)\Z")
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
-FILENO = sys.stdin.fileno()
-SELECT_ARGS = [FILENO], [], [], 0
+MOUSE_RE = re.compile("^" + re.escape("\x1b[") + r"(<[\d;]+[mM]|M...)\Z")
+MAX_ESCAPE_LENGTH = 20
+"""
+Heuristic for the maximum length of an ansi escape. Longer max escape length will
+lengthen searches for ansi escapes in arbitrary data from stdin.
+"""
+STDIN = sys.stdin.fileno()
+
+_EVENTS = []
 
 
-def read_stdin():
+def read_stdin() -> str:
     """
     Read (non-blocking) from stdin and return it decoded.
     """
-    if not select.select(*SELECT_ARGS)[0]:
+    if not select.select([STDIN], [], [], 0)[0]:
         return ""
 
     try:
-        return DECODER.decode(os.read(FILENO, 1024))
+        return DECODER.decode(os.read(STDIN, 1024))
     except OSError:
         return ""
 
 
-def _create_mouse_event(data):
+def _create_mouse_event(data) -> _PartialMouseEvent | None:
     """
     Create a MouseEvent from ansi escapes.
     """
@@ -61,11 +68,12 @@ def _create_mouse_event(data):
         _EVENTS.append(_PartialMouseEvent(Point(y, x), *mouse_info))
 
 
-def _find_longest_match(data):
+def _find_longest_match(data: str) -> str:
     """
-    Iteratively look for key matches in data.
+    Iteratively look for an ANSI escape in data. If one is found an event will be
+    created and appended to `_EVENTS` and the remaining data returned.
     """
-    for i in range(len(data), 0, -1):
+    for i in range(min(MAX_ESCAPE_LENGTH, len(data)), 0, -1):
         prefix = data[:i]
         suffix = data[i:]
 
@@ -76,27 +84,24 @@ def _find_longest_match(data):
         match ANSI_ESCAPES.get(prefix):
             case None:
                 continue
-
             case Key.Ignore:
                 return suffix
-
             case Key.Paste:
-                match suffix.find("\x1b[201~"):
-                    case -1:
-                        _EVENTS.append(PasteEvent(suffix))
-                        return ""
-                    case i:
-                        _EVENTS.append(PasteEvent(suffix[:i]))
-                        return suffix[i + 6 :]
-
-            case KeyEvent.ESCAPE if suffix and suffix not in ANSI_ESCAPES:
-                if len(suffix) == 1:  # alt + character
-                    _EVENTS.append(KeyEvent(suffix, ALT))
-                else:
-                    # Unrecognized escape sequence.
-                    _EVENTS.append(KeyEvent(data, NO_MODS))
-                return ""
-
+                paste_end = suffix.find("\x1b[201~")
+                if paste_end == -1:
+                    # ! To end up here, a paste start ansi was found without the
+                    # ! corresponding paste end. This shouldn't happen, so maybe an
+                    # ! error should be logged. For now, instead, a paste event is
+                    # ! created from the remainder of the data.
+                    # ? Log this error?
+                    _EVENTS.append(PasteEvent(suffix))
+                    return ""
+                _EVENTS.append(PasteEvent(suffix[:paste_end]))
+                return suffix[paste_end + 6 :]
+            case KeyEvent.ESCAPE if suffix:
+                # alt + character
+                _EVENTS.append(KeyEvent(suffix[0], ALT))
+                return suffix[1:]
             case key:
                 _EVENTS.append(key)
                 return suffix
@@ -105,7 +110,7 @@ def _find_longest_match(data):
     return suffix
 
 
-def events():
+def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
     """
     Yield input events.
     """
