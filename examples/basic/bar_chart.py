@@ -39,4 +39,5 @@ class BarChartApp(App):
         self.add_widgets(label, bar_chart)
 
 
-BarChartApp(title="Bar Chart Example", background_color_pair=PRIMARY_COLOR).run()
+if __name__ == "__main__":
+    BarChartApp(title="Bar Chart Example", background_color_pair=PRIMARY_COLOR).run()

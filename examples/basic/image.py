@@ -9,7 +9,7 @@ PATH_TO_LOGO_FULL = ASSETS / "python_discord_logo.png"
 PATH_TO_BACKGROUND = ASSETS / "background.png"
 
 
-class MyApp(App):
+class ImageApp(App):
     async def on_start(self):
         background = Image(size_hint=(1.0, 1.0), path=PATH_TO_BACKGROUND)
 
@@ -28,4 +28,5 @@ class MyApp(App):
         self.add_widgets(background, logo_flat, logo_full)
 
 
-MyApp(title="Image Example").run()
+if __name__ == "__main__":
+    ImageApp(title="Image Example").run()

@@ -169,4 +169,5 @@ class Connect4(Widget):
             )
 
 
-run_widget_as_app(Connect4())
+if __name__ == "__main__":
+    run_widget_as_app(Connect4())

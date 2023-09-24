@@ -46,4 +46,5 @@ class TabApp(App):
         self.add_widget(tabbed)
 
 
-TabApp(title="Tabbed Widget").run()
+if __name__ == "__main__":
+    TabApp(title="Tabbed Widget").run()

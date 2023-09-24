@@ -17,7 +17,7 @@ LEFT_GRADIENT = gradient(WHITE_ON_RED, WHITE_ON_GREEN, BIG_WIDGET_SIZE.rows)
 RIGHT_GRADIENT = gradient(WHITE_ON_GREEN, WHITE_ON_BLUE, BIG_WIDGET_SIZE.rows)
 
 
-class MyApp(App):
+class ScrollViewApp(App):
     async def on_start(self):
         big_widget = TextWidget(size=BIG_WIDGET_SIZE)
 
@@ -33,4 +33,5 @@ class MyApp(App):
         self.add_widget(scroll_view)
 
 
-MyApp(title="Scroll View Example").run()
+if __name__ == "__main__":
+    ScrollViewApp(title="Scroll View Example").run()

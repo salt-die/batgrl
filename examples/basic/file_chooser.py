@@ -28,4 +28,5 @@ class FileApp(App):
         fc.root_dir = ASSETS.parent.parent
 
 
-FileApp(title="File Chooser Example").run()
+if __name__ == "__main__":
+    FileApp(title="File Chooser Example").run()

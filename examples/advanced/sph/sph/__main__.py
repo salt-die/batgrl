@@ -134,4 +134,5 @@ class SPHApp(App):
         self.add_widget(container)
 
 
-SPHApp(title="Smoothed-Particle Hydrodynamics").run()
+if __name__ == "__main__":
+    SPHApp(title="Smoothed-Particle Hydrodynamics").run()

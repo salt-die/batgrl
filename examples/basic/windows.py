@@ -20,7 +20,7 @@ YS_2 = np.random.randint(0, 100, 20)
 YS_3 = np.random.randint(0, 100, 20)
 
 
-class MyApp(App):
+class WindowsApp(App):
     async def on_start(self):
         window_kwargs = dict(size=(25, 50), border_alpha=0.7, alpha=0.7)
 
@@ -48,4 +48,5 @@ class MyApp(App):
         animation.play()
 
 
-MyApp(title="Windows Example").run()
+if __name__ == "__main__":
+    WindowsApp(title="Windows Example").run()

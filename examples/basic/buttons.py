@@ -9,7 +9,7 @@ from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
 
 
-class MyApp(App):
+class ButtonApp(App):
     async def on_start(self):
         display = TextWidget(size=(1, 20), pos=(1, 9))
 
@@ -91,4 +91,5 @@ class MyApp(App):
         self.add_widgets(display, grid_layout, flat_grid)
 
 
-MyApp(title="Buttons Example").run()
+if __name__ == "__main__":
+    ButtonApp(title="Buttons Example").run()

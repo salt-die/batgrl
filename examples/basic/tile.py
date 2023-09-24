@@ -10,7 +10,7 @@ LOGO_PATH = ASSETS / "python_discord_logo.png"
 LOGO_FLAT = ASSETS / "logo_solo_flat_256.png"
 
 
-class MyApp(App):
+class TiledApp(App):
     async def on_start(self):
         tile_1 = Image(size=(10, 25), path=LOGO_PATH)
         tile_2 = Image(size=(9, 19), path=LOGO_FLAT)
@@ -24,4 +24,5 @@ class MyApp(App):
         tiled_image.tile = tile_2
 
 
-MyApp(title="Tile Example").run()
+if __name__ == "__main__":
+    TiledApp(title="Tile Example").run()

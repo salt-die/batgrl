@@ -35,4 +35,5 @@ class SparklineApp(App):
         self.add_widgets(sparkline_a, sparkline_b, button)
 
 
-SparklineApp(title="Sparkline Example", background_color_pair=PRIMARY_COLOR).run()
+if __name__ == "__main__":
+    SparklineApp(title="Sparkline Example", background_color_pair=PRIMARY_COLOR).run()

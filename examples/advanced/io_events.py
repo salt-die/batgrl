@@ -324,4 +324,5 @@ class InputApp(App):
         self.add_widget(container)
 
 
-InputApp(title="IO Events").run()
+if __name__ == "__main__":
+    InputApp(title="IO Events").run()

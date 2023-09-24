@@ -13,7 +13,7 @@ LINK_TO_VIDEO = (
 )
 
 
-class MyApp(App):
+class VideoApp(App):
     async def on_start(self):
         video = VideoPlayer(
             source=LINK_TO_VIDEO, size_hint=(1.0, 0.5)
@@ -30,4 +30,5 @@ class MyApp(App):
         braille_video.play()
 
 
-MyApp(title="Video Example").run()
+if __name__ == "__main__":
+    VideoApp(title="Video Example").run()

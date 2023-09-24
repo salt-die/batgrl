@@ -202,7 +202,7 @@ class PokeParticleField(TextParticleField):
                 return
 
 
-class MyApp(App):
+class ExplodingLogoApp(App):
     async def on_start(self):
         colors = np.full((HEIGHT, WIDTH), BLUE_INDEX)
         colors[-7:] = colors[-13:-7, -41:] = YELLOW_INDEX
@@ -245,4 +245,5 @@ class MyApp(App):
         self.add_widgets(bg, field)
 
 
-MyApp(title="Exploding Logo Example").run()
+if __name__ == "__main__":
+    ExplodingLogoApp(title="Exploding Logo Example").run()

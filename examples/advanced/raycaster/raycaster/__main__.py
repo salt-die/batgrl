@@ -31,7 +31,7 @@ MAP = np.array(
 )
 
 
-class MyApp(App):
+class RaycasterApp(App):
     async def on_start(self):
         sources = sorted(SPINNER.iterdir(), key=lambda file: file.name)
         textures = [read_texture(source) for source in sources]
@@ -56,4 +56,5 @@ class MyApp(App):
         self.add_widget(raycaster)
 
 
-MyApp(title="Raycaster Example").run()
+if __name__ == "__main__":
+    RaycasterApp(title="Raycaster Example").run()

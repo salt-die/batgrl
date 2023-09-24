@@ -130,4 +130,5 @@ class SnakeApp(App):
         self.add_widgets(background, snake)
 
 
-SnakeApp().run()
+if __name__ == "__main__":
+    SnakeApp().run()

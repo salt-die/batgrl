@@ -144,4 +144,5 @@ class DripApp(App):
         self.add_widget(bleed)
 
 
-DripApp().run()
+if __name__ == "__main__":
+    DripApp().run()

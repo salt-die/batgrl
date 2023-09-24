@@ -48,4 +48,5 @@ class ShowIOEvents(TextWidget):
             self.add_str(line.ljust(self.width)[: self.width], (i, 0))
 
 
-run_widget_as_app(ShowIOEvents(size_hint=(1.0, 1.0)))
+if __name__ == "__main__":
+    run_widget_as_app(ShowIOEvents(size_hint=(1.0, 1.0)))

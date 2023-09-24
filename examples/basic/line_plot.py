@@ -52,4 +52,5 @@ class PlotApp(App):
         self.add_widgets(plot, container)
 
 
-PlotApp(title="Line Plot Example").run()
+if __name__ == "__main__":
+    PlotApp(title="Line Plot Example").run()

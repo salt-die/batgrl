@@ -146,7 +146,7 @@ class PokeParticleField(GraphicParticleField):
                 return
 
 
-class MyApp(App):
+class ExplodingLogoApp(App):
     async def on_start(self):
         background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))
 
@@ -173,4 +173,5 @@ class MyApp(App):
         self.add_widgets(background, field)
 
 
-MyApp(title="Exploding Logo Redux Example").run()
+if __name__ == "__main__":
+    ExplodingLogoApp(title="Exploding Logo Redux Example").run()

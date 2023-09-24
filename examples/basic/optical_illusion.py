@@ -38,4 +38,5 @@ class IllusionApp(App):
             illusion.texture = np.roll(illusion.texture, 1, 0)
 
 
-IllusionApp(title="Optical Illusion").run()
+if __name__ == "__main__":
+    IllusionApp(title="Optical Illusion").run()

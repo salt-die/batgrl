@@ -61,4 +61,5 @@ class HackApp(App):
         memory.init_memory()
 
 
-HackApp(title="Hack", background_color_pair=DEFAULT_COLOR_PAIR).run()
+if __name__ == "__main__":
+    HackApp(title="Hack", background_color_pair=DEFAULT_COLOR_PAIR).run()

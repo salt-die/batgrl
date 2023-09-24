@@ -43,4 +43,5 @@ class SpinnersApp(App):
         self.add_widget(sv)
 
 
-SpinnersApp(title="Spinners").run()
+if __name__ == "__main__":
+    SpinnersApp(title="Spinners").run()

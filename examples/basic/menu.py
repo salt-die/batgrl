@@ -3,7 +3,7 @@ from nurses_2.widgets.menu import MenuBar
 from nurses_2.widgets.text_widget import TextWidget
 
 
-class MyApp(App):
+class MenuApp(App):
     async def on_start(self):
         label = TextWidget(size=(1, 50))
 
@@ -53,4 +53,5 @@ class MyApp(App):
         self.children[-2].children[1].item_disabled = True
 
 
-MyApp(title="Menu Example").run()
+if __name__ == "__main__":
+    MenuApp(title="Menu Example").run()

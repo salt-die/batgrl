@@ -128,4 +128,5 @@ class PaletteApp(App):
         self.add_widget(container)
 
 
-PaletteApp(title="Color Palette Creator").run()
+if __name__ == "__main__":
+    PaletteApp(title="Color Palette Creator").run()

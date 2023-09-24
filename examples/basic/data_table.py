@@ -47,4 +47,5 @@ class TableApp(App):
         self.add_widgets(table_1, table_2)
 
 
-TableApp(title="Data Table Example").run()
+if __name__ == "__main__":
+    TableApp(title="Data Table Example").run()

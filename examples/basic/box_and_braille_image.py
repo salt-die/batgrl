@@ -20,4 +20,5 @@ class ImageApp(App):
         self.add_widgets(box_image, braille_image)
 
 
-ImageApp(title="Box and Braille Image Example").run()
+if __name__ == "__main__":
+    ImageApp(title="Box and Braille Image Example").run()

@@ -221,4 +221,5 @@ class ShadowCasterApp(App):
                 await asyncio.sleep(0.01)
 
 
-ShadowCasterApp(background_color_pair=PRIMARY).run()
+if __name__ == "__main__":
+    ShadowCasterApp(background_color_pair=PRIMARY).run()

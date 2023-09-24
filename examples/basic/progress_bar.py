@@ -10,7 +10,7 @@ from nurses_2.widgets.text_widget import TextWidget
 PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
 
 
-class MyApp(App):
+class ProgressBarApp(App):
     async def on_start(self):
         label_a = TextWidget(default_color_pair=PRIMARY_COLOR)
         horizontal_a = ProgressBar(pos=(0, 10), size=(1, 50))
@@ -56,4 +56,7 @@ class MyApp(App):
         )
 
 
-MyApp(title="Progress Bar Example", background_color_pair=PRIMARY_COLOR).run()
+if __name__ == "__main__":
+    ProgressBarApp(
+        title="Progress Bar Example", background_color_pair=PRIMARY_COLOR
+    ).run()

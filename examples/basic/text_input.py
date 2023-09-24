@@ -79,4 +79,5 @@ class TextPadApp(App):
         self.add_widgets(window, border)
 
 
-TextPadApp().run()
+if __name__ == "__main__":
+    TextPadApp().run()

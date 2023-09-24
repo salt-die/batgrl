@@ -13,7 +13,7 @@ POS_HINTS = cycle(((0.0, 0.0), (0.5, 0.5)))
 SIZE_HINTS = cycle(((0.25, 0.25), (0.5, 0.5)))
 
 
-class MyApp(App):
+class EasingsApp(App):
     async def on_start(self):
         logo = Image(
             path=PATH_TO_LOGO,
@@ -39,4 +39,5 @@ class MyApp(App):
         self.exit()
 
 
-MyApp(title="Easings Example").run()
+if __name__ == "__main__":
+    EasingsApp(title="Easings Example").run()

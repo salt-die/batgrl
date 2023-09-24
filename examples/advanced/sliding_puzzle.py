@@ -70,4 +70,5 @@ class SlidingPuzzle(GraphicWidget):
         self._sliding = False
 
 
-run_widget_as_app(SlidingPuzzle(PATH_TO_LOGO, size=SIZE))
+if __name__ == "__main__":
+    run_widget_as_app(SlidingPuzzle(PATH_TO_LOGO, size=SIZE))

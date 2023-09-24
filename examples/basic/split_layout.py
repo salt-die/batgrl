@@ -9,7 +9,7 @@ PATH_TO_LOGO_FLAT = ASSETS / "logo_solo_flat_256.png"
 PATH_TO_LOGO_FULL = ASSETS / "python_discord_logo.png"
 
 
-class MyApp(App):
+class SplitLayoutApp(App):
     async def on_start(self):
         image_tl = Image(path=PATH_TO_LOGO_FLAT, size_hint=(1.0, 1.0))
         image_tr = Image(path=PATH_TO_LOGO_FULL, size_hint=(1.0, 1.0))
@@ -36,4 +36,5 @@ class MyApp(App):
         self.add_widget(split_layout)
 
 
-MyApp(title="Split Layout Example").run()
+if __name__ == "__main__":
+    SplitLayoutApp(title="Split Layout Example").run()

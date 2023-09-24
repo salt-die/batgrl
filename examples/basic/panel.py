@@ -21,4 +21,5 @@ panel.text_container.canvas[0]["bold"] = True
 panel.text_container.canvas[:2]["italic"] = True
 panel.add_border()
 
-run_widget_as_app(panel)
+if __name__ == "__main__":
+    run_widget_as_app(panel)

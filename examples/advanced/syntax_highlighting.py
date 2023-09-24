@@ -67,7 +67,8 @@ class SyntaxApp(App):
         add_syntax_highlighting(text_widget, PYTHON_LEXER, STYLE)
 
 
-SyntaxApp().run()
+if __name__ == "__main__":
+    SyntaxApp().run()
 """
 
 
@@ -79,4 +80,5 @@ class SyntaxApp(App):
         add_syntax_highlighting(text_widget, PYTHON_LEXER, STYLE)
 
 
-SyntaxApp(title="Syntax Highlighting Example").run()
+if __name__ == "__main__":
+    SyntaxApp(title="Syntax Highlighting Example").run()

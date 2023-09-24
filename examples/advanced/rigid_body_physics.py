@@ -213,4 +213,5 @@ class PhysicsApp(App):
         self.add_widgets(background, space_renderer)
 
 
-PhysicsApp(title="Rigid Body Physics Simulation").run()
+if __name__ == "__main__":
+    PhysicsApp(title="Rigid Body Physics Simulation").run()

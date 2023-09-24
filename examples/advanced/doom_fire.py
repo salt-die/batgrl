@@ -157,4 +157,5 @@ class DoomFireApp(App):
         self.add_widgets(doomfire, slider_container)
 
 
-DoomFireApp(title="Doom Fire Example").run()
+if __name__ == "__main__":
+    DoomFireApp(title="Doom Fire Example").run()

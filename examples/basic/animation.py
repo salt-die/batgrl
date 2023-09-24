@@ -7,7 +7,7 @@ ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_FRAMES = ASSETS / "caveman"
 
 
-class MyApp(App):
+class AnimationApp(App):
     async def on_start(self):
         animation = Animation(
             size_hint=(0.5, 0.5),
@@ -20,4 +20,5 @@ class MyApp(App):
         animation.play()
 
 
-MyApp(title="Animation Example").run()
+if __name__ == "__main__":
+    AnimationApp(title="Animation Example").run()

@@ -14,4 +14,5 @@ class ClothApp(App):
         await cloth.step_forever()
 
 
-ClothApp(title="Cloth Simulation").run()
+if __name__ == "__main__":
+    ClothApp(title="Cloth Simulation").run()

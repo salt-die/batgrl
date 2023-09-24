@@ -5,7 +5,7 @@ from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.window import Window
 
 
-class MyApp(App):
+class SubscriptionApp(App):
     async def on_start(self):
         window = Window(title="Move/Resize Me")
         sv = ScrollView(
@@ -29,4 +29,5 @@ class MyApp(App):
         window.pos = 10, 10
 
 
-MyApp(title="Subscribe Example").run()
+if __name__ == "__main__":
+    SubscriptionApp(title="Subscribe Example").run()

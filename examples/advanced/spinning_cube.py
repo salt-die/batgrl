@@ -144,4 +144,5 @@ class SpinApp(App):
         )
 
 
-SpinApp(title="Spinning Cube").run()
+if __name__ == "__main__":
+    SpinApp(title="Spinning Cube").run()

@@ -79,4 +79,5 @@ class Life(GraphicWidget):
             )
 
 
-run_widget_as_app(Life(size_hint=(1.0, 1.0)))
+if __name__ == "__main__":
+    run_widget_as_app(Life(size_hint=(1.0, 1.0)))

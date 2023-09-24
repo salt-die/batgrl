@@ -12,7 +12,7 @@ BLUE_ON_BLACK = ColorPair.from_colors(BLUE, BLACK)
 BLUE_ON_WHITE = ColorPair.from_colors(BLUE, WHITE)
 
 
-class MyApp(App):
+class SliderApp(App):
     async def on_start(self):
         display = TextWidget(size=(2, 30))
         display.add_str("Slider 1 Value:")
@@ -41,4 +41,5 @@ class MyApp(App):
         self.add_widgets(display, slider_1, slider_2)
 
 
-MyApp(title="Slider Example").run()
+if __name__ == "__main__":
+    SliderApp(title="Slider Example").run()

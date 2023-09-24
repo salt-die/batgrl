@@ -19,4 +19,5 @@ class BordersApp(App):
         return await super().on_start()
 
 
-BordersApp(title="Borders").run()
+if __name__ == "__main__":
+    BordersApp(title="Borders").run()
