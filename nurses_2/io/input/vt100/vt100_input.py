@@ -33,6 +33,7 @@ def attach(callback):
 
     def on_resize(*_):
         w, h = os.get_terminal_size()
+        # Create a size event and schedule event handler:
         _EVENTS.append(Size(h, w))
         loop.call_soon_threadsafe(callback)
 
