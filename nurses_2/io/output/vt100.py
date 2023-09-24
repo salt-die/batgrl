@@ -3,6 +3,7 @@ Output for vt100 terminals.
 """
 import json
 import os
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -62,7 +63,7 @@ class Vt100_Output:
         self._mem_usage = 0
 
     def get_size(self) -> Size:
-        cols, rows = os.get_terminal_size()
+        cols, rows = shutil.get_terminal_size()
         return Size(rows, cols)
 
     def set_title(self, title):
