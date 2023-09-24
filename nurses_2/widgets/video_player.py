@@ -264,7 +264,6 @@ class VideoPlayer(GraphicWidget):
             # one with cv2 will pollute the terminal with cv2 errors, we don't attempt
             # to open a device in this case and instead issue a warning.
             warnings.warn("device not available on WSL")
-            warnings.warn("device not available on WSL")
             self._resource = None
             return
 
