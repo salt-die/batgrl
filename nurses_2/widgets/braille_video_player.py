@@ -284,11 +284,9 @@ class BrailleVideoPlayer(TextWidget):
         source = self.source
 
         if _IS_WSL and self.is_device:
-            # Problem: WSL doesn't support most USB devices (yet?), and trying to open
-            # one with cv2 will pollute the terminal with cv2 errors (which can't be
-            # redirected without duping file descriptors -- though this may be done
-            # sometime in the future).
-            # Solution: Prevent the error.
+            # Because WSL doesn't support most USB devices (yet?), and trying to open
+            # one with cv2 will pollute the terminal with cv2 errors, we don't attempt
+            # to open a device in this case and instead issue a warning.
             warnings.warn("device not available on WSL")
             self._resource = None
             return
