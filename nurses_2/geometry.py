@@ -1,6 +1,7 @@
 """
 Data structures and functions for :mod:`nurses_2` geometry.
 """
+from functools import lru_cache
 from numbers import Real
 from typing import NamedTuple
 
@@ -134,6 +135,7 @@ class Rect(NamedTuple):
     """Right-coordinate of rectangle."""
 
 
+@lru_cache(maxsize=128)
 def intersection(
     a: Rect, b: Rect
 ) -> tuple[tuple[slice, slice], tuple[slice, slice]] | None:
