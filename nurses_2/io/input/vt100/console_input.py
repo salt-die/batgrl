@@ -41,7 +41,7 @@ def read_stdin() -> str:
 
 def _create_mouse_event(data) -> _PartialMouseEvent | None:
     """
-    Create a MouseEvent from ansi escapes.
+    Create a _PartialMouseEvent from ansi escapes.
     """
     mouse_info = None
 
