@@ -2,7 +2,7 @@
 Movable children behavior for a widget. Translate a widget's child by clicking and
 dragging them.
 """
-from ...clamp import clamp
+from ...geometry import clamp
 from .grabbable import Grabbable
 
 

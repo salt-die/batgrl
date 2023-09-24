@@ -9,7 +9,7 @@ import sys
 from codecs import getincrementaldecoder
 from collections.abc import Iterable
 
-from ....data_structures import Point, Size
+from ....geometry import Point, Size
 from ..events import Key, KeyEvent, PasteEvent, _PartialMouseEvent
 from .ansi_escapes import ALT, ANSI_ESCAPES, NO_MODS
 from .mouse_bindings import TERM_SGR, TYPICAL

@@ -9,7 +9,7 @@ import termios
 import tty
 from contextlib import contextmanager
 
-from ....data_structures import Size
+from ....geometry import Size
 from .console_input import _EVENTS, events
 
 __all__ = (

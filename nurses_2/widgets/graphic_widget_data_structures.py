@@ -8,8 +8,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from ..data_structures import Point, Size
-from .widget import Rect, intersection
+from .widget import Point, Rect, Size, intersection
 
 __all__ = "Interpolation", "read_texture", "resize_texture", "composite"
 

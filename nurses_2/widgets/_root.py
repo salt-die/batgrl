@@ -4,8 +4,7 @@ Root widget.
 import numpy as np
 
 from ..colors import ColorPair
-from ..data_structures import Point
-from .widget import Widget, style_char
+from .widget import Point, Widget, style_char
 
 
 class _Root(Widget):

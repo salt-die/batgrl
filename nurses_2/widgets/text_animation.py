@@ -8,10 +8,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import WHITE_ON_BLACK, ColorPair
+from ..geometry import Rect, intersection
 from .animation import _check_frame_durations
-from .text_widget import TextWidget
-from .widget import Widget, intersection
-from .widget_data_structures import Char, Rect
+from .text_widget import Char, TextWidget
+from .widget import Widget
 
 
 class TextAnimation(Widget):

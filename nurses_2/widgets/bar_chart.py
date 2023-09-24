@@ -3,7 +3,7 @@ from numbers import Real
 from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
-from ..easings import lerp
+from ..geometry import lerp
 from ._smooth_bars import create_vertical_bar
 from .scroll_view import ScrollView
 from .text_widget import TextWidget, add_text

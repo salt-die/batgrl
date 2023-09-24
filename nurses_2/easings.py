@@ -4,7 +4,6 @@ Easing functions.
 from math import cos, pi, sin
 
 __all__ = (
-    "lerp",
     "linear",
     "in_quad",
     "out_quad",
@@ -37,13 +36,6 @@ __all__ = (
     "out_bounce",
     "in_out_bounce",
 )
-
-
-def lerp(a, b, p):
-    """
-    Linear interpolation of `a` to `b` with proportion `p`.
-    """
-    return (1.0 - p) * a + p * b
 
 
 def linear(p):

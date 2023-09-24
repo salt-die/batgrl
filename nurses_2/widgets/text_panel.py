@@ -1,7 +1,7 @@
 """
 A widget for static multi-line text.
 """
-from ..clamp import clamp
+from ..geometry import clamp
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
 from .widget import Size, Widget

@@ -6,12 +6,11 @@ import asyncio
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.clamp import clamp
 from nurses_2.colors import Color, ColorPair
 from nurses_2.widgets.graphic_widget import GraphicWidget
 from nurses_2.widgets.slider import Slider
 from nurses_2.widgets.text_widget import TextWidget
-from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.widget import Widget, clamp
 
 FIRE_PALETTE = np.array(
     [

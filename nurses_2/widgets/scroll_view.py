@@ -1,8 +1,8 @@
 """
 A scrollable view widget.
 """
-from ..clamp import clamp
 from ..colors import Color
+from ..geometry import clamp
 from ..io import KeyEvent, MouseEvent, MouseEventType
 from ._smooth_bars import create_horizontal_bar, create_vertical_bar
 from .behaviors.grabbable import Grabbable

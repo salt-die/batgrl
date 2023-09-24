@@ -6,7 +6,7 @@ from typing import Literal, NamedTuple
 import numpy as np
 from numpy.typing import NDArray
 
-__all__ = "Char", "style_char", "SizeHint", "PosHint", "Rect", "Anchor", "Easing"
+__all__ = "Char", "style_char", "SizeHint", "PosHint", "Anchor", "Easing"
 
 Char = np.dtype(
     [
@@ -114,46 +114,6 @@ class PosHint(NamedTuple):
 
     y: float | None
     x: float | None
-
-
-class Rect(NamedTuple):
-    """
-    Rectangular coordinates.
-
-    Parameters
-    ----------
-    top : int
-        Top-coordinate of rectangle.
-    bottom : int
-        Bottom-coordinate of rectangle.
-    left : int
-        Left-coordinate of rectangle.
-    right : int
-        Right-coordinate of rectangle.
-
-    Attributes
-    ----------
-    top : int
-        Top-coordinate of rectangle.
-    bottom : int
-        Bottom-coordinate of rectangle.
-    left : int
-        Left-coordinate of rectangle.
-    right : int
-        Right-coordinate of rectangle.
-
-    Methods
-    -------
-    count:
-        Return number of occurrences of value.
-    index:
-        Return first index of value.
-    """
-
-    top: int
-    bottom: int
-    left: int
-    right: int
 
 
 Anchor = Literal[

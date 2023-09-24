@@ -6,8 +6,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import Color
-from nurses_2.easings import lerp
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphic_widget import GraphicWidget, lerp
 from nurses_2.widgets.image import Image
 
 ASSETS = Path(__file__).parent.parent / "assets"

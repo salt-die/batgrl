@@ -3,8 +3,8 @@ A slider widget.
 """
 from collections.abc import Callable
 
-from ..clamp import clamp
 from ..colors import Color, ColorPair
+from ..geometry import clamp
 from ..io import MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
 from .text_widget import TextWidget

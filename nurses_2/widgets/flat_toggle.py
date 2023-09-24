@@ -5,10 +5,9 @@ import asyncio
 from collections.abc import Callable, Hashable
 
 from ..colors import BLACK, GREEN, Color
-from ..data_structures import Point
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .text_widget import TextWidget, add_text
-from .widget import Widget
+from .widget import Point, Widget
 
 TOGGLE_BLOCK = "▊▋▌▍▎▏"
 DARK_GREY = Color.from_hex("333333")

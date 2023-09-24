@@ -1,7 +1,7 @@
 """
 Movable behavior for a widget.
 """
-from ...clamp import clamp
+from ...geometry import clamp
 from .grabbable import Grabbable
 
 

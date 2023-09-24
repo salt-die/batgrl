@@ -4,8 +4,8 @@ A movable, resizable window widget.
 import numpy as np
 from wcwidth import wcswidth
 
-from ..clamp import clamp
 from ..colors import AColor
+from ..geometry import clamp
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.resizable import Resizable

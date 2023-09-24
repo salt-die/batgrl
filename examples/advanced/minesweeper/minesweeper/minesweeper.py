@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text_widget import Point, TextWidget
-from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.widget import Point, Widget
 
 from .colors import DATA_BAR, FLAG_COLOR
 from .count import Count

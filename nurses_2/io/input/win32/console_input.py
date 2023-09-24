@@ -6,7 +6,7 @@ from collections.abc import Iterable
 from ctypes import byref, windll
 from ctypes.wintypes import DWORD
 
-from ....data_structures import Point, Size
+from ....geometry import Point, Size
 from ...win32_types import (
     INPUT_RECORD,
     KEY_EVENT_RECORD,

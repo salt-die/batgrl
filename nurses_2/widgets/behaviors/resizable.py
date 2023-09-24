@@ -1,7 +1,7 @@
 """
 Draggable resize behavior for a widget.
 """
-from ...clamp import clamp
+from ...geometry import clamp
 from ..graphic_widget import TRANSPARENT, AColor, GraphicWidget, Size
 from .grabbable import Grabbable
 

@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from ..clamp import clamp
+from ..geometry import clamp
 from .graphic_widget_data_structures import Interpolation
 from .image import Image
 from .widget import Char, Widget, subscribable

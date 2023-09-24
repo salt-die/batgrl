@@ -6,21 +6,42 @@ from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK, Color, ColorPair
-from ..data_structures import Point, Size
 from .text_widget_data_structures import Border, add_text
-from .widget import Anchor, Char, Easing, PosHint, SizeHint, Widget, style_char
+from .widget import (
+    Anchor,
+    Char,
+    Easing,
+    Point,
+    PosHint,
+    Rect,
+    Size,
+    SizeHint,
+    Widget,
+    clamp,
+    intersection,
+    lerp,
+    style_char,
+    subscribable,
+)
 
 __all__ = (
-    "add_text",
     "Anchor",
     "Border",
-    "ColorPair",
+    "Char",
     "Easing",
     "Point",
     "PosHint",
+    "Rect",
     "Size",
     "SizeHint",
     "TextWidget",
+    "Widget",
+    "add_text",
+    "clamp",
+    "intersection",
+    "lerp",
+    "style_char",
+    "subscribable",
 )
 
 

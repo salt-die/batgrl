@@ -5,11 +5,10 @@ import cv2
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.clamp import clamp
 from nurses_2.colors import BLACK, WHITE, Color
 from nurses_2.widgets.behaviors.grabbable import Grabbable
 from nurses_2.widgets.text_widget import TextWidget
-from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.widget import Widget, clamp
 
 H = 11
 """Height of palette."""

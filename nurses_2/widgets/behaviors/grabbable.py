@@ -1,7 +1,7 @@
 """
 Grabbable behavior for a widget.
 """
-from ...data_structures import Point
+from ...geometry import Point
 from ...io import MouseButton, MouseEventType
 
 

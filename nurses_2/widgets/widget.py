@@ -4,37 +4,33 @@ Base class for all widgets.
 import asyncio
 from collections.abc import Callable, Sequence
 from functools import wraps
+from numbers import Real
 from time import monotonic
-from typing import Optional
+from typing import Any, Optional
 from weakref import WeakKeyDictionary
 
 import numpy as np
 from numpy.typing import NDArray
 
 from .. import easings
-from ..clamp import clamp
 from ..colors import ColorPair
-from ..data_structures import Point, Size
+from ..geometry import Point, Rect, Size, clamp, intersection, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
-from .widget_data_structures import (
-    Anchor,
-    Char,
-    Easing,
-    PosHint,
-    Rect,
-    SizeHint,
-    style_char,
-)
+from .widget_data_structures import Anchor, Char, Easing, PosHint, SizeHint, style_char
 
 __all__ = (
     "Anchor",
-    "ColorPair",
+    "Char",
     "Easing",
     "Point",
     "PosHint",
+    "Rect",
     "Size",
     "SizeHint",
     "Widget",
+    "clamp",
+    "intersection",
+    "lerp",
     "style_char",
     "subscribable",
 )
@@ -57,56 +53,6 @@ def subscribable(setter):
     wrapper.instances = instances
 
     return wrapper
-
-
-def intersection(a: Rect, b: Rect):
-    """
-    Find the intersection of two rects and return the numpy slices that
-    correspond to that intersection for both rects.
-    """
-    btop, bbottom, bleft, bright = b
-    bheight, bwidth = bbottom - btop, bright - bleft
-
-    atop, abottom, aleft, aright = a
-    atop -= btop
-    abottom -= btop
-    aleft -= bleft
-    aright -= bleft
-
-    if (
-        atop >= bheight or abottom < 0 or aleft >= bwidth or aright < 0
-    ):  # Empty intersection.
-        return
-
-    if atop < 0:
-        at = -atop
-        bt = 0
-    else:
-        at = 0
-        bt = atop
-
-    if abottom >= bheight:
-        ab = bheight - atop
-        bb = bheight
-    else:
-        ab = abottom - atop
-        bb = abottom
-
-    if aleft < 0:
-        al = -aleft
-        bl = 0
-    else:
-        al = 0
-        bl = aleft
-
-    if aright >= bwidth:
-        ar = bwidth - aleft
-        br = bwidth
-    else:
-        ar = aright - aleft
-        br = aright
-
-    return (slice(at, ab), slice(al, ar)), (slice(bt, bb), slice(bl, br))
 
 
 class Widget:
@@ -885,10 +831,10 @@ class Widget:
         *,
         duration: float = 1.0,
         easing: Easing = "linear",
-        on_start: Callable | None = None,
-        on_progress: Callable | None = None,
-        on_complete: Callable | None = None,
-        **properties: dict[str, int | float | Sequence[int] | Sequence[float | None]],
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties: dict[str, Real | NDArray[np.number] | Sequence[Any]],
     ):
         """
         Coroutine that sequentially updates widget properties over a duration (in
@@ -900,23 +846,35 @@ class Widget:
             The duration of the tween in seconds.
         easing : Easing, default: "linear"
             The easing used for tweening.
-        on_start : Callable | None, default: None
+        on_start : Callable[[], None] | None, default: None
             Called when tween starts.
-        on_progress : Callable | None, default: None
+        on_progress : Callable[[], None] | None, default: None
             Called when tween updates.
-        on_complete : Callable | None, default: None
+        on_complete : Callable[[], None] | None, default: None
             Called when tween completes.
-        **properties : dict[str, int | float | Sequence[int] | Sequence[float | None]]
+        **properties : dict[str, Real | NDArray[np.number] | Sequence[Any]]
             Widget properties' target values. E.g., to smoothly tween a widget's
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
             keyword-argument:
             ``await widget.tween(pos=(5, 10), duration=2.5, easing="out_bounce")``
 
+        Notes
+        -----
+        Tweened values will be coerced to match the type of the initial value of their
+        corresponding property.
+
+        Non-numeric values in will be set immediately. For instance, if a widget has
+        size hint `(None, .5)` and is being tweened to `(1.0, 1.0)`, the height hint
+        will be set to `1.0` as soon as the coroutine starts. Conversely, if a widget
+        has size hint `(1.0, 1.0)` and is being tweened to `(None, .5)`, the height hint
+        will be set to `None` as soon as the coroutine starts. This is considered
+        edge-case behavior and is subject to change, therefore it is discouraged to
+        tween non-numeric values.
+
         Warnings
         --------
         Running several tweens on the same properties concurrently will probably result
-        in unexpected behavior. `tween` won't work for numpy array types. If tweening
-        size or pos hints, make sure the relevant hints aren't `None` to start.
+        in unexpected behavior.
         """
         end_time = monotonic() + duration
         start_values = tuple(getattr(self, attr) for attr in properties)
@@ -929,25 +887,24 @@ class Widget:
             p = easing_function(1 - (end_time - current_time) / duration)
 
             for start_value, (prop, target) in zip(start_values, properties.items()):
-                match start_value:
-                    case (int(), *_):  # Sequence[int]
-                        value = tuple(
-                            (
-                                round(easings.lerp(i, j, p))
-                                for i, j in zip(start_value, target)
-                            )
-                        )
-                    case int():
-                        value = round(easings.lerp(start_value, target, p))
-                    case (float() | None, *_):  # Sequence[float | None]
-                        value = tuple(
-                            (
-                                None if i is None else easings.lerp(i, j, p)
-                                for i, j in zip(start_value, target)
-                            )
-                        )
-                    case float():
-                        value = easings.lerp(start_value, target, p)
+                if isinstance(start_value, Real):
+                    value = lerp(start_value, target, p)
+                    if isinstance(start_value, int) and isinstance(target, int):
+                        value = round(value)
+                elif isinstance(start_value, np.ndarray) and np.issubdtype(
+                    start_value.dtype, np.number
+                ):
+                    value = lerp(start_value, target, p).astype(start_value.dtype)
+                else:
+                    value = []
+                    for i, j in zip(start_value, target):
+                        if not isinstance(i, Real) or not isinstance(j, Real):
+                            value.append(j)
+                        else:
+                            item = lerp(i, j, p)
+                            if isinstance(i, int):
+                                item = round(item)
+                            value.append(item)
 
                 setattr(self, prop, value)
 

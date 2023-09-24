@@ -11,7 +11,7 @@ import numpy as np
 from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
-from ..easings import lerp
+from ..geometry import lerp
 from ..io import MouseEvent, MouseEventType
 from ._binary_to_char import binary_to_box, binary_to_braille
 from .behaviors.movable import Movable

@@ -4,7 +4,7 @@ A progress bar widget.
 import asyncio
 from itertools import chain, cycle
 
-from ..clamp import clamp
+from ..geometry import clamp
 from ._smooth_bars import create_horizontal_bar, create_vertical_bar
 from .behaviors.themable import Themable
 from .text_widget import TextWidget, style_char

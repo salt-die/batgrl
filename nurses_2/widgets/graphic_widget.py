@@ -7,31 +7,42 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from ..clamp import clamp
 from ..colors import TRANSPARENT, AColor
-from ..data_structures import Point, Size
 from .graphic_widget_data_structures import Interpolation
 from .widget import (
     Anchor,
     Char,
     Easing,
+    Point,
     PosHint,
+    Rect,
+    Size,
     SizeHint,
     Widget,
+    clamp,
+    intersection,
+    lerp,
     style_char,
     subscribable,
 )
 
 __all__ = (
-    "AColor",
     "Anchor",
+    "Char",
     "Easing",
+    "GraphicWidget",
     "Interpolation",
     "Point",
     "PosHint",
+    "Rect",
     "Size",
     "SizeHint",
-    "GraphicWidget",
+    "Widget",
+    "clamp",
+    "intersection",
+    "lerp",
+    "style_char",
+    "subscribable",
 )
 
 

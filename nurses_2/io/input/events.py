@@ -6,7 +6,7 @@ from enum import Enum
 from functools import cache
 from typing import NamedTuple
 
-from ...data_structures import Point
+from ...geometry import Point
 from .keys import Key
 
 __all__ = (

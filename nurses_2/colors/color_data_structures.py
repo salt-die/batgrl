@@ -4,8 +4,8 @@ Color data structures.
 from typing import NamedTuple
 
 __all__ = (
-    "Color",
     "AColor",
+    "Color",
     "ColorPair",
     "ColorTheme",
 )

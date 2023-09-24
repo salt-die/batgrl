@@ -6,7 +6,6 @@ from itertools import chain
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.clamp import clamp
 from nurses_2.colors import (
     ACYAN,
     AMAGENTA,
@@ -25,7 +24,7 @@ from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.shadow_caster import Camera, LightSource, ShadowCaster
 from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.toggle_button import ToggleButton
-from nurses_2.widgets.widget import Widget
+from nurses_2.widgets.widget import Widget, clamp
 
 PANEL_WIDTH = 23
 WHITE_TO_RED = gradient(WHITE, RED, PANEL_WIDTH)

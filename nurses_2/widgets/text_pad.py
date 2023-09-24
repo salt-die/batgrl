@@ -287,7 +287,6 @@ class TextPad(Themable, Focusable, ScrollView):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
         self._prev_cursor_pos = Point(0, 0)
         self._last_x = None
         self._selection_start = self._selection_end = None
@@ -298,6 +297,9 @@ class TextPad(Themable, Focusable, ScrollView):
         self._cursor = TextWidget(size=(1, 1), is_enabled=False)
         self._pad = TextWidget(size=(1, 1))
         self._pad.add_widget(self._cursor)
+
+        super().__init__(**kwargs)
+
         self.view = self._pad
 
     def update_theme(self):

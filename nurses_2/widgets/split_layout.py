@@ -1,8 +1,8 @@
 """
 Draggable horizontal and vertical split layouts.
 """
-from ..clamp import clamp
 from ..colors import AColor
+from ..geometry import clamp
 from .behaviors.grabbable import Grabbable
 from .graphic_widget import GraphicWidget
 from .widget import Widget

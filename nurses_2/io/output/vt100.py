@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from sys import stdout
 
-from ...data_structures import Size
+from ...geometry import Size
 
 MAX_MEM_USAGE = 5_000_000
 

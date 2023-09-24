@@ -9,11 +9,8 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from ..clamp import clamp
 from ..colors import AWHITE, BLACK, WHITE, AColor, Color
-from ..data_structures import Point, Size
-from .graphic_widget import GraphicWidget
-from .widget import Rect, intersection
+from .graphic_widget import GraphicWidget, Point, Rect, Size, clamp, intersection
 
 __all__ = "Camera", "LightSource", "ShadowCaster", "Restrictiveness"
 

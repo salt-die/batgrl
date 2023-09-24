@@ -7,8 +7,8 @@ from typing import Literal, Protocol
 import numpy as np
 from numpy.typing import NDArray
 
-from ..clamp import clamp
 from ..colors import BLACK, Color
+from ..geometry import clamp
 from .graphic_widget import Char, GraphicWidget
 
 

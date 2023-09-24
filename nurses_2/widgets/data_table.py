@@ -14,8 +14,7 @@ from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .grid_layout import GridLayout
 from .scroll_view import ScrollView
-from .text_widget import Point, TextWidget
-from .text_widget_data_structures import add_text
+from .text_widget import Point, TextWidget, add_text
 
 __all__ = "ColumnStyle", "DataTable"
 
