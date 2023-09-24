@@ -68,10 +68,7 @@ class Checker(GraphicWidget):
             gradient(self._color, AWHITE, 20) + gradient(AWHITE, self._color, 10)
         )
         for self.texture[:] in flash_gradient:
-            try:
-                await asyncio.sleep(0.05)
-            except asyncio.CancelledError:
-                break
+            await asyncio.sleep(0.05)
 
     async def fall(self, target, on_complete):
         velocity = 0
@@ -83,10 +80,7 @@ class Checker(GraphicWidget):
             y += velocity
             self.y = min(target, int(y))
 
-            try:
-                await asyncio.sleep(0)
-            except asyncio.CancelledError:
-                break
+            await asyncio.sleep(0)
 
         on_complete()
 

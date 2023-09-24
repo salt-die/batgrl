@@ -53,12 +53,8 @@ class Labyrinth(GraphicWidget):
         self._new_level_task = asyncio.create_task(self._new_level_soon())
 
     async def _new_level_soon(self):
-        try:
-            await asyncio.sleep(0.1)
-        except asyncio.CancelledError:
-            pass
-        else:
-            self.new_level()
+        await asyncio.sleep(0.1)
+        self.new_level()
 
     def new_level(self):
         self.player = 1, 0

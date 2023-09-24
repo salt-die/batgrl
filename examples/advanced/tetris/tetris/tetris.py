@@ -264,11 +264,7 @@ class Tetris(Image):
     async def _run_game(self):
         while True:
             self.move_current_piece(dy=1, dx=0)
-
-            try:
-                await asyncio.sleep(self.gravity)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(self.gravity)
 
     def pause(self):
         if self.is_paused:
@@ -292,12 +288,8 @@ class Tetris(Image):
         self._lock_down_task = asyncio.create_task(self._lock_down_timer())
 
     async def _lock_down_timer(self):
-        try:
-            await asyncio.sleep(LOCK_DOWN_DELAY)
-        except asyncio.CancelledError:
-            return
-        else:
-            self.affix_piece()
+        await asyncio.sleep(LOCK_DOWN_DELAY)
+        self.affix_piece()
 
     def update_ghost_position(self):
         ghost = self.ghost_piece

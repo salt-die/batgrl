@@ -302,10 +302,7 @@ class Animation(Widget):
 
     async def _play_animation(self):
         while self.frames:
-            try:
-                await asyncio.sleep(self.frame_durations[self._i])
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(self.frame_durations[self._i])
 
             if self.reverse:
                 self._i -= 1

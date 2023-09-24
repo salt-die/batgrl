@@ -149,7 +149,5 @@ class ModalScreen(TextWidget):
 
                 try:
                     await asyncio.sleep(LINE_GLOW_DURATION)
-                except asyncio.CancelledError:
-                    return
                 finally:
                     colors[start:stop] = buffer[start:stop]

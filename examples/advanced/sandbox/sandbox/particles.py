@@ -131,10 +131,7 @@ class Element(ABC):
             if self.LIFETIME <= 0.0:
                 self.replace()
 
-            try:
-                await asyncio.sleep(self.SLEEP)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(self.SLEEP)
 
     def neighbors(self):
         """

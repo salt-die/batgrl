@@ -163,10 +163,7 @@ class PokeParticleField(TextParticleField):
             vys[bottom] *= -1
             vxs[right] *= -1
 
-            try:
-                await asyncio.sleep(0)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(0)
 
     async def reset(self):
         """
@@ -196,10 +193,7 @@ class PokeParticleField(TextParticleField):
             )
             color_pairs[:] = RAINBOW[indices]
 
-            try:
-                await asyncio.sleep(0.03)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(0.03)
 
 
 class ExplodingLogoApp(App):

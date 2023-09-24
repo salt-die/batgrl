@@ -118,11 +118,7 @@ class DoomFire(GraphicWidget):
     async def _step_forever(self):
         while True:
             self._step_fire()
-
-            try:
-                await asyncio.sleep(0)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(0)
 
 
 class DoomFireApp(App):

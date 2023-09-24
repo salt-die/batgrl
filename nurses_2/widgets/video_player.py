@@ -308,10 +308,7 @@ class VideoPlayer(GraphicWidget):
             elif (seconds_ahead := self._start_time - self._time_delta()) < 0:
                 continue
 
-            try:
-                await asyncio.sleep(seconds_ahead)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(seconds_ahead)
 
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

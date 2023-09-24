@@ -56,11 +56,7 @@ class Cloth(GraphicWidget):
     async def step_forever(self):
         while True:
             self.step()
-
-            try:
-                await asyncio.sleep(0)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(0)
 
     def on_mouse(self, mouse_event):
         if mouse_event.button != MouseButton.LEFT:
