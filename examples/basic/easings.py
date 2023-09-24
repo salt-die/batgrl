@@ -3,8 +3,7 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.text_widget import TextWidget
-from nurses_2.widgets.widget_data_structures import Easing
+from nurses_2.widgets.text_widget import Easing, TextWidget
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "logo_solo_flat_256.png"

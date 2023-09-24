@@ -3,11 +3,10 @@ from numbers import Real
 from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
-from ..geometry import lerp
-from ._smooth_bars import create_vertical_bar
 from .scroll_view import ScrollView
+from .text_tools import smooth_vertical_bar
 from .text_widget import TextWidget, add_text
-from .widget import Widget
+from .widget import Widget, lerp
 
 __all__ = ("BarChart",)
 
@@ -374,7 +373,7 @@ class BarChart(Widget):
             x1 = BAR_SPACING + (bar_width + BAR_SPACING) * i
             x2 = x1 + bar_width
             self._bars.add_str(label.center(bar_width), (h - 1, x1))
-            smooth_bar = create_vertical_bar(h - 3, (value - min_y) / y_delta, 0.5)
+            smooth_bar = smooth_vertical_bar(h - 3, (value - min_y) / y_delta, 0.5)
             canvas_view.T[x1:x2, 2 : 2 + len(smooth_bar)] = smooth_bar
             colors_view[2, x1:x2, :3] = self.chart_color_pair.bg_color
             colors_view[2, x1:x2, 3:] = bar_colors[i]

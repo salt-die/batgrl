@@ -16,12 +16,8 @@ from pymunk.vec2d import Vec2d
 from nurses_2.app import App
 from nurses_2.colors import AWHITE, AColor
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.graphic_widget_data_structures import (
-    composite,
-    read_texture,
-    resize_texture,
-)
 from nurses_2.widgets.image import Image
+from nurses_2.widgets.texture_tools import composite, read_texture, resize_texture
 
 BOX_SIZE = W, H = Vec2d(9, 9)
 BOX_MASS = 0.1

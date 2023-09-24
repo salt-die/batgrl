@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, lerp_colors
 from ..io import MouseEvent
-from ._smooth_bars import create_vertical_bar
+from .text_tools import smooth_vertical_bar
 from .text_widget import TextWidget, add_text, style_char
 from .widget import Widget
 
@@ -390,7 +390,7 @@ class Sparkline(TextWidget):
         self.canvas[:] = style_char(self.default_char)
         chars = self.canvas["char"][::-1]
         for i, bin_proportion in enumerate(bin_proportions):
-            smooth_bar = create_vertical_bar(self.height, bin_proportion)
+            smooth_bar = smooth_vertical_bar(self.height, bin_proportion)
             chars[: len(smooth_bar), i] = smooth_bar
             self.colors[:, i, :3] = lerp_colors(
                 self.min_color, self.max_color, bin_proportion

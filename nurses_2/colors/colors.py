@@ -1,7 +1,7 @@
 """
 Commonly used colors.
 """
-from .color_data_structures import AColor, Color, ColorPair, ColorTheme
+from .color_types import AColor, Color, ColorPair, ColorTheme
 
 __all__ = (
     "WHITE",

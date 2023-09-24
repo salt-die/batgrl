@@ -6,7 +6,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from ._binary_to_char import binary_to_box
+from .text_tools import binary_to_box
 from .text_widget import TextWidget, style_char
 
 

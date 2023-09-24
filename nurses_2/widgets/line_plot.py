@@ -11,13 +11,12 @@ import numpy as np
 from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
-from ..geometry import lerp
 from ..io import MouseEvent, MouseEventType
-from ._binary_to_char import binary_to_box, binary_to_braille
 from .behaviors.movable import Movable
 from .scroll_view import ScrollView
+from .text_tools import binary_to_box, binary_to_braille
 from .text_widget import TextWidget, add_text
-from .widget import Widget
+from .widget import Widget, lerp
 
 __all__ = ("LinePlot",)
 

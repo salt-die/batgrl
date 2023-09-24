@@ -2,12 +2,11 @@
 A scrollable view widget.
 """
 from ..colors import Color
-from ..geometry import clamp
 from ..io import KeyEvent, MouseEvent, MouseEventType
-from ._smooth_bars import create_horizontal_bar, create_vertical_bar
 from .behaviors.grabbable import Grabbable
+from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .text_widget import TextWidget
-from .widget import Widget, subscribable
+from .widget import Widget, clamp, subscribable
 
 DEFAULT_SCROLLBAR_COLOR = Color.from_hex("070C25")
 DEFAULT_INDICATOR_NORMAL = Color.from_hex("0E1843")
@@ -86,7 +85,7 @@ class _VerticalScrollbar(_ScrollBarBase):
         indicator_color, start, offset = super().paint_indicator()
 
         sv: ScrollView = self.parent
-        smooth_bar = create_vertical_bar(
+        smooth_bar = smooth_vertical_bar(
             self.indicator_length, 1, offset, reversed=True
         )
         stop = start + len(smooth_bar)
@@ -140,7 +139,7 @@ class _HorizontalScrollbar(_ScrollBarBase):
         indicator_color, start, offset = super().paint_indicator()
 
         sv: ScrollView = self.parent
-        smooth_bar = create_horizontal_bar(self.indicator_length, 1, offset)
+        smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
         if offset != 0:
             self.colors[:, start, :3] = sv._scrollbar_color

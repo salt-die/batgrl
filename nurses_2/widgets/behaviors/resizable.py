@@ -1,8 +1,7 @@
 """
 Draggable resize behavior for a widget.
 """
-from ...geometry import clamp
-from ..graphic_widget import TRANSPARENT, AColor, GraphicWidget, Size
+from ..graphic_widget import TRANSPARENT, AColor, GraphicWidget, Size, clamp
 from .grabbable import Grabbable
 
 __all__ = ("Resizable",)

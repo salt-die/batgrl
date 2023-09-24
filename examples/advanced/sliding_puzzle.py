@@ -5,7 +5,7 @@ from nurses_2.app import run_widget_as_app
 from nurses_2.colors import ABLACK, AWHITE
 from nurses_2.io import MouseButton, MouseEventType
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.graphic_widget_data_structures import read_texture, resize_texture
+from nurses_2.widgets.texture_tools import read_texture, resize_texture
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "python_discord_logo.png"

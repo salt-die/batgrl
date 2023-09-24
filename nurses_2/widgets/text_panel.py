@@ -1,10 +1,9 @@
 """
 A widget for static multi-line text.
 """
-from ..geometry import clamp
 from .behaviors.themable import Themable
 from .text_widget import TextWidget
-from .widget import Size, Widget
+from .widget import Size, Widget, clamp
 
 # TODO: Set text with limited markdown.
 

@@ -8,7 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
-from .graphic_widget_data_structures import Interpolation
+from .texture_tools import Interpolation
 from .widget import (
     Anchor,
     Char,

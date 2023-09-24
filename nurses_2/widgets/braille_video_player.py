@@ -11,7 +11,7 @@ from platform import uname
 import cv2
 import numpy as np
 
-from ._binary_to_char import binary_to_braille
+from .text_tools import binary_to_braille
 from .text_widget import TextWidget, style_char
 
 __all__ = ("BrailleVideoPlayer",)

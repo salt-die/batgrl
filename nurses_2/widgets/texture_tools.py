@@ -1,5 +1,5 @@
 """
-Graphic widget data structures.
+Tools for graphic widgets.
 """
 from pathlib import Path
 from typing import Literal

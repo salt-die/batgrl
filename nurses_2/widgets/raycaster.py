@@ -8,8 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
-from ..geometry import clamp
-from .graphic_widget import Char, GraphicWidget
+from .graphic_widget import Char, GraphicWidget, clamp
 
 
 @dataclass(slots=True)

@@ -5,14 +5,13 @@ import numpy as np
 from wcwidth import wcswidth
 
 from ..colors import AColor
-from ..geometry import clamp
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.resizable import Resizable
 from .behaviors.themable import Themable
 from .graphic_widget import GraphicWidget
 from .text_widget import TextWidget
-from .widget import Widget
+from .widget import Widget, clamp
 
 __all__ = ("Window",)
 

@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 
 from nurses_2.app import App
-from nurses_2.widgets.graphic_widget_data_structures import read_texture
 from nurses_2.widgets.raycaster import Raycaster, Sprite
+from nurses_2.widgets.texture_tools import read_texture
 
 from .animated_texture import AnimatedTexture
 from .camera import Camera

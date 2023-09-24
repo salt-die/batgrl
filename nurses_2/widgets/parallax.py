@@ -7,10 +7,8 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from ..geometry import clamp
-from .graphic_widget_data_structures import Interpolation
-from .image import Image
-from .widget import Char, Widget, subscribable
+from .image import Image, Interpolation
+from .widget import Char, Widget, clamp, subscribable
 
 __all__ = ("Parallax",)
 

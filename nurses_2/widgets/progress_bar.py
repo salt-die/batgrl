@@ -4,11 +4,10 @@ A progress bar widget.
 import asyncio
 from itertools import chain, cycle
 
-from ..geometry import clamp
-from ._smooth_bars import create_horizontal_bar, create_vertical_bar
 from .behaviors.themable import Themable
+from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .text_widget import TextWidget, style_char
-from .widget import subscribable
+from .widget import clamp, subscribable
 
 
 class ProgressBar(Themable, TextWidget):
@@ -251,7 +250,7 @@ class ProgressBar(Themable, TextWidget):
         bar_width = max(1, (self.width - 1) // 2)
         x, offset = divmod(progress * (self.width - bar_width), 1)
         x = int(x)
-        smooth_bar = create_horizontal_bar(bar_width, 1, offset)
+        smooth_bar = smooth_horizontal_bar(bar_width, 1, offset)
 
         self.canvas[:] = style_char(self.default_char)
         self.canvas["char"][:, x : x + len(smooth_bar)] = smooth_bar
@@ -263,7 +262,7 @@ class ProgressBar(Themable, TextWidget):
         bar_height = max(1, (self.height - 1) // 2)
         y, offset = divmod(progress * (self.height - bar_height), 1)
         y = int(y)
-        smooth_bar = create_vertical_bar(bar_height, 1, offset)
+        smooth_bar = smooth_vertical_bar(bar_height, 1, offset)
 
         self.canvas[:] = style_char(self.default_char)
         try:
@@ -316,8 +315,8 @@ class ProgressBar(Themable, TextWidget):
     def _repaint_progress_bar(self):
         self.canvas[:] = style_char(self.default_char)
         if self.is_horizontal:
-            smooth_bar = create_horizontal_bar(self.width, self.progress)
+            smooth_bar = smooth_horizontal_bar(self.width, self.progress)
             self.canvas["char"][:, : len(smooth_bar)] = smooth_bar
         else:
-            smooth_bar = create_vertical_bar(self.height, self.progress)
+            smooth_bar = smooth_vertical_bar(self.height, self.progress)
             self.canvas["char"][::-1][: len(smooth_bar)].T[:] = smooth_bar

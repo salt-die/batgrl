@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from numpy.typing import NDArray
 
-from ..widget_data_structures import Char
+from ..widget import Char
 
 
 class Effect(ABC):

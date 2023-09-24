@@ -8,9 +8,9 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .graphic_widget import GraphicWidget, Interpolation
-from .graphic_widget_data_structures import read_texture
+from .texture_tools import read_texture
 
-__all__ = ("GraphicWidget",)
+__all__ = "Image", "Interpolation"
 
 
 class Image(GraphicWidget):

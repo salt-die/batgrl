@@ -5,7 +5,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import AColor
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.graphic_widget_data_structures import composite
+from nurses_2.widgets.texture_tools import composite
 
 LEN = 20
 COLORS = AColor.from_hex("6d42b2"), AColor.from_hex("9c42b2")

@@ -1,12 +1,14 @@
 """
 A text widget.
 """
+from typing import Literal
+
 import numpy as np
 from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK, Color, ColorPair
-from .text_widget_data_structures import Border, add_text
+from .text_tools import add_text
 from .widget import (
     Anchor,
     Char,
@@ -43,6 +45,11 @@ __all__ = (
     "style_char",
     "subscribable",
 )
+
+Border = Literal[
+    "light", "heavy", "double", "curved", "ascii", "outer", "inner", "thick"
+]
+"""Border styles for :meth:`nurses_2.text_widget.TextWidget.add_border`."""
 
 
 class TextWidget(Widget):

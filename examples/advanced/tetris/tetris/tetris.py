@@ -8,9 +8,9 @@ import numpy as np
 
 from nurses_2.colors import AWHITE
 from nurses_2.widgets.graphic_widget import GraphicWidget
-from nurses_2.widgets.graphic_widget_data_structures import composite
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.texture_tools import composite
 
 from .matrix import MatrixWidget
 from .modal_screen import ModalScreen

@@ -14,8 +14,7 @@ from nurses_2.app import App
 from nurses_2.colors import BLACK, ColorPair, rainbow_gradient
 from nurses_2.io import MouseButton
 from nurses_2.widgets.text_field import TextParticleField
-from nurses_2.widgets.widget import Widget
-from nurses_2.widgets.widget_data_structures import Char
+from nurses_2.widgets.widget import Char, Widget
 
 LOGO = """
                    _.gj8888888lkoz.,_

@@ -1,8 +1,8 @@
 """
 Grabbable behavior for a widget.
 """
-from ...geometry import Point
 from ...io import MouseButton, MouseEventType
+from ..widget import Point
 
 
 class Grabbable:

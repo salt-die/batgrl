@@ -6,7 +6,7 @@ from collections.abc import Callable, Sequence
 from functools import wraps
 from numbers import Real
 from time import monotonic
-from typing import Any, Optional
+from typing import Any, Literal, NamedTuple, Optional
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -16,7 +16,6 @@ from .. import easings
 from ..colors import ColorPair
 from ..geometry import Point, Rect, Size, clamp, intersection, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
-from .widget_data_structures import Anchor, Char, Easing, PosHint, SizeHint, style_char
 
 __all__ = (
     "Anchor",
@@ -34,6 +33,181 @@ __all__ = (
     "style_char",
     "subscribable",
 )
+
+
+class SizeHint(NamedTuple):
+    """
+    A size hint.
+
+    Sets a widget's size as a proportion of parent's size.
+
+    Parameters
+    ----------
+    height : float | None
+        Proportion of parent's height.
+    width : float | None
+        Proportion of parent's width.
+
+    Attributes
+    ----------
+    height : float | None
+        Proportion of parent's height.
+    width : float | None
+        Proportion of parent's width.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
+    """
+
+    height: float | None
+    width: float | None
+
+
+class PosHint(NamedTuple):
+    """
+    A position hint.
+
+    Sets a widget's position as a proportion of parent's size.
+
+    Parameters
+    ----------
+    y : float | None
+        Y-coordinate as a proportion of parent's height.
+    x : float | None
+        X-coordinate as a proportion of parent's width.
+
+    Attributes
+    ----------
+    y : float | None
+        Y-coordinate as a proportion of parent's height.
+    x : float | None
+        X-coordinate as a proportion of parent's width.
+
+    Methods
+    -------
+    count:
+        Return number of occurrences of value.
+    index:
+        Return first index of value.
+    """
+
+    y: float | None
+    x: float | None
+
+
+Anchor = Literal[
+    "bottom",
+    "bottom-left",
+    "bottom-right",
+    "center",
+    "left",
+    "right",
+    "top",
+    "top-left",
+    "top-right",
+]
+"""
+Point of widget attached to :attr:`nurses_2.widgets.Widget.pos_hint`.
+"""
+
+
+Char = np.dtype(
+    [
+        ("char", "U1"),
+        ("bold", "?"),
+        ("italic", "?"),
+        ("underline", "?"),
+        ("strikethrough", "?"),
+        ("overline", "?"),
+    ]
+)
+"""Data type of canvas arrays."""
+
+
+def style_char(
+    char: str,
+    bold: bool = False,
+    italic: bool = False,
+    underline: bool = False,
+    strikethrough: bool = False,
+    overline: bool = False,
+) -> NDArray[Char]:
+    """
+    Return a zero-dimensional `Char` array.
+
+    The primary use for this function is to paint a styled character into a `Char`
+    array. For instance, `my_widget.canvas[:] = style_char("a", bold=True)` would
+    fill `my_widget`'s canvas with bold `a`s. Alternatively, one can avoid this function
+    by setting only the `"char"` field of a `Char` array, e.g.,
+    `my_widget.canvas["char"][:] = "a"`, but the boolean styling fields won't be
+    changed. Avoid setting `Char` arrays with strings; `my_widget.canvas[:] = "a"` is
+    incorrect,`"a"` will be coerced into true for all the boolean styling fields, so
+    that `my_widget` is filled with bold, italic, underline, strikethrough, and overline
+    `a`s.
+
+    Parameters
+    ----------
+    char : str
+        A single unicode character.
+    bold : bool, default: False
+        Whether char is bold.
+    italic : bool, default: False
+        Whether char is italic.
+    underline : bool, default: False
+        Whether char is underlined.
+    strikethrough : bool, default: False
+        Whether char is strikethrough.
+    overline : bool, default: False
+        Whether char is overlined.
+
+    Returns
+    -------
+    NDArray[Char]
+        A zero-dimensional `Char` array with the styled character.
+    """
+    return np.array(
+        (char, bold, italic, underline, strikethrough, overline), dtype=Char
+    )
+
+
+Easing = Literal[
+    "linear",
+    "in_quad",
+    "out_quad",
+    "in_out_quad",
+    "in_cubic",
+    "out_cubic",
+    "in_out_cubic",
+    "in_quart",
+    "out_quart",
+    "in_out_quart",
+    "in_quint",
+    "out_quint",
+    "in_out_quint",
+    "in_sine",
+    "out_sine",
+    "in_out_sine",
+    "in_exp",
+    "out_exp",
+    "in_out_exp",
+    "in_circ",
+    "out_circ",
+    "in_out_circ",
+    "in_elastic",
+    "out_elastic",
+    "in_out_elastic",
+    "in_back",
+    "out_back",
+    "in_out_back",
+    "in_bounce",
+    "out_bounce",
+    "in_out_bounce",
+]
+"""Easings for :meth:`nurses_2.widgets.Widget.tween`"""
 
 
 def subscribable(setter):
@@ -863,13 +1037,12 @@ class Widget:
         Tweened values will be coerced to match the type of the initial value of their
         corresponding property.
 
-        Non-numeric values in will be set immediately. For instance, if a widget has
+        Non-numeric values will be set immediately. For instance, if a widget has
         size hint `(None, .5)` and is being tweened to `(1.0, 1.0)`, the height hint
         will be set to `1.0` as soon as the coroutine starts. Conversely, if a widget
         has size hint `(1.0, 1.0)` and is being tweened to `(None, .5)`, the height hint
-        will be set to `None` as soon as the coroutine starts. This is considered
-        edge-case behavior and is subject to change, therefore it is discouraged to
-        tween non-numeric values.
+        will be set to `None` as soon as the coroutine starts. This is subject to
+        change, therefore it is discouraged to tween non-numeric values.
 
         Warnings
         --------

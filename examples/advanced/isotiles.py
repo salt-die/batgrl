@@ -7,8 +7,8 @@ from nurses_2.app import App
 from nurses_2.colors import AWHITE
 from nurses_2.io import MouseButton, MouseEvent, MouseEventType
 from nurses_2.widgets.graphic_widget import GraphicWidget, Point, Size
-from nurses_2.widgets.graphic_widget_data_structures import composite, read_texture
 from nurses_2.widgets.scroll_view import ScrollView
+from nurses_2.widgets.texture_tools import composite, read_texture
 
 ASSETS = Path(__file__).parent.parent / "assets"
 TILES_PATH = ASSETS / "isometric_demo.png"

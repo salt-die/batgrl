@@ -4,11 +4,9 @@ A slider widget.
 from collections.abc import Callable
 
 from ..colors import Color, ColorPair
-from ..geometry import clamp
 from ..io import MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
-from .text_widget import TextWidget
-from .widget import subscribable
+from .text_widget import TextWidget, clamp, subscribable
 
 
 class Slider(Grabbable, TextWidget):

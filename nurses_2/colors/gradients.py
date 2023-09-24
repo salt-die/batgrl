@@ -4,7 +4,7 @@ Functions for creating color gradients.
 import numpy as np
 
 from ..geometry import lerp
-from .color_data_structures import AColor, Color, ColorPair
+from .color_types import AColor, Color, ColorPair
 
 __all__ = (
     "rainbow_gradient",
@@ -12,9 +12,11 @@ __all__ = (
     "gradient",
 )
 
+SomeColor = Color | AColor | ColorPair
+
 
 def rainbow_gradient(
-    n: int, *, color_type: type[Color] | type[AColor] = Color
+    n: int, *, color_type: type[Color | AColor] = Color
 ) -> list[Color | AColor]:
     """
     Return a rainbow gradient of `n` colors.
@@ -36,17 +38,15 @@ def rainbow_gradient(
     ]
 
 
-def lerp_colors(
-    start: Color | AColor | ColorPair, end: Color | AColor | ColorPair, p: float
-) -> Color | AColor | ColorPair:
+def lerp_colors(start: SomeColor, end: SomeColor, p: float) -> SomeColor:
     """
     Linear interpolation from `start` to `end` with proportion `p`.
 
     Parameters
     ----------
-    start : Color | AColor
+    start : SomeColor
         Start color.
-    end : Color | AColor
+    end : SomeColor
         End Color
     p : float
         Proportion from start to end.
@@ -54,17 +54,15 @@ def lerp_colors(
     return type(start)(*(round(lerp(a, b, p)) for a, b in zip(start, end)))
 
 
-def gradient(
-    start: Color | AColor | ColorPair, end: Color | AColor | ColorPair, ncolors: int
-) -> list[Color | AColor | ColorPair]:
+def gradient(start: SomeColor, end: SomeColor, ncolors: int) -> list[SomeColor]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
 
     Parameters
     ----------
-    start : Color | AColor | ColorPair
+    start : SomeColor
         Start color or colorpair.
-    end : Color | AColor | ColorPair
+    end : SomeColor
         End color of colorpair.
     ncolors : int
         Number of colors in gradient.
