@@ -4,9 +4,8 @@ dist/
 .vscode/
 TODO.md
 
-# Documentation source is built in docsrc.
-docsrc/_build
-docsrc/reference/generated
+# Documentation is published to gh-pages branch
+docs/_build
 
 examples/_old
 garage/
