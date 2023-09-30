@@ -50,7 +50,20 @@ __all__ = [
 ]
 
 Border = Literal[
-    "light", "heavy", "double", "curved", "ascii", "outer", "inner", "thick"
+    "light",
+    "heavy",
+    "double",
+    "curved",
+    "ascii",
+    "outer",
+    "inner",
+    "thick",
+    "dashed",
+    "dashed_2",
+    "dashed_3",
+    "heavy_dashed",
+    "heavy_dashed_2",
+    "heavy_dashed_3",
 ]
 """Border styles for :meth:`nurses_2.text_widget.TextWidget.add_border`."""
 
@@ -287,16 +300,22 @@ class TextWidget(Widget):
         color_pair : ColorPair | None, default: None
             Border color pair if not None.
         """
-        BORDER_STYLES = dict(
-            light="┌┐││──└┘",
-            heavy="┏┓┃┃━━┗┛",
-            double="╔╗║║══╚╝",
-            curved="╭╮││──╰╯",
-            ascii="++||--++",
-            outer="▛▜▌▐▀▄▙▟",
-            inner="▗▖▐▌▄▀▝▘",
-            thick="████▀▄██",
-        )
+        BORDER_STYLES = {
+            "light": "┌┐││──└┘",
+            "heavy": "┏┓┃┃━━┗┛",
+            "double": "╔╗║║══╚╝",
+            "curved": "╭╮││──╰╯",
+            "ascii": "++||--++",
+            "outer": "▛▜▌▐▀▄▙▟",
+            "inner": "▗▖▐▌▄▀▝▘",
+            "thick": "████▀▄██",
+            "dashed": "┌┐╎╎╌╌└┘",
+            "heavy_dashed": "┏┓╏╏╍╍┗┛",
+            "dashed_2": "┌┐┆┆┄┄└┘",
+            "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
+            "dashed_3": "┌┐┊┊┈┈└┘",
+            "heavy_dashed_3": "┏┓┋┋┉┉┗┛",
+        }
         tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]
 
         canvas = self.canvas

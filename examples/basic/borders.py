@@ -1,5 +1,6 @@
 from nurses_2.app import App
 from nurses_2.colors import BLACK, Color, ColorPair, rainbow_gradient
+from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.text_widget import Border, TextWidget
 
 border_colors = [
@@ -10,13 +11,15 @@ border_colors = [
 
 class BordersApp(App):
     async def on_start(self):
-        for i, border in enumerate(Border.__args__):
-            widget = TextWidget(size=(3, 17), pos=(i * 3, 0))
-            widget.add_border(border, color_pair=border_colors[i])
+        grid_layout = GridLayout(grid_columns=7, grid_rows=2)
+        for border, color in zip(Border.__args__, border_colors):
+            widget = TextWidget(size=(3, 17))
+            widget.add_border(border, bold=True, color_pair=color)
             widget.add_str(f"{border:^15}", pos=(1, 1), italic=True)
-            self.add_widget(widget)
+            grid_layout.add_widget(widget)
 
-        return await super().on_start()
+        grid_layout.size = grid_layout.minimum_grid_size
+        self.add_widget(grid_layout)
 
 
 if __name__ == "__main__":
