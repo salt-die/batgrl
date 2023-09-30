@@ -264,7 +264,45 @@ class SizeHint(_Hint):
 
 
 class PosHintDict(TypedDict, total=False):
-    """PosHint parameters as a dict."""
+    """
+    PosHint parameters as a dict.
+
+    Methods
+    -------
+    clear:
+        Remove all items from the dictionary.
+    copy:
+        Return a shallow copy of the dictionary.
+    fromkeys:
+        Create a new dictionary with keys from iterable and values set to value.
+    get:
+        Return the value for key if key is in the dictionary, else default. If default
+        is not given, it defaults to None, so that this method never raises a KeyError.
+    items:
+        Return a new view of the dictionary’s items ((key, value) pairs). See the
+        documentation of view objects.
+    keys:
+        Return a new view of the dictionary’s keys. See the documentation of view
+        objects.
+    pop:
+        If key is in the dictionary, remove it and return its value, else return
+        default. If default is not given and key is not in the dictionary, a KeyError is
+        raised.
+    popitem:
+        Remove and return a (key, value) pair from the dictionary. Pairs are returned in
+        LIFO order. popitem() is useful to destructively iterate over a dictionary, as
+        often used in set algorithms. If the dictionary is empty, calling popitem()
+        raises a KeyError.
+    setdefault:
+        If key is in the dictionary, return its value. If not, insert key with a value
+        of default and return default. default defaults to None.
+    update:
+        Update the dictionary with the key/value pairs from other, overwriting existing
+        keys. Return None.
+    values:
+        Return a new view of the dictionary’s values. See the documentation of view
+        objects.
+    """
 
     anchor: Anchor | tuple[float, float]
     y_hint: float | None
@@ -274,7 +312,45 @@ class PosHintDict(TypedDict, total=False):
 
 
 class SizeHintDict(TypedDict, total=False):
-    """SizeHint parameters as a dict."""
+    """
+    SizeHint parameters as a dict.
+
+    Methods
+    -------
+    clear:
+        Remove all items from the dictionary.
+    copy:
+        Return a shallow copy of the dictionary.
+    fromkeys:
+        Create a new dictionary with keys from iterable and values set to value.
+    get:
+        Return the value for key if key is in the dictionary, else default. If default
+        is not given, it defaults to None, so that this method never raises a KeyError.
+    items:
+        Return a new view of the dictionary’s items ((key, value) pairs). See the
+        documentation of view objects.
+    keys:
+        Return a new view of the dictionary’s keys. See the documentation of view
+        objects.
+    pop:
+        If key is in the dictionary, remove it and return its value, else return
+        default. If default is not given and key is not in the dictionary, a KeyError is
+        raised.
+    popitem:
+        Remove and return a (key, value) pair from the dictionary. Pairs are returned in
+        LIFO order. popitem() is useful to destructively iterate over a dictionary, as
+        often used in set algorithms. If the dictionary is empty, calling popitem()
+        raises a KeyError.
+    setdefault:
+        If key is in the dictionary, return its value. If not, insert key with a value
+        of default and return default. default defaults to None.
+    update:
+        Update the dictionary with the key/value pairs from other, overwriting existing
+        keys. Return None.
+    values:
+        Return a new view of the dictionary’s values. See the documentation of view
+        objects.
+    """
 
     height_hint: float | None
     width_hint: float | None
@@ -310,15 +386,15 @@ def style_char(
     """
     Return a zero-dimensional `Char` array.
 
-    The primary use for this function is to paint a styled character into a `Char`
-    array. For instance, `my_widget.canvas[:] = style_char("a", bold=True)` would
-    fill `my_widget`'s canvas with bold `a`s. Alternatively, one can avoid this function
-    by setting only the `"char"` field of a `Char` array, e.g.,
-    `my_widget.canvas["char"][:] = "a"`, but the boolean styling fields won't be
-    changed. Avoid setting `Char` arrays with strings; `my_widget.canvas[:] = "a"` is
-    incorrect,`"a"` will be coerced into true for all the boolean styling fields, so
+    The primary use for this function is to paint a styled character into a ``Char``
+    array. For instance, ``my_widget.canvas[:] = style_char("a", bold=True)`` would
+    fill the canvas with bold ``a``. Alternatively, one can avoid this function by
+    setting only the `"char"` field of a ``Char`` array, e.g.,
+    ``my_widget.canvas["char"][:] = "a"``, but the boolean styling fields won't be
+    changed. Avoid setting `Char` arrays with strings; ``my_widget.canvas[:] = "a"`` is
+    incorrect,``"a"`` will be coerced into true for all the boolean styling fields, so
     that `my_widget` is filled with bold, italic, underline, strikethrough, and overline
-    `a`s.
+    ``a``.
 
     Parameters
     ----------
