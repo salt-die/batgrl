@@ -1,0 +1,29 @@
+nurses\_2.widgets.tiled\_image
+==============================
+
+.. automodule:: nurses_2.widgets.tiled_image
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TiledImage
+   
+   
+
+   
+   
+   
+
+
+

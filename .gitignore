@@ -4,8 +4,5 @@ dist/
 .vscode/
 TODO.md
 
-# Documentation is published to gh-pages branch
-docs/_build
-
 examples/_old
 garage/

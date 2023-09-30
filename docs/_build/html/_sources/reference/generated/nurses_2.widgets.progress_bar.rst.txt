@@ -1,0 +1,29 @@
+nurses\_2.widgets.progress\_bar
+===============================
+
+.. automodule:: nurses_2.widgets.progress_bar
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ProgressBar
+   
+   
+
+   
+   
+   
+
+
+

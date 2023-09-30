@@ -1,0 +1,29 @@
+nurses\_2.widgets.behaviors.themable
+====================================
+
+.. automodule:: nurses_2.widgets.behaviors.themable
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Themable
+   
+   
+
+   
+   
+   
+
+
+
