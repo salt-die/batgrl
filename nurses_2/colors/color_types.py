@@ -3,12 +3,12 @@ Color data structures.
 """
 from typing import NamedTuple
 
-__all__ = (
+__all__ = [
     "AColor",
     "Color",
     "ColorPair",
     "ColorTheme",
-)
+]
 
 
 class Color(NamedTuple):

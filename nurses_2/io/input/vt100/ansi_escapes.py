@@ -22,11 +22,11 @@ ANSI_ESCAPES = {
     "\x06": KeyEvent("f", CONTROL),
     "\x07": KeyEvent("g", CONTROL),
     "\x08": KeyEvent("h", CONTROL),
-    "\x09": KeyEvent(Key.Tab, NO_MODS),
+    "\x09": KeyEvent(Key.Tab, NO_MODS),  # ctrl + i
     "\x0a": KeyEvent("j", CONTROL),
     "\x0b": KeyEvent("k", CONTROL),
     "\x0c": KeyEvent("l", CONTROL),
-    "\x0d": KeyEvent(Key.Enter, NO_MODS),
+    "\x0d": KeyEvent(Key.Enter, NO_MODS),  # ctrl + m
     "\x0e": KeyEvent("n", CONTROL),
     "\x0f": KeyEvent("o", CONTROL),
     "\x10": KeyEvent("p", CONTROL),

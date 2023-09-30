@@ -194,7 +194,7 @@ class ShadowCasterApp(App):
         )
         grid_layout.size = grid_layout.minimum_grid_size
 
-        container = Widget(pos_hint=(0.5, 0.5), size=(17, 58))
+        container = Widget(pos_hint={"y_hint": 0.5, "x_hint": 0.5}, size=(17, 58))
         container.add_widgets(caster, grid_layout)
         self.add_widget(container)
 

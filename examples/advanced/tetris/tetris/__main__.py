@@ -5,8 +5,7 @@ from .tetris import Tetris
 
 class TetrisApp(App):
     async def on_start(self):
-        tetris = Tetris(pos_hint=(0.5, 0.5))
-
+        tetris = Tetris(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
         self.add_widget(tetris)
 
         tetris.modal_screen.enable(callback=tetris.new_game, is_game_over=True)

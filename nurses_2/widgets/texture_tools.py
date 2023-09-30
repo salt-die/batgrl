@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 
 from .widget import Point, Rect, Size, intersection
 
-__all__ = "Interpolation", "read_texture", "resize_texture", "composite"
+__all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
 
 Interpolation = Literal["nearest", "linear", "cubic", "area", "lanczos"]
 """Interpolation methods for resizing graphic widgets."""

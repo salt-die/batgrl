@@ -56,24 +56,19 @@ class MineSweeper(Widget):
 
         self.timer = TextWidget(
             size=(1, 20),
-            anchor="top-right",
-            pos_hint=(None, 0.95),
+            pos_hint={"x_hint": 0.95, "anchor": "top-right"},
             default_color_pair=DATA_BAR,
         )
         self.timer.add_str("Time Elapsed:")
         self._elapsed_time = 0
 
         self.mines_left = TextWidget(
-            size=(1, 10),
-            pos_hint=(None, 0.05),
-            default_color_pair=DATA_BAR,
+            size=(1, 10), pos_hint={"x_hint": 0.05}, default_color_pair=DATA_BAR
         )
         self.mines_left.add_str("Mines:")
 
         self.reset_button = ResetButton(
-            size=(1, 2),
-            default_color_pair=DATA_BAR,
-            pos_hint=(None, 0.5),
+            size=(1, 2), default_color_pair=DATA_BAR, pos_hint={"x_hint": 0.5}
         )
 
         self.add_widgets(self.mines_left, self.timer, self.reset_button)

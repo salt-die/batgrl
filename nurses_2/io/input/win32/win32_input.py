@@ -9,11 +9,11 @@ from ctypes.wintypes import BOOL, DWORD, HANDLE
 from ...win32_types import SECURITY_ATTRIBUTES, STD_INPUT_HANDLE
 from .console_input import events
 
-__all__ = (
+__all__ = [
     "attach",
     "raw_mode",
     "events",
-)
+]
 
 
 @contextmanager

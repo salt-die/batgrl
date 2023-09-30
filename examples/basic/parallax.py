@@ -12,11 +12,13 @@ PARALLAX = ASSETS / "space_parallax"
 
 class ParallaxApp(App):
     async def on_start(self):
-        parallax = Parallax(path=PARALLAX, size_hint=(1.0, 1.0))
+        parallax = Parallax(
+            path=PARALLAX, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
         self.add_widget(parallax)
 
         async def circle_movement():
-            angles = np.linspace(0, 2 * np.pi, 400)
+            angles = np.linspace(0, 2 * np.pi, 100)
             radius = 50
 
             while True:

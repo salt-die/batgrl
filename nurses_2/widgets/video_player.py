@@ -11,10 +11,28 @@ from platform import uname
 import cv2
 import numpy as np
 
-from ..colors import ABLACK
-from .graphic_widget import GraphicWidget, Interpolation
+from ..colors import ABLACK, AColor, ColorPair
+from .graphic_widget import (
+    GraphicWidget,
+    Interpolation,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
 
-__all__ = ("VideoPlayer",)
+__all__ = [
+    "Interpolation",
+    "Point",
+    "PosHint",
+    "PosHintDict",
+    "Size",
+    "SizeHint",
+    "SizeHintDict",
+    "VideoPlayer",
+]
 
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
@@ -41,38 +59,23 @@ class VideoPlayer(GraphicWidget):
         Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint, default: SizeHint(None, None)
-        Proportion of parent's height and width. Non-None values will have
-        precedent over :attr:`size`.
-    min_height : int | None, default: None
-        Minimum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_height : int | None, default: None
-        Maximum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    min_width : int | None, default: None
-        Minimum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_width : int | None, default: None
-        Maximum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    pos_hint : PosHint, default: PosHint(None, None)
-        Position as a proportion of parent's height and width. Non-None values
-        will have precedent over :attr:`pos`.
-    anchor : Anchor, default: "center"
-        The point of the widget attached to :attr:`pos_hint`.
+    size_hint : SizeHint | SizeHintDict | None, default: None
+        Size as a proportion of parent's height and width.
+    pos_hint : PosHint | PosHintDict | None , default: None
+        Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        If false, :attr:`alpha` and alpha channels are ignored.
+        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
     is_visible : bool, default: True
-        If false, widget won't be painted, but still dispatched.
+        Whether widget is visible. Widget will still receive input events if not
+        visible.
     is_enabled : bool, default: True
-        If false, widget won't be painted or dispatched.
+        Whether widget is enabled. A disabled widget is not painted and doesn't receive
+        input events.
     background_char : str | None, default: None
-        The background character of the widget if not `None` and if the widget
-        is not transparent.
+        The background character of the widget if the widget is not transparent.
+        Character must be single unicode half-width grapheme.
     background_color_pair : ColorPair | None, default: None
-        The background color pair of the widget if not `None` and if the
-        widget is not transparent.
+        The background color pair of the widget if the widget is not transparent.
 
     Attributes
     ----------
@@ -101,47 +104,29 @@ class VideoPlayer(GraphicWidget):
     columns : int
         Alias for :attr:`width`.
     pos : Point
-        Position relative to parent.
+        Position of upper-left corner.
     top : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     y : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     left : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     x : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     bottom : int
-        :attr:`top` + :attr:`height`.
+        Y-coordinate of bottom of widget.
     right : int
-        :attr:`left` + :attr:`width`.
+        X-coordinate of right side of widget.
+    center : Point
+        Position of center of widget.
     absolute_pos : Point
         Absolute position on screen.
-    center : Point
-        Center of widget in local coordinates.
     size_hint : SizeHint
-        Size as a proportion of parent's size.
-    height_hint : float | None
-        Height as a proportion of parent's height.
-    width_hint : float | None
-        Width as a proportion of parent's width.
-    min_height : int
-        Minimum height allowed when using :attr:`size_hint`.
-    max_height : int
-        Maximum height allowed when using :attr:`size_hint`.
-    min_width : int
-        Minimum width allowed when using :attr:`size_hint`.
-    max_width : int
-        Maximum width allowed when using :attr:`size_hint`.
+        Size as a proportion of parent's height and width.
     pos_hint : PosHint
-        Position as a proportion of parent's size.
-    y_hint : float | None
-        Vertical position as a proportion of parent's size.
-    x_hint : float | None
-        Horizontal position as a proportion of parent's size.
-    anchor : Anchor
-        Determines which point is attached to :attr:`pos_hint`.
+        Position as a proportion of parent's height and width.
     background_char : str | None
-        Background character.
+        The background character of the widget if the widget is not transparent.
     background_color_pair : ColorPair | None
         Background color pair.
     parent : Widget | None
@@ -178,7 +163,7 @@ class VideoPlayer(GraphicWidget):
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
-        True if point is within widget's bounding box.
+        True if point collides with an uncovered portion of widget.
     collides_widget:
         True if other is within widget's bounding box.
     add_widget:
@@ -220,12 +205,32 @@ class VideoPlayer(GraphicWidget):
         *,
         source: Path | str | int,
         loop: bool = True,
-        default_color=ABLACK,
-        is_transparent=False,
-        **kwargs,
+        default_color: AColor = ABLACK,
+        is_transparent: bool = False,
+        alpha: float = 1.0,
+        interpolation: Interpolation = "linear",
+        size=Size(10, 10),
+        pos=Point(0, 0),
+        size_hint: SizeHint | SizeHintDict | None = None,
+        pos_hint: PosHint | PosHintDict | None = None,
+        is_visible: bool = True,
+        is_enabled: bool = True,
+        background_char: str | None = None,
+        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
-            default_color=default_color, is_transparent=is_transparent, **kwargs
+            default_color=default_color,
+            is_transparent=is_transparent,
+            alpha=alpha,
+            interpolation=interpolation,
+            size=size,
+            pos=pos,
+            size_hint=size_hint,
+            pos_hint=pos_hint,
+            is_visible=is_visible,
+            is_enabled=is_enabled,
+            background_char=background_char,
+            background_color_pair=background_color_pair,
         )
         self._current_frame = None
         self._resource = None
@@ -287,7 +292,7 @@ class VideoPlayer(GraphicWidget):
         self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
 
         if self._current_frame is not None:
-            self.texture[..., :3] = cv2.resize(
+            self.texture[:] = cv2.resize(
                 self._current_frame,
                 (w, h),
                 interpolation=Interpolation._to_cv_enum[self.interpolation],
@@ -311,9 +316,9 @@ class VideoPlayer(GraphicWidget):
             await asyncio.sleep(seconds_ahead)
 
             _, frame = self._resource.retrieve()
-            self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
 
-            self.texture[..., :3] = cv2.resize(
+            self.texture[:] = cv2.resize(
                 self._current_frame,
                 (self.width, 2 * self.height),
                 interpolation=Interpolation._to_cv_enum[self.interpolation],

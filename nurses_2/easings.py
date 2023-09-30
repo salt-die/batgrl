@@ -3,7 +3,7 @@ Easing functions.
 """
 from math import cos, pi, sin
 
-__all__ = (
+__all__ = [
     "linear",
     "in_quad",
     "out_quad",
@@ -35,7 +35,7 @@ __all__ = (
     "in_bounce",
     "out_bounce",
     "in_out_bounce",
-)
+]
 
 
 def linear(p):

@@ -7,7 +7,9 @@ MESH_SIZE = 11, 21
 
 class ClothApp(App):
     async def on_start(self):
-        cloth = Cloth(mesh_size=MESH_SIZE, size_hint=(1.0, 1.0))
+        cloth = Cloth(
+            mesh_size=MESH_SIZE, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
 
         self.add_widget(cloth)
 

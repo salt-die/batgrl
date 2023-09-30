@@ -3,116 +3,287 @@ Base class for all widgets.
 """
 import asyncio
 from collections.abc import Callable, Sequence
+from dataclasses import asdict, dataclass
 from functools import wraps
 from numbers import Real
 from time import monotonic
-from typing import Any, Literal, NamedTuple, Optional
+from typing import Literal, Optional, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
 from numpy.typing import NDArray
+from wcwidth import wcwidth
 
 from .. import easings
 from ..colors import ColorPair
 from ..geometry import Point, Rect, Size, clamp, intersection, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
 
-__all__ = (
+__all__ = [
     "Anchor",
     "Char",
     "Easing",
     "Point",
     "PosHint",
+    "PosHintDict",
     "Rect",
     "Size",
     "SizeHint",
+    "SizeHintDict",
     "Widget",
     "clamp",
     "intersection",
     "lerp",
     "style_char",
     "subscribable",
-)
+]
 
 
-class SizeHint(NamedTuple):
-    """
-    A size hint.
-
-    Sets a widget's size as a proportion of parent's size.
-
-    Parameters
-    ----------
-    height : float | None
-        Proportion of parent's height.
-    width : float | None
-        Proportion of parent's width.
-
-    Attributes
-    ----------
-    height : float | None
-        Proportion of parent's height.
-    width : float | None
-        Proportion of parent's width.
-
-    Methods
-    -------
-    count:
-        Return number of occurrences of value.
-    index:
-        Return first index of value.
-    """
-
-    height: float | None
-    width: float | None
-
-
-class PosHint(NamedTuple):
-    """
-    A position hint.
-
-    Sets a widget's position as a proportion of parent's size.
-
-    Parameters
-    ----------
-    y : float | None
-        Y-coordinate as a proportion of parent's height.
-    x : float | None
-        X-coordinate as a proportion of parent's width.
-
-    Attributes
-    ----------
-    y : float | None
-        Y-coordinate as a proportion of parent's height.
-    x : float | None
-        X-coordinate as a proportion of parent's width.
-
-    Methods
-    -------
-    count:
-        Return number of occurrences of value.
-    index:
-        Return first index of value.
-    """
-
-    y: float | None
-    x: float | None
+def round_down(n: float) -> int:
+    """Like the built-in `round`, but always rounds down."""
+    i, r = divmod(n, 1)
+    if r <= 0.5:
+        return int(i)
+    return int(i + 1)
 
 
 Anchor = Literal[
-    "bottom",
-    "bottom-left",
-    "bottom-right",
-    "center",
-    "left",
-    "right",
-    "top",
     "top-left",
+    "top",
     "top-right",
+    "left",
+    "center",
+    "right",
+    "bottom-left",
+    "bottom",
+    "bottom-right",
 ]
 """
-Point of widget attached to :attr:`nurses_2.widgets.Widget.pos_hint`.
+Point of widget attached to a pos hint.
 """
+
+
+@np.vectorize
+def char_widths(char: np.dtype("<U1")) -> int:
+    """Return the width of a character."""
+    return 0 if char == "" else wcwidth(char)
+
+
+_ANCHOR_TO_POS: dict[Anchor, tuple[float, float]] = {
+    "top-left": (0.0, 0.0),
+    "top": (0.0, 0.5),
+    "top-right": (0.0, 1.0),
+    "left": (0.5, 0.0),
+    "center": (0.5, 0.5),
+    "right": (0.5, 1.0),
+    "bottom-left": (1.0, 0.0),
+    "bottom": (1.0, 0.5),
+    "bottom-right": (1.0, 1.0),
+}
+
+
+class _Hint:
+    """
+    Base for size and pos hints. Calls widget's `apply_hints` when an attribute is
+    changed.
+    """
+
+    __slots__ = ("_widget",)
+
+    def __setattr__(self, attr, value):
+        super().__setattr__(attr, value)
+        if (
+            attr != "_widget"
+            and attr in self.__dataclass_fields__
+            and getattr(self, "_widget", None) is not None
+        ):
+            self._widget.apply_hints()
+
+
+@dataclass(slots=True)
+class PosHint(_Hint):
+    """
+    A position hint.
+
+    A pos hint allows a widget to automatically position itself when added to the
+    widget tree or when its parent resizes. `y_hint` controls vertical position and
+    `x_hint` horizontal. `anchor` determines which point of the widget is attached to
+    the pos hint. For instance, in the diagram below, if the `y_hint` and `x_hint` are
+    both `0.5` the pos hint will be at point `c` on the parent (50% of the parent's
+    height and width). Additionally, if the anchor is `"top"`, the anchor will be at
+    point `a` on the widget::
+
+             parent
+        +---------------+
+        |               |    +---a---+
+        |       c       |    |widget |
+        |               |    +-------+
+        +---------------+
+
+
+    Subsequently, `a` will be aligned with `c`, so that the widget is positioned as
+    below::
+
+             parent
+        +---------------+
+        |               |
+        |   +-------+   |
+        |   |widget |   |
+        +---+-------+---+
+
+    The additional parameters `y_offset` and `x_offset` allow one to translate the
+    widget by some integer offsets after the pos hint has been applied.
+
+    Parameters
+    ----------
+    anchor : Anchor | tuple[float, float], default: "center"
+        Determines which point is attached to the pos hint.
+    y_hint : float | None, default: None
+        Vertical position as a proportion of parent's height.
+    x_hint : float | None, default: None
+        Horizontal position as a proportion of parent's width.
+    y_offset : int, default: 0
+        Vertical offset after pos hint is applied.
+    x_offset : int, default: 0
+        Horizontal offset after pos hint is applied.
+
+    Attributes
+    ----------
+    anchor : Anchor | tuple[float, float]
+        Determines which point is attached to the pos hint.
+    y_anchor : float
+        Y-coordinate of anchor.
+    x_anchor : float
+        X-coordinate of anchor.
+    y_hint : float | None
+        Vertical position as a proportion of parent's height.
+    x_hint : float | None
+        Horizontal position as a proportion of parent's width.
+    y_offset : int
+        Vertical offset after pos hint is applied.
+    x_offset : int
+        Horizontal offset after pos hint is applied.
+    """
+
+    anchor: Anchor | tuple[float, float] = "center"
+    """Determines which point is attached to the pos hint."""
+    y_hint: float | None = None
+    """Vertical position as a proportion of parent's height."""
+    x_hint: float | None = None
+    """Horizontal position as a proportion of parent's width."""
+    y_offset: int = 0
+    """Vertical offset after y-hint is applied."""
+    x_offset: int = 0
+    """Horizontal offset after x-hint is applied."""
+
+    @property
+    def y_anchor(self) -> float:
+        """
+        The y-coordinate of the anchor.
+        """
+        if isinstance(self.anchor, str):
+            return _ANCHOR_TO_POS[self.anchor][0]
+
+    @y_anchor.setter
+    def y_anchor(self, y_anchor: float):
+        if isinstance(self.anchor, str):
+            x_anchor = _ANCHOR_TO_POS[self.anchor][1]
+        self.anchor = y_anchor, x_anchor
+
+    @property
+    def x_anchor(self) -> float:
+        """
+        The x-coordinate of the anchor.
+        """
+        if isinstance(self.anchor, str):
+            return _ANCHOR_TO_POS[self.anchor][1]
+
+    @x_anchor.setter
+    def x_anchor(self, x_anchor: float):
+        if isinstance(self.anchor, str):
+            y_anchor = _ANCHOR_TO_POS[self.anchor][0]
+        self.anchor = x_anchor, y_anchor
+
+
+@dataclass(slots=True)
+class SizeHint(_Hint):
+    """
+    A size hint.
+
+    A size hint allows a widget to automatically size itself when added to the widget
+    tree or when its parent resizes. `height_hint` is the proportion of the parent's
+    height the widget's height will be and `width_hint` the proportion of the parent's
+    width. Additional parameters `height_offset` and `width_offset` allow adjusting the
+    size by some integer amount after the size hint has been applied. If given,
+    `min_height`, `max_height`, `min_width`, max_width` will prevent the widget from
+    sizing too small or too large.
+
+    Parameters
+    ----------
+    height_hint : float | None, default: None
+        Height as a proportion of parent's height.
+    width_hint : float | None, default: None
+        Width as a proportion of parent's width.
+    height_offset : int , default: 0
+        Height offset after height-hint is applied.
+    width_offset : int, default: 0
+        Width offset after width-hint is applied.
+    min_height : int | None, default: None
+        Minimum allowed height.
+    max_height : int | None, default: None
+        Maximum allowed height.
+    min_width : int | None, default: None
+        Minimum allowed width.
+    max_width : int | None, default: None
+        Maximum allowed width.
+
+    Attributes
+    ----------
+    height_hint : float | None
+        Height as a proportion of parent's height.
+    width_hint : float | None
+        Width as a proportion of parent's width.
+    min_height : int | None
+        Minimum allowed height.
+    max_height : int | None
+        Maximum allowed height.
+    min_width : int | None
+        Minimum allowed width.
+    max_width : int | None
+        Maximum allowed width.
+    """
+
+    height_hint: float | None = None
+    width_hint: float | None = None
+    height_offset: int = 0
+    width_offset: int = 0
+    max_height: int | None = None
+    min_height: int | None = None
+    max_width: int | None = None
+    min_width: int | None = None
+
+
+class PosHintDict(TypedDict, total=False):
+    """PosHint parameters as a dict."""
+
+    anchor: Anchor | tuple[float, float]
+    y_hint: float | None
+    x_hint: float | None
+    y_offset: int
+    x_offset: int
+
+
+class SizeHintDict(TypedDict, total=False):
+    """SizeHint parameters as a dict."""
+
+    height_hint: float | None
+    width_hint: float | None
+    height_offset: int
+    width_offset: int
+    max_height: int | None
+    min_height: int | None
+    max_width: int | None
+    min_width: int | None
 
 
 Char = np.dtype(
@@ -239,38 +410,23 @@ class Widget:
         Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint, default: SizeHint(None, None)
-        Proportion of parent's height and width. Non-None values will have
-        precedent over :attr:`size`.
-    min_height : int | None, default: None
-        Minimum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_height : int | None, default: None
-        Maximum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    min_width : int | None, default: None
-        Minimum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_width : int | None, default: None
-        Maximum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    pos_hint : PosHint, default: PosHint(None, None)
-        Position as a proportion of parent's height and width. Non-None values
-        will have precedent over :attr:`pos`.
-    anchor : Anchor, default: "center"
-        The point of the widget attached to :attr:`pos_hint`.
+    size_hint : SizeHint | SizeHintDict | None, default: None
+        Size as a proportion of parent's height and width.
+    pos_hint : PosHint | PosHintDict | None , default: None
+        Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        If true, background_char and background_color_pair won't be painted.
+        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
     is_visible : bool, default: True
-        If false, widget won't be painted, but still dispatched.
+        Whether widget is visible. Widget will still receive input events if not
+        visible.
     is_enabled : bool, default: True
-        If false, widget won't be painted or dispatched.
+        Whether widget is enabled. A disabled widget is not painted and doesn't receive
+        input events.
     background_char : str | None, default: None
-        The background character of the widget if not `None` and if the widget
-        is not transparent.
+        The background character of the widget if the widget is not transparent.
+        Character must be single unicode half-width grapheme.
     background_color_pair : ColorPair | None, default: None
-        The background color pair of the widget if not `None` and if the
-        widget is not transparent.
+        The background color pair of the widget if the widget is not transparent.
 
     Attributes
     ----------
@@ -285,47 +441,29 @@ class Widget:
     columns : int
         Alias for :attr:`width`.
     pos : Point
-        Position relative to parent.
+        Position of upper-left corner.
     top : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     y : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     left : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     x : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     bottom : int
-        :attr:`top` + :attr:`height`.
+        Y-coordinate of bottom of widget.
     right : int
-        :attr:`left` + :attr:`width`.
+        X-coordinate of right side of widget.
+    center : Point
+        Position of center of widget.
     absolute_pos : Point
         Absolute position on screen.
-    center : Point
-        Center of widget in local coordinates.
     size_hint : SizeHint
-        Size as a proportion of parent's size.
-    height_hint : float | None
-        Height as a proportion of parent's height.
-    width_hint : float | None
-        Width as a proportion of parent's width.
-    min_height : int
-        Minimum height allowed when using :attr:`size_hint`.
-    max_height : int
-        Maximum height allowed when using :attr:`size_hint`.
-    min_width : int
-        Minimum width allowed when using :attr:`size_hint`.
-    max_width : int
-        Maximum width allowed when using :attr:`size_hint`.
+        Size as a proportion of parent's height and width.
     pos_hint : PosHint
-        Position as a proportion of parent's size.
-    y_hint : float | None
-        Vertical position as a proportion of parent's size.
-    x_hint : float | None
-        Horizontal position as a proportion of parent's size.
-    anchor : Anchor
-        Determines which point is attached to :attr:`pos_hint`.
+        Position as a proportion of parent's height and width.
     background_char : str | None
-        Background character.
+        The background character of the widget if the widget is not transparent.
     background_color_pair : ColorPair | None
         Background color pair.
     parent : Widget | None
@@ -352,7 +490,7 @@ class Widget:
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
-        True if point is within widget's bounding box.
+        True if point collides with an uncovered portion of widget.
     collides_widget:
         True if other is within widget's bounding box.
     add_widget:
@@ -394,13 +532,8 @@ class Widget:
         *,
         size=Size(10, 10),
         pos=Point(0, 0),
-        size_hint: SizeHint = SizeHint(None, None),
-        min_width: int | None = None,
-        max_width: int | None = None,
-        min_height: int | None = None,
-        max_height: int | None = None,
-        pos_hint: PosHint = PosHint(None, None),
-        anchor: Anchor = "center",
+        size_hint: SizeHint | SizeHintDict | None = None,
+        pos_hint: PosHint | PosHintDict | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
@@ -414,14 +547,21 @@ class Widget:
         self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
         self._pos = Point(*pos)
 
-        self._size_hint = size_hint
-        self._min_height = min_height
-        self._max_height = max_height
-        self._min_width = min_width
-        self._max_width = max_width
+        if size_hint is None:
+            self._size_hint = SizeHint()
+        elif isinstance(size_hint, dict):
+            self._size_hint = SizeHint(**size_hint)
+        else:
+            self._size_hint = size_hint
+        self._size_hint._widget = self
 
-        self._pos_hint = pos_hint
-        self._anchor = anchor
+        if pos_hint is None:
+            self._pos_hint = PosHint()
+        elif isinstance(pos_hint, dict):
+            self._pos_hint = PosHint(**pos_hint)
+        else:
+            self._pos_hint = pos_hint
+        self._pos_hint._widget = self
 
         self.background_color_pair = background_color_pair
         self.background_char = background_char
@@ -429,6 +569,15 @@ class Widget:
         self.is_transparent = is_transparent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(size={self.size}, pos={self.pos}, size_hint="
+            f"{self.size_hint}, pos_hint={self.pos_hint}, is_transparent="
+            f"{self.is_transparent}, is_visible={self.is_visible}, is_enabled="
+            f"{self.is_enabled}, background_char={self.background_char}, "
+            f"background_color_pair={self.background_color_pair})"
+        )
 
     @property
     def size(self) -> Size:
@@ -440,6 +589,9 @@ class Widget:
     @size.setter
     @subscribable
     def size(self, size: Size):
+        if size == self._size:
+            return
+
         h, w = size
         self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
 
@@ -488,6 +640,7 @@ class Widget:
 
     @property
     def top(self) -> int:
+        """Y-coordinate of top of widget."""
         return self._pos[0]
 
     @top.setter
@@ -495,9 +648,11 @@ class Widget:
         self.pos = top, self.left
 
     y = top
+    """Y-coordinate of top of widget."""
 
     @property
     def left(self) -> int:
+        """X-coordinate of left side of widget."""
         return self._pos[1]
 
     @left.setter
@@ -505,28 +660,44 @@ class Widget:
         self.pos = self.top, left
 
     x = left
+    """X-coordinate of left side of widget."""
 
     @property
     def bottom(self) -> int:
         """
-        Bottom of widget in parent's reference frame.
+        Y-coordinate of bottom of widget.
         """
         return self.top + self.height
 
     @bottom.setter
-    def bottom(self, value: int):
-        self.top = value - self.height
+    def bottom(self, bottom: int):
+        self.top = bottom - self.height
 
     @property
     def right(self) -> int:
         """
-        Right side of widget in parent's reference frame.
+        X-coordinate of right side of widget.
         """
         return self.left + self.width
 
     @right.setter
-    def right(self, value: int):
-        self.left = value - self.width
+    def right(self, right: int):
+        self.left = right - self.width
+
+    @property
+    def center(self) -> Point:
+        """
+        Position of center of widget.
+        """
+        y, x = self.pos
+        h, w = self.size
+        return Point(y + h // 2, x + w // 2)
+
+    @center.setter
+    def center(self, center: Point):
+        cy, cx = center
+        h, w = self.size
+        self.pos = Point(cy - h // 2, cx - w // 2)
 
     @property
     def absolute_pos(self) -> Point:
@@ -537,13 +708,6 @@ class Widget:
         return Point(self.top + y, self.left + x)
 
     @property
-    def center(self) -> Point:
-        """
-        The center of the widget in local coordinates.
-        """
-        return Point(self.height // 2, self.width // 2)
-
-    @property
     def size_hint(self) -> SizeHint:
         """
         Widget's size as a proportion of its parent's size.
@@ -551,92 +715,23 @@ class Widget:
         return self._size_hint
 
     @size_hint.setter
-    @subscribable
     def size_hint(self, size_hint: SizeHint):
         """
         Set widget's size as a proportion of its parent's size.
 
         Negative size hints are set to 0.0.
         """
-        h, w = size_hint
-        self._size_hint = SizeHint(
-            h if h is None else max(float(h), 0.0),
-            w if w is None else max(float(w), 0.0),
-        )
-        self.apply_hints()
+        if isinstance(size_hint, dict):
+            size_hint = SizeHint(**size_hint)
+        if size_hint.height_hint is not None:
+            size_hint.height_hint = float(size_hint.height_hint)
+        if size_hint.width_hint is not None:
+            size_hint.width_hint = float(size_hint.width_hint)
 
-    @property
-    def height_hint(self) -> float | None:
-        """
-        Widget's height as proportion of its parent's height.
-        """
-        return self._size_hint[0]
+        size_hint._widget = self
+        self._size_hint._widget = None
+        self._size_hint = size_hint
 
-    @height_hint.setter
-    def height_hint(self, height_hint: float | None):
-        self.size_hint = height_hint, self.width_hint
-
-    @property
-    def width_hint(self) -> float | None:
-        """
-        Widget's width as proportion of its parent's width.
-        """
-        return self._size_hint[1]
-
-    @width_hint.setter
-    def width_hint(self, width_hint: float | None):
-        self.size_hint = self.height_hint, width_hint
-
-    @property
-    def min_height(self) -> int | None:
-        """
-        The minimum height of widget set due to :attr:`size_hint`.
-        """
-        return self._min_height
-
-    @min_height.setter
-    @subscribable
-    def min_height(self, min_height: int | None):
-        self._min_height = min_height
-        self.apply_hints()
-
-    @property
-    def max_height(self) -> int | None:
-        """
-        The maximum height of widget set due to :attr:`size_hint`.
-        """
-        return self._max_height
-
-    @max_height.setter
-    @subscribable
-    def max_height(self, max_height: int | None):
-        self._max_height = max_height
-        self.apply_hints()
-
-    @property
-    def min_width(self) -> int | None:
-        """
-        The minimum width of widget set due to :attr:`size_hint`.
-        """
-        return self._min_width
-
-    @min_width.setter
-    @subscribable
-    def min_width(self, min_width: int | None):
-        self._min_width = min_width
-        self.apply_hints()
-
-    @property
-    def max_width(self) -> int | None:
-        """
-        The maximum width of widget set due to :attr:`size_hint`.
-        """
-        return self._max_width
-
-    @max_width.setter
-    @subscribable
-    def max_width(self, max_width: int | None):
-        self._max_width = max_width
         self.apply_hints()
 
     @property
@@ -647,63 +742,31 @@ class Widget:
         return self._pos_hint
 
     @pos_hint.setter
-    @subscribable
     def pos_hint(self, pos_hint: PosHint):
-        h, w = pos_hint
-        self._pos_hint = PosHint(
-            h if h is None else float(h),
-            w if w is None else float(w),
-        )
-        self.apply_hints()
-
-    @property
-    def y_hint(self) -> float | None:
-        """
-        Vertical position of widget as a proportion of its parent's height.
-        """
-        return self._pos_hint[0]
-
-    @y_hint.setter
-    def y_hint(self, y_hint: float | None):
-        self.pos_hint = y_hint, self.x_hint
-
-    @property
-    def x_hint(self) -> float | None:
-        """
-        Horizontal position of widget as proportion of its parent's width.
-        """
-        return self._pos_hint[1]
-
-    @x_hint.setter
-    def x_hint(self, x_hint: float | None):
-        self.pos_hint = self.y_hint, x_hint
-
-    @property
-    def anchor(self) -> Anchor:
-        return self._anchor
-
-    @anchor.setter
-    @subscribable
-    def anchor(self, anchor: Anchor):
-        if anchor not in Anchor.__args__:
-            raise TypeError(f"{anchor} is not a valid Anchor")
-        self._anchor = anchor
+        if isinstance(pos_hint, dict):
+            pos_hint = PosHint(**pos_hint)
+        if pos_hint.y_hint is not None:
+            pos_hint.y_hint = float(pos_hint.y_hint)
+        if pos_hint.x_hint is not None:
+            pos_hint.x_hint = float(pos_hint.x_hint)
+        pos_hint._widget = self
+        self._pos_hint._widget = None
+        self._pos_hint = pos_hint
         self.apply_hints()
 
     @property
     def background_char(self) -> str | None:
+        """
+        The background character of the widget if the widget is not transparent.
+        """
         return self._background_char
 
     @background_char.setter
-    @subscribable
     def background_char(self, background_char: str | None):
-        match background_char:
-            case None:
-                self._background_char = background_char
-            case str():
-                self._background_char = background_char[:1] or None
-            case _:
-                raise ValueError("invalid background character")
+        if isinstance(background_char, str) and wcwidth(background_char[0]) == 1:
+            self._background_char = background_char[0]
+        else:
+            self._background_char = None
 
     @property
     def root(self) -> Optional["Widget"]:
@@ -734,72 +797,80 @@ class Widget:
         if self.parent is None:
             return
 
-        h, w = self.parent.size
+        if self._size_hint.height_hint is None:
+            height = self.height
+        else:
+            height = clamp(
+                round_down(self.parent.height * self._size_hint.height_hint)
+                + self._size_hint.height_offset,
+                self._size_hint.min_height,
+                self._size_hint.max_height,
+            )
 
-        h_hint, w_hint = self.size_hint
-        if h_hint is not None or w_hint is not None:
-            if h_hint is None:
-                height = self.height
-            else:
-                height = clamp(round(h_hint * h), self.min_height, self.max_height)
+        if self._size_hint.width_hint is None:
+            width = self.width
+        else:
+            width = clamp(
+                round_down(self.parent.width * self._size_hint.width_hint)
+                + self._size_hint.width_offset,
+                self._size_hint.min_width,
+                self._size_hint.max_width,
+            )
 
-            if w_hint is None:
-                width = self.width
-            else:
-                width = clamp(round(w_hint * w), self.min_width, self.max_width)
+        self.size = height, width
 
-            if self.size != (height, width):  # Avoid unnecessary `on_size` calls.
-                self.size = height, width
+        if isinstance(self._pos_hint.anchor, str):
+            y_anchor, x_anchor = _ANCHOR_TO_POS[self._pos_hint.anchor]
+        else:
+            y_anchor, x_anchor = self._pos_hint.anchor
 
-        y_hint, x_hint = self.pos_hint
-        if y_hint is None and x_hint is None:
-            return
+        if self._pos_hint.y_hint is not None:
+            self.top = (
+                round_down(self.parent.height * self._pos_hint.y_hint)
+                - round_down(height * y_anchor)
+                + self._pos_hint.y_offset
+            )
 
-        match self.anchor:
-            case "center":
-                offset_top, offset_left = self.center
-            case "top":
-                offset_top, offset_left = 0, self.center.x
-            case "bottom":
-                offset_top, offset_left = self.height, self.center.x
-            case "left":
-                offset_top, offset_left = self.center.y, 0
-            case "right":
-                offset_top, offset_left = self.center.y, self.width
-            case "top-left":
-                offset_top, offset_left = 0, 0
-            case "top-right":
-                offset_top, offset_left = 0, self.width
-            case "bottom-left":
-                offset_top, offset_left = self.height, 0
-            case "bottom-right":
-                offset_top, offset_left = self.height, self.width
-
-        if y_hint is not None:
-            self.top = int(h * y_hint) - offset_top
-
-        if x_hint is not None:
-            self.left = int(w * x_hint) - offset_left
+        if self._pos_hint.x_hint is not None:
+            self.left = (
+                round_down(self.parent.width * self._pos_hint.x_hint)
+                - round_down(width * x_anchor)
+                + self._pos_hint.x_offset
+            )
 
     def to_local(self, point: Point) -> Point:
         """
         Convert point in absolute coordinates to local coordinates.
         """
+        if self.parent is None:
+            return point
+
         y, x = self.parent.to_local(point)
         return Point(y - self.top, x - self.left)
 
     def collides_point(self, point: Point) -> bool:
         """
-        True if point is within widget's bounding box.
+        True if point collides with an uncovered portion of widget.
         """
-        # These conditions are separated as they both require
-        # recursive calls up the widget tree and we'd like to
-        # escape as early as possible.
+        if self.parent is None:
+            y, x = point
+            return 0 <= y < self.height and 0 <= x < self.width
+
         if not self.parent.collides_point(point):
             return False
 
-        y, x = self.to_local(point)
-        return 0 <= y < self.height and 0 <= x < self.width
+        y, x = self.parent.to_local(point)
+        for sibling in reversed(self.parent.children):
+            if sibling is not self:
+                if (
+                    sibling.is_enabled
+                    and sibling.top <= y < sibling.bottom
+                    and sibling.left <= x < sibling.right
+                ):
+                    # Point collides with a sibling that is above it.
+                    return False
+            else:
+                return self.top <= y < self.bottom and self.left <= x < self.right
 
     def collides_widget(self, other: "Widget") -> bool:
         """
@@ -1000,6 +1071,37 @@ class Widget:
                         canvas_view[dest_slice], colors_view[dest_slice], source_slice
                     )
 
+    @staticmethod
+    def _tween_lerp(start, end, p):
+        """
+        Helper function to tween non-Real values.
+        """
+        if start is None or end is None:
+            return end
+
+        if isinstance(start, Real) and isinstance(end, Real):
+            value = lerp(start, end, p)
+            if isinstance(start, int):
+                return round_down(value)
+            return value
+
+        if isinstance(start, Sequence):
+            return [
+                Widget._tween_lerp(start_value, end_value, p)
+                for start_value, end_value in zip(start, end)
+            ]
+
+        if isinstance(start, dict):
+            if isinstance(start.get("anchor"), str):
+                start["anchor"] = _ANCHOR_TO_POS[start["anchor"]]
+            if isinstance(end.get("anchor"), str):
+                end["anchor"] = _ANCHOR_TO_POS[end["anchor"]]
+
+            return {
+                key: Widget._tween_lerp(start_value, end.get(key), p)
+                for key, start_value in start.items()
+            }
+
     async def tween(
         self,
         *,
@@ -1008,7 +1110,16 @@ class Widget:
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties: dict[str, Real | NDArray[np.number] | Sequence[Any]],
+        **properties: dict[
+            str,
+            Real
+            | NDArray[np.number]
+            | Sequence[Real]
+            | PosHint
+            | SizeHint
+            | PosHintDict
+            | SizeHintDict,
+        ],
     ):
         """
         Coroutine that sequentially updates widget properties over a duration (in
@@ -1026,7 +1137,16 @@ class Widget:
             Called when tween updates.
         on_complete : Callable[[], None] | None, default: None
             Called when tween completes.
-        **properties : dict[str, Real | NDArray[np.number] | Sequence[Any]]
+        **properties : dict[
+            str,
+            Real
+            | NDArray[np.number]
+            | Sequence[Real]
+            | PosHint
+            | SizeHint
+            | PosHintDict
+            | SizeHintDict,
+        ]
             Widget properties' target values. E.g., to smoothly tween a widget's
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
             keyword-argument:
@@ -1037,12 +1157,7 @@ class Widget:
         Tweened values will be coerced to match the type of the initial value of their
         corresponding property.
 
-        Non-numeric values will be set immediately. For instance, if a widget has
-        size hint `(None, .5)` and is being tweened to `(1.0, 1.0)`, the height hint
-        will be set to `1.0` as soon as the coroutine starts. Conversely, if a widget
-        has size hint `(1.0, 1.0)` and is being tweened to `(None, .5)`, the height hint
-        will be set to `None` as soon as the coroutine starts. This is subject to
-        change, therefore it is discouraged to tween non-numeric values.
+        Non-numeric values will be set immediately.
 
         Warnings
         --------
@@ -1050,8 +1165,23 @@ class Widget:
         in unexpected behavior.
         """
         end_time = monotonic() + duration
-        start_values = tuple(getattr(self, attr) for attr in properties)
+        start_values = tuple(
+            asdict(getattr(self, attr))
+            if isinstance(getattr(self, attr), (PosHint, SizeHint))
+            else getattr(self, attr)
+            for attr in properties
+        )
         easing_function = getattr(easings, easing)
+
+        if pos_hint := properties.get("pos_hint"):
+            if isinstance(pos_hint, dict):
+                pos_hint = PosHint(**properties["pos_hint"])
+            properties["pos_hint"] = asdict(pos_hint)
+
+        if size_hint := properties.get("size_hint"):
+            if isinstance(size_hint, dict):
+                size_hint = SizeHint(**properties["size_hint"])
+            properties["size_hint"] = asdict(size_hint)
 
         if on_start:
             on_start()
@@ -1060,26 +1190,7 @@ class Widget:
             p = easing_function(1 - (end_time - current_time) / duration)
 
             for start_value, (prop, target) in zip(start_values, properties.items()):
-                if isinstance(start_value, Real):
-                    value = lerp(start_value, target, p)
-                    if isinstance(start_value, int) and isinstance(target, int):
-                        value = round(value)
-                elif isinstance(start_value, np.ndarray) and np.issubdtype(
-                    start_value.dtype, np.number
-                ):
-                    value = lerp(start_value, target, p).astype(start_value.dtype)
-                else:
-                    value = []
-                    for i, j in zip(start_value, target):
-                        if not isinstance(i, Real) or not isinstance(j, Real):
-                            value.append(j)
-                        else:
-                            item = lerp(i, j, p)
-                            if isinstance(i, int):
-                                item = round(item)
-                            value.append(item)
-
-                setattr(self, prop, value)
+                setattr(self, prop, Widget._tween_lerp(start_value, target, p))
 
             if on_progress:
                 on_progress()

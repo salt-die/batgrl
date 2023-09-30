@@ -22,7 +22,7 @@ class PlotApp(App):
             x_label="X Values",
             y_label="Y Values",
             legend_labels=["Before", "During", "After"],
-            size_hint=(1.0, 1.0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
             background_color_pair=DEFAULT_COLOR_THEME.primary,
         )
 
@@ -46,7 +46,7 @@ class PlotApp(App):
         )
 
         container = Widget(
-            size=(2, BUTTON_WIDTH), pos_hint=(None, 1.0), anchor="top-right"
+            size=(2, BUTTON_WIDTH), pos_hint={"x_hint": 1.0, "anchor": "top-right"}
         )
         container.add_widgets(box_button, braille_button)
         self.add_widgets(plot, container)

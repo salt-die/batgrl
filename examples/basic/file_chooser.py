@@ -18,7 +18,7 @@ class FileApp(App):
         fc = FileChooser(
             root_dir=ASSETS,
             size=(20, 25),
-            size_hint=(1.0, None),
+            size_hint={"height_hint": 1.0},
             select_callback=select_callback,
         )
         self.add_widgets(label, fc)

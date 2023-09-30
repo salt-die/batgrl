@@ -139,8 +139,8 @@ class SpinningCube(GraphicWidget):
 class SpinApp(App):
     async def on_start(self):
         self.add_widgets(
-            Image(path=BACKGROUND, size_hint=(1.0, 1.0)),
-            SpinningCube(size_hint=(1.0, 1.0)),
+            Image(path=BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}),
+            SpinningCube(size_hint={"height_hint": 1.0, "width_hint": 1.0}),
         )
 
 

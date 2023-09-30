@@ -147,7 +147,7 @@ class WorldWidget(GraphicWidget):
 class IsoTileApp(App):
     async def on_start(self):
         sv = ScrollView(
-            size_hint=(1.0, 1.0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
             show_vertical_bar=False,
             show_horizontal_bar=False,
             mouse_button=MouseButton.MIDDLE,

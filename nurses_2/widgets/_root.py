@@ -2,14 +2,14 @@
 Root widget.
 """
 import numpy as np
+from wcwidth import wcwidth
 
-from ..colors import ColorPair
-from .widget import Point, Widget, style_char
+from .widget import ColorPair, Point, Widget, style_char
 
 
 class _Root(Widget):
     """
-    Root widget.
+    Root widget of the widget tree.
 
     Instantiated only by :class:`nurses_2.app.App`.
     """
@@ -27,7 +27,8 @@ class _Root(Widget):
         self.background_char = background_char
         self.background_color_pair = background_color_pair
 
-        self.size = env_out.get_size()
+        self._size = env_out.get_size()
+        self.on_size()
 
     def on_size(self):
         """
@@ -128,8 +129,30 @@ class _Root(Widget):
 
         for y, x, style, color_pair in zip(ys, xs, canvas[ys, xs], colors[ys, xs]):
             char, bold, italic, underline, strikethrough, overline = style
+
             if char == "":
-                continue
+                # `""` is used to indicate the character before it is a full-width
+                # character. If this char is appearing in the diffs, we probably need to
+                # repaint the full-width character before it, but if the character
+                # before it isn't full-width paint whitespace instead.
+                if x > 0 and wcwidth(canvas["char"][y, x - 1]) == 2:
+                    x -= 1
+                    char, bold, italic, underline, strikethrough, overline = canvas[
+                        y, x
+                    ]
+                    color_pair = colors[y, x]
+                else:
+                    char = " "
+            elif (
+                x + 1 < width
+                and self.canvas["char"][y, x + 1] != ""
+                and wcwidth(char) == 2
+            ):
+                # If the character is full-width, but the following character isn't
+                # `""`, assume the full-width character is being clipped, and paint
+                # whitespace instead.
+                char = " "
+
             fr, fg, fb, br, bg, bb = color_pair
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)

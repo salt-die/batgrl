@@ -11,16 +11,18 @@ PATH_TO_BACKGROUND = ASSETS / "background.png"
 
 class ImageApp(App):
     async def on_start(self):
-        background = Image(size_hint=(1.0, 1.0), path=PATH_TO_BACKGROUND)
+        background = Image(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, path=PATH_TO_BACKGROUND
+        )
 
         logo_flat = Image(
-            size_hint=(0.5, 0.5),
+            size_hint={"height_hint": 0.5, "width_hint": 0.5},
             path=PATH_TO_LOGO_FLAT,
         )
 
         logo_full = Image(
-            size_hint=(0.5, 0.5),
-            pos_hint=(0.5, 0.5),
+            size_hint={"height_hint": 0.5, "width_hint": 0.5},
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             path=PATH_TO_LOGO_FULL,
             alpha=0.8,
         )

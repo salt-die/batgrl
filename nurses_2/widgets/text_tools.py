@@ -7,13 +7,13 @@ from wcwidth import wcswidth, wcwidth
 
 from .widget import Char
 
-__all__ = (
+__all__ = [
     "add_text",
     "binary_to_box",
     "binary_to_braille",
     "smooth_vertical_bar",
     "smooth_horizontal_bar",
-)
+]
 
 
 def add_text(

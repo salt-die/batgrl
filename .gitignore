@@ -1,6 +1,7 @@
 *.pyc
 *.egg-info
 dist/
+.vscode/
 TODO.md
 
 # Documentation source is built in docsrc.

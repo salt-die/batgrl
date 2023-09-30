@@ -4,9 +4,33 @@ A slider widget.
 from collections.abc import Callable
 
 from ..colors import Color, ColorPair
-from ..io import MouseEvent, MouseEventType
+from ..io import MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
-from .text_widget import TextWidget, clamp, subscribable
+from .text_widget import (
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+    TextWidget,
+    clamp,
+    subscribable,
+)
+
+__all__ = [
+    "Point",
+    "PosHint",
+    "PosHintDict",
+    "Size",
+    "SizeHint",
+    "SizeHintDict",
+    "Slider",
+]
+
+DEFAULT_SLIDER_COLOR_PAIR = ColorPair.from_hex("2A3CA0070C25")
+DEFAULT_SLIDER_FILL_COLOR = Color.from_hex("5A6FE8")
+DEFAULT_SLIDER_HANDLE_COLOR_PAIR = ColorPair.from_hex("DDE4ED070C25")
 
 
 class Slider(Grabbable, TextWidget):
@@ -23,56 +47,50 @@ class Slider(Grabbable, TextWidget):
         Start value of slider. If `None`, start value is :attr:`min`.
     callback : Callable | None, default: None
         Single argument callable called with new value of slider when slider is updated.
-    handle_color_pair : ColorPair | None, default: None
-        Color pair of slider handle. If None, handle color pair is
+    handle_color_pair : ColorPair | None, default: DEFAULT_SLIDER_HANDLE_COLOR_PAIR
+        Color pair of slider handle. If `None`, handle color pair is
         :attr:`default_color_pair`.
     handle_char : str, default: "█"
         Character used for slider handle.
-    fill_color: Color | None, default: None
-        Color of "filled" portion of slider.
+    fill_color: Color | None, default: DEFAULT_SLIDER_FILL_COLOR
+        Color of "filled" portion of slider. If `None`, fill color is
+        :attr:`default_color_pair`.
     fill_char: str, default: "▬"
         Character used for slider.
     slider_enabled : bool, default: True
         Whether slider value can be changed.
+    is_grabbable : bool, default: True
+        If false, grabbable behavior is disabled.
+    disable_ptf : bool, default: False
+        If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
     default_char : str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
+    default_color_pair : ColorPair, default: DEFAULT_SLIDER_COLOR_PAIR
         Default color of widget.
+    size : Size, default: Size(10, 10)
+        Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint, default: SizeHint(None, None)
-        Proportion of parent's height and width. Non-None values will have
-        precedent over :attr:`size`.
-    min_height : int | None, default: None
-        Minimum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_height : int | None, default: None
-        Maximum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    min_width : int | None, default: None
-        Minimum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_width : int | None, default: None
-        Maximum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    pos_hint : PosHint, default: PosHint(None, None)
-        Position as a proportion of parent's height and width. Non-None values
-        will have precedent over :attr:`pos`.
-    anchor : Anchor, default: "center"
-        The point of the widget attached to :attr:`pos_hint`.
+    size_hint : SizeHint | SizeHintDict | None, default: None
+        Size as a proportion of parent's height and width.
+    pos_hint : PosHint | PosHintDict | None , default: None
+        Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        If true, background color and whitespace in text widget won't be painted.
+        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
     is_visible : bool, default: True
-        If false, widget won't be painted, but still dispatched.
+        Whether widget is visible. Widget will still receive input events if not
+        visible.
     is_enabled : bool, default: True
-        If false, widget won't be painted or dispatched.
+        Whether widget is enabled. A disabled widget is not painted and doesn't receive
+        input events.
     background_char : str | None, default: None
-        The background character of the widget if not `None` and if the widget
-        is not transparent.
+        The background character of the widget if the widget is not transparent.
+        Character must be single unicode half-width grapheme.
     background_color_pair : ColorPair | None, default: None
-        The background color pair of the widget if not `None` and if the
-        widget is not transparent.
+        The background color pair of the widget if the widget is not transparent.
 
     Attributes
     ----------
@@ -96,6 +114,20 @@ class Slider(Grabbable, TextWidget):
         True if slider value can be changed.
     proportion : float
         Current proportion of slider.
+    is_grabbable : bool
+        If false, grabbable behavior is disabled.
+    disable_ptf : bool
+        If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton
+        Mouse button used for grabbing.
+    is_grabbed : bool
+        True if widget is grabbed.
+    mouse_dyx : Point
+        Last change in mouse position.
+    mouse_dy : int
+        Last vertical change in mouse position.
+    mouse_dx : int
+        Last horizontal change in mouse position.
     canvas : NDArray[Char]
         The array of characters for the widget.
     colors : NDArray[np.uint8]
@@ -119,47 +151,29 @@ class Slider(Grabbable, TextWidget):
     columns : int
         Alias for :attr:`width`.
     pos : Point
-        Position relative to parent.
+        Position of upper-left corner.
     top : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     y : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     left : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     x : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     bottom : int
-        :attr:`top` + :attr:`height`.
+        Y-coordinate of bottom of widget.
     right : int
-        :attr:`left` + :attr:`width`.
+        X-coordinate of right side of widget.
+    center : Point
+        Position of center of widget.
     absolute_pos : Point
         Absolute position on screen.
-    center : Point
-        Center of widget in local coordinates.
     size_hint : SizeHint
-        Size as a proportion of parent's size.
-    height_hint : float | None
-        Height as a proportion of parent's height.
-    width_hint : float | None
-        Width as a proportion of parent's width.
-    min_height : int
-        Minimum height allowed when using :attr:`size_hint`.
-    max_height : int
-        Maximum height allowed when using :attr:`size_hint`.
-    min_width : int
-        Minimum width allowed when using :attr:`size_hint`.
-    max_width : int
-        Maximum width allowed when using :attr:`size_hint`.
+        Size as a proportion of parent's height and width.
     pos_hint : PosHint
-        Position as a proportion of parent's size.
-    y_hint : float | None
-        Vertical position as a proportion of parent's size.
-    x_hint : float | None
-        Horizontal position as a proportion of parent's size.
-    anchor : Anchor
-        Determines which point is attached to :attr:`pos_hint`.
+        Position as a proportion of parent's height and width.
     background_char : str | None
-        Background character.
+        The background character of the widget if the widget is not transparent.
     background_color_pair : ColorPair | None
         Background color pair.
     parent : Widget | None
@@ -179,10 +193,14 @@ class Slider(Grabbable, TextWidget):
 
     Methods
     -------
+    grab:
+        Grab the widget.
+    ungrab:
+        Ungrab the widget.
+    grab_update:
+        Update widget with incoming mouse events while grabbed.
     add_border:
         Add a border to the widget.
-    normalize_canvas:
-        Ensure column width of text in the canvas is equal to widget width.
     add_str:
         Add a single line of text to the canvas.
     set_text:
@@ -194,7 +212,7 @@ class Slider(Grabbable, TextWidget):
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
-        True if point is within widget's bounding box.
+        True if point collides with an uncovered portion of widget.
     collides_widget:
         True if other is within widget's bounding box.
     add_widget:
@@ -238,21 +256,51 @@ class Slider(Grabbable, TextWidget):
         max: float,
         start_value: float | None = None,
         callback: Callable | None = None,
-        handle_color_pair: ColorPair | None = None,
+        handle_color_pair: ColorPair | None = DEFAULT_SLIDER_HANDLE_COLOR_PAIR,
         handle_char: str = "█",
-        fill_color: Color | None = None,
+        fill_color: Color | None = DEFAULT_SLIDER_FILL_COLOR,
         fill_char: str = "▬",
         slider_enabled: bool = True,
-        **kwargs,
+        is_grabbable: bool = True,
+        disable_ptf: bool = False,
+        mouse_button: MouseButton = MouseButton.LEFT,
+        default_char: str = " ",
+        default_color_pair: ColorPair = DEFAULT_SLIDER_COLOR_PAIR,
+        size=Size(10, 10),
+        pos=Point(0, 0),
+        size_hint: SizeHint | SizeHintDict | None = None,
+        pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = False,
+        is_visible: bool = True,
+        is_enabled: bool = True,
+        background_char: str | None = None,
+        background_color_pair: ColorPair | None = None,
     ):
-        super().__init__(**kwargs)
+        super().__init__(
+            is_grabbable=is_grabbable,
+            disable_ptf=disable_ptf,
+            mouse_button=mouse_button,
+            default_char=default_char,
+            default_color_pair=default_color_pair,
+            size=size,
+            pos=pos,
+            size_hint=size_hint,
+            pos_hint=pos_hint,
+            is_transparent=is_transparent,
+            is_visible=is_visible,
+            is_enabled=is_enabled,
+            background_char=background_char,
+            background_color_pair=background_color_pair,
+        )
 
         if min >= max:
             raise ValueError(f"{min=} >= {max=}")
         self._min = min
         self._max = max
 
-        self._handle = TextWidget(size=(1, 1), pos_hint=(0.5, None))
+        self._handle = TextWidget(
+            size=(1, 1), pos_hint={"y_hint": 0.5, "anchor": "top"}
+        )
         self.add_widget(self._handle)
         self.handle_color_pair = handle_color_pair or self.default_color_pair
         self.handle_char = handle_char

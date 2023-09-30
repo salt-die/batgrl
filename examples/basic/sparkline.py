@@ -5,15 +5,11 @@ from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.button import Button
 from nurses_2.widgets.sparkline import Sparkline
 
-PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
-
 
 class SparklineApp(App):
     async def on_start(self):
-        sparkline_a = Sparkline(size=(4, 30), default_color_pair=PRIMARY_COLOR)
-        sparkline_b = Sparkline(
-            size=(4, 30), pos=(5, 0), default_color_pair=PRIMARY_COLOR
-        )
+        sparkline_a = Sparkline(size=(4, 30))
+        sparkline_b = Sparkline(size=(4, 30), pos=(5, 0))
 
         i = 0
 
@@ -36,4 +32,6 @@ class SparklineApp(App):
 
 
 if __name__ == "__main__":
-    SparklineApp(title="Sparkline Example", background_color_pair=PRIMARY_COLOR).run()
+    SparklineApp(
+        title="Sparkline Example", background_color_pair=DEFAULT_COLOR_THEME.primary
+    ).run()

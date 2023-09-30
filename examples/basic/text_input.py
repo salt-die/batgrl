@@ -68,8 +68,7 @@ class TextPadApp(App):
         border = TextWidget(
             pos=(1, 0),
             size=(3, 35),
-            pos_hint=(None, 0.5),
-            anchor="top",
+            pos_hint={"x_hint": 0.5, "anchor": "top"},
             default_color_pair=DEFAULT_COLOR_THEME.textbox_primary,
         )
         border.add_border()

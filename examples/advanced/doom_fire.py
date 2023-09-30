@@ -123,12 +123,11 @@ class DoomFire(GraphicWidget):
 
 class DoomFireApp(App):
     async def on_start(self):
-        doomfire = DoomFire(size_hint=(1.0, 1.0))
+        doomfire = DoomFire(size_hint={"height_hint": 1.0, "width_hint": 1.0})
 
         strength_label = TextWidget(
             size=(1, 22),
-            pos_hint=(None, 0.5),
-            anchor="top",
+            pos_hint={"x_hint": 0.5, "anchor": "top"},
             default_color_pair=SLIDER_DEFAULT,
         )
         strength_label.add_str(f"Current Strength: {doomfire.fire_strength:2d}", (0, 1))
@@ -148,7 +147,10 @@ class DoomFireApp(App):
             handle_color_pair=SLIDER_HANDLE,
         )
 
-        slider_container = Widget(size=(2, 38), pos_hint=(0, 0.5), anchor="top")
+        slider_container = Widget(
+            size=(2, 38),
+            pos_hint={"y_hint": 0, "x_hint": 0.5, "anchor": "top"},
+        )
         slider_container.add_widgets(strength_label, slider)
         self.add_widgets(doomfire, slider_container)
 

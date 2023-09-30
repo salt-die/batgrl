@@ -80,4 +80,4 @@ class Life(GraphicWidget):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(Life(size_hint=(1.0, 1.0)))
+    run_widget_as_app(Life(size_hint={"height_hint": 1.0, "width_hint": 1.0}))

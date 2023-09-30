@@ -25,7 +25,9 @@ class Sandbox(GraphicWidget):
     """
 
     def __init__(self, size: Size):
-        super().__init__(size=size, pos_hint=(0.5, 0.5), default_color=ABLACK)
+        super().__init__(
+            size=size, pos_hint={"y_hint": 0.5, "x_hint": 0.5}, default_color=ABLACK
+        )
 
     def on_add(self):
         super().on_add()
@@ -38,7 +40,7 @@ class Sandbox(GraphicWidget):
         self.display = TextWidget(
             size=(1, 9),
             pos=(1, 0),
-            pos_hint=(None, 0.5),
+            pos_hint={"x_hint": 0.5},
             default_color_pair=ColorPair.from_colors(Air.COLOR, MENU_BACKGROUND_COLOR),
         )
         self.add_widgets(self.display, ButtonContainer())

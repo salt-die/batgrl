@@ -45,6 +45,7 @@ class Count(Grid):
 
         self.canvas["char"][v_center, h_center] = stringify(count)
         self.canvas["char"][v_center, h_center][minefield == 1] = BOMB
-        self.normalize_canvas()  # Fix spacing after full-width `BOMB` glyphs.
-
         self.colors[v_center, h_center, :3] = np.dstack(colorify(count))
+
+        ys, xs = (self.canvas["char"] == BOMB).nonzero()
+        self.canvas["char"][ys, xs + 1] = ""

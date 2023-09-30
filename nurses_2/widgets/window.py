@@ -4,16 +4,34 @@ A movable, resizable window widget.
 import numpy as np
 from wcwidth import wcswidth
 
-from ..colors import AColor
+from ..colors import TRANSPARENT, AColor, ColorPair
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.resizable import Resizable
 from .behaviors.themable import Themable
-from .graphic_widget import GraphicWidget
+from .graphic_widget import GraphicWidget, Interpolation
 from .text_widget import TextWidget
-from .widget import Widget, clamp
+from .widget import (
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+    Widget,
+    clamp,
+)
 
-__all__ = ("Window",)
+__all__ = [
+    "Interpolation",
+    "Point",
+    "PosHint",
+    "PosHintDict",
+    "Size",
+    "SizeHint",
+    "SizeHintDict",
+    "Window",
+]
 
 
 class _TitleBar(Grabbable, Widget):
@@ -22,7 +40,7 @@ class _TitleBar(Grabbable, Widget):
             pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" "
         )
 
-        self._label = TextWidget(pos_hint=(None, 0.5), anchor="top")
+        self._label = TextWidget(pos_hint={"x_hint": 0.5, "anchor": "top"})
         self.add_widget(self._label)
 
     def on_add(self):
@@ -48,8 +66,8 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     A movable, resizable window widget.
 
     The view can be set with the :attr:`view` property, e.g.,
-    ``my_window.view = some_widget``. Added views will have their size hints reset to
-    (None, None). Views are resized as the window is resized.
+    ``my_window.view = some_widget``. Added views will have their size hints and
+    visibility reset. Views are resized as the window is resized.
 
     Parameters
     ----------
@@ -59,12 +77,12 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         Allow vertical resize.
     allow_horizontal_resize : bool, default: True
         Allow horizontal resize.
-    grab_resize_min_height : int | None, default: None
-        Minimum height widget can be resized by grabbing. Minimum
-        height will never be less than 3.
-    grab_resize_min_width : int | None, default: None
-        Minimum width widget can be resized by grabbing. Minimum
-        width will never be less than 6 + column width of title.
+    resize_min_height : int | None, default: None
+        Minimum height widget can be resized by grabbing. Minimum height can't be less
+        than 3.
+    resize_min_width : int | None, default: None
+        Minimum width widget can be resized by grabbing. Minimum width can't be less
+        than 6 + column width of title.
     border_alpha : float, default: 1.0
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor, default: TRANSPARENT
@@ -80,38 +98,23 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         Size of widget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint, default: SizeHint(None, None)
-        Proportion of parent's height and width. Non-None values will have
-        precedent over :attr:`size`.
-    min_height : int | None, default: None
-        Minimum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_height : int | None, default: None
-        Maximum height set due to size_hint. Ignored if corresponding size
-        hint is None.
-    min_width : int | None, default: None
-        Minimum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    max_width : int | None, default: None
-        Maximum width set due to size_hint. Ignored if corresponding size
-        hint is None.
-    pos_hint : PosHint, default: PosHint(None, None)
-        Position as a proportion of parent's height and width. Non-None values
-        will have precedent over :attr:`pos`.
-    anchor : Anchor, default: "center"
-        The point of the widget attached to :attr:`pos_hint`.
+    size_hint : SizeHint | SizeHintDict | None, default: None
+        Size as a proportion of parent's height and width.
+    pos_hint : PosHint | PosHintDict | None , default: None
+        Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        If false, :attr:`alpha` and alpha channels are ignored.
+        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
     is_visible : bool, default: True
-        If false, widget won't be painted, but still dispatched.
+        Whether widget is visible. Widget will still receive input events if not
+        visible.
     is_enabled : bool, default: True
-        If false, widget won't be painted or dispatched.
+        Whether widget is enabled. A disabled widget is not painted and doesn't receive
+        input events.
     background_char : str | None, default: None
-        The background character of the widget if not `None` and if the widget
-        is not transparent.
+        The background character of the widget if the widget is not transparent.
+        Character must be single unicode half-width grapheme.
     background_color_pair : ColorPair | None, default: None
-        The background color pair of the widget if not `None` and if the
-        widget is not transparent.
+        The background color pair of the widget if the widget is not transparent.
 
     Attributes
     ----------
@@ -127,9 +130,9 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         Allow vertical resize.
     allow_horizontal_resize : bool
         Allow horizontal resize.
-    grab_resize_min_height : int
+    resize_min_height : int
         Minimum height widget can be resized by grabbing.
-    grab_resize_min_width : int
+    resize_min_width : int
         Minimum width widget can be resized by grabbing.
     border_alpha : float
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
@@ -154,47 +157,29 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     columns : int
         Alias for :attr:`width`.
     pos : Point
-        Position relative to parent.
+        Position of upper-left corner.
     top : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     y : int
-        Y-coordinate of position.
+        Y-coordinate of top of widget.
     left : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     x : int
-        X-coordinate of position.
+        X-coordinate of left side of widget.
     bottom : int
-        :attr:`top` + :attr:`height`.
+        Y-coordinate of bottom of widget.
     right : int
-        :attr:`left` + :attr:`width`.
+        X-coordinate of right side of widget.
+    center : Point
+        Position of center of widget.
     absolute_pos : Point
         Absolute position on screen.
-    center : Point
-        Center of widget in local coordinates.
     size_hint : SizeHint
-        Size as a proportion of parent's size.
-    height_hint : float | None
-        Height as a proportion of parent's height.
-    width_hint : float | None
-        Width as a proportion of parent's width.
-    min_height : int
-        Minimum height allowed when using :attr:`size_hint`.
-    max_height : int
-        Maximum height allowed when using :attr:`size_hint`.
-    min_width : int
-        Minimum width allowed when using :attr:`size_hint`.
-    max_width : int
-        Maximum width allowed when using :attr:`size_hint`.
+        Size as a proportion of parent's height and width.
     pos_hint : PosHint
-        Position as a proportion of parent's size.
-    y_hint : float | None
-        Vertical position as a proportion of parent's size.
-    x_hint : float | None
-        Horizontal position as a proportion of parent's size.
-    anchor : Anchor
-        Determines which point is attached to :attr:`pos_hint`.
+        Position as a proportion of parent's height and width.
     background_char : str | None
-        Background character.
+        The background character of the widget if the widget is not transparent.
     background_color_pair : ColorPair | None
         Background color pair.
     parent : Widget | None
@@ -239,7 +224,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
     to_local:
         Convert point in absolute coordinates to local coordinates.
     collides_point:
-        True if point is within widget's bounding box.
+        True if point collides with an uncovered portion of widget.
     collides_widget:
         True if other is within widget's bounding box.
     add_widget:
@@ -277,15 +262,56 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
 
     Notes
     -----
-    If not given or too small, :attr:`grab_resize_min_height` and
-    :attr:`grab_resize_min_width` will be set large enough so that the border and title
+    If not given or too small, :attr:`resize_min_height` and
+    :attr:`resize_min_width` will be set large enough so that the border and title
     are visible.
     """
 
-    def __init__(self, *, title="", **kwargs):
+    def __init__(
+        self,
+        *,
+        title="",
+        allow_vertical_resize: bool = True,
+        allow_horizontal_resize: bool = True,
+        resize_min_height: int | None = None,
+        resize_min_width: int | None = None,
+        border_alpha: float = 1.0,
+        border_color: AColor = TRANSPARENT,
+        is_transparent: bool = True,
+        default_color: AColor = TRANSPARENT,
+        alpha: float = 1.0,
+        interpolation: Interpolation = "linear",
+        size=Size(10, 10),
+        pos=Point(0, 0),
+        size_hint: SizeHint | SizeHintDict | None = None,
+        pos_hint: PosHint | PosHintDict | None = None,
+        is_visible: bool = True,
+        is_enabled: bool = True,
+        background_char: str | None = None,
+        background_color_pair: ColorPair | None = None,
+    ):
         self._title = title
 
-        super().__init__(**kwargs)
+        super().__init__(
+            allow_vertical_resize=allow_vertical_resize,
+            allow_horizontal_resize=allow_horizontal_resize,
+            resize_min_height=resize_min_height,
+            resize_min_width=resize_min_width,
+            border_alpha=border_alpha,
+            border_color=border_color,
+            is_transparent=is_transparent,
+            default_color=default_color,
+            alpha=alpha,
+            interpolation=interpolation,
+            size=size,
+            pos=pos,
+            size_hint=size_hint,
+            pos_hint=pos_hint,
+            is_visible=is_visible,
+            is_enabled=is_enabled,
+            background_char=background_char,
+            background_color_pair=background_color_pair,
+        )
 
         self._view = None
         self._titlebar = _TitleBar()
@@ -293,27 +319,27 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         self.title = title
 
     @property
-    def grab_resize_min_height(self) -> int:
-        return self._grab_resize_min_height
+    def resize_min_height(self) -> int:
+        return self._resize_min_height
 
-    @grab_resize_min_height.setter
-    def grab_resize_min_height(self, min_height: int | None):
+    @resize_min_height.setter
+    def resize_min_height(self, min_height: int | None):
         if min_height is None:
-            self._grab_resize_min_height = 3
+            self._resize_min_height = 3
         else:
-            self._grab_resize_min_height = clamp(min_height, 3, None)
+            self._resize_min_height = clamp(min_height, 3, None)
 
     @property
-    def grab_resize_min_width(self) -> int:
-        return self._grab_resize_min_width
+    def resize_min_width(self) -> int:
+        return self._resize_min_width
 
-    @grab_resize_min_width.setter
-    def grab_resize_min_width(self, min_width: int | None):
+    @resize_min_width.setter
+    def resize_min_width(self, min_width: int | None):
         w = 6 + wcswidth(self._title)
         if min_width is None:
-            self._grab_resize_min_width = w
+            self._resize_min_width = w
         else:
-            self._grab_resize_min_width = clamp(min_width, w, None)
+            self._resize_min_width = clamp(min_width, w, None)
 
     @property
     def view(self) -> Widget | None:
@@ -331,7 +357,8 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
 
         if view is not None:
             view.pos = 2, 2
-            view.size_hint = None, None
+            view.size_hint.height_hint = None
+            view.size_hint.width_hint = None
             self.add_widget(view)
             self.on_size()
 
@@ -341,12 +368,9 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         self.texture[4:-2, 2:-2] = self.default_color
 
         if self._view is not None:
-            if self._view.size_hint == (None, None):
-                self._view.size = h - 3, w - 4
-            elif self._view.height_hint is None:
-                self._view.height = h - 3
-            elif self._view.width_hint is None:
-                self._view.width = w - 4
+            self._view.size = h - 3, w - 4
+
+        self._view.is_visible = h - 3 > 0 and w - 4 > 0
 
     @property
     def title(self):
@@ -357,7 +381,7 @@ class Window(Themable, Focusable, Resizable, GraphicWidget):
         self._title = title
         self._titlebar._label.width = wcswidth(title)
         self._titlebar._label.add_str(title)
-        self.grab_resize_min_width = self.grab_resize_min_width
+        self.resize_min_width = self.resize_min_width
 
     def update_theme(self):
         self.default_color = AColor(*self.color_theme.primary.bg_color)

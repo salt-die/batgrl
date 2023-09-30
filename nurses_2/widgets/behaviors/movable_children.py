@@ -2,8 +2,11 @@
 Movable children behavior for a widget. Translate a widget's child by clicking and
 dragging them.
 """
+from ...io import MouseButton
 from ..widget import clamp
 from .grabbable import Grabbable
+
+__all__ = ["MovableChildren"]
 
 
 class MovableChildren(Grabbable):
@@ -21,6 +24,8 @@ class MovableChildren(Grabbable):
         If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
 
     Attributes
     ----------
@@ -32,6 +37,8 @@ class MovableChildren(Grabbable):
         If false, grabbable behavior is disabled.
     disable_ptf : bool
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton
+        Mouse button used for grabbing.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -51,8 +58,22 @@ class MovableChildren(Grabbable):
         Update widget with incoming mouse events while grabbed.
     """
 
-    def __init__(self, *, disable_child_oob=False, disable_child_ptf=False, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        *,
+        disable_child_oob=False,
+        disable_child_ptf=False,
+        is_grabbable: bool = True,
+        disable_ptf: bool = False,
+        mouse_button: MouseButton = MouseButton.LEFT,
+        **kwargs,
+    ):
+        super().__init__(
+            is_grabbable=is_grabbable,
+            disable_ptf=disable_ptf,
+            mouse_button=mouse_button,
+            **kwargs,
+        )
         self.disable_child_oob = disable_child_oob
         self.disable_child_ptf = disable_child_ptf
 

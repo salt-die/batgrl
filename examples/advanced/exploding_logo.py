@@ -83,7 +83,8 @@ class PokeParticleField(TextParticleField):
     def on_size(self):
         super().on_size()
         oh, ow = self._old_middle
-        h, w = self.center
+        h = self.height // 2
+        w = self.width // 2
         nh, nw = self._old_middle = h - HEIGHT // 2, w - WIDTH // 2
 
         real_positions = self.particle_properties["real_positions"]
@@ -226,7 +227,7 @@ class ExplodingLogoApp(App):
         )
 
         field = PokeParticleField(
-            size_hint=(1.0, 1.0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
             particle_positions=particle_positions,
             particle_chars=particle_chars,
             particle_color_pairs=particle_color_pairs,
@@ -235,7 +236,10 @@ class ExplodingLogoApp(App):
         )
 
         # This background to show off field transparency.
-        bg = Widget(size_hint=(1.0, 0.5), background_color_pair=(0, 0, 0, 25, 25, 25))
+        bg = Widget(
+            size_hint={"height_hint": 1.0, "width_hint": 0.5},
+            background_color_pair=(0, 0, 0, 25, 25, 25),
+        )
         self.add_widgets(bg, field)
 
 

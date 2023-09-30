@@ -27,10 +27,10 @@ import numpy as np
 from numpy.typing import NDArray
 from wcwidth import wcswidth, wcwidth
 
-__all__ = (
+__all__ = [
     "FullLayout",
     "FIGFont",
-)
+]
 
 
 class FullLayout(IntFlag):

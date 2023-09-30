@@ -4,6 +4,8 @@ Grabbable behavior for a widget.
 from ...io import MouseButton, MouseEventType
 from ..widget import Point
 
+__all__ = ["Grabbable"]
+
 
 class Grabbable:
     """

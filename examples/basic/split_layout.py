@@ -11,17 +11,31 @@ PATH_TO_LOGO_FULL = ASSETS / "python_discord_logo.png"
 
 class SplitLayoutApp(App):
     async def on_start(self):
-        image_tl = Image(path=PATH_TO_LOGO_FLAT, size_hint=(1.0, 1.0))
-        image_tr = Image(path=PATH_TO_LOGO_FULL, size_hint=(1.0, 1.0))
-        image_bl = Image(path=PATH_TO_LOGO_FULL, size_hint=(1.0, 1.0))
-        image_br = Image(path=PATH_TO_LOGO_FLAT, size_hint=(1.0, 1.0))
+        image_tl = Image(
+            path=PATH_TO_LOGO_FLAT, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
+        image_tr = Image(
+            path=PATH_TO_LOGO_FULL, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
+        image_bl = Image(
+            path=PATH_TO_LOGO_FULL, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
+        image_br = Image(
+            path=PATH_TO_LOGO_FLAT, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
 
         split_layout = HSplitLayout(
-            split_row=10, min_split_height=3, size_hint=(1.0, 1.0)
+            split_row=10,
+            min_split_height=3,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
-        top_split_layout = VSplitLayout(split_col=10, size_hint=(1.0, 1.0))
+        top_split_layout = VSplitLayout(
+            split_col=10, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
         bottom_split_layout = VSplitLayout(
-            split_col=10, size_hint=(1.0, 1.0), anchor_left_pane=False
+            split_col=10,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            anchor_left_pane=False,
         )
 
         split_layout.top_pane.add_widget(top_split_layout)

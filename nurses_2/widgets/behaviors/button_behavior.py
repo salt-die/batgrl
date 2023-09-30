@@ -5,7 +5,7 @@ from enum import Enum
 
 from ...io import MouseEventType
 
-__all__ = "ButtonState", "ButtonBehavior"
+__all__ = ["ButtonState", "ButtonBehavior"]
 
 
 class ButtonState(str, Enum):
@@ -55,7 +55,7 @@ class ButtonBehavior:
         Triggered when a button is released.
     """
 
-    def __init__(self, *, always_release=False, **kwargs):
+    def __init__(self, *, always_release: bool = False, **kwargs):
         super().__init__(**kwargs)
         self.always_release = always_release
         self.state = ButtonState.NORMAL

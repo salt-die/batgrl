@@ -26,7 +26,9 @@ class HackApp(App):
         header = TextWidget(size=(5, 39), default_color_pair=DEFAULT_COLOR_PAIR)
         add_text(header.canvas, HEADER)
 
-        modal = Modal(size_hint=(1.0, 1.0), is_enabled=False)
+        modal = Modal(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, is_enabled=False
+        )
 
         output = Output(
             header,
@@ -45,7 +47,9 @@ class HackApp(App):
 
         modal.memory = memory
 
-        terminal = Image(path=TERMINAL, size=(36, 63), pos_hint=(0.5, 0.5))
+        terminal = Image(
+            path=TERMINAL, size=(36, 63), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
+        )
         container = BOLDCRT(
             size=(22, 53),
             pos=(5, 5),

@@ -26,7 +26,7 @@ from .colors import (
 )
 from .gradients import gradient, lerp_colors, rainbow_gradient
 
-__all__ = (
+__all__ = [
     "AColor",
     "Color",
     "ColorPair",
@@ -54,4 +54,4 @@ __all__ = (
     "rainbow_gradient",
     "lerp_colors",
     "gradient",
-)
+]

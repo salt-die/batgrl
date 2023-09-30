@@ -3,7 +3,7 @@ Commonly used colors.
 """
 from .color_types import AColor, Color, ColorPair, ColorTheme
 
-__all__ = (
+__all__ = [
     "WHITE",
     "BLACK",
     "RED",
@@ -24,7 +24,7 @@ __all__ = (
     "WHITE_ON_BLACK",
     "BLACK_ON_BLACK",
     "DEFAULT_COLOR_THEME",
-)
+]
 
 WHITE = Color(255, 255, 255)
 """White."""

@@ -122,7 +122,9 @@ class Snake(GraphicWidget):
 
 class SnakeApp(App):
     async def on_start(self):
-        kwargs = dict(size=(HEIGHT // 2, WIDTH), pos_hint=(0.5, 0.5))
+        kwargs = dict(
+            size=(HEIGHT // 2, WIDTH), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
+        )
         background = Animation(path=SPINNER, alpha=0.5, **kwargs)
         background.play()
         snake = Snake(**kwargs)

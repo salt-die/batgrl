@@ -10,8 +10,8 @@ PATH_TO_FRAMES = ASSETS / "caveman"
 class AnimationApp(App):
     async def on_start(self):
         animation = Animation(
-            size_hint=(0.5, 0.5),
-            pos_hint=(0.5, 0.5),
+            size_hint={"height_hint": 0.5, "width_hint": 0.5},
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             path=PATH_TO_FRAMES,
             interpolation="nearest",
         )

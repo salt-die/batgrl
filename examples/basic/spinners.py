@@ -1,6 +1,7 @@
 from math import ceil
 
 from nurses_2.app import App
+from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.spinners import SPINNERS
 from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.scroll_view import ScrollView
@@ -9,14 +10,16 @@ from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.widget import Widget
 
 COLUMNS = 2
+PRIMARY = DEFAULT_COLOR_THEME.primary
 
 
 class SpinnersApp(App):
     async def on_start(self):
         sv = ScrollView(
-            size_hint=(1.0, 1.0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
             allow_horizontal_scroll=False,
             show_horizontal_bar=False,
+            background_color_pair=PRIMARY,
         )
         grid = GridLayout(
             grid_rows=ceil(len(SPINNERS) / COLUMNS),
@@ -26,10 +29,14 @@ class SpinnersApp(App):
         )
 
         for name, frames in SPINNERS.items():
-            label = TextWidget(pos_hint=(0.5, None), anchor="left")
+            label = TextWidget(
+                pos_hint={"y_hint": 0.5, "anchor": "left"}, default_color_pair=PRIMARY
+            )
             label.set_text(f"{name}: ")
 
-            animation = TextAnimation(pos=(0, label.right), frames=frames)
+            animation = TextAnimation(
+                pos=(0, label.right), frames=frames, animation_color_pair=PRIMARY
+            )
             animation.size = animation.frames[0].size
             animation.play()
 

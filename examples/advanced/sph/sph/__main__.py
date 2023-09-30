@@ -94,7 +94,7 @@ class SPHApp(App):
 
         container = TextWidget(
             size=(height, width),
-            pos_hint=(0.5, 0.5),
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             default_color_pair=WHITE_ON_BLACK,
         )
 

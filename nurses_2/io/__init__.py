@@ -6,6 +6,7 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 
+from .input.events import _PartialMouseEvent  # noqa
 from .input.events import (
     Key,
     KeyEvent,
@@ -14,10 +15,9 @@ from .input.events import (
     MouseEvent,
     MouseEventType,
     PasteEvent,
-    _PartialMouseEvent,
 )
 
-__all__ = (
+__all__ = [
     "Key",
     "Mods",
     "KeyEvent",
@@ -25,8 +25,7 @@ __all__ = (
     "MouseButton",
     "MouseEvent",
     "PasteEvent",
-    "_PartialMouseEvent",
-)
+]
 
 
 def _create_io(asciicast_path: Path | None):

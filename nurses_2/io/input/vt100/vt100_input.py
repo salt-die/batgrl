@@ -12,11 +12,11 @@ from contextlib import contextmanager
 from ....geometry import Size
 from .console_input import _EVENTS, events
 
-__all__ = (
+__all__ = [
     "attach",
     "raw_mode",
     "events",
-)
+]
 
 
 @contextmanager

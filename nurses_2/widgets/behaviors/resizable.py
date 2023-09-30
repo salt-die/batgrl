@@ -4,7 +4,7 @@ Draggable resize behavior for a widget.
 from ..graphic_widget import TRANSPARENT, AColor, GraphicWidget, Size, clamp
 from .grabbable import Grabbable
 
-__all__ = ("Resizable",)
+__all__ = ["Resizable"]
 
 
 class _Border(Grabbable, GraphicWidget):
@@ -36,8 +36,8 @@ class _Border(Grabbable, GraphicWidget):
         h, w = parent.size
 
         new_size = Size(
-            clamp(h + y_edge * dy, parent.grab_resize_min_height, None),
-            clamp(w + x_edge * dx, parent.grab_resize_min_width, None),
+            clamp(h + y_edge * dy, parent.resize_min_height, None),
+            clamp(w + x_edge * dx, parent.resize_min_width, None),
         )
 
         if new_size != parent.size:
@@ -89,7 +89,7 @@ class Resizable:
     """
     Draggable resize behavior for a widget. Resize a widget by clicking its border and
     dragging it. Widget dimensions won't be resized smaller than
-    :attr:`grab_resize_min_height` or :attr:`grab_resize_min_width`.
+    :attr:`resize_min_height` or :attr:`resize_min_width`.
 
     Parameters
     ----------
@@ -97,10 +97,10 @@ class Resizable:
         Allow vertical resize.
     allow_horizontal_resize : bool, default: True
         Allow horizontal resize.
-    grab_resize_min_height : int | None, default: None
-        Minimum height widget can be resized by grabbing. Minimum
-        height will never be less than 2.
-    grab_resize_min_width : int | None, default: None
+    resize_min_height : int | None, default: None
+        Minimum height widget can be resized by grabbing. Minimum height can't be less
+        than 2.
+    resize_min_width : int | None, default: None
         Minimum width widget can be resized by grabbing. Minimum
         width will never be less than 4.
     border_alpha : float, default: 1.0
@@ -114,9 +114,9 @@ class Resizable:
         Allow vertical resize.
     allow_horizontal_resize : bool
         Allow horizontal resize.
-    grab_resize_min_height : int
+    resize_min_height : int
         Minimum height widget can be resized by grabbing.
-    grab_resize_min_width : int
+    resize_min_width : int
         Minimum width widget can be resized by grabbing.
     border_alpha : float
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
@@ -139,8 +139,8 @@ class Resizable:
         *,
         allow_vertical_resize: bool = True,
         allow_horizontal_resize: bool = True,
-        grab_resize_min_height: int | None = None,
-        grab_resize_min_width: int | None = None,
+        resize_min_height: int | None = None,
+        resize_min_width: int | None = None,
         border_alpha: float = 1.0,
         border_color: AColor = TRANSPARENT,
         **kwargs,
@@ -149,8 +149,8 @@ class Resizable:
         self.allow_vertical_resize = allow_vertical_resize
         self.allow_horizontal_resize = allow_horizontal_resize
 
-        self.grab_resize_min_height = grab_resize_min_height
-        self.grab_resize_min_width = grab_resize_min_width
+        self.resize_min_height = resize_min_height
+        self.resize_min_width = resize_min_width
 
         borders = ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1))
         self._borders = tuple(_Border(*border) for border in borders)
@@ -161,26 +161,26 @@ class Resizable:
         self.border_color = border_color
 
     @property
-    def grab_resize_min_height(self) -> int:
-        return self._grab_resize_min_height
+    def resize_min_height(self) -> int:
+        return self._resize_min_height
 
-    @grab_resize_min_height.setter
-    def grab_resize_min_height(self, min_height: int | None):
+    @resize_min_height.setter
+    def resize_min_height(self, min_height: int | None):
         if min_height is None:
-            self._grab_resize_min_height = 2
+            self._resize_min_height = 2
         else:
-            self._grab_resize_min_height = clamp(min_height, 2, None)
+            self._resize_min_height = clamp(min_height, 2, None)
 
     @property
-    def grab_resize_min_width(self) -> int:
-        return self._grab_resize_min_width
+    def resize_min_width(self) -> int:
+        return self._resize_min_width
 
-    @grab_resize_min_width.setter
-    def grab_resize_min_width(self, min_width: int | None):
+    @resize_min_width.setter
+    def resize_min_width(self, min_width: int | None):
         if min_width is None:
-            self._grab_resize_min_width = 4
+            self._resize_min_width = 4
         else:
-            self._grab_resize_min_width = clamp(min_width, 4, None)
+            self._resize_min_width = clamp(min_width, 4, None)
 
     @property
     def border_alpha(self) -> float:

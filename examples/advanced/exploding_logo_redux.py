@@ -42,8 +42,8 @@ class PokeParticleField(GraphicParticleField):
     def on_size(self):
         super().on_size()
         oh, ow = self._old_middle
-        h, w = self.center
-        h *= 2
+        h = self.height
+        w = self.width // 2
         nh, nw = self._old_middle = h - HEIGHT, w - WIDTH // 2
 
         real_positions = self.particle_properties["real_positions"]
@@ -142,7 +142,9 @@ class PokeParticleField(GraphicParticleField):
 
 class ExplodingLogoApp(App):
     async def on_start(self):
-        background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))
+        background = Image(
+            path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
 
         logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL)
 
@@ -156,7 +158,7 @@ class ExplodingLogoApp(App):
         )
 
         field = PokeParticleField(
-            size_hint=(1.0, 1.0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
             particle_positions=particle_positions,
             particle_colors=logo.texture[pys, pxs],
             particle_properties=particle_properties,

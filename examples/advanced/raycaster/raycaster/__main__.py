@@ -50,7 +50,7 @@ class RaycasterApp(App):
             sprite_textures=[read_texture(SPRITE)],
             ceiling=read_texture(CEILING),
             floor=read_texture(FLOOR),
-            size_hint=(1.0, 1.0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
 
         self.add_widget(raycaster)

@@ -5,6 +5,8 @@ from abc import ABC, abstractmethod
 
 from ...colors import DEFAULT_COLOR_THEME
 
+__all__ = ["Themable"]
+
 
 class Themable(ABC):
     """

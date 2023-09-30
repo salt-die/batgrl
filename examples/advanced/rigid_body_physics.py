@@ -204,11 +204,16 @@ class PhysicsApp(App):
         space.add(segment)
 
         space_renderer = SpaceRenderer(
-            space, render_mode="sprite", dt=0.03, size_hint=(1.0, 1.0)
+            space,
+            render_mode="sprite",
+            dt=0.03,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
         space_renderer.run_simulation()
 
-        background = Image(path=PATH_TO_BACKGROUND, size_hint=(1.0, 1.0))
+        background = Image(
+            path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
 
         self.add_widgets(background, space_renderer)
 

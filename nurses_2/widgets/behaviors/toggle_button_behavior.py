@@ -7,7 +7,7 @@ from weakref import WeakValueDictionary
 
 from .button_behavior import ButtonBehavior, ButtonState
 
-__all__ = "ButtonState", "ToggleState", "ToggleButtonBehavior"
+__all__ = ["ButtonState", "ToggleState", "ToggleButtonBehavior"]
 
 
 class ToggleState(str, Enum):
@@ -80,6 +80,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         group: None | Hashable = None,
         allow_no_selection: bool = False,
         toggle_state: ToggleState = ToggleState.OFF,
+        always_release: bool = False,
         **kwargs,
     ):
         self.group = group
@@ -97,7 +98,7 @@ class ToggleButtonBehavior(ButtonBehavior):
             toggle_state = ToggleState.ON
             ToggleButtonBehavior._toggle_groups[group] = self
 
-        super().__init__(**kwargs)
+        super().__init__(always_release=always_release, **kwargs)
 
         self.toggle_state = toggle_state
 

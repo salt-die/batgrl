@@ -16,13 +16,12 @@ LINK_TO_VIDEO = (
 class VideoApp(App):
     async def on_start(self):
         video = VideoPlayer(
-            source=LINK_TO_VIDEO, size_hint=(1.0, 0.5)
+            source=LINK_TO_VIDEO, size_hint={"height_hint": 1.0, "width_hint": 0.5}
         )  # Try `source=0` to capture a webcam.
         braille_video = BrailleVideoPlayer(
             source=LINK_TO_VIDEO,
-            size_hint=(1.0, 0.5),
-            pos_hint=(0, 0.5),
-            anchor="top-left",
+            size_hint={"height_hint": 1.0, "width_hint": 0.5},
+            pos_hint={"y_hint": 0, "x_hint": 0.5, "anchor": "top-left"},
         )
 
         self.add_widgets(video, braille_video)

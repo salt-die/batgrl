@@ -149,23 +149,21 @@ in the middle of each half of the play field. Add the following to your `on_star
 
     divider = Widget(
         size=(1, 1),
-        size_hint=(1.0, None),
-        pos_hint=(None, 0.5),
+        size_hint={"height_hint": 1.0},
+        pos_hint={"x_hint": 0.5, "anchor": "center"},
         background_color_pair=WHITE_ON_BLUE,
     )
 
     left_score_label = TextWidget(
         size=(1, 5),
         pos=(1, 1),
-        pos_hint=(None, 0.25),
-        anchor="center",
+        pos_hint={"x_hint": 0.25, "anchor": "center"},
     )
 
     right_score_label = TextWidget(
         size=(1, 5),
         pos=(1, 1),
-        pos_hint=(None, 0.75),
-        anchor="center",
+        pos_hint={"x_hint": 0.75, "anchor": "center"},
     )
 
     game_field.add_widgets(
@@ -211,7 +209,7 @@ called when the widget is added to the widget tree.
             self.x_pos -= 2 * self.x_velocity
             x_sgn = 1 if self.x_velocity > 0 else -1
 
-            center_y = paddle.center.y
+            center_y = paddle.height // 2
             intersect = max(min(paddle.y + center_y - self.y, 0.95), -0.95)
             normalized = intersect / center_y
             self.y_velocity = -normalized
@@ -269,7 +267,7 @@ Finally, add the ball to the game field.
         background_color_pair=WHITE_ON_BLUE,
     )
 
-        game_field.add_widgets(
+    game_field.add_widgets(
         left_paddle,
         right_paddle,
         divider,

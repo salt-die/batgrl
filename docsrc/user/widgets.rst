@@ -18,8 +18,8 @@ Size and Pos Hints
 If a widget has a non-None size hint, it will have a size that is some proportion (given by the hint) of its
 parent. If the parent is resized, the widget will update its size to follow the size hint. Similary, for non-None
 position hints, a widget will position itself at some proportion of its parent's size.  Position hints can be
-further controlled with the `anchor` keyword-argument or attribute. The `anchor` determines which point
-in the widget is aligned with the position hint (the default is `"top-left"`).
+further controlled with the `anchor` key or attribute. The `anchor` determines which point
+in the widget is aligned with the position hint (the default is `"center"`).
 
 Responding to Events
 --------------------

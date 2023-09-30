@@ -20,17 +20,25 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class TabApp(App):
     async def on_start(self):
-        tabbed = TabbedWidget(size_hint=(1.0, 1.0))
+        tabbed = TabbedWidget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
 
         animation = Animation(
-            path=CAVEMAN_PATH, interpolation="nearest", size_hint=(1.0, 1.0)
+            path=CAVEMAN_PATH,
+            interpolation="nearest",
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
         animation.play()
         tabbed.add_tab("Animation", animation)
         tabbed.add_tab(
-            "File Chooser", FileChooser(root_dir=ASSETS, size_hint=(1.0, 1.0))
+            "File Chooser",
+            FileChooser(
+                root_dir=ASSETS, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+            ),
         )
-        tabbed.add_tab("Color Picker", ColorPicker(size_hint=(1.0, 1.0)))
+        tabbed.add_tab(
+            "Color Picker",
+            ColorPicker(size_hint={"height_hint": 1.0, "width_hint": 1.0}),
+        )
         tabbed.add_tab(
             "Line Plot",
             LinePlot(
@@ -40,7 +48,7 @@ class TabApp(App):
                 y_label="Y Values",
                 legend_labels=("Before", "During", "After"),
                 plot_color_pair=DEFAULT_COLOR_THEME.primary,
-                size_hint=(1.0, 1.0),
+                size_hint={"height_hint": 1.0, "width_hint": 1.0},
             ),
         )
         self.add_widget(tabbed)

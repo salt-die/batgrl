@@ -26,10 +26,10 @@ class OKButton(ButtonBehavior, TextWidget):
 class Modal(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.background = Darken(size_hint=(1.0, 1.0))
+        self.background = Darken(size_hint={"height_hint": 1.0, "width_hint": 1.0})
         self.message_box = TextWidget(
             size=(6, 20),
-            pos_hint=(0.5, 0.5),
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             default_color_pair=DEFAULT_COLOR_PAIR,
         )
         self.message_box.add_border("heavy")

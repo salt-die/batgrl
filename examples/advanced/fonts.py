@@ -130,7 +130,7 @@ class DripApp(App):
         button = TextButton(
             size=button_canvas.shape,
             pos=(10, 0),
-            pos_hint=(None, 0.5),
+            pos_hint={"x_hint": 0.5},
             is_transparent=True,
         )
         button.canvas["char"] = button_canvas
@@ -139,7 +139,9 @@ class DripApp(App):
         banner = TextWidget(size=(h, w), is_transparent=True)
         banner.canvas["char"] = banner_canvas
 
-        bleed = Bleed(banner, button, size=(h + 9, w), pos_hint=(0.5, 0.5))
+        bleed = Bleed(
+            banner, button, size=(h + 9, w), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
+        )
 
         self.add_widget(bleed)
 

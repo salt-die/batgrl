@@ -78,7 +78,7 @@ PAUSED = """
 class ModalScreen(TextWidget):
     def __init__(
         self,
-        pos_hint=(0.5, 0.5),
+        pos_hint={"y_hint": 0.5, "x_hint": 0.5},
         is_enabled=False,
         **kwargs,
     ):

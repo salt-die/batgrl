@@ -23,7 +23,7 @@ from .widgets._root import _Root
 from .widgets.behaviors.themable import Themable
 from .widgets.widget import Size, Widget
 
-__all__ = "App", "run_widget_as_app"
+__all__ = ["App", "run_widget_as_app"]
 
 
 class App(ABC):

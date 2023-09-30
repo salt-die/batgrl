@@ -1,8 +1,11 @@
 """
 Movable behavior for a widget.
 """
+from ...io import MouseButton
 from ..widget import clamp
 from .grabbable import Grabbable
+
+__all__ = ["Movable"]
 
 
 class Movable(Grabbable):
@@ -21,6 +24,8 @@ class Movable(Grabbable):
         If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton, default: MouseButton.LEFT
+        Mouse button used for grabbing.
 
     Attributes
     ----------
@@ -34,6 +39,8 @@ class Movable(Grabbable):
         If false, grabbable behavior is disabled.
     disable_ptf : bool
         If true, widget will not be pulled to front when grabbed.
+    mouse_button : MouseButton
+        Mouse button used for grabbing.
     is_grabbed : bool
         True if widget is grabbed.
     mouse_dyx : Point
@@ -59,9 +66,17 @@ class Movable(Grabbable):
         disable_oob=False,
         allow_vertical_translation=True,
         allow_horizontal_translation=True,
+        is_grabbable: bool = True,
+        disable_ptf: bool = False,
+        mouse_button: MouseButton = MouseButton.LEFT,
         **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__(
+            is_grabbable=is_grabbable,
+            disable_ptf=disable_ptf,
+            mouse_button=mouse_button,
+            **kwargs,
+        )
         self.disable_oob = disable_oob
         self.allow_vertical_translation = allow_vertical_translation
         self.allow_horizontal_translation = allow_horizontal_translation

@@ -8,6 +8,8 @@ from numpy.typing import NDArray
 
 from ..widget import Char
 
+__all__ = ["Effect"]
+
 
 class Effect(ABC):
     """

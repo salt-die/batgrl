@@ -27,7 +27,7 @@ class ScrollViewApp(App):
                 LEFT_GRADIENT[y], RIGHT_GRADIENT[y], BIG_WIDGET_SIZE.columns
             )
 
-        scroll_view = ScrollView(size=(10, 30), pos_hint=(0.5, 0.5))
+        scroll_view = ScrollView(size=(10, 30), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
         scroll_view.view = big_widget
 
         self.add_widget(scroll_view)

@@ -6,11 +6,11 @@ import numpy as np
 from ..geometry import lerp
 from .color_types import AColor, Color, ColorPair
 
-__all__ = (
+__all__ = [
     "rainbow_gradient",
     "lerp_colors",
     "gradient",
-)
+]
 
 SomeColor = Color | AColor | ColorPair
 

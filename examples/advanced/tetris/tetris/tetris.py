@@ -79,11 +79,9 @@ class Piece(GraphicWidget):
     def orientation(self, orientation):
         self._orientation = orientation
         h, w, _ = self._tetromino.textures[orientation].shape
+        self.texture = self._tetromino.textures[self._orientation]
         self.size = h // 2, w
         self.apply_hints()
-
-    def on_size(self):
-        self.texture = self._tetromino.textures[self._orientation]
 
 
 class Tetris(Image):
@@ -163,10 +161,14 @@ class Tetris(Image):
         for widget in self.walk():
             setup_background(widget)
 
-        self.held_piece = Piece(pos_hint=(0.5, 0.5), is_enabled=False)
+        self.held_piece = Piece(
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_enabled=False
+        )
         held_space.add_widget(self.held_piece)
 
-        self.next_piece = Piece(pos_hint=(0.5, 0.5), is_enabled=False)
+        self.next_piece = Piece(
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_enabled=False
+        )
         next_space.add_widget(self.next_piece)
 
         self.matrix = np.zeros(matrix_size, dtype=np.bool8)

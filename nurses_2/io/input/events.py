@@ -9,7 +9,7 @@ from typing import NamedTuple
 from ...geometry import Point
 from .keys import Key
 
-__all__ = (
+__all__ = [
     "Mods",
     "Key",
     "KeyEvent",
@@ -17,7 +17,7 @@ __all__ = (
     "MouseButton",
     "MouseEvent",
     "PasteEvent",
-)
+]
 
 
 class Mods(namedtuple("Mods", "alt ctrl shift")):

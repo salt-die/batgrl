@@ -6,6 +6,8 @@ from weakref import ReferenceType, WeakSet, ref
 
 from ...io import Key, MouseEventType
 
+__all__ = ["Focusable"]
+
 
 class Focusable:
     """
@@ -40,9 +42,6 @@ class Focusable:
 
     __focus_widgets: deque[ReferenceType] = deque()
     __focused = WeakSet()
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
     def on_add(self):
         super().on_add()
