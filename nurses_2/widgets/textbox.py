@@ -349,6 +349,17 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
     def has_selection(self) -> bool:
         return self._selection_start is not None and self._selection_end is not None
 
+    @property
+    def has_nonempty_selection(self) -> bool:
+        return self.has_selection and self._selection_start != self._selection_end
+
+    @property
+    def selection_contents(self) -> str | None:
+        if self.has_nonempty_selection:
+            return "".join(
+                self._box.canvas["char"][0, self._selection_start : self._selection_end]
+            )
+
     def update_theme(self):
         primary = self.color_theme.textbox_primary
 
@@ -409,7 +420,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self._selection_start = self._selection_end = None
 
     def delete_selection(self):
-        if not self.has_selection:
+        if not self.has_nonempty_selection:
             return
 
         box = self._box
@@ -511,31 +522,33 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             self.enter_callback(self)
 
     def _backspace(self):
-        if not self.has_selection:
+        if not self.has_nonempty_selection:
             self.select()
             self.move_cursor_left()
         self.delete_selection()
 
     def _delete(self):
-        if not self.has_selection:
+        if not self.has_nonempty_selection:
             self.select()
             self.move_cursor_right()
         self.delete_selection()
 
     def _left(self):
-        if self.has_selection:
+        if self.has_nonempty_selection:
             select_start = self._selection_start
             self.unselect()
             self.cursor = select_start
         else:
+            self.unselect()
             self.move_cursor_left()
 
     def _right(self):
-        if self.has_selection:
+        if self.has_nonempty_selection:
             select_end = self._selection_end
             self.unselect()
             self.cursor = select_end
         else:
+            self.unselect()
             self.move_cursor_right()
 
     def _ctrl_left(self):
@@ -579,10 +592,11 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self.cursor = self._line_length
 
     def _escape(self):
-        if self.has_selection:
+        if self.has_nonempty_selection:
             self.unselect()
             self._highlight_selection()
         else:
+            self.unselect()
             self.blur()
 
     def _ascii(self, key):

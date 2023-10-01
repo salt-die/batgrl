@@ -319,7 +319,7 @@ class TextPad(Themable, Focusable, ScrollView):
         self._cursor.default_color_pair = primary.reversed()
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
-        self.background_color_pair = primary
+        self.background_color_pair = primary.bg_color * 2
 
         self._highlight_selection()
 
@@ -412,6 +412,25 @@ class TextPad(Themable, Focusable, ScrollView):
         return self._selection_start is not None and self._selection_end is not None
 
     @property
+    def has_nonempty_selection(self) -> bool:
+        return self.has_selection and self._selection_start != self._selection_end
+
+    @property
+    def selection_contents(self) -> str | None:
+        if self.has_nonempty_selection:
+            sy, sx = self._selection_start
+            ey, ex = self._selection_end
+            chars = self._pad.canvas["char"]
+            lengths = self._line_lengths
+
+            return "\n".join(
+                "".join(
+                    chars[y, sx if y == sy else None : ex if y == ey else lengths[y]]
+                )
+                for y in range(sy, ey + 1)
+            )
+
+    @property
     def end_text_point(self) -> Point:
         """
         Point after last character in text.
@@ -431,7 +450,7 @@ class TextPad(Themable, Focusable, ScrollView):
         self._selection_start = self._selection_end = None
 
     def delete_selection(self):
-        if not self.has_selection:
+        if not self.has_nonempty_selection:
             return
 
         self._last_x = None
@@ -645,32 +664,34 @@ class TextPad(Themable, Focusable, ScrollView):
 
     @undoable
     def _backspace(self):
-        if not self.has_selection:
+        if not self.has_nonempty_selection:
             self.select()
             self.move_cursor_left()
         self.delete_selection()
 
     @undoable
     def _delete(self):
-        if not self.has_selection:
+        if not self.has_nonempty_selection:
             self.select()
             self.move_cursor_right()
         self.delete_selection()
 
     def _left(self):
-        if self.has_selection:
+        if self.has_nonempty_selection:
             select_start = self._selection_start
             self.unselect()
             self.cursor = select_start
         else:
+            self.unselect()
             self.move_cursor_left()
 
     def _right(self):
-        if self.has_selection:
+        if self.has_nonempty_selection:
             select_end = self._selection_end
             self.unselect()
             self.cursor = select_end
         else:
+            self.unselect()
             self.move_cursor_right()
 
     def _ctrl_left(self):
@@ -760,10 +781,11 @@ class TextPad(Themable, Focusable, ScrollView):
         self.cursor = y, self._line_lengths[y]
 
     def _escape(self):
-        if self.has_selection:
+        if self.has_nonempty_selection:
             self.unselect()
             self._highlight_selection()
         else:
+            self.unselect()
             self.blur()
 
     @undoable
