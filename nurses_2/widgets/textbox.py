@@ -269,9 +269,12 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             background_color_pair=background_color_pair,
         )
 
-        self._prev_cursor_x = 0
         self._selection_start = self._selection_end = None
         self._line_length = 0
+        self._undo_stack = []
+        self._redo_stack = []
+        self._undo_buffer = []
+        self._undo_buffer_type = "add"
 
         self._placeholder_widget = TextWidget()
         self._placeholder_widget.set_text(placeholder)
@@ -286,79 +289,6 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self.hide_input = hide_input
         self.hide_char = hide_char
         self.max_chars = max_chars
-
-    @property
-    def placeholder(self) -> str:
-        return self._placeholder
-
-    @placeholder.setter
-    def placeholder(self, placeholder: str):
-        self._placeholder = placeholder
-        self._placeholder_widget.set_text(placeholder)
-        self._placeholder_widget.colors[:] = self.color_theme.textbox_placeholder
-        if self._line_length == 0 and placeholder:
-            self._placeholder_widget.is_enabled = True
-            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
-        else:
-            self._placeholder_widget.is_enabled = False
-
-    @property
-    def text(self) -> str:
-        return "".join(self._box.canvas["char"][0, : self._line_length])
-
-    @text.setter
-    def text(self, text: str):
-        self.unselect()
-        text = text.replace("\n", " ")
-        self._line_length = wcswidth(text)
-
-        self._box.canvas[:] = style_char(" ")
-        self._box.width = max(self._line_length + 1, self.width)
-        self._box.add_str(text)
-        if self._line_length == 0 and self._placeholder:
-            self._placeholder_widget.is_enabled = True
-        self.cursor = self._line_length
-
-    @property
-    def cursor(self) -> int:
-        return self._cursor.x
-
-    @cursor.setter
-    def cursor(self, cursor: int):
-        """
-        After setting cursor position, move textbox so that cursor is visible.
-        """
-        self._prev_cursor_x = self._cursor.x
-        self._cursor.x = cursor
-        if self._line_length == 0 and self._placeholder:
-            self._placeholder_widget.is_enabled = True
-            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
-        else:
-            self._placeholder_widget.is_enabled = False
-            self._cursor.canvas[0, 0] = self._box.canvas[0, cursor]
-
-        max_x = self.width - 1
-        if (rel_x := cursor + self._box.x) > max_x:
-            self._box.x += max_x - rel_x
-        elif rel_x < 0:
-            self._box.x -= rel_x
-
-        self._update_selection()
-
-    @property
-    def has_selection(self) -> bool:
-        return self._selection_start is not None and self._selection_end is not None
-
-    @property
-    def has_nonempty_selection(self) -> bool:
-        return self.has_selection and self._selection_start != self._selection_end
-
-    @property
-    def selection_contents(self) -> str | None:
-        if self.has_nonempty_selection:
-            return "".join(
-                self._box.canvas["char"][0, self._selection_start : self._selection_end]
-            )
 
     def update_theme(self):
         primary = self.color_theme.textbox_primary
@@ -412,30 +342,112 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
                 src, _ = intersect
                 canvas_view[src] = style_char(self.hide_char)
 
-    def select(self):
-        if not self.has_selection:
-            self._selection_start = self._selection_end = self.cursor
+    @property
+    def placeholder(self) -> str:
+        return self._placeholder
 
-    def unselect(self):
-        self._selection_start = self._selection_end = None
+    @placeholder.setter
+    def placeholder(self, placeholder: str):
+        self._placeholder = placeholder
+        self._placeholder_widget.set_text(placeholder)
+        self._placeholder_widget.colors[:] = self.color_theme.textbox_placeholder
+        if self._line_length == 0 and placeholder:
+            self._placeholder_widget.is_enabled = True
+            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
+        else:
+            self._placeholder_widget.is_enabled = False
 
-    def delete_selection(self):
-        if not self.has_nonempty_selection:
-            return
+    def _move_undo_buffer_to_stack(self, buffer_type=None):
+        self._undo_buffer_type = buffer_type
+        if self._undo_buffer:
+            self._undo_stack.append(self._undo_buffer)
+            self._undo_buffer = []
+            self._redo_stack.clear()
 
-        box = self._box
+    def undo(self):
+        self._move_undo_buffer_to_stack()
+        if self._undo_stack:
+            redo = []
+            for func, args, selection_start, selection_end, cursor in reversed(
+                self._undo_stack.pop()
+            ):
+                redo.append(func(*args))
+                self._selection_start = selection_start
+                self._selection_end = selection_end
+                self.cursor = cursor
+            self._redo_stack.append(redo)
 
-        start = self._selection_start
-        end = self._selection_end
+    def redo(self):
+        if self._redo_stack and not self._undo_buffer:
+            undo = []
+            for func, args, selection_start, selection_end, cursor in reversed(
+                self._redo_stack.pop()
+            ):
+                undo.append(func(*args))
+                self._selection_start = selection_start
+                self._selection_end = selection_end
+                self.cursor = cursor
+            self._undo_stack.append(undo)
 
-        len_end = self._line_length - end
-        new_len = self._line_length = start + len_end
+    @property
+    def text(self) -> str:
+        return "".join(self._box.canvas["char"][0, : self._line_length])
 
-        box.canvas[0, start:new_len] = box.canvas[0, end : end + len_end]
-        box.canvas[0, new_len:] = style_char(box.default_char)
-
+    @text.setter
+    def text(self, text: str):
+        self._redo_stack.clear()
+        self._undo_stack.clear()
+        self._undo_buffer.clear()
         self.unselect()
-        self.cursor = start
+        text = text.replace("\n", " ")[: self.max_chars]
+        self._line_length = wcswidth(text)
+
+        self._box.canvas[:] = style_char(" ")
+        self._box.width = max(self._line_length + 1, self.width)
+        self._box.add_str(text)
+        if self._line_length == 0 and self._placeholder:
+            self._placeholder_widget.is_enabled = True
+        self.cursor = self._line_length
+
+    @property
+    def cursor(self) -> int:
+        return self._cursor.x
+
+    @cursor.setter
+    def cursor(self, cursor: int):
+        """
+        After setting cursor position, move textbox so that cursor is visible.
+        """
+        self._cursor.x = cursor
+        if self._line_length == 0 and self._placeholder:
+            self._placeholder_widget.is_enabled = True
+            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
+        else:
+            self._placeholder_widget.is_enabled = False
+            self._cursor.canvas[0, 0] = self._box.canvas[0, cursor]
+
+        max_x = self.width - 1
+        if (rel_x := cursor + self._box.x) > max_x:
+            self._box.x += max_x - rel_x
+        elif rel_x < 0:
+            self._box.x -= rel_x
+
+        self._update_selection()
+
+    def _update_selection(self):
+        if self.is_selecting:
+            if self._selection_start > self._selection_end:
+                self._selection_start, self._selection_end = (
+                    self._selection_end,
+                    self._selection_start,
+                )
+
+            if self.cursor < self._selection_start:
+                self._selection_start = self.cursor
+            elif self.cursor > self._selection_end:
+                self._selection_end = self.cursor
+
+        self._highlight_selection()
 
     def _highlight_selection(self):
         colors = self._box.colors
@@ -447,20 +459,65 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
 
             colors[0, start:end] = self.color_theme.textbox_selection_highlight
 
-    def _update_selection(self):
-        if self.has_selection:
-            if self._prev_cursor_x == self._selection_start:
-                self._selection_start = self.cursor
-            elif self._prev_cursor_x == self._selection_end:
-                self._selection_end = self.cursor
+    @property
+    def is_selecting(self) -> bool:
+        return self._selection_start is not None and self._selection_end is not None
 
-            if self._selection_start > self._selection_end:
-                self._selection_start, self._selection_end = (
-                    self._selection_end,
-                    self._selection_start,
-                )
+    @property
+    def has_nonempty_selection(self) -> bool:
+        return self.is_selecting and self._selection_start != self._selection_end
 
-        self._highlight_selection()
+    def select(self):
+        if not self.is_selecting:
+            self._selection_start = self._selection_end = self.cursor
+
+    def unselect(self):
+        self._selection_start = self._selection_end = None
+
+    def delete_selection(self):
+        if self.has_nonempty_selection:
+            return self._del_text(self._selection_start, self._selection_end)
+
+    def _del_text(self, start: int, end: int):
+        contents = "".join(self._box.canvas["char"][0, start:end])
+        selection_start = self._selection_start
+        selection_end = self._selection_end
+        cursor = self.cursor
+
+        len_end = self._line_length - end
+        self._line_length = start + len_end
+
+        box = self._box
+        box.canvas[0, start : self._line_length] = box.canvas[0, end : end + len_end]
+        box.canvas[0, self._line_length :] = style_char(box.default_char)
+
+        self.unselect()
+        self.cursor = start
+
+        return self._add_text, [start, contents], selection_start, selection_end, cursor
+
+    def _add_text(self, x: int, text: str):
+        selection_start = self._selection_start
+        selection_end = self._selection_end
+        cursor = self.cursor
+
+        text = text.replace("\n", " ")
+        box = self._box
+        box_text = (
+            f"{''.join(box.canvas['char'][0, :x])}"
+            f"{text}"
+            f"{''.join(box.canvas['char'][0, x : self._line_length])}"
+        )[: self.max_chars]
+
+        box_width = self._line_length = wcswidth(box_text)
+        if box_width >= box.width:
+            box.width = box_width + 1
+
+        box.add_str(box_text)
+        box.canvas[0, box_width:] = style_char(box.default_char)
+
+        self.cursor = min(box_width, x + wcswidth(text))
+        return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
 
     def move_cursor_left(self, n: int = 1):
         text_before_cursor = "".join(self._box.canvas["char"][0, : self.cursor])
@@ -522,16 +579,34 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             self.enter_callback(self)
 
     def _backspace(self):
-        if not self.has_nonempty_selection:
-            self.select()
+        if self.has_nonempty_selection:
+            self._move_undo_buffer_to_stack("del")
+            self._undo_buffer.append(self.delete_selection())
+        else:
+            if self._undo_buffer_type != "del":
+                self._move_undo_buffer_to_stack("del")
+
+            end = self.cursor
             self.move_cursor_left()
-        self.delete_selection()
+            start = self.cursor
+            self.cursor = end
+            if start != end:
+                self._undo_buffer.append(self._del_text(start, end))
 
     def _delete(self):
-        if not self.has_nonempty_selection:
-            self.select()
+        if self.has_nonempty_selection:
+            self._move_undo_buffer_to_stack("del")
+            self._undo_buffer.append(self.delete_selection())
+        else:
+            if self._undo_buffer_type != "del":
+                self._move_undo_buffer_to_stack("del")
+
+            start = self.cursor
             self.move_cursor_right()
-        self.delete_selection()
+            end = self.cursor
+            self.cursor = start
+            if start != end:
+                self._undo_buffer.append(self._del_text(start, end))
 
     def _left(self):
         if self.has_nonempty_selection:
@@ -600,22 +675,16 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             self.blur()
 
     def _ascii(self, key):
-        self.delete_selection()
+        if self.has_nonempty_selection:
+            self._move_undo_buffer_to_stack("add")
+            self._undo_buffer.append(self.delete_selection())
 
-        if self._line_length == self.max_chars:
-            return
-
-        x = self.cursor
-        box = self._box
-
-        self._line_length += 1
-        if self._line_length >= box.width:
-            box.width = self._line_length + 1
-
-        box.canvas[0, x + 1 :] = box.canvas[0, x:-1]
-        box.canvas[0, x] = style_char(key)
-
-        self.cursor = x + 1
+        if (
+            self._box.canvas["char"][0, : self._line_length] != ""
+        ).sum() < self.max_chars:
+            if self._undo_buffer_type != "add":
+                self._move_undo_buffer_to_stack("add")
+            self._undo_buffer.append(self._add_text(self.cursor, key))
 
     __HANDLERS = {
         (Key.Enter, Mods.NO_MODS): _enter,
@@ -634,6 +703,9 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         (Key.Home, Mods(False, False, True)): _shift_home,
         (Key.End, Mods(False, False, True)): _shift_end,
         (Key.Escape, Mods.NO_MODS): _escape,
+        ("z", Mods(False, True, False)): undo,
+        ("z", Mods(False, True, True)): redo,
+        ("r", Mods(False, True, False)): redo,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
@@ -653,29 +725,13 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         if not self.is_focused:
             return
 
-        self.delete_selection()
-
-        x = self.cursor
-        box = self._box
-        paste = paste_event.paste.replace("\n", " ")
-        width_paste = wcswidth(paste)
-
-        input_text = (
-            "".join(box.canvas["char"][0, :x])
-            + paste
-            + "".join(box.canvas["char"][0, x : self._line_length])
-        )[: self.max_chars]
-
-        len_input = wcswidth(input_text)
-
-        if len_input >= box.width:
-            box.width = len_input + 1
-
-        box.add_str(input_text)
-        box.canvas[0, len_input:] = style_char(box.default_char)
-
-        self._line_length = len_input
-        self.cursor = min(len_input, x + width_paste)
+        self._move_undo_buffer_to_stack()
+        undos = []
+        if undo := self.delete_selection():
+            undos.append(undo)
+        undos.append(self._add_text(self.cursor, paste_event.paste))
+        self._undo_stack.append(undos)
+        self._redo_stack.clear()
 
         return True
 

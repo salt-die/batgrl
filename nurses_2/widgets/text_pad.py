@@ -1,8 +1,6 @@
 """
 A text-pad widget for multiline editable text.
 """
-from functools import wraps
-
 from wcwidth import wcswidth
 
 from ..colors import ColorPair
@@ -33,24 +31,6 @@ __all__ = [
 ]
 
 WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
-
-
-def undoable(method):
-    """
-    Adds textpad text to the undo stack if a method modifies it.
-    """
-
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        before_text = self.text
-        before_cursor = self.cursor
-        method(self, *args, **kwargs)
-        after_text = self.text
-        if before_text != after_text:
-            self._undo_stack.append((before_text, before_cursor))
-            self._redo_stack.clear()
-
-    return wrapper
 
 
 class TextPad(Themable, Focusable, ScrollView):
@@ -287,12 +267,13 @@ class TextPad(Themable, Focusable, ScrollView):
         background_char: str | None = None,
         background_color_pair: ColorPair | None = None,
     ):
-        self._prev_cursor_pos = Point(0, 0)
         self._last_x = None
         self._selection_start = self._selection_end = None
         self._line_lengths = [0]
         self._undo_stack = []
         self._redo_stack = []
+        self._undo_buffer = []
+        self._undo_buffer_type = "add"
 
         self._cursor = TextWidget(size=(1, 1), is_enabled=False)
         self._pad = TextWidget(size=(1, 1))
@@ -339,19 +320,37 @@ class TextPad(Themable, Focusable, ScrollView):
     def on_blur(self):
         self._cursor.is_enabled = False
 
+    def _move_undo_buffer_to_stack(self, buffer_type=None):
+        self._undo_buffer_type = buffer_type
+        if self._undo_buffer:
+            self._undo_stack.append(self._undo_buffer)
+            self._undo_buffer = []
+            self._redo_stack.clear()
+
     def undo(self):
+        self._move_undo_buffer_to_stack()
         if self._undo_stack:
-            self._redo_stack.append((self.text, self.cursor))
-            text, cursor = self._undo_stack.pop()
-            self._update_text(text)
-            self.cursor = cursor
+            redo = []
+            for func, args, selection_start, selection_end, cursor in reversed(
+                self._undo_stack.pop()
+            ):
+                redo.append(func(*args))
+                self._selection_start = selection_start
+                self._selection_end = selection_end
+                self.cursor = cursor
+            self._redo_stack.append(redo)
 
     def redo(self):
-        if self._redo_stack:
-            self._undo_stack.append((self.text, self.cursor))
-            text, cursor = self._redo_stack.pop()
-            self._update_text(text)
-            self.cursor = cursor
+        if self._redo_stack and not self._undo_buffer:
+            undo = []
+            for func, args, selection_start, selection_end, cursor in reversed(
+                self._redo_stack.pop()
+            ):
+                undo.append(func(*args))
+                self._selection_start = selection_start
+                self._selection_end = selection_end
+                self.cursor = cursor
+            self._undo_stack.append(undo)
 
     @property
     def text(self) -> str:
@@ -362,12 +361,9 @@ class TextPad(Themable, Focusable, ScrollView):
 
     @text.setter
     def text(self, text: str):
-        self._undo_stack.clear()
         self._redo_stack.clear()
-        self._update_text(text)
-        self.cursor = self.end_text_point
-
-    def _update_text(self, text: str):
+        self._undo_stack.clear()
+        self._undo_buffer.clear()
         self.unselect()
         lines = text.splitlines()
         self._line_lengths = list(map(wcswidth, lines))
@@ -378,6 +374,7 @@ class TextPad(Themable, Focusable, ScrollView):
         pad.width = max(max(self._line_lengths) + 1, self.port_width)
 
         add_text(pad.canvas, text)
+        self.cursor = self.end_text_point
 
     @property
     def cursor(self) -> Point:
@@ -389,7 +386,6 @@ class TextPad(Themable, Focusable, ScrollView):
         After setting cursor position, move pad so that cursor is visible.
         """
         y, x = cursor
-        self._prev_cursor_pos = self._cursor.pos
         self._cursor.pos = Point(y, x)
         self._cursor.canvas[0, 0] = self._pad.canvas[y, x]
 
@@ -407,28 +403,48 @@ class TextPad(Themable, Focusable, ScrollView):
 
         self._update_selection()
 
+    def _update_selection(self):
+        if self.is_selecting:
+            if self._selection_start > self._selection_end:
+                self._selection_start, self._selection_end = (
+                    self._selection_end,
+                    self._selection_start,
+                )
+
+            if self.cursor < self._selection_start:
+                self._selection_start = self.cursor
+            elif self.cursor > self._selection_end:
+                self._selection_end = self.cursor
+
+        self._highlight_selection()
+
+    def _highlight_selection(self):
+        colors = self._pad.colors
+        colors[:] = self._pad.default_color_pair
+
+        if self._selection_start != self._selection_end:
+            sy, sx = self._selection_start
+            ey, ex = self._selection_end
+            highlight = self.color_theme.pad_selection_highlight
+            ll = self._line_lengths
+
+            if ey == sy:
+                colors[sy, sx:ex] = highlight
+            else:
+                colors[sy, sx : ll[sy]] = highlight
+                colors[ey, :ex] = highlight
+                for i in range(sy + 1, ey):
+                    colors[i, : ll[i]] = highlight
+        else:  # If no selection or selection is empty, add line highlight.
+            colors[self.cursor.y, :] = self.color_theme.pad_line_highlight
+
     @property
-    def has_selection(self) -> bool:
+    def is_selecting(self) -> bool:
         return self._selection_start is not None and self._selection_end is not None
 
     @property
     def has_nonempty_selection(self) -> bool:
-        return self.has_selection and self._selection_start != self._selection_end
-
-    @property
-    def selection_contents(self) -> str | None:
-        if self.has_nonempty_selection:
-            sy, sx = self._selection_start
-            ey, ex = self._selection_end
-            chars = self._pad.canvas["char"]
-            lengths = self._line_lengths
-
-            return "\n".join(
-                "".join(
-                    chars[y, sx if y == sy else None : ex if y == ey else lengths[y]]
-                )
-                for y in range(sy, ey + 1)
-            )
+        return self.is_selecting and self._selection_start != self._selection_end
 
     @property
     def end_text_point(self) -> Point:
@@ -443,74 +459,111 @@ class TextPad(Themable, Focusable, ScrollView):
         return self.height - 2 - self.show_horizontal_bar
 
     def select(self):
-        if not self.has_selection:
+        if not self.is_selecting:
             self._selection_start = self._selection_end = self.cursor
 
     def unselect(self):
         self._selection_start = self._selection_end = None
 
     def delete_selection(self):
-        if not self.has_nonempty_selection:
-            return
+        if self.has_nonempty_selection:
+            return self._del_text(self._selection_start, self._selection_end)
 
-        self._last_x = None
-
+    def _del_text(self, start: Point, end: Point):
         pad = self._pad
+        canvas = pad.canvas
+        ll = self._line_lengths
+        sy, sx = start
+        ey, ex = end
 
-        sy, sx = self._selection_start
-        ey, ex = self._selection_end
+        contents = "\n".join(
+            "".join(
+                canvas["char"][y, sx if y == sy else None : ex if y == ey else ll[y]]
+            )
+            for y in range(sy, ey + 1)
+        )
+        selection_start = self._selection_start
+        selection_end = self._selection_end
+        cursor = self.cursor
 
-        len_end = self._line_lengths[ey] - ex
-        len_start = self._line_lengths[sy] = sx + len_end
+        len_end = ll[ey] - ex
+        len_start = ll[sy] = sx + len_end
         if len_start >= pad.width:
             pad.width = len_start + 1
 
-        pad.canvas[sy, sx:len_start] = pad.canvas[ey, ex : ex + len_end]
-        pad.canvas[sy, len_start:] = style_char(pad.default_char)
+        canvas[sy, sx:len_start] = canvas[ey, ex : ex + len_end]
+        canvas[sy, len_start:] = style_char(pad.default_char)
 
-        remaining = pad.canvas[ey + 1 :]
-        pad.canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
+        remaining = canvas[ey + 1 :]
+        canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
         pad.height -= ey - sy
-        del self._line_lengths[sy + 1 : ey + 1]
+
+        del ll[sy + 1 : ey + 1]
 
         self.unselect()
+        self._last_x = None
+        self.cursor = start
+        return self._add_text, [start, contents], selection_start, selection_end, cursor
 
-        self.cursor = sy, sx
+    def _add_text(self, pos: Point, text: str):
+        y, x = pos
+        pad = self._pad
+        ll = self._line_lengths
+        line_remaining = pad.canvas[y, x : ll[y]].copy()
 
-    def _highlight_selection(self):
-        colors = self._pad.colors
-        colors[:] = self._pad.default_color_pair
+        selection_start = self._selection_start
+        selection_end = self._selection_end
+        cursor = self.cursor
 
-        if self._selection_start != self._selection_end:
-            sy, sx = self._selection_start
-            ey, ex = self._selection_end
-            highlight = self.color_theme.pad_selection_highlight
-            ll = self._line_lengths
+        lines = text.split("\n")  # DO NOT USE `splitlines`.
+        if len(lines) == 1:
+            [line] = lines
+            width_line = wcswidth(line)
 
-            if ey > sy:
-                colors[sy, sx : ll[sy]] = highlight
-                colors[ey, :ex] = highlight
-                for i in range(sy + 1, ey):
-                    colors[i, : ll[i]] = highlight
-            else:
-                colors[sy, sx:ex] = highlight
-        else:  # If no selection or selection is empty, add line highlight.
-            colors[self.cursor.y, :] = self.color_theme.pad_line_highlight
+            ll[y] += width_line
+            if ll[y] >= pad.width:
+                pad.width = ll[y] + 1
 
-    def _update_selection(self):
-        if self.has_selection:
-            if self._prev_cursor_pos == self._selection_start:
-                self._selection_start = self.cursor
-            elif self._prev_cursor_pos == self._selection_end:
-                self._selection_end = self.cursor
+            pad.add_str(line, (y, x))
+            pad.canvas[y, x + width_line : ll[y]] = line_remaining
 
-            if self._selection_start > self._selection_end:
-                self._selection_start, self._selection_end = (
-                    self._selection_end,
-                    self._selection_start,
-                )
+            self.cursor = y, x + width_line
+        else:
+            first, *lines, last = lines
+            newlines = len(lines) + 1
+            width_last = wcswidth(last)
+            last_y = y + newlines
 
-        self._highlight_selection()
+            pad.height += newlines
+            pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
+            pad.canvas[y, x : ll[y]] = style_char(pad.default_char)
+
+            ll[y] = x + wcswidth(first)
+            for i, line in enumerate(lines, start=y + 1):
+                ll.insert(i, wcswidth(line))
+            ll.insert(last_y, width_last + wcswidth("".join(line_remaining["char"])))
+
+            max_width = max(ll)
+            if max_width >= pad.width:
+                pad.width = max_width + 1
+
+            pad.add_str(first, (y, x))
+            for i, line in enumerate(lines, start=y + 1):
+                pad.add_str(line.ljust(pad.width), (i, 0))
+
+            pad.add_str(last, (last_y, 0))
+            pad.canvas[last_y, width_last : ll[last_y]] = line_remaining
+            pad.canvas[last_y, ll[last_y] :] = style_char(pad.default_char)
+
+            self.cursor = last_y, width_last
+
+        return (
+            self._del_text,
+            [cursor, self.cursor],
+            selection_start,
+            selection_end,
+            cursor,
+        )
 
     def move_cursor_left(self, n: int = 1):
         self._last_x = None
@@ -622,59 +675,53 @@ class TextPad(Themable, Focusable, ScrollView):
             elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
                 break
 
-    @undoable
     def _enter(self):
-        self.delete_selection()
+        self._move_undo_buffer_to_stack()
+        undos = []
+        if undo := self.delete_selection():
+            undos.append(undo)
+        undos.append(self._add_text(self.cursor, "\n"))
+        self._undo_stack.append(undos)
+        self._redo_stack.clear()
 
-        y, x = self.cursor
-        pad = self._pad
-        pad.height += 1
-
-        pad.canvas[y + 2 :] = pad.canvas[y + 1 : -1]
-        pad.canvas[y + 1] = style_char(pad.default_char)
-
-        len_line = self._line_lengths[y] - x
-        if len_line > 0:
-            pad.canvas[y + 1, :len_line] = pad.canvas[y, x : x + len_line]
-            pad.canvas[y, x : x + len_line] = style_char(pad.default_char)
-
-        self._line_lengths[y] = x
-        self._line_lengths.insert(y + 1, len_line)
-
-        if pad.width > self.port_width:
-            pad.width = max(self.port_width, max(self._line_lengths) + 1)
-
-        self.cursor = y + 1, 0
-
-    @undoable
     def _tab(self):
-        self.delete_selection()
+        self._move_undo_buffer_to_stack()
+        undos = []
+        if undo := self.delete_selection():
+            undos.append(undo)
+        undos.append(self._add_text(self.cursor, "    "))
+        self._undo_stack.append(undos)
+        self._redo_stack.clear()
 
-        y, x = self.cursor
-        pad = self._pad
-
-        self._line_lengths[y] += 4
-        if self._line_lengths[y] >= pad.width:
-            pad.width = self._line_lengths[y] + 1
-
-        pad.canvas[y, x + 4 :] = pad.canvas[y, x:-4]
-        pad.canvas[y, x : x + 4] = style_char(pad.default_char)
-
-        self.cursor = y, x + 4
-
-    @undoable
     def _backspace(self):
-        if not self.has_nonempty_selection:
-            self.select()
-            self.move_cursor_left()
-        self.delete_selection()
+        if self.has_nonempty_selection:
+            self._move_undo_buffer_to_stack("del")
+            self._undo_buffer.append(self.delete_selection())
+        else:
+            if self._undo_buffer_type != "del":
+                self._move_undo_buffer_to_stack("del")
 
-    @undoable
+            end = self.cursor
+            self.move_cursor_left()
+            start = self.cursor
+            self.cursor = end
+            if start != end:
+                self._undo_buffer.append(self._del_text(start, end))
+
     def _delete(self):
-        if not self.has_nonempty_selection:
-            self.select()
+        if self.has_nonempty_selection:
+            self._move_undo_buffer_to_stack("del")
+            self._undo_buffer.append(self.delete_selection())
+        else:
+            if self._undo_buffer_type != "del":
+                self._move_undo_buffer_to_stack("del")
+
+            start = self.cursor
             self.move_cursor_right()
-        self.delete_selection()
+            end = self.cursor
+            self.cursor = start
+            if start != end:
+                self._undo_buffer.append(self._del_text(start, end))
 
     def _left(self):
         if self.has_nonempty_selection:
@@ -703,28 +750,28 @@ class TextPad(Themable, Focusable, ScrollView):
         self.move_word_right()
 
     def _up(self):
-        if self.has_selection:
+        if self.is_selecting:
             select_start = self._selection_start
             self.unselect()
             self.cursor = select_start
         self.move_cursor_up()
 
     def _down(self):
-        if self.has_selection:
+        if self.is_selecting:
             select_end = self._selection_end
             self.unselect()
             self.cursor = select_end
         self.move_cursor_down()
 
     def _pgup(self):
-        if self.has_selection:
+        if self.is_selecting:
             select_start = self._selection_start
             self.unselect()
             self.cursor = select_start
         self.move_cursor_up(self.page_lines)
 
     def _pgdn(self):
-        if self.has_selection:
+        if self.is_selecting:
             select_end = self._selection_end
             self.unselect()
             self.cursor = select_end
@@ -788,20 +835,13 @@ class TextPad(Themable, Focusable, ScrollView):
             self.unselect()
             self.blur()
 
-    @undoable
     def _ascii(self, key):
-        self.delete_selection()
-        y, x = self.cursor
-        pad = self._pad
-
-        self._line_lengths[y] += 1
-        if self._line_lengths[y] >= pad.width:
-            pad.width = self._line_lengths[y] + 1
-
-        pad.canvas[y, x + 1 :] = pad.canvas[y, x:-1]
-        pad.canvas[y, x] = style_char(key)
-
-        self.cursor = y, x + 1
+        if self.has_nonempty_selection:
+            self._move_undo_buffer_to_stack("add")
+            self._undo_buffer.append(self.delete_selection())
+        elif self._undo_buffer_type != "add":
+            self._move_undo_buffer_to_stack("add")
+        self._undo_buffer.append(self._add_text(self.cursor, key))
 
     __HANDLERS = {
         (Key.Enter, Mods.NO_MODS): _enter,
@@ -847,59 +887,17 @@ class TextPad(Themable, Focusable, ScrollView):
 
         return True
 
-    @undoable
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         if not self.is_focused:
             return
 
-        self.delete_selection()
-
-        y, x = self.cursor
-        pad = self._pad
-        ll = self._line_lengths
-        line_remaining = pad.canvas[y, x : ll[y]].copy()
-
-        paste_lines = paste_event.paste.splitlines()
-        if len(paste_lines) == 1:
-            [paste] = paste_lines
-            len_paste = wcswidth(paste)
-
-            ll[y] += len_paste
-            if ll[y] >= pad.width:
-                pad.width = ll[y] + 1
-
-            pad.add_str(paste, (y, x))
-            pad.canvas[y, x + len_paste : ll[y]] = line_remaining
-
-            self.cursor = y, x + len_paste
-        else:
-            first, *lines, last = paste_lines
-            newlines = len(lines) + 1
-            len_last = wcswidth(last)
-            last_y = y + newlines
-
-            pad.height += newlines
-            pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
-            pad.canvas[y, x : ll[y]] = style_char(pad.default_char)
-
-            ll[y] = x + wcswidth(first)
-            for i, line in enumerate(lines, start=y + 1):
-                ll.insert(i, wcswidth(line))
-            ll.insert(last_y, len_last + wcswidth("".join(line_remaining["char"])))
-
-            max_width = max(ll)
-            if max_width >= pad.width:
-                pad.width = max_width + 1
-
-            pad.add_str(first, (y, x))
-            for i, line in enumerate(lines, start=y + 1):
-                pad.add_str(line.ljust(pad.width), (i, 0))
-
-            pad.add_str(last, (last_y, 0))
-            pad.canvas[last_y, len_last : ll[last_y]] = line_remaining
-            pad.canvas[last_y, ll[last_y] :] = style_char(pad.default_char)
-
-            self.cursor = last_y, len_last
+        self._move_undo_buffer_to_stack()
+        undos = []
+        if undo := self.delete_selection():
+            undos.append(undo)
+        undos.append(self._add_text(self.cursor, paste_event.paste))
+        self._undo_stack.append(undos)
+        self._redo_stack.clear()
 
         return True
 
