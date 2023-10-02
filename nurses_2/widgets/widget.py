@@ -16,7 +16,7 @@ from wcwidth import wcwidth
 
 from .. import easings
 from ..colors import ColorPair
-from ..geometry import Point, Rect, Size, clamp, intersection, lerp
+from ..geometry import Point, Rect, Region, Size, clamp, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
 
 __all__ = [
@@ -30,9 +30,9 @@ __all__ = [
     "Size",
     "SizeHint",
     "SizeHintDict",
+    "Region",
     "Widget",
     "clamp",
-    "intersection",
     "lerp",
     "style_char",
     "subscribable",
@@ -476,7 +476,7 @@ def subscribable(setter):
     return wrapper
 
 
-class Widget:
+class Widget(Rect):
     """
     Base class for creating widgets.
 
@@ -646,14 +646,11 @@ class Widget:
         self.is_visible = is_visible
         self.is_enabled = is_enabled
 
+        self.region: Region
+        """The visible portion of the widget on the screen, set by the root."""
+
     def __repr__(self):
-        return (
-            f"{type(self).__name__}(size={self.size}, pos={self.pos}, size_hint="
-            f"{self.size_hint}, pos_hint={self.pos_hint}, is_transparent="
-            f"{self.is_transparent}, is_visible={self.is_visible}, is_enabled="
-            f"{self.is_enabled}, background_char={self.background_char}, "
-            f"background_color_pair={self.background_color_pair})"
-        )
+        return f"{type(self).__name__}(size={self.size}, pos={self.pos})"
 
     @property
     def size(self) -> Size:
@@ -675,6 +672,9 @@ class Widget:
 
         for child in self.children:
             child.apply_hints()
+
+        if (root := self.root) is not None:
+            root.regions_need_update = True
 
     @property
     def height(self) -> int:
@@ -713,6 +713,8 @@ class Widget:
     @subscribable
     def pos(self, point: Point):
         self._pos = Point(*point)
+        if (root := self.root) is not None:
+            root.regions_need_update = True
 
     @property
     def top(self) -> int:
@@ -829,6 +831,26 @@ class Widget:
         self._pos_hint._widget = None
         self._pos_hint = pos_hint
         self.apply_hints()
+
+    @property
+    def is_visible(self) -> bool:
+        return self._is_visible
+
+    @is_visible.setter
+    def is_visible(self, is_visible: bool):
+        self._is_visible = is_visible
+        if (root := self.root) is not None:
+            root.regions_need_update = True
+
+    @property
+    def is_enabled(self) -> bool:
+        return self._is_visible
+
+    @is_enabled.setter
+    def is_enabled(self, is_enabled: bool):
+        self._is_visible = is_enabled
+        if (root := self.root) is not None:
+            root.regions_need_update = True
 
     @property
     def background_char(self) -> str | None:
@@ -974,7 +996,8 @@ class Widget:
         self.children.append(widget)
         widget.parent = self
 
-        if self.root:
+        if (root := self.root) is not None:
+            root.regions_need_update = True
             widget.on_add()
 
     def add_widgets(self, *widgets: "Widget"):
@@ -992,7 +1015,8 @@ class Widget:
         """
         Remove a child widget.
         """
-        if self.root:
+        if (root := self.root) is not None:
+            root.regions_need_update = True
             widget.on_remove()
 
         self.children.remove(widget)
@@ -1010,22 +1034,22 @@ class Widget:
         """
         Yield all descendents of the root widget.
         """
-        for child in self.root.children:
-            yield child
-            yield from child.walk()
+        yield from self.root.walk_preorder()
 
-    def walk(self, reverse: bool = False):
-        """
-        Yield all descendents (or ancestors if `reverse` is true).
-        """
-        if reverse:
-            if self.parent:
-                yield self.parent
-                yield from self.parent.walk(reverse=True)
-        else:
-            for child in self.children:
-                yield child
-                yield from child.walk()
+    def walk_preorder(self):
+        for child in self.children:
+            yield child
+            yield from child.walk_preorder()
+
+    def walk_reverse_postorder(self):
+        for child in reversed(self.children):
+            yield from child.walk_reverse_postorder()
+            yield child
+
+    def ancestors(self):
+        if self.parent:
+            yield self.parent
+            yield from self.parent.ancestors()
 
     def subscribe(
         self,
@@ -1109,43 +1133,18 @@ class Widget:
         or ``None``).
         """
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        """
-        Paint region given by `source` into `canvas_view` and `colors_view`.
-        """
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        if not self.region:
+            return
+
         if not self.is_transparent:
             if self.background_char is not None:
-                canvas_view[:] = style_char(self.background_char)
+                for index in self.region.indices():
+                    canvas[index.to_slices()] = style_char(self.background_char)
 
             if self.background_color_pair is not None:
-                colors_view[:] = self.background_color_pair
-
-        self.render_children(source, canvas_view, colors_view)
-
-    def render_children(
-        self,
-        destination: tuple[slice, slice],
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-    ):
-        vert_slice, hori_slice = destination
-        dest = Rect(
-            vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop
-        )
-
-        for child in self.children:
-            if child.is_visible and child.is_enabled:
-                source = Rect(child.top, child.bottom, child.left, child.right)
-                if (slices := intersection(dest, source)) is not None:
-                    dest_slice, source_slice = slices
-                    child.render(
-                        canvas_view[dest_slice], colors_view[dest_slice], source_slice
-                    )
+                for index in self.region.indices():
+                    colors[index.to_slices()] = self.background_color_pair
 
     @staticmethod
     def _tween_lerp(start, end, p):

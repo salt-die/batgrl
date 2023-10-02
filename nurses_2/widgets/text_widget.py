@@ -22,7 +22,6 @@ from .widget import (
     SizeHintDict,
     Widget,
     clamp,
-    intersection,
     lerp,
     style_char,
     subscribable,
@@ -43,7 +42,6 @@ __all__ = [
     "TextWidget",
     "add_text",
     "clamp",
-    "intersection",
     "lerp",
     "style_char",
     "subscribable",
@@ -430,23 +428,24 @@ class TextWidget(Widget):
             overline=overline,
         )
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         """
         Paint region given by source into canvas_view and colors_view.
         """
+        abs_pos = self.absolute_pos
         if self.is_transparent:
-            source_view = self.canvas[source]
-            visible = np.isin(source_view["char"], (" ", "⠀"), invert=True)
+            for index in self.region.indices():
+                ys, xs = index.to_slices()
+                offy, offx = index.to_slices(abs_pos)
 
-            canvas_view[visible] = source_view[visible]
-            colors_view[..., :3][visible] = self.colors[..., :3][source][visible]
+                source = self.canvas[offy, offx]
+                visible = np.isin(source["char"], (" ", "⠀"), invert=True)
+
+                canvas[ys, xs][visible] = source[visible]
+                colors[ys, xs, :3][visible] = self.colors[offy, offx, :3][visible]
         else:
-            canvas_view[:] = self.canvas[source]
-            colors_view[:] = self.colors[source]
-
-        self.render_children(source, canvas_view, colors_view)
+            for index in self.region.indices():
+                ind = index.to_slices()
+                offset_ind = index.to_slices(abs_pos)
+                canvas[ind] = self.canvas[offset_ind]
+                colors[ind] = self.colors[offset_ind]

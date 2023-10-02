@@ -22,7 +22,6 @@ from .widget import (
     SizeHintDict,
     Widget,
     clamp,
-    intersection,
     lerp,
     style_char,
     subscribable,
@@ -42,7 +41,6 @@ __all__ = [
     "SizeHint",
     "SizeHintDict",
     "clamp",
-    "intersection",
     "lerp",
     "style_char",
     "subscribable",
@@ -271,51 +269,54 @@ class GraphicWidget(Widget):
             raise TypeError(f"{interpolation} is not a valid interpolation type.")
         self._interpolation = interpolation
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        """
-        Paint region given by `source` into `canvas_view` and `colors_view`.
-        """
-        vert_slice, hori_slice = source
-        t = 2 * vert_slice.start
-        b = 2 * vert_slice.stop
-
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         texture = self.texture
-        even_rows = texture[t:b:2, hori_slice]
-        odd_rows = texture[t + 1 : b : 2, hori_slice]
+        foreground = colors[..., :3]
+        background = colors[..., 3:]
 
-        foreground = colors_view[..., :3]
-        background = colors_view[..., 3:]
+        abs_pos = self.absolute_pos
+        if self.is_transparent:
+            for index in self.region.indices():
+                ind = index.to_slices()
+                offy, offx = index.to_slices(abs_pos)
 
-        if not self.is_transparent:
-            foreground[:] = even_rows[..., :3]
-            background[:] = odd_rows[..., :3]
+                mask = canvas["char"][ind] != "▀"
+                foreground[ind][mask] = background[ind][mask]
+
+                even_rows = texture[2 * offy.start : 2 * offy.stop : 2, offx]
+                odd_rows = texture[2 * offy.start + 1 : 2 * offy.stop : 2, offx]
+
+                even_buffer = np.subtract(
+                    even_rows[..., :3], foreground[ind], dtype=float
+                )
+                odd_buffer = np.subtract(
+                    odd_rows[..., :3], background[ind], dtype=float
+                )
+
+                norm_alpha = self.alpha / 255
+
+                even_buffer *= even_rows[..., 3, None]
+                even_buffer *= norm_alpha
+
+                odd_buffer *= odd_rows[..., 3, None]
+                odd_buffer *= norm_alpha
+
+                np.add(
+                    even_buffer, foreground[ind], out=foreground[ind], casting="unsafe"
+                )
+                np.add(
+                    odd_buffer, background[ind], out=background[ind], casting="unsafe"
+                )
+                canvas[ind] = style_char("▀")
         else:
-            # If alpha compositing with a text widget, will look better to replace
-            # foreground colors with background colors in most cases.
-            mask = canvas_view != style_char("▀")
-            foreground[mask] = background[mask]
-
-            even_buffer = np.subtract(even_rows[..., :3], foreground, dtype=float)
-            odd_buffer = np.subtract(odd_rows[..., :3], background, dtype=float)
-
-            norm_alpha = self.alpha / 255
-
-            even_buffer *= even_rows[..., 3, None]
-            even_buffer *= norm_alpha
-
-            odd_buffer *= odd_rows[..., 3, None]
-            odd_buffer *= norm_alpha
-
-            np.add(even_buffer, foreground, out=foreground, casting="unsafe")
-            np.add(odd_buffer, background, out=background, casting="unsafe")
-
-        canvas_view[:] = style_char("▀")
-        self.render_children(source, canvas_view, colors_view)
+            for index in self.region.indices():
+                ind = index.to_slices()
+                offy, offx = index.to_slices(abs_pos)
+                even_rows = texture[2 * offy.start : 2 * offy.stop : 2, offx]
+                odd_rows = texture[2 * offy.start + 1 : 2 * offy.stop : 2, offx]
+                foreground[ind] = even_rows[..., :3]
+                background[ind] = odd_rows[..., :3]
+                canvas[ind] = style_char("▀")
 
     def to_png(self, path: Path):
         """

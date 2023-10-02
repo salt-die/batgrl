@@ -299,7 +299,7 @@ class BarChart(Widget):
 
         self._chart_color_pair = chart_color_pair
 
-        for child in self.walk():
+        for child in self.walk_preorder():
             if isinstance(child, TextWidget):
                 child.colors[:] = chart_color_pair
 

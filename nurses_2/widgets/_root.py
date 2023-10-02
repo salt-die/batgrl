@@ -2,9 +2,10 @@
 Root widget.
 """
 import numpy as np
+from numpy.typing import NDArray
 from wcwidth import wcwidth
 
-from .widget import ColorPair, Point, Widget, style_char
+from .widget import Char, ColorPair, Point, Region, Widget, style_char
 
 
 class _Root(Widget):
@@ -26,6 +27,7 @@ class _Root(Widget):
         self.env_out = env_out
         self.background_char = background_char
         self.background_color_pair = background_color_pair
+        self.regions_need_update = True
 
         self._size = env_out.get_size()
         self.on_size()
@@ -45,6 +47,7 @@ class _Root(Widget):
         self.colors = self._last_colors.copy()
 
         self._redraw_all = True
+        self.regions_need_update = True
 
         # Buffer arrays to re-use in the `render` method:
         self._color_diffs = np.zeros_like(self.colors, dtype=bool)
@@ -89,10 +92,42 @@ class _Root(Widget):
         y, x = point
         return 0 <= y < self.height and 0 <= x < self.width
 
+    def _update_regions(self):
+        if self.regions_need_update:
+            self.region = Region.from_rect(self)
+            for child in self.walk_preorder():
+                if child.is_enabled and child.is_visible:
+                    child.region = child.parent.region & Region.from_rect(child)
+
+            for child in self.walk_reverse_postorder():
+                if child.is_enabled and child.is_visible:
+                    child.region = self.region & child.region
+                    if not child.is_transparent:
+                        self.region -= child.region
+            self.regions_need_update = False
+
+    def _render_tree(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        transparent_stack = []
+        for child in self.walk_reverse_postorder():
+            if child.is_enabled and child.is_visible:
+                if child.is_transparent:
+                    transparent_stack.append(child)
+                else:
+                    child.render(canvas, colors)
+
+                    while transparent_stack and transparent_stack[-1].parent is child:
+                        transparent_stack.pop().render(canvas, colors)
+
+        while transparent_stack:
+            transparent_stack.pop().render(canvas, colors)
+
     def render(self):
         """
         Paint canvas. Render to terminal.
         """
+        if self.regions_need_update:
+            self._update_regions()
+
         # Swap canvas with last render:
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
         self.colors, self._last_colors = self._last_colors, self.colors
@@ -104,10 +139,9 @@ class _Root(Widget):
         canvas[:] = style_char(self.background_char)
         colors[:, :] = self.background_color_pair
 
-        height, width = canvas.shape
+        self._render_tree(canvas, colors)
 
-        self.render_children((slice(0, height), slice(0, width)), canvas, colors)
-
+        height, width = self.size
         if self._redraw_all:
             self._redraw_all = False
             ys, xs = np.indices((height, width)).reshape(2, height * width)
