@@ -470,6 +470,12 @@ class TextPad(Themable, Focusable, ScrollView):
             return self._del_text(self._selection_start, self._selection_end)
 
     def _del_text(self, start: Point, end: Point):
+        # ! If one of the following conditions is true, something went wrong.
+        if end > self.end_text_point:
+            end = self.end_text_point
+        elif end.x > self._line_lengths[end.y]:
+            end = end.y, self._line_lengths[end.y]
+
         pad = self._pad
         canvas = pad.canvas
         ll = self._line_lengths

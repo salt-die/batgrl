@@ -479,6 +479,10 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             return self._del_text(self._selection_start, self._selection_end)
 
     def _del_text(self, start: int, end: int):
+        if end > self._line_length:
+            # ! If we ended up here, something went wrong.
+            end = self._line_length
+
         contents = "".join(self._box.canvas["char"][0, start:end])
         selection_start = self._selection_start
         selection_end = self._selection_end
