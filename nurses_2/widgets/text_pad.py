@@ -401,20 +401,8 @@ class TextPad(Themable, Focusable, ScrollView):
         elif rel_x < 0:
             self._scroll_left(-rel_x)
 
-        self._update_selection()
-
-    def _update_selection(self):
         if self.is_selecting:
-            if self._selection_start > self._selection_end:
-                self._selection_start, self._selection_end = (
-                    self._selection_end,
-                    self._selection_start,
-                )
-
-            if self.cursor < self._selection_start:
-                self._selection_start = self.cursor
-            elif self.cursor > self._selection_end:
-                self._selection_end = self.cursor
+            self._selection_end = self.cursor
 
         self._highlight_selection()
 
@@ -423,8 +411,12 @@ class TextPad(Themable, Focusable, ScrollView):
         colors[:] = self._pad.default_color_pair
 
         if self._selection_start != self._selection_end:
-            sy, sx = self._selection_start
-            ey, ex = self._selection_end
+            if self._selection_start > self._selection_end:
+                sy, sx = self._selection_end
+                ey, ex = self._selection_start
+            else:
+                sy, sx = self._selection_start
+                ey, ex = self._selection_end
             highlight = self.color_theme.pad_selection_highlight
             ll = self._line_lengths
 
@@ -474,6 +466,10 @@ class TextPad(Themable, Focusable, ScrollView):
 
         pad = self._pad
         canvas = pad.canvas
+
+        if start > end:
+            start, end = end, start
+
         sy, sx = start
         ey, ex = end
 
@@ -732,7 +728,7 @@ class TextPad(Themable, Focusable, ScrollView):
 
     def _left(self):
         if self.has_nonempty_selection:
-            select_start = self._selection_start
+            select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
         else:
@@ -741,7 +737,7 @@ class TextPad(Themable, Focusable, ScrollView):
 
     def _right(self):
         if self.has_nonempty_selection:
-            select_end = self._selection_end
+            select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end
         else:
@@ -758,28 +754,28 @@ class TextPad(Themable, Focusable, ScrollView):
 
     def _up(self):
         if self.is_selecting:
-            select_start = self._selection_start
+            select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
         self.move_cursor_up()
 
     def _down(self):
         if self.is_selecting:
-            select_end = self._selection_end
+            select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end
         self.move_cursor_down()
 
     def _pgup(self):
         if self.is_selecting:
-            select_start = self._selection_start
+            select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
         self.move_cursor_up(self.page_lines)
 
     def _pgdn(self):
         if self.is_selecting:
-            select_end = self._selection_end
+            select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end
         self.move_cursor_down(self.page_lines)

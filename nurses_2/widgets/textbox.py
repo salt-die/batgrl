@@ -432,20 +432,8 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         elif rel_x < 0:
             self._box.x -= rel_x
 
-        self._update_selection()
-
-    def _update_selection(self):
         if self.is_selecting:
-            if self._selection_start > self._selection_end:
-                self._selection_start, self._selection_end = (
-                    self._selection_end,
-                    self._selection_start,
-                )
-
-            if self.cursor < self._selection_start:
-                self._selection_start = self.cursor
-            elif self.cursor > self._selection_end:
-                self._selection_end = self.cursor
+            self._selection_end = self.cursor
 
         self._highlight_selection()
 
@@ -454,8 +442,12 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         colors[:] = self._box.default_color_pair
 
         if self._selection_start != self._selection_end:
-            start = self._selection_start
-            end = self._selection_end
+            if self._selection_start > self._selection_end:
+                start = self._selection_end
+                end = self._selection_start
+            else:
+                start = self._selection_start
+                end = self._selection_end
 
             colors[0, start:end] = self.color_theme.textbox_selection_highlight
 
@@ -479,6 +471,9 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             return self._del_text(self._selection_start, self._selection_end)
 
     def _del_text(self, start: int, end: int):
+        if start > end:
+            start, end = end, start
+
         if end > self._line_length:
             # ! If we ended up here, something went wrong.
             end = self._line_length
@@ -614,7 +609,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
 
     def _left(self):
         if self.has_nonempty_selection:
-            select_start = self._selection_start
+            select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
         else:
@@ -623,7 +618,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
 
     def _right(self):
         if self.has_nonempty_selection:
-            select_end = self._selection_end
+            select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end
         else:
