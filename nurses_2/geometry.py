@@ -211,7 +211,7 @@ class Region:
     Collection of mutually exclusive bands of rects.
     """
 
-    bands: list[Band] = field(default_factory=[])
+    bands: list[Band] = field(default_factory=list)
 
     def _coalesce(self):
         """
