@@ -16,7 +16,7 @@ from wcwidth import wcwidth
 
 from .. import easings
 from ..colors import ColorPair
-from ..geometry import Point, Rect, Region, Size, clamp, lerp
+from ..geometry import Point, Region, Size, clamp, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
 
 __all__ = [
@@ -26,7 +26,6 @@ __all__ = [
     "Point",
     "PosHint",
     "PosHintDict",
-    "Rect",
     "Size",
     "SizeHint",
     "SizeHintDict",
@@ -476,7 +475,7 @@ def subscribable(setter):
     return wrapper
 
 
-class Widget(Rect):
+class Widget:
     """
     Base class for creating widgets.
 
@@ -711,8 +710,11 @@ class Widget(Rect):
 
     @pos.setter
     @subscribable
-    def pos(self, point: Point):
-        self._pos = Point(*point)
+    def pos(self, pos: Point):
+        if pos == self._pos:
+            return
+
+        self._pos = Point(*pos)
         if (root := self.root) is not None:
             root.regions_need_update = True
 
@@ -922,19 +924,21 @@ class Widget(Rect):
         else:
             y_anchor, x_anchor = self._pos_hint.anchor
 
+        top, left = self.pos
         if self._pos_hint.y_hint is not None:
-            self.top = (
+            top = (
                 round_down(self.parent.height * self._pos_hint.y_hint)
                 - round_down(height * y_anchor)
                 + self._pos_hint.y_offset
             )
 
         if self._pos_hint.x_hint is not None:
-            self.left = (
+            left = (
                 round_down(self.parent.width * self._pos_hint.x_hint)
                 - round_down(width * x_anchor)
                 + self._pos_hint.x_offset
             )
+        self.pos = top, left
 
     def to_local(self, point: Point) -> Point:
         """
@@ -1137,14 +1141,13 @@ class Widget(Rect):
         if not self.region:
             return
 
-        if not self.is_transparent:
-            if self.background_char is not None:
-                for index in self.region.indices():
-                    canvas[index.to_slices()] = style_char(self.background_char)
+        if self.background_char is not None:
+            for index in self.region.indices():
+                canvas[index.to_slices()] = style_char(self.background_char)
 
-            if self.background_color_pair is not None:
-                for index in self.region.indices():
-                    colors[index.to_slices()] = self.background_color_pair
+        if self.background_color_pair is not None:
+            for index in self.region.indices():
+                colors[index.to_slices()] = self.background_color_pair
 
     @staticmethod
     def _tween_lerp(start, end, p):

@@ -4,7 +4,7 @@ Data structures and functions for :mod:`nurses_2` geometry.
 from dataclasses import dataclass, field
 from numbers import Real
 from operator import and_, or_, xor
-from typing import Callable, Iterator, NamedTuple, Protocol
+from typing import Callable, Iterator, NamedTuple
 
 
 class Point(NamedTuple):
@@ -171,11 +171,6 @@ def _merge(op: BoolOp, a: list[int], b: list[int]) -> list[int]:
             walls.append(threshold)
 
     return walls
-
-
-class Rect(Protocol):
-    absolute_pos: Point
-    size: Size
 
 
 @dataclass(slots=True)
@@ -420,7 +415,7 @@ class Region:
         return Index(self.bands[0].y1, self.bands[-1].y2, left, right)
 
     @classmethod
-    def from_rect(cls, rect: Rect) -> "Region":
-        y, x = rect.absolute_pos
-        h, w = rect.size
+    def from_rect(cls, pos: Point, size: Size) -> "Region":
+        y, x = pos
+        h, w = size
         return cls([Band(y, y + h, [x, x + w])])

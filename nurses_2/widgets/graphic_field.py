@@ -241,52 +241,44 @@ class GraphicParticleField(Widget):
         """
         return len(self.particle_positions)
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        """
-        Paint region given by `source` into `canvas_view` and `colors_view`.
-        """
-        vert_slice, hori_slice = source
-        top = vert_slice.start
-        height = vert_slice.stop - top
-        left = hori_slice.start
-        width = hori_slice.stop - left
-
-        pos = self.particle_positions - (2 * top, left)
-        where_inbounds = np.nonzero(
-            (((0, 0) <= pos) & (pos < (2 * height, width))).all(axis=1)
-        )
-        local_ys, local_xs = pos[where_inbounds].T
-
-        ch, cw, _ = colors_view.shape
-        texture_view = (
-            colors_view.reshape(ch, cw, 2, 3).swapaxes(1, 2).reshape(2 * ch, width, 3)
-        )
-        colors = self.particle_colors[where_inbounds]
-        if not self.is_transparent:
-            texture_view[local_ys, local_xs] = colors[..., :3]
-        else:
-            mask = canvas_view != style_char("▀")
-            colors_view[..., :3][mask] = colors_view[..., 3:][mask]
-
-            buffer = np.subtract(
-                colors[:, :3], texture_view[local_ys, local_xs], dtype=float
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        offy, offx = self.absolute_pos
+        palphas = self.particle_alphas
+        pcolors = self.particle_colors
+        ppos = self.particle_positions
+        for index in self.region.indices():
+            height = index.bottom - index.top
+            width = index.right - index.left
+            pos = ppos - (index.top - offy, index.left - offx)
+            where_inbounds = np.nonzero(
+                (((0, 0) <= pos) & (pos < (2 * height, width))).all(axis=1)
             )
-            buffer *= colors[:, 3, None]
-            buffer *= self.particle_alphas[where_inbounds][:, None]
-            buffer /= 255
-            texture_view[local_ys, local_xs] = (
-                buffer + texture_view[local_ys, local_xs]
-            ).astype(np.uint8)
+            ys, xs = pos[where_inbounds].T
 
-        colors_view[:] = (
-            texture_view.reshape(height, 2, width, 3)
-            .swapaxes(1, 2)
-            .reshape(height, width, 6)
-        )
-        canvas_view[:] = style_char("▀")
-        self.render_children(source, canvas_view, colors_view)
+            ind = index.to_slices()
+            texture = (
+                colors[ind]
+                .reshape(height, width, 2, 3)
+                .swapaxes(1, 2)
+                .reshape(2 * height, width, 3)
+            )
+            painted = pcolors[where_inbounds]
+
+            if not self.is_transparent:
+                texture[ys, xs] = painted[..., :3]
+            else:
+                mask = canvas["char"][ind] != "▀"
+                colors[ind][..., :3][mask] = colors[ind][..., 3:][mask]
+
+                buffer = np.subtract(painted[:, :3], texture[ys, xs], dtype=float)
+                buffer *= painted[:, 3, None]
+                buffer *= palphas[where_inbounds][:, None]
+                buffer /= 255
+                texture[ys, xs] = (buffer + texture[ys, xs]).astype(np.uint8)
+
+            colors[ind] = (
+                texture.reshape(height, 2, width, 3)
+                .swapaxes(1, 2)
+                .reshape(height, width, 6)
+            )
+            canvas[ind] = style_char("▀")

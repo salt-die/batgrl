@@ -2,11 +2,10 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.widgets.behaviors.effect import Effect
 from nurses_2.widgets.graphic_widget import GraphicWidget
 
 
-class MatrixWidget(Effect, GraphicWidget):
+class MatrixWidget(GraphicWidget):
     def on_add(self):
         super().on_add()
         self._glow = 0
@@ -36,12 +35,25 @@ class MatrixWidget(Effect, GraphicWidget):
 
             await asyncio.sleep(sleep)
 
-    def apply_effect(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(self, canvas, colors):
+        super().render(canvas, colors)
         glow = self._glow
-        visible = self.texture[..., 3] == 255
-        colors_view[..., :3][visible[::2]] = (
-            colors_view[..., :3][visible[::2]] * (1 - glow) + glow * 255
-        ).astype(int)
-        colors_view[..., 3:][visible[1::2]] = (
-            colors_view[..., 3:][visible[1::2]] * (1 - glow) + glow * 255
-        ).astype(int)
+        abs_pos = self.absolute_pos
+        for index in self.region.indices():
+            ys, xs = index.to_slices()
+            offy, offx = index.to_slices(abs_pos)
+
+            visible = (
+                self.texture[
+                    2 * offy.start : 2 * offy.stop, 2 * offx.start : 2 * offx.stop, 3
+                ]
+                == 255
+            )
+            fg = colors[ys, xs, :3]
+            fg[visible[::2]] = (fg[visible[::2]] * (1 - glow) + glow * 255).astype(
+                np.uint8
+            )
+            bg = colors[ys, xs, 3:]
+            bg[visible[1::2]] = (bg[visible[1::2]] * (1 - glow) + glow * 255).astype(
+                np.uint8
+            )

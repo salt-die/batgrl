@@ -8,7 +8,6 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from ..geometry import Band
 from .widget import Point, Region, Size
 
 __all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
@@ -72,16 +71,15 @@ def composite(
     """
     sh, sw, _ = source.shape
     dh, dw, _ = dest.shape
-    y, x = pos
 
-    source_reg = Region([Band(y, y + sh, [x, x + sw])])
-    dest_reg = Region([Band(0, dh, [0, dw])])
+    dest_reg = Region.from_rect((0, 0), (dh, dw))
+    source_reg = Region.from_rect(pos, (sh, sw))
 
     if intersection := source_reg & dest_reg:
         ind = next(intersection.indices())
 
-        dest_tex = source[ind.to_slices()]
-        source_tex = dest[ind.to_slices(pos)]
+        dest_tex = dest[ind.to_slices()]
+        source_tex = source[ind.to_slices(pos)]
         source_alpha = source_tex[..., 3]
 
         if mask_mode:

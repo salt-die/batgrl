@@ -94,10 +94,12 @@ class _Root(Widget):
 
     def _update_regions(self):
         if self.regions_need_update:
-            self.region = Region.from_rect(self)
+            self.region = Region.from_rect(self.pos, self.size)
             for child in self.walk_preorder():
                 if child.is_enabled and child.is_visible:
-                    child.region = child.parent.region & Region.from_rect(child)
+                    child.region = child.parent.region & Region.from_rect(
+                        child.absolute_pos, child.size
+                    )
 
             for child in self.walk_reverse_postorder():
                 if child.is_enabled and child.is_visible:
@@ -107,7 +109,7 @@ class _Root(Widget):
             self.regions_need_update = False
 
     def _render_tree(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        transparent_stack = []
+        transparent_stack: list[Widget] = []
         for child in self.walk_reverse_postorder():
             if child.is_enabled and child.is_visible:
                 if child.is_transparent:

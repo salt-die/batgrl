@@ -15,6 +15,7 @@ from .widget import (
     Point,
     PosHint,
     PosHintDict,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
@@ -248,6 +249,8 @@ class Animation(Widget):
         if path is not None:
             paths = sorted(path.iterdir(), key=lambda file: file.name)
             self.frames = [Image(path=path, size=self.size) for path in paths]
+            for frame in self.frames:
+                frame.parent = self
 
         self.frame_durations = _check_frame_durations(self.frames, frame_durations)
         self.alpha = alpha
@@ -256,6 +259,16 @@ class Animation(Widget):
         self.reverse = reverse
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
+
+    @property
+    def region(self) -> Region:
+        return self._region
+
+    @region.setter
+    def region(self, region: Region):
+        self._region = region
+        for frame in self.frames:
+            frame.region = region
 
     def on_remove(self):
         self.pause()
@@ -352,16 +365,11 @@ class Animation(Widget):
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         if self.frames:
-            self.frames[self._i].render(canvas_view, colors_view, source)
-
-        self.render_children(source, canvas_view, colors_view)
+            self.frames[self._i].render(canvas, colors)
+        else:
+            super().render(canvas, colors)
 
     @classmethod
     def from_textures(
@@ -411,6 +419,8 @@ class Animation(Widget):
             )
             for texture in textures
         ]
+        for frame in animation.frames:
+            frame.parent = animation
         animation.frame_durations = _check_frame_durations(
             animation.frames, frame_durations
         )
@@ -460,6 +470,7 @@ class Animation(Widget):
             image.interpolation = animation.interpolation
             image.size = animation.size
             image.alpha = animation.alpha
+            image.parent = animation
         animation.frame_durations = _check_frame_durations(
             animation.frames, frame_durations
         )

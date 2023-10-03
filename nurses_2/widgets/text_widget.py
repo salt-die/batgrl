@@ -16,7 +16,7 @@ from .widget import (
     Point,
     PosHint,
     PosHintDict,
-    Rect,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
@@ -35,7 +35,7 @@ __all__ = [
     "Point",
     "PosHint",
     "PosHintDict",
-    "Rect",
+    "Region",
     "Size",
     "SizeHint",
     "SizeHintDict",
@@ -438,10 +438,11 @@ class TextWidget(Widget):
                 ys, xs = index.to_slices()
                 offy, offx = index.to_slices(abs_pos)
 
-                source = self.canvas[offy, offx]
-                visible = np.isin(source["char"], (" ", "⠀"), invert=True)
+                visible = np.isin(
+                    self.canvas[offy, offx]["char"], (" ", "⠀"), invert=True
+                )
 
-                canvas[ys, xs][visible] = source[visible]
+                canvas[ys, xs][visible] = self.canvas[offy, offx][visible]
                 colors[ys, xs, :3][visible] = self.colors[offy, offx, :3][visible]
         else:
             for index in self.region.indices():

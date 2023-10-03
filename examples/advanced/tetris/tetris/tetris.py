@@ -158,7 +158,7 @@ class Tetris(Image):
 
         self.add_widgets(held_border, next_border, score_border, level_border)
 
-        for widget in self.walk():
+        for widget in self.walk_preorder():
             setup_background(widget)
 
         self.held_piece = Piece(
@@ -440,7 +440,6 @@ class Tetris(Image):
             current_piece.texture,
             self.matrix_widget.texture,
             (2 * y, x),
-            mask_mode=True,
         )
         task_name = str(next(QUEUE_ID))
         self._clear_lines_queue.append(

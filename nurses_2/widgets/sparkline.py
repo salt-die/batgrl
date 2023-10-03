@@ -48,11 +48,6 @@ class _Tooltip(TextWidget):
         self.is_enabled = self.selector.is_enabled = False
 
 
-class _BinSelector(Widget):
-    def render(self, _, colors_view, source: tuple[slice, slice]):
-        colors_view[source][..., :3] = self.parent.highlight_color
-
-
 class Sparkline(TextWidget):
     """
     A sparkline widget for displaying sequential data.
@@ -263,10 +258,11 @@ class Sparkline(TextWidget):
             background_color_pair=background_color_pair,
         )
 
-        self._selector = _BinSelector(
+        self._selector = Widget(
             size=(self.height, 1),
             size_hint={"height_hint": 1.0},
             is_enabled=False,
+            is_transparent=True,
         )
         self.add_widget(self._selector)
 
@@ -282,7 +278,6 @@ class Sparkline(TextWidget):
         self.tooltip_color_pair = tooltip_color_pair
         self.show_tooltip = show_tooltip
         self.highlight_color = highlight_color
-        """Color of highlighted value of the sparkline."""
         self._min_color = min_color
         """Color of minimum value of the sparkline."""
         self._max_color = max_color
@@ -300,6 +295,18 @@ class Sparkline(TextWidget):
         """Maximum of each bin."""
         self._means: NDArray[np.float64]
         """Arithmetic mean of each bin."""
+
+    @property
+    def highlight_color(self) -> Color:
+        """Color of highlighted value of the sparkline."""
+        return self._highlight_color
+
+    @highlight_color.setter
+    def highlight_color(self, highlight_color: Color):
+        self._highlight_color = highlight_color
+        self._selector.background_color_pair = ColorPair.from_colors(
+            highlight_color, self.default_bg_color
+        )
 
     @property
     def show_tooltip(self) -> bool:
@@ -406,7 +413,7 @@ class Sparkline(TextWidget):
             return
 
         _, x = self.to_local(mouse_event.position)
-        if len(self._means) > x and self.show_tooltip:
+        if self.show_tooltip and len(self._means) > x:
             start = f"{self._walls[x]:8d}"
             stop = f"{self._walls[x + 1]:8d}"
             min_ = _get_float_text(self._mins[x])

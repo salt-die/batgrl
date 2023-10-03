@@ -20,6 +20,7 @@ class Minefield(Grid):
             size=count.shape,
             is_light=False,
             default_color_pair=HIDDEN,
+            is_transparent=True,
             **kwargs,
         )
         self.count = count
@@ -224,20 +225,12 @@ class Minefield(Grid):
         self._is_gameover = True
         self.parent.game_over(win=win)
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
-        canvas_source = self.canvas[source]
-        visible = self.hidden[source] != 0
+    def render(self, canvas, colors):
+        abs_pos = self.absolute_pos
+        for index in self.region.indices():
+            ind = index.to_slices()
+            off = index.to_slices(abs_pos)
+            visible = self.hidden[off] != 0
 
-        canvas_view[visible] = canvas_source[visible]
-        colors_view[visible] = self.colors[source][visible]
-
-        self.render_children(source, canvas_view, colors_view)
-
-        if self.hidden_cells.sum() == self.nmines:
-            self._game_over(win=True)
-            return
-
-    def _game_over(self, win: bool):
-        self.hidden[:] = 0
-        self._is_gameover = True
-        self.parent.game_over(win=win)
+            canvas[ind][visible] = self.canvas[off][visible]
+            colors[ind][visible] = self.colors[off][visible]
