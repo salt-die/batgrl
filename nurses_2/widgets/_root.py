@@ -100,6 +100,8 @@ class _Root(Widget):
                     child.region = child.parent.region & Region.from_rect(
                         child.absolute_pos, child.size
                     )
+                else:
+                    child.region = Region()
 
             for child in self.walk_reverse_postorder():
                 if child.is_enabled and child.is_visible:
