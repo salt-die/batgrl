@@ -90,7 +90,6 @@ DEFAULT_COLOR_THEME = ColorTheme.from_hexes(
     textbox_primary="FFF0F6070C25",
     textbox_selection_highlight="FFF0F60F1847",
     textbox_placeholder="2A3A92070C25",
-    panel="4D67FF070C25",
     button_normal="DDE4ED2A3CA0",
     button_hover="FFF0F63248C0",
     button_press="FFF0F6c4a219",

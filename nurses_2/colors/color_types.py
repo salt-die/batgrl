@@ -287,8 +287,6 @@ class ColorTheme(NamedTuple):
         Textbox selection highlight color pair.
     textbox_placeholder : ColorPair
         Textbox placeholder text color pair.
-    panel : ColorPair
-        Text panel color pair.
     button_normal : ColorPair
         Button color pair.
     button_hover : ColorPair
@@ -338,8 +336,6 @@ class ColorTheme(NamedTuple):
         Textbox selection highlight color pair.
     textbox_placeholder : ColorPair
         Textbox placeholder text color pair.
-    panel : ColorPair
-        Text panel color pair.
     button_normal : ColorPair
         Button color pair.
     button_hover : ColorPair
@@ -391,7 +387,6 @@ class ColorTheme(NamedTuple):
     textbox_primary: ColorPair
     textbox_selection_highlight: ColorPair
     textbox_placeholder: ColorPair
-    panel: ColorPair
     button_normal: ColorPair
     button_hover: ColorPair
     button_press: ColorPair
@@ -414,7 +409,6 @@ class ColorTheme(NamedTuple):
     def from_hexes(
         cls,
         primary: str,
-        panel: str,
         pad_line_highlight: str,
         pad_selection_highlight: str,
         textbox_primary: str,
@@ -457,8 +451,6 @@ class ColorTheme(NamedTuple):
             Hex code for textbox selection highlight color pair.
         textbox_placeholder : str
             Hex code for textbox placeholder text color pair.
-        panel : str
-            Hex code for text panel color pair.
         button_normal : str
             Hex code for button color pair.
         button_hover : str
@@ -502,7 +494,6 @@ class ColorTheme(NamedTuple):
             ColorPair.from_hex(textbox_primary),
             ColorPair.from_hex(textbox_selection_highlight),
             ColorPair.from_hex(textbox_placeholder),
-            ColorPair.from_hex(panel),
             ColorPair.from_hex(button_normal),
             ColorPair.from_hex(button_hover),
             ColorPair.from_hex(button_press),
