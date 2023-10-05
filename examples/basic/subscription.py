@@ -1,7 +1,7 @@
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.scroll_view import ScrollView
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.window import Window
 
 
@@ -13,9 +13,7 @@ class SubscriptionApp(App):
             show_horizontal_bar=False,
             show_vertical_bar=False,
         )
-        label = TextWidget(
-            size=(2, 100), default_color_pair=DEFAULT_COLOR_THEME.primary
-        )
+        label = Text(size=(2, 100), default_color_pair=DEFAULT_COLOR_THEME.primary)
 
         label.subscribe(window, "pos", lambda: label.add_str(f"{window.pos}".ljust(30)))
         label.subscribe(

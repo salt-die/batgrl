@@ -16,7 +16,7 @@ from .behaviors.toggle_button_behavior import (
     ToggleState,
 )
 from .grid_layout import GridLayout
-from .text_widget import TextWidget
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -263,10 +263,10 @@ class MenuItem(Themable, ToggleButtonBehavior, Widget):
 
         self._item_disabled = item_disabled
 
-        self.left_label = TextWidget(size=(1, wcswidth(left_label)))
+        self.left_label = Text(size=(1, wcswidth(left_label)))
         self.left_label.add_str(left_label)
 
-        self.right_label = TextWidget(
+        self.right_label = Text(
             size=(1, wcswidth(right_label)),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
         )
@@ -832,7 +832,7 @@ class Menu(GridLayout):
         yield menu_widget
 
 
-class _MenuButton(Themable, ToggleButtonBehavior, TextWidget):
+class _MenuButton(Themable, ToggleButtonBehavior, Text):
     def __init__(self, label, menu, group):
         super().__init__(
             size=(1, wcswidth(label) + 2), group=group, allow_no_selection=True

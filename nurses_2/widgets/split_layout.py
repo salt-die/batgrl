@@ -3,7 +3,7 @@ Draggable horizontal and vertical split layouts.
 """
 from ..colors import AColor, ColorPair
 from .behaviors.grabbable import Grabbable
-from .graphic_widget import GraphicWidget
+from .graphics import Graphics
 from .widget import (
     Point,
     PosHint,
@@ -29,7 +29,7 @@ __all__ = [
 AGRAY = AColor(127, 127, 127, 127)
 
 
-class _Handle(Grabbable, GraphicWidget):
+class _Handle(Grabbable, Graphics):
     def __init__(self, size_hint):
         super().__init__(
             size=(1, 1),

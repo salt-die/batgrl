@@ -8,14 +8,14 @@ from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
 from .scroll_view import ScrollView
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     add_text,
     style_char,
 )
@@ -275,8 +275,8 @@ class TextPad(Themable, Focusable, ScrollView):
         self._undo_buffer = []
         self._undo_buffer_type = "add"
 
-        self._cursor = TextWidget(size=(1, 1), is_enabled=False)
-        self._pad = TextWidget(size=(1, 1))
+        self._cursor = Text(size=(1, 1), is_enabled=False)
+        self._pad = Text(size=(1, 1))
         self._pad.add_widget(self._cursor)
 
         super().__init__(

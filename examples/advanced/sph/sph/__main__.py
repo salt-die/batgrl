@@ -5,9 +5,9 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import BLACK, WHITE_ON_BLACK, Color, ColorPair
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 from nurses_2.widgets.slider import Slider
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 from .solver import SPHSolver
 
@@ -16,7 +16,7 @@ FILL_COLOR = Color.from_hex("2fa399")
 WATER_ON_BLACK = ColorPair.from_colors(WATER_COLOR, BLACK)
 
 
-class SPH(GraphicWidget):
+class SPH(Graphics):
     def __init__(self, nparticles, is_transparent=False, **kwargs):
         super().__init__(is_transparent=is_transparent, **kwargs)
         y, x = self.size
@@ -92,7 +92,7 @@ class SPHApp(App):
         )
         sliders_height = (len(slider_settings) + 1) // 2 * 2
 
-        container = TextWidget(
+        container = Text(
             size=(height, width),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             default_color_pair=WHITE_ON_BLACK,

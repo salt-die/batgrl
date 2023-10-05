@@ -3,14 +3,14 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.file_chooser import FileChooser
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
 
 
 class FileApp(App):
     async def on_start(self):
-        label = TextWidget(size=(1, 50), pos=(0, 26))
+        label = Text(size=(1, 50), pos=(0, 26))
 
         def select_callback(path):
             label.add_str(f"{f'{path.name} selected!':<50}"[:50])

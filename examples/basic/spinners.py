@@ -5,8 +5,8 @@ from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.spinners import SPINNERS
 from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.scroll_view import ScrollView
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.text_animation import TextAnimation
-from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.widget import Widget
 
 COLUMNS = 2
@@ -29,7 +29,7 @@ class SpinnersApp(App):
         )
 
         for name, frames in SPINNERS.items():
-            label = TextWidget(
+            label = Text(
                 pos_hint={"y_hint": 0.5, "anchor": "left"}, default_color_pair=PRIMARY
             )
             label.set_text(f"{name}: ")

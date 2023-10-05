@@ -36,7 +36,7 @@ def add_text(
     Parameters
     ----------
     canvas : NDArray[Char]
-        A 1- or 2-dimensional view of a `TextWidget` canvas.
+        A 1- or 2-dimensional view of a `Text` canvas.
     text : str
         Text to add to canvas.
     bold : bool, default: False

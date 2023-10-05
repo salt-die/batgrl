@@ -4,7 +4,7 @@ A 7x8 14-segment (plus decimal point) display widget.
 import numpy as np
 
 from ..colors import BLACK, Color, ColorPair
-from .text_widget import TextWidget
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -364,7 +364,7 @@ class DigitalDisplay(Widget):
         self.off_color_pair = off_color_pair
         self.on_color_pair = on_color_pair
 
-        self._display = TextWidget(
+        self._display = Text(
             default_color_pair=off_color_pair, pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
         self._display.set_text(

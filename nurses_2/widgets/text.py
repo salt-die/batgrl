@@ -39,7 +39,7 @@ __all__ = [
     "Size",
     "SizeHint",
     "SizeHintDict",
-    "TextWidget",
+    "Text",
     "add_text",
     "clamp",
     "lerp",
@@ -63,10 +63,10 @@ Border = Literal[
     "heavy_dashed_2",
     "heavy_dashed_3",
 ]
-"""Border styles for :meth:`nurses_2.text_widget.TextWidget.add_border`."""
+"""Border styles for :meth:`nurses_2.text_widget.Text.add_border`."""
 
 
-class TextWidget(Widget):
+class Text(Widget):
     """
     A text widget. Displays arbitrary text data.
 

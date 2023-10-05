@@ -8,7 +8,7 @@ from wcwidth import wcswidth
 from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .text_widget import TextWidget
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -190,7 +190,7 @@ class Button(Themable, ButtonBehavior, Widget):
         is_enabled: bool = True,
         background_color_pair: ColorPair | None = None,
     ):
-        self._label_widget = TextWidget(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
+        self._label_widget = Text(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
         super().__init__(
             always_release=always_release,

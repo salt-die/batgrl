@@ -1,12 +1,12 @@
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Widget
 
 from .colors import DEFAULT_COLOR_PAIR
 from .effects import Darken
 
 
-class OKButton(ButtonBehavior, TextWidget):
+class OKButton(ButtonBehavior, Text):
     def __init__(self):
         super().__init__(size=(1, 6), pos=(3, 7), default_color_pair=DEFAULT_COLOR_PAIR)
         self.add_str("[ OK ]")
@@ -27,7 +27,7 @@ class Modal(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.background = Darken(size_hint={"height_hint": 1.0, "width_hint": 1.0})
-        self.message_box = TextWidget(
+        self.message_box = Text(
             size=(6, 20),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             default_color_pair=DEFAULT_COLOR_PAIR,

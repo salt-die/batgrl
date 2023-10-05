@@ -2,10 +2,10 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 
 
-class MatrixWidget(GraphicWidget):
+class MatrixWidget(Graphics):
     def on_add(self):
         super().on_add()
         self._glow = 0

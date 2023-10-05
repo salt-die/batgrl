@@ -1,6 +1,6 @@
 from nurses_2.colors import BLACK, Color, ColorPair
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Widget
 
 from .particles import Element
@@ -8,7 +8,7 @@ from .particles import Element
 MENU_BACKGROUND_COLOR = Color(222, 224, 127)  # Mustard
 
 
-class ElementButton(ButtonBehavior, TextWidget):
+class ElementButton(ButtonBehavior, Text):
     """
     Button which selects an element when pressed and updates the element display.
     """

@@ -22,7 +22,7 @@ from nurses_2.colors import (
 from nurses_2.widgets.behaviors.grabbable import Grabbable
 from nurses_2.widgets.grid_layout import GridLayout
 from nurses_2.widgets.shadow_caster import Camera, LightSource, ShadowCaster
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.toggle_button import ToggleButton
 from nurses_2.widgets.widget import Widget, clamp
 
@@ -34,12 +34,10 @@ PRIMARY = DEFAULT_COLOR_THEME.primary
 SLIDER_COLOR_PAIR = ColorPair.from_colors(WHITE, PRIMARY.bg_color)
 
 
-class Selector(Grabbable, TextWidget):
+class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.indicator = TextWidget(
-            size=(1, 1), default_color_pair=WHITE_ON_BLACK.reversed()
-        )
+        self.indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_BLACK.reversed())
         self.add_widget(self.indicator)
         self.callback = None
 
@@ -84,7 +82,7 @@ class ShadowCasterApp(App):
 
             return callback
 
-        button_label = TextWidget(**label_kwargs)
+        button_label = Text(**label_kwargs)
         button_label.set_text("Caster Restrictiveness:")
 
         button_a = ToggleButton(
@@ -127,19 +125,19 @@ class ShadowCasterApp(App):
         slider_d.callback = lambda i: setattr(caster, "radius", 10 + round(30 / 23 * i))
         slider_d.indicator.x = slider_d.width - 1
 
-        label_a = TextWidget(**label_kwargs)
+        label_a = Text(**label_kwargs)
         label_a.set_text("Light source A:")
 
-        label_b = TextWidget(**label_kwargs)
+        label_b = Text(**label_kwargs)
         label_b.set_text("Light source B:")
 
-        label_c = TextWidget(**label_kwargs)
+        label_c = Text(**label_kwargs)
         label_c.set_text("Ambient Light:")
 
-        label_d = TextWidget(**label_kwargs)
+        label_d = Text(**label_kwargs)
         label_d.set_text("Radius:")
 
-        decay_label = TextWidget(**label_kwargs)
+        decay_label = Text(**label_kwargs)
         decay_label.set_text("Light Decay:")
 
         def make_decay_callback(i):

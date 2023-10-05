@@ -3,7 +3,7 @@ Support for loading and rendering text with FIGfonts.
 
 A FIGfont is a file which describes how to render ascii art from
 normal text. `FIGFont.render_array` will render the ascii art into a numpy
-array that can be copied into a `TextWidget` canvas. `FIGFont.render_str`
+array that can be copied into a `Text` canvas. `FIGFont.render_str`
 will render the ascii art into a multiline string.
 
 References:

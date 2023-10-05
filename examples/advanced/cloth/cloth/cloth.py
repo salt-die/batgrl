@@ -5,12 +5,12 @@ import numpy as np
 
 from nurses_2.colors import AWHITE, AColor
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget, Size
+from nurses_2.widgets.graphics import Graphics, Size
 
 from .mesh import Mesh
 
 
-class Cloth(GraphicWidget):
+class Cloth(Graphics):
     def __init__(self, mesh_size: Size, scale=5, mesh_color: AColor = AWHITE, **kwargs):
         super().__init__(**kwargs)
 

@@ -21,7 +21,7 @@ from cv2 import filter2D
 from nurses_2.app import run_widget_as_app
 from nurses_2.colors import AColor
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 
 # Kernels
 CONVECTION = np.array(
@@ -60,7 +60,7 @@ def sigmoid(array):
     return 1 / (1 + np.e**-array)
 
 
-class Fluid(GraphicWidget):
+class Fluid(Graphics):
     def on_add(self):
         super().on_add()
         self.on_size()

@@ -7,9 +7,9 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import Color, ColorPair
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 from nurses_2.widgets.slider import Slider
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Widget, clamp
 
 FIRE_PALETTE = np.array(
@@ -61,7 +61,7 @@ SLIDER_FILL = Color(159, 47, 7)
 SLIDER_HANDLE = ColorPair(239, 239, 199, 0, 0, 0)
 
 
-class DoomFire(GraphicWidget):
+class DoomFire(Graphics):
     def __init__(self, fire_strength=MAX_STRENGTH, **kwargs):
         super().__init__(**kwargs)
 
@@ -125,7 +125,7 @@ class DoomFireApp(App):
     async def on_start(self):
         doomfire = DoomFire(size_hint={"height_hint": 1.0, "width_hint": 1.0})
 
-        strength_label = TextWidget(
+        strength_label = Text(
             size=(1, 22),
             pos_hint={"x_hint": 0.5, "anchor": "top"},
             default_color_pair=SLIDER_DEFAULT,

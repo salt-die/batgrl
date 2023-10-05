@@ -12,17 +12,17 @@ import cv2
 import numpy as np
 
 from ..colors import WHITE_ON_BLACK, ColorPair
-from .text_tools import binary_to_braille
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     style_char,
 )
+from .text_tools import binary_to_braille
 
 __all__ = [
     "BrailleVideoPlayer",
@@ -37,7 +37,7 @@ __all__ = [
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
 
-class BrailleVideoPlayer(TextWidget):
+class BrailleVideoPlayer(Text):
     """
     A video player that renders to braille unicode characters in grayscale.
 

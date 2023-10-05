@@ -5,7 +5,7 @@ can be selected and toggled open or closed.
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .text_widget import TextWidget
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 
-class TreeViewNode(Themable, ButtonBehavior, TextWidget):
+class TreeViewNode(Themable, ButtonBehavior, Text):
     """
     A node of a :class:`TreeView`.
 

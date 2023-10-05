@@ -5,13 +5,13 @@ from nurses_2.app import App
 from nurses_2.widgets.button import Button
 from nurses_2.widgets.flat_toggle import FlatToggle
 from nurses_2.widgets.grid_layout import GridLayout
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
 
 
 class ButtonApp(App):
     async def on_start(self):
-        display = TextWidget(size=(1, 20), pos=(1, 9))
+        display = Text(size=(1, 20), pos=(1, 9))
 
         def button_callback(i):
             def callback():

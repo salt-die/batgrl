@@ -8,7 +8,7 @@ from nurses_2.app import App
 from nurses_2.colors import BLACK, RED, ColorPair, gradient, lerp_colors
 from nurses_2.fonts import FIGFont
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior, ButtonState
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BIG_FONT = FIGFont.from_path(ASSETS / "delta_corps_priest_1.flf")
@@ -17,7 +17,7 @@ RED_ON_BLACK = ColorPair.from_colors(RED, BLACK)
 TRANSITIONS = np.array([0.07, 0.004, 1e-5])
 
 
-class Bleed(TextWidget):
+class Bleed(Text):
     def __init__(
         self, banner, button, blood_color_pair: ColorPair = RED_ON_BLACK, **kwargs
     ):
@@ -47,7 +47,7 @@ class Bleed(TextWidget):
             await asyncio.sleep(0.03)
 
     async def _drip(self):
-        drop = TextWidget(default_color_pair=self.blood_color_pair, is_transparent=True)
+        drop = Text(default_color_pair=self.blood_color_pair, is_transparent=True)
         drop.pos = self._start_locs[randrange(len(self._start_locs))]
         drop.size = self.height - drop.y, 1
 
@@ -78,7 +78,7 @@ class Bleed(TextWidget):
         self.remove_widget(drop)
 
 
-class TextButton(ButtonBehavior, TextWidget):
+class TextButton(ButtonBehavior, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._dark_red = lerp_colors(RED, BLACK, 0.35)
@@ -136,7 +136,7 @@ class DripApp(App):
         button.canvas["char"] = button_canvas
 
         h, w = banner_canvas.shape
-        banner = TextWidget(size=(h, w), is_transparent=True)
+        banner = Text(size=(h, w), is_transparent=True)
         banner.canvas["char"] = banner_canvas
 
         bleed = Bleed(

@@ -4,8 +4,8 @@ import numpy as np
 
 from nurses_2.colors import ABLACK, ColorPair
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget, Size
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.graphics import Graphics, Size
+from nurses_2.widgets.text import Text
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air
@@ -19,7 +19,7 @@ def particles_to_colors(particle):
     return particle.COLOR
 
 
-class Sandbox(GraphicWidget):
+class Sandbox(Graphics):
     """
     Sandbox widget.
     """
@@ -37,7 +37,7 @@ class Sandbox(GraphicWidget):
             for x in range(self.width):
                 world[y, x] = Air(world, (y, x))
 
-        self.display = TextWidget(
+        self.display = Text(
             size=(1, 9),
             pos=(1, 0),
             pos_hint={"x_hint": 0.5},

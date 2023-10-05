@@ -4,8 +4,8 @@ from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
 from .scroll_view import ScrollView
+from .text import Text, add_text
 from .text_tools import smooth_vertical_bar
-from .text_widget import TextWidget, add_text
 from .widget import (
     Point,
     PosHint,
@@ -260,9 +260,9 @@ class BarChart(Widget):
             background_color_pair=background_color_pair,
         )
 
-        self._bars = TextWidget()
-        self._y_ticks = TextWidget()
-        self._y_label_widget = TextWidget()
+        self._bars = Text()
+        self._y_ticks = Text()
+        self._y_label_widget = Text()
         self._scrollview = ScrollView(
             show_horizontal_bar=False,
             show_vertical_bar=False,
@@ -300,7 +300,7 @@ class BarChart(Widget):
         self._chart_color_pair = chart_color_pair
 
         for child in self.walk():
-            if isinstance(child, TextWidget):
+            if isinstance(child, Text):
                 child.colors[:] = chart_color_pair
 
         self.build_chart()

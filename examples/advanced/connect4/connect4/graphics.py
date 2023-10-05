@@ -4,7 +4,7 @@ from itertools import cycle
 import cv2
 
 from nurses_2.colors import AWHITE, TRANSPARENT, AColor, gradient
-from nurses_2.widgets.graphic_widget import GraphicWidget, Size
+from nurses_2.widgets.graphics import Graphics, Size
 from nurses_2.widgets.grid_layout import GridLayout
 
 BOARD_COLOR = AColor.from_hex("4bade5")
@@ -21,7 +21,7 @@ def x_to_column(x):
             return i - 1
 
 
-class BoardPiece(GraphicWidget):
+class BoardPiece(Graphics):
     """
     A single square of a Connect4 board.
     """
@@ -43,7 +43,7 @@ class BoardPiece(GraphicWidget):
         texture[(texture != TRANSPARENT).all(axis=2)] = BOARD_COLOR
 
 
-class Checker(GraphicWidget):
+class Checker(Graphics):
     def __init__(self, color):
         super().__init__(size=CHECKER_SIZE)
 

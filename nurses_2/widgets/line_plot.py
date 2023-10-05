@@ -14,8 +14,8 @@ from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
 from ..io import MouseEvent, MouseEventType
 from .behaviors.movable import Movable
 from .scroll_view import ScrollView
+from .text import Text, add_text
 from .text_tools import binary_to_box, binary_to_braille
-from .text_widget import TextWidget, add_text
 from .widget import (
     Point,
     PosHint,
@@ -49,7 +49,7 @@ TICK_HALF = TICK_WIDTH // 2
 VERTICAL_HALF = VERTICAL_SPACING // 2
 
 
-class _Legend(Movable, TextWidget):
+class _Legend(Movable, Text):
     def _build_legend(self):
         colors = (
             rainbow_gradient(len(self.labels))
@@ -319,7 +319,7 @@ class LinePlot(Widget):
         )
         self._traces_zoom_index = 0
         """Index of size hint in `PLOT_ZOOM` that `_traces` is using."""
-        self._traces = TextWidget()
+        self._traces = Text()
         self._scrollview = ScrollView(
             show_vertical_bar=False,
             show_horizontal_bar=False,
@@ -328,7 +328,7 @@ class LinePlot(Widget):
         )
         self._scrollview.view = self._traces
 
-        self._x_ticks = TextWidget()
+        self._x_ticks = Text()
 
         def set_x_left():
             self._x_ticks.left = (
@@ -337,18 +337,18 @@ class LinePlot(Widget):
 
         self._x_ticks.subscribe(self._traces, "pos", set_x_left)
 
-        self._y_ticks = TextWidget()
+        self._y_ticks = Text()
 
         def set_y_top():
             self._y_ticks.top = self._traces.top
 
         self._y_ticks.subscribe(self._traces, "pos", set_y_top)
 
-        self._tick_corner = TextWidget(size=(3, TICK_WIDTH + 1))
+        self._tick_corner = Text(size=(3, TICK_WIDTH + 1))
         self._tick_corner.canvas["char"][0, -1] = "└"
 
-        self._x_label_widget = TextWidget()
-        self._y_label_widget = TextWidget()
+        self._x_label_widget = Text()
+        self._y_label_widget = Text()
         self._legend = _Legend(disable_oob=True, is_enabled=False)
         self._legend.labels = legend_labels
 
@@ -392,7 +392,7 @@ class LinePlot(Widget):
         self._plot_color_pair = plot_color_pair
 
         for child in self.walk():
-            if isinstance(child, TextWidget):
+            if isinstance(child, Text):
                 child.colors[:] = plot_color_pair
 
         self._legend._build_legend()

@@ -11,7 +11,7 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .text_widget import TextWidget
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -21,14 +21,14 @@ __all__ = [
     "Size",
     "SizeHint",
     "SizeHintDict",
-    "TabbedWidget",
+    "Tabs",
 ]
 
 # TODO: Movable tabs?
 TAB_SPACING = 3
 
 
-class _Tab(Themable, ToggleButtonBehavior, TextWidget):
+class _Tab(Themable, ToggleButtonBehavior, Text):
     def __init__(self, title, content, **kwargs):
         super().__init__(**kwargs)
         self.title = title
@@ -82,7 +82,7 @@ class _Tab(Themable, ToggleButtonBehavior, TextWidget):
         self._update()
 
 
-class TabbedWidget(Themable, Widget):
+class Tabs(Themable, Widget):
     """
     A tabbed widget.
 
@@ -245,9 +245,7 @@ class TabbedWidget(Themable, Widget):
         h, w = self.size
         self.tab_bar = Widget(size_hint={"width_hint": 1.0}, size=(1, w))
 
-        self.separator = TextWidget(
-            size_hint={"width_hint": 1.0}, size=(1, w), pos=(1, 0)
-        )
+        self.separator = Text(size_hint={"width_hint": 1.0}, size=(1, w), pos=(1, 0))
 
         def _update_sep():
             self.separator.canvas["char"] = "━"
@@ -261,7 +259,7 @@ class TabbedWidget(Themable, Widget):
 
         self.tab_window.subscribe(self, "size", _update_tabs)
 
-        self._tab_underline = TextWidget(size=(1, 1), pos=(1, 0), is_enabled=False)
+        self._tab_underline = Text(size=(1, 1), pos=(1, 0), is_enabled=False)
 
         self._active_tab = None
         self._history = []  # Used to select the last viewed tab when a tab is removed.
@@ -286,7 +284,7 @@ class TabbedWidget(Themable, Widget):
             underline.canvas["char"][0, i] = "╸"
             underline.canvas["char"][0, -i - 1] = "╺"
             i -= 1
-            await asyncio.sleep(0.03)
+            await asyncio.sleep(1 / 60)
 
     def _reposition_tabs(self):
         x = 1

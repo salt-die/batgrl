@@ -27,7 +27,7 @@ from .scroll_view import (
     SizeHint,
     SizeHintDict,
 )
-from .text_widget import TextWidget, add_text
+from .text import Text, add_text
 
 __all__ = [
     "ColumnStyle",
@@ -136,7 +136,7 @@ _ALIGN_FORMATTER = {
 """Convert an alignment to f-string format specification."""
 
 
-class _CellBase(ButtonBehavior, TextWidget):
+class _CellBase(ButtonBehavior, Text):
     """
     Base for cells in a data table.
     """

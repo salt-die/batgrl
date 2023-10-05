@@ -7,17 +7,17 @@ import cv2
 import numpy as np
 
 from ..colors import WHITE_ON_BLACK, ColorPair
-from .text_tools import binary_to_braille
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     style_char,
 )
+from .text_tools import binary_to_braille
 
 __all__ = [
     "BrailleImage",
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class BrailleImage(TextWidget):
+class BrailleImage(Text):
     """
     An image painted with braille unicode characters.
 

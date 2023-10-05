@@ -1,7 +1,7 @@
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.bar_chart import BarChart
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
 
@@ -31,7 +31,7 @@ class BarChartApp(App):
             size=(25, 75),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
         )
-        label = TextWidget(default_color_pair=PRIMARY_COLOR, pos_hint={"x_hint": 0.5})
+        label = Text(default_color_pair=PRIMARY_COLOR, pos_hint={"x_hint": 0.5})
         label.set_text("Top Programming Languages 2023")
         label.subscribe(
             bar_chart, "pos", lambda: setattr(label, "bottom", bar_chart.top)

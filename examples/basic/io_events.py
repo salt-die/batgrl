@@ -5,10 +5,10 @@ from textwrap import dedent
 
 from nurses_2.app import run_widget_as_app
 from nurses_2.io import KeyEvent, MouseEvent, PasteEvent
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 
-class ShowIOEvents(TextWidget):
+class ShowIOEvents(Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

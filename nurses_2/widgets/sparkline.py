@@ -6,18 +6,18 @@ from numpy.typing import NDArray
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, lerp_colors
 from ..io import MouseEvent
-from .text_tools import smooth_vertical_bar
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     add_text,
     style_char,
 )
+from .text_tools import smooth_vertical_bar
 from .widget import Widget
 
 __all__ = [
@@ -43,12 +43,12 @@ def _get_float_text(value: float) -> str:
     return text
 
 
-class _Tooltip(TextWidget):
+class _Tooltip(Text):
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         self.is_enabled = self.selector.is_enabled = False
 
 
-class Sparkline(TextWidget):
+class Sparkline(Text):
     """
     A sparkline widget for displaying sequential data.
 

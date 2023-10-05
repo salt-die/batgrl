@@ -7,17 +7,17 @@ import cv2
 import numpy as np
 
 from ..colors import WHITE_ON_BLACK, ColorPair
-from .text_tools import binary_to_box
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     style_char,
 )
+from .text_tools import binary_to_box
 
 __all__ = [
     "BoxImage",
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class BoxImage(TextWidget):
+class BoxImage(Text):
     """
     An image painted with box unicode characters.
 

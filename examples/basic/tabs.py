@@ -8,7 +8,7 @@ from nurses_2.widgets.animation import Animation
 from nurses_2.widgets.color_picker import ColorPicker
 from nurses_2.widgets.file_chooser import FileChooser
 from nurses_2.widgets.line_plot import LinePlot
-from nurses_2.widgets.tabbed_widget import TabbedWidget
+from nurses_2.widgets.tabs import Tabs
 
 ASSETS = Path(__file__).parent.parent / "assets"
 CAVEMAN_PATH = ASSETS / "caveman"
@@ -20,7 +20,7 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class TabApp(App):
     async def on_start(self):
-        tabbed = TabbedWidget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        tabs = Tabs(size_hint={"height_hint": 1.0, "width_hint": 1.0})
 
         animation = Animation(
             path=CAVEMAN_PATH,
@@ -28,18 +28,18 @@ class TabApp(App):
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
         animation.play()
-        tabbed.add_tab("Animation", animation)
-        tabbed.add_tab(
+        tabs.add_tab("Animation", animation)
+        tabs.add_tab(
             "File Chooser",
             FileChooser(
                 root_dir=ASSETS, size_hint={"height_hint": 1.0, "width_hint": 1.0}
             ),
         )
-        tabbed.add_tab(
+        tabs.add_tab(
             "Color Picker",
             ColorPicker(size_hint={"height_hint": 1.0, "width_hint": 1.0}),
         )
-        tabbed.add_tab(
+        tabs.add_tab(
             "Line Plot",
             LinePlot(
                 xs=[XS, XS, XS],
@@ -51,7 +51,7 @@ class TabApp(App):
                 size_hint={"height_hint": 1.0, "width_hint": 1.0},
             ),
         )
-        self.add_widget(tabbed)
+        self.add_widget(tabs)
 
 
 if __name__ == "__main__":

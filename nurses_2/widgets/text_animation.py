@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .animation import _check_frame_durations
-from .text_widget import Char, TextWidget
+from .text import Char, Text
 from .widget import (
     Point,
     PosHint,
@@ -73,7 +73,7 @@ class TextAnimation(Widget):
 
     Attributes
     ----------
-    frames : list[TextWidget]
+    frames : list[Text]
         Frames of the animation.
     frame_durations : list[int | float]
         Time each frame is displayed.
@@ -207,7 +207,7 @@ class TextAnimation(Widget):
         self.frames = []
         if frames is not None:
             for frame in frames:
-                self.frames.append(TextWidget())
+                self.frames.append(Text())
                 self.frames[-1].set_text(frame)
                 self.frames[-1].parent = self
 

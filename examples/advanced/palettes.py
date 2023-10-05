@@ -7,7 +7,7 @@ import numpy as np
 from nurses_2.app import App
 from nurses_2.colors import BLACK, WHITE, Color
 from nurses_2.widgets.behaviors.grabbable import Grabbable
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Widget, clamp
 
 H = 11
@@ -54,10 +54,10 @@ def text_color(rgb) -> Color:
     return WHITE
 
 
-class Selector(Grabbable, TextWidget):
+class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.indicator = TextWidget(size=(1, 1), default_color_pair=(255, 255, 255) * 2)
+        self.indicator = Text(size=(1, 1), default_color_pair=(255, 255, 255) * 2)
         self.add_widget(self.indicator)
         self.callback = None
 
@@ -80,7 +80,7 @@ class PaletteApp(App):
 
         slope_selector = Selector(size=(1, W), pos=(1, 0), default_char="▬")
 
-        palette = TextWidget(size=(H, W), pos=(2, 0))
+        palette = Text(size=(H, W), pos=(2, 0))
 
         def update_palette():
             start_rgb = hue_selector.colors[0, hue_selector.indicator.x, :3]

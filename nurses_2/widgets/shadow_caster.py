@@ -10,8 +10,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import AWHITE, BLACK, TRANSPARENT, WHITE, AColor, Color, ColorPair
-from .graphic_widget import (
-    GraphicWidget,
+from .graphics import (
+    Graphics,
     Interpolation,
     Point,
     PosHint,
@@ -159,7 +159,7 @@ class _Interval:
         return (other.start, other.end) < (self.start, self.end)
 
 
-class ShadowCaster(GraphicWidget):
+class ShadowCaster(Graphics):
     """
     A restrictive precise angle shadowcaster.
 

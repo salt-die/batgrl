@@ -1,11 +1,11 @@
 from nurses_2.app import App
 from nurses_2.widgets.menu import MenuBar
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 
 class MenuApp(App):
     async def on_start(self):
-        label = TextWidget(size=(1, 50))
+        label = Text(size=(1, 50))
 
         def add_label(text):
             def inner():

@@ -10,7 +10,7 @@ from cv2 import BORDER_CONSTANT, filter2D
 
 from nurses_2.app import run_widget_as_app
 from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 
 KERNEL = np.array(
     [
@@ -22,7 +22,7 @@ KERNEL = np.array(
 UPDATE_SPEED = 0.1
 
 
-class Life(GraphicWidget):
+class Life(Graphics):
     def on_add(self):
         super().on_add()
         self._update_task = asyncio.create_task(self._update())

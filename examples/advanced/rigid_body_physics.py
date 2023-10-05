@@ -15,7 +15,7 @@ from pymunk.vec2d import Vec2d
 
 from nurses_2.app import App
 from nurses_2.colors import AWHITE, AColor
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.texture_tools import composite, read_texture, resize_texture
 
@@ -38,7 +38,7 @@ CRATE = resize_texture(read_texture(PATH_TO_CRATE), BOX_SIZE, "nearest")
 BALL = resize_texture(read_texture(PATH_TO_BALL), BALL_SIZE, "nearest")
 
 
-class SpaceRenderer(GraphicWidget):
+class SpaceRenderer(Graphics):
     def __init__(
         self,
         space: pymunk.Space,

@@ -7,9 +7,9 @@ from random import shuffle
 import numpy as np
 
 from nurses_2.colors import AWHITE
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.texture_tools import composite
 
 from .matrix import MatrixWidget
@@ -60,7 +60,7 @@ def setup_background(widget):
         widget.colors[..., 3:] = widget.parent.colors[top:bottom, left:right, 3:] // 2
 
 
-class Piece(GraphicWidget):
+class Piece(Graphics):
     @property
     def tetromino(self):
         return self._tetromino
@@ -131,28 +131,28 @@ class Tetris(Image):
         self.is_paused = False
 
         # Setup HELD display
-        held_border = TextWidget(size=bsize, pos=(top, left))
+        held_border = Text(size=bsize, pos=(top, left))
         held_border.add_str(f"{'HOLD':^{bsize[1]}}")
-        held_space = TextWidget(**display_geometry)
+        held_space = Text(**display_geometry)
 
         held_border.add_widget(held_space)
 
         # Setup NEXT display
-        next_border = TextWidget(size=bsize, pos=(top, right))
+        next_border = Text(size=bsize, pos=(top, right))
         next_border.add_str(f"{'NEXT':^{bsize[1]}}")
-        next_space = TextWidget(**display_geometry)
+        next_space = Text(**display_geometry)
         next_border.add_widget(next_space)
 
         # Setup SCORE display
-        score_border = TextWidget(size=bsize, pos=(bottom, left))
+        score_border = Text(size=bsize, pos=(bottom, left))
         score_border.add_str(f"{'SCORE':^{bsize[1]}}")
-        self.score_display = TextWidget(**display_geometry)
+        self.score_display = Text(**display_geometry)
         score_border.add_widget(self.score_display)
 
         # Setup LEVEL Display
-        level_border = TextWidget(size=bsize, pos=(bottom, right))
+        level_border = Text(size=bsize, pos=(bottom, right))
         level_border.add_str(f"{'LEVEL':^{bsize[1]}}")
-        self.level_display = TextWidget(**display_geometry)
+        self.level_display = Text(**display_geometry)
 
         level_border.add_widget(self.level_display)
 

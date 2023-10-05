@@ -10,7 +10,7 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .text_widget import TextWidget, add_text
+from .text import Text, add_text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -30,7 +30,7 @@ DARK_GREY = Color.from_hex("333333")
 LIGHT_GREY = Color.from_hex("666666")
 
 
-class _AnimatedToggle(ToggleButtonBehavior, TextWidget):
+class _AnimatedToggle(ToggleButtonBehavior, Text):
     def __init__(
         self, group, allow_no_selection, toggle_state, always_release, bg_color
     ):

@@ -6,8 +6,8 @@ from math import ceil
 import numpy as np
 
 from ..colors import TRANSPARENT, AColor, ColorPair
-from .graphic_widget import (
-    GraphicWidget,
+from .graphics import (
+    Graphics,
     Interpolation,
     Point,
     PosHint,
@@ -29,13 +29,13 @@ __all__ = [
 ]
 
 
-class TiledImage(GraphicWidget):
+class TiledImage(Graphics):
     """
     A tiled image.
 
     Parameters
     ----------
-    tile : GraphicWidget
+    tile : Graphics
         The widget to tile.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
@@ -68,7 +68,7 @@ class TiledImage(GraphicWidget):
 
     Attributes
     ----------
-    tile : GraphicWidget
+    tile : Graphics
         The widget to tile. Setting this attribute updates the
         texture immediately.
     texture : NDArray[np.uint8]
@@ -181,7 +181,7 @@ class TiledImage(GraphicWidget):
     def __init__(
         self,
         *,
-        tile: GraphicWidget,
+        tile: Graphics,
         is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,

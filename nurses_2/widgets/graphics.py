@@ -31,7 +31,7 @@ __all__ = [
     "Anchor",
     "Char",
     "Easing",
-    "GraphicWidget",
+    "Graphics",
     "Interpolation",
     "Point",
     "PosHint",
@@ -47,7 +47,7 @@ __all__ = [
 ]
 
 
-class GraphicWidget(Widget):
+class Graphics(Widget):
     """
     Base for graphic widgets.
 

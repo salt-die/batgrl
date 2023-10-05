@@ -1,7 +1,7 @@
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.text_pad import TextPad
-from nurses_2.widgets.text_widget import TextWidget
 from nurses_2.widgets.textbox import Textbox
 from nurses_2.widgets.window import Window
 
@@ -65,7 +65,7 @@ class TextPadApp(App):
             max_chars=50,
         )
 
-        border = TextWidget(
+        border = Text(
             pos=(1, 0),
             size=(3, 35),
             pos_hint={"x_hint": 0.5, "anchor": "top"},

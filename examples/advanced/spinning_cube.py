@@ -6,7 +6,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.colors import Color
-from nurses_2.widgets.graphic_widget import GraphicWidget, lerp
+from nurses_2.widgets.graphics import Graphics, lerp
 from nurses_2.widgets.image import Image
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -89,7 +89,7 @@ def darken(depth):
     return int(brightness * R), int(brightness * G), int(brightness * B), 255
 
 
-class SpinningCube(GraphicWidget):
+class SpinningCube(Graphics):
     def on_add(self):
         super().on_add()
         self._spin_task = asyncio.create_task(self.spin_forever())

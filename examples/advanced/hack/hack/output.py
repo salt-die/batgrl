@@ -1,6 +1,6 @@
 import asyncio
 
-from nurses_2.widgets.text_widget import TextWidget, add_text
+from nurses_2.widgets.text import Text, add_text
 
 CORRECT_GUESS = """\
 >{}
@@ -20,7 +20,7 @@ INCORRECT_GUESS = """\
 """
 
 
-class Output(TextWidget):
+class Output(Text):
     def __init__(self, header, modal, **kwargs):
         super().__init__(**kwargs)
         self.header = header

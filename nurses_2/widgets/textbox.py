@@ -12,7 +12,7 @@ from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .text_widget import TextWidget, style_char
+from .text import Text, style_char
 from .widget import (
     Char,
     Point,
@@ -275,10 +275,10 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self._undo_buffer = []
         self._undo_buffer_type = "add"
 
-        self._placeholder_widget = TextWidget()
+        self._placeholder_widget = Text()
         self._placeholder_widget.set_text(placeholder)
         self._cursor = Widget(size=(1, 1), is_enabled=False, is_transparent=True)
-        self._box = TextWidget(size=self._placeholder_widget.size)
+        self._box = Text(size=self._placeholder_widget.size)
         self._box.add_widgets(self._placeholder_widget, self._cursor)
 
         self.add_widgets(self._box)

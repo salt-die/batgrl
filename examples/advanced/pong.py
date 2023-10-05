@@ -2,7 +2,7 @@ import asyncio
 
 from nurses_2.app import App
 from nurses_2.colors import BLUE, GREEN, WHITE, ColorPair
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Widget
 
 FIELD_HEIGHT = 25
@@ -136,13 +136,13 @@ class Pong(App):
             background_color_pair=WHITE_ON_BLUE,
         )
 
-        left_score_label = TextWidget(
+        left_score_label = Text(
             size=(1, 5),
             pos=(1, 1),
             pos_hint={"x_hint": 0.25, "anchor": "center"},
         )
 
-        right_score_label = TextWidget(
+        right_score_label = Text(
             size=(1, 5),
             pos=(1, 1),
             pos_hint={"x_hint": 0.75, "anchor": "center"},

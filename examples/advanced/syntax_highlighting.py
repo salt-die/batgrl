@@ -13,16 +13,16 @@ from wcwidth import wcswidth
 
 from nurses_2.app import App
 from nurses_2.colors import Color
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 
-def add_syntax_highlighting(text_widget: TextWidget, lexer: Lexer, style: Style):
+def add_syntax_highlighting(text_widget: Text, lexer: Lexer, style: Style):
     """
     Add syntax highlighting to a text widget.
 
     Parameters
     ----------
-    text_widget : TextWidget
+    text_widget : Text
         The widget to be highlighted.
 
     lexer : Lexer
@@ -61,7 +61,7 @@ STYLE = get_style_by_name("github-dark")
 CODE = """\
 class SyntaxApp(App):
     async def on_start(self):
-        text_widget = TextWidget()
+        text_widget = Text()
         text_widget.set_text(CODE)
         self.add_widget(text_widget)
         add_syntax_highlighting(text_widget, PYTHON_LEXER, STYLE)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
 class SyntaxApp(App):
     async def on_start(self):
-        text_widget = TextWidget()
+        text_widget = Text()
         text_widget.set_text(CODE)
         self.add_widget(text_widget)
         add_syntax_highlighting(text_widget, PYTHON_LEXER, STYLE)

@@ -8,8 +8,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor, ColorPair
-from .graphic_widget import (
-    GraphicWidget,
+from .graphics import (
+    Graphics,
     Interpolation,
     Point,
     PosHint,
@@ -32,7 +32,7 @@ __all__ = [
 ]
 
 
-class Image(GraphicWidget):
+class Image(Graphics):
     """
     An Image widget.
 

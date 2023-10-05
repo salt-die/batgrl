@@ -2,7 +2,7 @@ from pathlib import Path
 
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.text_widget import TextWidget, add_text
+from nurses_2.widgets.text import Text, add_text
 
 from .colors import DEFAULT_COLOR_PAIR
 from .effects import BOLDCRT
@@ -23,7 +23,7 @@ ENTER PASSWORD NOW
 
 class HackApp(App):
     async def on_start(self):
-        header = TextWidget(size=(5, 39), default_color_pair=DEFAULT_COLOR_PAIR)
+        header = Text(size=(5, 39), default_color_pair=DEFAULT_COLOR_PAIR)
         add_text(header.canvas, HEADER)
 
         modal = Modal(

@@ -4,15 +4,15 @@ from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.button import Button
 from nurses_2.widgets.progress_bar import ProgressBar
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.text_animation import TextAnimation
-from nurses_2.widgets.text_widget import TextWidget
 
 PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
 
 
 class ProgressBarApp(App):
     async def on_start(self):
-        label_a = TextWidget(default_color_pair=PRIMARY_COLOR)
+        label_a = Text(default_color_pair=PRIMARY_COLOR)
         horizontal_a = ProgressBar(pos=(0, 10), size=(1, 50))
 
         label_b = TextAnimation(

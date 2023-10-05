@@ -24,8 +24,8 @@ from ..colors import (
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
-from .graphic_widget import GraphicWidget
-from .text_widget import TextWidget
+from .graphics import Graphics
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -43,11 +43,11 @@ GRAD = tuple(zip(GRAD, GRAD[1:]))
 WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
 
 
-class _ShadeSelector(Grabbable, GraphicWidget):
+class _ShadeSelector(Grabbable, Graphics):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
 
-        self._shade_indicator = TextWidget(size=(1, 1), default_color_pair=WHITE_ON_RED)
+        self._shade_indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_RED)
         self._shade_indicator.add_str("○")
         self._shade_hint = 0.0, 1.0
         self.add_widget(self._shade_indicator)
@@ -107,13 +107,13 @@ class _ShadeSelector(Grabbable, GraphicWidget):
             self.update_swatch_label()
 
 
-class _HueSelector(Grabbable, GraphicWidget):
+class _HueSelector(Grabbable, Graphics):
     def __init__(self, shade_selector, **kwargs):
         super().__init__(**kwargs)
         self.shade_selector = shade_selector
 
         self._hue_hint = 0.0
-        self._hue_indicator = TextWidget(size=(1, 1), default_color_pair=WHITE_ON_RED)
+        self._hue_indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_RED)
         self._hue_indicator.add_str("▼")
 
         self.add_widget(self._hue_indicator)
@@ -313,7 +313,7 @@ class ColorPicker(Themable, Widget):
             background_color_pair=WHITE_ON_RED,
         )
 
-        self.label = TextWidget(size=(9, 8))
+        self.label = Text(size=(9, 8))
         self.label.add_widget(
             Button(
                 label="OK",

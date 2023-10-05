@@ -6,17 +6,17 @@ from itertools import chain, cycle
 
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .behaviors.themable import Themable
-from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     style_char,
 )
+from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .widget import clamp, subscribable
 
 __all__ = [
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class ProgressBar(Themable, TextWidget):
+class ProgressBar(Themable, Text):
     """
     A progress bar widget.
 

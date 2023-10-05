@@ -4,7 +4,7 @@ from pathlib import Path
 from nurses_2.app import run_widget_as_app
 from nurses_2.colors import ABLACK, AWHITE
 from nurses_2.io import MouseButton, MouseEventType
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 from nurses_2.widgets.texture_tools import read_texture, resize_texture
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -14,7 +14,7 @@ SIZE = H, W = 40, 80  # Each dimension should be divisible by 4
 EMPTY_PIECE = object()
 
 
-class _SlidingPiece(GraphicWidget):
+class _SlidingPiece(Graphics):
     def on_mouse(self, mouse_event):
         if (
             not self.parent._sliding
@@ -43,7 +43,7 @@ class _SlidingPiece(GraphicWidget):
             return True
 
 
-class SlidingPuzzle(GraphicWidget):
+class SlidingPuzzle(Graphics):
     def __init__(self, path: Path, **kwargs):
         super().__init__(**kwargs)
 

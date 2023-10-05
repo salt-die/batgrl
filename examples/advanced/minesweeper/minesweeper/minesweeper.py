@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Point, Widget
 
 from .colors import DATA_BAR, FLAG_COLOR
@@ -32,7 +32,7 @@ V_SPACING = Grid.V_SPACING
 H_SPACING = Grid.H_SPACING
 
 
-class ResetButton(ButtonBehavior, TextWidget):
+class ResetButton(ButtonBehavior, Text):
     def update_normal(self):
         self.add_str(HAPPY)
 
@@ -54,7 +54,7 @@ class MineSweeper(Widget):
             **kwargs,
         )
 
-        self.timer = TextWidget(
+        self.timer = Text(
             size=(1, 20),
             pos_hint={"x_hint": 0.95, "anchor": "top-right"},
             default_color_pair=DATA_BAR,
@@ -62,7 +62,7 @@ class MineSweeper(Widget):
         self.timer.add_str("Time Elapsed:")
         self._elapsed_time = 0
 
-        self.mines_left = TextWidget(
+        self.mines_left = Text(
             size=(1, 10), pos_hint={"x_hint": 0.05}, default_color_pair=DATA_BAR
         )
         self.mines_left.add_str("Mines:")

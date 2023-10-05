@@ -6,9 +6,9 @@ Widgets are the building blocks of your app.  All widgets have a size, position,
 :ref:`children <widget_tree>`. The base widget has a `background_color_pair` and a `background_char`
 so you can fill the area of the screen the widget is located in with some character or color.
 
-For more interesting displays, there are `TextWidget` and `GraphicWidget`. Underlying both
-these classes are NumPy arrays that represent the content of the widget. The `TextWidget` has
-a `canvas` array of characters and a `colors` array of color pairs. The `GraphicWidget` widget
+For more interesting displays, there are `Text` and `Graphics`. Underlying both
+these classes are NumPy arrays that represent the content of the widget. The `Text` has
+a `canvas` array of characters and a `colors` array of color pairs. The `Graphics` widget
 has a rgba `texture` array that is twice the height of the widget. Painting any image on screen
 is as simple as copying the image into the `texture` array.  Layered graphic widgets do proper
 alpha compositing.
@@ -16,7 +16,7 @@ alpha compositing.
 Size and Pos Hints
 ------------------
 If a widget has a non-None size hint, it will have a size that is some proportion (given by the hint) of its
-parent. If the parent is resized, the widget will update its size to follow the size hint. Similary, for non-None
+parent. If the parent is resized, the widget will update its size to follow the size hint. Similarly, for non-None
 position hints, a widget will position itself at some proportion of its parent's size.  Position hints can be
 further controlled with the `anchor` key or attribute. The `anchor` determines which point
 in the widget is aligned with the position hint (the default is `"center"`).

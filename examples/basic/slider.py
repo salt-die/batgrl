@@ -4,14 +4,12 @@ Example slider widget.
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.slider import Slider
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 
 class SliderApp(App):
     async def on_start(self):
-        display = TextWidget(
-            size=(3, 30), default_color_pair=DEFAULT_COLOR_THEME.primary
-        )
+        display = Text(size=(3, 30), default_color_pair=DEFAULT_COLOR_THEME.primary)
         slider_1 = Slider(
             size=(1, 20),
             pos=(1, 0),

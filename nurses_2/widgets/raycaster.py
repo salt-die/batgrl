@@ -8,10 +8,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import BLACK, TRANSPARENT, AColor, Color
-from .graphic_widget import (
+from .graphics import (
     Char,
     ColorPair,
-    GraphicWidget,
+    Graphics,
     Interpolation,
     Point,
     PosHint,
@@ -126,7 +126,7 @@ class Texture(Protocol):
         """
 
 
-class Raycaster(GraphicWidget):
+class Raycaster(Graphics):
     """
     A raycaster widget.
 

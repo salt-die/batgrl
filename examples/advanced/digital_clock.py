@@ -3,10 +3,10 @@ import time
 
 from nurses_2.app import App
 from nurses_2.widgets.digital_display import BRIGHT_GREEN_ON_BLACK, DigitalDisplay
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 
-class DigitalClock(TextWidget):
+class DigitalClock(Text):
     def __init__(
         self,
         pos=(0, 0),

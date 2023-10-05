@@ -9,8 +9,8 @@ from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.resizable import Resizable
 from .behaviors.themable import Themable
-from .graphic_widget import GraphicWidget, Interpolation
-from .text_widget import TextWidget
+from .graphics import Graphics, Interpolation
+from .text import Text
 from .widget import (
     Point,
     PosHint,
@@ -38,7 +38,7 @@ class _TitleBar(Grabbable, Widget):
     def __init__(self):
         super().__init__(pos=(1, 2), disable_ptf=True, background_char=" ")
 
-        self._label = TextWidget(pos_hint={"x_hint": 0.5, "anchor": "top"})
+        self._label = Text(pos_hint={"x_hint": 0.5, "anchor": "top"})
         self.add_widget(self._label)
 
     def on_add(self):
@@ -59,7 +59,7 @@ class _TitleBar(Grabbable, Widget):
         self.parent.left += self.mouse_dx
 
 
-class Window(Themable, Focusable, Resizable, GraphicWidget):
+class Window(Themable, Focusable, Resizable, Graphics):
     """
     A movable, resizable window widget.
 

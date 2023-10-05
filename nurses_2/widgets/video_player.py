@@ -12,8 +12,8 @@ import cv2
 import numpy as np
 
 from ..colors import ABLACK, AColor, ColorPair
-from .graphic_widget import (
-    GraphicWidget,
+from .graphics import (
+    Graphics,
     Interpolation,
     Point,
     PosHint,
@@ -37,7 +37,7 @@ __all__ = [
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
 
-class VideoPlayer(GraphicWidget):
+class VideoPlayer(Graphics):
     """
     A video player.
 

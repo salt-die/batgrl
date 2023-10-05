@@ -6,14 +6,14 @@ from collections.abc import Callable
 from ..colors import Color, ColorPair
 from ..io import MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
-from .text_widget import (
+from .text import (
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    TextWidget,
+    Text,
     clamp,
     subscribable,
 )
@@ -33,7 +33,7 @@ DEFAULT_SLIDER_FILL_COLOR = Color.from_hex("5A6FE8")
 DEFAULT_SLIDER_HANDLE_COLOR_PAIR = ColorPair.from_hex("DDE4ED070C25")
 
 
-class Slider(Grabbable, TextWidget):
+class Slider(Grabbable, Text):
     """
     A slider widget.
 
@@ -298,9 +298,7 @@ class Slider(Grabbable, TextWidget):
         self._min = min
         self._max = max
 
-        self._handle = TextWidget(
-            size=(1, 1), pos_hint={"y_hint": 0.5, "anchor": "top"}
-        )
+        self._handle = Text(size=(1, 1), pos_hint={"y_hint": 0.5, "anchor": "top"})
         self.add_widget(self._handle)
         self.handle_color_pair = handle_color_pair or self.default_color_pair
         self.handle_char = handle_char

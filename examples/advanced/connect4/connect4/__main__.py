@@ -5,7 +5,7 @@ import numpy as np
 from nurses_2.app import run_widget_as_app
 from nurses_2.colors import ARED, AYELLOW
 from nurses_2.io import MouseEventType
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 from nurses_2.widgets.widget import Widget
 
 from .graphics import CHECKER_SIZE, Board, Checker, x_to_column
@@ -24,7 +24,7 @@ class Connect4(Widget):
 
         super().__init__(size=(h + 2, w), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
-        self._label = TextWidget(size=(1, 10), pos_hint={"x_hint": 0.5})
+        self._label = Text(size=(1, 10), pos_hint={"x_hint": 0.5})
         self.add_widgets(self._board, self._label)
 
     def on_add(self):

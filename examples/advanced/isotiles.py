@@ -6,7 +6,7 @@ import nurses_2.colors as colors
 from nurses_2.app import App
 from nurses_2.colors import AWHITE
 from nurses_2.io import MouseButton, MouseEvent, MouseEventType
-from nurses_2.widgets.graphic_widget import GraphicWidget, Point, Size
+from nurses_2.widgets.graphics import Graphics, Point, Size
 from nurses_2.widgets.scroll_view import ScrollView
 from nurses_2.widgets.texture_tools import composite, read_texture
 
@@ -41,7 +41,7 @@ TILES = (
 )
 
 
-class WorldWidget(GraphicWidget):
+class WorldWidget(Graphics):
     def __init__(self):
         wh, ww = WORLD_SIZE
         th, tw = TILE_SIZE

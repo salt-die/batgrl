@@ -12,7 +12,7 @@ import numpy as np
 
 from nurses_2.app import run_widget_as_app
 from nurses_2.colors import AWHITE, AColor, gradient
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 
 GREEN = AColor.from_hex("0bbf23")
 BLUE = AColor.from_hex("0b38bf")
@@ -28,7 +28,7 @@ def _path_yx(a, b):
     return ay + by + 1, ax + bx + 1
 
 
-class Labyrinth(GraphicWidget):
+class Labyrinth(Graphics):
     def on_add(self):
         self._new_level_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self._player_task = asyncio.create_task(self._update_player())

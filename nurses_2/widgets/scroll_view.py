@@ -4,8 +4,8 @@ A scrollable view widget.
 from ..colors import Color, ColorPair
 from ..io import KeyEvent, MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
+from .text import Text
 from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
-from .text_widget import TextWidget
 from .widget import (
     Point,
     PosHint,
@@ -38,7 +38,7 @@ DEFAULT_INDICATOR_HOVER = Color.from_hex("111E4F")
 DEFAULT_INDICATOR_PRESS = Color.from_hex("172868")
 
 
-class _ScrollBarBase(Grabbable, TextWidget):
+class _ScrollBarBase(Grabbable, Text):
     length: int
 
     def __init__(self):

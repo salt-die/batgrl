@@ -4,7 +4,7 @@ from random import choice, randrange, sample
 import numpy as np
 
 from nurses_2.io import MouseButton, MouseEventType
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 from .colors import DEFAULT_COLOR_PAIR
 
@@ -46,7 +46,7 @@ def pos_to_memory(pos):
         return (17 + y) * 12 + x - 27
 
 
-class MemoryWidget(TextWidget):
+class MemoryWidget(Text):
     def __init__(self, output, **kwargs):
         super().__init__(**kwargs)
         self.output = output

@@ -12,7 +12,7 @@ from random import choice
 from nurses_2.app import App
 from nurses_2.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
 from nurses_2.widgets.animation import Animation
-from nurses_2.widgets.graphic_widget import GraphicWidget
+from nurses_2.widgets.graphics import Graphics
 
 ASSETS = Path(__file__).parent.parent / "assets"
 SPINNER = ASSETS / "spinner"
@@ -29,7 +29,7 @@ def inbounds(pos):
     return 0 <= y < HEIGHT and 0 <= x < WIDTH
 
 
-class Snake(GraphicWidget):
+class Snake(Graphics):
     def on_add(self):
         super().on_add()
         self.reset()

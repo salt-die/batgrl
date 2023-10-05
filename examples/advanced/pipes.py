@@ -3,7 +3,7 @@ from random import choice, random, randrange
 from time import monotonic
 
 from nurses_2.app import run_widget_as_app
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 CURVY = {
     0: "╷",
@@ -44,7 +44,7 @@ HEAVY = {
 }
 
 
-class Pipes(TextWidget):
+class Pipes(Text):
     def __init__(self, npipes: int = 5, **kwargs):
         super().__init__(**kwargs)
         self._npipes = npipes

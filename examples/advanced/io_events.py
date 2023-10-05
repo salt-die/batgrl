@@ -5,7 +5,7 @@ import numpy as np
 
 from nurses_2.app import App
 from nurses_2.io import Key, MouseButton, MouseEventType
-from nurses_2.widgets.text_widget import TextWidget, add_text
+from nurses_2.widgets.text import Text, add_text
 from nurses_2.widgets.widget import Widget
 
 KEYBOARD = """\
@@ -205,18 +205,18 @@ class RainbowBehavior:
             await asyncio.sleep(0)
 
 
-class KeyboardWidget(RainbowBehavior, TextWidget):
+class KeyboardWidget(RainbowBehavior, Text):
     def __init__(self, **kwargs):
         super().__init__(size=(23, 88), **kwargs)
         add_text(self.canvas, KEYBOARD)
         common = dict(is_visible=False, is_transparent=True)
-        self._key_border = TextWidget(**common)
-        self._lshift = TextWidget(pos=(14, 3), size=(4, 9), **common)
-        self._rshift = TextWidget(pos=(14, 51), size=(4, 16), **common)
-        self._lctrl = TextWidget(pos=(17, 3), size=(4, 6), **common)
-        self._rctrl = TextWidget(pos=(17, 56), size=(4, 11), **common)
-        self._lalt = TextWidget(pos=(17, 13), size=(4, 6), **common)
-        self._ralt = TextWidget(pos=(17, 46), size=(4, 6), **common)
+        self._key_border = Text(**common)
+        self._lshift = Text(pos=(14, 3), size=(4, 9), **common)
+        self._rshift = Text(pos=(14, 51), size=(4, 16), **common)
+        self._lctrl = Text(pos=(17, 3), size=(4, 6), **common)
+        self._rctrl = Text(pos=(17, 56), size=(4, 11), **common)
+        self._lalt = Text(pos=(17, 13), size=(4, 6), **common)
+        self._ralt = Text(pos=(17, 46), size=(4, 6), **common)
 
         self.add_widgets(
             self._lshift,
@@ -261,14 +261,14 @@ class KeyboardWidget(RainbowBehavior, TextWidget):
         self._show_mods(mouse_event.mods)
 
 
-class MouseWidget(RainbowBehavior, TextWidget):
+class MouseWidget(RainbowBehavior, Text):
     def __init__(self, **kwargs):
         super().__init__(size=(15, 19), **kwargs)
         common = dict(is_visible=False, is_transparent=True)
-        self._left_button = TextWidget(size=(7, 10), **common)
-        self._right_button = TextWidget(size=(7, 10), pos=(0, 9), **common)
-        self._wheel = TextWidget(size=(3, 3), pos=(2, 8), **common)
-        self._move = TextWidget(size=(15, 19), **common)
+        self._left_button = Text(size=(7, 10), **common)
+        self._right_button = Text(size=(7, 10), pos=(0, 9), **common)
+        self._wheel = Text(size=(3, 3), pos=(2, 8), **common)
+        self._move = Text(size=(15, 19), **common)
 
         add_text(self.canvas, MOUSE)
         add_text(self._left_button.canvas, LEFT_BUTTON)

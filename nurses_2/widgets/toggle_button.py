@@ -12,7 +12,7 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .text_widget import TextWidget
+from .text import Text
 from .widget import Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Widget
 
 __all__ = [
@@ -228,7 +228,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Widget):
     ):
         self.normal_color_pair = (0,) * 6  # Temporary assignment
 
-        self._label_widget = TextWidget(
+        self._label_widget = Text(
             pos_hint={"y_hint": 0.0, "x_hint": 0.0, "anchor": "left"}
         )
 

@@ -1,9 +1,9 @@
-from nurses_2.widgets.text_widget import TextWidget
+from nurses_2.widgets.text import Text
 
 from .unicode_chars import HEAVY_BOX, LIGHT_BOX
 
 
-class Grid(TextWidget):
+class Grid(Text):
     V_SPACING = 2
     H_SPACING = 4
 

@@ -4,7 +4,7 @@ from pathlib import Path
 from nurses_2.app import App
 from nurses_2.colors import DEFAULT_COLOR_THEME
 from nurses_2.widgets.image import Image
-from nurses_2.widgets.text_widget import Easing, TextWidget
+from nurses_2.widgets.text import Easing, Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "logo_solo_flat_256.png"
@@ -29,7 +29,7 @@ class EasingsApp(App):
             pos_hint=next(POS_HINTS),
         )
 
-        label = TextWidget(
+        label = Text(
             size=(1, 30),
             pos_hint={"x_hint": 0.5, "anchor": "top"},
             default_color_pair=DEFAULT_COLOR_THEME.primary,
