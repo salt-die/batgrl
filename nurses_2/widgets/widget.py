@@ -645,7 +645,7 @@ class Widget:
         self.is_visible = is_visible
         self.is_enabled = is_enabled
 
-        self.region: Region
+        self.region: Region | None = None
         """The visible portion of the widget on the screen, set by the root."""
 
     def __repr__(self):
@@ -779,6 +779,8 @@ class Widget:
         """
         Absolute position on screen.
         """
+        if self.parent is None:
+            return self.pos
         y, x = self.parent.absolute_pos
         return Point(self.top + y, self.left + x)
 
@@ -929,25 +931,11 @@ class Widget:
         """
         True if point collides with an uncovered portion of widget.
         """
-        if self.parent is None:
+        if self.region is None:
             y, x = point
             return 0 <= y < self.height and 0 <= x < self.width
 
-        if not self.parent.collides_point(point):
-            return False
-
-        y, x = self.parent.to_local(point)
-        for sibling in reversed(self.parent.children):
-            if sibling is not self:
-                if (
-                    sibling.is_enabled
-                    and sibling.top <= y < sibling.bottom
-                    and sibling.left <= x < sibling.right
-                ):
-                    # Point collides with a sibling that is above it.
-                    return False
-            else:
-                return self.top <= y < self.bottom and self.left <= x < self.right
+        return point in self.region
 
     def collides_widget(self, other: "Widget") -> bool:
         """

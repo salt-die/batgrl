@@ -1,6 +1,7 @@
 """
 Data structures and functions for :mod:`nurses_2` geometry.
 """
+from bisect import bisect
 from dataclasses import dataclass, field
 from numbers import Real
 from operator import and_, or_, xor
@@ -203,6 +204,15 @@ class Band:
             raise ValueError(
                 f"Invalid Band: y1 ({self.y1}) is not smaller than y2 ({self.y2})"
             )
+
+    def __gt__(self, y: int):
+        """
+        Whether band's y1-coordinate is greater than `y`.
+
+        Implemented so that a list of sorted bands can be bisected by
+        a y-coordinate.
+        """
+        return y < self.y1
 
 
 @dataclass(slots=True)
@@ -419,3 +429,19 @@ class Region:
         y, x = pos
         h, w = size
         return cls([Band(y, y + h, [x, x + w])])
+
+    def __contains__(self, point: Point) -> bool:
+        """
+        Whether point is in region.
+        """
+        y, x = point
+        i = bisect(self.bands, y)
+        if i == 0:
+            return False
+
+        band = self.bands[i - 1]
+        if band.y2 <= y:
+            return False
+
+        j = bisect(band.walls, x)
+        return j % 2 == 1
