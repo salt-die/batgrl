@@ -391,7 +391,7 @@ class LinePlot(Widget):
 
         self._plot_color_pair = plot_color_pair
 
-        for child in self.walk_preorder():
+        for child in self.walk():
             if isinstance(child, TextWidget):
                 child.colors[:] = plot_color_pair
 

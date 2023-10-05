@@ -158,7 +158,7 @@ class Tetris(Image):
 
         self.add_widgets(held_border, next_border, score_border, level_border)
 
-        for widget in self.walk_preorder():
+        for widget in self.walk():
             setup_background(widget)
 
         self.held_piece = Piece(

@@ -125,7 +125,7 @@ class App(ABC):
         Themable.color_theme = color_theme
 
         if self.root is not None:
-            for widget in self.root.walk_preorder():
+            for widget in self.root.walk():
                 if isinstance(widget, Themable):
                     widget.update_theme()
 

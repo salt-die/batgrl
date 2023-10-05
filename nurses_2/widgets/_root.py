@@ -97,7 +97,7 @@ class _Root(Widget):
         # z-order.
         self.region = Region.from_rect(self.pos, self.size)
 
-        for child in self.walk_preorder():
+        for child in self.walk():
             if child.is_enabled and child.is_visible:
                 child.region = child.parent.region & Region.from_rect(
                     child.absolute_pos, child.size
@@ -105,7 +105,7 @@ class _Root(Widget):
             else:
                 child.region = Region()
 
-        for child in self.walk_reverse_postorder():
+        for child in self.walk_reverse():
             if child.is_enabled and child.is_visible:
                 child.region &= self.region
                 if not child.is_transparent:
@@ -128,7 +128,7 @@ class _Root(Widget):
         canvas[:] = style_char(self.background_char)
         colors[:] = self.background_color_pair
 
-        for child in self.walk_preorder():
+        for child in self.walk():
             if child.is_enabled and child.is_visible:
                 child.render(canvas, colors)
 

@@ -936,7 +936,7 @@ class Widget:
             return 0 <= y < self.height and 0 <= x < self.width
 
         return point in self.region or any(
-            point in child.region for child in self.walk_preorder()
+            point in child.region for child in self.walk()
         )
 
     def collides_widget(self, other: "Widget") -> bool:
@@ -1001,16 +1001,16 @@ class Widget:
         """
         Yield all descendents of the root widget.
         """
-        yield from self.root.walk_preorder()
+        yield from self.root.walk()
 
-    def walk_preorder(self):
+    def walk(self):
         for child in self.children:
             yield child
-            yield from child.walk_preorder()
+            yield from child.walk()
 
-    def walk_reverse_postorder(self):
+    def walk_reverse(self):
         for child in reversed(self.children):
-            yield from child.walk_reverse_postorder()
+            yield from child.walk_reverse()
             yield child
 
     def ancestors(self):
