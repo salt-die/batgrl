@@ -665,7 +665,7 @@ class Widget:
             return
 
         h, w = size
-        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
+        self._size = Size(clamp(int(h), 1, None), clamp(int(w), 1, None))
 
         self.on_size()
 
@@ -708,10 +708,8 @@ class Widget:
     @pos.setter
     @subscribable
     def pos(self, pos: Point):
-        if pos == self._pos:
-            return
-
-        self._pos = Point(*pos)
+        y, x = pos
+        self._pos = Point(int(y), int(x))
 
     @property
     def top(self) -> int:
