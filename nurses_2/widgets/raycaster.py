@@ -619,12 +619,7 @@ class Raycaster(GraphicWidget):
 
             texture[start_y:end_y, columns, :3] = sprite_rgb
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
+    def render(self, canvas_view: NDArray[Char], colors_view: NDArray[np.uint8]):
         camera = self.camera
         pos_frac = self._pos_frac
         rotated_angles = self._rotated_angles
@@ -654,4 +649,4 @@ class Raycaster(GraphicWidget):
 
         self.cast_sprites()
 
-        super().render(canvas_view, colors_view, source)
+        super().render(canvas_view, colors_view)

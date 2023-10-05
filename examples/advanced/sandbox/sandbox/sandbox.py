@@ -53,10 +53,10 @@ class Sandbox(GraphicWidget):
         for particle in self.world.flatten():
             particle.sleep()
 
-    def render(self, canvas_view, colors_view, source: tuple[slice, slice]):
+    def render(self, canvas, colors):
         # Color of each particle in `self.world` is written into color array.
         self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
-        super().render(canvas_view, colors_view, source)
+        super().render(canvas, colors)
 
     def on_mouse(self, mouse_event):
         if mouse_event.button != MouseButton.LEFT or not self.collides_point(

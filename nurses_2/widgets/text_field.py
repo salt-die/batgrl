@@ -242,38 +242,39 @@ class TextParticleField(Widget):
         """
         return len(self.particle_positions)
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        vert_slice, hori_slice = source
-        top = vert_slice.start
-        height = vert_slice.stop - top
-        left = hori_slice.start
-        width = hori_slice.stop - left
-        pos = self.particle_positions - (top, left)
-        inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        if self.background_char is not None:
+            for rect in self.region.rects():
+                canvas[rect.to_slices()] = style_char(self.background_char)
 
-        if not self.is_transparent:
-            if self.background_char is not None:
-                canvas_view[:] = style_char(self.background_char)
+        if self.background_color_pair is not None:
+            for rect in self.region.rects():
+                colors[rect.to_slices()] = self.background_color_pair
 
-            if self.background_color_pair is not None:
-                colors_view[:] = self.background_color_pair
-
-            where_inbounds = np.nonzero(inbounds)
-            local_ys, local_xs = pos[where_inbounds].T
-            colors_view[local_ys, local_xs] = self.particle_color_pairs[where_inbounds]
+        offy, offx = self.absolute_pos
+        pchars = self.particle_chars
+        pcolors = self.particle_color_pairs
+        ppos = self.particle_positions
+        if self.is_transparent:
+            not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
+            for rect in self.region.rects():
+                height = rect.bottom - rect.top
+                width = rect.right - rect.left
+                pos = ppos - (rect.top - offy, rect.left - offx)
+                inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
+                where_inbounds = np.nonzero(inbounds & not_whitespace)
+                ys, xs = pos[where_inbounds].T
+                dst = rect.to_slices()
+                colors[dst][..., :3][ys, xs] = pcolors[where_inbounds][..., :3]
+                canvas[dst][ys, xs] = pchars[where_inbounds]
         else:
-            where_inbounds = np.nonzero(
-                inbounds & np.isin(self.particle_chars["char"], (" ", "⠀"), invert=True)
-            )
-            local_ys, local_xs = pos[where_inbounds].T
-            colors_view[..., :3][local_ys, local_xs] = self.particle_color_pairs[
-                ..., :3
-            ][where_inbounds]
-
-        canvas_view[local_ys, local_xs] = self.particle_chars[where_inbounds]
-        self.render_children(source, canvas_view, colors_view)
+            for rect in self.region.rects():
+                height = rect.bottom - rect.top
+                width = rect.right - rect.left
+                pos = ppos - (rect.top - offy, rect.left - offx)
+                inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
+                where_inbounds = np.nonzero(inbounds)
+                ys, xs = pos[where_inbounds].T
+                dst = rect.to_slices()
+                colors[dst][ys, xs] = pcolors[where_inbounds]
+                canvas[dst][ys, xs] = pchars[where_inbounds]

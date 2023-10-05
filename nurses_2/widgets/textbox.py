@@ -18,12 +18,11 @@ from .widget import (
     Point,
     PosHint,
     PosHintDict,
-    Rect,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
     Widget,
-    intersection,
 )
 
 __all__ = [
@@ -278,7 +277,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
 
         self._placeholder_widget = TextWidget()
         self._placeholder_widget.set_text(placeholder)
-        self._cursor = TextWidget(size=(1, 1), is_enabled=False)
+        self._cursor = Widget(size=(1, 1), is_enabled=False, is_transparent=True)
         self._box = TextWidget(size=self._placeholder_widget.size)
         self._box.add_widgets(self._placeholder_widget, self._cursor)
 
@@ -297,7 +296,7 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self._placeholder_widget.colors[:] = self.color_theme.textbox_placeholder
         self._box.colors[:] = primary
         self._box.default_color_pair = primary
-        self._cursor.colors[:] = primary.reversed()
+        self._cursor.background_color_pair = primary.reversed()
 
         self._highlight_selection()
 
@@ -316,31 +315,14 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
     def on_blur(self):
         self._cursor.is_enabled = False
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        """
-        Paint region given by source into canvas_view and colors_view.
-        """
-        super().render(canvas_view, colors_view, source)
-
-        if self.hide_input and not self._placeholder_widget.is_enabled:
-            vert, hori = source
-            srctop = vert.start
-            srcbot = vert.stop
-            srcleft = hori.start
-            srcright = hori.stop
-
-            intersect = intersection(
-                Rect(0, 1, 0, min(self._line_length + self._box.left, self.width)),
-                Rect(srctop, srcbot, srcleft, srcright),
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        super().render(canvas, colors)
+        if self.hide_input:
+            hider_region = self._box.region & Region.from_rect(
+                self._box.absolute_pos, (1, self._line_length)
             )
-            if intersect is not None:
-                src, _ = intersect
-                canvas_view[src] = style_char(self.hide_char)
+            for rect in hider_region.rects():
+                canvas[rect.to_slices()] = style_char(self.hide_char)
 
     @property
     def placeholder(self) -> str:
@@ -353,7 +335,6 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self._placeholder_widget.colors[:] = self.color_theme.textbox_placeholder
         if self._line_length == 0 and placeholder:
             self._placeholder_widget.is_enabled = True
-            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
         else:
             self._placeholder_widget.is_enabled = False
 
@@ -421,10 +402,8 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
         self._cursor.x = cursor
         if self._line_length == 0 and self._placeholder:
             self._placeholder_widget.is_enabled = True
-            self._cursor.canvas[0, 0] = self._placeholder_widget.canvas[0, 0]
         else:
             self._placeholder_widget.is_enabled = False
-            self._cursor.canvas[0, 0] = self._box.canvas[0, cursor]
 
         max_x = self.width - 1
         if (rel_x := cursor + self._box.x) > max_x:

@@ -75,9 +75,7 @@ class Focusable:
             return
 
         ancestors = WeakSet(
-            ancestor
-            for ancestor in self.walk(reverse=True)
-            if isinstance(ancestor, Focusable)
+            ancestor for ancestor in self.ancestors() if isinstance(ancestor, Focusable)
         )
         ancestors.add(self)
 
@@ -102,7 +100,7 @@ class Focusable:
         Un-focus widget.
         """
         if self.is_focused:
-            for ancestor in self.walk(reverse=True):
+            for ancestor in self.ancestors():
                 if isinstance(ancestor, Focusable):
                     ancestor.focus()
                     return

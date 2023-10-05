@@ -16,7 +16,7 @@ from wcwidth import wcwidth
 
 from .. import easings
 from ..colors import ColorPair
-from ..geometry import Point, Rect, Size, clamp, intersection, lerp
+from ..geometry import Point, Region, Size, clamp, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
 
 __all__ = [
@@ -26,13 +26,12 @@ __all__ = [
     "Point",
     "PosHint",
     "PosHintDict",
-    "Rect",
     "Size",
     "SizeHint",
     "SizeHintDict",
+    "Region",
     "Widget",
     "clamp",
-    "intersection",
     "lerp",
     "style_char",
     "subscribable",
@@ -61,12 +60,6 @@ Anchor = Literal[
 """
 Point of widget attached to a pos hint.
 """
-
-
-@np.vectorize
-def char_widths(char: np.dtype("<U1")) -> int:
-    """Return the width of a character."""
-    return 0 if char == "" else wcwidth(char)
 
 
 _ANCHOR_TO_POS: dict[Anchor, tuple[float, float]] = {
@@ -646,14 +639,11 @@ class Widget:
         self.is_visible = is_visible
         self.is_enabled = is_enabled
 
+        self.region: Region | None = None
+        """The visible portion of the widget on the screen, set by the root."""
+
     def __repr__(self):
-        return (
-            f"{type(self).__name__}(size={self.size}, pos={self.pos}, size_hint="
-            f"{self.size_hint}, pos_hint={self.pos_hint}, is_transparent="
-            f"{self.is_transparent}, is_visible={self.is_visible}, is_enabled="
-            f"{self.is_enabled}, background_char={self.background_char}, "
-            f"background_color_pair={self.background_color_pair})"
-        )
+        return f"{type(self).__name__}(size={self.size}, pos={self.pos})"
 
     @property
     def size(self) -> Size:
@@ -669,7 +659,7 @@ class Widget:
             return
 
         h, w = size
-        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
+        self._size = Size(clamp(int(h), 1, None), clamp(int(w), 1, None))
 
         self.on_size()
 
@@ -711,8 +701,9 @@ class Widget:
 
     @pos.setter
     @subscribable
-    def pos(self, point: Point):
-        self._pos = Point(*point)
+    def pos(self, pos: Point):
+        y, x = pos
+        self._pos = Point(int(y), int(x))
 
     @property
     def top(self) -> int:
@@ -780,6 +771,8 @@ class Widget:
         """
         Absolute position on screen.
         """
+        if self.parent is None:
+            return self.pos
         y, x = self.parent.absolute_pos
         return Point(self.top + y, self.left + x)
 
@@ -900,19 +893,21 @@ class Widget:
         else:
             y_anchor, x_anchor = self._pos_hint.anchor
 
+        top, left = self.pos
         if self._pos_hint.y_hint is not None:
-            self.top = (
+            top = (
                 round_down(self.parent.height * self._pos_hint.y_hint)
                 - round_down(height * y_anchor)
                 + self._pos_hint.y_offset
             )
 
         if self._pos_hint.x_hint is not None:
-            self.left = (
+            left = (
                 round_down(self.parent.width * self._pos_hint.x_hint)
                 - round_down(width * x_anchor)
                 + self._pos_hint.x_offset
             )
+        self.pos = top, left
 
     def to_local(self, point: Point) -> Point:
         """
@@ -928,25 +923,13 @@ class Widget:
         """
         True if point collides with an uncovered portion of widget.
         """
-        if self.parent is None:
+        if self.region is None:
             y, x = point
             return 0 <= y < self.height and 0 <= x < self.width
 
-        if not self.parent.collides_point(point):
-            return False
-
-        y, x = self.parent.to_local(point)
-        for sibling in reversed(self.parent.children):
-            if sibling is not self:
-                if (
-                    sibling.is_enabled
-                    and sibling.top <= y < sibling.bottom
-                    and sibling.left <= x < sibling.right
-                ):
-                    # Point collides with a sibling that is above it.
-                    return False
-            else:
-                return self.top <= y < self.bottom and self.left <= x < self.right
+        return point in self.region or any(
+            point in child.region for child in self.walk()
+        )
 
     def collides_widget(self, other: "Widget") -> bool:
         """
@@ -974,7 +957,7 @@ class Widget:
         self.children.append(widget)
         widget.parent = self
 
-        if self.root:
+        if self.root is not None:
             widget.on_add()
 
     def add_widgets(self, *widgets: "Widget"):
@@ -992,7 +975,7 @@ class Widget:
         """
         Remove a child widget.
         """
-        if self.root:
+        if self.root is not None:
             widget.on_remove()
 
         self.children.remove(widget)
@@ -1010,22 +993,22 @@ class Widget:
         """
         Yield all descendents of the root widget.
         """
-        for child in self.root.children:
+        yield from self.root.walk()
+
+    def walk(self):
+        for child in self.children:
             yield child
             yield from child.walk()
 
-    def walk(self, reverse: bool = False):
-        """
-        Yield all descendents (or ancestors if `reverse` is true).
-        """
-        if reverse:
-            if self.parent:
-                yield self.parent
-                yield from self.parent.walk(reverse=True)
-        else:
-            for child in self.children:
-                yield child
-                yield from child.walk()
+    def walk_reverse(self):
+        for child in reversed(self.children):
+            yield from child.walk_reverse()
+            yield child
+
+    def ancestors(self):
+        if self.parent:
+            yield self.parent
+            yield from self.parent.ancestors()
 
     def subscribe(
         self,
@@ -1109,43 +1092,17 @@ class Widget:
         or ``None``).
         """
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        """
-        Paint region given by `source` into `canvas_view` and `colors_view`.
-        """
-        if not self.is_transparent:
-            if self.background_char is not None:
-                canvas_view[:] = style_char(self.background_char)
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        if not self.region:
+            return
 
-            if self.background_color_pair is not None:
-                colors_view[:] = self.background_color_pair
+        if self.background_char is not None:
+            for rect in self.region.rects():
+                canvas[rect.to_slices()] = style_char(self.background_char)
 
-        self.render_children(source, canvas_view, colors_view)
-
-    def render_children(
-        self,
-        destination: tuple[slice, slice],
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-    ):
-        vert_slice, hori_slice = destination
-        dest = Rect(
-            vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop
-        )
-
-        for child in self.children:
-            if child.is_visible and child.is_enabled:
-                source = Rect(child.top, child.bottom, child.left, child.right)
-                if (slices := intersection(dest, source)) is not None:
-                    dest_slice, source_slice = slices
-                    child.render(
-                        canvas_view[dest_slice], colors_view[dest_slice], source_slice
-                    )
+        if self.background_color_pair is not None:
+            for rect in self.region.rects():
+                colors[rect.to_slices()] = self.background_color_pair
 
     @staticmethod
     def _tween_lerp(start, end, p):

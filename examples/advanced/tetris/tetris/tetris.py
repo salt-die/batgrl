@@ -440,7 +440,6 @@ class Tetris(Image):
             current_piece.texture,
             self.matrix_widget.texture,
             (2 * y, x),
-            mask_mode=True,
         )
         task_name = str(next(QUEUE_ID))
         self._clear_lines_queue.append(

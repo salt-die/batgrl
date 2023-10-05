@@ -11,9 +11,9 @@ ENABLE_MOUSE_INPUT = 0x10
 ENABLE_QUICK_EDIT_MODE = 0x0040
 
 
-class Windows10_Output(Vt100_Output):
+class WindowsOutput(Vt100_Output):
     """
-    Windows 10 output.
+    Windows output.
     """
 
     def __init__(self, *args, **kwargs):

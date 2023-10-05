@@ -14,12 +14,11 @@ from .widget import (
     Point,
     PosHint,
     PosHintDict,
-    Rect,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
     Widget,
-    intersection,
 )
 
 __all__ = [
@@ -210,6 +209,7 @@ class TextAnimation(Widget):
             for frame in frames:
                 self.frames.append(TextWidget())
                 self.frames[-1].set_text(frame)
+                self.frames[-1].parent = self
 
         super().__init__(
             size=size,
@@ -229,6 +229,16 @@ class TextAnimation(Widget):
         self.reverse = reverse
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
+
+    @property
+    def region(self) -> Region:
+        return self._region
+
+    @region.setter
+    def region(self, region: Region):
+        self._region = region
+        for frame in self.frames:
+            frame.region = region & Region.from_rect(self.absolute_pos, frame.size)
 
     @property
     def animation_color_pair(self) -> ColorPair:
@@ -304,23 +314,8 @@ class TextAnimation(Widget):
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         if self.frames:
-            frame = self.frames[self._i]
-            vert_slice, hori_slice = source
-            dest_rect = Rect(
-                vert_slice.start, vert_slice.stop, hori_slice.start, hori_slice.stop
-            )
-            source_rect = Rect(frame.top, frame.bottom, frame.left, frame.right)
-            if (slices := intersection(dest_rect, source_rect)) is not None:
-                dest_slice, source_slice = slices
-                frame.render(
-                    canvas_view[dest_slice], colors_view[dest_slice], source_slice
-                )
-
-        self.render_children(source, canvas_view, colors_view)
+            self.frames[self._i].render(canvas, colors)
+        else:
+            super().render(canvas, colors)

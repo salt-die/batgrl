@@ -57,7 +57,7 @@ def add_text(
         canvas = canvas[None]
     rows, columns = canvas.shape
 
-    text_lines = text.splitlines()
+    text_lines = text.split("\n")
     if not truncate_text and (
         len(text_lines) > rows or max(map(wcswidth, text_lines), default=0) > columns
     ):

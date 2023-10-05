@@ -14,6 +14,7 @@ from .widget import (
     Point,
     PosHint,
     PosHintDict,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
@@ -223,6 +224,8 @@ class Parallax(Widget):
         else:
             paths = sorted(path.iterdir(), key=lambda file: file.name)
             self.layers = [Image(path=path) for path in paths]
+            for layer in self.layers:
+                layer.parent = self
 
         super().__init__(
             is_transparent=is_transparent,
@@ -241,6 +244,16 @@ class Parallax(Widget):
         self.interpolation = interpolation
 
         self._vertical_offset = self._horizontal_offset = 0.0
+
+    @property
+    def region(self) -> Region:
+        return self._region
+
+    @region.setter
+    def region(self, region: Region):
+        self._region = region
+        for layer in self.layers:
+            layer.region = region
 
     def on_size(self):
         for layer in self.layers:
@@ -326,16 +339,12 @@ class Parallax(Widget):
             )
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
-        for layer in self.layers:
-            layer.render(canvas_view, colors_view, source)
-
-        self.render_children(source, canvas_view, colors_view)
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        if self.layers:
+            for layer in self.layers:
+                layer.render(canvas, colors)
+        else:
+            super().render(canvas, colors)
 
     @classmethod
     def from_textures(
@@ -381,6 +390,8 @@ class Parallax(Widget):
             )
             for texture in textures
         ]
+        for layer in parallax.layers:
+            layer.parent = parallax
         parallax.speeds = _check_layer_speeds(parallax.layers, speeds)
         return parallax
 
@@ -424,5 +435,6 @@ class Parallax(Widget):
             image.interpolation = parallax.interpolation
             image.size = parallax.size
             image.alpha = parallax.alpha
+            image.parent = parallax
         parallax.speeds = _check_layer_speeds(parallax.layers, speeds)
         return parallax

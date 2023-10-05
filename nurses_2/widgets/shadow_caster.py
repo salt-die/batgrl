@@ -16,12 +16,11 @@ from .graphic_widget import (
     Point,
     PosHint,
     PosHintDict,
-    Rect,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
     clamp,
-    intersection,
 )
 
 __all__ = [
@@ -89,17 +88,12 @@ class Camera:
         """
         submap = np.zeros(self.size, dtype=np.uint8)
 
-        map_height, map_width = map.shape
-        height, width = self.size
-        top, left = self.pos
-        bottom, right = height + top, width + left
+        source = Region.from_rect((0, 0), map.shape)
+        dest = Region.from_rect(self.pos, self.size)
 
-        dest = Rect(top, bottom, left, right)
-        source = Rect(0, map_height, 0, map_width)
-
-        if (slices := intersection(dest, source)) is not None:
-            dest_slice, source_slice = slices
-            submap[dest_slice] = map[source_slice]
+        if intersection := source & dest:
+            rect = next(intersection.rects())
+            submap[rect.to_slices(self.pos)] = map[rect.to_slices()]
 
         return submap
 

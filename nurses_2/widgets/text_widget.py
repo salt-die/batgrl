@@ -16,13 +16,12 @@ from .widget import (
     Point,
     PosHint,
     PosHintDict,
-    Rect,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
     Widget,
     clamp,
-    intersection,
     lerp,
     style_char,
     subscribable,
@@ -36,14 +35,13 @@ __all__ = [
     "Point",
     "PosHint",
     "PosHintDict",
-    "Rect",
+    "Region",
     "Size",
     "SizeHint",
     "SizeHintDict",
     "TextWidget",
     "add_text",
     "clamp",
-    "intersection",
     "lerp",
     "style_char",
     "subscribable",
@@ -415,7 +413,7 @@ class TextWidget(Widget):
         --------
         text_widget.add_text : Add multiple lines of text to a view of a canvas.
         """
-        lines = text.splitlines()
+        lines = text.split("\n")
         height = len(lines)
         width = max(map(wcswidth, lines), default=0)
         self.size = height, width
@@ -430,23 +428,27 @@ class TextWidget(Widget):
             overline=overline,
         )
 
-    def render(
-        self,
-        canvas_view: NDArray[Char],
-        colors_view: NDArray[np.uint8],
-        source: tuple[slice, slice],
-    ):
+    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         """
         Paint region given by source into canvas_view and colors_view.
         """
+        abs_pos = self.absolute_pos
         if self.is_transparent:
-            source_view = self.canvas[source]
-            visible = np.isin(source_view["char"], (" ", "⠀"), invert=True)
+            for rect in self.region.rects():
+                dst_y, dst_x = rect.to_slices()
+                src_y, src_x = rect.to_slices(abs_pos)
 
-            canvas_view[visible] = source_view[visible]
-            colors_view[..., :3][visible] = self.colors[..., :3][source][visible]
+                visible = np.isin(
+                    self.canvas[src_y, src_x]["char"], (" ", "⠀"), invert=True
+                )
+
+                canvas[dst_y, dst_x][visible] = self.canvas[src_y, src_x][visible]
+                colors[dst_y, dst_x, :3][visible] = self.colors[src_y, src_x, :3][
+                    visible
+                ]
         else:
-            canvas_view[:] = self.canvas[source]
-            colors_view[:] = self.colors[source]
-
-        self.render_children(source, canvas_view, colors_view)
+            for rect in self.region.rects():
+                dst = rect.to_slices()
+                src = rect.to_slices(abs_pos)
+                canvas[dst] = self.canvas[src]
+                colors[dst] = self.colors[src]

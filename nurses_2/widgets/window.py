@@ -36,9 +36,7 @@ __all__ = [
 
 class _TitleBar(Grabbable, Widget):
     def __init__(self):
-        super().__init__(
-            pos=(1, 2), disable_ptf=True, is_transparent=False, background_char=" "
-        )
+        super().__init__(pos=(1, 2), disable_ptf=True, background_char=" ")
 
         self._label = TextWidget(pos_hint={"x_hint": 0.5, "anchor": "top"})
         self.add_widget(self._label)

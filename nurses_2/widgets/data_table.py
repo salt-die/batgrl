@@ -168,7 +168,7 @@ class _ColumnLabel(_CellBase):
         """Display text of cell."""
         self.allow_sorting = allow_sorting
 
-        lines = label.splitlines()
+        lines = label.split("\n")
 
         self.cell_min_height = len(lines)
         """Minimum allowed height of cells."""
@@ -231,7 +231,7 @@ class _ColumnLabel(_CellBase):
         )
         content = "\n".join(
             f"{line:{align}{content_width}}{' ' * _SORT_INDICATOR_SPACING}"
-            for line in self.label.splitlines()
+            for line in self.label.split("\n")
         )
         add_text(self.canvas[:, padding : -_SORT_INDICATOR_WIDTH - padding], content)
 
@@ -273,7 +273,7 @@ class _DataCell(_CellBase):
         self.data = data
         """Data of cell."""
 
-        lines = self.style.render(data).splitlines()
+        lines = self.style.render(data).split("\n")
 
         self.cell_min_height = len(lines)
         """Minimum allowed height of cell."""
@@ -308,7 +308,7 @@ class _DataCell(_CellBase):
         content_width = self.width - 2 * padding
         content = "\n".join(
             f"{line:{align}{content_width}}"
-            for line in self.style.render(self.data).splitlines()
+            for line in self.style.render(self.data).split("\n")
         )
         add_text(self.canvas[:, padding : self.width - padding], content)
 
