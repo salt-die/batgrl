@@ -365,7 +365,7 @@ class TextPad(Themable, Focusable, ScrollView):
         self._undo_stack.clear()
         self._undo_buffer.clear()
         self.unselect()
-        lines = text.splitlines()
+        lines = text.split("\n")
         self._line_lengths = list(map(wcswidth, lines))
 
         pad = self._pad

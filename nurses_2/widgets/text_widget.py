@@ -413,7 +413,7 @@ class TextWidget(Widget):
         --------
         text_widget.add_text : Add multiple lines of text to a view of a canvas.
         """
-        lines = text.splitlines()
+        lines = text.split("\n")
         height = len(lines)
         width = max(map(wcswidth, lines), default=0)
         self.size = height, width
