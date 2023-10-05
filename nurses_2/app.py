@@ -2,12 +2,14 @@
 Base for creating terminal applications.
 """
 import asyncio
+import platform
 import sys
 from abc import ABC, abstractmethod
 from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from time import monotonic
+from types import ModuleType
 
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import (
@@ -17,8 +19,8 @@ from .io import (
     MouseEventType,
     PasteEvent,
     _PartialMouseEvent,
-    io,
 )
+from .io.output import Output
 from .widgets._root import _Root
 from .widgets.behaviors.themable import Themable
 from .widgets.widget import Size, Widget
@@ -50,7 +52,7 @@ class App(ABC):
         Record the terminal in asciicast v2 file format if a path is provided.
         Resizing the terminal while recording isn't currently supported by
         the asciicast format -- doing so will corrupt the recording.
-    log_file : Path | None, default: None
+    redirect_stderr : Path | None, default: None
         If provided, stderr is written to this path.
 
     Attributes
@@ -71,7 +73,7 @@ class App(ABC):
         widgets.
     asciicast_path : Path | None
         Path where asciicast recording will be saved.
-    log_file : Path | None
+    redirect_stderr : Path | None
         Path where stderr is saved.
     root : _Root | None
         Root of widget tree.
@@ -103,7 +105,7 @@ class App(ABC):
         render_interval: float = 0.0,
         color_theme: ColorTheme = DEFAULT_COLOR_THEME,
         asciicast_path: Path | None = None,
-        log_file: Path | None = None,
+        redirect_stderr: Path | None = None,
     ):
         self.root = None
 
@@ -114,7 +116,7 @@ class App(ABC):
         self.render_interval = render_interval
         self.color_theme = color_theme
         self.asciicast_path = asciicast_path
-        self.log_file = log_file
+        self.redirect_stderr = redirect_stderr
 
     @property
     def color_theme(self) -> ColorTheme:
@@ -128,6 +130,26 @@ class App(ABC):
             for widget in self.root.walk():
                 if isinstance(widget, Themable):
                     widget.update_theme()
+
+    @property
+    def background_char(self) -> str:
+        return self._background_char
+
+    @background_char.setter
+    def background_char(self, background_char: str):
+        self._background_char = background_char
+        if self.root is not None:
+            self.root.background_char = background_char
+
+    @property
+    def background_color_pair(self) -> str:
+        return self._background_color_pair
+
+    @background_color_pair.setter
+    def background_color_pair(self, background_color_pair: str):
+        self._background_color_pair = background_color_pair
+        if self.root is not None:
+            self.root.background_color_pair = background_color_pair
 
     @abstractmethod
     async def on_start(self):
@@ -145,9 +167,9 @@ class App(ABC):
         except asyncio.CancelledError:
             pass
         finally:
-            if self.log_file:
-                with open(self.log_file, "w") as log:
-                    print(defer_stderr.getvalue(), file=log, end="")
+            if self.redirect_stderr:
+                with open(self.redirect_stderr, "w") as errors:
+                    print(defer_stderr.getvalue(), file=errors, end="")
             else:
                 print(defer_stderr.getvalue(), file=sys.stderr, end="")
 
@@ -156,19 +178,45 @@ class App(ABC):
         Exit the app.
         """
         self.root.destroy()
+        self.root = None
         for task in asyncio.all_tasks():
             task.cancel()
+
+    def _create_io(self) -> tuple[ModuleType, Output]:
+        """
+        Return platform specific io.
+        """
+        if not sys.stdin.isatty():
+            raise RuntimeError("Interactive terminal required.")
+
+        if platform.system() == "Windows":
+            from .io.output.windows import WindowsOutput, is_vt100_enabled
+
+            if not is_vt100_enabled():
+                raise RuntimeError(
+                    "nurses_2 not supported on non-vt100 enabled terminals"
+                )
+
+            from .io.input.win32 import win32_input
+
+            return win32_input, WindowsOutput(self.asciicast_path)
+
+        else:
+            from .io.input.vt100 import vt100_input
+            from .io.output.vt100 import Vt100_Output
+
+            return vt100_input, Vt100_Output(self.asciicast_path)
 
     async def _run_async(self):
         """
         Build environment, create root, and schedule app-specific tasks.
         """
-        with io(self.asciicast_path) as (env_in, env_out):
+        env_in, env_out = self._create_io()
+        with env_out:
             self.root = root = _Root(
-                app=self,
-                env_out=env_out,
                 background_char=self.background_char,
                 background_color_pair=self.background_color_pair,
+                size=env_out.get_size(),
             )
 
             if self.title:
@@ -230,14 +278,13 @@ class App(ABC):
                 """
                 Render screen every :attr:`render_interval` seconds.
                 """
-                render = root.render
-
                 while True:
+                    root.render()
+                    env_out.render_frame(root)
                     await asyncio.sleep(self.render_interval)
-                    render()
 
             with env_in.raw_mode(), env_in.attach(read_from_input):
-                await asyncio.gather(auto_render(), self.on_start())
+                await asyncio.gather(self.on_start(), auto_render())
 
     def add_widget(self, widget):
         """

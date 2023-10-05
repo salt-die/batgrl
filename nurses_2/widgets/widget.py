@@ -62,12 +62,6 @@ Point of widget attached to a pos hint.
 """
 
 
-@np.vectorize
-def char_widths(char: np.dtype("<U1")) -> int:
-    """Return the width of a character."""
-    return 0 if char == "" else wcwidth(char)
-
-
 _ANCHOR_TO_POS: dict[Anchor, tuple[float, float]] = {
     "top-left": (0.0, 0.0),
     "top": (0.0, 0.5),
