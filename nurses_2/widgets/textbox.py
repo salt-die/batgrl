@@ -321,8 +321,8 @@ class Textbox(Themable, Focusable, Grabbable, Widget):
             hider_region = self._box.region & Region.from_rect(
                 self._box.absolute_pos, (1, self._line_length)
             )
-            for index in hider_region.indices():
-                canvas[index.to_slices()] = style_char(self.hide_char)
+            for rect in hider_region.rects():
+                canvas[rect.to_slices()] = style_char(self.hide_char)
 
     @property
     def placeholder(self) -> str:

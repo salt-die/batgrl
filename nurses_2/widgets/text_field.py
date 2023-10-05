@@ -244,12 +244,12 @@ class TextParticleField(Widget):
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         if self.background_char is not None:
-            for index in self.region.indices():
-                canvas[index.to_slices()] = style_char(self.background_char)
+            for rect in self.region.rects():
+                canvas[rect.to_slices()] = style_char(self.background_char)
 
         if self.background_color_pair is not None:
-            for index in self.region.indices():
-                colors[index.to_slices()] = self.background_color_pair
+            for rect in self.region.rects():
+                colors[rect.to_slices()] = self.background_color_pair
 
         offy, offx = self.absolute_pos
         pchars = self.particle_chars
@@ -257,24 +257,24 @@ class TextParticleField(Widget):
         ppos = self.particle_positions
         if self.is_transparent:
             not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
-            for index in self.region.indices():
-                height = index.bottom - index.top
-                width = index.right - index.left
-                pos = ppos - (index.top - offy, index.left - offx)
+            for rect in self.region.rects():
+                height = rect.bottom - rect.top
+                width = rect.right - rect.left
+                pos = ppos - (rect.top - offy, rect.left - offx)
                 inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
                 where_inbounds = np.nonzero(inbounds & not_whitespace)
                 ys, xs = pos[where_inbounds].T
-                ind = index.to_slices()
-                colors[ind][..., :3][ys, xs] = pcolors[where_inbounds][..., :3]
-                canvas[ind][ys, xs] = pchars[where_inbounds]
+                dst = rect.to_slices()
+                colors[dst][..., :3][ys, xs] = pcolors[where_inbounds][..., :3]
+                canvas[dst][ys, xs] = pchars[where_inbounds]
         else:
-            for index in self.region.indices():
-                height = index.bottom - index.top
-                width = index.right - index.left
-                pos = ppos - (index.top - offy, index.left - offx)
+            for rect in self.region.rects():
+                height = rect.bottom - rect.top
+                width = rect.right - rect.left
+                pos = ppos - (rect.top - offy, rect.left - offx)
                 inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
                 where_inbounds = np.nonzero(inbounds)
                 ys, xs = pos[where_inbounds].T
-                ind = index.to_slices()
-                colors[ind][ys, xs] = pcolors[where_inbounds]
-                canvas[ind][ys, xs] = pchars[where_inbounds]
+                dst = rect.to_slices()
+                colors[dst][ys, xs] = pcolors[where_inbounds]
+                canvas[dst][ys, xs] = pchars[where_inbounds]

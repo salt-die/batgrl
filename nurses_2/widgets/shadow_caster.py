@@ -92,8 +92,8 @@ class Camera:
         dest = Region.from_rect(self.pos, self.size)
 
         if intersection := source & dest:
-            index = next(intersection.indices())
-            submap[index.to_slices(self.pos)] = map[index.to_slices()]
+            rect = next(intersection.rects())
+            submap[rect.to_slices(self.pos)] = map[rect.to_slices()]
 
         return submap
 

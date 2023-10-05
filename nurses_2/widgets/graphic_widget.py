@@ -276,21 +276,21 @@ class GraphicWidget(Widget):
 
         abs_pos = self.absolute_pos
         if self.is_transparent:
-            for index in self.region.indices():
-                ind = index.to_slices()
-                offy, offx = index.to_slices(abs_pos)
+            for rect in self.region.rects():
+                dst = rect.to_slices()
+                src_y, src_x = rect.to_slices(abs_pos)
 
-                mask = canvas["char"][ind] != "▀"
-                foreground[ind][mask] = background[ind][mask]
+                mask = canvas["char"][dst] != "▀"
+                foreground[dst][mask] = background[dst][mask]
 
-                even_rows = texture[2 * offy.start : 2 * offy.stop : 2, offx]
-                odd_rows = texture[2 * offy.start + 1 : 2 * offy.stop : 2, offx]
+                even_rows = texture[2 * src_y.start : 2 * src_y.stop : 2, src_x]
+                odd_rows = texture[2 * src_y.start + 1 : 2 * src_y.stop : 2, src_x]
 
                 even_buffer = np.subtract(
-                    even_rows[..., :3], foreground[ind], dtype=float
+                    even_rows[..., :3], foreground[dst], dtype=float
                 )
                 odd_buffer = np.subtract(
-                    odd_rows[..., :3], background[ind], dtype=float
+                    odd_rows[..., :3], background[dst], dtype=float
                 )
 
                 norm_alpha = self.alpha / 255
@@ -302,21 +302,21 @@ class GraphicWidget(Widget):
                 odd_buffer *= norm_alpha
 
                 np.add(
-                    even_buffer, foreground[ind], out=foreground[ind], casting="unsafe"
+                    even_buffer, foreground[dst], out=foreground[dst], casting="unsafe"
                 )
                 np.add(
-                    odd_buffer, background[ind], out=background[ind], casting="unsafe"
+                    odd_buffer, background[dst], out=background[dst], casting="unsafe"
                 )
-                canvas[ind] = style_char("▀")
+                canvas[dst] = style_char("▀")
         else:
-            for index in self.region.indices():
-                ind = index.to_slices()
-                offy, offx = index.to_slices(abs_pos)
-                even_rows = texture[2 * offy.start : 2 * offy.stop : 2, offx]
-                odd_rows = texture[2 * offy.start + 1 : 2 * offy.stop : 2, offx]
-                foreground[ind] = even_rows[..., :3]
-                background[ind] = odd_rows[..., :3]
-                canvas[ind] = style_char("▀")
+            for rect in self.region.rects():
+                dst = rect.to_slices()
+                src_y, src_x = rect.to_slices(abs_pos)
+                even_rows = texture[2 * src_y.start : 2 * src_y.stop : 2, src_x]
+                odd_rows = texture[2 * src_y.start + 1 : 2 * src_y.stop : 2, src_x]
+                foreground[dst] = even_rows[..., :3]
+                background[dst] = odd_rows[..., :3]
+                canvas[dst] = style_char("▀")
 
     def to_png(self, path: Path):
         """

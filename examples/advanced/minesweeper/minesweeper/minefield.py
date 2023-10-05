@@ -227,10 +227,10 @@ class Minefield(Grid):
 
     def render(self, canvas, colors):
         abs_pos = self.absolute_pos
-        for index in self.region.indices():
-            ind = index.to_slices()
-            off = index.to_slices(abs_pos)
-            visible = self.hidden[off] != 0
+        for rect in self.region.rects():
+            dst = rect.to_slices()
+            src = rect.to_slices(abs_pos)
+            visible = self.hidden[src] != 0
 
-            canvas[ind][visible] = self.canvas[off][visible]
-            colors[ind][visible] = self.colors[off][visible]
+            canvas[dst][visible] = self.canvas[src][visible]
+            colors[dst][visible] = self.colors[src][visible]

@@ -2,10 +2,9 @@
 Root widget.
 """
 import numpy as np
-from numpy.typing import NDArray
 from wcwidth import wcwidth
 
-from .widget import Char, ColorPair, Point, Region, Widget, style_char
+from .widget import ColorPair, Point, Region, Widget, style_char
 
 
 class _Root(Widget):
@@ -112,11 +111,6 @@ class _Root(Widget):
                 if not child.is_transparent:
                     self.region -= child.region
 
-    def _render_tree(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        for child in self.walk_preorder():
-            if child.is_enabled and child.is_visible:
-                child.render(canvas, colors)
-
     def render(self):
         """
         Paint canvas. Render to terminal.
@@ -132,9 +126,11 @@ class _Root(Widget):
 
         # Erase canvas:
         canvas[:] = style_char(self.background_char)
-        colors[:, :] = self.background_color_pair
+        colors[:] = self.background_color_pair
 
-        self._render_tree(canvas, colors)
+        for child in self.walk_preorder():
+            if child.is_enabled and child.is_visible:
+                child.render(canvas, colors)
 
         height, width = self.size
         if self._redraw_all:

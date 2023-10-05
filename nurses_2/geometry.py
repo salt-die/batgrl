@@ -135,10 +135,6 @@ def lerp(a: Real, b: Real, p: Real) -> Real:
     return (1.0 - p) * a + p * b
 
 
-_NO_WALLS = []  # We keep around an empty list to pass to _merge.
-BoolOp = Callable[[bool, bool], bool]
-
-
 def sub(a: bool, b: bool) -> bool:
     """
     `a` and not `b`
@@ -146,7 +142,7 @@ def sub(a: bool, b: bool) -> bool:
     return a and not b
 
 
-def _merge(op: BoolOp, a: list[int], b: list[int]) -> list[int]:
+def _merge(op: Callable[[bool, bool], bool], a: list[int], b: list[int]) -> list[int]:
     """
     Merge the walls of two bands given a set operation.
     """
@@ -175,17 +171,27 @@ def _merge(op: BoolOp, a: list[int], b: list[int]) -> list[int]:
 
 
 @dataclass(slots=True)
-class Index:
+class Rect:
+    """Rectangular Coordinates."""
+
     top: int
+    """Y-coordinate of top of rect."""
     bottom: int
+    """Y-coordinate of bottom of rect."""
     left: int
+    """X-coordinate of left of rect."""
     right: int
+    """X-coordinate of right of rect."""
+
+    def offset(self, point: Point):
+        y, x = point
+        return Rect(self.top - y, self.bottom - y, self.left - x, self.right - x)
 
     def to_slices(self, offset: Point = Point(0, 0)) -> tuple[slice, slice]:
-        offset_y, offset_x = offset
+        y, x = offset
         return (
-            slice(self.top - offset_y, self.bottom - offset_y),
-            slice(self.left - offset_x, self.right - offset_x),
+            slice(self.top - y, self.bottom - y),
+            slice(self.left - x, self.right - x),
         )
 
 
@@ -241,7 +247,9 @@ class Region:
             else:
                 i += 1
 
-    def _merge_regions(self, other: "Region", op: BoolOp) -> "Region":
+    def _merge_regions(
+        self, other: "Region", op: Callable[[bool, bool], bool]
+    ) -> "Region":
         bands = []
         i = j = 0
         scanline = -float("inf")
@@ -259,7 +267,7 @@ class Region:
                     ##        ~~~~~~~~~~~~~~~
                     ##               s
                     ##        ~~~~~~~~~~~~~~~
-                    bands.append(Band(scanline, r.y2, _merge(op, r.walls, _NO_WALLS)))
+                    bands.append(Band(scanline, r.y2, _merge(op, r.walls, [])))
                     scanline = r.y2
                     i += 1
                 elif r.y2 < s.y2:
@@ -271,9 +279,7 @@ class Region:
                         ## ---------------
                         ##               s
                         ##        ~~~~~~~~~~~~~~~
-                        bands.append(
-                            Band(scanline, s.y1, _merge(op, r.walls, _NO_WALLS))
-                        )
+                        bands.append(Band(scanline, s.y1, _merge(op, r.walls, [])))
                     if s.y1 < r.y2:
                         ## ---------------
                         ##        r
@@ -293,9 +299,7 @@ class Region:
                         ##               s
                         ##        ~~~~~~~~~~~~~~~
                         ## ---------------
-                        bands.append(
-                            Band(scanline, s.y1, _merge(op, r.walls, _NO_WALLS))
-                        )
+                        bands.append(Band(scanline, s.y1, _merge(op, r.walls, [])))
                     ## ---------------
                     ##        r
                     ##        ~-~-~-~-~-~-~-~ scanline
@@ -318,7 +322,7 @@ class Region:
                     ##        _______________
                     ##               r
                     ##        _______________
-                    bands.append(Band(scanline, s.y2, _merge(op, _NO_WALLS, s.walls)))
+                    bands.append(Band(scanline, s.y2, _merge(op, [], s.walls)))
                     scanline = s.y2
                     j += 1
                 elif s.y2 < r.y2:
@@ -330,9 +334,7 @@ class Region:
                         ## ~~~~~~~~~~~~~~~
                         ##               r
                         ##        ---------------
-                        bands.append(
-                            Band(scanline, r.y1, _merge(op, _NO_WALLS, s.walls))
-                        )
+                        bands.append(Band(scanline, r.y1, _merge(op, [], s.walls)))
                     if r.y1 < s.y2:
                         ## ~~~~~~~~~~~~~~~
                         ##        s
@@ -352,9 +354,7 @@ class Region:
                         ##               r
                         ##        ---------------
                         ## ~~~~~~~~~~~~~~~
-                        bands.append(
-                            Band(scanline, r.y1, _merge(op, _NO_WALLS, s.walls))
-                        )
+                        bands.append(Band(scanline, r.y1, _merge(op, [], s.walls)))
                     ## ~~~~~~~~~~~~~~~
                     ##        s
                     ##        --------------- scanline
@@ -371,14 +371,14 @@ class Region:
             r = self.bands[i]
             if scanline < r.y1:
                 scanline = r.y1
-            bands.append(Band(scanline, r.y2, _merge(op, r.walls, _NO_WALLS)))
+            bands.append(Band(scanline, r.y2, _merge(op, r.walls, [])))
             i += 1
 
         while j < len(other.bands):
             s = other.bands[j]
             if scanline < s.y1:
                 scanline = s.y1
-            bands.append(Band(scanline, s.y2, _merge(op, _NO_WALLS, s.walls)))
+            bands.append(Band(scanline, s.y2, _merge(op, [], s.walls)))
             j += 1
 
         region = Region(bands=bands)
@@ -400,32 +400,30 @@ class Region:
     def __bool__(self):
         return len(self.bands) > 0
 
-    def indices(self) -> Iterator[Index]:
+    def rects(self) -> Iterator[Rect]:
         """
-        Yield indices (top, bottom, left, right) for each rect that make up the region.
+        Yield rects that make up the region.
         """
         for band in self.bands:
             i = 0
             while i < len(band.walls):
-                yield Index(band.y1, band.y2, band.walls[i], band.walls[i + 1])
+                yield Rect(band.y1, band.y2, band.walls[i], band.walls[i + 1])
                 i += 2
 
     @property
-    def bbox_indices(self) -> Index | None:
-        """
-        Bounding box indices (top, bottom, left, right) of region or None if region is
-        empty.
-        """
+    def bbox(self) -> Rect | None:
+        """Bounding box of region."""
         if not self:
             return None
 
         left = min(band.walls[0] for band in self.bands)
         right = max(band.walls[-1] for band in self.bands)
 
-        return Index(self.bands[0].y1, self.bands[-1].y2, left, right)
+        return Rect(self.bands[0].y1, self.bands[-1].y2, left, right)
 
     @classmethod
     def from_rect(cls, pos: Point, size: Size) -> "Region":
+        """Return a region from a rect position and size."""
         y, x = pos
         h, w = size
         return cls([Band(y, y + h, [x, x + w])])

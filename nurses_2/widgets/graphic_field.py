@@ -246,18 +246,18 @@ class GraphicParticleField(Widget):
         palphas = self.particle_alphas
         pcolors = self.particle_colors
         ppos = self.particle_positions
-        for index in self.region.indices():
-            height = index.bottom - index.top
-            width = index.right - index.left
-            pos = ppos - (index.top - offy, index.left - offx)
+        for rect in self.region.rects():
+            height = rect.bottom - rect.top
+            width = rect.right - rect.left
+            pos = ppos - (rect.top - offy, rect.left - offx)
             where_inbounds = np.nonzero(
                 (((0, 0) <= pos) & (pos < (2 * height, width))).all(axis=1)
             )
             ys, xs = pos[where_inbounds].T
 
-            ind = index.to_slices()
+            dst = rect.to_slices()
             texture = (
-                colors[ind]
+                colors[dst]
                 .reshape(height, width, 2, 3)
                 .swapaxes(1, 2)
                 .reshape(2 * height, width, 3)
@@ -267,8 +267,8 @@ class GraphicParticleField(Widget):
             if not self.is_transparent:
                 texture[ys, xs] = painted[..., :3]
             else:
-                mask = canvas["char"][ind] != "▀"
-                colors[ind][..., :3][mask] = colors[ind][..., 3:][mask]
+                mask = canvas["char"][dst] != "▀"
+                colors[dst][..., :3][mask] = colors[dst][..., 3:][mask]
 
                 buffer = np.subtract(painted[:, :3], texture[ys, xs], dtype=float)
                 buffer *= painted[:, 3, None]
@@ -276,9 +276,9 @@ class GraphicParticleField(Widget):
                 buffer /= 255
                 texture[ys, xs] = (buffer + texture[ys, xs]).astype(np.uint8)
 
-            colors[ind] = (
+            colors[dst] = (
                 texture.reshape(height, 2, width, 3)
                 .swapaxes(1, 2)
                 .reshape(height, width, 6)
             )
-            canvas[ind] = style_char("▀")
+            canvas[dst] = style_char("▀")

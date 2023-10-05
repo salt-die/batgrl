@@ -76,10 +76,9 @@ def composite(
     source_reg = Region.from_rect(pos, (sh, sw))
 
     if intersection := source_reg & dest_reg:
-        ind = next(intersection.indices())
-
-        dest_tex = dest[ind.to_slices()]
-        source_tex = source[ind.to_slices(pos)]
+        rect = next(intersection.rects())
+        dest_tex = dest[rect.to_slices()]
+        source_tex = source[rect.to_slices(pos)]
         source_alpha = source_tex[..., 3]
 
         if mask_mode:

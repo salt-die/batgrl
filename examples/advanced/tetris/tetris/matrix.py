@@ -39,21 +39,23 @@ class MatrixWidget(GraphicWidget):
         super().render(canvas, colors)
         glow = self._glow
         abs_pos = self.absolute_pos
-        for index in self.region.indices():
-            ys, xs = index.to_slices()
-            offy, offx = index.to_slices(abs_pos)
+        for rect in self.region.rects():
+            dst_y, dst_x = rect.to_slices()
+            src_y, src_x = rect.to_slices(abs_pos)
 
             visible = (
                 self.texture[
-                    2 * offy.start : 2 * offy.stop, 2 * offx.start : 2 * offx.stop, 3
+                    2 * src_y.start : 2 * src_y.stop,
+                    2 * src_x.start : 2 * src_x.stop,
+                    3,
                 ]
                 == 255
             )
-            fg = colors[ys, xs, :3]
+            fg = colors[dst_y, dst_x, :3]
             fg[visible[::2]] = (fg[visible[::2]] * (1 - glow) + glow * 255).astype(
                 np.uint8
             )
-            bg = colors[ys, xs, 3:]
+            bg = colors[dst_y, dst_x, 3:]
             bg[visible[1::2]] = (bg[visible[1::2]] * (1 - glow) + glow * 255).astype(
                 np.uint8
             )

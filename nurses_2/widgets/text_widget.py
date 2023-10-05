@@ -434,19 +434,21 @@ class TextWidget(Widget):
         """
         abs_pos = self.absolute_pos
         if self.is_transparent:
-            for index in self.region.indices():
-                ys, xs = index.to_slices()
-                offy, offx = index.to_slices(abs_pos)
+            for rect in self.region.rects():
+                dst_y, dst_x = rect.to_slices()
+                src_y, src_x = rect.to_slices(abs_pos)
 
                 visible = np.isin(
-                    self.canvas[offy, offx]["char"], (" ", "⠀"), invert=True
+                    self.canvas[src_y, src_x]["char"], (" ", "⠀"), invert=True
                 )
 
-                canvas[ys, xs][visible] = self.canvas[offy, offx][visible]
-                colors[ys, xs, :3][visible] = self.colors[offy, offx, :3][visible]
+                canvas[dst_y, dst_x][visible] = self.canvas[src_y, src_x][visible]
+                colors[dst_y, dst_x, :3][visible] = self.colors[src_y, src_x, :3][
+                    visible
+                ]
         else:
-            for index in self.region.indices():
-                ind = index.to_slices()
-                offset_ind = index.to_slices(abs_pos)
-                canvas[ind] = self.canvas[offset_ind]
-                colors[ind] = self.colors[offset_ind]
+            for rect in self.region.rects():
+                dst = rect.to_slices()
+                src = rect.to_slices(abs_pos)
+                canvas[dst] = self.canvas[src]
+                colors[dst] = self.colors[src]

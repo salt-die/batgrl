@@ -935,7 +935,9 @@ class Widget:
             y, x = point
             return 0 <= y < self.height and 0 <= x < self.width
 
-        return point in self.region
+        return point in self.region or any(
+            point in child.region for child in self.walk_preorder()
+        )
 
     def collides_widget(self, other: "Widget") -> bool:
         """
@@ -1103,12 +1105,12 @@ class Widget:
             return
 
         if self.background_char is not None:
-            for index in self.region.indices():
-                canvas[index.to_slices()] = style_char(self.background_char)
+            for rect in self.region.rects():
+                canvas[rect.to_slices()] = style_char(self.background_char)
 
         if self.background_color_pair is not None:
-            for index in self.region.indices():
-                colors[index.to_slices()] = self.background_color_pair
+            for rect in self.region.rects():
+                colors[rect.to_slices()] = self.background_color_pair
 
     @staticmethod
     def _tween_lerp(start, end, p):
