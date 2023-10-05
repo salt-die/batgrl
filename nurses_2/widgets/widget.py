@@ -672,9 +672,6 @@ class Widget:
         for child in self.children:
             child.apply_hints()
 
-        if (root := self.root) is not None:
-            root.regions_need_update = True
-
     @property
     def height(self) -> int:
         """
@@ -715,8 +712,6 @@ class Widget:
             return
 
         self._pos = Point(*pos)
-        if (root := self.root) is not None:
-            root.regions_need_update = True
 
     @property
     def top(self) -> int:
@@ -833,26 +828,6 @@ class Widget:
         self._pos_hint._widget = None
         self._pos_hint = pos_hint
         self.apply_hints()
-
-    @property
-    def is_visible(self) -> bool:
-        return self._is_visible
-
-    @is_visible.setter
-    def is_visible(self, is_visible: bool):
-        self._is_visible = is_visible
-        if (root := self.root) is not None:
-            root.regions_need_update = True
-
-    @property
-    def is_enabled(self) -> bool:
-        return self._is_visible
-
-    @is_enabled.setter
-    def is_enabled(self, is_enabled: bool):
-        self._is_visible = is_enabled
-        if (root := self.root) is not None:
-            root.regions_need_update = True
 
     @property
     def background_char(self) -> str | None:
@@ -1000,8 +975,7 @@ class Widget:
         self.children.append(widget)
         widget.parent = self
 
-        if (root := self.root) is not None:
-            root.regions_need_update = True
+        if self.root is not None:
             widget.on_add()
 
     def add_widgets(self, *widgets: "Widget"):
@@ -1019,8 +993,7 @@ class Widget:
         """
         Remove a child widget.
         """
-        if (root := self.root) is not None:
-            root.regions_need_update = True
+        if self.root is not None:
             widget.on_remove()
 
         self.children.remove(widget)

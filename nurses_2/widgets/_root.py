@@ -27,7 +27,6 @@ class _Root(Widget):
         self.env_out = env_out
         self.background_char = background_char
         self.background_color_pair = background_color_pair
-        self.regions_need_update = True
 
         self._size = env_out.get_size()
         self.on_size()
@@ -47,7 +46,6 @@ class _Root(Widget):
         self.colors = self._last_colors.copy()
 
         self._redraw_all = True
-        self.regions_need_update = True
 
         # Buffer arrays to re-use in the `render` method:
         self._color_diffs = np.zeros_like(self.colors, dtype=bool)
@@ -93,44 +91,37 @@ class _Root(Widget):
         return 0 <= y < self.height and 0 <= x < self.width
 
     def _update_regions(self):
-        if self.regions_need_update:
-            self.region = Region.from_rect(self.pos, self.size)
-            for child in self.walk_preorder():
-                if child.is_enabled and child.is_visible:
-                    child.region = child.parent.region & Region.from_rect(
-                        child.absolute_pos, child.size
-                    )
-                else:
-                    child.region = Region()
+        # TODO: Optimize:
+        # Recalculating all regions every frame isn't necessary. If widget geometry
+        # hasn't changed regions don't need to be updated. Additionally, if there is a
+        # change in some widget geometry, regions can be reused that are later in
+        # z-order.
+        self.region = Region.from_rect(self.pos, self.size)
 
-            for child in self.walk_reverse_postorder():
-                if child.is_enabled and child.is_visible:
-                    child.region = self.region & child.region
-                    if not child.is_transparent:
-                        self.region -= child.region
-            self.regions_need_update = False
+        for child in self.walk_preorder():
+            if child.is_enabled and child.is_visible:
+                child.region = child.parent.region & Region.from_rect(
+                    child.absolute_pos, child.size
+                )
+            else:
+                child.region = Region()
 
-    def _render_tree(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        transparent_stack: list[Widget] = []
         for child in self.walk_reverse_postorder():
             if child.is_enabled and child.is_visible:
-                if child.is_transparent:
-                    transparent_stack.append(child)
-                else:
-                    child.render(canvas, colors)
+                child.region &= self.region
+                if not child.is_transparent:
+                    self.region -= child.region
 
-                    while transparent_stack and transparent_stack[-1].parent is child:
-                        transparent_stack.pop().render(canvas, colors)
-
-        while transparent_stack:
-            transparent_stack.pop().render(canvas, colors)
+    def _render_tree(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        for child in self.walk_preorder():
+            if child.is_enabled and child.is_visible:
+                child.render(canvas, colors)
 
     def render(self):
         """
         Paint canvas. Render to terminal.
         """
-        if self.regions_need_update:
-            self._update_regions()
+        self._update_regions()
 
         # Swap canvas with last render:
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
