@@ -1,11 +1,11 @@
 """
 Root widget.
 """
+from typing import Literal
+
 import numpy as np
 
 from .widget import ColorPair, Point, Region, Size, Widget, style_char
-
-USE_PAINTERS = True
 
 
 class _Root(Widget):
@@ -16,11 +16,16 @@ class _Root(Widget):
     """
 
     def __init__(
-        self, background_char: str, background_color_pair: ColorPair, size: Size
+        self,
+        background_char: str,
+        background_color_pair: ColorPair,
+        render_mode: Literal["regions", "painter"],
+        size: Size,
     ):
         self.children = []
         self.background_char = background_char
         self.background_color_pair = background_color_pair
+        self.render_mode = render_mode
         self._size = size
         self.on_size()
 
@@ -93,11 +98,12 @@ class _Root(Widget):
                 else Region()
             )
 
-        for child in self.walk_reverse():
-            if child.is_enabled:
-                child.region &= self.region
-                if child.is_visible and not child.is_transparent:
-                    self.region -= child.region
+        if self.render_mode == "regions":
+            for child in self.walk_reverse():
+                if child.is_enabled:
+                    child.region &= self.region
+                    if child.is_visible and not child.is_transparent:
+                        self.region -= child.region
 
         self.canvas, self._last_canvas = self._last_canvas, self.canvas
         self.colors, self._last_colors = self._last_colors, self.colors

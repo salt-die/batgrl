@@ -10,6 +10,7 @@ from io import StringIO
 from pathlib import Path
 from time import monotonic
 from types import ModuleType
+from typing import Literal
 
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .io import (
@@ -54,6 +55,10 @@ class App(ABC):
         the asciicast format -- doing so will corrupt the recording.
     redirect_stderr : Path | None, default: None
         If provided, stderr is written to this path.
+    render_mode : Literal["regions", "painter"], default: "regions"
+        Determines how the widget tree is rendered. "painter" fully paints every widget
+        back-to-front. "regions" only paints the visible portion of each widget.
+        "painter" may be more efficient for a large number of non-overlapping widgets.
 
     Attributes
     ----------
@@ -106,6 +111,7 @@ class App(ABC):
         color_theme: ColorTheme = DEFAULT_COLOR_THEME,
         asciicast_path: Path | None = None,
         redirect_stderr: Path | None = None,
+        render_mode: Literal["regions", "painter"] = "regions",
     ):
         self.root = None
 
@@ -117,6 +123,7 @@ class App(ABC):
         self.color_theme = color_theme
         self.asciicast_path = asciicast_path
         self.redirect_stderr = redirect_stderr
+        self.render_mode = render_mode
 
     @property
     def color_theme(self) -> ColorTheme:
@@ -150,6 +157,16 @@ class App(ABC):
         self._background_color_pair = background_color_pair
         if self.root is not None:
             self.root.background_color_pair = background_color_pair
+
+    @property
+    def render_mode(self) -> Literal["regions", "painter"]:
+        return self._render_mode
+
+    @render_mode.setter
+    def render_mode(self, render_mode: Literal["regions", "painter"]):
+        self._render_mode = render_mode
+        if self.root is not None:
+            self.root.render_mode = render_mode
 
     @abstractmethod
     async def on_start(self):
@@ -216,6 +233,7 @@ class App(ABC):
             self.root = root = _Root(
                 background_char=self.background_char,
                 background_color_pair=self.background_color_pair,
+                render_mode=self.render_mode,
                 size=env_out.get_size(),
             )
 
