@@ -3,6 +3,7 @@ from pathlib import Path
 from nurses_2.app import App
 from nurses_2.widgets.image import Image
 from nurses_2.widgets.text import Text, add_text
+from nurses_2.widgets.widget import Widget
 
 from .colors import DEFAULT_COLOR_PAIR
 from .effects import BOLDCRT
@@ -27,7 +28,9 @@ class HackApp(App):
         add_text(header.canvas, HEADER)
 
         modal = Modal(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}, is_enabled=False
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            is_enabled=False,
+            is_transparent=True,
         )
 
         output = Output(
@@ -50,16 +53,16 @@ class HackApp(App):
         terminal = Image(
             path=TERMINAL, size=(36, 63), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
-        container = BOLDCRT(
+        container = Widget(
             size=(22, 53),
             pos=(5, 5),
-            is_transparent=False,
-            background_char=" ",
             background_color_pair=DEFAULT_COLOR_PAIR,
         )
 
+        crt = BOLDCRT(size=(22, 53), is_transparent=True)
+
         terminal.add_widget(container)
-        container.add_widgets(header, memory, output, modal)
+        container.add_widgets(header, memory, output, modal, crt)
         self.add_widget(terminal)
 
         memory.init_memory()

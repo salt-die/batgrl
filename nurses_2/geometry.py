@@ -215,7 +215,7 @@ def _merge(op: Callable[[bool, bool], bool], a: list[int], b: list[int]) -> list
     return walls
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, unsafe_hash=True)
 class Region:
     """
     Collection of mutually exclusive bands of rects.
@@ -227,15 +227,12 @@ class Region:
         """
         Join contiguous bands with the same walls to reduce rects.
         """
-        bands = self.bands
+        bands = self.bands = [band for band in self.bands if len(band.walls) > 0]
+
         i = 0
         while i < len(bands) - 1:
             a, b = bands[i], bands[i + 1]
-            if len(a.walls) == 0:
-                del bands[i]
-            elif len(b.walls) == 0:
-                del bands[i + 1]
-            elif b.y1 <= a.y2 and a.walls == b.walls:
+            if b.y1 <= a.y2 and a.walls == b.walls:
                 a.y2 = b.y2
                 del bands[i + 1]
             else:
@@ -425,7 +422,7 @@ class Region:
         """Return a region from a rect position and size."""
         y, x = pos
         h, w = size
-        return cls([_Band(y, y + h, [x, x + w])])
+        return cls([_Band(y, y + h, (x, x + w))])
 
     def __contains__(self, point: Point) -> bool:
         """

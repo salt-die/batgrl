@@ -91,6 +91,7 @@ class Board(GridLayout):
             grid_rows=6,
             grid_columns=7,
             pos=(2, 0),
+            is_transparent=True,
         )
 
         self.add_widgets(BoardPiece() for _ in range(42))

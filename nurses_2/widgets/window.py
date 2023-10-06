@@ -358,6 +358,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
             view.size_hint.height_hint = None
             view.size_hint.width_hint = None
             self.add_widget(view)
+            self.pull_border_to_front()
             self.on_size()
 
     def on_size(self):

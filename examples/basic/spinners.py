@@ -26,6 +26,7 @@ class SpinnersApp(App):
             grid_columns=COLUMNS,
             horizontal_spacing=1,
             orientation="tb-lr",
+            background_color_pair=PRIMARY,
         )
 
         for name, frames in SPINNERS.items():
@@ -40,7 +41,10 @@ class SpinnersApp(App):
             animation.size = animation.frames[0].size
             animation.play()
 
-            container = Widget(size=(animation.height, label.width + animation.width))
+            container = Widget(
+                size=(animation.height, label.width + animation.width),
+                is_transparent=True,
+            )
             container.add_widgets(label, animation)
 
             grid.add_widget(container)

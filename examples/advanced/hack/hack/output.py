@@ -9,15 +9,13 @@ CORRECT_GUESS = """\
 >while system
 >is accessed.
 
->
-"""
+>"""
 INCORRECT_GUESS = """\
 >{}
 >Entry denied
->{}/7 correct.
+>{}/9 correct.
 
->█
-"""
+>█"""
 
 
 class Output(Text):

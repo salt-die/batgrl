@@ -237,8 +237,9 @@ class TextAnimation(Widget):
     @region.setter
     def region(self, region: Region):
         self._region = region
-        for frame in self.frames:
-            frame.region = region & Region.from_rect(self.absolute_pos, frame.size)
+        if region is not None:
+            for frame in self.frames:
+                frame.region = region & Region.from_rect(self.absolute_pos, frame.size)
 
     @property
     def animation_color_pair(self) -> ColorPair:
@@ -268,23 +269,26 @@ class TextAnimation(Widget):
         super().on_remove()
 
     async def _play_animation(self):
-        while self.frames:
-            await asyncio.sleep(self.frame_durations[self._i])
+        try:
+            while self.frames:
+                await asyncio.sleep(self.frame_durations[self._i])
 
-            if self.reverse:
-                self._i -= 1
-                if self._i < 0:
-                    self._i = len(self.frames) - 1
+                if self.reverse:
+                    self._i -= 1
+                    if self._i < 0:
+                        self._i = len(self.frames) - 1
 
-                    if not self.loop:
-                        return
-            else:
-                self._i += 1
-                if self._i == len(self.frames):
-                    self._i = 0
+                        if not self.loop:
+                            return
+                else:
+                    self._i += 1
+                    if self._i == len(self.frames):
+                        self._i = 0
 
-                    if not self.loop:
-                        return
+                        if not self.loop:
+                            return
+        except Exception as e:
+            raise SystemExit(e)
 
     def play(self) -> asyncio.Task:
         """

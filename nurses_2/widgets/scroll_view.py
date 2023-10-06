@@ -1,7 +1,7 @@
 """
 A scrollable view widget.
 """
-from ..colors import Color, ColorPair
+from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair
 from ..io import KeyEvent, MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
 from .text import Text
@@ -262,7 +262,7 @@ class ScrollView(Grabbable, Widget):
     background_char : str | None, default: None
         The background character of the widget if the widget is not transparent.
         Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
+    background_color_pair : ColorPair | None, default: DEFAULT_COLOR_THEME.primary
         The background color pair of the widget if the widget is not transparent.
 
     Attributes
@@ -434,7 +434,7 @@ class ScrollView(Grabbable, Widget):
         is_visible: bool = True,
         is_enabled: bool = True,
         background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
+        background_color_pair: ColorPair | None = DEFAULT_COLOR_THEME.primary,
     ):
         super().__init__(
             is_grabbable=is_grabbable,

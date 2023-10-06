@@ -5,6 +5,8 @@ import numpy as np
 
 from .widget import ColorPair, Point, Region, Size, Widget, style_char
 
+USE_PAINTERS = True
+
 
 class _Root(Widget):
     """
@@ -85,17 +87,16 @@ class _Root(Widget):
         self.region = Region.from_rect(self.pos, self.size)
 
         for child in self.walk():
-            if child.is_enabled and child.is_visible:
-                child.region = child.parent.region & Region.from_rect(
-                    child.absolute_pos, child.size
-                )
-            else:
-                child.region = Region()
+            child.region = (
+                child.parent.region & Region.from_rect(child.absolute_pos, child.size)
+                if child.is_enabled
+                else Region()
+            )
 
         for child in self.walk_reverse():
-            if child.is_enabled and child.is_visible:
+            if child.is_enabled:
                 child.region &= self.region
-                if not child.is_transparent:
+                if child.is_visible and not child.is_transparent:
                     self.region -= child.region
 
         self.canvas, self._last_canvas = self._last_canvas, self.canvas

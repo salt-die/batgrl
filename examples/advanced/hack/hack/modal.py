@@ -26,7 +26,9 @@ class OKButton(ButtonBehavior, Text):
 class Modal(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.background = Darken(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self.background = Darken(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, is_transparent=True
+        )
         self.message_box = Text(
             size=(6, 20),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},

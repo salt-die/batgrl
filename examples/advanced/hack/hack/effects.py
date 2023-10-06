@@ -2,7 +2,6 @@ import asyncio
 
 import numpy as np
 
-from nurses_2.widgets.behaviors.effect import Effect
 from nurses_2.widgets.widget import Widget
 
 from .colors import BRIGHT_COLOR_PAIR
@@ -14,16 +13,18 @@ NPS_2 = (1 - PS) * BRIGHT_COLOR_PAIR.reversed()
 SKIP = 23  # Increase for a faster scanline.
 
 
-class Darken(Effect, Widget):
+class Darken(Widget):
     """
     Darken view.
     """
 
-    def apply_effect(self, canvas_view, colors_view, source):
-        colors_view >>= 1
+    def render(self, canvas, colors):
+        super().render(canvas, colors)
+        for rect in self.region.rects():
+            colors[rect.to_slices()] >>= 1
 
 
-class BOLDCRT(Effect, Widget):
+class BOLDCRT(Widget):
     """
     Bold all text and apply a crt effect.
     """
@@ -44,16 +45,18 @@ class BOLDCRT(Effect, Widget):
             self._i %= y * x
             await asyncio.sleep(0)
 
-    def apply_effect(self, canvas_view, colors_view, source):
-        canvas_view["bold"] = True
+    def render(self, canvas, colors):
+        py, px = self.absolute_pos
+        h, w = self.size
 
-        h, w, _ = colors_view.shape
+        dst = slice(py, py + h), slice(px, px + w)
+        canvas[dst]["bold"] = True
+
         y, x = divmod(self._i, w)
         nchars = 0
         while nchars < CRT_LEN:
-            strip = colors_view[y, x : x + CRT_LEN - nchars]
-            lstrip = len(strip)
-            end = nchars + lstrip
+            strip = colors[dst][y, x : x + CRT_LEN - nchars]
+            end = nchars + len(strip)
 
             normal = (strip * PS[nchars:end] + NPS[nchars:end]).astype(np.uint8)
             reversed = (strip * PS[nchars:end] + NPS_2[nchars:end]).astype(np.uint8)
