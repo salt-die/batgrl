@@ -269,26 +269,23 @@ class TextAnimation(Widget):
         super().on_remove()
 
     async def _play_animation(self):
-        try:
-            while self.frames:
-                await asyncio.sleep(self.frame_durations[self._i])
+        while self.frames:
+            await asyncio.sleep(self.frame_durations[self._i])
 
-                if self.reverse:
-                    self._i -= 1
-                    if self._i < 0:
-                        self._i = len(self.frames) - 1
+            if self.reverse:
+                self._i -= 1
+                if self._i < 0:
+                    self._i = len(self.frames) - 1
 
-                        if not self.loop:
-                            return
-                else:
-                    self._i += 1
-                    if self._i == len(self.frames):
-                        self._i = 0
+                    if not self.loop:
+                        return
+            else:
+                self._i += 1
+                if self._i == len(self.frames):
+                    self._i = 0
 
-                        if not self.loop:
-                            return
-        except Exception as e:
-            raise SystemExit(e)
+                    if not self.loop:
+                        return
 
     def play(self) -> asyncio.Task:
         """

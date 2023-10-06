@@ -276,10 +276,7 @@ class ProgressBar(Themable, Text):
         smooth_bar = smooth_vertical_bar(bar_height, 1, offset)
 
         self.canvas[:] = style_char(self.default_char)
-        try:
-            self.canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
-        except Exception as e:
-            raise SystemExit(bar_height, progress, offset, smooth_bar) from e
+        self.canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
         self.colors[:] = self.color_theme.progress_bar
         if offset != 0:
             self.colors[::-1][y] = self.color_theme.progress_bar.reversed()
