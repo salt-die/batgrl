@@ -80,7 +80,7 @@ class Animation(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
-    is_transparent : bool, default: False
+    is_transparent : bool, default: True
         Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
