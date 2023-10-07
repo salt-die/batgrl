@@ -7,12 +7,12 @@ Create games:
 
 Simulations:
 
-![Cloth](https://raw.githubusercontent.com/salt-die/batgrl/main/preview_images/cloth.png)
+![Simulation](https://raw.githubusercontent.com/salt-die/batgrl/main/preview_images/simulation.png)
 
 Or entire feature-filled applications:
 
-![Windows](https://raw.githubusercontent.com/salt-die/batgrl/main/preview_images/windows.png)
+![Application](https://raw.githubusercontent.com/salt-die/batgrl/main/preview_images/application.png)
 
-See it in action: [Video Preview](https://youtu.be/LLI6ANQ6MH4).
+[See it in action](https://youtu.be/FzQP86ljsgc)
 
 [Read the docs](https://salt-die.github.io/batgrl/index.html)
