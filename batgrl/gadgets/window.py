@@ -36,23 +36,16 @@ __all__ = [
 
 class _TitleBar(Grabbable, Gadget):
     def __init__(self):
-        super().__init__(pos=(1, 2), disable_ptf=True, background_char=" ")
+        super().__init__(
+            pos=(1, 2),
+            size=(1, 2),
+            disable_ptf=True,
+            background_char=" ",
+            size_hint={"width_hint": 1.0, "width_offset": -4},
+        )
 
         self._label = Text(pos_hint={"x_hint": 0.5, "anchor": "top"})
         self.add_gadget(self._label)
-
-    def on_add(self):
-        super().on_add()
-
-        def update_size():
-            self.size = 1, self.parent.width - 4
-
-        update_size()
-        self.subscribe(self.parent, "size", update_size)
-
-    def on_remove(self):
-        self.unsubscribe(self.parent, "size")
-        super().on_remove()
 
     def grab_update(self, mouse_event):
         self.parent.top += self.mouse_dy
@@ -368,8 +361,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
         if self._view is not None:
             self._view.size = h - 3, w - 4
-
-        self._view.is_visible = h - 3 > 0 and w - 4 > 0
+            self._view.is_visible = h - 3 > 0 and w - 4 > 0
 
     @property
     def title(self):
