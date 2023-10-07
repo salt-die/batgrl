@@ -4,6 +4,7 @@ import random
 from itertools import chain
 
 import numpy as np
+
 from batgrl.app import App
 from batgrl.colors import (
     ACYAN,
@@ -219,4 +220,4 @@ class ShadowCasterApp(App):
 
 
 if __name__ == "__main__":
-    ShadowCasterApp(background_color_pair=PRIMARY).run()
+    ShadowCasterApp(title="Shadow Casting", background_color_pair=PRIMARY).run()
