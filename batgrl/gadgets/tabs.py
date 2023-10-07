@@ -252,12 +252,11 @@ class Tabs(Themable, Gadget):
 
         self.separator.subscribe(self, "size", _update_sep)
 
-        self.tab_window = Gadget(size=(h - 2, w), pos=(2, 0))
-
-        def _update_tabs():
-            self.tab_window.size = self.height - 2, self.width
-
-        self.tab_window.subscribe(self, "size", _update_tabs)
+        self.tab_window = Gadget(
+            size=(h - 2, w),
+            pos=(2, 0),
+            size_hint={"height_hint": 1.0, "width_hint": 1.0, "height_offset": -2},
+        )
 
         self._tab_underline = Text(size=(1, 1), pos=(1, 0), is_enabled=False)
 
