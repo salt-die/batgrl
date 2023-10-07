@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.image import Image
-from nurses_2.widgets.text import Text, add_text
-from nurses_2.widgets.widget import Widget
+from batgrl.app import App
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.image import Image
+from batgrl.gadgets.text import Text, add_text
 
 from .colors import DEFAULT_COLOR_PAIR
 from .effects import BOLDCRT
-from .memory import MemoryWidget
+from .memory import MemoryGadget
 from .modal import Modal
 from .output import Output
 
@@ -41,7 +41,7 @@ class HackApp(App):
             default_color_pair=DEFAULT_COLOR_PAIR,
         )
 
-        memory = MemoryWidget(
+        memory = MemoryGadget(
             output,
             size=(17, 39),
             pos=(5, 0),
@@ -53,7 +53,7 @@ class HackApp(App):
         terminal = Image(
             path=TERMINAL, size=(36, 63), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
-        container = Widget(
+        container = Gadget(
             size=(22, 53),
             pos=(5, 5),
             background_color_pair=DEFAULT_COLOR_PAIR,
@@ -61,9 +61,9 @@ class HackApp(App):
 
         crt = BOLDCRT(size=(22, 53), is_transparent=True)
 
-        terminal.add_widget(container)
-        container.add_widgets(header, memory, output, modal, crt)
-        self.add_widget(terminal)
+        terminal.add_gadget(container)
+        container.add_gadgets(header, memory, output, modal, crt)
+        self.add_gadget(terminal)
 
         memory.init_memory()
 

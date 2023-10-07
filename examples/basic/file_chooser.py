@@ -1,9 +1,9 @@
 import asyncio
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.file_chooser import FileChooser
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.gadgets.file_chooser import FileChooser
+from batgrl.gadgets.text import Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
 
@@ -21,7 +21,7 @@ class FileApp(App):
             size_hint={"height_hint": 1.0},
             select_callback=select_callback,
         )
-        self.add_widgets(label, fc)
+        self.add_gadgets(label, fc)
 
         await asyncio.sleep(5)
 

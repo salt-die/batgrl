@@ -6,11 +6,10 @@ Press `r` to reset. Click to create new live cells with random colors.
 import asyncio
 
 import numpy as np
+from batgrl.app import run_gadget_as_app
+from batgrl.gadgets.graphics import Graphics
+from batgrl.io import MouseButton
 from cv2 import BORDER_CONSTANT, filter2D
-
-from nurses_2.app import run_widget_as_app
-from nurses_2.io import MouseButton
-from nurses_2.widgets.graphics import Graphics
 
 KERNEL = np.array(
     [
@@ -80,4 +79,4 @@ class Life(Graphics):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(Life(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    run_gadget_as_app(Life(size_hint={"height_hint": 1.0, "width_hint": 1.0}))

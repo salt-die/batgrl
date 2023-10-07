@@ -2,13 +2,13 @@ import asyncio
 from pathlib import Path
 from time import monotonic
 
-import nurses_2.colors as colors
-from nurses_2.app import App
-from nurses_2.colors import AWHITE
-from nurses_2.io import MouseButton, MouseEvent, MouseEventType
-from nurses_2.widgets.graphics import Graphics, Point, Size
-from nurses_2.widgets.scroll_view import ScrollView
-from nurses_2.widgets.texture_tools import composite, read_texture
+import batgrl.colors as colors
+from batgrl.app import App
+from batgrl.colors import AWHITE
+from batgrl.gadgets.graphics import Graphics, Point, Size
+from batgrl.gadgets.scroll_view import ScrollView
+from batgrl.gadgets.texture_tools import composite, read_texture
+from batgrl.io import MouseButton, MouseEvent, MouseEventType
 
 ASSETS = Path(__file__).parent.parent / "assets"
 TILES_PATH = ASSETS / "isometric_demo.png"
@@ -41,7 +41,7 @@ TILES = (
 )
 
 
-class WorldWidget(Graphics):
+class WorldGadget(Graphics):
     def __init__(self):
         wh, ww = WORLD_SIZE
         th, tw = TILE_SIZE
@@ -152,8 +152,8 @@ class IsoTileApp(App):
             show_horizontal_bar=False,
             mouse_button=MouseButton.MIDDLE,
         )
-        sv.view = WorldWidget()
-        self.add_widget(sv)
+        sv.view = WorldGadget()
+        self.add_gadget(sv)
 
 
 if __name__ == "__main__":

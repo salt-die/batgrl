@@ -1,11 +1,11 @@
 ###################
-nurses_2 User Guide
+batgrl User Guide
 ###################
 
 .. toctree::
    :maxdepth: 1
 
-   nurses_2_faq
-   widgets
-   widget_tree
+   batgrl_faq
+   gadgets
+   gadget_tree
    pong_tutorial

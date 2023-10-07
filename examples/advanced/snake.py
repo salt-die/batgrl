@@ -9,10 +9,10 @@ from itertools import cycle, product
 from pathlib import Path
 from random import choice
 
-from nurses_2.app import App
-from nurses_2.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
-from nurses_2.widgets.animation import Animation
-from nurses_2.widgets.graphics import Graphics
+from batgrl.app import App
+from batgrl.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
+from batgrl.gadgets.animation import Animation
+from batgrl.gadgets.graphics import Graphics
 
 ASSETS = Path(__file__).parent.parent / "assets"
 SPINNER = ASSETS / "spinner"
@@ -129,7 +129,7 @@ class SnakeApp(App):
         background.play()
         snake = Snake(**kwargs)
 
-        self.add_widgets(background, snake)
+        self.add_gadgets(background, snake)
 
 
 if __name__ == "__main__":

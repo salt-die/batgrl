@@ -3,12 +3,11 @@ Color palette creator.
 """
 import cv2
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import BLACK, WHITE, Color
-from nurses_2.widgets.behaviors.grabbable import Grabbable
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Widget, clamp
+from batgrl.app import App
+from batgrl.colors import BLACK, WHITE, Color
+from batgrl.gadgets.behaviors.grabbable import Grabbable
+from batgrl.gadgets.gadget import Gadget, clamp
+from batgrl.gadgets.text import Text
 
 H = 11
 """Height of palette."""
@@ -58,7 +57,7 @@ class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.indicator = Text(size=(1, 1), default_color_pair=(255, 255, 255) * 2)
-        self.add_widget(self.indicator)
+        self.add_gadget(self.indicator)
         self.callback = None
 
     def grab(self, mouse_event):
@@ -123,9 +122,9 @@ class PaletteApp(App):
 
         hue_selector.callback = slope_selector.callback = update_palette
 
-        container = Widget(size=(H + 2, W), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
-        container.add_widgets(hue_selector, slope_selector, palette)
-        self.add_widget(container)
+        container = Gadget(size=(H + 2, W), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
+        container.add_gadgets(hue_selector, slope_selector, palette)
+        self.add_gadget(container)
 
 
 if __name__ == "__main__":

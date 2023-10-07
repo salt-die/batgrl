@@ -1,12 +1,11 @@
 import asyncio
 
 import numpy as np
-
-from nurses_2.app import run_widget_as_app
-from nurses_2.colors import ARED, AYELLOW
-from nurses_2.io import MouseEventType
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Widget
+from batgrl.app import run_gadget_as_app
+from batgrl.colors import ARED, AYELLOW
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.text import Text
+from batgrl.io import MouseEventType
 
 from .graphics import CHECKER_SIZE, Board, Checker, x_to_column
 
@@ -17,7 +16,7 @@ TURN_MESSAGE = "{}'s turn."
 PLAYER_NAMES = "Red", "Yellow"
 
 
-class Connect4(Widget):
+class Connect4(Gadget):
     def __init__(self):
         self._board = Board()
         h, w = self._board.size
@@ -25,7 +24,7 @@ class Connect4(Widget):
         super().__init__(size=(h + 2, w), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
         self._label = Text(size=(1, 10), pos_hint={"x_hint": 0.5})
-        self.add_widgets(self._board, self._label)
+        self.add_gadgets(self._board, self._label)
 
     def on_add(self):
         super().on_add()
@@ -160,7 +159,7 @@ class Connect4(Widget):
             self._columns[col].append(checker)
             self._board_array[row, col] = self._player + 1
 
-            self.add_widget(checker)
+            self.add_gadget(checker)
             self._label.pull_to_front()
             self._board.pull_to_front()
 
@@ -170,4 +169,4 @@ class Connect4(Widget):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(Connect4())
+    run_gadget_as_app(Connect4())

@@ -3,8 +3,8 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nurses_2"
-description = "A widgetful and async-centric library for terminal graphics."
+name = "batgrl"
+description = "Badass terminal graphics library."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -22,16 +22,15 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-"repository" = "https://github.com/salt-die/nurses_2"
-"documentation" = "https://salt-die.github.io/nurses_2/index.html"
+"repository" = "https://github.com/salt-die/batgrl"
+"documentation" = "https://salt-die.github.io/batgrl/index.html"
 
 [tool.setuptools.dynamic]
-version = {attr = "nurses_2.__version__"}
+version = {attr = "batgrl.__version__"}
 
 [tool.setuptools.packages.find]
 exclude = [
     "docs**",
-    "docsrc**",
     "examples**",
     "preview_images**",
 ]

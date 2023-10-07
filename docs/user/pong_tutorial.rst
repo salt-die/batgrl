@@ -3,7 +3,7 @@ A Proper Pong Preamble
 ######################
 
 This is a tutorial for creating a simple Pong clone. The completed source of this tutorial lives
-`here <https://github.com/salt-die/nurses_2/blob/main/examples/advanced/pong.py>`_.
+`here <https://github.com/salt-die/batgrl/blob/main/examples/advanced/pong.py>`_.
 
 
 Getting Started
@@ -13,7 +13,7 @@ Let's just get a basic app up and running. Create a new file named `pong.py`.
 
 .. code-block:: python
 
-    from nurses_2.app import App
+    from batgrl.app import App
 
 
     class Pong(App):
@@ -25,11 +25,11 @@ Let's just get a basic app up and running. Create a new file named `pong.py`.
         Pong().run()
 
 If you run this file, you should just see a blank terminal. To exit, press `ctrl+c`. The `on_start` method
-is where you add widgets to and schedule tasks for your app. Note that `on_start` is an async method.
+is where you add gadgets to and schedule tasks for your app. Note that `on_start` is an async method.
 
 Simple Graphics
 ---------------
-You can create a green play field by adding a new widget with a background color pair with green background.
+You can create a green play field by adding a new gadget with a background color pair with green background.
 A `ColorPair` includes a foreground color and a background color for text. In this case, the foreground
 color is not used.
 
@@ -37,10 +37,10 @@ color is not used.
 
     import asyncio
 
-    from nurses_2.app import App
-    from nurses_2.colors import GREEN, BLUE, WHITE, ColorPair
-    from nurses_2.widgets.text import Text
-    from nurses_2.widgets.widget import Widget
+    from batgrl.app import App
+    from batgrl.colors import GREEN, BLUE, WHITE, ColorPair
+    from batgrl.gadgets.text import Text
+    from batgrl.gadgets.gadget import Gadget
 
     FIELD_HEIGHT = 25
     FIELD_WIDTH = 100
@@ -49,21 +49,21 @@ color is not used.
 
     class Pong(App):
         async def on_start(self):
-            game_field = Widget(
+            game_field = Gadget(
                 size=(FIELD_HEIGHT, FIELD_WIDTH),
                 background_color_pair=WHITE_ON_GREEN,
             )
 
-            self.add_widget(game_field)
+            self.add_gadget(game_field)
 
 
     if __name__ == "__main__":
         Pong().run()
 
-Widgets are interactive graphic elements that make up your app. In fact, the app is just a tree of widgets.
-The base `Widget` class is little more than a container for other widgets, but it can be given a background color pair.
+Gadgets are interactive graphic elements that make up your app. In fact, the app is just a tree of gadgets.
+The base `Gadget` class is little more than a container for other gadgets, but it can be given a background color pair.
 
-The app's `add_widget` method adds a widget to the root widget in the widget tree. The root widget always has a size
+The app's `add_gadget` method adds a gadget to the root gadget in the gadget tree. The root gadget always has a size
 that is equal to your terminal's current size.
 
 If you run the app now, you should see a green rectangle.
@@ -71,8 +71,8 @@ If you run the app now, you should see a green rectangle.
 
 Responding to Input
 -------------------
-You can add two more widgets to the game field for paddles. To allow the paddles to respond to key presses you must
-subclass widget and implement the `on_key` method.
+You can add two more gadgets to the game field for paddles. To allow the paddles to respond to key presses you must
+subclass gadget and implement the `on_key` method.
 
 .. code-block:: python
 
@@ -81,7 +81,7 @@ subclass widget and implement the `on_key` method.
     WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
-    class Paddle(Widget):
+    class Paddle(Gadget):
         def __init__(self, player, **kwargs):
             super().__init__(**kwargs)
             self.player = player
@@ -108,7 +108,7 @@ And the app's `on_start` method will now look like:
 .. code-block:: python
 
     async def on_start(self):
-        game_field = Widget(
+        game_field = Gadget(
             size=(FIELD_HEIGHT, FIELD_WIDTH),
             background_color_pair=WHITE_ON_GREEN,
         )
@@ -129,25 +129,25 @@ And the app's `on_start` method will now look like:
             background_color_pair=WHITE_ON_BLUE,
         )
 
-        game_field.add_widgets(left_paddle, right_paddle)
-        self.add_widget(game_field)
+        game_field.add_gadgets(left_paddle, right_paddle)
+        self.add_gadget(game_field)
 
-Because the paddles were added to the game_field and not the root widget, the position of the paddles
-will be relative to the game field. Multiple widgets can be added at once with the `add_widgets` (note the plural)
+Because the paddles were added to the game_field and not the root gadget, the position of the paddles
+will be relative to the game field. Multiple gadgets can be added at once with the `add_gadgets` (note the plural)
 method.
 
 Try out the app now and you should be able to move the paddles up and down with `w`, `s`, `up` and `down` keys.
 
 Size and Pos Hints
 ------------------
-Size and position hints are used to place or size a widget as some proportion of its parent. If the
-parent widget is resized, the widget will automatically reposition or resize itself using hints.
+Size and position hints are used to place or size a gadget as some proportion of its parent. If the
+parent gadget is resized, the gadget will automatically reposition or resize itself using hints.
 This allows us to easily place a divider in the middle of the play field, and to add two score labels
 in the middle of each half of the play field. Add the following to your `on_start` method:
 
 .. code-block:: python
 
-    divider = Widget(
+    divider = Gadget(
         size=(1, 1),
         size_hint={"height_hint": 1.0},
         pos_hint={"x_hint": 0.5, "anchor": "center"},
@@ -166,27 +166,27 @@ in the middle of each half of the play field. Add the following to your `on_star
         pos_hint={"x_hint": 0.75, "anchor": "center"},
     )
 
-    game_field.add_widgets(
+    game_field.add_gadgets(
         left_paddle,
         right_paddle,
         divider,
         left_score_label,
         right_score_label,
     )
-    self.add_widget(game_field)
+    self.add_gadget(game_field)
 
-The `anchor` keyword argument is used for position hints to specify which point the of the widget
+The `anchor` keyword argument is used for position hints to specify which point the of the gadget
 is aligned with the hint. The default is `"top_left"`.
 
 Scheduling Tasks
 ----------------
-Pong isn't complete without a ball. Because nurses_2 uses `asyncio`, you can create a task (with `asyncio.create_task`)
+Pong isn't complete without a ball. Because batgrl uses `asyncio`, you can create a task (with `asyncio.create_task`)
 to constantly update the ball's position. In the code below, the task is created in `on_add` which is
-called when the widget is added to the widget tree.
+called when the gadget is added to the gadget tree.
 
 .. code-block:: python
 
-    class Ball(Widget):
+    class Ball(Gadget):
         def __init__(self, left_paddle, right_paddle, left_label, right_label, **kwargs):
             super().__init__(**kwargs)
             self.left_paddle = left_paddle
@@ -205,7 +205,7 @@ called when the widget is added to the widget tree.
             self.x_velocity = 1.0
             self.speed = 0.04
 
-        def bounce_paddle(self, paddle: Widget):
+        def bounce_paddle(self, paddle: Gadget):
             self.x_pos -= 2 * self.x_velocity
             x_sgn = 1 if self.x_velocity > 0 else -1
 
@@ -229,9 +229,9 @@ called when the widget is added to the widget tree.
                 self.x_pos += self.x_velocity
 
                 # Does ball collide with a paddle?
-                if self.collides_widget(self.left_paddle):
+                if self.collides_gadget(self.left_paddle):
                     self.bounce_paddle(self.left_paddle)
-                elif self.collides_widget(self.right_paddle):
+                elif self.collides_gadget(self.right_paddle):
                     self.bounce_paddle(self.right_paddle)
 
                 # Bounce off the top or bottom of the play field.
@@ -267,20 +267,20 @@ Finally, add the ball to the game field.
         background_color_pair=WHITE_ON_BLUE,
     )
 
-    game_field.add_widgets(
+    game_field.add_gadgets(
         left_paddle,
         right_paddle,
         divider,
         left_score_label,
         right_score_label,
     )
-    self.add_widget(game_field)
+    self.add_gadget(game_field)
 
 Running the file now should give a complete pong game! Nice!
 
 Now What?
 ---------
-This is only scraping the surface of nurses_2! For future improvements, you could:
+This is only scraping the surface of batgrl! For future improvements, you could:
 
 * Use images or animations for the game field, paddles, or ball.
 * Trigger an animation or graphical effect when the ball collides with the paddle or goes out of bounds.

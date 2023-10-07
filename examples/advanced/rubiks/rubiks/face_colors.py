@@ -1,4 +1,4 @@
-from nurses_2.colors import AColor
+from batgrl.colors import AColor
 
 from_hex = AColor.from_hex
 

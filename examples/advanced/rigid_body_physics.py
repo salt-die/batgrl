@@ -11,13 +11,12 @@ from typing import Literal
 import cv2
 import numpy as np
 import pymunk
+from batgrl.app import App
+from batgrl.colors import AWHITE, AColor
+from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.image import Image
+from batgrl.gadgets.texture_tools import composite, read_texture, resize_texture
 from pymunk.vec2d import Vec2d
-
-from nurses_2.app import App
-from nurses_2.colors import AWHITE, AColor
-from nurses_2.widgets.graphics import Graphics
-from nurses_2.widgets.image import Image
-from nurses_2.widgets.texture_tools import composite, read_texture, resize_texture
 
 BOX_SIZE = W, H = Vec2d(9, 9)
 BOX_MASS = 0.1
@@ -215,7 +214,7 @@ class PhysicsApp(App):
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
 
-        self.add_widgets(background, space_renderer)
+        self.add_gadgets(background, space_renderer)
 
 
 if __name__ == "__main__":

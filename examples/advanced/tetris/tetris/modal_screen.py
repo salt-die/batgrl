@@ -1,9 +1,8 @@
 import asyncio
 
 import numpy as np
-
-from nurses_2.colors import BLACK, Color, ColorPair, gradient
-from nurses_2.widgets.text import Text
+from batgrl.colors import BLACK, Color, ColorPair, gradient
+from batgrl.gadgets.text import Text
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")

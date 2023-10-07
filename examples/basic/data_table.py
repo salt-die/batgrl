@@ -1,8 +1,8 @@
 """
 An example usage of data tables.
 """
-from nurses_2.app import App
-from nurses_2.widgets.data_table import ColumnStyle, DataTable
+from batgrl.app import App
+from batgrl.gadgets.data_table import ColumnStyle, DataTable
 
 TABLE = {
     "Name": [
@@ -44,7 +44,7 @@ class TableApp(App):
         for i in range(len(TABLE["Name"])):
             table_2.add_row([column[i] for column in TABLE.values()])
 
-        self.add_widgets(table_1, table_2)
+        self.add_gadgets(table_1, table_2)
 
 
 if __name__ == "__main__":

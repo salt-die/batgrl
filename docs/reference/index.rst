@@ -1,7 +1,7 @@
-.. module:: nurses_2
+.. module:: batgrl
 
 ##################
-nurses_2 Reference
+batgrl Reference
 ##################
 
 :Release: |release|
@@ -14,7 +14,7 @@ nurses_2 Reference
    colors
    io.input.events
    io.input.keys
-   widgets
+   gadgets
    app
    easings
    fonts

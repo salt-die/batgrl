@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.animation import Animation
+from batgrl.app import App
+from batgrl.gadgets.animation import Animation
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_FRAMES = ASSETS / "caveman"
@@ -16,7 +16,7 @@ class AnimationApp(App):
             interpolation="nearest",
         )
 
-        self.add_widget(animation)
+        self.add_gadget(animation)
         animation.play()
 
 

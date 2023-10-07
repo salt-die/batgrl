@@ -1,9 +1,9 @@
 import asyncio
 
-from nurses_2.app import App
-from nurses_2.colors import BLUE, GREEN, WHITE, ColorPair
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Widget
+from batgrl.app import App
+from batgrl.colors import BLUE, GREEN, WHITE, ColorPair
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.text import Text
 
 FIELD_HEIGHT = 25
 FIELD_WIDTH = 100
@@ -14,7 +14,7 @@ PADDLE_WIDTH = 1
 WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
 
 
-class Paddle(Widget):
+class Paddle(Gadget):
     def __init__(self, player, **kwargs):
         super().__init__(**kwargs)
         self.player = player
@@ -37,7 +37,7 @@ class Paddle(Widget):
             self.y = FIELD_HEIGHT - PADDLE_HEIGHT
 
 
-class Ball(Widget):
+class Ball(Gadget):
     def __init__(self, left_paddle, right_paddle, left_label, right_label, **kwargs):
         super().__init__(**kwargs)
         self.left_paddle = left_paddle
@@ -56,7 +56,7 @@ class Ball(Widget):
         self.x_velocity = 1.0
         self.speed = 0.04
 
-    def bounce_paddle(self, paddle: Widget):
+    def bounce_paddle(self, paddle: Gadget):
         self.x_pos -= 2 * self.x_velocity
         x_sgn = 1 if self.x_velocity > 0 else -1
 
@@ -80,9 +80,9 @@ class Ball(Widget):
             self.x_pos += self.x_velocity
 
             # Does ball collide with a paddle?
-            if self.collides_widget(self.left_paddle):
+            if self.collides_gadget(self.left_paddle):
                 self.bounce_paddle(self.left_paddle)
-            elif self.collides_widget(self.right_paddle):
+            elif self.collides_gadget(self.right_paddle):
                 self.bounce_paddle(self.right_paddle)
 
             # Bounce off the top or bottom of the play field.
@@ -108,7 +108,7 @@ class Ball(Widget):
 
 class Pong(App):
     async def on_start(self):
-        game_field = Widget(
+        game_field = Gadget(
             size=(FIELD_HEIGHT, FIELD_WIDTH),
             background_color_pair=WHITE_ON_GREEN,
         )
@@ -129,7 +129,7 @@ class Pong(App):
             background_color_pair=WHITE_ON_BLUE,
         )
 
-        divider = Widget(
+        divider = Gadget(
             size=(1, 1),
             size_hint={"height_hint": 1.0},
             pos_hint={"x_hint": 0.5, "anchor": "center"},
@@ -157,7 +157,7 @@ class Pong(App):
             background_color_pair=WHITE_ON_BLUE,
         )
 
-        game_field.add_widgets(
+        game_field.add_gadgets(
             left_paddle,
             right_paddle,
             divider,
@@ -165,7 +165,7 @@ class Pong(App):
             right_score_label,
             ball,
         )
-        self.add_widget(game_field)
+        self.add_gadget(game_field)
 
 
 if __name__ == "__main__":

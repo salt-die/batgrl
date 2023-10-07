@@ -3,9 +3,9 @@ Move/click mouse, press keys or paste in terminal to show IO events.
 """
 from textwrap import dedent
 
-from nurses_2.app import run_widget_as_app
-from nurses_2.io import KeyEvent, MouseEvent, PasteEvent
-from nurses_2.widgets.text import Text
+from batgrl.app import run_gadget_as_app
+from batgrl.gadgets.text import Text
+from batgrl.io import KeyEvent, MouseEvent, PasteEvent
 
 
 class ShowIOEvents(Text):
@@ -49,4 +49,4 @@ class ShowIOEvents(Text):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(ShowIOEvents(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    run_gadget_as_app(ShowIOEvents(size_hint={"height_hint": 1.0, "width_hint": 1.0}))

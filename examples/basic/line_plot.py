@@ -1,10 +1,9 @@
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.line_plot import LinePlot
-from nurses_2.widgets.toggle_button import ToggleButton
-from nurses_2.widgets.widget import Widget
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.line_plot import LinePlot
+from batgrl.gadgets.toggle_button import ToggleButton
 
 XS = np.arange(20)
 YS_1 = np.random.randint(0, 100, 20)
@@ -45,11 +44,11 @@ class PlotApp(App):
             group=0,
         )
 
-        container = Widget(
+        container = Gadget(
             size=(2, BUTTON_WIDTH), pos_hint={"x_hint": 1.0, "anchor": "top-right"}
         )
-        container.add_widgets(box_button, braille_button)
-        self.add_widgets(plot, container)
+        container.add_gadgets(box_button, braille_button)
+        self.add_gadgets(plot, container)
 
 
 if __name__ == "__main__":

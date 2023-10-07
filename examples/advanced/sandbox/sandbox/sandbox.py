@@ -1,11 +1,10 @@
 from functools import partial
 
 import numpy as np
-
-from nurses_2.colors import ABLACK, ColorPair
-from nurses_2.io import MouseButton
-from nurses_2.widgets.graphics import Graphics, Size
-from nurses_2.widgets.text import Text
+from batgrl.colors import ABLACK, ColorPair
+from batgrl.gadgets.graphics import Graphics, Size
+from batgrl.gadgets.text import Text
+from batgrl.io import MouseButton
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air
@@ -21,7 +20,7 @@ def particles_to_colors(particle):
 
 class Sandbox(Graphics):
     """
-    Sandbox widget.
+    Sandbox gadget.
     """
 
     def __init__(self, size: Size):
@@ -43,7 +42,7 @@ class Sandbox(Graphics):
             pos_hint={"x_hint": 0.5},
             default_color_pair=ColorPair.from_colors(Air.COLOR, MENU_BACKGROUND_COLOR),
         )
-        self.add_widgets(self.display, ButtonContainer())
+        self.add_gadgets(self.display, ButtonContainer())
 
         # Press the Stone button setting particle type.
         self.children[1].children[1].on_release()

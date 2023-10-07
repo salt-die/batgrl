@@ -1,8 +1,7 @@
 import asyncio
 
 import numpy as np
-
-from nurses_2.widgets.widget import Widget
+from batgrl.gadgets.gadget import Gadget
 
 from .colors import BRIGHT_COLOR_PAIR
 
@@ -13,7 +12,7 @@ NPS_2 = (1 - PS) * BRIGHT_COLOR_PAIR.reversed()
 SKIP = 23  # Increase for a faster scanline.
 
 
-class Darken(Widget):
+class Darken(Gadget):
     """
     Darken view.
     """
@@ -24,7 +23,7 @@ class Darken(Widget):
             colors[rect.to_slices()] >>= 1
 
 
-class BOLDCRT(Widget):
+class BOLDCRT(Gadget):
     """
     Bold all text and apply a crt effect.
     """

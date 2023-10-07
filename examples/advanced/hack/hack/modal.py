@@ -1,6 +1,6 @@
-from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Widget
+from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.text import Text
 
 from .colors import DEFAULT_COLOR_PAIR
 from .effects import Darken
@@ -23,7 +23,7 @@ class OKButton(ButtonBehavior, Text):
         modal.is_enabled = False
 
 
-class Modal(Widget):
+class Modal(Gadget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.background = Darken(
@@ -35,8 +35,8 @@ class Modal(Widget):
             default_color_pair=DEFAULT_COLOR_PAIR,
         )
         self.message_box.add_border("heavy")
-        self.message_box.add_widget(OKButton())
-        self.add_widgets(self.background, self.message_box)
+        self.message_box.add_gadget(OKButton())
+        self.add_gadgets(self.background, self.message_box)
 
     def show(self, is_win):
         message = " System Accessed. " if is_win else "  System Locked.  "

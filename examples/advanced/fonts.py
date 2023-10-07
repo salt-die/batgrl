@@ -3,12 +3,11 @@ from pathlib import Path
 from random import random, randrange
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import BLACK, RED, ColorPair, gradient, lerp_colors
-from nurses_2.fonts import FIGFont
-from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior, ButtonState
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.colors import BLACK, RED, ColorPair, gradient, lerp_colors
+from batgrl.fonts import FIGFont
+from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior, ButtonState
+from batgrl.gadgets.text import Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BIG_FONT = FIGFont.from_path(ASSETS / "delta_corps_priest_1.flf")
@@ -24,7 +23,7 @@ class Bleed(Text):
         super().__init__(**kwargs)
         self.banner = banner
         self.button = button
-        self.add_widgets(banner, button)
+        self.add_gadgets(banner, button)
         self.blood_color_pair = blood_color_pair
         self._start_locs = np.argwhere(self.banner.canvas["char"] != " ")
         self._drops = []
@@ -60,7 +59,7 @@ class Bleed(Text):
 
         canvas = drop.canvas["char"][:, 0]
 
-        self.add_widget(drop)
+        self.add_gadget(drop)
         if round(random()):
             self.children.remove(drop)
             self.children.insert(0, drop)
@@ -75,7 +74,7 @@ class Bleed(Text):
 
             await asyncio.sleep(0)
 
-        self.remove_widget(drop)
+        self.remove_gadget(drop)
 
 
 class TextButton(ButtonBehavior, Text):
@@ -143,7 +142,7 @@ class DripApp(App):
             banner, button, size=(h + 9, w), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
 
-        self.add_widget(bleed)
+        self.add_gadget(bleed)
 
 
 if __name__ == "__main__":

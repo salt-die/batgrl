@@ -8,11 +8,10 @@ import asyncio
 from pathlib import Path
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.io import MouseButton
-from nurses_2.widgets.graphic_field import GraphicParticleField
-from nurses_2.widgets.image import Image
+from batgrl.app import App
+from batgrl.gadgets.graphic_field import GraphicParticleField
+from batgrl.gadgets.image import Image
+from batgrl.io import MouseButton
 
 HEIGHT, WIDTH = 18, 36
 POWER = 2
@@ -166,7 +165,7 @@ class ExplodingLogoApp(App):
             is_transparent=True,
         )
 
-        self.add_widgets(background, field)
+        self.add_gadgets(background, field)
 
 
 if __name__ == "__main__":

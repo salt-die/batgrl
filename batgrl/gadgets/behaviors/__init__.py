@@ -1,0 +1,3 @@
+"""
+Inheritable gadget behaviors.
+"""

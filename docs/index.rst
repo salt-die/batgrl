@@ -1,8 +1,8 @@
 **********************
-nurses_2 Documentation
+batgrl Documentation
 **********************
 
-Welcome to the nurses_2 docs. nurses_2 is a library for terminal graphics.
+Welcome to the batgrl docs. batgrl stands for badass terminal graphics library.
 It can render transparent images, animations, or videos. Perfect for simulation
 visualizations, games, or GUIs.
 
@@ -15,5 +15,5 @@ visualizations, games, or GUIs.
 **Version**: |release|
 
 **Links**:
-`Source <https://github.com/salt-die/nurses_2>`_ |
-`Examples <https://github.com/salt-die/nurses_2/tree/main/examples>`_
+`Source <https://github.com/salt-die/batgrl>`_ |
+`Examples <https://github.com/salt-die/batgrl/tree/main/examples>`_

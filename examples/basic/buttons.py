@@ -1,12 +1,12 @@
 """
 Button showcase.
 """
-from nurses_2.app import App
-from nurses_2.widgets.button import Button
-from nurses_2.widgets.flat_toggle import FlatToggle
-from nurses_2.widgets.grid_layout import GridLayout
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.toggle_button import ToggleButton, ToggleState
+from batgrl.app import App
+from batgrl.gadgets.button import Button
+from batgrl.gadgets.flat_toggle import FlatToggle
+from batgrl.gadgets.grid_layout import GridLayout
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.toggle_button import ToggleButton, ToggleState
 
 
 class ButtonApp(App):
@@ -39,13 +39,13 @@ class ButtonApp(App):
         )
 
         # Buttons
-        grid_layout.add_widgets(
+        grid_layout.add_gadgets(
             Button(size=(1, 10), label=f"Button {i + 1}", callback=button_callback(i))
             for i in range(5)
         )
 
         # Independent toggle buttons
-        grid_layout.add_widgets(
+        grid_layout.add_gadgets(
             ToggleButton(
                 size=(1, 12),
                 label=f"Button {i + 1}",
@@ -55,7 +55,7 @@ class ButtonApp(App):
         )
 
         # Grouped radio buttons
-        grid_layout.add_widgets(
+        grid_layout.add_gadgets(
             ToggleButton(
                 size=(1, 12),
                 group="a",
@@ -76,19 +76,19 @@ class ButtonApp(App):
         )
 
         # Independent flat toggles
-        flat_grid.add_widgets(
+        flat_grid.add_gadgets(
             FlatToggle(callback=toggle_button_callback(i)) for i in range(15, 20)
         )
 
         # Grouped flat toggles
-        flat_grid.add_widgets(
+        flat_grid.add_gadgets(
             FlatToggle(group="b", callback=toggle_button_callback(i))
             for i in range(20, 25)
         )
 
         flat_grid.size = flat_grid.minimum_grid_size
 
-        self.add_widgets(display, grid_layout, flat_grid)
+        self.add_gadgets(display, grid_layout, flat_grid)
 
 
 if __name__ == "__main__":

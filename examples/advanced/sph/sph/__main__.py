@@ -1,13 +1,12 @@
 import asyncio
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import BLACK, WHITE_ON_BLACK, Color, ColorPair
-from nurses_2.io import MouseButton
-from nurses_2.widgets.graphics import Graphics
-from nurses_2.widgets.slider import Slider
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.colors import BLACK, WHITE_ON_BLACK, Color, ColorPair
+from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.slider import Slider
+from batgrl.gadgets.text import Text
+from batgrl.io import MouseButton
 
 from .solver import SPHSolver
 
@@ -115,11 +114,11 @@ class SPHApp(App):
 
             return update
 
-        container.add_widget(fluid)
+        container.add_gadget(fluid)
         for i, (attr, caption, min, max) in enumerate(slider_settings):
             y = i // 2 * 2
             x = (i % 2) * (width // 2 + 1)
-            container.add_widget(
+            container.add_gadget(
                 Slider(
                     pos=(y + 1, x),
                     min=min,
@@ -131,7 +130,7 @@ class SPHApp(App):
                     default_color_pair=WATER_ON_BLACK,
                 )
             )
-        self.add_widget(container)
+        self.add_gadget(container)
 
 
 if __name__ == "__main__":

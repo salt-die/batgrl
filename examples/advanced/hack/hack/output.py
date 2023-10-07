@@ -1,6 +1,6 @@
 import asyncio
 
-from nurses_2.widgets.text import Text, add_text
+from batgrl.gadgets.text import Text, add_text
 
 CORRECT_GUESS = """\
 >{}

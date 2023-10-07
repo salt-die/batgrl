@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.image import Image
+from batgrl.app import App
+from batgrl.gadgets.image import Image
 
 from .rubiks_cube import RubiksCube
 
@@ -11,7 +11,7 @@ PATH_TO_BACKGROUND = ASSETS / "background.png"
 
 class RubiksApp(App):
     async def on_start(self):
-        self.add_widgets(
+        self.add_gadgets(
             Image(
                 path=PATH_TO_BACKGROUND,
                 size_hint={"height_hint": 1.0, "width_hint": 1.0},

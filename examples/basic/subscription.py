@@ -1,7 +1,7 @@
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.window import Window
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.window import Window
 
 
 class SubscriptionApp(App):
@@ -25,7 +25,7 @@ class SubscriptionApp(App):
         )
 
         window.view = label
-        self.add_widget(window)
+        self.add_gadget(window)
         window.size = 15, 30
         window.pos = 10, 10
 

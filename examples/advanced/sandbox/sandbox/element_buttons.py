@@ -1,7 +1,7 @@
-from nurses_2.colors import BLACK, Color, ColorPair
-from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Widget
+from batgrl.colors import BLACK, Color, ColorPair
+from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.text import Text
 
 from .particles import Element
 
@@ -42,9 +42,9 @@ class ElementButton(ButtonBehavior, Text):
         sandbox.display.add_str(f"{element.__name__:^{sandbox.display.width}}")
 
 
-class ButtonContainer(Widget):
+class ButtonContainer(Gadget):
     """
-    Container widget of `ElementButton`s.
+    Container gadget of `ElementButton`s.
     """
 
     def __init__(self):
@@ -58,7 +58,7 @@ class ButtonContainer(Widget):
         )
 
         for i, element in enumerate(Element.all_elements.values()):
-            self.add_widget(ElementButton(pos=(3 * i + 1, 2), element=element))
+            self.add_gadget(ElementButton(pos=(3 * i + 1, 2), element=element))
 
     def on_mouse(self, mouse_event):
         return self.collides_point(mouse_event.position)

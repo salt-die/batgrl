@@ -1,11 +1,11 @@
 import asyncio
 from pathlib import Path
 
-from nurses_2.app import run_widget_as_app
-from nurses_2.colors import ABLACK, AWHITE
-from nurses_2.io import MouseButton, MouseEventType
-from nurses_2.widgets.graphics import Graphics
-from nurses_2.widgets.texture_tools import read_texture, resize_texture
+from batgrl.app import run_gadget_as_app
+from batgrl.colors import ABLACK, AWHITE
+from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.texture_tools import read_texture, resize_texture
+from batgrl.io import MouseButton, MouseEventType
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "python_discord_logo.png"
@@ -65,10 +65,10 @@ class SlidingPuzzle(Graphics):
                     piece.texture[0] = piece.texture[:, 0] = AWHITE
                     piece.texture[-1] = piece.texture[:, -1] = ABLACK
                     self._grid[y, x] = piece
-                    self.add_widget(piece)
+                    self.add_gadget(piece)
 
         self._sliding = False
 
 
 if __name__ == "__main__":
-    run_widget_as_app(SlidingPuzzle(PATH_TO_LOGO, size=SIZE))
+    run_gadget_as_app(SlidingPuzzle(PATH_TO_LOGO, size=SIZE))

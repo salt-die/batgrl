@@ -2,8 +2,8 @@ import asyncio
 from random import choice, random, randrange
 from time import monotonic
 
-from nurses_2.app import run_widget_as_app
-from nurses_2.widgets.text import Text
+from batgrl.app import run_gadget_as_app
+from batgrl.gadgets.text import Text
 
 CURVY = {
     0: "╷",
@@ -113,6 +113,6 @@ class Pipes(Text):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(
+    run_gadget_as_app(
         Pipes(npipes=5, size_hint={"height_hint": 1.0, "width_hint": 1.0})
     )

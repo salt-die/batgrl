@@ -1,9 +1,8 @@
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.button import Button
-from nurses_2.widgets.sparkline import Sparkline
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.button import Button
+from batgrl.gadgets.sparkline import Sparkline
 
 
 class SparklineApp(App):
@@ -28,7 +27,7 @@ class SparklineApp(App):
             callback=new_data,
         )
 
-        self.add_widgets(sparkline_a, sparkline_b, button)
+        self.add_gadgets(sparkline_a, sparkline_b, button)
 
 
 if __name__ == "__main__":

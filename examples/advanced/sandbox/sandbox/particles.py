@@ -4,8 +4,7 @@ from enum import Enum
 from itertools import cycle
 
 import numpy as np
-
-from nurses_2.colors import Color
+from batgrl.colors import Color
 
 random = np.random.default_rng().random
 

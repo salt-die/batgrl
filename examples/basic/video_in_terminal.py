@@ -1,12 +1,12 @@
 """
-An example of how to play videos with nurses.
+An example of how to play videos with batgrl.
 
 `VideoPlayer.source` can be a `pathlib.Path` to a video, an URL as a string, or an int
 for a capturing device.
 """
-from nurses_2.app import App
-from nurses_2.widgets.braille_video_player import BrailleVideoPlayer
-from nurses_2.widgets.video_player import VideoPlayer
+from batgrl.app import App
+from batgrl.gadgets.braille_video_player import BrailleVideoPlayer
+from batgrl.gadgets.video_player import VideoPlayer
 
 LINK_TO_VIDEO = (
     "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
@@ -24,7 +24,7 @@ class VideoApp(App):
             pos_hint={"y_hint": 0, "x_hint": 0.5, "anchor": "top-left"},
         )
 
-        self.add_widgets(video, braille_video)
+        self.add_gadgets(video, braille_video)
         video.play()
         braille_video.play()
 

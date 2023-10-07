@@ -1,4 +1,4 @@
-from nurses_2.widgets.text import Text
+from batgrl.gadgets.text import Text
 
 from .unicode_chars import HEAVY_BOX, LIGHT_BOX
 

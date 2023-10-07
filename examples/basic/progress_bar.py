@@ -1,11 +1,11 @@
 import asyncio
 
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.button import Button
-from nurses_2.widgets.progress_bar import ProgressBar
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.text_animation import TextAnimation
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.button import Button
+from batgrl.gadgets.progress_bar import ProgressBar
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.text_animation import TextAnimation
 
 PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
 
@@ -24,7 +24,7 @@ class ProgressBarApp(App):
         )
         label_b.play()
 
-        horizontal_b = ProgressBar(pos=(2, 10), size=(1, 50), animation_delay=0.005)
+        horizontal_b = ProgressBar(pos=(2, 10), size=(1, 50), animation_delay=0)
 
         vertical_a = ProgressBar(size=(5, 1), is_horizontal=False)
         vertical_a.top = horizontal_b.bottom + 1
@@ -51,7 +51,7 @@ class ProgressBarApp(App):
             pos=(4, 5), size=(5, 55), label="Reset", callback=reset_progress
         )
 
-        self.add_widgets(
+        self.add_gadgets(
             horizontal_a, horizontal_b, vertical_a, vertical_b, label_a, label_b, button
         )
 

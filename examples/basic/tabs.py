@@ -1,14 +1,13 @@
 from pathlib import Path
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.animation import Animation
-from nurses_2.widgets.color_picker import ColorPicker
-from nurses_2.widgets.file_chooser import FileChooser
-from nurses_2.widgets.line_plot import LinePlot
-from nurses_2.widgets.tabs import Tabs
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.animation import Animation
+from batgrl.gadgets.color_picker import ColorPicker
+from batgrl.gadgets.file_chooser import FileChooser
+from batgrl.gadgets.line_plot import LinePlot
+from batgrl.gadgets.tabs import Tabs
 
 ASSETS = Path(__file__).parent.parent / "assets"
 CAVEMAN_PATH = ASSETS / "caveman"
@@ -51,8 +50,8 @@ class TabApp(App):
                 size_hint={"height_hint": 1.0, "width_hint": 1.0},
             ),
         )
-        self.add_widget(tabs)
+        self.add_gadget(tabs)
 
 
 if __name__ == "__main__":
-    TabApp(title="Tabbed Widget").run()
+    TabApp(title="Tabbed Gadget").run()

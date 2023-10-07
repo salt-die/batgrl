@@ -1,13 +1,13 @@
 from math import ceil
 
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.spinners import SPINNERS
-from nurses_2.widgets.grid_layout import GridLayout
-from nurses_2.widgets.scroll_view import ScrollView
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.text_animation import TextAnimation
-from nurses_2.widgets.widget import Widget
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.grid_layout import GridLayout
+from batgrl.gadgets.scroll_view import ScrollView
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.text_animation import TextAnimation
+from batgrl.spinners import SPINNERS
 
 COLUMNS = 2
 PRIMARY = DEFAULT_COLOR_THEME.primary
@@ -41,17 +41,17 @@ class SpinnersApp(App):
             animation.size = animation.frames[0].size
             animation.play()
 
-            container = Widget(
+            container = Gadget(
                 size=(animation.height, label.width + animation.width),
                 is_transparent=True,
             )
-            container.add_widgets(label, animation)
+            container.add_gadgets(label, animation)
 
-            grid.add_widget(container)
+            grid.add_gadget(container)
 
         grid.size = grid.minimum_grid_size
         sv.view = grid
-        self.add_widget(sv)
+        self.add_gadget(sv)
 
 
 if __name__ == "__main__":

@@ -2,8 +2,7 @@ from itertools import product
 
 import cv2
 import numpy as np
-
-from nurses_2.io import MouseButton, MouseEventType
+from batgrl.io import MouseButton, MouseEventType
 
 from .colors import FLAG_COLOR, HIDDEN, HIDDEN_REVERSED
 from .grid import Grid

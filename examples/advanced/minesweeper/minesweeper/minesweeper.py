@@ -2,10 +2,9 @@ import asyncio
 
 import cv2
 import numpy as np
-
-from nurses_2.widgets.behaviors.button_behavior import ButtonBehavior
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Point, Widget
+from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
+from batgrl.gadgets.gadget import Gadget, Point
+from batgrl.gadgets.text import Text
 
 from .colors import DATA_BAR, FLAG_COLOR
 from .count import Count
@@ -43,7 +42,7 @@ class ResetButton(ButtonBehavior, Text):
         self.parent.reset()
 
 
-class MineSweeper(Widget):
+class MineSweeper(Gadget):
     def __init__(self, pos=Point(0, 0), **kwargs):
         h, w = SIZE
 
@@ -71,7 +70,7 @@ class MineSweeper(Widget):
             size=(1, 2), default_color_pair=DATA_BAR, pos_hint={"x_hint": 0.5}
         )
 
-        self.add_widgets(self.mines_left, self.timer, self.reset_button)
+        self.add_gadgets(self.mines_left, self.timer, self.reset_button)
 
     def on_add(self):
         super().on_add()
@@ -103,7 +102,7 @@ class MineSweeper(Widget):
         minefield = self.create_minefield()
         count = cv2.filter2D(minefield, -1, KERNEL, borderType=cv2.BORDER_CONSTANT)
 
-        self.add_widgets(Count(count, minefield), Minefield(count, minefield))
+        self.add_gadgets(Count(count, minefield), Minefield(count, minefield))
 
         self._timer_task = asyncio.create_task(self._time())
 

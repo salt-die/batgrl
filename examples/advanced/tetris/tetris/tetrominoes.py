@@ -1,8 +1,7 @@
 from enum import IntFlag
 
 import numpy as np
-
-from nurses_2.colors import Color
+from batgrl.colors import Color
 
 from .wall_kicks import ARIKA_I_WALL_KICKS, I_WALL_KICKS, JLSTZ_WALL_KICKS, O_WALL_KICKS
 

@@ -4,13 +4,12 @@ Recreating the fire effect from Doom.
 import asyncio
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import Color, ColorPair
-from nurses_2.widgets.graphics import Graphics
-from nurses_2.widgets.slider import Slider
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.widget import Widget, clamp
+from batgrl.app import App
+from batgrl.colors import Color, ColorPair
+from batgrl.gadgets.gadget import Gadget, clamp
+from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.slider import Slider
+from batgrl.gadgets.text import Text
 
 FIRE_PALETTE = np.array(
     [
@@ -147,12 +146,12 @@ class DoomFireApp(App):
             handle_color_pair=SLIDER_HANDLE,
         )
 
-        slider_container = Widget(
+        slider_container = Gadget(
             size=(2, 38),
             pos_hint={"y_hint": 0, "x_hint": 0.5, "anchor": "top"},
         )
-        slider_container.add_widgets(strength_label, slider)
-        self.add_widgets(doomfire, slider_container)
+        slider_container.add_gadgets(strength_label, slider)
+        self.add_gadgets(doomfire, slider_container)
 
 
 if __name__ == "__main__":

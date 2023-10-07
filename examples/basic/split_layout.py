@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.image import Image
-from nurses_2.widgets.split_layout import HSplitLayout, VSplitLayout
+from batgrl.app import App
+from batgrl.gadgets.image import Image
+from batgrl.gadgets.split_layout import HSplitLayout, VSplitLayout
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO_FLAT = ASSETS / "logo_solo_flat_256.png"
@@ -38,16 +38,16 @@ class SplitLayoutApp(App):
             anchor_left_pane=False,
         )
 
-        split_layout.top_pane.add_widget(top_split_layout)
-        split_layout.bottom_pane.add_widget(bottom_split_layout)
+        split_layout.top_pane.add_gadget(top_split_layout)
+        split_layout.bottom_pane.add_gadget(bottom_split_layout)
 
-        top_split_layout.left_pane.add_widget(image_tl)
-        top_split_layout.right_pane.add_widget(image_tr)
+        top_split_layout.left_pane.add_gadget(image_tl)
+        top_split_layout.right_pane.add_gadget(image_tr)
 
-        bottom_split_layout.left_pane.add_widget(image_bl)
-        bottom_split_layout.right_pane.add_widget(image_br)
+        bottom_split_layout.left_pane.add_gadget(image_bl)
+        bottom_split_layout.right_pane.add_gadget(image_br)
 
-        self.add_widget(split_layout)
+        self.add_gadget(split_layout)
 
 
 if __name__ == "__main__":

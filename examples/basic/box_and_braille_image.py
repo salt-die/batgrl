@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.box_image import BoxImage
-from nurses_2.widgets.braille_image import BrailleImage
+from batgrl.app import App
+from batgrl.gadgets.box_image import BoxImage
+from batgrl.gadgets.braille_image import BrailleImage
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_IMAGE = ASSETS / "loudypixelsky.png"
@@ -18,7 +18,7 @@ class ImageApp(App):
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
             pos_hint={"x_hint": 0.5, "anchor": "top-left"},
         )
-        self.add_widgets(box_image, braille_image)
+        self.add_gadgets(box_image, braille_image)
 
 
 if __name__ == "__main__":

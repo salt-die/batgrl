@@ -2,11 +2,10 @@ import asyncio
 from time import monotonic
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.io import Key, MouseButton, MouseEventType
-from nurses_2.widgets.text import Text, add_text
-from nurses_2.widgets.widget import Widget
+from batgrl.app import App
+from batgrl.gadgets.gadget import Gadget
+from batgrl.gadgets.text import Text, add_text
+from batgrl.io import Key, MouseButton, MouseEventType
 
 KEYBOARD = """\
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
@@ -199,7 +198,7 @@ class RainbowBehavior:
             await asyncio.sleep(0)
 
 
-class KeyboardWidget(RainbowBehavior, Text):
+class KeyboardGadget(RainbowBehavior, Text):
     def __init__(self, **kwargs):
         super().__init__(size=(23, 88), **kwargs)
         add_text(self.canvas, KEYBOARD)
@@ -212,7 +211,7 @@ class KeyboardWidget(RainbowBehavior, Text):
         self._lalt = Text(pos=(17, 13), size=(4, 6), **common)
         self._ralt = Text(pos=(17, 46), size=(4, 6), **common)
 
-        self.add_widgets(
+        self.add_gadgets(
             self._lshift,
             self._rshift,
             self._lctrl,
@@ -255,7 +254,7 @@ class KeyboardWidget(RainbowBehavior, Text):
         self._show_mods(mouse_event.mods)
 
 
-class MouseWidget(RainbowBehavior, Text):
+class MouseGadget(RainbowBehavior, Text):
     def __init__(self, **kwargs):
         super().__init__(size=(15, 19), **kwargs)
         common = dict(is_visible=False, is_transparent=True)
@@ -270,7 +269,7 @@ class MouseWidget(RainbowBehavior, Text):
         add_text(self._wheel.canvas, SCROLL_WHEEL)
         add_text(self._move.canvas, MOUSE_MOVE)
 
-        self.add_widgets(self._left_button, self._right_button, self._wheel, self._move)
+        self.add_gadgets(self._left_button, self._right_button, self._wheel, self._move)
 
     def on_key(self, key_event):
         self._left_button.is_visible = False
@@ -306,18 +305,18 @@ class MouseWidget(RainbowBehavior, Text):
 
 class InputApp(App):
     async def on_start(self):
-        keyboard = KeyboardWidget(
+        keyboard = KeyboardGadget(
             pos_hint={"y_hint": 0.5, "x_hint": 0.0, "anchor": "left"}
         )
-        mouse = MouseWidget(pos_hint={"y_hint": 0.5, "x_hint": 1.0, "anchor": "right"})
+        mouse = MouseGadget(pos_hint={"y_hint": 0.5, "x_hint": 1.0, "anchor": "right"})
 
         container_size = (
             max(keyboard.height, mouse.height),
             keyboard.width + mouse.width + 2,
         )
-        container = Widget(size=container_size, pos_hint={"y_hint": 0.5, "x_hint": 0.5})
-        container.add_widgets(keyboard, mouse)
-        self.add_widget(container)
+        container = Gadget(size=container_size, pos_hint={"y_hint": 0.5, "x_hint": 0.5})
+        container.add_gadgets(keyboard, mouse)
+        self.add_gadget(container)
 
 
 if __name__ == "__main__":

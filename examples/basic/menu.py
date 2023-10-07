@@ -1,6 +1,6 @@
-from nurses_2.app import App
-from nurses_2.widgets.menu import MenuBar
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.gadgets.menu import MenuBar
+from batgrl.gadgets.text import Text
 
 
 class MenuApp(App):
@@ -43,8 +43,8 @@ class MenuApp(App):
             ("Paste", "Ctrl+V"): add_label("Paste"),
         }
 
-        self.add_widget(label)
-        self.add_widgets(
+        self.add_gadget(label)
+        self.add_gadgets(
             MenuBar.from_iterable(
                 (("File", file_menu), ("Edit", edit_menu)), pos=(2, 0)
             )

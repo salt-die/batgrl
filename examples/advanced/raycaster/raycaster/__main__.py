@@ -1,10 +1,9 @@
 from pathlib import Path
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.widgets.raycaster import Raycaster, Sprite
-from nurses_2.widgets.texture_tools import read_texture
+from batgrl.app import App
+from batgrl.gadgets.raycaster import Raycaster, Sprite
+from batgrl.gadgets.texture_tools import read_texture
 
 from .animated_texture import AnimatedTexture
 from .camera import Camera
@@ -53,7 +52,7 @@ class RaycasterApp(App):
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
 
-        self.add_widget(raycaster)
+        self.add_gadget(raycaster)
 
 
 if __name__ == "__main__":

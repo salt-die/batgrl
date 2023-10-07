@@ -1,3 +1,3 @@
 # Cloth Simulation
 
-A cloth simulation with nurses_2. `python -m cloth` to run.
+A cloth simulation with batgrl. `python -m cloth` to run.

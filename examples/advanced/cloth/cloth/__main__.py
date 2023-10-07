@@ -1,4 +1,4 @@
-from nurses_2.app import App
+from batgrl.app import App
 
 from .cloth import Cloth
 
@@ -11,7 +11,7 @@ class ClothApp(App):
             mesh_size=MESH_SIZE, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
 
-        self.add_widget(cloth)
+        self.add_gadget(cloth)
 
         await cloth.step_forever()
 

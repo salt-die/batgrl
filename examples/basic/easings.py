@@ -1,10 +1,10 @@
 from itertools import cycle
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.image import Image
-from nurses_2.widgets.text import Easing, Text
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.image import Image
+from batgrl.gadgets.text import Easing, Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "logo_solo_flat_256.png"
@@ -35,7 +35,7 @@ class EasingsApp(App):
             default_color_pair=DEFAULT_COLOR_THEME.primary,
         )
 
-        self.add_widgets(logo, label)
+        self.add_gadgets(logo, label)
 
         for easing in Easing.__args__:
             label.add_str(f"{easing:^30}")

@@ -3,27 +3,26 @@ A syntax highlighting example with `pygments`.
 
 Requires `pygments>=2.14`.
 
-`add_syntax_highlighting` may be included in `nurses_2` in the future.
+`add_syntax_highlighting` may be included in `batgrl` in the future.
 """
+from batgrl.app import App
+from batgrl.colors import Color
+from batgrl.gadgets.text import Text
 from pygments.lexer import Lexer
 from pygments.lexers import get_lexer_by_name
 from pygments.style import Style
 from pygments.styles import get_style_by_name
 from wcwidth import wcswidth
 
-from nurses_2.app import App
-from nurses_2.colors import Color
-from nurses_2.widgets.text import Text
 
-
-def add_syntax_highlighting(text_widget: Text, lexer: Lexer, style: Style):
+def add_syntax_highlighting(text_gadget: Text, lexer: Lexer, style: Style):
     """
-    Add syntax highlighting to a text widget.
+    Add syntax highlighting to a text gadget.
 
     Parameters
     ----------
-    text_widget : Text
-        The widget to be highlighted.
+    text_gadget : Text
+        The gadget to be highlighted.
 
     lexer : Lexer
         A pygments `Lexer` object.
@@ -32,8 +31,8 @@ def add_syntax_highlighting(text_widget: Text, lexer: Lexer, style: Style):
         A pygments `Style` object.
     """
     y = x = 0
-    canvas = text_widget.canvas
-    colors = text_widget.colors
+    canvas = text_gadget.canvas
+    colors = text_gadget.colors
 
     colors[..., 3:] = Color.from_hex(style.background_color)
 
@@ -61,10 +60,10 @@ STYLE = get_style_by_name("github-dark")
 CODE = """\
 class SyntaxApp(App):
     async def on_start(self):
-        text_widget = Text()
-        text_widget.set_text(CODE)
-        self.add_widget(text_widget)
-        add_syntax_highlighting(text_widget, PYTHON_LEXER, STYLE)
+        text_gadget = Text()
+        text_gadget.set_text(CODE)
+        self.add_gadget(text_gadget)
+        add_syntax_highlighting(text_gadget, PYTHON_LEXER, STYLE)
 
 
 if __name__ == "__main__":
@@ -74,10 +73,10 @@ if __name__ == "__main__":
 
 class SyntaxApp(App):
     async def on_start(self):
-        text_widget = Text()
-        text_widget.set_text(CODE)
-        self.add_widget(text_widget)
-        add_syntax_highlighting(text_widget, PYTHON_LEXER, STYLE)
+        text_gadget = Text()
+        text_gadget.set_text(CODE)
+        self.add_gadget(text_gadget)
+        add_syntax_highlighting(text_gadget, PYTHON_LEXER, STYLE)
 
 
 if __name__ == "__main__":

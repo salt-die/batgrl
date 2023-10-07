@@ -5,12 +5,11 @@ import asyncio
 from itertools import cycle
 
 import numpy as np
+from batgrl.app import run_gadget_as_app
+from batgrl.colors import ABLACK, rainbow_gradient
+from batgrl.gadgets.graphics import Graphics
+from batgrl.io import MouseButton, MouseEvent
 from scipy.ndimage import convolve, map_coordinates
-
-from nurses_2.app import run_widget_as_app
-from nurses_2.colors import ABLACK, rainbow_gradient
-from nurses_2.io import MouseButton, MouseEvent
-from nurses_2.widgets.graphics import Graphics
 
 DIF_KERNEL = np.array([-0.5, 0.0, 0.5])
 GRAD_KERNEL = np.array([-1.0, 0.0, 1.0])
@@ -157,4 +156,4 @@ class StableFluid(Graphics):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(StableFluid(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    run_gadget_as_app(StableFluid(size_hint={"height_hint": 1.0, "width_hint": 1.0}))

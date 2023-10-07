@@ -9,12 +9,11 @@ Directions:
 import asyncio
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import BLACK, ColorPair, rainbow_gradient
-from nurses_2.io import MouseButton
-from nurses_2.widgets.text_field import TextParticleField
-from nurses_2.widgets.widget import Char, Widget
+from batgrl.app import App
+from batgrl.colors import BLACK, ColorPair, rainbow_gradient
+from batgrl.gadgets.gadget import Char, Gadget
+from batgrl.gadgets.text_field import TextParticleField
+from batgrl.io import MouseButton
 
 LOGO = """
                    _.gj8888888lkoz.,_
@@ -236,11 +235,11 @@ class ExplodingLogoApp(App):
         )
 
         # This background to show off field transparency.
-        bg = Widget(
+        bg = Gadget(
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
             background_color_pair=(0, 0, 0, 25, 25, 25),
         )
-        self.add_widgets(bg, field)
+        self.add_gadgets(bg, field)
 
 
 if __name__ == "__main__":

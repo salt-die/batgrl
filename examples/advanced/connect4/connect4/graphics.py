@@ -2,10 +2,9 @@ import asyncio
 from itertools import cycle
 
 import cv2
-
-from nurses_2.colors import AWHITE, TRANSPARENT, AColor, gradient
-from nurses_2.widgets.graphics import Graphics, Size
-from nurses_2.widgets.grid_layout import GridLayout
+from batgrl.colors import AWHITE, TRANSPARENT, AColor, gradient
+from batgrl.gadgets.graphics import Graphics, Size
+from batgrl.gadgets.grid_layout import GridLayout
 
 BOARD_COLOR = AColor.from_hex("4bade5")
 SELECTED_COLOR = AColor(*(2 * (i // 3) + (255 // 3) for i in BOARD_COLOR))
@@ -94,7 +93,7 @@ class Board(GridLayout):
             is_transparent=True,
         )
 
-        self.add_widgets(BoardPiece() for _ in range(42))
+        self.add_gadgets(BoardPiece() for _ in range(42))
 
         self.size = self.minimum_grid_size
 

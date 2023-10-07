@@ -1,7 +1,7 @@
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.bar_chart import BarChart
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.bar_chart import BarChart
+from batgrl.gadgets.text import Text
 
 PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
 
@@ -36,7 +36,7 @@ class BarChartApp(App):
         label.subscribe(
             bar_chart, "pos", lambda: setattr(label, "bottom", bar_chart.top)
         )
-        self.add_widgets(label, bar_chart)
+        self.add_gadgets(label, bar_chart)
 
 
 if __name__ == "__main__":

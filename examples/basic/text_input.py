@@ -1,9 +1,9 @@
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.text_pad import TextPad
-from nurses_2.widgets.textbox import Textbox
-from nurses_2.widgets.window import Window
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.text_pad import TextPad
+from batgrl.gadgets.textbox import Textbox
+from batgrl.gadgets.window import Window
 
 JABBERWOCKY = """
             Jabberwocky
@@ -73,9 +73,9 @@ class TextPadApp(App):
         )
         border.add_border()
         border.add_str("🔍", pos=(1, 1))
-        border.add_widget(textbox)
+        border.add_gadget(textbox)
 
-        self.add_widgets(window, border)
+        self.add_gadgets(window, border)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from nurses_2.colors import BLACK, GREEN, WHITE, ColorPair, lerp_colors
+from batgrl.colors import BLACK, GREEN, WHITE, ColorPair, lerp_colors
 
 MORE_BRIGHT_GREEN = lerp_colors(GREEN, WHITE, 0.70)
 BRIGHT_GREEN = lerp_colors(GREEN, WHITE, 0.30)

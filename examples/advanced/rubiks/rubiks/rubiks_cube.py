@@ -3,10 +3,9 @@ from itertools import product
 from random import randrange
 
 import numpy as np
+from batgrl.gadgets.behaviors.grabbable import Grabbable
+from batgrl.gadgets.graphics import Graphics
 from numpy.linalg import norm
-
-from nurses_2.widgets.behaviors.grabbable import Grabbable
-from nurses_2.widgets.graphics import Graphics
 
 from . import rotation
 from .camera import Camera

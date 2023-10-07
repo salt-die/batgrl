@@ -1,10 +1,10 @@
 """
-Example slider widget.
+Example slider gadget.
 """
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.slider import Slider
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.slider import Slider
+from batgrl.gadgets.text import Text
 
 
 class SliderApp(App):
@@ -26,7 +26,7 @@ class SliderApp(App):
             fill_color=(220, 120, 0),
             default_color_pair=DEFAULT_COLOR_THEME.button_normal,
         )
-        self.add_widgets(display, slider_1, slider_2)
+        self.add_gadgets(display, slider_1, slider_2)
 
 
 if __name__ == "__main__":

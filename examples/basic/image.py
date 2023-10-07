@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.image import Image
+from batgrl.app import App
+from batgrl.gadgets.image import Image
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO_FLAT = ASSETS / "logo_solo_flat_256.png"
@@ -27,7 +27,7 @@ class ImageApp(App):
             alpha=0.8,
         )
 
-        self.add_widgets(background, logo_flat, logo_full)
+        self.add_gadgets(background, logo_flat, logo_full)
 
 
 if __name__ == "__main__":

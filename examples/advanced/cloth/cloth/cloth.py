@@ -2,10 +2,9 @@ import asyncio
 
 import cv2
 import numpy as np
-
-from nurses_2.colors import AWHITE, AColor
-from nurses_2.io import MouseButton
-from nurses_2.widgets.graphics import Graphics, Size
+from batgrl.colors import AWHITE, AColor
+from batgrl.gadgets.graphics import Graphics, Size
+from batgrl.io import MouseButton
 
 from .mesh import Mesh
 
@@ -25,7 +24,7 @@ class Cloth(Graphics):
 
         self.texture = np.full((h * 2, w, 4), self.default_color, dtype=np.uint8)
 
-        # Center the nodes horizontally in the widget with following offset:
+        # Center the nodes horizontally in the gadget with following offset:
         self.h_offset = (
             (self.width - self.mesh.nodes[-1].position.imag * self.scale) / 2 * 1j
         )

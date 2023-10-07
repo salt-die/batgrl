@@ -1,9 +1,9 @@
 import asyncio
 import time
 
-from nurses_2.app import App
-from nurses_2.widgets.digital_display import BRIGHT_GREEN_ON_BLACK, DigitalDisplay
-from nurses_2.widgets.text import Text
+from batgrl.app import App
+from batgrl.gadgets.digital_display import BRIGHT_GREEN_ON_BLACK, DigitalDisplay
+from batgrl.gadgets.text import Text
 
 
 class DigitalClock(Text):
@@ -23,7 +23,7 @@ class DigitalClock(Text):
         self.twelve_hour = twelve_hour
 
         for i in range(6):
-            self.add_widget(DigitalDisplay(pos=(0, i * 8 + i // 2 * 2)))
+            self.add_gadget(DigitalDisplay(pos=(0, i * 8 + i // 2 * 2)))
 
         self.canvas["char"][[2, -3], 16] = self.canvas["char"][[2, -3], 34] = "●"
 
@@ -68,7 +68,7 @@ class TestDisplay(DigitalDisplay):
 
 class DigitalClockApp(App):
     async def on_start(self):
-        self.add_widgets(DigitalClock(twelve_hour=True), TestDisplay(pos=(10, 0)))
+        self.add_gadgets(DigitalClock(twelve_hour=True), TestDisplay(pos=(10, 0)))
 
 
 if __name__ == "__main__":

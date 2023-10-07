@@ -3,11 +3,10 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import Color
-from nurses_2.widgets.graphics import Graphics, lerp
-from nurses_2.widgets.image import Image
+from batgrl.app import App
+from batgrl.colors import Color
+from batgrl.gadgets.graphics import Graphics, lerp
+from batgrl.gadgets.image import Image
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BACKGROUND = ASSETS / "loudypixelsky.png"
@@ -138,7 +137,7 @@ class SpinningCube(Graphics):
 
 class SpinApp(App):
     async def on_start(self):
-        self.add_widgets(
+        self.add_gadgets(
             Image(path=BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}),
             SpinningCube(size_hint={"height_hint": 1.0, "width_hint": 1.0}),
         )

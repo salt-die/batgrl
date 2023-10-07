@@ -5,14 +5,13 @@ from pathlib import Path
 from random import shuffle
 
 import numpy as np
+from batgrl.colors import AWHITE
+from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.image import Image
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.texture_tools import composite
 
-from nurses_2.colors import AWHITE
-from nurses_2.widgets.graphics import Graphics
-from nurses_2.widgets.image import Image
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.texture_tools import composite
-
-from .matrix import MatrixWidget
+from .matrix import MatrixGadget
 from .modal_screen import ModalScreen
 from .tetrominoes import ARIKA_TETROMINOS, TETROMINOS, Orientation
 
@@ -46,18 +45,18 @@ def tetromino_generator(tetrominos):
         yield from bag
 
 
-def setup_background(widget):
-    top = widget.top
-    left = widget.left
-    bottom = widget.bottom
-    right = widget.right
+def setup_background(gadget):
+    top = gadget.top
+    left = gadget.left
+    bottom = gadget.bottom
+    right = gadget.right
 
-    if isinstance(widget.parent, Image):
-        widget.colors[..., 3:] = (
-            widget.parent.texture[2 * top + 1 : 2 * bottom : 2, left:right, :3] // 2
+    if isinstance(gadget.parent, Image):
+        gadget.colors[..., 3:] = (
+            gadget.parent.texture[2 * top + 1 : 2 * bottom : 2, left:right, :3] // 2
         )
     else:
-        widget.colors[..., 3:] = widget.parent.colors[top:bottom, left:right, 3:] // 2
+        gadget.colors[..., 3:] = gadget.parent.colors[top:bottom, left:right, 3:] // 2
 
 
 class Piece(Graphics):
@@ -113,7 +112,7 @@ class Tetris(Image):
         )  # border size; border height, border width
         h, w = matrix_size
 
-        # offsets for border widgets
+        # offsets for border gadgets
         top = SPACING
         bottom = h - (bh + SPACING)
         left = SPACING
@@ -135,60 +134,60 @@ class Tetris(Image):
         held_border.add_str(f"{'HOLD':^{bsize[1]}}")
         held_space = Text(**display_geometry)
 
-        held_border.add_widget(held_space)
+        held_border.add_gadget(held_space)
 
         # Setup NEXT display
         next_border = Text(size=bsize, pos=(top, right))
         next_border.add_str(f"{'NEXT':^{bsize[1]}}")
         next_space = Text(**display_geometry)
-        next_border.add_widget(next_space)
+        next_border.add_gadget(next_space)
 
         # Setup SCORE display
         score_border = Text(size=bsize, pos=(bottom, left))
         score_border.add_str(f"{'SCORE':^{bsize[1]}}")
         self.score_display = Text(**display_geometry)
-        score_border.add_widget(self.score_display)
+        score_border.add_gadget(self.score_display)
 
         # Setup LEVEL Display
         level_border = Text(size=bsize, pos=(bottom, right))
         level_border.add_str(f"{'LEVEL':^{bsize[1]}}")
         self.level_display = Text(**display_geometry)
 
-        level_border.add_widget(self.level_display)
+        level_border.add_gadget(self.level_display)
 
-        self.add_widgets(held_border, next_border, score_border, level_border)
+        self.add_gadgets(held_border, next_border, score_border, level_border)
 
-        for widget in self.walk():
-            setup_background(widget)
+        for gadget in self.walk():
+            setup_background(gadget)
 
         self.held_piece = Piece(
             pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_enabled=False
         )
-        held_space.add_widget(self.held_piece)
+        held_space.add_gadget(self.held_piece)
 
         self.next_piece = Piece(
             pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_enabled=False
         )
-        next_space.add_widget(self.next_piece)
+        next_space.add_gadget(self.next_piece)
 
         self.matrix = np.zeros(matrix_size, dtype=np.bool8)
         """Bool array representation of mino positions."""
-        self.matrix_widget = MatrixWidget(size=(h, 2 * w), pos=(0, 2 * SPACING + bw))
+        self.matrix_gadget = MatrixGadget(size=(h, 2 * w), pos=(0, 2 * SPACING + bw))
         """The "matrix", where minos land."""
 
         self.on_size()
 
         self.ghost_piece = Piece(alpha=0.33, is_enabled=False)
         self.current_piece = Piece(is_enabled=False)
-        self.matrix_widget.add_widgets(self.ghost_piece, self.current_piece)
+        self.matrix_gadget.add_gadgets(self.ghost_piece, self.current_piece)
 
-        self.add_widget(self.matrix_widget)
+        self.add_gadget(self.matrix_gadget)
 
         self.modal_screen = ModalScreen()
 
     def on_add(self):
         super().on_add()
-        self.root.add_widget(self.modal_screen)
+        self.root.add_gadget(self.modal_screen)
         self._game_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self._lock_down_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
         self._clear_lines_queue = deque()
@@ -196,7 +195,7 @@ class Tetris(Image):
     def on_remove(self):
         super().on_remove()
         if self.modal_screen.parent:
-            self.modal_screen.parent.remove_widget(self.modal_screen)
+            self.modal_screen.parent.remove_gadget(self.modal_screen)
         self._game_task.cancel()
         self._lock_down_task.cancel()
         for task in self._clear_lines_queue:
@@ -204,10 +203,10 @@ class Tetris(Image):
 
     def on_size(self):
         super().on_size()
-        if hasattr(self, "matrix_widget"):
+        if hasattr(self, "matrix_gadget"):
             # Darken background behind matrix.
-            left = self.matrix_widget.left
-            right = self.matrix_widget.right
+            left = self.matrix_gadget.left
+            right = self.matrix_gadget.right
             self.texture[:, left:right, :3] //= 3
 
     def new_game(self):
@@ -217,7 +216,7 @@ class Tetris(Image):
             self._clear_lines_queue.popleft().cancel()
 
         self.matrix[:] = 0
-        self.matrix_widget.texture[:] = 0
+        self.matrix_gadget.texture[:] = 0
 
         self.current_piece.is_enabled = False
         self.next_piece.is_enabled = False
@@ -438,7 +437,7 @@ class Tetris(Image):
 
         composite(
             current_piece.texture,
-            self.matrix_widget.texture,
+            self.matrix_gadget.texture,
             (2 * y, x),
         )
         task_name = str(next(QUEUE_ID))
@@ -468,7 +467,7 @@ class Tetris(Image):
         if not completed_lines.any():
             return
 
-        matrix_texture = self.matrix_widget.texture
+        matrix_texture = self.matrix_gadget.texture
         matrix_lines = np.kron(completed_lines, [True, True])
         old_texture = matrix_texture[matrix_lines].copy()
 

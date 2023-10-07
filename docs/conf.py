@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from nurses_2 import __version__
+from batgrl import __version__
 
 author = "salt-die"
 today = f"{datetime.now():%B %d, %Y}"
@@ -28,7 +28,7 @@ html_theme = "pydata_sphinx_theme"
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 
 html_theme_options = {
-    "github_url": "https://github.com/salt-die/nurses_2",
+    "github_url": "https://github.com/salt-die/batgrl",
     "show_prev_next": False,
     "left_sidebar_end": [],
     "page_sidebar_items": ["page-toc"],

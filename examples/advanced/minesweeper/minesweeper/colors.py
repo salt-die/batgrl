@@ -1,4 +1,4 @@
-from nurses_2.colors import Color, ColorPair
+from batgrl.colors import Color, ColorPair
 
 ZERO = Color.from_hex("aba1ad")
 ONE = Color.from_hex("272ae5")

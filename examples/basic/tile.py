@@ -1,9 +1,9 @@
 import asyncio
 from pathlib import Path
 
-from nurses_2.app import App
-from nurses_2.widgets.image import Image
-from nurses_2.widgets.tiled_image import TiledImage
+from batgrl.app import App
+from batgrl.gadgets.image import Image
+from batgrl.gadgets.tiled_image import TiledImage
 
 ASSETS = Path(__file__).parent.parent / "assets"
 LOGO_PATH = ASSETS / "python_discord_logo.png"
@@ -17,7 +17,7 @@ class TiledApp(App):
 
         tiled_image = TiledImage(size=(25, 50), tile=tile_1)
 
-        self.add_widget(tiled_image)
+        self.add_gadget(tiled_image)
 
         await asyncio.sleep(5)
 

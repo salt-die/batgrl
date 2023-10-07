@@ -9,10 +9,9 @@ from random import choice, random
 
 import networkx as nx
 import numpy as np
-
-from nurses_2.app import run_widget_as_app
-from nurses_2.colors import AWHITE, AColor, gradient
-from nurses_2.widgets.graphics import Graphics
+from batgrl.app import run_gadget_as_app
+from batgrl.colors import AWHITE, AColor, gradient
+from batgrl.gadgets.graphics import Graphics
 
 GREEN = AColor.from_hex("0bbf23")
 BLUE = AColor.from_hex("0b38bf")
@@ -143,4 +142,4 @@ class Labyrinth(Graphics):
 
 
 if __name__ == "__main__":
-    run_widget_as_app(Labyrinth(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    run_gadget_as_app(Labyrinth(size_hint={"height_hint": 1.0, "width_hint": 1.0}))

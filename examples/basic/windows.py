@@ -1,14 +1,13 @@
 from pathlib import Path
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import DEFAULT_COLOR_THEME
-from nurses_2.widgets.animation import Animation
-from nurses_2.widgets.color_picker import ColorPicker
-from nurses_2.widgets.file_chooser import FileChooser
-from nurses_2.widgets.line_plot import LinePlot
-from nurses_2.widgets.window import Window
+from batgrl.app import App
+from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.gadgets.animation import Animation
+from batgrl.gadgets.color_picker import ColorPicker
+from batgrl.gadgets.file_chooser import FileChooser
+from batgrl.gadgets.line_plot import LinePlot
+from batgrl.gadgets.window import Window
 
 ASSETS = Path(__file__).parent.parent / "assets"
 CAVEMAN_PATH = ASSETS / "caveman"
@@ -44,7 +43,7 @@ class WindowsApp(App):
             plot_color_pair=DEFAULT_COLOR_THEME.primary,
         )
 
-        self.add_widgets(window_1, window_2, window_3, window_4)
+        self.add_gadgets(window_1, window_2, window_3, window_4)
         animation.play()
 
 

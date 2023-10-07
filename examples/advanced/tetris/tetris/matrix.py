@@ -1,11 +1,10 @@
 import asyncio
 
 import numpy as np
+from batgrl.gadgets.graphics import Graphics
 
-from nurses_2.widgets.graphics import Graphics
 
-
-class MatrixWidget(Graphics):
+class MatrixGadget(Graphics):
     def on_add(self):
         super().on_add()
         self._glow = 0

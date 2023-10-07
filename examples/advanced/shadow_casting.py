@@ -4,9 +4,8 @@ import random
 from itertools import chain
 
 import numpy as np
-
-from nurses_2.app import App
-from nurses_2.colors import (
+from batgrl.app import App
+from batgrl.colors import (
     ACYAN,
     AMAGENTA,
     AWHITE,
@@ -19,12 +18,12 @@ from nurses_2.colors import (
     ColorPair,
     gradient,
 )
-from nurses_2.widgets.behaviors.grabbable import Grabbable
-from nurses_2.widgets.grid_layout import GridLayout
-from nurses_2.widgets.shadow_caster import Camera, LightSource, ShadowCaster
-from nurses_2.widgets.text import Text
-from nurses_2.widgets.toggle_button import ToggleButton
-from nurses_2.widgets.widget import Widget, clamp
+from batgrl.gadgets.behaviors.grabbable import Grabbable
+from batgrl.gadgets.gadget import Gadget, clamp
+from batgrl.gadgets.grid_layout import GridLayout
+from batgrl.gadgets.shadow_caster import Camera, LightSource, ShadowCaster
+from batgrl.gadgets.text import Text
+from batgrl.gadgets.toggle_button import ToggleButton
 
 PANEL_WIDTH = 23
 WHITE_TO_RED = gradient(WHITE, RED, PANEL_WIDTH)
@@ -38,7 +37,7 @@ class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_BLACK.reversed())
-        self.add_widget(self.indicator)
+        self.add_gadget(self.indicator)
         self.callback = None
 
     def grab(self, mouse_event):
@@ -171,7 +170,7 @@ class ShadowCasterApp(App):
         grid_layout = GridLayout(
             grid_rows=17, grid_columns=1, pos=(0, caster.right + 1)
         )
-        grid_layout.add_widgets(
+        grid_layout.add_gadgets(
             button_label,
             button_a,
             button_b,
@@ -192,9 +191,9 @@ class ShadowCasterApp(App):
         )
         grid_layout.size = grid_layout.minimum_grid_size
 
-        container = Widget(pos_hint={"y_hint": 0.5, "x_hint": 0.5}, size=(17, 58))
-        container.add_widgets(caster, grid_layout)
-        self.add_widget(container)
+        container = Gadget(pos_hint={"y_hint": 0.5, "x_hint": 0.5}, size=(17, 58))
+        container.add_gadgets(caster, grid_layout)
+        self.add_gadget(container)
 
         theta = 0
         while True:
