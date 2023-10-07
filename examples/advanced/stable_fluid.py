@@ -5,11 +5,12 @@ import asyncio
 from itertools import cycle
 
 import numpy as np
-from batgrl.app import run_gadget_as_app
-from batgrl.colors import ABLACK, rainbow_gradient
+from scipy.ndimage import convolve, map_coordinates
+
+from batgrl.app import App
+from batgrl.colors import ABLACK, DEFAULT_COLOR_THEME, AColor, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
 from batgrl.io import MouseButton, MouseEvent
-from scipy.ndimage import convolve, map_coordinates
 
 DIF_KERNEL = np.array([-0.5, 0.0, 0.5])
 GRAD_KERNEL = np.array([-1.0, 0.0, 1.0])
@@ -32,7 +33,7 @@ POKE_RADIUS = 3.0
 DISSIPATION = 0.99
 PRESSURE = 0.1
 PRESSURE_ITERATIONS = 10
-RAINBOW_COLORS = cycle(rainbow_gradient(100))
+RAINBOW_COLORS = cycle(rainbow_gradient(100, color_type=AColor))
 EPSILON = np.finfo(float).eps
 
 
@@ -54,7 +55,7 @@ class StableFluid(Graphics):
         h *= 2
 
         self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
-        self.dye = np.zeros((3, h, w))
+        self.dye = np.zeros((4, h, w))
         self.indices = np.indices((h, w))
         self.velocity = np.zeros((2, h, w))
 
@@ -142,18 +143,31 @@ class StableFluid(Graphics):
             convolve(vy, GAUSSIAN_KERNEL, output=vy)
             convolve(vx, GAUSSIAN_KERNEL, output=vx)
 
-            r, g, b = dye = self.dye
+            r, g, b, a = dye = self.dye
             map_coordinates(r, coords, output=r)
             map_coordinates(g, coords, output=g)
             map_coordinates(b, coords, output=b)
+            map_coordinates(a, coords, output=a)
 
             dye *= DISSIPATION
             np.clip(dye, 0, 255, out=dye)
 
-            self.texture[..., :3] = np.moveaxis(dye, 0, -1)
+            self.texture[:] = np.moveaxis(dye, 0, -1)
 
             await asyncio.sleep(0)
 
 
+class StableFluidApp(App):
+    async def on_start(self):
+        self.add_gadget(
+            StableFluid(
+                size_hint={"height_hint": 1.0, "width_hint": 1.0},
+                default_color=(0, 0, 0, 0),
+            )
+        )
+
+
 if __name__ == "__main__":
-    run_gadget_as_app(StableFluid(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    StableFluidApp(
+        title="Stable Fluid Example", background_color_pair=DEFAULT_COLOR_THEME.primary
+    ).run()
