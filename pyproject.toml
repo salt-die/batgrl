@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "batgrl"
-description = "Badass terminal graphics library."
+description = "badass terminal graphics library"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
