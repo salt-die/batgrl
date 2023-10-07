@@ -3,11 +3,17 @@ A text-pad gadget for multiline editable text.
 """
 from wcwidth import wcswidth
 
-from ..colors import ColorPair
+from ..colors import Color, ColorPair
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
-from .scroll_view import ScrollView
+from .scroll_view import (
+    DEFAULT_INDICATOR_HOVER,
+    DEFAULT_INDICATOR_NORMAL,
+    DEFAULT_INDICATOR_PRESS,
+    DEFAULT_SCROLLBAR_COLOR,
+    ScrollView,
+)
 from .text import (
     Point,
     PosHint,
@@ -41,6 +47,14 @@ class TextPad(Themable, Focusable, ScrollView):
 
     Parameters
     ----------
+    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
+        Scrollbar indicator normal color.
+    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
+        Scrollbar indicator hover color.
+    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
+        Scrollbar indicator press color.
+    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
+        Background color of scrollbar.
     allow_vertical_scroll : bool, default: True
         Allow vertical scrolling.
     allow_horizontal_scroll : bool, default: True
@@ -51,16 +65,8 @@ class TextPad(Themable, Focusable, ScrollView):
         Show the horizontal scrollbar.
     scrollwheel_enabled : bool, default: True
         Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool, default: True
+    arrow_keys_enabled : bool, default: False
         Allow scrolling with arrow keys.
-    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
-        Background color of scrollbar.
-    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
-        Scrollbar indicator hover color.
-    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
-        Scrollbar indicator press color.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
@@ -93,10 +99,10 @@ class TextPad(Themable, Focusable, ScrollView):
     ----------
     text : str
         The textpad's text.
-    $1=$1, : bool
-        True if gadget has focus.
+    is_focused : bool
+        Return true if gadget has focus.
     any_focused : bool
-        True if any gadget has focus.
+        Return true if any gadget has focus.
     view : Gadget | None
         The scrolled gadget.
     allow_vertical_scroll : bool
@@ -257,8 +263,21 @@ class TextPad(Themable, Focusable, ScrollView):
     def __init__(
         self,
         *,
-        size=Size(10, 10),
-        pos=Point(0, 0),
+        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
+        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
+        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
+        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
+        allow_vertical_scroll: bool = True,
+        allow_horizontal_scroll: bool = True,
+        show_vertical_bar: bool = True,
+        show_horizontal_bar: bool = True,
+        scrollwheel_enabled: bool = True,
+        arrow_keys_enabled: bool = False,
+        is_grabbable: bool = True,
+        disable_ptf: bool = True,
+        mouse_button: MouseButton = MouseButton.LEFT,
+        size: Size = Size(10, 10),
+        pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
         is_transparent: bool = False,
@@ -280,6 +299,19 @@ class TextPad(Themable, Focusable, ScrollView):
         self._pad.add_gadget(self._cursor)
 
         super().__init__(
+            indicator_normal_color=indicator_normal_color,
+            indicator_hover_color=indicator_hover_color,
+            indicator_press_color=indicator_press_color,
+            scrollbar_color=scrollbar_color,
+            allow_vertical_scroll=allow_vertical_scroll,
+            allow_horizontal_scroll=allow_horizontal_scroll,
+            show_vertical_bar=show_vertical_bar,
+            show_horizontal_bar=show_horizontal_bar,
+            scrollwheel_enabled=scrollwheel_enabled,
+            arrow_keys_enabled=arrow_keys_enabled,
+            is_grabbable=is_grabbable,
+            disable_ptf=disable_ptf,
+            mouse_button=mouse_button,
             size=size,
             pos=pos,
             size_hint=size_hint,
