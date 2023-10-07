@@ -1,6 +1,7 @@
 """
 Base for graphic gadgets.
 """
+from math import prod
 from pathlib import Path
 
 import cv2
@@ -73,7 +74,7 @@ class Graphics(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
-    is_transparent : bool, default: False
+    is_transparent : bool, default: True
         Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
@@ -293,7 +294,15 @@ class Graphics(Gadget):
                     odd_rows[..., :3], background[dst], dtype=float
                 )
 
-                norm_alpha = self.alpha / 255
+                norm_alpha = (
+                    prod(
+                        ancestor.alpha
+                        for ancestor in self.ancestors()
+                        if isinstance(ancestor, Graphics)
+                    )
+                    * self.alpha
+                    / 255
+                )
 
                 even_buffer *= even_rows[..., 3, None]
                 even_buffer *= norm_alpha
