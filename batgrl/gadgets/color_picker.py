@@ -47,8 +47,7 @@ class _ShadeSelector(Grabbable, Graphics):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
 
-        self._shade_indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_RED)
-        self._shade_indicator.add_str("○")
+        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_char="○")
         self._shade_hint = 0.0, 1.0
         self.add_gadget(self._shade_indicator)
 
@@ -84,8 +83,6 @@ class _ShadeSelector(Grabbable, Graphics):
         shade = ColorPair(*WHITE, r, g, b)
 
         self.color_swatch.background_color_pair = shade
-
-        self._shade_indicator.colors[:] = shade
 
         self.label.add_str(hex(r * 2**16 + g * 2**8 + b)[2:], (1, 1))
         self.label.add_str(f"R: {r:>3}", (3, 1))
