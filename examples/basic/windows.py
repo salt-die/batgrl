@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+
 from batgrl.app import App
 from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.animation import Animation
@@ -21,10 +22,10 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class WindowsApp(App):
     async def on_start(self):
-        window_kwargs = dict(size=(25, 50), border_alpha=0.7, alpha=0.7)
+        window_kwargs = dict(size=(25, 50), border_alpha=0.7)
 
         animation = Animation(path=CAVEMAN_PATH, interpolation="nearest")
-        window_1 = Window(title=CAVEMAN_PATH.name, **window_kwargs)
+        window_1 = Window(title=CAVEMAN_PATH.name, alpha=0.7, **window_kwargs)
         window_1.view = animation
 
         window_2 = Window(title="File Chooser", **window_kwargs)
