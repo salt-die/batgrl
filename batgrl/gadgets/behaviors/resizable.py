@@ -56,7 +56,7 @@ class _Border(Grabbable, Graphics):
             height = 1
             top = 0
         elif self.y_edge == 0:
-            height = h - 2 * 1
+            height = h - 2
             top = 1
         else:
             height = 1
@@ -66,7 +66,7 @@ class _Border(Grabbable, Graphics):
             width = 2
             left = 0
         elif self.x_edge == 0:
-            width = w - 2 * 2
+            width = w - 4
             left = 2
         else:
             width = 2
