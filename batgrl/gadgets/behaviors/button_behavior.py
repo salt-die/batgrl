@@ -45,13 +45,13 @@ class ButtonBehavior:
 
     Methods
     -------
-    update_normal:
+    update_normal():
         Paint the normal state.
-    update_hover:
+    update_hover():
         Paint the hover state.
-    update_down:
+    update_down():
         Paint the down state.
-    on_release:
+    on_release():
         Triggered when a button is released.
     """
 

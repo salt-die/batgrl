@@ -9,7 +9,7 @@ so you can fill the area of the screen the gadget is located in with some charac
 For more interesting displays, there are `Text` and `Graphics`. Underlying both of
 these classes are NumPy arrays that represent the content of the gadget. The `Text` has
 a `canvas` array of characters and a `colors` array of color pairs. The `Graphics` gadget
-has a rgba `texture` array that is twice the height of the gadget. Painting any image on screen
+has a RGBA `texture` array that is twice the height of the gadget. Painting any image on screen
 is as simple as copying the image into the `texture` array.  Layered graphic gadgets do proper
 alpha compositing.
 

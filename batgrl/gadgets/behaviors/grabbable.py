@@ -1,7 +1,7 @@
 """
 Grabbable behavior for a gadget.
 """
-from ...io import MouseButton, MouseEventType
+from ...io import MouseButton, MouseEvent, MouseEventType
 from ..gadget import Point
 
 __all__ = ["Grabbable"]
@@ -49,11 +49,11 @@ class Grabbable:
 
     Methods
     -------
-    grab:
+    grab(mouse_event: MouseEvent):
         Grab the gadget.
-    ungrab:
+    ungrab(mouse_event: MouseEvent):
         Ungrab the gadget.
-    grab_update:
+    grab_update(mouse_event: MouseEvent):
         Update gadget with incoming mouse events while grabbed.
     """
 
@@ -124,22 +124,37 @@ class Grabbable:
         """
         return self._mouse_dyx[1]
 
-    def grab(self, mouse_event):
+    def grab(self, mouse_event: MouseEvent):
         """
         Grab gadget.
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event that grabbed the gadget.
         """
         self._is_grabbed = True
 
         if not self.disable_ptf:
             self.pull_to_front()
 
-    def ungrab(self, mouse_event):
+    def ungrab(self, mouse_event: MouseEvent):
         """
         Ungrab gadget.
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event that ungrabbed the gadget.
         """
         self._is_grabbed = False
 
-    def grab_update(self, mouse_event):
+    def grab_update(self, mouse_event: MouseEvent):
         """
         Update grabbed gadget with incoming mouse event.
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event that updates the grabbed gadget.
         """

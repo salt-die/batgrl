@@ -1,3 +1,6 @@
+"""
+Output for windows terminals.
+"""
 from ctypes import byref, windll
 from ctypes.wintypes import DWORD
 

@@ -488,67 +488,82 @@ class DataTable(Themable, ScrollView):
 
     Methods
     -------
-    add_column:
+    add_column(
+        label: str,
+        data: Sequence[T] | None = None,
+        style: ColumnStyle | None = None,
+    ):
         Add a column to the data table.
-    add_row:
+    add_row(data: Sequence[SupportsLessThan]):
         Add a row to the data table.
-    remove_column:
+    remove_column(column_id: int):
         Remove a column by column id.
-    remove_row:
+    remove_row(row_id: int):
         Remove a row by row id.
-    row_id_from_index:
+    row_id_from_index(index: int):
         Returns the row id of the row at index.
-    column_id_from_index:
+    column_id_from_index(index: int):
         Returns the column id of the column at index.
-    update_theme:
+    update_theme():
         Paint the gadget with current theme.
-    grab:
+    grab(mouse_event: MouseEvent):
         Grab the gadget.
-    ungrab:
+    ungrab(mouse_event: MouseEvent):
         Ungrab the gadget.
-    grab_update:
+    grab_update(mouse_event: MouseEvent):
         Update gadget with incoming mouse events while grabbed.
-    on_size:
+    on_size():
         Called when gadget is resized.
-    apply_hints:
+    apply_hints():
         Apply size and pos hints.
-    to_local:
+    to_local(point: Point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point:
+    collides_point(point: Point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget:
+    collides_gadget(other: Gadget):
         True if other is within gadget's bounding box.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Add multiple child gadgets.
-    remove_gadget:
+    remove_gadget(gadget: Gadget):
         Remove a child gadget.
-    pull_to_front:
+    pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root:
-        Yield all descendents of root gadget.
-    walk:
-        Yield all descendents (or ancestors if `reverse` is true).
-    subscribe:
+    walk_from_root():
+        Yield all descendents of the root gadget (preorder traversal).
+    walk():
+        Yield all descendents of this gadget (preorder traversal).
+    walk_reverse():
+        Yield all descendents of this gadget (reverse postorder traversal).
+    ancestors():
+        Yield all ancestors of this gadget.
+    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
         Subscribe to a gadget property.
-    unsubscribe:
+    unsubscribe(source: Gadget, attr: str):
         Unsubscribe to a gadget property.
-    on_key:
+    on_key(key_event: KeyEvent):
         Handle key press event.
-    on_mouse:
+    on_mouse(mouse_event: MouseEvent):
         Handle mouse event.
-    on_paste:
+    on_paste(paste_event: PasteEvent):
         Handle paste event.
-    tween:
-        Sequentially update a gadget property over time.
-    on_add:
+    tween(
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties,
+    ):
+        Sequentially update gadget properties over time.
+    on_add():
         Called after a gadget is added to gadget tree.
-    on_remove:
+    on_remove():
         Called before gadget is removed from gadget tree.
-    prolicide:
+    prolicide():
         Recursively remove all children.
-    destroy:
+    destroy():
         Destroy this gadget and all descendents.
     """
 
@@ -975,7 +990,7 @@ class DataTable(Themable, ScrollView):
         self._table.grid_rows -= 1
         self._fix_sizes()
 
-    def row_id_from_index(self, index: int):
+    def row_id_from_index(self, index: int) -> int:
         """
         Returns the row id of the row at index.
 
@@ -983,10 +998,15 @@ class DataTable(Themable, ScrollView):
         ----------
         index : int
             Index of row in table.
+
+        Returns
+        -------
+        int
+            Row id of the row tat index.
         """
         return self._table.children[index + 1].children[0].row_id
 
-    def column_id_from_index(self, index: int):
+    def column_id_from_index(self, index: int) -> int:
         """
         Returns the column id of the column at index.
 
@@ -994,5 +1014,10 @@ class DataTable(Themable, ScrollView):
         ----------
         index : int
             Index of column in table.
+
+        Returns
+        -------
+        int
+            Column id of the column at index.
         """
         return self._column_labels.children[index].column_id

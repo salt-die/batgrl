@@ -81,7 +81,8 @@ class Animation(Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
+        If true, gadget is rendered with alpha compositing; otherwise, alpha values are
+        ignored.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -161,57 +162,68 @@ class Animation(Gadget):
 
     Methods
     -------
-    play:
+    play():
         Play the animation. Returns a task.
-    pause:
+    pause():
         Pause the animation
-    stop:
+    stop():
         Stop the animation and reset current frame.
-    from_textures:
+    from_textures(textures: Iterable[NDArray[np.uint8]], **kwargs):
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
-    from_images:
+    from_images(images: Iterable[Image], **kwargs):
         Create an :class:`Animation` from an iterable of :class:`Image`.
-    on_size:
+    on_size():
         Called when gadget is resized.
-    apply_hints:
+    apply_hints():
         Apply size and pos hints.
-    to_local:
+    to_local(point: Point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point:
+    collides_point(point: Point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget:
+    collides_gadget(other: Gadget):
         True if other is within gadget's bounding box.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Add multiple child gadgets.
-    remove_gadget:
+    remove_gadget(gadget: Gadget):
         Remove a child gadget.
-    pull_to_front:
+    pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root:
-        Yield all descendents of root gadget.
-    walk:
-        Yield all descendents (or ancestors if `reverse` is true).
-    subscribe:
+    walk_from_root():
+        Yield all descendents of the root gadget (preorder traversal).
+    walk():
+        Yield all descendents of this gadget (preorder traversal).
+    walk_reverse():
+        Yield all descendents of this gadget (reverse postorder traversal).
+    ancestors():
+        Yield all ancestors of this gadget.
+    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
         Subscribe to a gadget property.
-    unsubscribe:
+    unsubscribe(source: Gadget, attr: str):
         Unsubscribe to a gadget property.
-    on_key:
+    on_key(key_event: KeyEvent):
         Handle key press event.
-    on_mouse:
+    on_mouse(mouse_event: MouseEvent):
         Handle mouse event.
-    on_paste:
+    on_paste(paste_event: PasteEvent):
         Handle paste event.
-    tween:
-        Sequentially update a gadget property over time.
-    on_add:
+    tween(
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties,
+    ):
+        Sequentially update gadget properties over time.
+    on_add():
         Called after a gadget is added to gadget tree.
-    on_remove:
+    on_remove():
         Called before gadget is removed from gadget tree.
-    prolicide:
+    prolicide():
         Recursively remove all children.
-    destroy:
+    destroy():
         Destroy this gadget and all descendents.
     """
 
@@ -224,11 +236,11 @@ class Animation(Gadget):
         reverse: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
         background_char: str | None = None,
@@ -238,11 +250,11 @@ class Animation(Gadget):
         """Frames of the animation."""
 
         super().__init__(
-            is_transparent=is_transparent,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
             background_char=background_char,
@@ -343,6 +355,11 @@ class Animation(Gadget):
     def play(self) -> asyncio.Task:
         """
         Play animation.
+
+        Returns
+        -------
+        asyncio.Task
+            The task that plays the animation.
         """
         self.pause()
 
@@ -384,11 +401,11 @@ class Animation(Gadget):
         reverse: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
         background_char: str | None = None,
@@ -396,6 +413,49 @@ class Animation(Gadget):
     ) -> "Animation":
         """
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
+
+        Parameters
+        ----------
+        textures : Iterable[NDArray[np.uint8]]
+            An iterable of RGBA textures that will be the frames of the animation.
+        frame_durations : float | Sequence[float], default: 1/12
+            Time each frame is displayed. If a sequence is provided, it's length
+            should be equal to number of frames.
+        loop : bool, default: True
+            If true, restart animation after last frame.
+        reverse : bool, default: False
+            If true, play animation in reverse.
+        alpha : float, default: 1.0
+            Transparency of the animation.
+        interpolation : Interpolation, default: "linear"
+            Interpolation used when gadget is resized.
+        size : Size, default: Size(10, 10)
+            Size of gadget.
+        pos : Point, default: Point(0, 0)
+            Position of upper-left corner in parent.
+        size_hint : SizeHint | SizeHintDict | None, default: None
+            Size as a proportion of parent's height and width.
+        pos_hint : PosHint | PosHintDict | None , default: None
+            Position as a proportion of parent's height and width.
+        is_transparent : bool, default: True
+            If true, gadget is rendered with alpha compositing; otherwise, alpha values
+            are ignored.
+        is_visible : bool, default: True
+            Whether gadget is visible. Gadget will still receive input events if not
+            visible.
+        is_enabled : bool, default: True
+            Whether gadget is enabled. A disabled gadget is not painted and doesn't
+            receive input events.
+        background_char : str | None, default: None
+            The background character of the gadget if the gadget is not transparent.
+            Character must be single unicode half-width grapheme.
+        background_color_pair : ColorPair | None, default: None
+            The background color pair of the gadget if the gadget is not transparent.
+
+        Returns
+        -------
+        Animation
+            A new animation gadget.
         """
         animation = cls(
             frame_durations=frame_durations,
@@ -439,11 +499,11 @@ class Animation(Gadget):
         reverse: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
         background_char: str | None = None,
@@ -451,6 +511,49 @@ class Animation(Gadget):
     ) -> "Animation":
         """
         Create an :class:`Animation` from an iterable of :class:`Image`.
+
+        Parameters
+        ----------
+        images : Iterable[Image]
+            An iterable of images that will be the frames of the animation.
+        frame_durations : float | Sequence[float], default: 1/12
+            Time each frame is displayed. If a sequence is provided, it's length
+            should be equal to number of frames.
+        loop : bool, default: True
+            If true, restart animation after last frame.
+        reverse : bool, default: False
+            If true, play animation in reverse.
+        alpha : float, default: 1.0
+            Transparency of the animation.
+        interpolation : Interpolation, default: "linear"
+            Interpolation used when gadget is resized.
+        size : Size, default: Size(10, 10)
+            Size of gadget.
+        pos : Point, default: Point(0, 0)
+            Position of upper-left corner in parent.
+        size_hint : SizeHint | SizeHintDict | None, default: None
+            Size as a proportion of parent's height and width.
+        pos_hint : PosHint | PosHintDict | None , default: None
+            Position as a proportion of parent's height and width.
+        is_transparent : bool, default: True
+            If true, gadget is rendered with alpha compositing; otherwise, alpha values
+            are ignored.
+        is_visible : bool, default: True
+            Whether gadget is visible. Gadget will still receive input events if not
+            visible.
+        is_enabled : bool, default: True
+            Whether gadget is enabled. A disabled gadget is not painted and doesn't
+            receive input events.
+        background_char : str | None, default: None
+            The background character of the gadget if the gadget is not transparent.
+            Character must be single unicode half-width grapheme.
+        background_color_pair : ColorPair | None, default: None
+            The background color pair of the gadget if the gadget is not transparent.
+
+        Returns
+        -------
+        Animation
+            A new animation gadget.
         """
         animation = cls(
             frame_durations=frame_durations,

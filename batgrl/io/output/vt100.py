@@ -19,6 +19,10 @@ MAX_MEM_USAGE = 5_000_000
 
 
 class Vt100_Output:
+    """
+    Vt100 Output.
+    """
+
     def __init__(self, asciicast_path: Path | None = None):
         self.term = os.environ.get("TERM", "")
         self._buffer = []

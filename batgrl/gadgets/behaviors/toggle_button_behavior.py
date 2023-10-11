@@ -57,19 +57,19 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     Methods
     -------
-    update_off:
+    update_off():
         Paint the off state.
-    update_on:
+    update_on():
         Paint the on state.
-    on_toggle:
+    on_toggle():
         Called when the toggle state changes.
-    update_normal:
+    update_normal():
         Paint the normal state.
-    update_hover:
+    update_hover():
         Paint the hover state.
-    update_down:
+    update_down():
         Paint the down state.
-    on_release:
+    on_release():
         Triggered when a button is released.
     """
 

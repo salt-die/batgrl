@@ -2,6 +2,8 @@
 A base for creating tree-like views. Tree views are composed of nodes that
 can be selected and toggled open or closed.
 """
+from collections.abc import Iterator
+
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
@@ -129,76 +131,105 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
     Methods
     -------
-    iter_open_nodes:
+    iter_open_nodes():
         Yield all child nodes and recursively yield from:
         all open child nodes.
-    add_node:
+    add_node(node: TreeViewNode):
         Add a child node.
-    remove_node:
+    remove_node(node: TreeViewNode):
         Remove a child node.
-    toggle:
+    toggle():
         Close node if node is open else open node.
-    select:
+    select():
         Select this node.
-    unselect:
+    unselect():
         Unselect this node.
-    update_theme:
+    update_theme():
         Paint the gadget with current theme.
-    update_normal:
+    update_normal():
         Paint the normal state.
-    update_hover:
+    update_hover():
         Paint the hover state.
-    update_down:
+    update_down():
         Paint the down state.
-    on_release:
+    on_release():
         Triggered when a button is released.
-    add_border:
+    add_border(style: Border, bold: bool, color_pair: ColorPair | None):
         Add a border to the gadget.
-    add_str:
+    add_str(
+        str: str,
+        pos: Point,
+        *,
+        bold: bool = False,
+        italic: bool = False,
+        underline: bool = False,
+        strikethrough: bool = False,
+        overline: bool = False,
+        truncate_str: bool = False,
+    ):
         Add a single line of text to the canvas.
-    set_text:
+    set_text(
+        text: str,
+        *,
+        bold: bool = False,
+        italic: bool = False,
+        underline: bool = False,
+        strikethrough: bool = False,
+        overline: bool = False,
+    ):
         Resize gadget to fit text, erase canvas, then fill canvas with text.
-    on_size:
+    on_size():
         Called when gadget is resized.
-    apply_hints:
+    apply_hints():
         Apply size and pos hints.
-    to_local:
+    to_local(point: Point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point:
+    collides_point(point: Point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget:
+    collides_gadget(other: Gadget):
         True if other is within gadget's bounding box.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Add multiple child gadgets.
-    remove_gadget:
+    remove_gadget(gadget: Gadget):
         Remove a child gadget.
-    pull_to_front:
+    pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root:
-        Yield all descendents of root gadget.
-    walk:
-        Yield all descendents (or ancestors if `reverse` is true).
-    subscribe:
+    walk_from_root():
+        Yield all descendents of the root gadget (preorder traversal).
+    walk():
+        Yield all descendents of this gadget (preorder traversal).
+    walk_reverse():
+        Yield all descendents of this gadget (reverse postorder traversal).
+    ancestors():
+        Yield all ancestors of this gadget.
+    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
         Subscribe to a gadget property.
-    unsubscribe:
+    unsubscribe(source: Gadget, attr: str):
         Unsubscribe to a gadget property.
-    on_key:
+    on_key(key_event: KeyEvent):
         Handle key press event.
-    on_mouse:
+    on_mouse(mouse_event: MouseEvent):
         Handle mouse event.
-    on_paste:
+    on_paste(paste_event: PasteEvent):
         Handle paste event.
-    tween:
-        Sequentially update a gadget property over time.
-    on_add:
+    tween(
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties,
+    ):
+        Sequentially update gadget properties over time.
+    on_add():
         Called after a gadget is added to gadget tree.
-    on_remove:
+    on_remove():
         Called before gadget is removed from gadget tree.
-    prolicide:
+    prolicide():
         Recursively remove all children.
-    destroy:
+    destroy():
         Destroy this gadget and all descendents.
     """
 
@@ -275,10 +306,15 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
         return self.parent_node.root_node
 
-    def iter_open_nodes(self):
+    def iter_open_nodes(self) -> Iterator["TreeViewNode"]:
         """
         Yield all child nodes and recursively yield from
         all open child nodes.
+
+        Yields
+        ------
+        TreeViewNode
+            A descendent open node.
         """
         for child in self.child_nodes:
             yield child
@@ -286,18 +322,28 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
             if child.is_open:
                 yield from child.iter_open_nodes()
 
-    def add_node(self, node):
+    def add_node(self, node: "TreeViewNode"):
         """
         Add a child node.
+
+        Parameters
+        ----------
+        node : TreeViewNode
+            The node to add.
         """
         self.child_nodes.append(node)
 
         node.level = self.level + 1
         node.parent_node = self
 
-    def remove_node(self, node):
+    def remove_node(self, node: "TreeViewNode"):
         """
         Remove a child node.
+
+        Parameters
+        ----------
+        node : TreeViewNode
+            The node to remove.
         """
         self.child_nodes.remove(node)
 
@@ -318,14 +364,6 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
             self._toggle_update()
             self.root_node.tree_view.update_tree_layout()
 
-    def unselect(self):
-        """
-        Unselect node.
-        """
-        self.is_selected = False
-        self.root_node.tree_view.selected_node = None
-        self._repaint()
-
     def select(self):
         """
         Select node.
@@ -335,6 +373,14 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
         self.is_selected = True
         self.root_node.tree_view.selected_node = self
+        self._repaint()
+
+    def unselect(self):
+        """
+        Unselect node.
+        """
+        self.is_selected = False
+        self.root_node.tree_view.selected_node = None
         self._repaint()
 
     def on_release(self):
@@ -429,49 +475,60 @@ class TreeView(Gadget):
 
     Methods
     -------
-    update_tree_layout:
+    update_tree_layout():
         Update tree layout after a child node is toggled open or closed.
-    on_size:
+    on_size():
         Called when gadget is resized.
-    apply_hints:
+    apply_hints():
         Apply size and pos hints.
-    to_local:
+    to_local(point: Point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point:
+    collides_point(point: Point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget:
+    collides_gadget(other: Gadget):
         True if other is within gadget's bounding box.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Add multiple child gadgets.
-    remove_gadget:
+    remove_gadget(gadget: Gadget):
         Remove a child gadget.
-    pull_to_front:
+    pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root:
-        Yield all descendents of root gadget.
-    walk:
-        Yield all descendents (or ancestors if `reverse` is true).
-    subscribe:
+    walk_from_root():
+        Yield all descendents of the root gadget (preorder traversal).
+    walk():
+        Yield all descendents of this gadget (preorder traversal).
+    walk_reverse():
+        Yield all descendents of this gadget (reverse postorder traversal).
+    ancestors():
+        Yield all ancestors of this gadget.
+    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
         Subscribe to a gadget property.
-    unsubscribe:
+    unsubscribe(source: Gadget, attr: str):
         Unsubscribe to a gadget property.
-    on_key:
+    on_key(key_event: KeyEvent):
         Handle key press event.
-    on_mouse:
+    on_mouse(mouse_event: MouseEvent):
         Handle mouse event.
-    on_paste:
+    on_paste(paste_event: PasteEvent):
         Handle paste event.
-    tween:
-        Sequentially update a gadget property over time.
-    on_add:
+    tween(
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties,
+    ):
+        Sequentially update gadget properties over time.
+    on_add():
         Called after a gadget is added to gadget tree.
-    on_remove:
+    on_remove():
         Called before gadget is removed from gadget tree.
-    prolicide:
+    prolicide():
         Recursively remove all children.
-    destroy:
+    destroy():
         Destroy this gadget and all descendents.
     """
 

@@ -35,11 +35,11 @@ class Color(NamedTuple):
 
     Methods
     -------
-    from_hex:
+    from_hex(hexcode: str):
         Create a :class:`Color` from a hex code.
-    count:
+    count(value):
         Return number of occurrences of value.
-    index:
+    index(value, start=0, stop=9223372036854775807):
         Return first index of value.
     """
 
@@ -48,7 +48,7 @@ class Color(NamedTuple):
     blue: int
 
     @classmethod
-    def from_hex(cls, hexcode: str):
+    def from_hex(cls, hexcode: str) -> "Color":
         """
         Create a :class:`Color` from a hex code.
 
@@ -56,6 +56,11 @@ class Color(NamedTuple):
         ----------
         hexcode : str
             A color hex code.
+
+        Returns
+        -------
+        Color
+            A new color.
         """
         hexcode = hexcode.removeprefix("#")
 
@@ -97,11 +102,11 @@ class AColor(NamedTuple):
 
     Methods
     -------
-    from_hex:
+    from_hex(hexcode: str):
         Create an :class:`AColor` from a hex code.
-    count:
+    count(value):
         Return number of occurrences of value.
-    index:
+    index(value, start=0, stop=9223372036854775807):
         Return first index of value.
     """
 
@@ -111,7 +116,7 @@ class AColor(NamedTuple):
     alpha: int = 255
 
     @classmethod
-    def from_hex(cls, hexcode: str):
+    def from_hex(cls, hexcode: str) -> "AColor":
         """
         Create an :class:`AColor` from a hex code.
 
@@ -119,6 +124,11 @@ class AColor(NamedTuple):
         ----------
         hexcode : str
             A color hex code.
+
+        Returns
+        -------
+        AColor
+            A new color with alpha.
         """
         hexcode = hexcode.removeprefix("#")
 
@@ -173,17 +183,17 @@ class ColorPair(NamedTuple):
 
     Methods
     -------
-    from_colors:
+    from_colors(fg_color: Color | AColor, bg_color: Color | AColor):
         Create a :class:`ColorPair` from two colors.
-    from_hex:
+    from_hex(hexcode: str):
         Create a :class:`ColorPair` from a 12-digit hex code.
-    from_hexes:
+    from_hexes(fg_hexcode: str, bg_hexcode: str):
         Create a :class:`ColorPair` from two hex codes.
-    count:
+    count(value):
         Return number of occurrences of value.
-    index:
+    index(value, start=0, stop=9223372036854775807):
         Return first index of value.
-    reversed:
+    reversed():
         Return a :class:`ColorPair` with the foreground and background reversed.
     """
 
@@ -195,7 +205,9 @@ class ColorPair(NamedTuple):
     bg_blue: int
 
     @classmethod
-    def from_colors(cls, fg_color: Color | AColor, bg_color: Color | AColor):
+    def from_colors(
+        cls, fg_color: Color | AColor, bg_color: Color | AColor
+    ) -> "ColorPair":
         """
         Create a :class:`ColorPair` from two colors.
 
@@ -205,11 +217,16 @@ class ColorPair(NamedTuple):
             Foreground color.
         bg_color : Color | AColor
             Background color.
+
+        Returns
+        -------
+        ColorPair
+            A new color pair.
         """
         return cls(*fg_color[:3], *bg_color[:3])
 
     @classmethod
-    def from_hex(cls, hexcode: str):
+    def from_hex(cls, hexcode: str) -> "ColorPair":
         """
         Create a :class:`ColorPair` from a 12-digit hex code.
 
@@ -217,6 +234,11 @@ class ColorPair(NamedTuple):
         ----------
         hexcode : str
             Hex code for color pair.
+
+        Returns
+        -------
+        ColorPair
+            A new color pair.
         """
         return cls(
             int(hexcode[:2], 16),
@@ -228,7 +250,7 @@ class ColorPair(NamedTuple):
         )
 
     @classmethod
-    def from_hexes(cls, fg_hexcode: str, bg_hexcode: str):
+    def from_hexes(cls, fg_hexcode: str, bg_hexcode: str) -> "ColorPair":
         """
         Create a :class:`ColorPair` from two hex codes.
 
@@ -238,6 +260,11 @@ class ColorPair(NamedTuple):
             Hex code for foreground color.
         bg_hexcode : int | str
             Hex code for background color.
+
+        Returns
+        -------
+        ColorPair
+            A new color pair.
         """
         return cls(
             int(fg_hexcode[:2], 16),
@@ -265,6 +292,11 @@ class ColorPair(NamedTuple):
     def reversed(self) -> "ColorPair":
         """
         Return a :class:`ColorPair` with the foreground and background reversed.
+
+        Returns
+        -------
+        ColorPair
+            A new color pair with colors foreground and background reversed.
         """
         return ColorPair.from_colors(self.bg_color, self.fg_color)
 
@@ -373,11 +405,11 @@ class ColorTheme(NamedTuple):
 
     Methods
     -------
-    from_hexes:
+    from_hexes(**kwargs):
         Return a ColorTheme using hex codes.
-    count:
+    count(value):
         Return number of occurrences of value.
-    index:
+    index(value, start=0, stop=9223372036854775807):
         Return first index of value.
     """
 
@@ -431,7 +463,7 @@ class ColorTheme(NamedTuple):
         data_table_selected: str,
         data_table_selected_hover: str,
         progress_bar: str,
-    ):
+    ) -> "ColorTheme":
         """
         Return a ColorTheme using hex codes.
 
@@ -486,6 +518,10 @@ class ColorTheme(NamedTuple):
             Hex code for color pair of selected, hovered items in a data table.
         progress_bar : ColorPair
             Color pair of progress bar.
+
+        Returns
+        -------
+        A new color theme.
         """
         return cls(
             ColorPair.from_hex(primary),

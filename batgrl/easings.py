@@ -38,28 +38,28 @@ __all__ = [
 ]
 
 
-def linear(p):
+def linear(p: float) -> float:
     """
     Linear easing.
     """
     return p
 
 
-def in_quad(p):
+def in_quad(p: float) -> float:
     """
     In-quad easing.
     """
     return p**2.0
 
 
-def out_quad(p):
+def out_quad(p: float) -> float:
     """
     Out-quad easing.
     """
     return -p * (p - 2.0)
 
 
-def in_out_quad(p):
+def in_out_quad(p: float) -> float:
     """
     In-out-quad easing.
     """
@@ -69,21 +69,21 @@ def in_out_quad(p):
     return -2.0 * p**2.0 + 4.0 * p - 1.0
 
 
-def in_cubic(p):
+def in_cubic(p: float) -> float:
     """
     In-cubic easing.
     """
     return p**3.0
 
 
-def out_cubic(p):
+def out_cubic(p: float) -> float:
     """
     Out-cubic easing.
     """
     return (p - 1.0) ** 3.0 + 1.0
 
 
-def in_out_cubic(p):
+def in_out_cubic(p: float) -> float:
     """
     In-out-cubic easing.
     """
@@ -93,21 +93,21 @@ def in_out_cubic(p):
     return 0.5 * (2.0 * p - 2.0) ** 3.0 + 1.0
 
 
-def in_quart(p):
+def in_quart(p: float) -> float:
     """
     In-quart easing.
     """
     return p**4.0
 
 
-def out_quart(p):
+def out_quart(p: float) -> float:
     """
     Out-quart easing.
     """
     return 1.0 - (p - 1.0) ** 4.0
 
 
-def in_out_quart(p):
+def in_out_quart(p: float) -> float:
     """
     In-out-quart easing.
     """
@@ -117,21 +117,21 @@ def in_out_quart(p):
     return -8.0 * (p - 1.0) ** 4.0 + 1.0
 
 
-def in_quint(p):
+def in_quint(p: float) -> float:
     """
     In-quint easing.
     """
     return p**5.0
 
 
-def out_quint(p):
+def out_quint(p: float) -> float:
     """
     Out-quint easing.
     """
     return (p - 1.0) ** 5.0 + 1.0
 
 
-def in_out_quint(p):
+def in_out_quint(p: float) -> float:
     """
     In-out-quint easing.
     """
@@ -141,28 +141,28 @@ def in_out_quint(p):
     return 0.5 * (2.0 * p - 2.0) ** 5.0 + 1.0
 
 
-def in_sine(p):
+def in_sine(p: float) -> float:
     """
     In-sine easing.
     """
     return sin((p - 1.0) * pi * 0.5) + 1.0
 
 
-def out_sine(p):
+def out_sine(p: float) -> float:
     """
     Out-sine easing.
     """
     return sin(p * pi * 0.5)
 
 
-def in_out_sine(p):
+def in_out_sine(p: float) -> float:
     """
     In-out-sine easing.
     """
     return 0.5 * (1.0 - cos(p * pi))
 
 
-def in_exp(p):
+def in_exp(p: float) -> float:
     """
     In-exponential easing.
     """
@@ -172,7 +172,7 @@ def in_exp(p):
     return 2.0 ** (10.0 * (p - 1.0))
 
 
-def out_exp(p):
+def out_exp(p: float) -> float:
     """
     Out-exponential easing.
     """
@@ -182,7 +182,7 @@ def out_exp(p):
     return 1.0 - 2.0 ** (-10.0 * p)
 
 
-def in_out_exp(p):
+def in_out_exp(p: float) -> float:
     """
     In-out-exponential easing.
     """
@@ -198,14 +198,14 @@ def in_out_exp(p):
     return -0.5 * 2.0 ** (-20.0 * p + 10.0) + 1.0
 
 
-def in_circ(p):
+def in_circ(p: float) -> float:
     """
     In-circular easing.
     """
     return 1.0 - (1.0 - p**2.0) ** 0.5
 
 
-def out_circ(p):
+def out_circ(p: float) -> float:
     """
     Out-circular easing.
     """
@@ -213,7 +213,7 @@ def out_circ(p):
     return (1.0 - p**2.0) ** 0.5
 
 
-def in_out_circ(p):
+def in_out_circ(p: float) -> float:
     """
     In-out-circular easing.
     """
@@ -225,21 +225,21 @@ def in_out_circ(p):
     return 0.5 * (1.0 - p**2.0) ** 0.5 + 0.5
 
 
-def in_elastic(p):
+def in_elastic(p: float) -> float:
     """
     In-elastic easing.
     """
     return sin(6.5 * pi * p) * 2.0 ** (10.0 * (p - 1.0))
 
 
-def out_elastic(p):
+def out_elastic(p: float) -> float:
     """
     Out-elastic easing.
     """
     return sin(-6.5 * pi * (p + 1.0)) * 2.0 ** (-10.0 * p) + 1.0
 
 
-def in_out_elastic(p):
+def in_out_elastic(p: float) -> float:
     """
     In-out-elastic easing.
     """
@@ -249,14 +249,14 @@ def in_out_elastic(p):
     return 0.5 * (sin(-13.0 * pi * p) * 2.0 ** (-20.0 * p + 10.0) + 2.0)
 
 
-def in_back(p):
+def in_back(p: float) -> float:
     """
     In-back easing.
     """
     return p**2.0 * (2.70158 * p - 1.70158)
 
 
-def out_back(p):
+def out_back(p: float) -> float:
     """
     Out-back easing.
     """
@@ -264,7 +264,7 @@ def out_back(p):
     return p**2.0 * (2.70158 * p + 1.70158) + 1.0
 
 
-def in_out_back(p):
+def in_out_back(p: float) -> float:
     """
     In-out-back easing.
     """
@@ -276,7 +276,7 @@ def in_out_back(p):
     return 0.5 * (p**2.0 * (3.5949095 * p + 2.5949095) + 2.0)
 
 
-def out_bounce(p):
+def out_bounce(p: float) -> float:
     """
     Out-bounce easing.
     """
@@ -292,14 +292,14 @@ def out_bounce(p):
     return 54.0 / 5.0 * p**2.0 - 513.0 / 25.0 * p + 268.0 / 25.0
 
 
-def in_bounce(p):
+def in_bounce(p: float) -> float:
     """
     In-bounce easing.
     """
     return 1.0 - out_bounce(1.0 - p)
 
 
-def in_out_bounce(p):
+def in_out_bounce(p: float) -> float:
     """
     In-out-bounce easing.
     """

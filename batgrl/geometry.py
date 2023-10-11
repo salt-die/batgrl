@@ -34,9 +34,9 @@ class Point(NamedTuple):
 
     Methods
     -------
-    count:
+    count(value):
         Return number of occurrences of value.
-    index:
+    index(value, start=0, stop=9223372036854775807):
         Return first index of value.
     """
 
@@ -73,9 +73,9 @@ class Size(NamedTuple):
 
     Methods
     -------
-    count:
+    count(value):
         Return number of occurrences of value.
-    index:
+    index(value, start=0, stop=9223372036854775807):
         Return first index of value.
     """
 

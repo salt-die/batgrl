@@ -205,47 +205,58 @@ class FlatToggle(Gadget):
 
     Methods
     -------
-    on_size:
+    on_size():
         Called when gadget is resized.
-    apply_hints:
+    apply_hints():
         Apply size and pos hints.
-    to_local:
+    to_local(point: Point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point:
+    collides_point(point: Point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget:
+    collides_gadget(other: Gadget):
         True if other is within gadget's bounding box.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Add multiple child gadgets.
-    remove_gadget:
+    remove_gadget(gadget: Gadget):
         Remove a child gadget.
-    pull_to_front:
+    pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root:
-        Yield all descendents of root gadget.
-    walk:
-        Yield all descendents (or ancestors if `reverse` is true).
-    subscribe:
+    walk_from_root():
+        Yield all descendents of the root gadget (preorder traversal).
+    walk():
+        Yield all descendents of this gadget (preorder traversal).
+    walk_reverse():
+        Yield all descendents of this gadget (reverse postorder traversal).
+    ancestors():
+        Yield all ancestors of this gadget.
+    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
         Subscribe to a gadget property.
-    unsubscribe:
+    unsubscribe(source: Gadget, attr: str):
         Unsubscribe to a gadget property.
-    on_key:
+    on_key(key_event: KeyEvent):
         Handle key press event.
-    on_mouse:
+    on_mouse(mouse_event: MouseEvent):
         Handle mouse event.
-    on_paste:
+    on_paste(paste_event: PasteEvent):
         Handle paste event.
-    tween:
-        Sequentially update a gadget property over time.
-    on_add:
+    tween(
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties,
+    ):
+        Sequentially update gadget properties over time.
+    on_add():
         Called after a gadget is added to gadget tree.
-    on_remove:
+    on_remove():
         Called before gadget is removed from gadget tree.
-    prolicide:
+    prolicide():
         Recursively remove all children.
-    destroy:
+    destroy():
         Destroy this gadget and all descendents.
     """
 

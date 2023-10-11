@@ -87,17 +87,16 @@ class App(ABC):
 
     Methods
     -------
-    on_start:
+    on_start():
         Coroutine scheduled when app is run.
-    run:
+    run():
         Run the app.
-    exit:
+    exit():
         Exit the app.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Alias for :attr:`root.add_gadget`.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Alias for :attr:`root.add_gadgets`.
-
     """
 
     def __init__(
@@ -149,11 +148,11 @@ class App(ABC):
             self.root.background_char = background_char
 
     @property
-    def background_color_pair(self) -> str:
+    def background_color_pair(self) -> ColorPair:
         return self._background_color_pair
 
     @background_color_pair.setter
-    def background_color_pair(self, background_color_pair: str):
+    def background_color_pair(self, background_color_pair: ColorPair):
         self._background_color_pair = background_color_pair
         if self.root is not None:
             self.root.background_color_pair = background_color_pair
@@ -304,24 +303,35 @@ class App(ABC):
             with env_in.raw_mode(), env_in.attach(read_from_input):
                 await asyncio.gather(self.on_start(), auto_render())
 
-    def add_gadget(self, gadget):
+    def add_gadget(self, gadget: Gadget):
         """
         Alias for :attr:`root.add_gadget`.
+
+        Parameters
+        ----------
+        gadget : Gadget
+            A gadget to add as a child to the root gadget.
         """
         self.root.add_gadget(gadget)
 
-    def add_gadgets(self, *gadgets):
+    def add_gadgets(self, *gadgets: Gadget):
         """
         Alias for :attr:`root.add_gadgets`.
+
+        Parameters
+        ----------
+        *gadgets : Gadget
+            Gadgets to add as children to the root gadget.
         """
         self.root.add_gadgets(*gadgets)
 
     @property
-    def children(self):
+    def children(self) -> list[Gadget] | None:
         """
         Alias for :attr:`root.children`.
         """
-        return self.root.children
+        if self.root is not None:
+            return self.root.children
 
 
 def run_gadget_as_app(gadget: Gadget):

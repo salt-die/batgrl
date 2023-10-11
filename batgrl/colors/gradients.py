@@ -27,6 +27,11 @@ def rainbow_gradient(
         Number of colors in gradient.
     color_type : Color | AColor, default: Color
         Color type of gradient.
+
+    Returns
+    -------
+    list[Color | AColor]
+        A rainbow gradient of colors.
     """
     TAU = 2 * np.pi
     OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
@@ -50,6 +55,11 @@ def lerp_colors(start: SomeColor, end: SomeColor, p: float) -> SomeColor:
         End Color
     p : float
         Proportion from start to end.
+
+    Returns
+    -------
+    SomeColor
+        The linear interpolation of `start` and `end`.
     """
     return type(start)(*(round(lerp(a, b, p)) for a, b in zip(start, end)))
 
@@ -66,6 +76,11 @@ def gradient(start: SomeColor, end: SomeColor, ncolors: int) -> list[SomeColor]:
         End color of colorpair.
     ncolors : int
         Number of colors in gradient.
+
+    Returns
+    -------
+    list[SomeColor]
+        A gradient of colors from `start` to `end`.
     """
     if ncolors < 2:
         raise ValueError(f"not enough colors ({ncolors=})")

@@ -143,6 +143,22 @@ def smooth_vertical_bar(
     Offset bars will return a minimum of 2 characters and the first character of the bar
     should have it's colors reversed (or, if bar is reversed, all colors should be
     reversed except first character).
+
+    Parameters
+    ----------
+    max_height : int
+        The height of the bar if proportion was 1.0.
+    proportion : float
+        The height of the bar as a proportion of the max_height.
+    offset : float, default: 0.0
+        Offset the bar vertically by some non-negative amount.
+    reversed : bool, default: False
+        Reversed vertical bar is drawn top-to-bottom and offset downwards.
+
+    Returns
+    -------
+    tuple[str, ...]
+        The bar as a tuple of characaters.
     """
     blocks = VERTICAL_BLOCKS[::-1] if reversed else VERTICAL_BLOCKS
     return _smooth_bar(blocks, max_height, proportion, offset)
@@ -157,6 +173,20 @@ def smooth_horizontal_bar(
 
     Offset bars will return a minimum of 2 characters and the first character of the bar
     should have it's colors reversed.
+
+    Parameters
+    ----------
+    max_width : int
+        The width of the bar if the proportion was 1.0.
+    proportion : float
+        The width of the bar as a proportion of the max_width.
+    offset : float, default: 0.0
+        Offset the bar horizontally by some non-negative amont.
+
+    Returns
+    -------
+    tuple[str, ...]
+        The bar as a tuple of characters.
     """
     return _smooth_bar(HORIZONTAL_BLOCKS, max_width, proportion, offset)
 
@@ -171,19 +201,39 @@ vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟�
 """Vectorized box enum to box char."""
 
 
-def binary_to_braille(array_4x2):
+def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
     """
-    Convert a (h, w, 4, 2)-shaped binary array into a (h, w) array of braille unicode
+    Convert a (h, w, 4, 2)-shaped boolean array into a (h, w) array of braille unicode
     characters.
+
+    Parameters
+    ----------
+    array_4x2 : NDArray[np.bool_]
+        A (h, w, 4, 2)-shaped boolean numpy array.
+
+    Returns
+    -------
+    NDArray[np.dtype("<U1")]
+        A numpy array of braille unicode characters.
     """
     return vectorized_chr(
         np.sum(array_4x2 * _BRAILLE_ENUM, axis=(2, 3), initial=0x2800)
     )
 
 
-def binary_to_box(array_2x2):
+def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint0]) -> NDArray[np.dtype("<U1")]:
     """
-    Convert a (h, w, 2, 2)-shaped binary array into a (h, w) array of box unicode
+    Convert a (h, w, 2, 2)-shaped boolean array into a (h, w) array of box unicode
     characters.
+
+    Parameters
+    ----------
+    array_2x2 : NDArray[np.bool_]
+        A (h, w, 2, 2)-shaped boolean numpy array.
+
+    Returns
+    -------
+    NDArray[np.dtype("<U1")]
+        A numpy array of box unicode characters.
     """
     return vectorized_box_map(np.sum(array_2x2 * _BOX_ENUM, axis=(2, 3)))

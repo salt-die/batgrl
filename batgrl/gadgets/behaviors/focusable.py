@@ -26,17 +26,17 @@ class Focusable:
 
     Methods
     -------
-    focus:
+    focus():
         Focus gadget.
-    blur:
+    blur():
         Un-focus gadget.
-    focus_next:
+    focus_next():
         Focus next focusable gadget.
-    focus_previous:
+    focus_previous():
         Focus previous focusable gadget.
-    on_focus:
+    on_focus():
         Called when gadget is focused.
-    on_blur:
+    on_blur():
         Called when gadget loses focus.
     """
 

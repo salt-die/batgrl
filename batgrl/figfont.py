@@ -91,7 +91,6 @@ class FullLayout(IntFlag):
     * HardBlank
 
         Two hardblanks will be replaced with a single hardblank.
-
     """
 
     FullWidth = 0
@@ -161,13 +160,13 @@ class FIGFont:
 
     Methods
     -------
-    from_path:
+    from_path(path: Path):
         Load a FIGFont from a path.
 
-    render_array:
+    render_array(text: str):
         Render text as ascii art into a 2D "<U1" numpy array.
 
-    render_str:
+    render_str(text: str):
         Render text as ascii art into a multiline string.
     """
 
@@ -453,6 +452,16 @@ class FIGFont:
     def render_array(self, text: str) -> NDArray[np.dtype("<U1")]:
         """
         Render text as ascii art into a 2D "<U1" numpy array.
+
+        Parameters
+        ----------
+        text : str
+            Text to render as ascii art into an array.
+
+        Returns
+        -------
+        NDArray[np.dtype("<U1")]
+            The rendered array.
         """
         lines = list(map(self._render_line, text.splitlines()))
         max_width = max(line.shape[1] for line in lines)
@@ -471,5 +480,15 @@ class FIGFont:
     def render_str(self, text: str) -> str:
         """
         Render text as ascii art into a multiline string.
+
+        Parameters
+        ----------
+        text : str
+            Text to render as ascii art into a multiline string.
+
+        Returns
+        -------
+        str
+            The rendered string.
         """
         return "\n".join("".join(line) for line in self.render_array(text))

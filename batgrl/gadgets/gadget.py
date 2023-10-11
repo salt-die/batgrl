@@ -2,12 +2,12 @@
 Base class for all gadgets.
 """
 import asyncio
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import asdict, dataclass
 from functools import wraps
 from numbers import Real
 from time import monotonic
-from typing import Literal, Optional, TypedDict
+from typing import Coroutine, Literal, Optional, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -552,47 +552,58 @@ class Gadget:
 
     Methods
     -------
-    on_size:
+    on_size():
         Called when gadget is resized.
-    apply_hints:
+    apply_hints():
         Apply size and pos hints.
-    to_local:
+    to_local(point: Point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point:
+    collides_point(point: Point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget:
+    collides_gadget(other: Gadget):
         True if other is within gadget's bounding box.
-    add_gadget:
+    add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets:
+    add_gadgets(*gadgets: Gadget):
         Add multiple child gadgets.
-    remove_gadget:
+    remove_gadget(gadget: Gadget):
         Remove a child gadget.
-    pull_to_front:
+    pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root:
-        Yield all descendents of root gadget.
-    walk:
-        Yield all descendents (or ancestors if `reverse` is true).
-    subscribe:
+    walk_from_root():
+        Yield all descendents of the root gadget (preorder traversal).
+    walk():
+        Yield all descendents of this gadget (preorder traversal).
+    walk_reverse():
+        Yield all descendents of this gadget (reverse postorder traversal).
+    ancestors():
+        Yield all ancestors of this gadget.
+    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
         Subscribe to a gadget property.
-    unsubscribe:
+    unsubscribe(source: Gadget, attr: str):
         Unsubscribe to a gadget property.
-    on_key:
+    on_key(key_event: KeyEvent):
         Handle key press event.
-    on_mouse:
+    on_mouse(mouse_event: MouseEvent):
         Handle mouse event.
-    on_paste:
+    on_paste(paste_event: PasteEvent):
         Handle paste event.
-    tween:
-        Sequentially update a gadget property over time.
-    on_add:
+    tween(
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties,
+    ):
+        Sequentially update gadget properties over time.
+    on_add():
         Called after a gadget is added to gadget tree.
-    on_remove:
+    on_remove():
         Called before gadget is removed from gadget tree.
-    prolicide:
+    prolicide():
         Recursively remove all children.
-    destroy:
+    destroy():
         Destroy this gadget and all descendents.
     """
 
@@ -912,6 +923,16 @@ class Gadget:
     def to_local(self, point: Point) -> Point:
         """
         Convert point in absolute coordinates to local coordinates.
+
+        Parameters
+        ----------
+        point : Point
+            Point in absolute (screen) coordinates.
+
+        Returns
+        -------
+        Point
+            The point in local coordinates.
         """
         if self.parent is None:
             return point
@@ -922,18 +943,40 @@ class Gadget:
     def collides_point(self, point: Point) -> bool:
         """
         True if point collides with an uncovered portion of gadget.
+
+        Parameters
+        ----------
+        point : Point
+            A point.
+
+        Returns
+        -------
+        bool
+            Whether point collides with gadget.
         """
         if self.region is None:
             y, x = point
             return 0 <= y < self.height and 0 <= x < self.width
 
         return point in self.region or any(
-            point in child.region for child in self.walk()
+            point in child.region
+            for child in self.walk()
+            if child.is_visible or child.is_enabled
         )
 
     def collides_gadget(self, other: "Gadget") -> bool:
         """
         True if some part of `other` is within bounding box.
+
+        Parameters
+        ----------
+        other : Gadget
+            Another gadget.
+
+        Returns
+        -------
+        bool
+            Whether other collides with gadget.
         """
         self_top, self_left = self.absolute_pos
         self_bottom = self_top + self.height
@@ -953,6 +996,11 @@ class Gadget:
     def add_gadget(self, gadget: "Gadget"):
         """
         Add a child gadget.
+
+        Parameters
+        ----------
+        gadget : Gadget
+            A gadget to add as a child.
         """
         self.children.append(gadget)
         gadget.parent = self
@@ -963,6 +1011,11 @@ class Gadget:
     def add_gadgets(self, *gadgets: "Gadget"):
         """
         Add multiple child gadgets.
+
+        Parameters
+        ----------
+        *gadgets : Gadget
+            Gadgets to add as children. Can also accept a single iterable of Gadgets.
         """
         if len(gadgets) == 1 and not isinstance(gadgets[0], Gadget):
             # Assume item is an iterable of gadgets.
@@ -974,6 +1027,11 @@ class Gadget:
     def remove_gadget(self, gadget: "Gadget"):
         """
         Remove a child gadget.
+
+        Parameters
+        ----------
+        gadget : Gadget
+            The gadget to remove from children.
         """
         if self.root is not None:
             gadget.on_remove()
@@ -989,23 +1047,52 @@ class Gadget:
             self.parent.children.remove(self)
             self.parent.children.append(self)
 
-    def walk_from_root(self):
+    def walk_from_root(self) -> Iterator["Gadget"]:
         """
-        Yield all descendents of the root gadget.
+        Yield all descendents of the root gadget (preorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of the root gadget.
         """
         yield from self.root.walk()
 
-    def walk(self):
+    def walk(self) -> Iterator["Gadget"]:
+        """
+        Yield all descendents of this gadget (preorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of this gadget.
+        """
         for child in self.children:
             yield child
             yield from child.walk()
 
-    def walk_reverse(self):
+    def walk_reverse(self) -> Iterator["Gadget"]:
+        """
+        Yield all descendents of this gadget (reverse postorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of this gadget.
+        """
         for child in reversed(self.children):
             yield from child.walk_reverse()
             yield child
 
-    def ancestors(self):
+    def ancestors(self) -> Iterator["Gadget"]:
+        """
+        Yield all ancestors of this gadget.
+
+        Yields
+        ------
+        Gadget
+            An ancestor of this gadget.
+        """
         if self.parent:
             yield self.parent
             yield from self.parent.ancestors()
@@ -1035,8 +1122,21 @@ class Gadget:
 
     def unsubscribe(self, source: "Gadget", attr: str) -> Callable[[], None] | None:
         """
-        Unsubscribe to a gadget event and return the callable that was subscribed
-        to the event or ``None`` if subscription isn't found.
+        Unsubscribe to a gadget event and return the action that was subscribed to the
+        property or ``None`` if subscription isn't found.
+
+        Parameters
+        ----------
+        source : Gadget
+            The source of the gadget property.
+        attr : str
+            The name of the gadget property.
+
+        Returns
+        -------
+        Callable[[], None] | None
+            The action that was subscribed to the property or `None` if no subscription
+            was found.
         """
         setter = getattr(type(source), attr).fset
         return setter.instances[source].pop(self, None)
@@ -1045,6 +1145,16 @@ class Gadget:
         """
         Dispatch key press until handled. (A key press is handled if a handler returns
         ``True``.)
+
+        Parameters
+        ----------
+        key_event : KeyEvent
+            The key event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
         """
         return any(
             gadget.dispatch_key(key_event)
@@ -1056,6 +1166,16 @@ class Gadget:
         """
         Dispatch mouse event until handled. (A mouse event is handled if a handler
         returns ``True``.)
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
         """
         return any(
             gadget.dispatch_mouse(mouse_event)
@@ -1067,6 +1187,16 @@ class Gadget:
         """
         Dispatch paste event until handled. (A paste event is handled if a handler
         returns ``True``.)
+
+        Parameters
+        ----------
+        paste_event : PasteEvent
+            The paste event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
         """
         return any(
             gadget.dispatch_paste(paste_event)
@@ -1078,21 +1208,54 @@ class Gadget:
         """
         Handle key press event. (Handled key presses should return ``True`` else
         ``False`` or ``None``).
+
+        Parameters
+        ----------
+        key_event : KeyEvent
+            The key event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the key event was handled.
         """
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
         Handle mouse event. (Handled mouse events should return ``True`` else ``False``
         or ``None``).
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the mouse event was handled.
         """
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         """
         Handle paste event. (Handled paste events should return ``True`` else ``False``
         or ``None``).
+
+        Parameters
+        ----------
+        paste_event : PasteEvent
+            The paste event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the paste event was handled.
         """
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        """
+        Render visible region of gadget into root's `canvas` and `colors` arrays.
+        """
         if not self.region:
             return
 
@@ -1153,7 +1316,7 @@ class Gadget:
             | PosHintDict
             | SizeHintDict,
         ],
-    ):
+    ) -> Coroutine:
         """
         Coroutine that sequentially updates gadget properties over a duration (in
         seconds).
@@ -1184,6 +1347,11 @@ class Gadget:
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
             keyword-argument:
             ``await gadget.tween(pos=(5, 10), duration=2.5, easing="out_bounce")``
+
+        Returns
+        -------
+        Coroutine
+            A coroutine updates gadget properties over some time.
 
         Notes
         -----

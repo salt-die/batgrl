@@ -27,6 +27,16 @@ Interpolation._to_cv_enum = {
 def read_texture(path: Path) -> NDArray[np.uint8]:
     """
     Return a uint8 RGBA numpy array from a path to an image.
+
+    Parameters
+    ----------
+    path : Path
+        Path to image.
+
+    Returns
+    -------
+    NDArray[np.uint8]
+        An uint8 RGBA array of the image.
     """
     image = cv2.imread(str(path.absolute()), cv2.IMREAD_UNCHANGED)
 
@@ -49,6 +59,20 @@ def resize_texture(
 ) -> NDArray[np.uint8]:
     """
     Resize texture.
+
+    Parameters
+    ----------
+    texture : NDArray[np.uint8]
+        The texture to resize.
+    size : Size
+        The new size of the texture.
+    interpolation : Interpolation, default: "linear"
+        Interpolation used when resizing texture.
+
+    Returns
+    -------
+    NDArray[np.uint8]
+        A new uint8 RGBA array.
     """
     w, h = size
     return cv2.resize(
@@ -68,6 +92,17 @@ def composite(
     Composite source texture onto destination texture at given position.
 
     If `mask_mode` is true, source alpha values less than 255 are ignored.
+
+    Parameters
+    ----------
+    source : NDArray[np.uint8]
+        The texture to composite.
+    dest : NDArray[np.uint8]
+        The texture on which the source is painted.
+    pos : Point, default: Point(0, 0)
+        Position of the source on the destination.
+    mask_mode : bool, default: False
+        Whether to ignore alpha values less than 255.
     """
     sh, sw, _ = source.shape
     dh, dw, _ = dest.shape
