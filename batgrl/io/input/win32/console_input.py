@@ -34,7 +34,7 @@ _INT_TO_KEYS = {
 }
 # Last mouse button pressed is needed to get behavior consistent with linux mouse
 # handling. OrderedDict is being used as an ordered-set.
-_PRESSED_KEYS = OrderedDict.fromkeys([0])
+_PRESSED_BUTTONS = OrderedDict.fromkeys([0])
 _TEXT: list[str] = []
 
 
@@ -76,20 +76,21 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
 
     Reference: https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str
     """
-    last_button_state = sum(_PRESSED_KEYS)
+    last_button_state = sum(_PRESSED_BUTTONS)
 
     # On linux, for simultaneous button presses, only the most recent button pressed or
     # released is given. On windows, simultaneous mouse button presses are communicated
     # through ev.ButtonState. To get behavior roughly consistent with linux, the most
     # recent mouse button pressed is determined from the last button state, the current
-    # button state, and the order mouse buttons were pressed (stored in _PRESSED_KEYS).
+    # button state, and the order mouse buttons were pressed (stored in
+    # _PRESSED_BUTTONS).
 
     # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent
     # with linux mouse-handling we determine double/triple-clicks with
     # `batgrl.app.App`.
     if ev.EventFlags & 0x0001:  # 0x0001 is mouse moved flag
         event_type = MouseEventType.MOUSE_MOVE
-        button_state = next(reversed(_PRESSED_KEYS))  # Last button pressed.
+        button_state = next(reversed(_PRESSED_BUTTONS))  # Last button pressed.
     elif ev.EventFlags & 0x0004:  # 0x0004 is mouse wheeled flag
         if ev.ButtonState > 0:
             event_type = MouseEventType.SCROLL_UP
@@ -99,12 +100,12 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     elif ev.ButtonState < last_button_state:
         event_type = MouseEventType.MOUSE_UP
         button_state = last_button_state - ev.ButtonState
-        _PRESSED_KEYS.pop(button_state, None)
+        _PRESSED_BUTTONS.pop(button_state, None)
     else:
         event_type = MouseEventType.MOUSE_DOWN
         button_state = ev.ButtonState - last_button_state
-        _PRESSED_KEYS[button_state] = None
-        _PRESSED_KEYS.move_to_end(button_state)
+        _PRESSED_BUTTONS[button_state] = None
+        _PRESSED_BUTTONS.move_to_end(button_state)
 
     return _PartialMouseEvent(
         Point(ev.MousePosition.Y, ev.MousePosition.X),
