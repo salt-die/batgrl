@@ -144,22 +144,63 @@ def sub(a: bool, b: bool) -> bool:
 
 @dataclass(slots=True)
 class Rect:
-    """Rectangular Coordinates."""
+    """
+    Rectangular Coordinates.
+
+    Parameters
+    ----------
+    top : int
+        y-coordinate of top of rect.
+    bottom : int
+        y-coordinate of bottom of rect.
+    left : int
+        x-coordinate of left of rect.
+    right : int
+        x-coordinate of right of rect.
+
+    Methods
+    -------
+    offset(point: Point)
+        Return a new Rect moved up by `point.y` and moved left by `point.x`.
+    to_slices(offset: Point=Point(0, 0))
+        Return slices for indexing the rect in a numpy array.
+    """
 
     top: int
-    """Y-coordinate of top of rect."""
+    """y-coordinate of top of rect."""
     bottom: int
-    """Y-coordinate of bottom of rect."""
+    """y-coordinate of bottom of rect."""
     left: int
-    """X-coordinate of left of rect."""
+    """x-coordinate of left of rect."""
     right: int
-    """X-coordinate of right of rect."""
+    """x-coordinate of right of rect."""
 
-    def offset(self, point: Point):
+    def offset(self, point: Point) -> "Rect":
+        """
+        Return a new Rect moved up by `point.y` and moved left by `point.x`.
+
+        Returns
+        -------
+        Rect
+            A new rect offset by point.
+        """
         y, x = point
         return Rect(self.top - y, self.bottom - y, self.left - x, self.right - x)
 
     def to_slices(self, offset: Point = Point(0, 0)) -> tuple[slice, slice]:
+        """
+        Return slices for indexing the rect in a numpy array.
+
+        Parameters
+        ----------
+        offset : Point, default: Point(0, 0)
+            Move the slices up and left by offset.
+
+        Returns
+        -------
+        tuple[slice, slice]
+            Slices that index the rect in a numpy array.
+        """
         y, x = offset
         return (
             slice(self.top - y, self.bottom - y),
@@ -174,8 +215,14 @@ class _Band:
     """
 
     y1: int
+    """y-coordinate of top of band."""
     y2: int
+    """y-coordinate of bottom of band."""
     walls: list[int]
+    """
+    Each contiguous pair of ints in `walls` represent the left and right side of a
+    rect in the band.
+    """
 
     def __gt__(self, y: int):
         """
