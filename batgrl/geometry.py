@@ -235,10 +235,10 @@ class Region:
 
     Methods
     -------
-    rects() : Iterator[Rect]
+    rects()
         Yield rects that make up the region.
 
-    from_rect(pos: Point, size: Size) : Region
+    from_rect(pos: Point, size: Size)
         Return a new region from a rect position and size.
     """
 
