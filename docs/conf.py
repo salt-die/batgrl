@@ -30,8 +30,6 @@ html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 html_theme_options = {
     "github_url": "https://github.com/salt-die/batgrl",
     "show_prev_next": False,
-    "left_sidebar_end": [],
-    "page_sidebar_items": ["page-toc"],
     "footer_start": ["copyright"],
 }
 

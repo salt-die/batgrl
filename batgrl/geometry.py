@@ -219,6 +219,27 @@ def _merge(op: Callable[[bool, bool], bool], a: list[int], b: list[int]) -> list
 class Region:
     """
     Collection of mutually exclusive bands of rects.
+
+    Parameters
+    ----------
+    bands : list[_Band], default: []
+        Bands that make up the region.
+
+    Attributes
+    ----------
+    bands : list[_Band]
+        Bands that make up the region.
+
+    bbox : Rect | None
+        Bounding box of region.
+
+    Methods
+    -------
+    rects() : Iterator[Rect]
+        Yield rects that make up the region.
+
+    from_rect(pos: Point, size: Size) : Region
+        Return a new region from a rect position and size.
     """
 
     bands: list[_Band] = field(default_factory=list)
@@ -396,16 +417,6 @@ class Region:
     def __bool__(self):
         return len(self.bands) > 0
 
-    def rects(self) -> Iterator[Rect]:
-        """
-        Yield rects that make up the region.
-        """
-        for band in self.bands:
-            i = 0
-            while i < len(band.walls):
-                yield Rect(band.y1, band.y2, band.walls[i], band.walls[i + 1])
-                i += 2
-
     @property
     def bbox(self) -> Rect | None:
         """Bounding box of region."""
@@ -417,9 +428,31 @@ class Region:
 
         return Rect(self.bands[0].y1, self.bands[-1].y2, left, right)
 
+    def rects(self) -> Iterator[Rect]:
+        """
+        Yield rects that make up the region.
+
+        Yields
+        ------
+        Rect
+            A rect in the region.
+        """
+        for band in self.bands:
+            i = 0
+            while i < len(band.walls):
+                yield Rect(band.y1, band.y2, band.walls[i], band.walls[i + 1])
+                i += 2
+
     @classmethod
     def from_rect(cls, pos: Point, size: Size) -> "Region":
-        """Return a region from a rect position and size."""
+        """
+        Return a region from a rect position and size.
+
+        Returns
+        -------
+        Region
+            A new region.
+        """
         y, x = pos
         h, w = size
         return cls([_Band(y, y + h, (x, x + w))])
