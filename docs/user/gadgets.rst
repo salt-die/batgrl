@@ -6,7 +6,7 @@ Gadgets are the building blocks of your app.  All gadgets have a size, position,
 :ref:`children <gadget_tree>`. The base gadget has a `background_color_pair` and a `background_char`
 so you can fill the area of the screen the gadget is located in with some character or color.
 
-For more interesting displays, there are `Text` and `Graphics`. Underlying both
+For more interesting displays, there are `Text` and `Graphics`. Underlying both of
 these classes are NumPy arrays that represent the content of the gadget. The `Text` has
 a `canvas` array of characters and a `colors` array of color pairs. The `Graphics` gadget
 has a rgba `texture` array that is twice the height of the gadget. Painting any image on screen
