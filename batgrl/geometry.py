@@ -160,9 +160,9 @@ class Rect:
 
     Methods
     -------
-    offset(point: Point)
+    offset(point)
         Return a new Rect moved up by `point.y` and moved left by `point.x`.
-    to_slices(offset: Point=Point(0, 0))
+    to_slices(offset=Point(0, 0))
         Return slices for indexing the rect in a numpy array.
     """
 
@@ -285,7 +285,7 @@ class Region:
     rects()
         Yield rects that make up the region.
 
-    from_rect(pos: Point, size: Size)
+    from_rect(post, size)
         Return a new region from a rect position and size.
     """
 

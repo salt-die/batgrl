@@ -262,37 +262,37 @@ class PosHintDict(TypedDict, total=False):
 
     Methods
     -------
-    clear:
+    clear():
         Remove all items from the dictionary.
-    copy:
+    copy():
         Return a shallow copy of the dictionary.
-    fromkeys:
+    fromkeys(iterable, value=None):
         Create a new dictionary with keys from iterable and values set to value.
-    get:
+    get(key, default=None):
         Return the value for key if key is in the dictionary, else default. If default
         is not given, it defaults to None, so that this method never raises a KeyError.
-    items:
+    items():
         Return a new view of the dictionary’s items ((key, value) pairs). See the
         documentation of view objects.
-    keys:
+    keys():
         Return a new view of the dictionary’s keys. See the documentation of view
         objects.
-    pop:
+    pop(...):
         If key is in the dictionary, remove it and return its value, else return
         default. If default is not given and key is not in the dictionary, a KeyError is
         raised.
-    popitem:
+    popitem():
         Remove and return a (key, value) pair from the dictionary. Pairs are returned in
         LIFO order. popitem() is useful to destructively iterate over a dictionary, as
         often used in set algorithms. If the dictionary is empty, calling popitem()
         raises a KeyError.
-    setdefault:
+    setdefault(key, default=None):
         If key is in the dictionary, return its value. If not, insert key with a value
         of default and return default. default defaults to None.
-    update:
+    update(...):
         Update the dictionary with the key/value pairs from other, overwriting existing
         keys. Return None.
-    values:
+    values():
         Return a new view of the dictionary’s values. See the documentation of view
         objects.
     """
@@ -310,37 +310,37 @@ class SizeHintDict(TypedDict, total=False):
 
     Methods
     -------
-    clear:
+    clear():
         Remove all items from the dictionary.
-    copy:
+    copy():
         Return a shallow copy of the dictionary.
-    fromkeys:
+    fromkeys(iterable, value=None):
         Create a new dictionary with keys from iterable and values set to value.
-    get:
+    get(key, default=None):
         Return the value for key if key is in the dictionary, else default. If default
         is not given, it defaults to None, so that this method never raises a KeyError.
-    items:
+    items():
         Return a new view of the dictionary’s items ((key, value) pairs). See the
         documentation of view objects.
-    keys:
+    keys():
         Return a new view of the dictionary’s keys. See the documentation of view
         objects.
-    pop:
+    pop(...):
         If key is in the dictionary, remove it and return its value, else return
         default. If default is not given and key is not in the dictionary, a KeyError is
         raised.
-    popitem:
+    popitem():
         Remove and return a (key, value) pair from the dictionary. Pairs are returned in
         LIFO order. popitem() is useful to destructively iterate over a dictionary, as
         often used in set algorithms. If the dictionary is empty, calling popitem()
         raises a KeyError.
-    setdefault:
+    setdefault(key, default=None):
         If key is in the dictionary, return its value. If not, insert key with a value
         of default and return default. default defaults to None.
-    update:
+    update(...):
         Update the dictionary with the key/value pairs from other, overwriting existing
         keys. Return None.
-    values:
+    values():
         Return a new view of the dictionary’s values. See the documentation of view
         objects.
     """
@@ -556,17 +556,17 @@ class Gadget:
         Called when gadget is resized.
     apply_hints():
         Apply size and pos hints.
-    to_local(point: Point):
+    to_local(point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point: Point):
+    collides_point(point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget(other: Gadget):
+    collides_gadget(other):
         True if other is within gadget's bounding box.
-    add_gadget(gadget: Gadget):
+    add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\*gadgets: Gadget):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
-    remove_gadget(gadget: Gadget):
+    remove_gadget(gadget):
         Remove a child gadget.
     pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
@@ -578,24 +578,17 @@ class Gadget:
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors():
         Yield all ancestors of this gadget.
-    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
+    subscribe(source, attr, action):
         Subscribe to a gadget property.
-    unsubscribe(source: Gadget, attr: str):
+    unsubscribe(source, attr):
         Unsubscribe to a gadget property.
-    on_key(key_event: KeyEvent):
+    on_key(key_event):
         Handle key press event.
-    on_mouse(mouse_event: MouseEvent):
+    on_mouse(mouse_event):
         Handle mouse event.
-    on_paste(paste_event: PasteEvent):
+    on_paste(paste_event):
         Handle paste event.
-    tween(
-        duration: float = 1.0,
-        easing: Easing = "linear",
-        on_start: Callable[[], None] | None = None,
-        on_progress: Callable[[], None] | None = None,
-        on_complete: Callable[[], None] | None = None,
-        \*\*properties,
-    ):
+    tween(...):
         Sequentially update gadget properties over time.
     on_add():
         Called after a gadget is added to gadget tree.

@@ -50,11 +50,11 @@ class MovableChildren(Grabbable):
 
     Methods
     -------
-    grab(mouse_event: MouseEvent):
+    grab(mouse_event):
         Grab the gadget.
-    ungrab(mouse_event: MouseEvent):
+    ungrab(mouse_event):
         Ungrab the gadget.
-    grab_update(mouse_event: MouseEvent):
+    grab_update(mouse_event):
         Update gadget with incoming mouse events while grabbed.
     """
 

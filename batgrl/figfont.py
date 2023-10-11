@@ -34,62 +34,51 @@ class FullLayout(IntFlag):
     """
     Layout controls how characters are fitted in rendered text. The layout modes are:
 
-    * FullWidth
-
+    * FullWidth:
         Each character occupies the full width or height of its arrangement of
         sub-characters.
 
-    * Kerning
-
+    * Kerning:
         Each character is moved together until they touch.
 
-    * Smushing
-
+    * Smushing:
         Each character is moved one step closer after they touch, so that they overlap.
         Additional smushing rules determine which sub-character is used for each
         overlap.
 
     There are two types of smushing:
 
-    * Controlled
-
+    * Controlled:
         Uses a set of smushing rules.
 
-    * Universal
-
+    * Universal:
         The sub-character from the earlier character is replaced by the sub-character
         from the later character. (This behavior can be reversed with
         `reverse_universal_smush`)
 
     The controlled smushing rules are:
 
-    * Equal
-
+    * Equal:
         Two sub-characters are smushed into a single sub-character if they are equal
         (except for hardblanks).
 
-    * Underscore
-
+    * Underscore:
         An underscore (`"_"`) will be replaced by any of: `"|"`, `"/"`, `"\\"`, `"["`,
         `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
 
-    * Hierarchy
-
+    * Hierarchy:
         A hierarchy of six classes is used: `"|"`, `"/\"`, `"[]"`, `"{}"`, `"()"`, and
         `"<>"`. When two sub-characters are from different classes, the latter class
         will be used.
 
-    * Pair
-
+    * Pair:
         Replaces opposite brackets (`"[]"` or `"]["`), braces (`"{}"` or `"}{"`), and
         parentheses (`"()"` or `")("`) with a vertical bar (`"|"`).
 
-    * BigX
-
+    * BigX:
         Replaces `"/\\"` with `"|"`, `"\\/"` with `"Y"`, and `"><"` into `"X"`.
 
-    * HardBlank
-
+    * HardBlank:
         Two hardblanks will be replaced with a single hardblank.
     """
 
@@ -160,13 +149,13 @@ class FIGFont:
 
     Methods
     -------
-    from_path(path: Path):
+    from_path(path):
         Load a FIGFont from a path.
 
-    render_array(text: str):
+    render_array(text):
         Render text as ascii art into a 2D "<U1" numpy array.
 
-    render_str(text: str):
+    render_str(text):
         Render text as ascii art into a multiline string.
     """
 

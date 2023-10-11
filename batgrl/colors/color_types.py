@@ -35,7 +35,7 @@ class Color(NamedTuple):
 
     Methods
     -------
-    from_hex(hexcode: str):
+    from_hex(hexcode):
         Create a :class:`Color` from a hex code.
     count(value):
         Return number of occurrences of value.
@@ -102,7 +102,7 @@ class AColor(NamedTuple):
 
     Methods
     -------
-    from_hex(hexcode: str):
+    from_hex(hexcode):
         Create an :class:`AColor` from a hex code.
     count(value):
         Return number of occurrences of value.
@@ -183,11 +183,11 @@ class ColorPair(NamedTuple):
 
     Methods
     -------
-    from_colors(fg_color: Color | AColor, bg_color: Color | AColor):
+    from_colors(fg_color, bg_color):
         Create a :class:`ColorPair` from two colors.
-    from_hex(hexcode: str):
+    from_hex(hexcode):
         Create a :class:`ColorPair` from a 12-digit hex code.
-    from_hexes(fg_hexcode: str, bg_hexcode: str):
+    from_hexes(fg_hexcode, bg_hexcode):
         Create a :class:`ColorPair` from two hex codes.
     count(value):
         Return number of occurrences of value.
@@ -405,7 +405,7 @@ class ColorTheme(NamedTuple):
 
     Methods
     -------
-    from_hexes(\*\*kwargs):
+    from_hexes(...):
         Return a ColorTheme using hex codes.
     count(value):
         Return number of occurrences of value.

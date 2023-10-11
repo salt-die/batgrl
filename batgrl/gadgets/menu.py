@@ -197,17 +197,17 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         Called when gadget is resized.
     apply_hints():
         Apply size and pos hints.
-    to_local(point: Point):
+    to_local(point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point: Point):
+    collides_point(point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget(other: Gadget):
+    collides_gadget(other):
         True if other is within gadget's bounding box.
-    add_gadget(gadget: Gadget):
+    add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\*gadgets: Gadget):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
-    remove_gadget(gadget: Gadget):
+    remove_gadget(gadget):
         Remove a child gadget.
     pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
@@ -219,24 +219,17 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors():
         Yield all ancestors of this gadget.
-    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
+    subscribe(source, attr, action):
         Subscribe to a gadget property.
-    unsubscribe(source: Gadget, attr: str):
+    unsubscribe(source, attr):
         Unsubscribe to a gadget property.
-    on_key(key_event: KeyEvent):
+    on_key(key_event):
         Handle key press event.
-    on_mouse(mouse_event: MouseEvent):
+    on_mouse(mouse_event):
         Handle mouse event.
-    on_paste(paste_event: PasteEvent):
+    on_paste(paste_event):
         Handle paste event.
-    tween(
-        duration: float = 1.0,
-        easing: Easing = "linear",
-        on_start: Callable[[], None] | None = None,
-        on_progress: Callable[[], None] | None = None,
-        on_complete: Callable[[], None] | None = None,
-        \*\*properties,
-    ):
+    tween(...):
         Sequentially update gadget properties over time.
     on_add():
         Called after a gadget is added to gadget tree.
@@ -522,30 +515,30 @@ class Menu(GridLayout):
 
     Methods
     -------
-    open_menu:
+    open_menu():
         Open menu.
-    close_menu:
+    close_menu():
         Close menu.
-    from_dict_of_dicts:
+    from_dict_of_dicts(...):
         Constructor to create a menu from a dict of dicts. This should be
         default way of constructing menus.
-    index_at:
+    index_at(row, col):
         Return index of gadget in :attr:`children` at position `row, col` in the grid.
     on_size():
         Called when gadget is resized.
     apply_hints():
         Apply size and pos hints.
-    to_local(point: Point):
+    to_local(point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point: Point):
+    collides_point(point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget(other: Gadget):
+    collides_gadget(other):
         True if other is within gadget's bounding box.
-    add_gadget(gadget: Gadget):
+    add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\*gadgets: Gadget):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
-    remove_gadget(gadget: Gadget):
+    remove_gadget(gadget):
         Remove a child gadget.
     pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
@@ -557,24 +550,17 @@ class Menu(GridLayout):
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors():
         Yield all ancestors of this gadget.
-    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
+    subscribe(source, attr, action):
         Subscribe to a gadget property.
-    unsubscribe(source: Gadget, attr: str):
+    unsubscribe(source, attr):
         Unsubscribe to a gadget property.
-    on_key(key_event: KeyEvent):
+    on_key(key_event):
         Handle key press event.
-    on_mouse(mouse_event: MouseEvent):
+    on_mouse(mouse_event):
         Handle mouse event.
-    on_paste(paste_event: PasteEvent):
+    on_paste(paste_event):
         Handle paste event.
-    tween(
-        duration: float = 1.0,
-        easing: Easing = "linear",
-        on_start: Callable[[], None] | None = None,
-        on_progress: Callable[[], None] | None = None,
-        on_complete: Callable[[], None] | None = None,
-        \*\*properties,
-    ):
+    tween(...):
         Sequentially update gadget properties over time.
     on_add():
         Called after a gadget is added to gadget tree.
@@ -795,6 +781,11 @@ class Menu(GridLayout):
             If true, close the menu when an item is selected.
         close_on_click : bool, default: True
             If true, close the menu when a click doesn't collide with it.
+
+        Yields
+        ------
+        Gadget
+            A gadget that makes up the menu.
         """
         height = len(menu)
         width = max(
@@ -1026,30 +1017,30 @@ class MenuBar(GridLayout):
 
     Methods
     -------
-    open_menu:
+    open_menu():
         Open menu.
-    close_menu:
+    close_menu():
         Close menu.
-    from_dict_of_dicts:
+    from_dict_of_dicts(...):
         Constructor to create a menu from a dict of dicts. This should be
         default way of constructing menus.
-    index_at:
+    index_at(row, col):
         Return index of gadget in :attr:`children` at position `row, col` in the grid.
     on_size():
         Called when gadget is resized.
     apply_hints():
         Apply size and pos hints.
-    to_local(point: Point):
+    to_local(point):
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point: Point):
+    collides_point(point):
         True if point collides with an uncovered portion of gadget.
-    collides_gadget(other: Gadget):
+    collides_gadget(other):
         True if other is within gadget's bounding box.
-    add_gadget(gadget: Gadget):
+    add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\*gadgets: Gadget):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
-    remove_gadget(gadget: Gadget):
+    remove_gadget(gadget):
         Remove a child gadget.
     pull_to_front():
         Move to end of gadget stack so gadget is drawn last.
@@ -1061,24 +1052,17 @@ class MenuBar(GridLayout):
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors():
         Yield all ancestors of this gadget.
-    subscribe(source: Gadget, attr: str, action: Callable[[], None]):
+    subscribe(source, attr, action):
         Subscribe to a gadget property.
-    unsubscribe(source: Gadget, attr: str):
+    unsubscribe(source, attr):
         Unsubscribe to a gadget property.
-    on_key(key_event: KeyEvent):
+    on_key(key_event):
         Handle key press event.
-    on_mouse(mouse_event: MouseEvent):
+    on_mouse(mouse_event):
         Handle mouse event.
-    on_paste(paste_event: PasteEvent):
+    on_paste(paste_event):
         Handle paste event.
-    tween(
-        duration: float = 1.0,
-        easing: Easing = "linear",
-        on_start: Callable[[], None] | None = None,
-        on_progress: Callable[[], None] | None = None,
-        on_complete: Callable[[], None] | None = None,
-        \*\*properties,
-    ):
+    tween(...):
         Sequentially update gadget properties over time.
     on_add():
         Called after a gadget is added to gadget tree.
@@ -1113,6 +1097,11 @@ class MenuBar(GridLayout):
             If true, close the menu when an item is selected.
         close_on_click : bool, default: True
             If true, close the menu when a click doesn't collide with it.
+
+        Yields
+        ------
+        Gadget
+            A gadget that makes up the menu bar.
         """
         menus = list(iter)
 
