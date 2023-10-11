@@ -168,9 +168,9 @@ class Animation(Gadget):
         Pause the animation
     stop():
         Stop the animation and reset current frame.
-    from_textures(textures: Iterable[NDArray[np.uint8]], **kwargs):
+    from_textures(textures: Iterable[NDArray[np.uint8]], \*\*kwargs):
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
-    from_images(images: Iterable[Image], **kwargs):
+    from_images(images: Iterable[Image], \*\*kwargs):
         Create an :class:`Animation` from an iterable of :class:`Image`.
     on_size():
         Called when gadget is resized.
@@ -184,7 +184,7 @@ class Animation(Gadget):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -214,7 +214,7 @@ class Animation(Gadget):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():

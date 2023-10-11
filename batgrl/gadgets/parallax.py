@@ -162,9 +162,9 @@ class Parallax(Gadget):
 
     Methods
     -------
-    from_textures(textures: Iterable[NDArray[np.uint8]], **kwargs):
+    from_textures(textures: Iterable[NDArray[np.uint8]], \*\*kwargs):
         Create a :class:`Parallax` from an iterable of uint8 RGBA numpy array.
-    from_images(images: Iterable[Image], **kwargs):
+    from_images(images: Iterable[Image], \*\*kwargs):
         Create a :class:`Parallax` from an iterable of :class:`Image`.
     on_size():
         Called when gadget is resized.
@@ -178,7 +178,7 @@ class Parallax(Gadget):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -208,7 +208,7 @@ class Parallax(Gadget):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():

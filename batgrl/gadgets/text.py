@@ -171,7 +171,7 @@ class Text(Gadget):
     add_str(
         str: str,
         pos: Point,
-        *,
+        \*,
         bold: bool = False,
         italic: bool = False,
         underline: bool = False,
@@ -182,7 +182,7 @@ class Text(Gadget):
         Add a single line of text to the canvas.
     set_text(
         text: str,
-        *,
+        \*,
         bold: bool = False,
         italic: bool = False,
         underline: bool = False,
@@ -202,7 +202,7 @@ class Text(Gadget):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -232,7 +232,7 @@ class Text(Gadget):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():

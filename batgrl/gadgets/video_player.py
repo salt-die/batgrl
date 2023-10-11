@@ -169,7 +169,7 @@ class VideoPlayer(Graphics):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -199,7 +199,7 @@ class VideoPlayer(Graphics):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():

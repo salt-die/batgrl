@@ -179,11 +179,11 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
     -------
     update_theme():
         Paint the gadget with current theme.
-    update_off:
+    update_off():
         Paint the "off" state.
-    update_on:
+    update_on():
         Paint the "on" state.
-    on_toggle:
+    on_toggle():
         Called when the toggle state changes.
     update_normal():
         Paint the normal state.
@@ -205,7 +205,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -235,7 +235,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():
@@ -543,7 +543,7 @@ class Menu(GridLayout):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -573,7 +573,7 @@ class Menu(GridLayout):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():
@@ -1047,7 +1047,7 @@ class MenuBar(GridLayout):
         True if other is within gadget's bounding box.
     add_gadget(gadget: Gadget):
         Add a child gadget.
-    add_gadgets(*gadgets: Gadget):
+    add_gadgets(\*gadgets: Gadget):
         Add multiple child gadgets.
     remove_gadget(gadget: Gadget):
         Remove a child gadget.
@@ -1077,7 +1077,7 @@ class MenuBar(GridLayout):
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties,
+        \*\*properties,
     ):
         Sequentially update gadget properties over time.
     on_add():

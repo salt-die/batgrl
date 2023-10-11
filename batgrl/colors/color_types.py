@@ -405,7 +405,7 @@ class ColorTheme(NamedTuple):
 
     Methods
     -------
-    from_hexes(**kwargs):
+    from_hexes(\*\*kwargs):
         Return a ColorTheme using hex codes.
     count(value):
         Return number of occurrences of value.
