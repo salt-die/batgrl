@@ -95,7 +95,7 @@ class App(ABC):
         Exit the app.
     add_gadget(gadget):
         Alias for :attr:`root.add_gadget`.
-    add_gadgets(\*gadgets):
+    add_gadgets(\\*gadgets):
         Alias for :attr:`root.add_gadgets`.
     """
 

@@ -183,7 +183,7 @@ class Tabs(Themable, Gadget):
         True if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\*gadgets):
+    add_gadgets(\\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
