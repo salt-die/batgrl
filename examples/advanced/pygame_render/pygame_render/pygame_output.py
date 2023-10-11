@@ -29,7 +29,7 @@ class PygameOutput:
         )
         pg.scrap.init()
 
-        fonts = Path(__file__).parent.parent / "fonts"
+        fonts = Path(__file__).parent.parent.parent.parent / "assets" / "fonts"
         self.regular_font = ft.Font(
             fonts / "NotoSansMono-Regular.ttf", (FONT_FULL_WIDTH, FONT_HEIGHT + 1)
         )

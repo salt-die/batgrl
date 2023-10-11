@@ -182,5 +182,3 @@ def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
             _handle_mods(event)
         elif event.type == pg.VIDEORESIZE:
             yield Size(event.h // FONT_HEIGHT, event.w // FONT_WIDTH)
-            yield Size(event.h // FONT_HEIGHT, event.w // FONT_WIDTH)
-            yield Size(event.h // FONT_HEIGHT, event.w // FONT_WIDTH)
