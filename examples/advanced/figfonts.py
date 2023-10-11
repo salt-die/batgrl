@@ -3,9 +3,10 @@ from pathlib import Path
 from random import random, randrange
 
 import numpy as np
+
 from batgrl.app import App
 from batgrl.colors import BLACK, RED, ColorPair, gradient, lerp_colors
-from batgrl.fonts import FIGFont
+from batgrl.figfonts import FIGFont
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior, ButtonState
 from batgrl.gadgets.text import Text
 

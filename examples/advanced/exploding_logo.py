@@ -1,64 +1,37 @@
 """
-Credit for ascii art logo to Matthew Barber (https://ascii.matthewbarber.io/art/python/)
-
-Directions:
-    'ctrl+c' to quit
-    'r' to reset
-    'click' to poke
+Click to explode the logo!
+Press `r` to reset.
 """
 import asyncio
+from pathlib import Path
 
 import numpy as np
+
 from batgrl.app import App
-from batgrl.colors import BLACK, ColorPair, rainbow_gradient
+from batgrl.colors import BLACK, DEFAULT_COLOR_THEME, ColorPair, gradient
+from batgrl.figfonts import FIGFont
 from batgrl.gadgets.gadget import Char, Gadget
 from batgrl.gadgets.text_field import TextParticleField
 from batgrl.io import MouseButton
 
-LOGO = """
-                   _.gj8888888lkoz.,_
-                d888888888888888888888b,
-               j88P""V8888888888888888888
-               888    8888888888888888888
-               888baed8888888888888888888
-               88888888888888888888888888
-                            8888888888888
-    ,ad8888888888888888888888888888888888  888888be,
-   d8888888888888888888888888888888888888  888888888b,
-  d88888888888888888888888888888888888888  8888888888b,
- j888888888888888888888888888888888888888  88888888888p,
-j888888888888888888888888888888888888888'  8888888888888
-8888888888888888888888888888888888888^"   ,8888888888888
-88888888888888^'                        .d88888888888888
-8888888888888"   .a8888888888888888888888888888888888888
-8888888888888  ,888888888888888888888888888888888888888^
-^888888888888  888888888888888888888888888888888888888^
- V88888888888  88888888888888888888888888888888888888Y
-  V8888888888  8888888888888888888888888888888888888Y
-   `"^8888888  8888888888888888888888888888888888^"'
-               8888888888888
-               88888888888888888888888888
-               8888888888888888888P""V888
-               8888888888888888888    888
-               8888888888888888888baed88V
-                `^888888888888888888888^
-                  `'"^^V888888888V^^'
-"""
-HEIGHT, WIDTH = 28, 56
+ASSETS = Path(__file__).parent.parent / "assets"
+BIG_FONT = FIGFont.from_path(ASSETS / "delta_corps_priest_1.flf")
+LOGO = BIG_FONT.render_array("batgrl")
+HEIGHT, WIDTH = LOGO.shape
+LOGO = np.append(LOGO, [list("badass terminal graphics library".center(WIDTH))], axis=0)
+HEIGHT += 1
 
 POWER = 2
 MAX_PARTICLE_SPEED = 10
 FRICTION = 0.99
 
 NCOLORS = 100
-RAINBOW = np.array(
-    [
-        list(ColorPair.from_colors(fg_color, BLACK))
-        for fg_color in rainbow_gradient(NCOLORS)
-    ]
+YELLOW_ON_BLACK = ColorPair.from_colors(
+    DEFAULT_COLOR_THEME.button_press.bg_color, BLACK
 )
-BLUE_INDEX = round(0.65 * NCOLORS)
-YELLOW_INDEX = round(0.1 * NCOLORS)
+BLUE_ON_BLACK = ColorPair.from_colors(DEFAULT_COLOR_THEME.primary.bg_color, BLACK)
+YELLOW_TO_BLACK = gradient(YELLOW_ON_BLACK, BLUE_ON_BLACK, NCOLORS // 2)
+GRADIENT = np.array(YELLOW_TO_BLACK + YELLOW_TO_BLACK[::-1])
 
 COLOR_CHANGE_SPEED = 5
 PERCENTS = tuple(np.linspace(0, 1, 30))
@@ -133,7 +106,7 @@ class PokeParticleField(TextParticleField):
             color_indices = (
                 color_indices + clipped_speeds * COLOR_CHANGE_SPEED
             ).astype(int) % NCOLORS
-            color_pairs[:] = RAINBOW[color_indices]
+            color_pairs[:] = GRADIENT[color_indices]
 
             speed_mask = speeds > MAX_PARTICLE_SPEED
             velocities[speed_mask] *= MAX_PARTICLE_SPEED / speeds[:, None][speed_mask]
@@ -191,25 +164,19 @@ class PokeParticleField(TextParticleField):
             indices[:] = (percent_left * start_indices + percent * end_indices).astype(
                 int
             )
-            color_pairs[:] = RAINBOW[indices]
+            color_pairs[:] = GRADIENT[indices]
 
             await asyncio.sleep(0.03)
 
 
 class ExplodingLogoApp(App):
     async def on_start(self):
-        colors = np.full((HEIGHT, WIDTH), BLUE_INDEX)
-        colors[-7:] = colors[-13:-7, -41:] = YELLOW_INDEX
-        colors[-14, -17:] = colors[-20:-14, -15:] = YELLOW_INDEX
+        colors = np.full((HEIGHT, WIDTH), 0)
 
-        chars = np.array(
-            [list(line + " " * (WIDTH - len(line))) for line in LOGO.splitlines()]
-        )
-
-        particle_positions = np.argwhere(chars != " ")
+        particle_positions = np.argwhere(LOGO != " ")
         pys, pxs = particle_positions.T
 
-        particles = chars[pys, pxs]
+        particles = LOGO[pys, pxs]
         particle_chars = np.zeros_like(particles, dtype=Char)
         particle_chars["char"] = particles
 
@@ -222,7 +189,7 @@ class ExplodingLogoApp(App):
         )
 
         particle_color_pairs = np.array(
-            RAINBOW[particle_properties["indices"]], dtype=np.uint8
+            GRADIENT[particle_properties["indices"]], dtype=np.uint8
         )
 
         field = PokeParticleField(
@@ -237,10 +204,11 @@ class ExplodingLogoApp(App):
         # This background to show off field transparency.
         bg = Gadget(
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
-            background_color_pair=(0, 0, 0, 25, 25, 25),
+            pos_hint={"x_hint": 0.5, "anchor": "top-left"},
+            background_color_pair=BLUE_ON_BLACK.reversed(),
         )
         self.add_gadgets(bg, field)
 
 
 if __name__ == "__main__":
-    ExplodingLogoApp(title="Exploding Logo Example").run()
+    ExplodingLogoApp(title="batgrl").run()
