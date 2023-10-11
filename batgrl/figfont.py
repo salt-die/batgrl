@@ -1,10 +1,10 @@
 """
-Support for loading and rendering text with FIGfonts.
+Support for loading and rendering FIGfonts.
 
-A FIGfont is a file which describes how to render ascii art from
-normal text. `FIGFont.render_array` will render the ascii art into a numpy
-array that can be copied into a `Text` canvas. `FIGFont.render_str`
-will render the ascii art into a multiline string.
+A `FIGFont` (class) represents a FIGfont (file) which describe how to render ascii art
+from normal text. `FIGFont.render_array` will render the ascii art into a numpy array
+that can be copied into a `Text` canvas. `FIGFont.render_str` will render the ascii art
+into a multiline string.
 
 References:
     * http://www.figlet.org/
@@ -86,7 +86,7 @@ class FullLayout(IntFlag):
 
     * BigX
 
-        Replaces `"/\\"` with `"|"`, `"\/"` with `"Y"`, and `"><"` into `"X"`.
+        Replaces `"/\\"` with `"|"`, `"\\/"` with `"Y"`, and `"><"` into `"X"`.
 
     * HardBlank
 
@@ -406,7 +406,7 @@ class FIGFont:
             if sub_c := self._smush_subchar(sub_a, sub_b):
                 c.append(sub_c)
             else:
-                return
+                return None
         return c
 
     def _add_char(

@@ -9,7 +9,7 @@ import numpy as np
 
 from batgrl.app import App
 from batgrl.colors import BLACK, DEFAULT_COLOR_THEME, ColorPair, gradient
-from batgrl.figfonts import FIGFont
+from batgrl.figfont import FIGFont
 from batgrl.gadgets.gadget import Char, Gadget
 from batgrl.gadgets.text_field import TextParticleField
 from batgrl.io import MouseButton
