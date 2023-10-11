@@ -12,10 +12,10 @@ batgrl Reference
    :recursive:
 
    colors
+   gadgets
    io.input.events
    io.input.keys
-   gadgets
    app
    easings
-   fonts
+   figfont
    geometry
