@@ -14,12 +14,11 @@ from wcwidth import wcwidth
 
 from ...gadgets._root import _Root
 from ...geometry import Size
-from .output import Output
 
 MAX_MEM_USAGE = 5_000_000
 
 
-class Vt100_Output(Output):
+class Vt100_Output:
     def __init__(self, asciicast_path: Path | None = None):
         self.term = os.environ.get("TERM", "")
         self._buffer = []

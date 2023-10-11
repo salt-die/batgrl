@@ -24,7 +24,7 @@ from .io import (
     PasteEvent,
     _PartialMouseEvent,
 )
-from .io.output import Output
+from .io.output.vt100 import Vt100_Output
 
 __all__ = ["App", "run_gadget_as_app"]
 
@@ -199,7 +199,7 @@ class App(ABC):
         for task in asyncio.all_tasks():
             task.cancel()
 
-    def _create_io(self) -> tuple[ModuleType, Output]:
+    def _create_io(self) -> tuple[ModuleType, Vt100_Output]:
         """
         Return platform specific io.
         """
