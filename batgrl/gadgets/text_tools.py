@@ -208,7 +208,7 @@ def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
 
     Parameters
     ----------
-    array_4x2 : NDArray[np.bool\_]
+    array_4x2 : NDArray[np.bool\\_]
         A (h, w, 4, 2)-shaped boolean numpy array.
 
     Returns
@@ -228,7 +228,7 @@ def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint0]) -> NDArray[np.dtype("
 
     Parameters
     ----------
-    array_2x2 : NDArray[np.bool\_]
+    array_2x2 : NDArray[np.bool\\_]
         A (h, w, 2, 2)-shaped boolean numpy array.
 
     Returns
