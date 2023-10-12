@@ -7,6 +7,7 @@ from ..colors import Color, ColorPair
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
+from .gadget import Gadget
 from .scroll_view import (
     DEFAULT_INDICATOR_HOVER,
     DEFAULT_INDICATOR_NORMAL,
@@ -298,7 +299,7 @@ class TextPad(Themable, Focusable, ScrollView):
         self._undo_buffer = []
         self._undo_buffer_type = "add"
 
-        self._cursor = Text(size=(1, 1), is_enabled=False)
+        self._cursor = Gadget(size=(1, 1), is_enabled=False, is_transparent=True)
         self._pad = Text(size=(1, 1))
         self._pad.add_gadget(self._cursor)
 
@@ -332,8 +333,7 @@ class TextPad(Themable, Focusable, ScrollView):
     def update_theme(self):
         primary = self.color_theme.primary
 
-        self._cursor.colors[:] = primary.reversed()
-        self._cursor.default_color_pair = primary.reversed()
+        self._cursor.background_color_pair = primary.reversed()
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
         self.background_color_pair = primary.bg_color * 2
@@ -423,7 +423,6 @@ class TextPad(Themable, Focusable, ScrollView):
         """
         y, x = cursor
         self._cursor.pos = Point(y, x)
-        self._cursor.canvas[0, 0] = self._pad.canvas[y, x]
 
         max_y = self.height - (self.show_horizontal_bar and 1) - 1
         if (rel_y := y + self._pad.y) > max_y:
@@ -788,6 +787,35 @@ class TextPad(Themable, Focusable, ScrollView):
         self.unselect()
         self.move_word_right()
 
+    def _ctrl_a(self):
+        """Select all."""
+        self._selection_start = 0, 0
+        self._selection_end = self.end_text_point
+        self.cursor = self.end_text_point
+
+    def _ctrl_d(self):
+        """Select word."""
+        self.unselect()
+        last_x = self.cursor.x
+        while True:
+            self.move_cursor_left()
+            if last_x == self.cursor.x:
+                break
+            if self._pad.canvas[self.cursor]["char"] not in WORD_CHARS:
+                self.move_cursor_right()
+                break
+            last_x = self.cursor.x
+
+        self.select()
+        last_x = self.cursor.x
+        while True:
+            if self._pad.canvas[self.cursor]["char"] not in WORD_CHARS:
+                break
+            self.move_cursor_right()
+            if last_x == self.cursor.x:
+                break
+            last_x = self.cursor.x
+
     def _up(self):
         if self.is_selecting:
             select_start = min(self._selection_start, self._selection_end)
@@ -911,6 +939,8 @@ class TextPad(Themable, Focusable, ScrollView):
         ("z", Mods(False, True, False)): undo,
         ("z", Mods(False, True, True)): redo,
         ("r", Mods(False, True, False)): redo,
+        ("a", Mods(False, True, False)): _ctrl_a,
+        ("d", Mods(False, True, False)): _ctrl_d,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:

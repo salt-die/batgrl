@@ -315,6 +315,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def on_focus(self):
         self._cursor.is_enabled = True
+        if self._line_length > 0:
+            self._ctrl_a()
 
     def on_blur(self):
         self._cursor.is_enabled = False
@@ -616,6 +618,35 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self.unselect()
         self.move_word_right()
 
+    def _ctrl_a(self):
+        """Select all."""
+        self._selection_start = 0
+        self._selection_end = self._line_length
+        self.cursor = self._line_length
+
+    def _ctrl_d(self):
+        """Select word."""
+        self.unselect()
+        last_x = self.cursor
+        while True:
+            self.move_cursor_left()
+            if last_x == self.cursor:
+                break
+            if self._box.canvas[0, self.cursor]["char"] not in WORD_CHARS:
+                self.move_cursor_right()
+                break
+            last_x = self.cursor
+
+        self.select()
+        last_x = self.cursor
+        while True:
+            if self._box.canvas[0, self.cursor]["char"] not in WORD_CHARS:
+                break
+            self.move_cursor_right()
+            if last_x == self.cursor:
+                break
+            last_x = self.cursor
+
     def _home(self):
         self.unselect()
         self.cursor = 0
@@ -688,6 +719,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         ("z", Mods(False, True, False)): undo,
         ("z", Mods(False, True, True)): redo,
         ("r", Mods(False, True, False)): redo,
+        ("a", Mods(False, True, False)): _ctrl_a,
+        ("d", Mods(False, True, False)): _ctrl_d,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
