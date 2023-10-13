@@ -1,10 +1,12 @@
 """
 Root gadget.
 """
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 
+if TYPE_CHECKING:
+    from ..app import App
 from .gadget import ColorPair, Gadget, Point, Region, Size, style_char
 
 
@@ -44,32 +46,36 @@ class _Root(Gadget):
         self._resized = True
 
     @property
-    def pos(self):
+    def pos(self) -> Point:
         return Point(0, 0)
 
     @property
-    def absolute_pos(self):
+    def absolute_pos(self) -> Point:
         return Point(0, 0)
 
     @property
-    def is_transparent(self):
+    def is_transparent(self) -> Literal[False]:
         return False
 
     @property
-    def is_visible(self):
+    def is_visible(self) -> Literal[True]:
         return True
 
     @property
-    def is_enabled(self):
+    def is_enabled(self) -> Literal[True]:
         return True
 
     @property
-    def parent(self):
+    def parent(self) -> Literal[None]:
         return None
 
     @property
-    def root(self):
+    def root(self) -> "_Root":
         return self
+
+    @property
+    def app(self) -> "App":
+        return self._app
 
     def to_local(self, point: Point) -> Point:
         return point

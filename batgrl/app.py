@@ -124,6 +124,26 @@ class App(ABC):
         self.redirect_stderr = redirect_stderr
         self.render_mode = render_mode
 
+    def __repr__(self):
+        color_theme_repr = "\n        ".join(
+            f"{name}={(*color,)}," for name, color in self.color_theme._asdict().items()
+        )
+        return (
+            f"{type(self).__name__}(\n"
+            f"    background_char={self.background_char!r},\n"
+            f"    background_color_pair={(*self.background_color_pair,)},\n"
+            f"    title={self.title},\n"
+            f"    double_click_timeout={self.double_click_timeout},\n"
+            f"    render_interval={self.render_interval},\n"
+            f"    color_theme=ColorTheme(\n"
+            f"        {color_theme_repr}\n"
+            "    ),\n"
+            f"    asciicast_path={self.asciicast_path},\n"
+            f"    redirect_stderr={self.redirect_stderr},\n"
+            f"    render_mode={self.render_mode!r},\n"
+            ")"
+        )
+
     @property
     def color_theme(self) -> ColorTheme:
         return Themable.color_theme
@@ -235,6 +255,7 @@ class App(ABC):
                 render_mode=self.render_mode,
                 size=env_out.get_size(),
             )
+            self.root._app = self
 
             if self.title:
                 env_out.set_title(self.title)
