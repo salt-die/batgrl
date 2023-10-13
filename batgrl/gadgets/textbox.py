@@ -336,10 +336,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._placeholder = placeholder
         self._placeholder_gadget.set_text(placeholder)
         self._placeholder_gadget.colors[:] = self.color_theme.textbox_placeholder
-        if self._line_length == 0 and placeholder:
-            self._placeholder_gadget.is_enabled = True
-        else:
-            self._placeholder_gadget.is_enabled = False
+        self._placeholder_gadget.is_enabled = self._line_length == 0 and bool(
+            placeholder
+        )
 
     def _move_undo_buffer_to_stack(self, buffer_type=None):
         self._undo_buffer_type = buffer_type
