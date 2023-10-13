@@ -690,8 +690,10 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             self._undo_buffer.append(self.delete_selection())
 
         if (
-            self._box.canvas["char"][0, : self._line_length] != ""
-        ).sum() < self.max_chars:
+            self.max_chars is None
+            or (self._box.canvas["char"][0, : self._line_length] != "").sum()
+            < self.max_chars
+        ):
             if self._undo_buffer_type != "add":
                 self._move_undo_buffer_to_stack("add")
             self._undo_buffer.append(self._add_text(self.cursor, key))
