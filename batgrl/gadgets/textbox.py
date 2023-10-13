@@ -305,13 +305,10 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._highlight_selection()
 
     def on_size(self):
-        self._input_hider.size = self.size
-
-        if self.width > self._box.width:
-            self._box.width = self.width
-        elif self.width < self._box.width:
-            self._box.width = max(self.width, self._line_length + 1)
-        self._highlight_selection()
+        self._box.width = max(self.width, self._line_length + 1)
+        if self._box.x + self._line_length < self.width:
+            self._box.x = min(0, self.width - self._line_length)
+        self.cursor = self.cursor
 
     def on_focus(self):
         self._cursor.is_enabled = True
