@@ -1,8 +1,8 @@
 """
 Functions that return 3-dimensional rotation arrays around some axis with a given angle.
 
-Warning
--------
+Warnings
+--------
 All functions re-use the same buffer array. To create new arrays from rotation
 functions, use `copy`.
 """
