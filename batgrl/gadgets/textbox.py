@@ -378,18 +378,13 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     @text.setter
     def text(self, text: str):
+        text = text.replace("\n", " ")[: self.max_chars]
+        self.unselect()
+        self._del_text(0, self._line_length)
+        self._add_text(0, text)
         self._redo_stack.clear()
         self._undo_stack.clear()
         self._undo_buffer.clear()
-        self.unselect()
-        text = text.replace("\n", " ")[: self.max_chars]
-        self._line_length = wcswidth(text)
-
-        self._box.canvas[:] = style_char(" ")
-        self._box.width = max(self._line_length + 1, self.width)
-        self._box.add_str(text)
-        if self._line_length == 0 and self._placeholder:
-            self._placeholder_gadget.is_enabled = True
         self.cursor = self._line_length
 
     @property

@@ -23,7 +23,6 @@ from .text import (
     SizeHint,
     SizeHintDict,
     Text,
-    add_text,
     style_char,
 )
 
@@ -397,19 +396,12 @@ class TextPad(Themable, Focusable, ScrollView):
 
     @text.setter
     def text(self, text: str):
+        self.unselect()
+        self._del_text((0, 0), self.end_text_point)
+        self._add_text((0, 0), text)
         self._redo_stack.clear()
         self._undo_stack.clear()
         self._undo_buffer.clear()
-        self.unselect()
-        lines = text.split("\n")
-        self._line_lengths = list(map(wcswidth, lines))
-
-        pad = self._pad
-        pad.canvas[:] = style_char(" ")
-        pad.height = len(lines)
-        pad.width = max(max(self._line_lengths) + 1, self.port_width)
-
-        add_text(pad.canvas, text)
         self.cursor = self.end_text_point
 
     @property
