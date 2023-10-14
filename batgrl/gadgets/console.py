@@ -30,6 +30,14 @@ __all__ = ["Console"]
 
 PROMPT_1 = ">>> "
 PROMPT_2 = "... "
+DEFAULT_BANNER = (
+    "Welcome to the batgrl interactive console!\n"
+    'The root gadget is "root", the running app is "app" and event loop is "loop".\n'
+    "(Code that modifies the gadget tree should probably be wrapped with "
+    '"loop.call_soon_threadsafe".)\n'
+    f"Python {sys.version} on {sys.platform}\n"
+    'Type "help", "copyright", "credits" or "license" for more information.'
+)
 
 
 class _InteractiveConsole(InteractiveInterpreter):
@@ -449,8 +457,7 @@ class Console(Themable, Focusable, Gadget):
 
             if text and (len(self._history) == 0 or self._history[-1] != text):
                 self._history.append(text)
-                if self._history_index != 0:
-                    self._history_index -= 0.5
+                self._history_index -= 0.5
 
             if self._input_mode:
                 self._console._input = text
@@ -471,8 +478,7 @@ class Console(Themable, Focusable, Gadget):
         self._container = Gadget(size=(1, self._min_line_length))
         self._container.add_gadgets(self._output, self._prompt, self._input)
         self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            arrow_keys_enabled=False,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, arrow_keys_enabled=False
         )
         self._scroll_view.view = self._container
         self.add_gadget(self._scroll_view)
@@ -484,15 +490,7 @@ class Console(Themable, Focusable, Gadget):
         self._update_bars()
 
         if banner is None:
-            self._add_text_to_output(
-                "Welcome to the batgrl interactive console!\n"
-                'The root gadget is "root", the running app is "app" and event loop '
-                'is "loop".\n'
-                "(Code that modifies the gadget tree should probably be wrapped with "
-                '"loop.call_soon_threadsafe".)\n'
-                f"Python {sys.version} on {sys.platform}\n"
-                'Type "help", "copyright", "credits" or "license" for more information.'
-            )
+            self._add_text_to_output(DEFAULT_BANNER)
         else:
             self._add_text_to_output(str(banner))
 
