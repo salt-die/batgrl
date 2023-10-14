@@ -132,7 +132,7 @@ class App(ABC):
             f"{type(self).__name__}(\n"
             f"    background_char={self.background_char!r},\n"
             f"    background_color_pair={(*self.background_color_pair,)},\n"
-            f"    title={self.title},\n"
+            f"    title={self.title!r},\n"
             f"    double_click_timeout={self.double_click_timeout},\n"
             f"    render_interval={self.render_interval},\n"
             f"    color_theme=ColorTheme(\n"
