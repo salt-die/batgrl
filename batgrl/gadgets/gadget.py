@@ -643,7 +643,7 @@ class Gadget:
         self.is_visible = is_visible
         self.is_enabled = is_enabled
 
-        self.region: Region | None = None
+        self.region: Region = Region()
         """The visible portion of the gadget on the screen, set by the root."""
 
     def __repr__(self):
