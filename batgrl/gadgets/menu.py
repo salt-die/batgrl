@@ -84,7 +84,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
+        A transparent gadget allows regions beneath it to be painted.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -423,7 +423,7 @@ class Menu(GridLayout):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
+        A transparent gadget allows regions beneath it to be painted.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -927,7 +927,7 @@ class MenuBar(GridLayout):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether :attr:`background_char` and :attr:`background_color_pair` are painted.
+        A transparent gadget allows regions beneath it to be painted.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.

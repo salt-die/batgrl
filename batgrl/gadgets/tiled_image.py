@@ -53,8 +53,8 @@ class TiledImage(Graphics):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        If true, gadget is rendered with alpha compositing; otherwise, alpha values are
-        ignored.
+        A transparent gadget allows regions beneath it to be painted. Additionally,
+        non-transparent graphic gadgets are not alpha composited.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
