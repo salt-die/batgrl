@@ -33,8 +33,6 @@ PROMPT_2 = "... "
 DEFAULT_BANNER = (
     "Welcome to the batgrl interactive console!\n"
     'The root gadget is "root", the running app is "app" and event loop is "loop".\n'
-    "(Code that modifies the gadget tree should probably be wrapped with "
-    '"loop.call_soon_threadsafe".)\n'
     f"Python {sys.version} on {sys.platform}\n"
     'Type "help", "copyright", "credits" or "license" for more information.'
 )
@@ -158,18 +156,15 @@ class _ConsoleTextbox(Textbox):
             return
 
         console: Console = self.parent.parent.parent
+        rel_x = console._container.x + console._prompt.width + cursor
+        port_width = console._scroll_view.port_width
 
-        rel_cursor = console._prompt.width + cursor
-        rel_x = console._container.x + rel_cursor
-
-        if rel_x < 0:
-            console._scroll_view._scroll_right(rel_x)
-        elif console.width <= rel_x:
-            console._scroll_view._scroll_right(rel_x - console.width + 1)
-
-        # If it's possible to show prompt and cursor, do it:
-        if console._container.x < 0 and rel_cursor < console.width:
+        if cursor == 0:
             console._scroll_view.horizontal_proportion = 0
+        elif rel_x < 0:
+            console._scroll_view._scroll_right(rel_x)
+        elif rel_x >= port_width:
+            console._scroll_view._scroll_right(rel_x - port_width + 1)
 
         if self.is_selecting:
             self._selection_end = self.cursor
@@ -225,12 +220,6 @@ class _ConsoleTextbox(Textbox):
 class Console(Themable, Focusable, Gadget):
     """
     An interactive python console gadget.
-
-    Warnings
-    --------
-    Code is executed in a separate thread. Modifying the running app or its gadget tree
-    may not be threadsafe; if executed code will modify the gadget tree, its safest to
-    wrap the code with `loop.call_soon_threadsafe`.
 
     Parameters
     ----------
@@ -450,14 +439,16 @@ class Console(Themable, Focusable, Gadget):
 
             if (
                 isinstance(self._history_index, float)
-                or self._history_index != 0
-                and text != self._history[self._history_index]
+                or self._history_index >= -1
+                or text != self._history[self._history_index]
             ):
                 self._history_index = 0
 
             if text and (len(self._history) == 0 or self._history[-1] != text):
                 self._history.append(text)
                 self._history_index -= 0.5
+            elif self._history_index < 0:
+                self._history_index += 0.5
 
             if self._input_mode:
                 self._console._input = text
