@@ -663,7 +663,13 @@ class Gadget:
             return
 
         h, w = size
-        self._size = Size(clamp(int(h), 1, None), clamp(int(w), 1, None))
+        size = Size(clamp(int(h), 1, None), clamp(int(w), 1, None))
+
+        if self.root is None:
+            self._size = size
+        else:
+            with self.root._render_lock:
+                self._size = size
 
         self.on_size()
 
@@ -707,7 +713,13 @@ class Gadget:
     @subscribable
     def pos(self, pos: Point):
         y, x = pos
-        self._pos = Point(int(y), int(x))
+        pos = Point(int(y), int(x))
+
+        if self.root is None:
+            self._pos = pos
+        else:
+            with self.root._render_lock:
+                self._pos = pos
 
     @property
     def top(self) -> int:

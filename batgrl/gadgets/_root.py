@@ -1,12 +1,14 @@
 """
 Root gadget.
 """
+from threading import Lock
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 
 if TYPE_CHECKING:
     from ..app import App
+
 from .gadget import ColorPair, Gadget, Point, Region, Size, style_char
 
 
@@ -30,6 +32,7 @@ class _Root(Gadget):
         self.render_mode = render_mode
         self._size = size
         self.on_size()
+        self._render_lock = Lock()
 
     def on_size(self):
         """
@@ -95,28 +98,32 @@ class _Root(Gadget):
         #   reused.
         # - Checking for changes in geometry can be done once every few frames if
         #   geometry has been static for some time.
-        self.region = Region.from_rect(self.pos, self.size)
 
-        for child in self.walk():
-            child.region = (
-                child.parent.region & Region.from_rect(child.absolute_pos, child.size)
-                if child.is_enabled
-                else Region()
-            )
+        with self._render_lock:
+            self.region = Region.from_rect(self.pos, self.size)
 
-        if self.render_mode == "regions":
-            for child in self.walk_reverse():
-                if child.is_enabled:
-                    child.region &= self.region
-                    if child.is_visible and not child.is_transparent:
-                        self.region -= child.region
+            for child in self.walk():
+                child.region = (
+                    child.parent.region
+                    & Region.from_rect(child.absolute_pos, child.size)
+                    if child.is_enabled
+                    else Region()
+                )
 
-        self.canvas, self._last_canvas = self._last_canvas, self.canvas
-        self.colors, self._last_colors = self._last_colors, self.colors
+            if self.render_mode == "regions":
+                for child in self.walk_reverse():
+                    if child.is_enabled:
+                        child.region &= self.region
+                        if child.is_visible and not child.is_transparent:
+                            self.region -= child.region
 
-        self.canvas[:] = style_char(self.background_char)
-        self.colors[:] = self.background_color_pair
+            self.canvas, self._last_canvas = self._last_canvas, self.canvas
+            self.colors, self._last_colors = self._last_colors, self.colors
 
-        for child in self.walk():
-            if child.is_enabled and child.is_visible:
-                child.render(self.canvas, self.colors)
+            self.canvas[:] = style_char(self.background_char)
+            self.colors[:] = self.background_color_pair
+
+            for child in self.walk():
+                if child.is_enabled and child.is_visible:
+                    child.render(self.canvas, self.colors)
+                    child.render(self.canvas, self.colors)
