@@ -1,4 +1,4 @@
-from types import SimpleNamespace
+from types import ModuleType
 
 import numpy as np
 
@@ -7,13 +7,13 @@ from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.button import Button
 from batgrl.gadgets.sparkline import Sparkline
 
-from .pygame_input import PygameInput
+from . import pygame_input
 from .pygame_output import PygameOutput
 
 
 class PygameApp(App):
-    def _create_io(self) -> tuple[SimpleNamespace, PygameOutput]:
-        return PygameInput, PygameOutput()
+    def _create_io(self) -> tuple[ModuleType, PygameOutput]:
+        return pygame_input, PygameOutput()
 
 
 # From examples/basic/sparkline.py

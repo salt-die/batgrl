@@ -1,10 +1,11 @@
 import asyncio
 from contextlib import contextmanager
-from types import SimpleNamespace
 
 import pygame as pg
 
 from .console_input import events
+
+__all__ = ["attach", "raw_mode", "events"]
 
 
 @contextmanager
@@ -32,7 +33,3 @@ def attach(callback):
 @contextmanager
 def raw_mode():
     yield
-
-
-PygameInput = SimpleNamespace(attach=attach, raw_mode=raw_mode, events=events)
-PygameInput = SimpleNamespace(attach=attach, raw_mode=raw_mode, events=events)

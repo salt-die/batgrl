@@ -25,7 +25,7 @@ class PygameOutput:
     def __enter__(self):
         pg.init()
         self.window = pg.display.set_mode(
-            (120 * FONT_WIDTH, 40 * FONT_HEIGHT), pg.RESIZABLE
+            (80 * FONT_WIDTH, 30 * FONT_HEIGHT), pg.RESIZABLE
         )
         pg.scrap.init()
 
