@@ -19,7 +19,6 @@ class SpinnersApp(App):
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             allow_horizontal_scroll=False,
             show_horizontal_bar=False,
-            background_color_pair=PRIMARY,
         )
         grid = GridLayout(
             grid_rows=ceil(len(SPINNERS) / COLUMNS),

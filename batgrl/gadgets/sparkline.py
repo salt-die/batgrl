@@ -8,6 +8,7 @@ from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, lerp_colors
 from ..io import MouseEvent
 from .gadget import Gadget
 from .text import (
+    Char,
     Point,
     PosHint,
     PosHintDict,
@@ -16,7 +17,6 @@ from .text import (
     SizeHintDict,
     Text,
     add_text,
-    style_char,
 )
 from .text_tools import smooth_vertical_bar
 
@@ -66,7 +66,7 @@ class Sparkline(Text):
         Color pair for tooltip.
     highlight_color : Color, default: DEFAULT_HIGHLIGHT_COLOR
         Color of highlighted value of the sparkline.
-    default_char : str, default: " "
+    default_char : NDArray[Char] | str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
     default_color_pair : ColorPair, default: DEFAULT_COLOR_THEME.primary
@@ -80,18 +80,13 @@ class Sparkline(Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether whitespace is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -112,7 +107,7 @@ class Sparkline(Text):
         The array of characters for the gadget.
     colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str
+    default_char : NDArray[Char]
         Default background character.
     default_color_pair : ColorPair
         Default color pair of gadget.
@@ -152,13 +147,9 @@ class Sparkline(Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -236,7 +227,7 @@ class Sparkline(Text):
         show_tooltip: bool = True,
         tooltip_color_pair: ColorPair = DEFAULT_TOOLTIP_COLORS,
         highlight_color: Color = DEFAULT_HIGHLIGHT_COLOR,
-        default_char: str = " ",
+        default_char: NDArray[Char] | str = " ",
         default_color_pair: ColorPair = DEFAULT_COLOR_THEME.primary,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -245,8 +236,6 @@ class Sparkline(Text):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             default_char=default_char,
@@ -258,8 +247,6 @@ class Sparkline(Text):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self._selector = Gadget(
@@ -403,7 +390,7 @@ class Sparkline(Text):
                 self._means.max() - self._means.min()
             )
 
-        self.canvas[:] = style_char(self.default_char)
+        self.canvas[:] = self.default_char
         chars = self.canvas["char"][::-1]
         for i, bin_proportion in enumerate(bin_proportions):
             smooth_bar = smooth_vertical_bar(self.height, bin_proportion)

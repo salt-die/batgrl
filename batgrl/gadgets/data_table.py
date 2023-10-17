@@ -9,24 +9,20 @@ from typing import Literal, Protocol, TypeVar
 
 from wcwidth import wcswidth
 
-from ..colors import Color, ColorPair
-from ..io import MouseButton, MouseEvent
+from ..io import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .grid_layout import GridLayout
-from .scroll_view import (
-    DEFAULT_INDICATOR_HOVER,
-    DEFAULT_INDICATOR_NORMAL,
-    DEFAULT_INDICATOR_PRESS,
-    DEFAULT_SCROLLBAR_COLOR,
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
-    ScrollView,
     Size,
     SizeHint,
     SizeHintDict,
 )
+from .grid_layout import GridLayout
+from .scroll_view import ScrollView
 from .text import Text, add_text
 
 __all__ = [
@@ -320,7 +316,7 @@ class _DataCell(_CellBase):
         return True
 
 
-class DataTable(Themable, ScrollView):
+class DataTable(Themable, GadgetBase):
     """
     A data table gadget.
 
@@ -337,32 +333,6 @@ class DataTable(Themable, ScrollView):
         Whether alternate rows are colored differently.
     allow_sorting : bool, default: True
         Whether columns can be sorted.
-    allow_vertical_scroll : bool, default: True
-        Allow vertical scrolling.
-    allow_horizontal_scroll : bool, default: True
-        Allow horizontal scrolling.
-    show_vertical_bar : bool, default: True
-        Show the vertical scrollbar.
-    show_horizontal_bar : bool, default: True
-        Show the horizontal scrollbar.
-    scrollwheel_enabled : bool, default: True
-        Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool, default: True
-        Allow scrolling with arrow keys.
-    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
-        Background color of scrollbar.
-    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
-        Scrollbar indicator hover color.
-    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
-        Scrollbar indicator press color.
-    is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
-        If true, gadget will not be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
-        Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -379,11 +349,6 @@ class DataTable(Themable, ScrollView):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -395,46 +360,6 @@ class DataTable(Themable, ScrollView):
         Whether alternate rows are colored differently.
     allow_sorting : bool
         Whether columns can be sorted.
-    view : Gadget | None
-        The scrolled gadget.
-    allow_vertical_scroll : bool
-        Allow vertical scrolling.
-    allow_horizontal_scroll : bool
-        Allow horizontal scrolling.
-    show_vertical_bar : bool
-        Show the vertical scrollbar.
-    show_horizontal_bar : bool
-        Show the horizontal scrollbar.
-    scrollwheel_enabled : bool
-        Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool
-        Allow scrolling with arrow keys.
-    scrollbar_color : Color
-        Background color of scrollbar.
-    indicator_normal_color : Color
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color
-        Scrollbar indicator hover color.
-    indicator_press_color : Color
-        Scrollbar indicator press color.
-    vertical_proportion : float
-        Vertical scroll position as a proportion of total.
-    horizontal_proportion : float
-        Horizontal scroll position as a proportion of total.
-    is_grabbable : bool
-        If false, grabbable behavior is disabled.
-    disable_ptf : bool
-        If true, gadget will not be pulled to front when grabbed.
-    mouse_button : MouseButton
-        Mouse button used for grabbing.
-    is_grabbed : bool
-        True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
     size : Size
         Size of gadget.
     height : int
@@ -467,13 +392,9 @@ class DataTable(Themable, ScrollView):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -502,12 +423,6 @@ class DataTable(Themable, ScrollView):
         Returns the column id of the column at index.
     update_theme():
         Paint the gadget with current theme.
-    grab(mouse_event):
-        Grab the gadget.
-    ungrab(mouse_event):
-        Ungrab the gadget.
-    grab_update(mouse_event):
-        Update gadget with incoming mouse events while grabbed.
     on_size():
         Called when gadget is resized.
     apply_hints():
@@ -566,19 +481,6 @@ class DataTable(Themable, ScrollView):
         select_items: Literal["cell", "row", "column"] = "row",
         zebra_stripes: bool = True,
         allow_sorting: bool = True,
-        allow_vertical_scroll: bool = True,
-        allow_horizontal_scroll: bool = True,
-        show_vertical_bar: bool = True,
-        show_horizontal_bar: bool = True,
-        scrollwheel_enabled: bool = True,
-        arrow_keys_enabled: bool = True,
-        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
-        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
-        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
-        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
-        is_grabbable: bool = True,
-        disable_ptf: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -586,23 +488,8 @@ class DataTable(Themable, ScrollView):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
-            allow_vertical_scroll=allow_vertical_scroll,
-            allow_horizontal_scroll=allow_horizontal_scroll,
-            show_vertical_bar=show_vertical_bar,
-            show_horizontal_bar=show_horizontal_bar,
-            scrollwheel_enabled=scrollwheel_enabled,
-            arrow_keys_enabled=arrow_keys_enabled,
-            scrollbar_color=scrollbar_color,
-            indicator_normal_color=indicator_normal_color,
-            indicator_hover_color=indicator_hover_color,
-            indicator_press_color=indicator_press_color,
-            is_grabbable=is_grabbable,
-            disable_ptf=disable_ptf,
-            mouse_button=mouse_button,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -610,8 +497,6 @@ class DataTable(Themable, ScrollView):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self._column_ids: list[int] = []
         """Column ids. Index of id corresponds to index of column in table."""
@@ -632,7 +517,6 @@ class DataTable(Themable, ScrollView):
         self._table = GridLayout(grid_rows=1, grid_columns=1, orientation="tb-lr")
         """Grid layout of column label and row grid layouts."""
         self._table.add_gadget(self._column_labels)
-        self.view = self._table
 
         self.default_style = default_style or ColumnStyle()
         """Default style for new columns."""
@@ -642,6 +526,22 @@ class DataTable(Themable, ScrollView):
         """Whether alternate rows are colored differently."""
         self._allow_sorting = allow_sorting
         """Whether columns can be sorted."""
+
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
+        self._scroll_view.view = self._table
+        self.add_gadget(self._scroll_view)
+
+        def update_bars():
+            self._scroll_view.show_horizontal_bar = (
+                self._table.width > self._scroll_view.port_width
+            )
+            self._scroll_view.show_vertical_bar = (
+                self._table.height > self._scroll_view.port_height
+            )
+
+        self.subscribe(self._table, "size", update_bars)
 
         if data is not None:
             for label, column_data in data.items():
@@ -709,7 +609,11 @@ class DataTable(Themable, ScrollView):
         self._update_hover(self._hover_column_id, self._hover_row_id)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        if not self.collides_point(mouse_event.position):
+        y, x = self.to_local(mouse_event.position)
+        if not (
+            0 <= y < self._scroll_view.port_height
+            and 0 <= x < self._scroll_view.port_width
+        ):
             self._update_hover()
         return super().on_mouse(mouse_event)
 

@@ -13,8 +13,9 @@ from wcwidth import wcswidth
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
 from ..io import MouseEvent, MouseEventType
 from .behaviors.movable import Movable
-from .gadget import (
-    Gadget,
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -51,10 +52,11 @@ VERTICAL_HALF = VERTICAL_SPACING // 2
 
 class _Legend(Movable, Text):
     def _build_legend(self):
+        plot: "LinePlot" = self.parent.parent
         colors = (
             rainbow_gradient(len(self.labels))
-            if self.parent.line_colors is None
-            else self.parent.line_colors
+            if plot.line_colors is None
+            else plot.line_colors
         )
         self.is_enabled = self.labels and len(self.labels) == len(colors)
         if self.is_enabled:
@@ -62,7 +64,7 @@ class _Legend(Movable, Text):
             width = max(map(wcswidth, self.labels)) + 6
 
             self.size = height, width
-            self.colors[:] = self.parent.plot_color_pair
+            self.colors[:] = plot.plot_color_pair
             self.canvas["char"][:] = " "
 
             self.add_border()
@@ -89,7 +91,7 @@ class _LinePlotProperty:
         instance._build_plot()
 
 
-class LinePlot(Gadget):
+class LinePlot(GadgetBase):
     """
     A 2D line plot gadget.
 
@@ -135,11 +137,6 @@ class LinePlot(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -199,13 +196,9 @@ class LinePlot(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -307,8 +300,6 @@ class LinePlot(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -318,8 +309,6 @@ class LinePlot(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self._traces_zoom_index = 0
         """Index of size hint in `PLOT_ZOOM` that `_traces` is using."""
@@ -355,8 +344,8 @@ class LinePlot(Gadget):
         self._y_label_gadget = Text()
         self._legend = _Legend(disable_oob=True, is_enabled=False)
         self._legend.labels = legend_labels
-
-        self.add_gadgets(
+        self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._container.add_gadgets(
             self._scrollview,
             self._x_ticks,
             self._y_ticks,
@@ -365,6 +354,7 @@ class LinePlot(Gadget):
             self._y_label_gadget,
             self._legend,
         )
+        self.add_gadget(self._container)
 
         self._xs = xs
         self._ys = ys
@@ -388,16 +378,13 @@ class LinePlot(Gadget):
 
     @plot_color_pair.setter
     def plot_color_pair(self, plot_color_pair: ColorPair):
-        # Remove any gadget transparency:
-        self.background_char = " "
-        self.background_color_pair = plot_color_pair
-        self.is_transparent = False
-
         self._plot_color_pair = plot_color_pair
 
         for child in self.walk():
             if isinstance(child, Text):
                 child.colors[:] = plot_color_pair
+            elif isinstance(child, Gadget):
+                child.background_color_pair = plot_color_pair
 
         self._legend._build_legend()
 

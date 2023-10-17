@@ -11,7 +11,7 @@ from platform import uname
 import cv2
 import numpy as np
 
-from ..colors import ABLACK, AColor, ColorPair
+from ..colors import ABLACK, AColor
 from .graphics import (
     Graphics,
     Interpolation,
@@ -72,11 +72,6 @@ class VideoPlayer(Graphics):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -126,13 +121,9 @@ class VideoPlayer(Graphics):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -220,8 +211,6 @@ class VideoPlayer(Graphics):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             default_color=default_color,
@@ -234,8 +223,6 @@ class VideoPlayer(Graphics):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self._current_frame = None
         self._resource = None

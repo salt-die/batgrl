@@ -53,6 +53,15 @@ class TextParticleField(Gadget):
         Color pairs of particles. Expect uint8 array with shape `N, 6`.
     particle_properties : dict[str, NDArray[Any]] | None, default: None
         Additional particle properties.
+    background_char : NDArray[Char] | str | None, default: None
+        The background character of the gadget. If not given and not transparent, the
+        background characters of the root gadget are painted. If not given and
+        transparent, characters behind the gadget are visible. The character must be
+        single unicode half-width grapheme.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the gadget. If not given and not transparent, the
+        background color pair of the root gadget is painted. If not given and
+        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -62,18 +71,13 @@ class TextParticleField(Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether whitespace is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -87,6 +91,10 @@ class TextParticleField(Gadget):
         Color pairs of particles.
     particle_properties : dict[str, NDArray[Any]]
         Additional particle properties.
+    background_char : NDArray[Char] | None
+        The background character of the gadget.
+    background_color_pair : ColorPair | None
+        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -119,13 +127,9 @@ class TextParticleField(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -202,7 +206,7 @@ class TextParticleField(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
+        background_char: NDArray[Char] | str | None = None,
         background_color_pair: ColorPair | None = None,
     ):
         super().__init__(

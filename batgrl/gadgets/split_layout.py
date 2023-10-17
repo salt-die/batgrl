@@ -1,10 +1,11 @@
 """
 Draggable horizontal and vertical split layouts.
 """
-from ..colors import AColor, ColorPair
+from ..colors import AColor
 from .behaviors.grabbable import Grabbable
-from .gadget import (
-    Gadget,
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -66,7 +67,7 @@ class _VSplitHandle(_Handle):
             self.parent.split_col -= self.mouse_dx
 
 
-class HSplitLayout(Gadget):
+class HSplitLayout(GadgetBase):
     """
     A horizontal split layout. Add gadgets to the :attr:`top_pane` or
     :attr:`bottom_pane`, e.g., ``my_hsplit.top_pane.add_gadget(my_gadget)``.
@@ -102,11 +103,6 @@ class HSplitLayout(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -157,13 +153,9 @@ class HSplitLayout(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -241,8 +233,6 @@ class HSplitLayout(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -252,8 +242,6 @@ class HSplitLayout(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self.top_pane = Gadget(size_hint={"width_hint": 1.0})
@@ -328,7 +316,7 @@ class HSplitLayout(Gadget):
         not_anchored.height = self.height - self.split_row
 
 
-class VSplitLayout(Gadget):
+class VSplitLayout(GadgetBase):
     """
     A vertical split layout. Add gadgets to the :attr:`left_pane` or :attr:`right_pane`,
     e.g., ``my_vsplit.left_pane.add_gadget(my_gadget)``.
@@ -364,11 +352,6 @@ class VSplitLayout(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -419,13 +402,9 @@ class VSplitLayout(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -502,8 +481,6 @@ class VSplitLayout(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -513,8 +490,6 @@ class VSplitLayout(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self.left_pane = Gadget(size_hint={"height_hint": 1.0})

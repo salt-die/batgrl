@@ -3,12 +3,22 @@ A button gadget.
 """
 from collections.abc import Callable
 
+from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
+from .gadget import (
+    Char,
+    Gadget,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
 from .text import Text
 
 __all__ = [
@@ -35,6 +45,15 @@ class Button(Themable, ButtonBehavior, Gadget):
         Called when button is released.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
+    background_char : NDArray[Char] | str | None, default: " "
+        The background character of the gadget. If not given and not transparent, the
+        background characters of the root gadget are painted. If not given and
+        transparent, characters behind the gadget are visible. The character must be
+        single unicode half-width grapheme.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the gadget. If not given and not transparent, the
+        background color pair of the root gadget is painted. If not given and
+        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -51,11 +70,6 @@ class Button(Themable, ButtonBehavior, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -67,6 +81,10 @@ class Button(Themable, ButtonBehavior, Gadget):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+    background_char : NDArray[Char] | None
+        The background character of the gadget.
+    background_color_pair : ColorPair | None
+        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -99,13 +117,9 @@ class Button(Themable, ButtonBehavior, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -181,7 +195,6 @@ class Button(Themable, ButtonBehavior, Gadget):
     def __init__(
         self,
         *,
-        background_char=" ",
         label: str = "",
         callback: Callable[[], None] = lambda: None,
         always_release: bool = False,
@@ -192,13 +205,13 @@ class Button(Themable, ButtonBehavior, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
+        background_char: NDArray[Char] | str | None = " ",
         background_color_pair: ColorPair | None = None,
     ):
         self._label_gadget = Text(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
         super().__init__(
             always_release=always_release,
-            background_char=background_char,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -206,6 +219,7 @@ class Button(Themable, ButtonBehavior, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
+            background_char=background_char,
             background_color_pair=background_color_pair,
         )
 

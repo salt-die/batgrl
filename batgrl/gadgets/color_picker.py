@@ -24,7 +24,16 @@ from ..colors import (
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
 from .graphics import Graphics
 from .text import Text
 
@@ -147,7 +156,7 @@ class _HueSelector(Grabbable, Graphics):
             self.update_hue()
 
 
-class ColorPicker(Themable, Gadget):
+class ColorPicker(Themable, GadgetBase):
     """
     A color picker gadget.
 
@@ -171,11 +180,6 @@ class ColorPicker(Themable, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -211,13 +215,9 @@ class ColorPicker(Themable, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -285,7 +285,6 @@ class ColorPicker(Themable, Gadget):
     def __init__(
         self,
         *,
-        background_char=" ",
         ok_callback: Callable[[Color], None] = lambda color: None,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -294,10 +293,8 @@ class ColorPicker(Themable, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
-            background_char=background_char,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -305,7 +302,6 @@ class ColorPicker(Themable, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_color_pair=background_color_pair,
         )
 
         self.color_swatch = Gadget(
@@ -339,7 +335,11 @@ class ColorPicker(Themable, Gadget):
             disable_ptf=True,
         )
 
-        self.add_gadgets(self.color_swatch, self.hues, self.shades, self.label)
+        self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._container.add_gadgets(
+            self.color_swatch, self.hues, self.shades, self.label
+        )
+        self.add_gadget(self._container)
 
     def on_size(self):
         h, w = self._size
@@ -362,7 +362,6 @@ class ColorPicker(Themable, Gadget):
 
     def update_theme(self):
         primary = self.color_theme.primary
-
-        self.background_color_pair = primary
+        self._container.background_color_pair = primary
         self.label.default_color_pair = primary
         self.label.colors[:] = primary

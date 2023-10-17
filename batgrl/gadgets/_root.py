@@ -5,11 +5,12 @@ from threading import Lock
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
+from numpy.typing import NDArray
 
 if TYPE_CHECKING:
     from ..app import App
 
-from .gadget import ColorPair, Gadget, Point, Region, Size, style_char
+from .gadget import Char, ColorPair, Gadget, Point, Region, Size
 
 
 class _Root(Gadget):
@@ -21,18 +22,18 @@ class _Root(Gadget):
 
     def __init__(
         self,
-        background_char: str,
+        background_char: NDArray[Char] | str,
         background_color_pair: ColorPair,
         render_mode: Literal["regions", "painter"],
         size: Size,
     ):
+        self._render_lock = Lock()
         self.children = []
         self.background_char = background_char
         self.background_color_pair = background_color_pair
         self.render_mode = render_mode
-        self._size = size
-        self.on_size()
-        self._render_lock = Lock()
+        self._size = -1, -1
+        self.size = size
 
     def on_size(self):
         """
@@ -40,7 +41,7 @@ class _Root(Gadget):
         """
         h, w = self._size
 
-        self.canvas = np.full((h, w), style_char(self.background_char))
+        self.canvas = np.full((h, w), self.background_char)
         self.colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
 
         self._last_canvas = self.canvas.copy()
@@ -120,10 +121,9 @@ class _Root(Gadget):
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
             self.colors, self._last_colors = self._last_colors, self.colors
 
-            self.canvas[:] = style_char(self.background_char)
+            self.canvas[:] = self.background_char
             self.colors[:] = self.background_color_pair
 
             for child in self.walk():
                 if child.is_enabled and child.is_visible:
-                    child.render(self.canvas, self.colors)
                     child.render(self.canvas, self.colors)

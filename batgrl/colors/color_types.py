@@ -309,9 +309,9 @@ class ColorTheme(NamedTuple):
     ----------
     primary : ColorPair
         Primary color pair.
-    pad_line_highlight : ColorPair
+    text_pad_line_highlight : ColorPair
         Text pad line highlight color pair.
-    pad_selection_highlight : ColorPair
+    text_pad_selection_highlight : ColorPair
         Text pad selection highlight color pair.
     textbox_primary : ColorPair
         Textbox primary color pair.
@@ -353,14 +353,22 @@ class ColorTheme(NamedTuple):
         Color pair of selected, hovered items in a data table.
     progress_bar : ColorPair
         Color pair of progress bar.
+    scroll_view_scrollbar_color : Color
+        Color of scrollbar in a scroll view.
+    scroll_view_indicator_normal_color : Color
+        Color of indicator in a scroll view.
+    scroll_view_indicator_hover_color : Color
+        Color of hovered indicator in a scroll view.
+    scroll_view_indicator_press_color : Color
+        Color of pressed indicator in a scroll view.
 
     Attributes
     ----------
     primary : ColorPair
         Primary color pair.
-    pad_line_highlight : ColorPair
+    text_pad_line_highlight : ColorPair
         Text pad line highlight color pair.
-    pad_selection_highlight : ColorPair
+    text_pad_selection_highlight : ColorPair
         Text pad selection highlight color pair.
     textbox_primary : ColorPair
         Textbox primary color pair.
@@ -402,6 +410,14 @@ class ColorTheme(NamedTuple):
         Color pair of selected, hovered items in a data table.
     progress_bar : ColorPair
         Color pair of progress bar.
+    scroll_view_scrollbar_color : Color
+        Color of scrollbar in a scroll view.
+    scroll_view_indicator_normal_color : Color
+        Color of indicator in a scroll view.
+    scroll_view_indicator_hover_color : Color
+        Color of hovered indicator in a scroll view.
+    scroll_view_indicator_press_color : Color
+        Color of pressed indicator in a scroll view.
 
     Methods
     -------
@@ -414,8 +430,8 @@ class ColorTheme(NamedTuple):
     """
 
     primary: ColorPair
-    pad_line_highlight: ColorPair
-    pad_selection_highlight: ColorPair
+    text_pad_line_highlight: ColorPair
+    text_pad_selection_highlight: ColorPair
     textbox_primary: ColorPair
     textbox_selection_highlight: ColorPair
     textbox_placeholder: ColorPair
@@ -436,13 +452,17 @@ class ColorTheme(NamedTuple):
     data_table_selected: ColorPair
     data_table_selected_hover: ColorPair
     progress_bar: ColorPair
+    scroll_view_scrollbar_color: Color
+    scroll_view_indicator_normal_color: Color
+    scroll_view_indicator_hover_color: Color
+    scroll_view_indicator_press_color: Color
 
     @classmethod
     def from_hexes(
         cls,
         primary: str,
-        pad_line_highlight: str,
-        pad_selection_highlight: str,
+        text_pad_line_highlight: str,
+        text_pad_selection_highlight: str,
         textbox_primary: str,
         textbox_selection_highlight: str,
         textbox_placeholder: str,
@@ -463,6 +483,10 @@ class ColorTheme(NamedTuple):
         data_table_selected: str,
         data_table_selected_hover: str,
         progress_bar: str,
+        scroll_view_scrollbar_color: str,
+        scroll_view_indicator_normal_color: str,
+        scroll_view_indicator_hover_color: str,
+        scroll_view_indicator_press_color: str,
     ) -> "ColorTheme":
         """
         Return a ColorTheme using hex codes.
@@ -473,9 +497,9 @@ class ColorTheme(NamedTuple):
         ----------
         primary : str
             Hex code for primary color pair.
-        pad_line_highlight : str
+        text_pad_line_highlight : str
             Hex code for text pad line highlight color pair.
-        pad_selection_highlight : str
+        text_pad_selection_highlight : str
             Hex code for text pad selection highlight color pair.
         textbox_primary : str
             Hex code for textbox primary color pair.
@@ -516,8 +540,16 @@ class ColorTheme(NamedTuple):
             Hex code for color pair of selected items in a data table.
         data_table_selected_hover : str
             Hex code for color pair of selected, hovered items in a data table.
-        progress_bar : ColorPair
-            Color pair of progress bar.
+        progress_bar : str
+            Hex code for progress bar color pair.
+        scroll_view_scrollbar_color : str
+            Hex code for scrollbar color in a scroll view.
+        scroll_view_indicator_normal_color : str
+            Hex code for indicator color in a scroll view.
+        scroll_view_indicator_hover_color : str
+            Hex code for hovered indicator color in a scroll view.
+        scroll_view_indicator_press_color : str
+            Hex code for pressed indicator color in a scroll view.
 
         Returns
         -------
@@ -525,8 +557,8 @@ class ColorTheme(NamedTuple):
         """
         return cls(
             ColorPair.from_hex(primary),
-            ColorPair.from_hex(pad_line_highlight),
-            ColorPair.from_hex(pad_selection_highlight),
+            ColorPair.from_hex(text_pad_line_highlight),
+            ColorPair.from_hex(text_pad_selection_highlight),
             ColorPair.from_hex(textbox_primary),
             ColorPair.from_hex(textbox_selection_highlight),
             ColorPair.from_hex(textbox_placeholder),
@@ -547,4 +579,8 @@ class ColorTheme(NamedTuple):
             ColorPair.from_hex(data_table_selected),
             ColorPair.from_hex(data_table_selected_hover),
             ColorPair.from_hex(progress_bar),
+            Color.from_hex(scroll_view_scrollbar_color),
+            Color.from_hex(scroll_view_indicator_normal_color),
+            Color.from_hex(scroll_view_indicator_hover_color),
+            Color.from_hex(scroll_view_indicator_press_color),
         )

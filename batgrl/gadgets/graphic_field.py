@@ -8,10 +8,9 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from ..colors import ColorPair
-from .gadget import (
+from .gadget_base import (
     Char,
-    Gadget,
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -32,7 +31,7 @@ __all__ = [
 ]
 
 
-class GraphicParticleField(Gadget):
+class GraphicParticleField(GadgetBase):
     """
     A graphic particle field.
 
@@ -69,11 +68,6 @@ class GraphicParticleField(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -119,13 +113,9 @@ class GraphicParticleField(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -202,8 +192,6 @@ class GraphicParticleField(Gadget):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             is_transparent=is_transparent,
@@ -213,8 +201,6 @@ class GraphicParticleField(Gadget):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         if particle_positions is None:

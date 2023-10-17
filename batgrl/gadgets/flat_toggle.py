@@ -4,13 +4,24 @@ An animated toggle button gadget.
 import asyncio
 from collections.abc import Callable, Hashable
 
+from numpy.typing import NDArray
+
 from ..colors import BLACK, GREEN, Color, ColorPair
 from .behaviors.toggle_button_behavior import (
     ButtonState,
     ToggleButtonBehavior,
     ToggleState,
 )
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
+from .gadget import (
+    Char,
+    Gadget,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
 from .text import Text, add_text
 
 __all__ = [
@@ -124,6 +135,15 @@ class FlatToggle(Gadget):
         Whether a mouse up event outside the button will trigger it.
         size : Size, default: Size(10, 10)
         Size of gadget.
+    background_char : NDArray[Char] | str | None, default: None
+        The background character of the gadget. If not given and not transparent, the
+        background characters of the root gadget are painted. If not given and
+        transparent, characters behind the gadget are visible. The character must be
+        single unicode half-width grapheme.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the gadget. If not given and not transparent, the
+        background color pair of the root gadget is painted. If not given and
+        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -140,11 +160,6 @@ class FlatToggle(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -152,6 +167,10 @@ class FlatToggle(Gadget):
         Toggle button callback.
     toggle_background: Color
         Background color of toggle.
+    background_char : NDArray[Char] | None
+        The background character of the gadget.
+    background_color_pair : ColorPair | None
+        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -184,13 +203,9 @@ class FlatToggle(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -278,7 +293,7 @@ class FlatToggle(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
+        background_char: NDArray[Char] | str | None = None,
         background_color_pair: ColorPair | None = None,
     ):
         super().__init__(

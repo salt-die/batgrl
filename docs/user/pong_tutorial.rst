@@ -60,8 +60,8 @@ color is not used.
     if __name__ == "__main__":
         Pong().run()
 
-Gadgets are interactive graphic elements that make up your app. In fact, the app is just a tree of gadgets.
-The base `Gadget` class is little more than a container for other gadgets, but it can be given a background color pair.
+Gadgets are interactive UI elements that make up your app. In fact, the app is just a tree of gadgets.
+The `Gadget` class is little more than a container for other gadgets, but it can be given a background color pair.
 
 The app's `add_gadget` method adds a gadget to the root gadget in the gadget tree. The root gadget always has a size
 that is equal to your terminal's current size.

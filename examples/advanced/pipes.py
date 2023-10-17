@@ -77,7 +77,7 @@ class Pipes(Text):
 
     async def run_pipes(self):
         while True:
-            self.canvas["char"] = self.default_char
+            self.canvas[:] = self.default_char
             self.colors[:] = self.default_color_pair
             await asyncio.gather(*(self.pipe() for _ in range(self.npipes)))
 

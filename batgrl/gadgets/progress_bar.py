@@ -4,19 +4,12 @@ A progress bar gadget.
 import asyncio
 from itertools import chain, cycle
 
+from numpy.typing import NDArray
+
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .behaviors.themable import Themable
 from .gadget import clamp, subscribable
-from .text import (
-    Point,
-    PosHint,
-    PosHintDict,
-    Size,
-    SizeHint,
-    SizeHintDict,
-    Text,
-    style_char,
-)
+from .text import Char, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Text
 from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 
 __all__ = [
@@ -43,7 +36,7 @@ class ProgressBar(Themable, Text):
         Time between loading animation updates.
     is_horizontal : bool, default: True
         If true, the bar will progress to the right, else the bar will progress upwards.
-    default_char : str, default: " "
+    default_char : NDArray[Char] | str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -57,18 +50,13 @@ class ProgressBar(Themable, Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether whitespace is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -84,7 +72,7 @@ class ProgressBar(Themable, Text):
         The array of characters for the gadget.
     colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str
+    default_char : NDArray[Char]
         Default background character.
     default_color_pair : ColorPair
         Default color pair of gadget.
@@ -124,13 +112,9 @@ class ProgressBar(Themable, Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -206,7 +190,7 @@ class ProgressBar(Themable, Text):
         *,
         is_horizontal: bool = True,
         animation_delay: float = 1 / 60,
-        default_char: str = " ",
+        default_char: NDArray[Char] | str = " ",
         default_color_pair: ColorPair = WHITE_ON_BLACK,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -215,8 +199,6 @@ class ProgressBar(Themable, Text):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             default_char=default_char,
@@ -228,8 +210,6 @@ class ProgressBar(Themable, Text):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self.animation_delay = animation_delay
         self._is_horizontal = is_horizontal
@@ -267,7 +247,7 @@ class ProgressBar(Themable, Text):
         x = int(x)
         smooth_bar = smooth_horizontal_bar(bar_width, 1, offset)
 
-        self.canvas[:] = style_char(self.default_char)
+        self.canvas[:] = self.default_char
         self.canvas["char"][:, x : x + len(smooth_bar)] = smooth_bar
         self.colors[:] = self.color_theme.progress_bar
         if offset != 0:
@@ -279,7 +259,7 @@ class ProgressBar(Themable, Text):
         y = int(y)
         smooth_bar = smooth_vertical_bar(bar_height, 1, offset)
 
-        self.canvas[:] = style_char(self.default_char)
+        self.canvas[:] = self.default_char
         self.canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
         self.colors[:] = self.color_theme.progress_bar
         if offset != 0:
@@ -294,7 +274,7 @@ class ProgressBar(Themable, Text):
         ):
             return
 
-        self.canvas[:] = style_char(self.default_char)
+        self.canvas[:] = self.default_char
 
         if self._is_horizontal:
             HSTEPS = 8 * self.width
@@ -325,7 +305,7 @@ class ProgressBar(Themable, Text):
         self.default_color_pair = self.color_theme.progress_bar
 
     def _repaint_progress_bar(self):
-        self.canvas[:] = style_char(self.default_char)
+        self.canvas[:] = self.default_char
         if self.is_horizontal:
             smooth_bar = smooth_horizontal_bar(self.width, self.progress)
             self.canvas["char"][:, : len(smooth_bar)] = smooth_bar

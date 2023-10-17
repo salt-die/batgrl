@@ -8,10 +8,9 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from ..colors import ColorPair
-from .gadget import (
+from .gadget_base import (
     Char,
-    Gadget,
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -53,7 +52,7 @@ def _check_layer_speeds(
     return speeds
 
 
-class Parallax(Gadget):
+class Parallax(GadgetBase):
     """
     A parallax gadget.
 
@@ -86,11 +85,6 @@ class Parallax(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -141,13 +135,9 @@ class Parallax(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -228,8 +218,6 @@ class Parallax(Gadget):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         self.layers: list[Image]
         """Layers of the parallax."""
@@ -250,8 +238,6 @@ class Parallax(Gadget):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self.speeds = _check_layer_speeds(self.layers, speeds)
@@ -376,8 +362,6 @@ class Parallax(Gadget):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ) -> "Parallax":
         """
         Create an :class:`Parallax` from an iterable of uint8 RGBA numpy array.
@@ -410,11 +394,6 @@ class Parallax(Gadget):
         is_enabled : bool, default: True
             Whether gadget is enabled. A disabled gadget is not painted and doesn't
             receive input events.
-        background_char : str | None, default: None
-            The background character of the gadget if the gadget is not transparent.
-            Character must be single unicode half-width grapheme.
-        background_color_pair : ColorPair | None, default: None
-            The background color pair of the gadget if the gadget is not transparent.
 
         Returns
         -------
@@ -432,8 +411,6 @@ class Parallax(Gadget):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         parallax.layers = [
             Image.from_texture(
@@ -464,8 +441,6 @@ class Parallax(Gadget):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ) -> "Parallax":
         """
         Create an :class:`Parallax` from an iterable of :class:`Image`.
@@ -498,11 +473,6 @@ class Parallax(Gadget):
         is_enabled : bool, default: True
             Whether gadget is enabled. A disabled gadget is not painted and doesn't
             receive input events.
-        background_char : str | None, default: None
-            The background character of the gadget if the gadget is not transparent.
-            Character must be single unicode half-width grapheme.
-        background_color_pair : ColorPair | None, default: None
-            The background color pair of the gadget if the gadget is not transparent.
 
         Returns
         -------
@@ -519,8 +489,6 @@ class Parallax(Gadget):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         parallax.layers = list(images)
         for image in parallax.layers:

@@ -12,10 +12,12 @@ from time import monotonic
 from types import ModuleType
 from typing import Literal
 
+from numpy.typing import NDArray
+
 from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.themable import Themable
-from .gadgets.gadget import Gadget, Size
+from .gadgets.gadget_base import Char, GadgetBase, Size, coerce_char, style_char
 from .io import (
     KeyEvent,
     MouseButton,
@@ -35,7 +37,7 @@ class App(ABC):
 
     Parameters
     ----------
-    background_char : str, default: " "
+    background_char : NDArray[Char] | str, default: " "
         Background character for root gadget.
     background_color_pair : ColorPair, default: BLACK_ON_BLACK
         Background color pair for root gadget.
@@ -62,7 +64,7 @@ class App(ABC):
 
     Attributes
     ----------
-    background_char : str
+    background_char : NDArray[Char]
         Background character for root gadget.
     background_color_pair : ColorPair
         Background color pair for root gadget.
@@ -82,7 +84,7 @@ class App(ABC):
         Path where stderr is saved.
     root : _Root | None
         Root of gadget tree.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Alias for :attr:`root.children`.
 
     Methods
@@ -102,7 +104,7 @@ class App(ABC):
     def __init__(
         self,
         *,
-        background_char: str = " ",
+        background_char: NDArray[Char] | str = " ",
         background_color_pair: ColorPair = BLACK_ON_BLACK,
         title: str | None = None,
         double_click_timeout: float = 0.5,
@@ -130,7 +132,7 @@ class App(ABC):
         )
         return (
             f"{type(self).__name__}(\n"
-            f"    background_char={self.background_char!r},\n"
+            f"    background_char={self.background_char},\n"
             f"    background_color_pair={(*self.background_color_pair,)},\n"
             f"    title={self.title!r},\n"
             f"    double_click_timeout={self.double_click_timeout},\n"
@@ -158,14 +160,14 @@ class App(ABC):
                     gadget.update_theme()
 
     @property
-    def background_char(self) -> str:
+    def background_char(self) -> NDArray[Char]:
         return self._background_char
 
     @background_char.setter
-    def background_char(self, background_char: str):
-        self._background_char = background_char
+    def background_char(self, char: NDArray[Char] | str):
+        self._background_char = coerce_char(char, style_char(" "))
         if self.root is not None:
-            self.root.background_char = background_char
+            self.root.background_char = self._background_char
 
     @property
     def background_color_pair(self) -> ColorPair:
@@ -324,30 +326,30 @@ class App(ABC):
             with env_in.raw_mode(), env_in.attach(read_from_input):
                 await asyncio.gather(self.on_start(), auto_render())
 
-    def add_gadget(self, gadget: Gadget):
+    def add_gadget(self, gadget: GadgetBase):
         """
         Alias for :attr:`root.add_gadget`.
 
         Parameters
         ----------
-        gadget : Gadget
+        gadget : GadgetBase
             A gadget to add as a child to the root gadget.
         """
         self.root.add_gadget(gadget)
 
-    def add_gadgets(self, *gadgets: Gadget):
+    def add_gadgets(self, *gadgets: GadgetBase):
         """
         Alias for :attr:`root.add_gadgets`.
 
         Parameters
         ----------
-        *gadgets : Gadget
+        \\*gadgets : GadgetBase
             Gadgets to add as children to the root gadget.
         """
         self.root.add_gadgets(*gadgets)
 
     @property
-    def children(self) -> list[Gadget] | None:
+    def children(self) -> list[GadgetBase] | None:
         """
         Alias for :attr:`root.children`.
         """
@@ -355,13 +357,13 @@ class App(ABC):
             return self.root.children
 
 
-def run_gadget_as_app(gadget: Gadget):
+def run_gadget_as_app(gadget: GadgetBase):
     """
     Run a gadget as a full-screen app.
 
     Parameters
     ----------
-    gadget : Gadget
+    gadget : GadgetBase
         A gadget to run as a full screen app.
     """
 

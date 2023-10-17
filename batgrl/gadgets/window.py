@@ -4,7 +4,7 @@ A movable, resizable window gadget.
 import numpy as np
 from wcwidth import wcswidth
 
-from ..colors import TRANSPARENT, AColor, ColorPair
+from ..colors import TRANSPARENT, AColor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.resizable import Resizable
@@ -19,6 +19,7 @@ from .gadget import (
     SizeHintDict,
     clamp,
 )
+from .gadget_base import GadgetBase
 from .graphics import Graphics, Interpolation
 from .text import Text
 
@@ -102,15 +103,10 @@ class Window(Themable, Focusable, Resizable, Graphics):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
-    view : Gadget
+    view : GadgetBase
         The windowed gadget.
     title : str
         Title of window.
@@ -170,13 +166,9 @@ class Window(Themable, Focusable, Resizable, Graphics):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -283,8 +275,6 @@ class Window(Themable, Focusable, Resizable, Graphics):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         self._title = title
 
@@ -305,8 +295,6 @@ class Window(Themable, Focusable, Resizable, Graphics):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self._view = None
@@ -338,14 +326,14 @@ class Window(Themable, Focusable, Resizable, Graphics):
             self._resize_min_width = clamp(min_width, w, None)
 
     @property
-    def view(self) -> Gadget | None:
+    def view(self) -> GadgetBase | None:
         """
         The windowed gadget.
         """
         return self._view
 
     @view.setter
-    def view(self, view: Gadget | None):
+    def view(self, view: GadgetBase | None):
         if self._view is not None:
             self.remove_gadget(self._view)
 

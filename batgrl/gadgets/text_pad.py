@@ -3,28 +3,22 @@ A text-pad gadget for multiline editable text.
 """
 from wcwidth import wcswidth
 
-from ..colors import Color, ColorPair
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
+from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .gadget import Gadget
-from .scroll_view import (
-    DEFAULT_INDICATOR_HOVER,
-    DEFAULT_INDICATOR_NORMAL,
-    DEFAULT_INDICATOR_PRESS,
-    DEFAULT_SCROLLBAR_COLOR,
-    ScrollView,
-)
-from .text import (
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    Text,
-    style_char,
 )
+from .scroll_view import ScrollView
+from .text import Text
 
 __all__ = [
     "Point",
@@ -39,7 +33,7 @@ __all__ = [
 WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
 
-class TextPad(Themable, Focusable, ScrollView):
+class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     """
     A text-pad gadget for multiline editable text.
 
@@ -47,32 +41,6 @@ class TextPad(Themable, Focusable, ScrollView):
 
     Parameters
     ----------
-    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
-        Scrollbar indicator hover color.
-    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
-        Scrollbar indicator press color.
-    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
-        Background color of scrollbar.
-    allow_vertical_scroll : bool, default: True
-        Allow vertical scrolling.
-    allow_horizontal_scroll : bool, default: True
-        Allow horizontal scrolling.
-    show_vertical_bar : bool, default: True
-        Show the vertical scrollbar.
-    show_horizontal_bar : bool, default: True
-        Show the horizontal scrollbar.
-    scrollwheel_enabled : bool, default: True
-        Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool, default: False
-        Allow scrolling with arrow keys.
-    is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
-        If true, gadget will not be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
-        Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -89,11 +57,6 @@ class TextPad(Themable, Focusable, ScrollView):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -103,46 +66,6 @@ class TextPad(Themable, Focusable, ScrollView):
         Return true if gadget has focus.
     any_focused : bool
         Return true if any gadget has focus.
-    view : Gadget | None
-        The scrolled gadget.
-    allow_vertical_scroll : bool
-        Allow vertical scrolling.
-    allow_horizontal_scroll : bool
-        Allow horizontal scrolling.
-    show_vertical_bar : bool
-        Show the vertical scrollbar.
-    show_horizontal_bar : bool
-        Show the horizontal scrollbar.
-    scrollwheel_enabled : bool
-        Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool
-        Allow scrolling with arrow keys.
-    scrollbar_color : Color
-        Background color of scrollbar.
-    indicator_normal_color : Color
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color
-        Scrollbar indicator hover color.
-    indicator_press_color : Color
-        Scrollbar indicator press color.
-    vertical_proportion : float
-        Vertical scroll position as a proportion of total.
-    horizontal_proportion : float
-        Horizontal scroll position as a proportion of total.
-    is_grabbable : bool
-        If false, grabbable behavior is disabled.
-    disable_ptf : bool
-        If true, gadget will not be pulled to front when grabbed.
-    mouse_button : MouseButton
-        Mouse button used for grabbing.
-    is_grabbed : bool
-        True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
     size : Size
         Size of gadget.
     height : int
@@ -175,13 +98,9 @@ class TextPad(Themable, Focusable, ScrollView):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -267,19 +186,6 @@ class TextPad(Themable, Focusable, ScrollView):
     def __init__(
         self,
         *,
-        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
-        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
-        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
-        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
-        allow_vertical_scroll: bool = True,
-        allow_horizontal_scroll: bool = True,
-        show_vertical_bar: bool = True,
-        show_horizontal_bar: bool = True,
-        scrollwheel_enabled: bool = True,
-        arrow_keys_enabled: bool = False,
-        is_grabbable: bool = True,
-        disable_ptf: bool = True,
-        mouse_button: MouseButton = MouseButton.LEFT,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -287,9 +193,16 @@ class TextPad(Themable, Focusable, ScrollView):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
+        super().__init__(
+            size=size,
+            pos=pos,
+            size_hint=size_hint,
+            pos_hint=pos_hint,
+            is_transparent=is_transparent,
+            is_visible=is_visible,
+            is_enabled=is_enabled,
+        )
         self._last_x = None
         self._selection_start = self._selection_end = None
         self._line_lengths = [0]
@@ -301,33 +214,13 @@ class TextPad(Themable, Focusable, ScrollView):
         self._cursor = Gadget(size=(1, 1), is_enabled=False, is_transparent=True)
         self._pad = Text(size=(1, 1))
         self._pad.add_gadget(self._cursor)
-
-        super().__init__(
-            indicator_normal_color=indicator_normal_color,
-            indicator_hover_color=indicator_hover_color,
-            indicator_press_color=indicator_press_color,
-            scrollbar_color=scrollbar_color,
-            allow_vertical_scroll=allow_vertical_scroll,
-            allow_horizontal_scroll=allow_horizontal_scroll,
-            show_vertical_bar=show_vertical_bar,
-            show_horizontal_bar=show_horizontal_bar,
-            scrollwheel_enabled=scrollwheel_enabled,
-            arrow_keys_enabled=arrow_keys_enabled,
-            is_grabbable=is_grabbable,
-            disable_ptf=disable_ptf,
-            mouse_button=mouse_button,
-            size=size,
-            pos=pos,
-            size_hint=size_hint,
-            pos_hint=pos_hint,
-            is_transparent=is_transparent,
-            is_visible=is_visible,
-            is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            arrow_keys_enabled=False,
+            is_grabbable=False,
         )
-
-        self.view = self._pad
+        self._scroll_view.view = self._pad
+        self.add_gadget(self._scroll_view)
 
     def update_theme(self):
         primary = self.color_theme.primary
@@ -335,17 +228,17 @@ class TextPad(Themable, Focusable, ScrollView):
         self._cursor.background_color_pair = primary.reversed()
         self._pad.colors[:] = primary
         self._pad.default_color_pair = primary
-        self.background_color_pair = primary.bg_color * 2
+        self._scroll_view.background_color_pair = primary.bg_color * 2
 
         self._highlight_selection()
 
     def on_size(self):
         super().on_size()
-
-        if self.port_width > self._pad.width:
-            self._pad.width = self.port_width
-        elif self.port_width < self._pad.width:
-            self._pad.width = max(self.port_width, max(self._line_lengths) + 1)
+        port_width = self._scroll_view.port_width
+        if port_width > self._pad.width:
+            self._pad.width = port_width
+        elif port_width < self._pad.width:
+            self._pad.width = max(port_width, max(self._line_lengths) + 1)
 
         self._highlight_selection()
 
@@ -416,17 +309,17 @@ class TextPad(Themable, Focusable, ScrollView):
         y, x = cursor
         self._cursor.pos = Point(y, x)
 
-        max_y = self.height - (self.show_horizontal_bar and 1) - 1
+        max_y = self._scroll_view.port_height - 1
         if (rel_y := y + self._pad.y) > max_y:
-            self._scroll_down(rel_y - max_y)
+            self._scroll_view._scroll_down(rel_y - max_y)
         elif rel_y < 0:
-            self._scroll_up(-rel_y)
+            self._scroll_view._scroll_up(-rel_y)
 
-        max_x = self.port_width - 1
+        max_x = self._scroll_view.port_width - 1
         if (rel_x := x + self._pad.x) > max_x:
-            self._scroll_right(rel_x - max_x)
+            self._scroll_view._scroll_right(rel_x - max_x)
         elif rel_x < 0:
-            self._scroll_left(-rel_x)
+            self._scroll_view._scroll_left(-rel_x)
 
         if self.is_selecting:
             self._selection_end = self.cursor
@@ -444,7 +337,7 @@ class TextPad(Themable, Focusable, ScrollView):
             else:
                 sy, sx = self._selection_start
                 ey, ex = self._selection_end
-            highlight = self.color_theme.pad_selection_highlight
+            highlight = self.color_theme.text_pad_selection_highlight
             ll = self._line_lengths
 
             if ey == sy:
@@ -455,7 +348,7 @@ class TextPad(Themable, Focusable, ScrollView):
                 for i in range(sy + 1, ey):
                     colors[i, : ll[i]] = highlight
         else:  # If no selection or selection is empty, add line highlight.
-            colors[self.cursor.y, :] = self.color_theme.pad_line_highlight
+            colors[self.cursor.y, :] = self.color_theme.text_pad_line_highlight
 
     @property
     def is_selecting(self) -> bool:
@@ -475,7 +368,7 @@ class TextPad(Themable, Focusable, ScrollView):
 
     @property
     def page_lines(self) -> int:
-        return self.height - 2 - self.show_horizontal_bar
+        return self._scroll_view.port_height
 
     def select(self):
         if not self.is_selecting:
@@ -522,7 +415,7 @@ class TextPad(Themable, Focusable, ScrollView):
             pad.width = len_start + 1
 
         canvas[sy, sx:len_start] = canvas[ey, ex : ex + len_end]
-        canvas[sy, len_start:] = style_char(pad.default_char)
+        canvas[sy, len_start:] = pad.default_char
 
         remaining = canvas[ey + 1 :]
         canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
@@ -566,7 +459,7 @@ class TextPad(Themable, Focusable, ScrollView):
 
             pad.height += newlines
             pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
-            pad.canvas[y, x : ll[y]] = style_char(pad.default_char)
+            pad.canvas[y, x : ll[y]] = pad.default_char
 
             ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
@@ -583,7 +476,7 @@ class TextPad(Themable, Focusable, ScrollView):
 
             pad.add_str(last, (last_y, 0))
             pad.canvas[last_y, width_last : ll[last_y]] = line_remaining
-            pad.canvas[last_y, ll[last_y] :] = style_char(pad.default_char)
+            pad.canvas[last_y, ll[last_y] :] = pad.default_char
 
             self.cursor = last_y, width_last
 

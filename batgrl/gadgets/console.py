@@ -11,18 +11,20 @@ from io import StringIO
 
 from wcwidth import wcswidth
 
-from ..colors import Color, ColorPair
 from ..io import Key, KeyEvent, Mods
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
-from .scroll_view import (
-    DEFAULT_INDICATOR_HOVER,
-    DEFAULT_INDICATOR_NORMAL,
-    DEFAULT_INDICATOR_PRESS,
-    DEFAULT_SCROLLBAR_COLOR,
-    ScrollView,
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
 )
+from .scroll_view import ScrollView
 from .text import Text
 from .textbox import Textbox
 
@@ -32,7 +34,7 @@ PROMPT_1 = ">>> "
 PROMPT_2 = "... "
 DEFAULT_BANNER = (
     "Welcome to the batgrl interactive console!\n"
-    'The root gadget is "root", the running app is "app" and event loop is "loop".\n'
+    'The root gadget is "root" and the running app is "app".\n'
     f"Python {sys.version} on {sys.platform}\n"
     'Type "help", "copyright", "credits" or "license" for more information.'
 )
@@ -217,7 +219,18 @@ class _ConsoleTextbox(Textbox):
                 self.focus()
 
 
-class Console(Themable, Focusable, Gadget):
+class _Prompt(Text):
+    def set_text(self, text: str, **kwargs):
+        # To fake a 0-width prompt move the prompt offscreen when text is empty.
+        self._text = text
+        if len(text) == 0:
+            self.left = -1
+        else:
+            self.left = 0
+        super().set_text(text, **kwargs)
+
+
+class Console(Themable, Focusable, GadgetBase):
     """
     An interactive python console gadget.
 
@@ -226,14 +239,6 @@ class Console(Themable, Focusable, Gadget):
     banner : str | None, default: None
         The banner to print in the console before first interaction. If not provided, a
         default banner is printed.
-    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
-        Background color of scrollbar.
-    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
-        Scrollbar indicator hover color.
-    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
-        Scrollbar indicator press color.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -250,22 +255,9 @@ class Console(Themable, Focusable, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
-    scrollbar_color : Color
-        Background color of scrollbar.
-    indicator_normal_color : Color
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color
-        Scrollbar indicator hover color.
-    indicator_press_color : Color
-        Scrollbar indicator press color.
     is_focused : bool
         True if gadget has focus.
     any_focused : bool
@@ -302,13 +294,9 @@ class Console(Themable, Focusable, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -388,10 +376,6 @@ class Console(Themable, Focusable, Gadget):
     def __init__(
         self,
         banner: str | None = None,
-        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
-        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
-        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
-        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -399,8 +383,6 @@ class Console(Themable, Focusable, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -410,8 +392,6 @@ class Console(Themable, Focusable, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self._output = Text(
             size_hint={"height_hint": 1.0, "width_hint": 1.0, "height_offset": -1},
@@ -419,7 +399,7 @@ class Console(Themable, Focusable, Gadget):
             is_visible=False,
             size=(1, 1),
         )
-        self._prompt = Text(pos_hint={"y_hint": 1.0, "anchor": "bottom"})
+        self._prompt = _Prompt(pos_hint={"y_hint": 1.0, "anchor": "bottom"})
         self._prompt.set_text(PROMPT_1)
         self._min_line_length = self._prompt.width + 1
         self._input_mode: bool = False
@@ -461,12 +441,13 @@ class Console(Themable, Focusable, Gadget):
             enter_callback=enter_callback,
         )
 
-        def fix_pos():
+        def fix_input_pos():
             self._input.left = self._prompt.right
 
-        self._input.subscribe(self._prompt, "size", fix_pos)
+        self._input.subscribe(self._prompt, "size", fix_input_pos)
+        self._input.subscribe(self._prompt, "pos", fix_input_pos)
 
-        self._container = Gadget(size=(1, self._min_line_length))
+        self._container = Gadget(size=(1, self._min_line_length), background_char=" ")
         self._container.add_gadgets(self._output, self._prompt, self._input)
         self._scroll_view = ScrollView(
             size_hint={"height_hint": 1.0, "width_hint": 1.0}, arrow_keys_enabled=False
@@ -474,10 +455,6 @@ class Console(Themable, Focusable, Gadget):
         self._scroll_view.view = self._container
         self.add_gadget(self._scroll_view)
 
-        self.scrollbar_color = scrollbar_color
-        self.indicator_normal_color = indicator_normal_color
-        self.indicator_hover_color = indicator_hover_color
-        self.indicator_press_color = indicator_press_color
         self._update_bars()
 
         if banner is None:
@@ -485,45 +462,13 @@ class Console(Themable, Focusable, Gadget):
         else:
             self._add_text_to_output(str(banner))
 
-    @property
-    def scrollbar_color(self) -> Color:
-        return self._scroll_view.scrollbar_color
-
-    @scrollbar_color.setter
-    def scrollbar_color(self, color: Color):
-        self._scroll_view.scrollbar_color = color
-
-    @property
-    def indicator_normal_color(self) -> Color:
-        return self._scroll_view.indicator_normal_color
-
-    @indicator_normal_color.setter
-    def indicator_normal_color(self, color: Color):
-        self._scroll_view.indicator_normal_color = color
-
-    @property
-    def indicator_hover_color(self) -> Color:
-        return self._scroll_view.indicator_hover_color
-
-    @indicator_hover_color.setter
-    def indicator_hover_color(self, color: Color):
-        self._scroll_view.indicator_hover_color = color
-
-    @property
-    def indicator_press_color(self) -> Color:
-        return self._scroll_view.indicator_press_color
-
-    @indicator_press_color.setter
-    def indicator_press_color(self, color: Color):
-        self._scroll_view.indicator_press_color = color
-
     def _update_bars(self):
         self._scroll_view.show_vertical_bar = self._container.height > self.height
         self._scroll_view.show_horizontal_bar = self._container.width > self.width
 
     def _add_text_to_output(self, text: str, with_prompt: bool = False):
         if with_prompt:
-            prompt = "\n".join("".join(line) for line in self._prompt.canvas["char"])
+            prompt = self._prompt._text
             text = f"{prompt}{text}"
         else:
             text = text.rstrip("\n")
@@ -554,7 +499,6 @@ class Console(Themable, Focusable, Gadget):
 
     def update_theme(self):
         primary = self.color_theme.primary
-        self._scroll_view.background_color_pair = primary
         self._container.background_color_pair = primary
         self._prompt.colors[:] = primary
         self._prompt.default_color_pair = primary
@@ -568,7 +512,7 @@ class Console(Themable, Focusable, Gadget):
         super().on_add()
         self._console.locals["app"] = self.app
         self._console.locals["root"] = self.root
-        self._console._loop = self._console.locals["loop"] = asyncio.get_event_loop()
+        self._console._loop = asyncio.get_event_loop()
 
     def on_focus(self):
         self._input.focus()

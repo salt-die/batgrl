@@ -5,18 +5,10 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 
 from ..colors import WHITE_ON_BLACK, ColorPair
-from .text import (
-    Point,
-    PosHint,
-    PosHintDict,
-    Size,
-    SizeHint,
-    SizeHintDict,
-    Text,
-    style_char,
-)
+from .text import Char, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Text
 from .text_tools import binary_to_braille
 
 __all__ = [
@@ -38,7 +30,7 @@ class BrailleImage(Text):
     ----------
     path : pathlib.Path
         Path to image.
-    default_char : str, default: " "
+    default_char : NDArray[Char] | str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -52,18 +44,13 @@ class BrailleImage(Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether whitespace is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -73,7 +60,7 @@ class BrailleImage(Text):
         The array of characters for the gadget.
     colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str
+    default_char : NDArray[Char]
         Default background character.
     default_color_pair : ColorPair
         Default color pair of gadget.
@@ -113,13 +100,9 @@ class BrailleImage(Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -192,7 +175,7 @@ class BrailleImage(Text):
         self,
         *,
         path: Path,
-        default_char: str = " ",
+        default_char: NDArray[Char] | str = " ",
         default_color_pair: ColorPair = WHITE_ON_BLACK,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -201,8 +184,6 @@ class BrailleImage(Text):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             default_char=default_char,
@@ -214,8 +195,6 @@ class BrailleImage(Text):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self.path = path
 
@@ -231,7 +210,7 @@ class BrailleImage(Text):
     def on_size(self):
         h, w = self._size
 
-        self.canvas = np.full((h, w), style_char(self.default_char))
+        self.canvas = np.full((h, w), self.default_char)
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self._load_texture()
@@ -262,20 +241,13 @@ class BrailleImage(Text):
 
         ndots = where_dots.sum(axis=(2, 3))
         ndots_neg = 8 - ndots
-
-        background = rgb_sectioned.copy()
-        background[where_dots] = 0
-        with np.errstate(divide="ignore", invalid="ignore"):
-            bg = (
-                background.sum(axis=(2, 3)) / ndots_neg[..., None]
-            )  # average of colors darker than `average_lightness`
+        ndots[ndots == 0] = 1
+        ndots_neg[ndots_neg == 0] = 1
 
         foreground = rgb_sectioned.copy()
         foreground[~where_dots] = 0
-        with np.errstate(divide="ignore", invalid="ignore"):
-            fg = (
-                foreground.sum(axis=(2, 3)) / ndots[..., None]
-            )  # average of colors lighter than `average_lightness`
+        self.colors[..., :3] = foreground.sum(axis=(2, 3)) / ndots[..., None]
 
-        self.colors[..., :3] = np.where(np.isin(fg, (np.nan, np.inf)), bg, fg)
-        self.colors[..., 3:] = np.where(np.isin(bg, (np.nan, np.inf)), fg, bg)
+        background = rgb_sectioned.copy()
+        background[where_dots] = 0
+        self.colors[..., 3:] = background.sum(axis=(2, 3)) / ndots_neg[..., None]

@@ -3,8 +3,9 @@ from numbers import Real
 from wcwidth import wcswidth
 
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
-from .gadget import (
-    Gadget,
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -49,7 +50,7 @@ class _BarChartProperty:
         instance.build_chart()
 
 
-class BarChart(Gadget):
+class BarChart(GadgetBase):
     """
     A bar chart gadget.
 
@@ -87,11 +88,6 @@ class BarChart(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -143,13 +139,9 @@ class BarChart(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -249,8 +241,6 @@ class BarChart(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -260,8 +250,6 @@ class BarChart(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self._bars = Text()
@@ -274,8 +262,11 @@ class BarChart(Gadget):
             disable_ptf=True,
         )
         self._scrollview.view = self._bars
-
-        self.add_gadgets(self._scrollview, self._y_ticks, self._y_label_gadget)
+        self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._container.add_gadgets(
+            self._scrollview, self._y_ticks, self._y_label_gadget
+        )
+        self.add_gadget(self._container)
 
         self._data = data
         self._min_y = min_y
@@ -296,16 +287,13 @@ class BarChart(Gadget):
 
     @chart_color_pair.setter
     def chart_color_pair(self, chart_color_pair: ColorPair):
-        # Remove any gadget transparency
-        self.background_char = " "
-        self.background_color_pair = chart_color_pair
-        self.is_transparent = False
-
         self._chart_color_pair = chart_color_pair
 
         for child in self.walk():
             if isinstance(child, Text):
                 child.colors[:] = chart_color_pair
+            elif isinstance(child, Gadget):
+                child.background_color_pair = chart_color_pair
 
         self.build_chart()
 

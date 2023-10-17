@@ -5,6 +5,7 @@ from collections.abc import Callable, Hashable, Iterable, Iterator
 from inspect import signature
 from typing import Optional, Union
 
+from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..colors import ColorPair
@@ -15,7 +16,16 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
+from .gadget import (
+    Char,
+    Gadget,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
 from .grid_layout import GridLayout
 from .text import Text
 
@@ -75,7 +85,16 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         would be "off".
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-        size : Size, default: Size(10, 10)
+    background_char : NDArray[Char] | str | None, default: None
+        The background character of the gadget. If not given and not transparent, the
+        background characters of the root gadget are painted. If not given and
+        transparent, characters behind the gadget are visible. The character must be
+        single unicode half-width grapheme.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the gadget. If not given and not transparent, the
+        background color pair of the root gadget is painted. If not given and
+        transparent, the color pairs behind the gadget are visible.
+    size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
@@ -91,11 +110,6 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -124,6 +138,10 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+    background_char : NDArray[Char] | None
+        The background character of the gadget.
+    background_color_pair : ColorPair | None
+        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -156,13 +174,9 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -260,7 +274,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
+        background_char: NDArray[Char] | str | None = None,
         background_color_pair: ColorPair | None = None,
     ):
         self.normal_color_pair = (0,) * 6  # Temporary assignment
@@ -414,6 +428,15 @@ class Menu(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
+    background_char : NDArray[Char] | str | None, default: None
+        The background character of the gadget. If not given and not transparent, the
+        background characters of the root gadget are painted. If not given and
+        transparent, characters behind the gadget are visible. The character must be
+        single unicode half-width grapheme.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the gadget. If not given and not transparent, the
+        background color pair of the root gadget is painted. If not given and
+        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -430,11 +453,6 @@ class Menu(GridLayout):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -462,6 +480,10 @@ class Menu(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int
         Vertical spacing between children.
+    background_char : NDArray[Char] | None
+        The background character of the gadget.
+    background_color_pair : ColorPair | None
+        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -494,13 +516,9 @@ class Menu(GridLayout):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -592,7 +610,7 @@ class Menu(GridLayout):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
+        background_char: NDArray[Char] | str | None = None,
         background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
@@ -766,7 +784,7 @@ class Menu(GridLayout):
         pos: Point = Point(0, 0),
         close_on_release: bool = True,
         close_on_click: bool = True,
-    ) -> Iterator[Gadget]:
+    ) -> Iterator["Menu"]:
         """
         Create and yield menus from a dict of dicts. Callables should either have no
         arguments for a normal menu item, or one argument for a toggle menu item.
@@ -784,8 +802,8 @@ class Menu(GridLayout):
 
         Yields
         ------
-        Gadget
-            A gadget that makes up the menu.
+        Menu
+            The menu or one of its submenus.
         """
         height = len(menu)
         width = max(
@@ -918,6 +936,15 @@ class MenuBar(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
+    background_char : NDArray[Char] | str | None, default: None
+        The background character of the gadget. If not given and not transparent, the
+        background characters of the root gadget are painted. If not given and
+        transparent, characters behind the gadget are visible. The character must be
+        single unicode half-width grapheme.
+    background_color_pair : ColorPair | None, default: None
+        The background color pair of the gadget. If not given and not transparent, the
+        background color pair of the root gadget is painted. If not given and
+        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -934,11 +961,6 @@ class MenuBar(GridLayout):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -964,6 +986,10 @@ class MenuBar(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int
         Vertical spacing between children.
+    background_char : NDArray[Char] | None
+        The background character of the gadget.
+    background_color_pair : ColorPair | None
+        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -996,13 +1022,9 @@ class MenuBar(GridLayout):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -1081,7 +1103,7 @@ class MenuBar(GridLayout):
         pos: Point = Point(0, 0),
         close_on_release: bool = True,
         close_on_click: bool = True,
-    ) -> Iterator[Gadget]:
+    ) -> Iterator[Union[Menu, "MenuBar"]]:
         """
         Create and yield a menu bar and menus from an iterable of
         `tuple[str, MenuDict]`.
@@ -1100,8 +1122,8 @@ class MenuBar(GridLayout):
 
         Yields
         ------
-        Gadget
-            A gadget that makes up the menu bar.
+        Menu | "MenuBar"
+            A menu or submenu of the menu bar or the menu bar.
         """
         menus = list(iter)
 

@@ -1,11 +1,13 @@
 """
 A scrollable view gadget.
 """
-from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair
+from ..colors import Color
 from ..io import KeyEvent, MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
-from .gadget import (
-    Gadget,
+from .behaviors.themable import Themable
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -19,10 +21,6 @@ from .text import Text
 from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 
 __all__ = [
-    "DEFAULT_INDICATOR_HOVER",
-    "DEFAULT_INDICATOR_NORMAL",
-    "DEFAULT_INDICATOR_PRESS",
-    "DEFAULT_SCROLLBAR_COLOR",
     "Point",
     "PosHint",
     "PosHintDict",
@@ -32,13 +30,8 @@ __all__ = [
     "SizeHintDict",
 ]
 
-DEFAULT_SCROLLBAR_COLOR = Color.from_hex("070C25")
-DEFAULT_INDICATOR_NORMAL = Color.from_hex("0E1843")
-DEFAULT_INDICATOR_HOVER = Color.from_hex("111E4F")
-DEFAULT_INDICATOR_PRESS = Color.from_hex("172868")
 
-
-class _ScrollBarBase(Grabbable, Text):
+class _ScrollbarBase(Grabbable, Text):
     length: int
 
     def __init__(self):
@@ -65,16 +58,16 @@ class _ScrollBarBase(Grabbable, Text):
         sv: ScrollView = self.parent
 
         if self.is_grabbed:
-            indicator_color = sv._indicator_press_color
+            indicator_color = sv.color_theme.scroll_view_indicator_press_color
         elif self.is_hovered:
-            indicator_color = sv._indicator_hover_color
+            indicator_color = sv.color_theme.scroll_view_indicator_hover_color
         else:
-            indicator_color = sv._indicator_normal_color
+            indicator_color = sv.color_theme.scroll_view_indicator_normal_color
 
         self.canvas["char"] = " "
 
         self.colors[..., :3] = indicator_color
-        self.colors[..., 3:] = sv._scrollbar_color
+        self.colors[..., 3:] = sv.color_theme.scroll_view_scrollbar_color
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
@@ -91,7 +84,7 @@ class _ScrollBarBase(Grabbable, Text):
         self.paint_indicator()
 
 
-class _VerticalScrollbar(_ScrollBarBase):
+class _VerticalScrollbar(_ScrollbarBase):
     @property
     def length(self) -> int:
         return self.height
@@ -112,7 +105,9 @@ class _VerticalScrollbar(_ScrollBarBase):
         self.canvas["char"][start:stop].T[:] = smooth_bar
 
         y_offset = offset != 0
-        self.colors[start + y_offset : stop, :, :3] = sv._scrollbar_color
+        self.colors[
+            start + y_offset : stop, :, :3
+        ] = sv.color_theme.scroll_view_scrollbar_color
         self.colors[start + y_offset : stop, :, 3:] = indicator_color
 
     def on_mouse(self, mouse_event):
@@ -152,7 +147,7 @@ class _VerticalScrollbar(_ScrollBarBase):
             sv.vertical_proportion += self.mouse_dy / self.fill_length
 
 
-class _HorizontalScrollbar(_ScrollBarBase):
+class _HorizontalScrollbar(_ScrollbarBase):
     @property
     def length(self):
         return self.width
@@ -169,7 +164,7 @@ class _HorizontalScrollbar(_ScrollBarBase):
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
         if offset != 0:
-            self.colors[:, start, :3] = sv._scrollbar_color
+            self.colors[:, start, :3] = sv.color_theme.scroll_view_scrollbar_color
             self.colors[:, start, 3:] = indicator_color
 
     def on_mouse(self, mouse_event):
@@ -208,7 +203,7 @@ class _HorizontalScrollbar(_ScrollBarBase):
             sv.horizontal_proportion += self.mouse_dx / self.fill_length
 
 
-class ScrollView(Grabbable, Gadget):
+class ScrollView(Themable, Grabbable, GadgetBase):
     """
     A scrollable view gadget.
 
@@ -229,14 +224,6 @@ class ScrollView(Grabbable, Gadget):
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool, default: True
         Allow scrolling with arrow keys.
-    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
-        Background color of scrollbar.
-    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
-        Scrollbar indicator hover color.
-    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
-        Scrollbar indicator press color.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
     disable_ptf : bool, default: False
@@ -259,15 +246,10 @@ class ScrollView(Grabbable, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: DEFAULT_COLOR_THEME.primary
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
-    view : Gadget | None
+    view : GadgetBase | None
         The scrolled gadget.
     allow_vertical_scroll : bool
         Allow vertical scrolling.
@@ -281,14 +263,6 @@ class ScrollView(Grabbable, Gadget):
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool
         Allow scrolling with arrow keys.
-    scrollbar_color : Color
-        Background color of scrollbar.
-    indicator_normal_color : Color
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color
-        Scrollbar indicator hover color.
-    indicator_press_color : Color
-        Scrollbar indicator press color.
     vertical_proportion : float
         Vertical scroll position as a proportion of total.
     horizontal_proportion : float
@@ -339,13 +313,9 @@ class ScrollView(Grabbable, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -423,10 +393,6 @@ class ScrollView(Grabbable, Gadget):
         show_horizontal_bar: bool = True,
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
-        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
-        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
-        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
-        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
         is_grabbable: bool = True,
         disable_ptf: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
@@ -437,8 +403,6 @@ class ScrollView(Grabbable, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = DEFAULT_COLOR_THEME.primary,
     ):
         super().__init__(
             is_grabbable=is_grabbable,
@@ -451,35 +415,38 @@ class ScrollView(Grabbable, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         self.allow_vertical_scroll = allow_vertical_scroll
         self.allow_horizontal_scroll = allow_horizontal_scroll
         self.scrollwheel_enabled = scrollwheel_enabled
         self.arrow_keys_enabled = arrow_keys_enabled
 
-        self._scrollbar_color = scrollbar_color
-        self._indicator_normal_color = indicator_normal_color
-        self._indicator_hover_color = indicator_hover_color
-        self._indicator_press_color = indicator_press_color
-
         self._vertical_proportion = 0
         self._horizontal_proportion = 0
         self._corner = Gadget(
             size=(1, 2),
             pos_hint={"y_hint": 1.0, "x_hint": 1.0, "anchor": "bottom-right"},
-            background_color_pair=scrollbar_color * 2,
             is_enabled=show_horizontal_bar and show_vertical_bar,
         )
         self._vertical_bar = _VerticalScrollbar()
         self._horizontal_bar = _HorizontalScrollbar()
         self._view = None
-
-        self.add_gadgets(self._corner, self._vertical_bar, self._horizontal_bar)
+        self._background = Gadget(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, background_char=" "
+        )
+        self.add_gadgets(
+            self._background, self._corner, self._vertical_bar, self._horizontal_bar
+        )
 
         self.show_horizontal_bar = show_horizontal_bar
         self.show_vertical_bar = show_vertical_bar
+
+    def update_theme(self):
+        self._background.background_color_pair = self.color_theme.primary.bg_color * 2
+        self._corner.background_color_pair = (
+            self.color_theme.scroll_view_scrollbar_color * 2
+        )
+        self._update_port_and_scrollbar()
 
     @property
     def show_vertical_bar(self) -> bool:
@@ -500,43 +467,6 @@ class ScrollView(Grabbable, Gadget):
     def show_horizontal_bar(self, show: bool):
         self._horizontal_bar.is_enabled = show
         self.on_size()
-
-    @property
-    def scrollbar_color(self) -> Color:
-        return self._scrollbar_color
-
-    @scrollbar_color.setter
-    def scrollbar_color(self, scrollbar_color: Color):
-        self._scrollbar_color = scrollbar_color
-        self._corner.background_color_pair = scrollbar_color * 2
-        self._update_port_and_scrollbar()
-
-    @property
-    def indicator_normal_color(self) -> Color:
-        return self._indicator_normal_color
-
-    @indicator_normal_color.setter
-    def indicator_normal_color(self, indicator_normal_color: Color):
-        self._indicator_normal_color = indicator_normal_color
-        self._update_port_and_scrollbar()
-
-    @property
-    def indicator_hover_color(self) -> Color:
-        return self._indicator_hover_color
-
-    @indicator_hover_color.setter
-    def indicator_hover_color(self, indicator_hover_color: Color):
-        self._indicator_hover_color = indicator_hover_color
-        self._update_port_and_scrollbar()
-
-    @property
-    def indicator_press_color(self) -> Color:
-        return self._indicator_press_color
-
-    @indicator_press_color.setter
-    def indicator_press_color(self, indicator_press_color: Color):
-        self._indicator_press_color = indicator_press_color
-        self._update_port_and_scrollbar()
 
     @property
     def vertical_proportion(self) -> float:
@@ -614,11 +544,11 @@ class ScrollView(Grabbable, Gadget):
             self._horizontal_bar.paint_indicator()
 
     @property
-    def view(self) -> Gadget | None:
+    def view(self) -> GadgetBase | None:
         return self._view
 
     @view.setter
-    def view(self, view: Gadget | None):
+    def view(self, view: GadgetBase | None):
         if self._view is not None:
             self.remove_gadget(self._view)
 
@@ -626,7 +556,7 @@ class ScrollView(Grabbable, Gadget):
 
         if view is not None:
             self.add_gadget(view)
-            self.children.insert(0, self.children.pop())  # Move view below scrollbars.
+            self.children.insert(1, self.children.pop())  # Move view below scrollbars.
 
             def update_proportion():
                 y, x = self._view.pos
@@ -638,7 +568,7 @@ class ScrollView(Grabbable, Gadget):
             self.subscribe(view, "size", update_proportion)
             self._update_port_and_scrollbar()
 
-    def remove_gadget(self, gadget: Gadget):
+    def remove_gadget(self, gadget: GadgetBase):
         if gadget is self._view:
             self._view = None
             self.unsubscribe(gadget, "size")

@@ -85,8 +85,8 @@ BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)
 
 DEFAULT_COLOR_THEME = ColorTheme.from_hexes(
     primary="F6A7A9070C25",
-    pad_line_highlight="F6A7A90C0E30",
-    pad_selection_highlight="F6A7A90F1847",
+    text_pad_line_highlight="F6A7A90C0E30",
+    text_pad_selection_highlight="F6A7A90F1847",
     textbox_primary="FFF0F6070C25",
     textbox_selection_highlight="FFF0F60F1847",
     textbox_placeholder="2A3A92070C25",
@@ -107,5 +107,9 @@ DEFAULT_COLOR_THEME = ColorTheme.from_hexes(
     data_table_selected="ECF3FF111F5E",
     data_table_selected_hover="ECF3FF1B244B",
     progress_bar="FFE0DF2A3CA0",
+    scroll_view_scrollbar_color="070C25",
+    scroll_view_indicator_normal_color="0E1843",
+    scroll_view_indicator_hover_color="111E4F",
+    scroll_view_indicator_press_color="172868",
 )
 """Default color theme."""

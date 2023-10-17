@@ -2,16 +2,25 @@
 A tabbed gadget.
 """
 import asyncio
-from math import ceil
 
-from ..colors import ColorPair, lerp_colors
+from ..colors import lerp_colors
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import (
     ButtonState,
     ToggleButtonBehavior,
     ToggleState,
 )
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
+from .gadget import Gadget
+from .gadget_base import (
+    GadgetBase,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+    style_char,
+)
 from .text import Text
 
 __all__ = [
@@ -41,19 +50,23 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
         if self.toggle_state is ToggleState.ON:
             self.content.is_enabled = True
 
-            tabbed = self.parent.parent
+            tabbed: Tabs = self.parent.parent
 
             tabbed._history.remove(self.title)
             tabbed._history.append(self.title)
-
-            tabbed._tab_underline.width = self.width + 2
-            tabbed._tab_underline.x = self.x - 1
 
             tabbed._active_tab = self.title
 
             if tabbed._underline_task is not None:
                 tabbed._underline_task.cancel()
-            tabbed._underline_task = asyncio.create_task(tabbed._animate_underline())
+            tabbed._underline_task = asyncio.create_task(
+                tabbed._tab_underline.tween(
+                    duration=0.5,
+                    easing="out_bounce",
+                    x=self.x - 1,
+                    width=self.width + 2,
+                )
+            )
         else:
             self.content.is_enabled = False
 
@@ -82,7 +95,7 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
         self._update()
 
 
-class Tabs(Themable, Gadget):
+class Tabs(Themable, GadgetBase):
     """
     A tabbed gadget.
 
@@ -104,11 +117,6 @@ class Tabs(Themable, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -144,13 +152,9 @@ class Tabs(Themable, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -229,8 +233,6 @@ class Tabs(Themable, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -240,8 +242,6 @@ class Tabs(Themable, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self.tabs: dict[str, Gadget] = {}
@@ -262,7 +262,25 @@ class Tabs(Themable, Gadget):
             size_hint={"height_hint": 1.0, "width_hint": 1.0, "height_offset": -2},
         )
 
-        self._tab_underline = Text(size=(1, 1), pos=(1, 0), is_enabled=False)
+        self._tab_underline = Text(
+            size=(1, 1),
+            pos=(1, 0),
+            is_enabled=False,
+            default_char=style_char("━", bold=True),
+            default_color_pair=self.color_theme.titlebar_normal,
+        )
+        tab_underline_left = Text(
+            size=(1, 1),
+            default_char=style_char("╺", bold=True),
+            default_color_pair=self.color_theme.titlebar_normal,
+        )
+        tab_underline_right = Text(
+            size=(1, 1),
+            pos_hint={"x_hint": 1.0, "anchor": "right"},
+            default_char=style_char("╸", bold=True),
+            default_color_pair=self.color_theme.titlebar_normal,
+        )
+        self._tab_underline.add_gadgets(tab_underline_left, tab_underline_right)
 
         self._active_tab = None
         self._history = []  # Used to select the last viewed tab when a tab is removed.
@@ -271,23 +289,6 @@ class Tabs(Themable, Gadget):
         self.add_gadgets(
             self.tab_bar, self.separator, self._tab_underline, self.tab_window
         )
-
-    async def _animate_underline(self):
-        underline = self._tab_underline
-
-        underline.is_enabled = True
-        underline.colors[:] = self.color_theme.titlebar_inactive
-        underline.canvas["bold"] = False
-
-        i = ceil(underline.width / 2) - 2
-        while i >= 0:
-            underline.canvas["bold"][0, i:-i] = True
-            underline.colors[0, i + 1 : -i - 1] = self.color_theme.titlebar_normal
-            underline.canvas["char"] = "━"
-            underline.canvas["char"][0, i] = "╸"
-            underline.canvas["char"][0, -i - 1] = "╺"
-            i -= 1
-            await asyncio.sleep(1 / 60)
 
     def _reposition_tabs(self):
         x = 1
@@ -306,7 +307,7 @@ class Tabs(Themable, Gadget):
         self._tab_underline.default_color_pair = title_active
         self._tab_underline.colors[:] = title_active
 
-    def add_tab(self, title: str, content: Gadget):
+    def add_tab(self, title: str, content: GadgetBase):
         """
         Add a new tab. Tab titles are unique.
 
@@ -314,7 +315,7 @@ class Tabs(Themable, Gadget):
         ----------
         title : str
             Title of tab.
-        content : Gadget
+        content : GadgetBase
             Content of the tab.
         """
         if title in self.tabs:
@@ -329,6 +330,7 @@ class Tabs(Themable, Gadget):
         self.tab_window.add_gadget(content)
         self._history.append(title)
         self.tabs[title].toggle_state = ToggleState.ON
+        self._tab_underline.is_enabled = True
 
     def remove_tab(self, title: str):
         """

@@ -8,10 +8,9 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget import (
+from .gadget_base import (
     Char,
-    ColorPair,
-    Gadget,
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -52,7 +51,7 @@ def _check_frame_durations(
     return frame_durations
 
 
-class Animation(Gadget):
+class Animation(GadgetBase):
     """
     An animation gadget.
 
@@ -89,11 +88,6 @@ class Animation(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -141,13 +135,9 @@ class Animation(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -236,8 +226,6 @@ class Animation(Gadget):
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         self.frames: list[Image] = []
         """Frames of the animation."""
@@ -250,8 +238,6 @@ class Animation(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         if path is not None:
@@ -401,8 +387,6 @@ class Animation(Gadget):
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ) -> "Animation":
         """
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
@@ -439,11 +423,6 @@ class Animation(Gadget):
         is_enabled : bool, default: True
             Whether gadget is enabled. A disabled gadget is not painted and doesn't
             receive input events.
-        background_char : str | None, default: None
-            The background character of the gadget if the gadget is not transparent.
-            Character must be single unicode half-width grapheme.
-        background_color_pair : ColorPair | None, default: None
-            The background color pair of the gadget if the gadget is not transparent.
 
         Returns
         -------
@@ -463,8 +442,6 @@ class Animation(Gadget):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         animation.frames = [
             Image.from_texture(
@@ -499,8 +476,6 @@ class Animation(Gadget):
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ) -> "Animation":
         """
         Create an :class:`Animation` from an iterable of :class:`Image`.
@@ -537,11 +512,6 @@ class Animation(Gadget):
         is_enabled : bool, default: True
             Whether gadget is enabled. A disabled gadget is not painted and doesn't
             receive input events.
-        background_char : str | None, default: None
-            The background character of the gadget if the gadget is not transparent.
-            Character must be single unicode half-width grapheme.
-        background_color_pair : ColorPair | None, default: None
-            The background color pair of the gadget if the gadget is not transparent.
 
         Returns
         -------
@@ -561,8 +531,6 @@ class Animation(Gadget):
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
         animation.frames = list(images)
         for image in animation.frames:

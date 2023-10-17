@@ -4,10 +4,21 @@ can be selected and toggled open or closed.
 """
 from collections.abc import Iterator
 
+from numpy.typing import NDArray
+
 from ..colors import WHITE_ON_BLACK, ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict
+from .gadget_base import (
+    Char,
+    GadgetBase,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
 from .text import Text
 
 __all__ = [
@@ -33,7 +44,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         True if node is a leaf node.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    default_char : str, default: " "
+    default_char : NDArray[Char] | str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -47,18 +58,13 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether whitespace is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -70,7 +76,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         The array of characters for the gadget.
     colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str
+    default_char : NDArray[Char]
         Default background character.
     default_color_pair : ColorPair
         Default color pair of gadget.
@@ -110,13 +116,9 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -211,7 +213,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self,
         is_leaf=True,
         always_release: bool = False,
-        default_char: str = " ",
+        default_char: NDArray[Char] | str = " ",
         default_color_pair: ColorPair = WHITE_ON_BLACK,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -220,8 +222,6 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         self.is_leaf = is_leaf
 
@@ -245,8 +245,6 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
     def _repaint(self):
@@ -361,7 +359,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self.toggle()
 
 
-class TreeView(Gadget):
+class TreeView(GadgetBase):
     """
     Base for creating tree-like views.
 
@@ -385,11 +383,6 @@ class TreeView(Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -427,13 +420,9 @@ class TreeView(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -508,8 +497,6 @@ class TreeView(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         self.selected_node = None
         self.root_node = root_node
@@ -523,8 +510,6 @@ class TreeView(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         root_node.toggle()

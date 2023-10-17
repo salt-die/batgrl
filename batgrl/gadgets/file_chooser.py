@@ -7,22 +7,16 @@ from pathlib import Path
 
 from wcwidth import wcswidth
 
-from ..colors import Color, ColorPair
-from ..io import MouseButton
-from .behaviors.themable import Themable
-from .scroll_view import (
-    DEFAULT_INDICATOR_HOVER,
-    DEFAULT_INDICATOR_NORMAL,
-    DEFAULT_INDICATOR_PRESS,
-    DEFAULT_SCROLLBAR_COLOR,
+from .gadget_base import (
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
-    ScrollView,
     Size,
     SizeHint,
     SizeHintDict,
 )
+from .scroll_view import ScrollView
 from .tree_view import TreeView, TreeViewNode
 
 __all__ = [
@@ -120,7 +114,7 @@ class _FileView(TreeView):
         if not self.show_hidden:
             it = (node for node in it if not _is_hidden(node.path))
 
-        max_width = self.parent and self.parent.port_width or 1
+        max_width = self.parent.port_width if self.parent else 1
         for y, node in enumerate(it):
             max_width = max(max_width, wcswidth(node.label))
             node.y = y
@@ -190,7 +184,7 @@ class _FileView(TreeView):
         return True
 
 
-class FileChooser(Themable, ScrollView):
+class FileChooser(GadgetBase):
     """
     A file chooser gadget.
 
@@ -206,32 +200,6 @@ class FileChooser(Themable, ScrollView):
     select_callback : Callable[[Path], None], default: lambda path: None
         Called with path of selected node when node is double-clicked
         or `enter` is pressed.
-    allow_vertical_scroll : bool, default: True
-        Allow vertical scrolling.
-    allow_horizontal_scroll : bool, default: True
-        Allow horizontal scrolling.
-    show_vertical_bar : bool, default: True
-        Show the vertical scrollbar.
-    show_horizontal_bar : bool, default: True
-        Show the horizontal scrollbar.
-    scrollwheel_enabled : bool, default: True
-        Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool, default: True
-        Allow scrolling with arrow keys.
-    scrollbar_color : Color, default: DEFAULT_SCROLLBAR_COLOR
-        Background color of scrollbar.
-    indicator_normal_color : Color, default: DEFAULT_INDICATOR_NORMAL
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color, default: DEFAULT_INDICATOR_HOVER
-        Scrollbar indicator hover color.
-    indicator_press_color : Color, default: DEFAULT_INDICATOR_PRESS
-        Scrollbar indicator press color.
-    is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
-        If true, gadget will not be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
-        Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -248,11 +216,6 @@ class FileChooser(Themable, ScrollView):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -263,48 +226,8 @@ class FileChooser(Themable, ScrollView):
     show_hidden : bool
         If false, hidden files won't be rendered.
     select_callback : Callable[[Path], None]
-        Called with path of selected node when node is double-clicked
-        or `enter` is pressed.
-    view : Gadget | None
-        The scrolled gadget.
-    allow_vertical_scroll : bool
-        Allow vertical scrolling.
-    allow_horizontal_scroll : bool
-        Allow horizontal scrolling.
-    show_vertical_bar : bool
-        Show the vertical scrollbar.
-    show_horizontal_bar : bool
-        Show the horizontal scrollbar.
-    scrollwheel_enabled : bool
-        Allow vertical scrolling with scrollwheel.
-    arrow_keys_enabled : bool
-        Allow scrolling with arrow keys.
-    scrollbar_color : Color
-        Background color of scrollbar.
-    indicator_normal_color : Color
-        Scrollbar indicator normal color.
-    indicator_hover_color : Color
-        Scrollbar indicator hover color.
-    indicator_press_color : Color
-        Scrollbar indicator press color.
-    vertical_proportion : float
-        Vertical scroll position as a proportion of total.
-    horizontal_proportion : float
-        Horizontal scroll position as a proportion of total.
-    is_grabbable : bool
-        If false, grabbable behavior is disabled.
-    disable_ptf : bool
-        If true, gadget will not be pulled to front when grabbed.
-    mouse_button : MouseButton
-        Mouse button used for grabbing.
-    is_grabbed : bool
-        True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
+        Called with path of selected node when node is double-clicked or `enter` is
+        pressed.
     size : Size
         Size of gadget.
     height : int
@@ -337,13 +260,9 @@ class FileChooser(Themable, ScrollView):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -358,14 +277,6 @@ class FileChooser(Themable, ScrollView):
 
     Methods
     -------
-    update_theme():
-        Paint the gadget with current theme.
-    grab(mouse_event):
-        Grab the gadget.
-    ungrab(mouse_event):
-        Ungrab the gadget.
-    grab_update(mouse_event):
-        Update gadget with incoming mouse events while grabbed.
     on_size():
         Called when gadget is resized.
     apply_hints():
@@ -421,19 +332,6 @@ class FileChooser(Themable, ScrollView):
         directories_only: bool = False,
         show_hidden: bool = True,
         select_callback: Callable[[Path], None] = lambda path: None,
-        arrow_keys_enabled: bool = False,
-        allow_vertical_scroll: bool = True,
-        allow_horizontal_scroll: bool = True,
-        show_vertical_bar: bool = True,
-        show_horizontal_bar: bool = True,
-        scrollwheel_enabled: bool = True,
-        scrollbar_color: Color = DEFAULT_SCROLLBAR_COLOR,
-        indicator_normal_color: Color = DEFAULT_INDICATOR_NORMAL,
-        indicator_hover_color: Color = DEFAULT_INDICATOR_HOVER,
-        indicator_press_color: Color = DEFAULT_INDICATOR_PRESS,
-        is_grabbable: bool = True,
-        disable_ptf: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -441,23 +339,8 @@ class FileChooser(Themable, ScrollView):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
-            arrow_keys_enabled=arrow_keys_enabled,
-            allow_vertical_scroll=allow_vertical_scroll,
-            allow_horizontal_scroll=allow_horizontal_scroll,
-            show_vertical_bar=show_vertical_bar,
-            show_horizontal_bar=show_horizontal_bar,
-            scrollwheel_enabled=scrollwheel_enabled,
-            scrollbar_color=scrollbar_color,
-            indicator_normal_color=indicator_normal_color,
-            indicator_hover_color=indicator_hover_color,
-            indicator_press_color=indicator_press_color,
-            is_grabbable=is_grabbable,
-            disable_ptf=disable_ptf,
-            mouse_button=mouse_button,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -465,25 +348,24 @@ class FileChooser(Themable, ScrollView):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
-        path = root_dir or Path()
-        self.view = _FileView(
-            root_node=_FileViewNode(path=path),
+        self._root_dir = root_dir or Path()
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1, "width_hint": 1},
+            arrow_keys_enabled=False,
+        )
+        self._scroll_view.view = _FileView(
+            root_node=_FileViewNode(path=self._root_dir),
             directories_only=directories_only,
             show_hidden=show_hidden,
             select_callback=select_callback,
         )
-        self._root_dir = path
-
-    def update_theme(self):
-        self.background_color_pair = self.color_theme.primary.bg_color * 2
+        self.add_gadget(self._scroll_view)
 
     def on_size(self):
         super().on_size()
-        if self._view is not None:
-            self._view.update_tree_layout()
+        if self._scroll_view is not None:
+            self._scroll_view._view.update_tree_layout()
 
     @property
     def directories_only(self):
@@ -510,9 +392,9 @@ class FileChooser(Themable, ScrollView):
     @root_dir.setter
     def root_dir(self, path: Path):
         self._root_dir = path
-        if selected := self._view.selected_node:
+        if selected := self._scroll_view._view.selected_node:
             selected.unselect()
-        root = self._view.root_node
+        root = self._scroll_view._view.root_node
         for node in root.child_nodes:
             node.level = -1
             node.parent_node = None

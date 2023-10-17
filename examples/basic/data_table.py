@@ -26,17 +26,13 @@ TABLE = {
 
 class TableApp(App):
     async def on_start(self):
-        common_kwargs = dict(
-            size=(7, 60),
-            show_vertical_bar=False,
-        )
-        table_1 = DataTable(data=TABLE, select_items="row", **common_kwargs)
+        table_1 = DataTable(data=TABLE, select_items="row", size=(7, 60))
         table_2 = DataTable(
             select_items="column",
             zebra_stripes=False,
             allow_sorting=False,
             default_style=ColumnStyle(alignment="center", padding=3),
-            **common_kwargs,
+            size=(7, 60),
         )
         table_2.top = table_1.bottom + 1
         for column_label in TABLE:

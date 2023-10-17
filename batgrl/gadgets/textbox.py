@@ -7,14 +7,14 @@ import numpy as np
 from numpy.typing import NDArray
 from wcwidth import wcswidth
 
-from ..colors import ColorPair
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import (
+from .gadget import Gadget
+from .gadget_base import (
     Char,
-    Gadget,
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -22,6 +22,7 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
+    coerce_char,
 )
 from .text import Text, style_char
 
@@ -38,7 +39,7 @@ __all__ = [
 WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
 
-class Textbox(Themable, Focusable, Grabbable, Gadget):
+class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     """
     A textbox gadget for single-line editable text.
 
@@ -53,7 +54,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Placeholder text for textbox.
     hide_input : bool, default: False
         If true, input is hidden with :attr:`hide_char`.
-    hide_char : str, default: "*"
+    hide_char : NDArray[Char] | str, default: "*"
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None, default: None
         Maximum allowed number of characters in textbox.
@@ -79,11 +80,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -93,7 +89,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Placeholder text for textbox.
     hide_input : bool
         If true, input is hidden with :attr:`hide_char`.
-    hide_char : str
+    hide_char : NDArray[Char]
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None
         Maximum allowed number of characters in textbox.
@@ -147,13 +143,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -242,7 +234,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         enter_callback: Callable[["Textbox"], None] | None = None,
         placeholder: str = "",
         hide_input: bool = False,
-        hide_char: str = "*",
+        hide_char: NDArray[Char] | str = "*",
         max_chars: int | None = None,
         is_grabbable: bool = True,
         disable_ptf: bool = False,
@@ -254,8 +246,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             is_grabbable=is_grabbable,
@@ -268,8 +258,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self._selection_start = self._selection_end = None
@@ -282,7 +270,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._placeholder_gadget = Text()
         self._placeholder_gadget.set_text(placeholder)
         self._cursor = Gadget(size=(1, 1), is_enabled=False, is_transparent=True)
-        self._box = Text(size=self._placeholder_gadget.size)
+        self._box = Text(size=self.size)
         self._box.add_gadgets(self._placeholder_gadget, self._cursor)
 
         self.add_gadgets(self._box)
@@ -293,10 +281,17 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self.hide_char = hide_char
         self.max_chars = max_chars
 
+    @property
+    def hide_char(self) -> NDArray[Char]:
+        return self._hide_char
+
+    @hide_char.setter
+    def hide_char(self, char: NDArray | str):
+        self._hide_char = coerce_char(char, style_char("*"))
+
     def update_theme(self):
         primary = self.color_theme.textbox_primary
 
-        self.background_color_pair = primary
         self._placeholder_gadget.colors[:] = self.color_theme.textbox_placeholder
         self._box.colors[:] = primary
         self._box.default_color_pair = primary
@@ -325,7 +320,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
                 self._box.absolute_pos, (1, self._line_length)
             )
             for rect in hider_region.rects():
-                canvas[rect.to_slices()] = style_char(self.hide_char)
+                canvas[rect.to_slices()] = self.hide_char
 
     @property
     def placeholder(self) -> str:
@@ -464,7 +459,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
         box = self._box
         box.canvas[0, start : self._line_length] = box.canvas[0, end : end + len_end]
-        box.canvas[0, self._line_length :] = style_char(box.default_char)
+        box.canvas[0, self._line_length :] = box.default_char
 
         self.unselect()
         self.cursor = start
@@ -489,7 +484,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             box.width = box_width + 1
 
         box.add_str(box_text)
-        box.canvas[0, box_width:] = style_char(box.default_char)
+        box.canvas[0, box_width:] = box.default_char
 
         self.cursor = min(box_width, x + wcswidth(text))
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor

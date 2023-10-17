@@ -8,11 +8,11 @@ from numpy.typing import NDArray
 from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK, Color, ColorPair
-from .gadget import (
+from .gadget_base import (
     Anchor,
     Char,
     Easing,
-    Gadget,
+    GadgetBase,
     Point,
     PosHint,
     PosHintDict,
@@ -21,6 +21,7 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
     clamp,
+    coerce_char,
     lerp,
     style_char,
     subscribable,
@@ -42,6 +43,7 @@ __all__ = [
     "Text",
     "add_text",
     "clamp",
+    "coerce_char",
     "lerp",
     "style_char",
     "subscribable",
@@ -66,13 +68,13 @@ Border = Literal[
 """Border styles for :meth:`batgrl.text_gadget.Text.add_border`."""
 
 
-class Text(Gadget):
+class Text(GadgetBase):
     """
     A text gadget. Displays arbitrary text data.
 
     Parameters
     ----------
-    default_char : str, default: " "
+    default_char : NDArray[Char] | str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
     default_color_pair : ColorPair, default: WHITE_ON_BLACK
@@ -86,18 +88,13 @@ class Text(Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether whitespace is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
     is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
-    background_char : str | None, default: None
-        The background character of the gadget if the gadget is not transparent.
-        Character must be single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget if the gadget is not transparent.
 
     Attributes
     ----------
@@ -105,7 +102,7 @@ class Text(Gadget):
         The array of characters for the gadget.
     colors : NDArray[np.uint8]
         The array of color pairs for each character in :attr:`canvas`.
-    default_char : str
+    default_char : NDArray[Char]
         Default background character.
     default_color_pair : ColorPair
         Default color pair of gadget.
@@ -145,13 +142,9 @@ class Text(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    background_char : str | None
-        The background character of the gadget if the gadget is not transparent.
-    background_color_pair : ColorPair | None
-        Background color pair.
-    parent : Gadget | None
+    parent: GadgetBase | None
         Parent gadget.
-    children : list[Gadget]
+    children : list[GadgetBase]
         Children gadgets.
     is_transparent : bool
         True if gadget is transparent.
@@ -223,7 +216,7 @@ class Text(Gadget):
     def __init__(
         self,
         *,
-        default_char: str = " ",
+        default_char: NDArray[Char] | str = " ",
         default_color_pair: ColorPair = WHITE_ON_BLACK,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -232,8 +225,6 @@ class Text(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -243,17 +234,23 @@ class Text(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         size = self.size
 
-        self.canvas = np.full(size, style_char(default_char))
-        self.colors = np.full((*size, 6), default_color_pair, dtype=np.uint8)
-
         self.default_char = default_char
         self.default_color_pair = default_color_pair
+
+        self.canvas = np.full(size, self.default_char)
+        self.colors = np.full((*size, 6), default_color_pair, dtype=np.uint8)
+
+    @property
+    def default_char(self) -> NDArray[Char]:
+        return self._default_char
+
+    @default_char.setter
+    def default_char(self, char: NDArray[Char] | str):
+        self._default_char = coerce_char(char, style_char(" "))
 
     def on_size(self):
         # Preserve content as much as possible.
@@ -267,7 +264,7 @@ class Text(Gadget):
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full((h, w), style_char(self.default_char))
+        self.canvas = np.full((h, w), self.default_char)
         self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
 
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
@@ -421,7 +418,7 @@ class Text(Gadget):
         height = len(lines)
         width = max(map(wcswidth, lines), default=0)
         self.size = height, width
-        self.canvas[:] = style_char(self.default_char)
+        self.canvas[:] = self.default_char
         add_text(
             self.canvas,
             text,
