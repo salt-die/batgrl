@@ -42,105 +42,93 @@ DEFAULT_BANNER = (
 
 class _InteractiveConsole(InteractiveInterpreter):
     """
-    An interactive interpreter that execs to a separate thread and redirects stderr and
-    stdout. Also, temporarily replaces `builtins.input` and hides stdin while executing.
+    An interactive interpreter that redirects stdin, stderr, and stdout while executing
+    code in a separate thread.
     """
 
-    # This probably looks insane, but there are a couple of issues this interactive
-    # interpreter needs to handle:
-    # 1) Running arbitray code in an interactive console could easily block the event
-    #    loop. To prevent this, code is executed in a separate thread.
-    # 2) Reading stdin and writing to stdout and stderr will ruin batgrl's io. To this
-    #    end, the most common function for reading stdin, `input`, is replaced
-    #    temporarily while executing code and stdin itself is replaced with an object
-    #    that will raise an error if readline is called. Further, stderr and stdout are
-    #    always redirected while executing or trying to compile code.
+    # TODO: Add a custom ttypager (see: pydoc.ttypager) or interactive help.
+    # TODO: Add a getch (sys.stdin.read(1)).
+    # ? Console maybe should wait on the future in runcode before allowing more input.
 
     def __init__(self, console_gadget):
         super().__init__()
         self.filename = "<batgrl console>"
-        self.buffer = []
+        self.src_buffer = []
         self.console_gadget: "Console" = console_gadget
-        self._input = None
-        self._output = StringIO()
-        self._loop: asyncio.AbstractEventLoop
+        self.input_buffer = None
+        """Result of replaced stdin.read or stdin.readline."""
+        self.output_buffer = StringIO()
+        """Replaces stdout while executing code."""
+
+        def read(size=-1):
+            return self.input()
+
+        self.stdin = type("stdin", (), {"read": read, "readline": read})()
+        """Replaces sys.stdin while executing code."""
+        self.loop: asyncio.AbstractEventLoop
         """batgrl's event loop. Set by `console_gadget.on_add`"""
 
-    def _write_output(self):
-        text = self._output.getvalue()
-        self._output.truncate(0)
+    def flush(self):
+        """Write the output buffer to console gadget's output."""
+        text = self.output_buffer.getvalue()
+        self.output_buffer.truncate(0)
         self.console_gadget._add_text_to_output(text)
 
-    def push(self, line):
-        self.buffer.append(line)
-        source = "\n".join(self.buffer)
+    def input(self, prompt=""):
+        """Replaces `builtins.input` while executing code."""
+        *lines, last_line = str(prompt).split("\n")
+        self.output_buffer.write("\n".join(lines))
+        self.flush()
+        self.console_gadget._input_mode = True
+        self.console_gadget._prompt.set_text(last_line)
 
-        with redirect_stdout(self._output), redirect_stderr(self._output):
+        try:
+            # Blocking
+            while self.input_buffer is None:
+                time.sleep(0.01)
+
+            return self.input_buffer
+        finally:
+            self.input_buffer = None
+            self.console_gadget._input_mode = False
+            self.console_gadget._prompt.set_text(PROMPT_1)
+
+    def exec(self, code):
+        old_input, builtins.input = builtins.input, self.input
+        old_stdin, sys.stdin = sys.stdin, self.stdin
+
+        with (
+            redirect_stdout(self.output_buffer),
+            redirect_stderr(self.output_buffer),
+        ):
+            try:
+                exec(code, self.locals)
+            except SystemExit:
+                raise
+            except:  # noqa
+                self.showtraceback()
+            finally:
+                builtins.input = old_input
+                sys.stdin = old_stdin
+                self.flush()
+
+    def runcode(self, code):
+        self.loop.run_in_executor(None, self.exec, code)
+
+    def push(self, line):
+        self.src_buffer.append(line)
+        source = "\n".join(self.src_buffer)
+
+        with redirect_stderr(self.output_buffer):
             more = self.runsource(source)
 
+        self.flush()
+
         if not more:
-            self.buffer.clear()
+            self.src_buffer.clear()
             self.console_gadget._prompt.set_text(PROMPT_1)
         else:
             self.console_gadget._prompt.set_text(PROMPT_2)
-
-        self._write_output()
-
-    def _fake_input(self, prompt=""):
-        """
-        This method replaces `builtins.input` when the interpreter executes code.
-
-        Warnings
-        --------
-        This method blocks indefinitely, so don't call unless in a separate thread.
-        """
-        try:
-            *lines, last_line = str(prompt).split("\n")
-            self._output.write("\n".join(lines))
-            self._loop.call_soon_threadsafe(self._write_output)
-            self._loop.call_soon_threadsafe(
-                lambda: self.console_gadget._prompt.set_text(last_line)
-            )
-            self.console_gadget._input_mode = True
-
-            # Blocking
-            while self._input is None:
-                time.sleep(0.01)
-
-            result = self._input
-        finally:
-            self._loop.call_soon_threadsafe(
-                lambda: self.console_gadget._prompt.set_text(PROMPT_1)
-            )
-            self.console_gadget._input_mode = False
-            self._input = None
-        return result
-
-    def _exec_in_thread(self, code):
-        old_input = builtins.input
-        old_stdin = sys.stdin
-
-        class _FileLike:
-            def readline(self):
-                raise IOError("Can't read stdin")
-
-        try:
-            builtins.input = self._fake_input
-            sys.stdin = _FileLike()
-            with redirect_stdout(self._output), redirect_stderr(self._output):
-                try:
-                    exec(code, self.locals)
-                except SystemExit:
-                    raise
-                except:  # noqa
-                    self.showtraceback()
-            self._loop.call_soon_threadsafe(self._write_output)
-        finally:
-            builtins.input = old_input
-            sys.stdin = old_stdin
-
-    def runcode(self, code):
-        self._loop.run_in_executor(None, lambda: self._exec_in_thread(code))
 
 
 class _ConsoleTextbox(Textbox):
@@ -175,12 +163,11 @@ class _ConsoleTextbox(Textbox):
 
     def on_size(self):
         console: Console = self.parent.parent.parent
-        offset = console._prompt.width
+        offset = console._prompt.right
         if self.width + offset >= console._min_line_length:
             console._container.width = self.width + offset
         else:
             console._container.width = console._min_line_length
-        console._update_bars()
         self.cursor = self.cursor
 
     def _del_text(self, start: int, end: int):
@@ -373,6 +360,10 @@ class Console(Themable, Focusable, GadgetBase):
         Destroy this gadget and all descendents.
     """
 
+    # TODO: Add a max output lines option.
+    # TODO: Add a max input history option.
+    # ? Maybe add some shell commands.
+
     def __init__(
         self,
         banner: str | None = None,
@@ -401,7 +392,7 @@ class Console(Themable, Focusable, GadgetBase):
         )
         self._prompt = _Prompt(pos_hint={"y_hint": 1.0, "anchor": "bottom"})
         self._prompt.set_text(PROMPT_1)
-        self._min_line_length = self._prompt.width + 1
+        self._min_line_length = self._prompt.right + 1
         self._input_mode: bool = False
         self._console = _InteractiveConsole(self)
         self._history = []
@@ -431,7 +422,7 @@ class Console(Themable, Focusable, GadgetBase):
                 self._history_index += 0.5
 
             if self._input_mode:
-                self._console._input = text
+                self._console.input_buffer = text
             else:
                 self._console.push(text)
 
@@ -455,16 +446,21 @@ class Console(Themable, Focusable, GadgetBase):
         self._scroll_view.view = self._container
         self.add_gadget(self._scroll_view)
 
-        self._update_bars()
-
         if banner is None:
             self._add_text_to_output(DEFAULT_BANNER)
         else:
             self._add_text_to_output(str(banner))
 
+        self.subscribe(self._container, "size", self._update_bars)
+        self.subscribe(self._scroll_view, "size", self._update_bars)
+
     def _update_bars(self):
-        self._scroll_view.show_vertical_bar = self._container.height > self.height
-        self._scroll_view.show_horizontal_bar = self._container.width > self.width
+        self._scroll_view.show_vertical_bar = (
+            self._container.height > self._scroll_view.port_height
+        )
+        self._scroll_view.show_horizontal_bar = (
+            self._container.width > self._scroll_view.port_width
+        )
 
     def _add_text_to_output(self, text: str, with_prompt: bool = False):
         if with_prompt:
@@ -490,12 +486,8 @@ class Console(Themable, Focusable, GadgetBase):
                 self._container.width = line_width
             self._output.add_str(line, (line_number + i, 0))
 
-        self._update_bars()
         self._scroll_view.horizontal_proportion = 0.0
         self._scroll_view.vertical_proportion = 1.0
-
-    def on_size(self):
-        self._update_bars()
 
     def update_theme(self):
         primary = self.color_theme.primary
@@ -512,7 +504,7 @@ class Console(Themable, Focusable, GadgetBase):
         super().on_add()
         self._console.locals["app"] = self.app
         self._console.locals["root"] = self.root
-        self._console._loop = asyncio.get_event_loop()
+        self._console.loop = asyncio.get_event_loop()
 
     def on_focus(self):
         self._input.focus()
