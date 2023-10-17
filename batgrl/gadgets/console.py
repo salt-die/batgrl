@@ -65,8 +65,6 @@ class _InteractiveConsole(InteractiveInterpreter):
 
         self.stdin = type("stdin", (), {"read": read, "readline": read})()
         """Replaces sys.stdin while executing code."""
-        self.loop: asyncio.AbstractEventLoop
-        """batgrl's event loop. Set by `console_gadget.on_add`"""
 
     def flush(self):
         """Write the output buffer to console gadget's output."""
@@ -113,7 +111,7 @@ class _InteractiveConsole(InteractiveInterpreter):
                 self.flush()
 
     def runcode(self, code):
-        self.loop.run_in_executor(None, self.exec, code)
+        asyncio.get_event_loop().run_in_executor(None, self.exec, code)
 
     def push(self, line):
         self.src_buffer.append(line)
@@ -504,7 +502,6 @@ class Console(Themable, Focusable, GadgetBase):
         super().on_add()
         self._console.locals["app"] = self.app
         self._console.locals["root"] = self.root
-        self._console.loop = asyncio.get_event_loop()
 
     def on_focus(self):
         self._input.focus()
