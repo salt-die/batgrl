@@ -1,6 +1,7 @@
 """
 Color data structures.
 """
+from dataclasses import dataclass
 from typing import NamedTuple
 
 __all__ = [
@@ -301,65 +302,66 @@ class ColorPair(NamedTuple):
         return ColorPair.from_colors(self.bg_color, self.fg_color)
 
 
-class ColorTheme(NamedTuple):
+@dataclass(slots=True, frozen=True, kw_only=True)
+class ColorTheme:
     """
-    Colors used on themable gadgets.
+    Colors for themable gadgets.
 
     Parameters
     ----------
-    primary : ColorPair
+    primary : ColorPair, default: ColorPair(246, 167, 169, 7, 12, 37)
         Primary color pair.
-    text_pad_line_highlight : ColorPair
+    text_pad_line_highlight : ColorPair, default: ColorPair(246, 167, 169, 12, 14, 48)
         Text pad line highlight color pair.
-    text_pad_selection_highlight : ColorPair
+    text_pad_selection_highlight : ColorPair, default: ColorPair(246, 167, 169, 15, 24, 71)
         Text pad selection highlight color pair.
-    textbox_primary : ColorPair
+    textbox_primary : ColorPair, default: ColorPair(255, 240, 246, 7, 12, 37)
         Textbox primary color pair.
-    textbox_selection_highlight : ColorPair
+    textbox_selection_highlight : ColorPair, default: ColorPair(255, 240, 246, 15, 24, 71)
         Textbox selection highlight color pair.
-    textbox_placeholder : ColorPair
+    textbox_placeholder : ColorPair, default: ColorPair(42, 58, 146, 7, 12, 37)
         Textbox placeholder text color pair.
-    button_normal : ColorPair
+    button_normal : ColorPair, default: ColorPair(221, 228, 237, 42, 60, 160)
         Button color pair.
-    button_hover : ColorPair
+    button_hover : ColorPair, default: ColorPair(255, 240, 246, 50, 72, 192)
         Hovored button color pair.
-    button_press : ColorPair
+    button_press : ColorPair, default: ColorPair(255, 240, 246, 196, 162, 25)
         Pressed button color pair.
-    menu_item_hover : ColorPair
+    menu_item_hover : ColorPair, default: ColorPair(246, 167, 169, 17, 24, 52)
         Hovered menu item color pair.
-    menu_item_selected : ColorPair
+    menu_item_selected : ColorPair, default: ColorPair(236, 243, 255, 27, 36, 75)
         Selected menu item color pair.
-    menu_item_disabled : ColorPair
+    menu_item_disabled : ColorPair, default: ColorPair(39, 43, 64, 7, 12, 37)
         Disabled menu item color pair.
-    titlebar_normal : ColorPair
+    titlebar_normal : ColorPair, default: ColorPair(255, 224, 223, 7, 12, 37)
         Titlebar color pair.
-    titlebar_inactive : ColorPair
+    titlebar_inactive : ColorPair, default: ColorPair(125, 107, 113, 7, 12, 37)
         Inactive titlebar color pair.
-    window_border_normal : AColor
+    window_border_normal : AColor, default: AColor(18, 33, 98, 255)
         Border color.
-    window_border_inactive : AColor
+    window_border_inactive : AColor, default: AColor(40, 44, 62, 255)
         Inactive border color.
-    data_table_sort_indicator : ColorPair
+    data_table_sort_indicator : ColorPair, default: ColorPair(236, 243, 255, 7, 12, 37)
         Color pair of sort indicator for a column label in a data table.
-    data_table_hover : ColorPair
+    data_table_hover : ColorPair, default: ColorPair(246, 167, 169, 17, 24, 52)
         Color pair of hovered items in a data table.
-    data_table_stripe : ColorPair
+    data_table_stripe : ColorPair, default: ColorPair(246, 167, 169, 11, 18, 56)
         Color pair of striped items in a data table.
-    data_table_stripe_hover : ColorPair
+    data_table_stripe_hover : ColorPair, default: ColorPair(246, 167, 169, 15, 24, 74)
         Color pair of striped, hovered items in a data table.
-    data_table_selected : ColorPair
+    data_table_selected : ColorPair, default: ColorPair(236, 243, 255, 17, 31, 94)
         Color pair of selected items in a data table.
-    data_table_selected_hover : ColorPair
+    data_table_selected_hover : ColorPair, default: ColorPair(236, 243, 255, 27, 36, 75)
         Color pair of selected, hovered items in a data table.
-    progress_bar : ColorPair
+    progress_bar : ColorPair, default: ColorPair(255, 224, 223, 42, 60, 160)
         Color pair of progress bar.
-    scroll_view_scrollbar_color : Color
+    scroll_view_scrollbar_color : Color, default: Color(7, 12, 37)
         Color of scrollbar in a scroll view.
-    scroll_view_indicator_normal_color : Color
+    scroll_view_indicator_normal_color : Color, default: Color(14, 24, 67)
         Color of indicator in a scroll view.
-    scroll_view_indicator_hover_color : Color
+    scroll_view_indicator_hover_color : Color, default: Color(17, 30, 79)
         Color of hovered indicator in a scroll view.
-    scroll_view_indicator_press_color : Color
+    scroll_view_indicator_press_color : Color, default: Color(23, 40, 104)
         Color of pressed indicator in a scroll view.
 
     Attributes
@@ -418,169 +420,32 @@ class ColorTheme(NamedTuple):
         Color of hovered indicator in a scroll view.
     scroll_view_indicator_press_color : Color
         Color of pressed indicator in a scroll view.
+    """  # noqa
 
-    Methods
-    -------
-    from_hexes(...):
-        Return a ColorTheme using hex codes.
-    count(value):
-        Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807):
-        Return first index of value.
-    """
-
-    primary: ColorPair
-    text_pad_line_highlight: ColorPair
-    text_pad_selection_highlight: ColorPair
-    textbox_primary: ColorPair
-    textbox_selection_highlight: ColorPair
-    textbox_placeholder: ColorPair
-    button_normal: ColorPair
-    button_hover: ColorPair
-    button_press: ColorPair
-    menu_item_hover: ColorPair
-    menu_item_selected: ColorPair
-    menu_item_disabled: ColorPair
-    titlebar_normal: ColorPair
-    titlebar_inactive: ColorPair
-    window_border_normal: AColor
-    window_border_inactive: AColor
-    data_table_sort_indicator: ColorPair
-    data_table_hover: ColorPair
-    data_table_stripe: ColorPair
-    data_table_stripe_hover: ColorPair
-    data_table_selected: ColorPair
-    data_table_selected_hover: ColorPair
-    progress_bar: ColorPair
-    scroll_view_scrollbar_color: Color
-    scroll_view_indicator_normal_color: Color
-    scroll_view_indicator_hover_color: Color
-    scroll_view_indicator_press_color: Color
-
-    @classmethod
-    def from_hexes(
-        cls,
-        primary: str,
-        text_pad_line_highlight: str,
-        text_pad_selection_highlight: str,
-        textbox_primary: str,
-        textbox_selection_highlight: str,
-        textbox_placeholder: str,
-        button_normal: str,
-        button_hover: str,
-        button_press: str,
-        menu_item_hover: str,
-        menu_item_selected: str,
-        menu_item_disabled: str,
-        titlebar_normal: str,
-        titlebar_inactive: str,
-        window_border_normal: str,
-        window_border_inactive: str,
-        data_table_sort_indicator: str,
-        data_table_hover: str,
-        data_table_stripe: str,
-        data_table_stripe_hover: str,
-        data_table_selected: str,
-        data_table_selected_hover: str,
-        progress_bar: str,
-        scroll_view_scrollbar_color: str,
-        scroll_view_indicator_normal_color: str,
-        scroll_view_indicator_hover_color: str,
-        scroll_view_indicator_press_color: str,
-    ) -> "ColorTheme":
-        """
-        Return a ColorTheme using hex codes.
-
-        ColorPair hex codes should be 12 digits.
-
-        Parameters
-        ----------
-        primary : str
-            Hex code for primary color pair.
-        text_pad_line_highlight : str
-            Hex code for text pad line highlight color pair.
-        text_pad_selection_highlight : str
-            Hex code for text pad selection highlight color pair.
-        textbox_primary : str
-            Hex code for textbox primary color pair.
-        textbox_selection_highlight : str
-            Hex code for textbox selection highlight color pair.
-        textbox_placeholder : str
-            Hex code for textbox placeholder text color pair.
-        button_normal : str
-            Hex code for button color pair.
-        button_hover : str
-            Hex code for hovored button color pair.
-        button_press : str
-            Hex code for pressed button color pair.
-        menu_item_hover : str
-            Hex code for hovered menu item color pair.
-        menu_item_selected : str
-            Hex code for selected menu item color pair.
-        menu_item_disabled : str
-            Hex code for disabled menu item color pair.
-        titlebar_normal : str
-            Hex code for titlebar color pair.
-        titlebar_inactive : str
-            Hex code for inactive titlebar color pair.
-        window_border_normal : str
-            Hex code for border color.
-        window_border_inactive : str
-            Hex code for inactive border color.
-        data_table_sort_indicator : str
-            Hex code for color pair of sort indicator for a column label in a data
-            table.
-        data_table_hover : str
-            Hex code for color pair of hovered items in a data table.
-        data_table_stripe : str
-            Hex code for color pair of striped items in a data table.
-        data_table_stripe_hover : str
-            Hex code for color pair of striped, hovered items in a data table.
-        data_table_selected : str
-            Hex code for color pair of selected items in a data table.
-        data_table_selected_hover : str
-            Hex code for color pair of selected, hovered items in a data table.
-        progress_bar : str
-            Hex code for progress bar color pair.
-        scroll_view_scrollbar_color : str
-            Hex code for scrollbar color in a scroll view.
-        scroll_view_indicator_normal_color : str
-            Hex code for indicator color in a scroll view.
-        scroll_view_indicator_hover_color : str
-            Hex code for hovered indicator color in a scroll view.
-        scroll_view_indicator_press_color : str
-            Hex code for pressed indicator color in a scroll view.
-
-        Returns
-        -------
-        A new color theme.
-        """
-        return cls(
-            ColorPair.from_hex(primary),
-            ColorPair.from_hex(text_pad_line_highlight),
-            ColorPair.from_hex(text_pad_selection_highlight),
-            ColorPair.from_hex(textbox_primary),
-            ColorPair.from_hex(textbox_selection_highlight),
-            ColorPair.from_hex(textbox_placeholder),
-            ColorPair.from_hex(button_normal),
-            ColorPair.from_hex(button_hover),
-            ColorPair.from_hex(button_press),
-            ColorPair.from_hex(menu_item_hover),
-            ColorPair.from_hex(menu_item_selected),
-            ColorPair.from_hex(menu_item_disabled),
-            ColorPair.from_hex(titlebar_normal),
-            ColorPair.from_hex(titlebar_inactive),
-            AColor.from_hex(window_border_normal),
-            AColor.from_hex(window_border_inactive),
-            ColorPair.from_hex(data_table_sort_indicator),
-            ColorPair.from_hex(data_table_hover),
-            ColorPair.from_hex(data_table_stripe),
-            ColorPair.from_hex(data_table_stripe_hover),
-            ColorPair.from_hex(data_table_selected),
-            ColorPair.from_hex(data_table_selected_hover),
-            ColorPair.from_hex(progress_bar),
-            Color.from_hex(scroll_view_scrollbar_color),
-            Color.from_hex(scroll_view_indicator_normal_color),
-            Color.from_hex(scroll_view_indicator_hover_color),
-            Color.from_hex(scroll_view_indicator_press_color),
-        )
+    primary: ColorPair = ColorPair(246, 167, 169, 7, 12, 37)
+    text_pad_line_highlight: ColorPair = ColorPair(246, 167, 169, 12, 14, 48)
+    text_pad_selection_highlight: ColorPair = ColorPair(246, 167, 169, 15, 24, 71)
+    textbox_primary: ColorPair = ColorPair(255, 240, 246, 7, 12, 37)
+    textbox_selection_highlight: ColorPair = ColorPair(255, 240, 246, 15, 24, 71)
+    textbox_placeholder: ColorPair = ColorPair(42, 58, 146, 7, 12, 37)
+    button_normal: ColorPair = ColorPair(221, 228, 237, 42, 60, 160)
+    button_hover: ColorPair = ColorPair(255, 240, 246, 50, 72, 192)
+    button_press: ColorPair = ColorPair(255, 240, 246, 196, 162, 25)
+    menu_item_hover: ColorPair = ColorPair(246, 167, 169, 17, 24, 52)
+    menu_item_selected: ColorPair = ColorPair(236, 243, 255, 27, 36, 75)
+    menu_item_disabled: ColorPair = ColorPair(39, 43, 64, 7, 12, 37)
+    titlebar_normal: ColorPair = ColorPair(255, 224, 223, 7, 12, 37)
+    titlebar_inactive: ColorPair = ColorPair(125, 107, 113, 7, 12, 37)
+    window_border_normal: AColor = AColor(18, 33, 98, 255)
+    window_border_inactive: AColor = AColor(40, 44, 62, 255)
+    data_table_sort_indicator: ColorPair = ColorPair(236, 243, 255, 7, 12, 37)
+    data_table_hover: ColorPair = ColorPair(246, 167, 169, 17, 24, 52)
+    data_table_stripe: ColorPair = ColorPair(246, 167, 169, 11, 18, 56)
+    data_table_stripe_hover: ColorPair = ColorPair(246, 167, 169, 15, 24, 74)
+    data_table_selected: ColorPair = ColorPair(236, 243, 255, 17, 31, 94)
+    data_table_selected_hover: ColorPair = ColorPair(236, 243, 255, 27, 36, 75)
+    progress_bar: ColorPair = ColorPair(255, 224, 223, 42, 60, 160)
+    scroll_view_scrollbar_color: Color = Color(7, 12, 37)
+    scroll_view_indicator_normal_color: Color = Color(14, 24, 67)
+    scroll_view_indicator_hover_color: Color = Color(17, 30, 79)
+    scroll_view_indicator_press_color: Color = Color(23, 40, 104)
