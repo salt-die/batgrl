@@ -309,10 +309,10 @@ class Text(GadgetBase):
             "inner": "▗▖▐▌▄▀▝▘",
             "thick": "████▀▄██",
             "dashed": "┌┐╎╎╌╌└┘",
-            "heavy_dashed": "┏┓╏╏╍╍┗┛",
             "dashed_2": "┌┐┆┆┄┄└┘",
-            "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
             "dashed_3": "┌┐┊┊┈┈└┘",
+            "heavy_dashed": "┏┓╏╏╍╍┗┛",
+            "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
             "heavy_dashed_3": "┏┓┋┋┉┉┗┛",
         }
         tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]

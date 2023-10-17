@@ -1,5 +1,5 @@
 """
-Tools for graphic gadgets.
+Tools for graphics.
 """
 from pathlib import Path
 from typing import Literal

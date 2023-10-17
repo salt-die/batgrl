@@ -12,11 +12,11 @@ from weakref import WeakKeyDictionary
 
 import numpy as np
 from numpy.typing import NDArray
-from wcwidth import wcwidth
 
 from .. import easings
 from ..geometry import Point, Region, Size, clamp, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
+from .text_tools import Char, coerce_char, style_char
 
 __all__ = [
     "Anchor",
@@ -353,99 +353,6 @@ class SizeHintDict(TypedDict, total=False):
     min_height: int | None
     max_width: int | None
     min_width: int | None
-
-
-Char = np.dtype(
-    [
-        ("char", "U1"),
-        ("bold", "?"),
-        ("italic", "?"),
-        ("underline", "?"),
-        ("strikethrough", "?"),
-        ("overline", "?"),
-    ]
-)
-"""Data type of canvas arrays."""
-
-
-def style_char(
-    char: str,
-    bold: bool = False,
-    italic: bool = False,
-    underline: bool = False,
-    strikethrough: bool = False,
-    overline: bool = False,
-) -> NDArray[Char]:
-    """
-    Return a zero-dimensional `Char` array.
-
-    The primary use for this function is to paint a styled character into a ``Char``
-    array. For instance, ``my_gadget.canvas[:] = style_char("a", bold=True)`` would
-    fill the canvas with bold ``a``. Alternatively, one can avoid this function by
-    setting only the ``"char"`` field of a ``Char`` array, e.g.,
-    ``my_gadget.canvas["char"][:] = "a"``, but the boolean styling fields won't be
-    changed. Avoid setting `Char` arrays with strings; ``my_gadget.canvas[:] = "a"`` is
-    incorrect, ``"a"`` will be coerced into true for all the boolean styling fields, so
-    that `my_gadget` is filled with bold, italic, underline, strikethrough, and overline
-    ``a``.
-
-    Parameters
-    ----------
-    char : str
-        A single unicode character.
-    bold : bool, default: False
-        Whether char is bold.
-    italic : bool, default: False
-        Whether char is italic.
-    underline : bool, default: False
-        Whether char is underlined.
-    strikethrough : bool, default: False
-        Whether char is strikethrough.
-    overline : bool, default: False
-        Whether char is overlined.
-
-    Returns
-    -------
-    NDArray[Char]
-        A zero-dimensional `Char` array with the styled character.
-    """
-    return np.array(
-        (char, bold, italic, underline, strikethrough, overline), dtype=Char
-    )
-
-
-def coerce_char(
-    char: NDArray[Char] | str, default: NDArray[Char] | None = None
-) -> NDArray[Char] | None:
-    """
-    Try to coerce a string into a half-width zero-dimensional Char array.
-
-    This is mostly an internal function for setting background/default/x characters in
-    App, Gadget, Text, and a few other gadgets.
-
-    Parameters
-    ----------
-    char : NDArray[Char] | str
-        The character to coerce.
-    default : NDArray[Char] | None, default: None
-        The fallback character (or None) if character can't be coerced.
-
-    Returns
-    -------
-    NDArray[Char] | None
-        The coerced Char (or None).
-    """
-    if isinstance(char, str) and len(char) > 0 and wcwidth(char[0]) == 1:
-        return style_char(char[0])
-    if (
-        isinstance(char, np.ndarray)
-        and char.dtype == Char
-        and char.shape == ()
-        and wcwidth(char["char"][()]) == 1
-    ):
-        return char
-    return default
-
 
 Easing = Literal[
     "linear",
