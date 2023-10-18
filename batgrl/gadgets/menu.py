@@ -652,20 +652,18 @@ class Menu(GridLayout):
         """
         Close the menu.
         """
-        self.is_enabled = False
-        self._current_selection = -1
-
         if (
             self._menu_button is not None
             and self._menu_button.toggle_state is ToggleState.ON
         ):
-            self._menu_button._toggle_state = ToggleState.OFF
-            self._menu_button.update_off()
+            self._menu_button.toggle_state = ToggleState.OFF
+        else:
+            self.is_enabled = False
+            self._current_selection = -1
+            self.close_submenus()
 
-        self.close_submenus()
-
-        for child in self.children:
-            child._normal()
+            for child in self.children:
+                child._normal()
 
     def close_submenus(self):
         for menu in self._submenus:
