@@ -66,15 +66,6 @@ class GridLayout(Gadget):
     """
     A gadget that automatically positions children into a grid.
 
-    Notes
-    -----
-    Re-ordering children (such as through :meth:`pull_to_front`) and calling
-    :meth:`_reposition_children` will change the positions of the children in the grid.
-
-    The read-only attribute :attr:`minimum_grid_size` is the minimum size the grid must
-    be to show all children. This can be used to set the size of the grid layout, e.g.,
-    ``my_grid.size = my_grid.minimum_grid_size``.
-
     Parameters
     ----------
     grid_rows : int, default: 1
@@ -247,10 +238,16 @@ class GridLayout(Gadget):
     destroy():
         Destroy this gadget and all descendents.
 
-    Raises
-    ------
-    ValueError
-        If grid is full and :meth:`add_gadget` is called.
+    Notes
+    -----
+    Grid layouts remove size and pos hints from their children.
+
+    Re-ordering children (such as through :meth:`pull_to_front`) and calling
+    :meth:`_reposition_children` will change the positions of the children in the grid.
+
+    The read-only attribute :attr:`minimum_grid_size` is the minimum size the grid must
+    be to show all children. This can be used to set the size of the grid layout, e.g.,
+    ``my_grid.size = my_grid.minimum_grid_size``.
     """
 
     grid_rows: int = _RepositionProperty()
@@ -445,6 +442,8 @@ class GridLayout(Gadget):
         if len(self.children) >= self.grid_rows * self.grid_columns:
             raise ValueError("too many children, grid is full")
 
+        gadget.size_hint = {}
+        gadget.pos_hint = {}
         super().add_gadget(gadget)
 
         self._reposition_children()

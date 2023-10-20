@@ -58,8 +58,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
     A movable, resizable window gadget.
 
     The view can be set with the :attr:`view` property, e.g.,
-    ``my_window.view = some_gadget``. Added views will have their size hints and
-    visibility reset. Views are resized as the window is resized.
+    ``my_window.view = some_gadget``.
 
     Parameters
     ----------
@@ -250,6 +249,8 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     Notes
     -----
+    Windows remove size and pos hints from their children.
+
     If not given or too small, :attr:`resize_min_height` and
     :attr:`resize_min_width` will be set large enough so that the border and title
     are visible.
@@ -340,9 +341,9 @@ class Window(Themable, Focusable, Resizable, Graphics):
         self._view = view
 
         if view is not None:
+            view.size_hint = {}
+            view.pos_hint = {}
             view.pos = 2, 2
-            view.size_hint.height_hint = None
-            view.size_hint.width_hint = None
             self.add_gadget(view)
             self.pull_border_to_front()
             self.on_size()

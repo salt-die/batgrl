@@ -80,10 +80,6 @@ class VStackLayout(_StackLayoutBase):
     :attr:`proportions`. The nth proportion adjusts the height of the nth child
     gadget. Extra unfilled rows or columns are divided among the children.
 
-    Notes
-    -----
-    Stack layouts remove size and pos hints from their children.
-
     Parameters
     ----------
     size : Size, default: Size(10, 10)
@@ -202,6 +198,10 @@ class VStackLayout(_StackLayoutBase):
         Recursively remove all children.
     destroy():
         Destroy this gadget and all descendents.
+
+    Notes
+    -----
+    Stack layouts remove size and pos hints from their children.
     """
 
     def _reposition_children(self):
@@ -228,10 +228,6 @@ class HStackLayout(_StackLayoutBase):
     (almost) equal amount of space, but this can be adjusted by setting
     :attr:`proportions`. The nth proportion adjusts the width of the nth child
     gadget. Extra unfilled rows or columns are divided among the children.
-
-    Notes
-    -----
-    Stack layouts remove size and pos hints from their children.
 
     Parameters
     ----------
@@ -351,6 +347,10 @@ class HStackLayout(_StackLayoutBase):
         Recursively remove all children.
     destroy():
         Destroy this gadget and all descendents.
+
+    Notes
+    -----
+    Stack layouts remove size and pos hints from their children.
     """
 
     def _reposition_children(self):
