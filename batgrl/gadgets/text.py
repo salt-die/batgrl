@@ -5,9 +5,12 @@ from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
+from pygments.lexer import Lexer
+from pygments.lexers import guess_lexer
+from pygments.style import Style
 from wcwidth import wcswidth
 
-from ..colors import WHITE_ON_BLACK, Color, ColorPair
+from ..colors import WHITE_ON_BLACK, Color, ColorPair, Neptune
 from .gadget_base import (
     Anchor,
     Char,
@@ -330,6 +333,31 @@ class Text(GadgetBase):
         if color_pair is not None:
             self.colors[[0, -1]] = color_pair
             self.colors[:, [0, -1]] = color_pair
+
+    def add_syntax_highlight(self, lexer: Lexer | None = None, style: Style = Neptune):
+        text = "\n".join("".join(line).rstrip() for line in self.canvas["char"])
+        if lexer is None:
+            lexer = guess_lexer(text)
+
+        self.colors[..., :3] = 0
+        self.colors[..., 3:] = Color.from_hex(style.background_color)
+        y = x = 0
+        for ttype, value in lexer.get_tokens(text):
+            lines = value.split("\n")
+            token_style = style.style_for_token(ttype)
+            for i, line in enumerate(lines):
+                if i > 0:
+                    y += 1
+                    x = 0
+                end = x + wcswidth(line)
+                if token_style["color"]:
+                    self.colors[y, x:end, :3] = Color.from_hex(token_style["color"])
+                if token_style["bgcolor"]:
+                    self.colors[y, x:end, 3:] = Color.from_hex(token_style["bgcolor"])
+                self.canvas[y, x:end]["bold"] = token_style["bold"]
+                self.canvas[y, x:end]["italic"] = token_style["italic"]
+                self.canvas[y, x:end]["underline"] = token_style["underline"]
+                x = end
 
     def add_str(
         self,
