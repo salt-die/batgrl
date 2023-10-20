@@ -4,23 +4,16 @@ Click to add fluid. `r` to reset.
 `cv2` convolutions (`filter2D`) currently don't support boundary wrapping. This is done
 manually by creating pressure and momentum arrays with sizes equal to the gadget's
 texture's size plus a 2-width border and copying data into that border.
-
-This simulates discrete Navier-Stokes with 0 viscosity and a rho of 1. Note that using
-DIFFUSION kernel instead of POISSON kernel (for the convolutions that used POISSON)
-will achieve almost identical results.
-
-An alternative (read: *possibly better*) visualization is to copy the derivative of the
-pressure array into the gadget's texture instead. This can be approximated by taking the
-difference of current pressure and previous pressure.
 """
 import asyncio
 
 import numpy as np
+from cv2 import filter2D
+
 from batgrl.app import run_gadget_as_app
 from batgrl.colors import AColor
 from batgrl.gadgets.graphics import Graphics
 from batgrl.io import MouseButton
-from cv2 import filter2D
 
 # Kernels
 CONVECTION = np.array(
