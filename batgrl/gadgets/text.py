@@ -164,6 +164,8 @@ class Text(GadgetBase):
     -------
     add_border(style="light", ...):
         Add a border to the gadget.
+    add_syntax_highlighting(lexer, style):
+        Add syntax highlighting to current text in canvas.
     add_str(str, pos, ...):
         Add a single line of text to the canvas.
     set_text(text, ...):
@@ -334,7 +336,19 @@ class Text(GadgetBase):
             self.colors[[0, -1]] = color_pair
             self.colors[:, [0, -1]] = color_pair
 
-    def add_syntax_highlight(self, lexer: Lexer | None = None, style: Style = Neptune):
+    def add_syntax_highlighting(
+        self, lexer: Lexer | None = None, style: Style = Neptune
+    ):
+        """
+        Add syntax highlighting to current text in canvas.
+
+        Parameters
+        ----------
+        lexer : Lexer | None, default: None
+            Lexer for text. If not given, the lexer is guessed.
+        style : pygments.style.Style, default: Neptune
+            A pygments style to use for syntax highlighting.
+        """
         text = "\n".join("".join(line).rstrip() for line in self.canvas["char"])
         if lexer is None:
             lexer = guess_lexer(text)

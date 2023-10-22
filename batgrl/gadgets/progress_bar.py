@@ -133,6 +133,8 @@ class ProgressBar(Themable, Text):
         Paint the gadget with current theme.
     add_border(style="light", ...):
         Add a border to the gadget.
+    add_syntax_highlighting(lexer, style):
+        Add syntax highlighting to current text in canvas.
     add_str(str, pos, ...):
         Add a single line of text to the canvas.
     set_text(text, ...):
