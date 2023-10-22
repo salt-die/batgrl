@@ -354,6 +354,7 @@ class SizeHintDict(TypedDict, total=False):
     max_width: int | None
     min_width: int | None
 
+
 Easing = Literal[
     "linear",
     "in_quad",
@@ -593,14 +594,19 @@ class GadgetBase:
 
         if self.root is None:
             self._size = size
-        else:
-            with self.root._render_lock:
-                self._size = size
+            self.on_size()
 
-        self.on_size()
+            for child in self.children:
+                child.apply_hints()
 
-        for child in self.children:
-            child.apply_hints()
+            return
+
+        with self.root._render_lock:
+            self._size = size
+            self.on_size()
+
+            for child in self.children:
+                child.apply_hints()
 
     @property
     def height(self) -> int:

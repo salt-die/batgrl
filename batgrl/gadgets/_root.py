@@ -1,7 +1,7 @@
 """
 Root gadget.
 """
-from threading import Lock
+from threading import RLock
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
@@ -27,7 +27,7 @@ class _Root(Gadget):
         render_mode: Literal["regions", "painter"],
         size: Size,
     ):
-        self._render_lock = Lock()
+        self._render_lock = RLock()
         self.children = []
         self.background_char = background_char
         self.background_color_pair = background_color_pair
