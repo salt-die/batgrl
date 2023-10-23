@@ -877,9 +877,8 @@ class GadgetBase:
         bool
             Whether point collides with gadget.
         """
-        if self.region is None:
-            y, x = point
-            return 0 <= y < self.height and 0 <= x < self.width
+        if not self.is_visible or not self.is_enabled:
+            return False
 
         return point in self.region or any(
             point in child.region

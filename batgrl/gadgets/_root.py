@@ -107,7 +107,7 @@ class _Root(Gadget):
                 child.region = (
                     child.parent.region
                     & Region.from_rect(child.absolute_pos, child.size)
-                    if child.is_enabled
+                    if child.is_enabled and child.is_visible
                     else Region()
                 )
 
