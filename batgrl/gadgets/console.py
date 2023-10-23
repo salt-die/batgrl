@@ -194,10 +194,11 @@ class _ConsoleTextbox(Textbox):
         return super().on_key(key_event)
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
-        lines = paste_event.paste.split("\n")
+        *lines, last = paste_event.paste.split("\n")
         for line in lines:
             super().on_paste(PasteEvent(line))
             self.enter_callback(self)
+        super().on_paste(PasteEvent(last))
         return True
 
     def on_focus(self):
