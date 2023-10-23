@@ -284,7 +284,7 @@ class FileChooser(GadgetBase):
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with an uncovered portion of gadget.
+        True if point collides with visible portion of gadget.
     collides_gadget(other):
         True if other is within gadget's bounding box.
     add_gadget(gadget):
