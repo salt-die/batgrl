@@ -11,7 +11,7 @@ from io import StringIO
 
 from wcwidth import wcswidth
 
-from ..io import Key, KeyEvent, Mods
+from ..io import Key, KeyEvent, Mods, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
 from .gadget import Gadget
@@ -192,6 +192,13 @@ class _ConsoleTextbox(Textbox):
             self._tab()
             return True
         return super().on_key(key_event)
+
+    def on_paste(self, paste_event: PasteEvent) -> bool | None:
+        lines = paste_event.paste.split("\n")
+        for line in lines:
+            super().on_paste(PasteEvent(line))
+            self.enter_callback(self)
+        return True
 
     def on_focus(self):
         pass
