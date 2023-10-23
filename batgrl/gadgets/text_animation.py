@@ -246,9 +246,8 @@ class TextAnimation(Gadget):
     @region.setter
     def region(self, region: Region):
         self._region = region
-        if region is not None:
-            for frame in self.frames:
-                frame.region = region & Region.from_rect(self.absolute_pos, frame.size)
+        for frame in self.frames:
+            frame.region = region & Region.from_rect(self.absolute_pos, frame.size)
 
     @property
     def animation_color_pair(self) -> ColorPair:
