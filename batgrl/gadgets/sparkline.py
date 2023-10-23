@@ -264,8 +264,8 @@ class Sparkline(Text):
         self._tooltip.add_border(style="thick")
         add_text(
             self._tooltip.canvas[1:, 2:],
-            "Start:\nStop:\nMin:\nMax:\nMean:",
-            italic=True,
+            "*Start:*\n*Stop:*\n*Min:*\n*Max:*\n*Mean:*",
+            markdown=True,
         )
 
         self.tooltip_color_pair = tooltip_color_pair

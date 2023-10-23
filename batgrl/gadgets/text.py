@@ -29,7 +29,7 @@ from .gadget_base import (
     style_char,
     subscribable,
 )
-from .text_tools import add_text
+from .text_tools import add_text, parse_batgrl_md, text_to_chars, write_chars_to_canvas
 
 __all__ = [
     "Anchor",
@@ -363,6 +363,10 @@ class Text(GadgetBase):
                 if i > 0:
                     y += 1
                     x = 0
+
+                if len(line) == 0:
+                    continue
+
                 end = x + wcswidth(line)
                 if token_style["color"]:
                     self.colors[y, x:end, :3] = Color.from_hex(token_style["color"])
@@ -377,16 +381,18 @@ class Text(GadgetBase):
         self,
         str: str,
         pos: Point = Point(0, 0),
-        *,
-        bold: bool = False,
-        italic: bool = False,
-        underline: bool = False,
-        strikethrough: bool = False,
-        overline: bool = False,
+        markdown: bool = False,
         truncate_str: bool = False,
     ):
         """
         Add a single line of text to the canvas at position `pos`.
+
+        If `markdown` is true, text can be styled using batgrl markdown. The syntax is:
+        - italic: `*this is italic text*`
+        - bold: `**this is bold text**`
+        - strikethrough: `~~this is strikethrough text~~`
+        - underlined: `__this is underlined text__`
+        - overlined: `^^this is overlined text^^`
 
         Parameters
         ----------
@@ -395,16 +401,8 @@ class Text(GadgetBase):
         pos : Point, default: Point(0, 0)
             Position of first character of string. Negative coordinates position
             from the right or bottom of canvas (like negative indices).
-        bold : bool, default: False
-            Whether text is bold.
-        italic : bool, default: False
-            Whether text is italic.
-        underline : bool, default: False
-            Whether text is underlined.
-        strikethrough : bool, default: False
-            Whether text is strikethrough.
-        overline : bool, default: False
-            Whether text is overlined.
+        markdown : bool, default: False
+            Whether to parse text for batgrl markdown.
         truncate_str : bool, default: False
             If false, an `IndexError` is raised if the text would not fit on canvas.
 
@@ -413,67 +411,40 @@ class Text(GadgetBase):
         text_tools.add_text : Add multiple lines of text to a view of a canvas.
         """
         y, x = pos
-        add_text(
-            self.canvas[y, x:],
-            str,
-            bold=bold,
-            italic=italic,
-            underline=underline,
-            strikethrough=strikethrough,
-            overline=overline,
-            truncate_text=truncate_str,
-        )
+        add_text(self.canvas[y, x:], str, markdown, truncate_text=truncate_str)
 
-    def set_text(
-        self,
-        text: str,
-        *,
-        bold: bool = False,
-        italic: bool = False,
-        underline: bool = False,
-        strikethrough: bool = False,
-        overline: bool = False,
-    ):
+    def set_text(self, text: str, markdown: bool = False):
         """
         Resize gadget to fit text, erase canvas, then fill canvas with text.
+
+        If `markdown` is true, text can be styled using batgrl markdown. The syntax is:
+        - italic: `*this is italic text*`
+        - bold: `**this is bold text**`
+        - strikethrough: `~~this is strikethrough text~~`
+        - underlined: `__this is underlined text__`
+        - overlined: `^^this is overlined text^^`
 
         Parameters
         ----------
         text : str
             Text to add to canvas.
-        bold : bool, default: False
-            Whether text is bold.
-        italic : bool, default: False
-            Whether text is italic.
-        underline : bool, default: False
-            Whether text is underlined.
-        strikethrough : bool, default: False
-            Whether text is strikethrough.
-        overline : bool, default: False
-            Whether text is overlined.
+        markdown : bool, default: False
+            Whether to parse text for batgrl markdown.
 
         See Also
         --------
         text_tools.add_text : Add multiple lines of text to a view of a canvas.
         """
-        lines = text.split("\n")
-        height = len(lines)
-        width = max(map(wcswidth, lines), default=0)
-        self.size = height, width
+        self.size, lines = parse_batgrl_md(text) if markdown else text_to_chars(text)
+
         self.canvas[:] = self.default_char
-        add_text(
-            self.canvas,
-            text,
-            bold=bold,
-            italic=italic,
-            underline=underline,
-            strikethrough=strikethrough,
-            overline=overline,
-        )
+        self.colors[:] = self.default_color_pair
+
+        write_chars_to_canvas(lines, self.canvas)
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         """
-        Paint region given by source into canvas_view and colors_view.
+        Render visible region of gadget into root's `canvas` and `colors` arrays.
         """
         abs_pos = self.absolute_pos
         if self.is_transparent:

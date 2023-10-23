@@ -15,7 +15,7 @@ class BordersApp(App):
         for border, color in zip(Border.__args__, border_colors):
             gadget = Text(size=(3, 17))
             gadget.add_border(border, bold=True, color_pair=color)
-            gadget.add_str(f"{border:^15}", pos=(1, 1), italic=True)
+            gadget.add_str(f"{f'*{border}*':^17}", pos=(1, 1), markdown=True)
             grid_layout.add_gadget(gadget)
 
         grid_layout.size = grid_layout.minimum_grid_size

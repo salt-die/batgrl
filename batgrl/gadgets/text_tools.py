@@ -5,10 +5,16 @@ import numpy as np
 from numpy.typing import NDArray
 from wcwidth import wcswidth, wcwidth
 
+from ..geometry import Size
+from ._batgrl_markdown import find_md_tokens
+
 __all__ = [
     "Char",
     "style_char",
     "coerce_char",
+    "parse_batgrl_md",
+    "text_to_chars",
+    "write_chars_to_canvas",
     "add_text",
     "binary_to_box",
     "binary_to_braille",
@@ -108,19 +114,142 @@ def coerce_char(
     return default
 
 
+def parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
+    """
+    Parse batgrl markdown and return the minimum canvas size to fit text and
+    a list of lines of styled characters.
+
+    #### Syntax for batgrl markdown
+    - italic: `*this is italic text*`
+    - bold: `**this is bold text**`
+    - strikethrough: `~~this is strikethrough text~~`
+    - underlined: `__this is underlined text__`
+    - overlined: `^^this is overlined text^^`
+
+    Parameters
+    ----------
+    text : str
+        The text to parse.
+
+    Returns
+    -------
+    tuple[Size, list[list[Char]]]
+        Minimum canvas size to fit text and a list of lines of styled characters.
+    """
+    NO_CHAR = style_char("")
+    matches, escapes = find_md_tokens(text)
+    chars = [style_char(char) for char in text]
+    for before, start, end, after, style in matches:
+        chars[start - before : start] = [NO_CHAR] * before
+        chars[end : end + after] = [NO_CHAR] * after
+        for i in range(start, end):
+            chars[i][style] = True
+
+    for i in escapes:
+        chars[i] = NO_CHAR
+
+    lines = []
+    line = []
+    line_width = max_width = 0
+
+    for char in chars:
+        if char["char"][()] == "\n":
+            lines.append(line)
+            line = []
+            if line_width > max_width:
+                max_width = line_width
+            line_width = 0
+        else:
+            char_width = wcswidth(char["char"][()])
+            if char_width > 0:
+                line.append(char)
+                line_width += char_width
+
+    lines.append(line)
+    if line_width > max_width:
+        max_width = line_width
+
+    return Size(len(lines), max_width), lines
+
+
+def text_to_chars(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
+    """
+    Convert chars to a list of lines of styled characters and the minimum canvas size to fit
+    them.
+
+    Parameters
+    ----------
+    text : str
+        The text to convert.
+
+    Returns
+    -------
+    tuple[Size, list[list[Char]]]
+        Minimum canvas size to fit text and a list of lines of styled characters.
+    """
+    lines = [[style_char(char) for char in line] for line in text.split("\n")]
+    line_width = 0
+    max_width = 0
+    for line in lines:
+        for char in line:
+            char_width = wcswidth(char["char"][()])
+            if char_width > 0:
+                line_width += char_width
+        if line_width > max_width:
+            max_width = line_width
+        line_width = 0
+    return Size(len(lines), max_width), lines
+
+
+def write_chars_to_canvas(lines: list[list[NDArray[Char]]], canvas: NDArray[Char]):
+    """
+    Write a list of lines of styled characters to a canvas array.
+
+    Full-width characters are succeeded by empty characters.
+
+    Parameters
+    ----------
+    lines : list[list[NDArray[Char]]]
+        Lines to write to a canvas.
+
+    canvas : NDArray[Char]
+        Canvas array where lines are written.
+    """
+    _, columns = canvas.shape
+    for chars, canvas_line in zip(lines, canvas):
+        i = 0
+        for char in chars:
+            if i >= columns:
+                break
+
+            width = wcswidth(char["char"][()])
+            if width <= 0:
+                continue
+
+            if width == 2 and i + 1 < columns:
+                empty_char = char.copy()
+                empty_char["char"] = ""
+                canvas_line[i + 1] = empty_char
+
+            canvas_line[i] = char
+            i += width
+
+
 def add_text(
     canvas: NDArray[Char],
     text: str,
-    *,
-    bold: bool = False,
-    italic: bool = False,
-    underline: bool = False,
-    strikethrough: bool = False,
-    overline: bool = False,
+    markdown: bool = False,
     truncate_text: bool = False,
 ):
     """
     Add multiple lines of text to a view of a canvas.
+
+    If `markdown` is true, text can be styled using batgrl markdown. The syntax is:
+    - italic: `*this is italic text*`
+    - bold: `**this is bold text**`
+    - strikethrough: `~~this is strikethrough text~~`
+    - underlined: `__this is underlined text__`
+    - overlined: `^^this is overlined text^^`
 
     Text is added starting at first index in canvas. Every new line is added on a new
     row.
@@ -131,51 +260,19 @@ def add_text(
         A 1- or 2-dimensional view of a `Text` canvas.
     text : str
         Text to add to canvas.
-    bold : bool, default: False
-        Whether text is bold.
-    italic : bool, default: False
-        Whether text is italic.
-    underline : bool, default: False
-        Whether text is underlined.
-    strikethrough : bool, default: False
-        Whether text is strikethrough.
-    overline : bool, default: False
-        Whether text is overlined.
+    markdown : bool, default: False
+        Whether to parse text for batgrl markdown.
     truncate_text : bool, default: False
         For text that doesn't fit on canvas, truncate text if true else raise an
         `IndexError`.
     """
+    size, lines = parse_batgrl_md(text) if markdown else text_to_chars(text)
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
     rows, columns = canvas.shape
-
-    text_lines = text.split("\n")
-    if not truncate_text and (
-        len(text_lines) > rows or max(map(wcswidth, text_lines), default=0) > columns
-    ):
+    if not truncate_text and (size.height > rows or size.width > columns):
         raise IndexError("Text does not fit in canvas.")
-
-    for text_line, canvas_line in zip(text_lines, canvas):
-        i = 0
-        for letter in text_line:
-            if i >= columns:
-                break
-
-            width = wcwidth(letter)
-            if width == 0:
-                continue
-            if width == 2 and i + 1 < columns:
-                canvas_line[i + 1] = (
-                    "",
-                    bold,
-                    italic,
-                    underline,
-                    strikethrough,
-                    overline,
-                )
-
-            canvas_line[i] = letter, bold, italic, underline, strikethrough, overline
-            i += width
+    write_chars_to_canvas(lines, canvas)
 
 
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
