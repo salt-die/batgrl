@@ -344,7 +344,7 @@ class Text(GadgetBase):
 
         Parameters
         ----------
-        lexer : Lexer | None, default: None
+        lexer : pygments.lexer.Lexer | None, default: None
             Lexer for text. If not given, the lexer is guessed.
         style : pygments.style.Style, default: Neptune
             A pygments style to use for syntax highlighting.
