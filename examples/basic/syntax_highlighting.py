@@ -89,7 +89,7 @@ class SyntaxApp(App):
             def callback():
                 nonlocal last_style
                 last_style = name
-                text.add_syntax_highlight(style=get_style_by_name_(name))
+                text.add_syntax_highlighting(style=get_style_by_name_(name))
 
             return callback
 
