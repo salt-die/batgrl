@@ -11,7 +11,7 @@ border_colors = [
 
 class BordersApp(App):
     async def on_start(self):
-        grid_layout = GridLayout(grid_columns=7, grid_rows=2)
+        grid_layout = GridLayout(grid_columns=6, grid_rows=3)
         for border, color in zip(Border.__args__, border_colors):
             gadget = Text(size=(3, 17))
             gadget.add_border(border, bold=True, color_pair=color)

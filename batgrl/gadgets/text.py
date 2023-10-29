@@ -67,6 +67,9 @@ Border = Literal[
     "heavy_dashed",
     "heavy_dashed_2",
     "heavy_dashed_3",
+    "near",
+    "mcgugan_tall",
+    "mcgugan_wide",
 ]
 """Border styles for :meth:`batgrl.text_gadget.Text.add_border`."""
 
@@ -319,6 +322,9 @@ class Text(GadgetBase):
             "heavy_dashed": "┏┓╏╏╍╍┗┛",
             "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
             "heavy_dashed_3": "┏┓┋┋┉┉┗┛",
+            "near": "  ▕▏▁▔  ",
+            "mcgugan_tall": "▕▏▕▏▔▁▕▏",
+            "mcgugan_wide": "▁▁▏▕▁▔▔▔",
         }
         tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]
 
@@ -333,8 +339,15 @@ class Text(GadgetBase):
         canvas[-1, -1] = style_char(br, bold=bold)
 
         if color_pair is not None:
-            self.colors[[0, -1]] = color_pair
-            self.colors[:, [0, -1]] = color_pair
+            if style == "mcgugan_tall":
+                self.colors[[0, -1], :, :3] = color_pair[:3]
+                self.colors[:, [0, -1]] = color_pair
+            elif style == "mcgugan_wide":
+                self.colors[[0, -1]] = color_pair
+                self.colors[:, [0, -1], :3] = color_pair[:3]
+            else:
+                self.colors[[0, -1]] = color_pair
+                self.colors[:, [0, -1]] = color_pair
 
     def add_syntax_highlighting(
         self, lexer: Lexer | None = None, style: Style = Neptune

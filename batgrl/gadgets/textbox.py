@@ -398,8 +398,9 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self._placeholder_gadget.is_enabled = False
 
         max_x = self.width - 1
-        if (rel_x := cursor + self._box.x) > max_x:
-            self._box.x += max_x - rel_x
+        rel_x = cursor + self._box.x
+        if rel_x > max_x:
+            self._box.x -= rel_x - max_x
         elif rel_x < 0:
             self._box.x -= rel_x
 
@@ -713,7 +714,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
         if not self.is_focused:
-            return
+            return super().on_key(key_event)
 
         if key_event.mods == Mods.NO_MODS and len(key_event.key) == 1:
             self._ascii(key_event.key)

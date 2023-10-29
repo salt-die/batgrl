@@ -234,12 +234,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     def on_size(self):
         super().on_size()
-        port_width = self._scroll_view.port_width
-        if port_width > self._pad.width:
-            self._pad.width = port_width
-        elif port_width < self._pad.width:
-            self._pad.width = max(port_width, max(self._line_lengths) + 1)
-
+        self._pad.width = max(self._scroll_view.port_width, max(self._line_lengths) + 1)
         self._highlight_selection()
 
     def on_focus(self):
@@ -316,10 +311,11 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             self._scroll_view._scroll_up(-rel_y)
 
         max_x = self._scroll_view.port_width - 1
-        if (rel_x := x + self._pad.x) > max_x:
+        rel_x = x + self._pad.x
+        if rel_x > max_x:
             self._scroll_view._scroll_right(rel_x - max_x)
         elif rel_x < 0:
-            self._scroll_view._scroll_left(-rel_x)
+            self._scroll_view._scroll_right(rel_x)
 
         if self.is_selecting:
             self._selection_end = self.cursor
@@ -411,8 +407,6 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
         len_end = ll[ey] - ex
         len_start = ll[sy] = sx + len_end
-        if len_start >= pad.width:
-            pad.width = len_start + 1
 
         canvas[sy, sx:len_start] = canvas[ey, ex : ex + len_end]
         canvas[sy, len_start:] = pad.default_char
@@ -422,6 +416,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         pad.height -= ey - sy
 
         del ll[sy + 1 : ey + 1]
+        pad.width = max(max(ll) + 1, self._scroll_view.port_width)
 
         self.unselect()
         self._last_x = None
@@ -830,7 +825,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
         if not self.is_focused:
-            return
+            return super().on_key(key_event)
 
         if key_event.mods == Mods.NO_MODS and len(key_event.key) == 1:
             self._ascii(key_event.key)
