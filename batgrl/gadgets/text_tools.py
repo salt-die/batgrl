@@ -9,6 +9,7 @@ from ..geometry import Size
 from ._batgrl_markdown import find_md_tokens
 
 __all__ = [
+    "is_word_char",
     "Char",
     "style_char",
     "coerce_char",
@@ -21,6 +22,26 @@ __all__ = [
     "smooth_vertical_bar",
     "smooth_horizontal_bar",
 ]
+
+
+def is_word_char(char: str) -> bool:
+    """
+    Whether `char` is a word character.
+
+    A character is a word character if it is alphanumeric or an underscore.
+
+    Parameters
+    ----------
+    char : str
+        The char to test.
+
+    Returns
+    -------
+    bool
+        Whether the char is a word character.
+    """
+    return char.isalnum() or char == "_"
+
 
 Char = np.dtype(
     [

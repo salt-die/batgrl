@@ -19,6 +19,7 @@ from .gadget_base import (
 )
 from .scroll_view import ScrollView
 from .text import Text
+from .text_tools import is_word_char
 
 __all__ = [
     "Point",
@@ -29,8 +30,6 @@ __all__ = [
     "SizeHintDict",
     "TextPad",
 ]
-
-WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
 
 class TextPad(Themable, Grabbable, Focusable, GadgetBase):
@@ -570,8 +569,10 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
-                    is_word_char = current_char in WORD_CHARS
-            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                    char_is_word_char = is_word_char(current_char)
+            elif current_char.isspace() or char_is_word_char != is_word_char(
+                current_char
+            ):
                 self.move_cursor_right()
                 break
 
@@ -589,8 +590,10 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
-                    is_word_char = current_char in WORD_CHARS
-            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                    char_is_word_char = is_word_char(current_char)
+            elif current_char.isspace() or char_is_word_char != is_word_char(
+                current_char
+            ):
                 break
 
     def _enter(self):
@@ -681,7 +684,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             self.move_cursor_left()
             if last_x == self.cursor.x:
                 break
-            if self._pad.canvas[self.cursor]["char"] not in WORD_CHARS:
+            if not is_word_char(self._pad.canvas[self.cursor]["char"]):
                 self.move_cursor_right()
                 break
             last_x = self.cursor.x
@@ -689,7 +692,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self.select()
         last_x = self.cursor.x
         while True:
-            if self._pad.canvas[self.cursor]["char"] not in WORD_CHARS:
+            if not is_word_char(self._pad.canvas[self.cursor]["char"]):
                 break
             self.move_cursor_right()
             if last_x == self.cursor.x:

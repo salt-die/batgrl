@@ -25,6 +25,7 @@ from .gadget_base import (
     coerce_char,
 )
 from .text import Text, style_char
+from .text_tools import is_word_char
 
 __all__ = [
     "Point",
@@ -35,8 +36,6 @@ __all__ = [
     "SizeHintDict",
     "Textbox",
 ]
-
-WORD_CHARS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 
 
 class Textbox(Themable, Focusable, Grabbable, GadgetBase):
@@ -522,8 +521,10 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
-                    is_word_char = current_char in WORD_CHARS
-            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                    char_is_word_char = is_word_char(current_char)
+            elif current_char.isspace() or char_is_word_char != is_word_char(
+                current_char
+            ):
                 self.move_cursor_right()
                 break
 
@@ -541,8 +542,10 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
-                    is_word_char = current_char in WORD_CHARS
-            elif current_char.isspace() or is_word_char != (current_char in WORD_CHARS):
+                    char_is_word_char = is_word_char(current_char)
+            elif current_char.isspace() or char_is_word_char != is_word_char(
+                current_char
+            ):
                 break
 
     def _enter(self):
@@ -619,7 +622,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self.move_cursor_left()
             if last_x == self.cursor:
                 break
-            if self._box.canvas[0, self.cursor]["char"] not in WORD_CHARS:
+            if not is_word_char(self._box.canvas[0, self.cursor]["char"]):
                 self.move_cursor_right()
                 break
             last_x = self.cursor
@@ -627,7 +630,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self.select()
         last_x = self.cursor
         while True:
-            if self._box.canvas[0, self.cursor]["char"] not in WORD_CHARS:
+            if not is_word_char(self._box.canvas[0, self.cursor]["char"]):
                 break
             self.move_cursor_right()
             if last_x == self.cursor:
