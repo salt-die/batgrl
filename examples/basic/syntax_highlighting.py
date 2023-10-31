@@ -54,7 +54,7 @@ LIGHT_STYLES = [
     "paraiso-light",
     "pastie",
     "perldoc",
-    "raindbow_dash",
+    "rainbow_dash",
     "sas",
     "solarized-light",
     "staroffice",
