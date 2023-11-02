@@ -36,8 +36,22 @@ exclude = [
     "preview_images**",
 ]
 
-[tool.black]
-line-length = 88
+[tool.ruff.lint]
+select = [
+    "D",  # pydocstyle
+    "F",  # pyflakes
+    "E",  # pycodestyle - error
+    "W",  # pycodestyle - warning
+    "I",  # isort
+]
+ignore = [
+    "D105",  # undocumented-magic-method
+    "D205",  # blank-line-after-summary -- This rule seems bugged for summaries that need more than one line.
+]
+fixable = ["ALL"]
 
-[tool.isort]
-profile = "black"
+[tool.ruff.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.pycodestyle]
+max-doc-length=88
