@@ -163,6 +163,7 @@ class Vt100_Output:
 
         write = self._buffer.append
 
+        write("\x1b7")  # Save cursor
         for y, x, style, color_pair in zip(ys, xs, canvas[ys, xs], colors[ys, xs]):
             char, bold, italic, underline, strikethrough, overline = style
             if char == "":
@@ -196,4 +197,5 @@ class Vt100_Output:
                 f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair
                 f"{char}"
             )
+        write("\x1b8")  # Restore cursor
         self.flush()
