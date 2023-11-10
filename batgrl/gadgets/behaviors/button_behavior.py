@@ -91,12 +91,12 @@ class ButtonBehavior:
             mouse_event.event_type is MouseEventType.MOUSE_UP
             and self.state is ButtonState.DOWN
         ):
-            self._normal()
-
             if collides:
                 self._hover()
                 self.on_release()
                 return True
+
+            self._normal()
 
             if self.always_release:
                 self.on_release()
