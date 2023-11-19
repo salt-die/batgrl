@@ -1,6 +1,4 @@
-"""
-Output for windows terminals.
-"""
+"""Output for windows terminals."""
 from ctypes import byref, windll
 from ctypes.wintypes import DWORD
 
@@ -15,9 +13,7 @@ ENABLE_QUICK_EDIT_MODE = 0x0040
 
 
 class WindowsOutput(Vt100_Output):
-    """
-    Windows output.
-    """
+    """Windows output."""
 
     def __init__(self, *args, **kwargs):
         self._original_mode = DWORD()
@@ -34,10 +30,10 @@ class WindowsOutput(Vt100_Output):
         super().__init__(*args, **kwargs)
 
     def enable_mouse_support(self):
+        """Enable mouse support in terminal."""
         self.flush()
 
         original_mode = DWORD()
-
         windll.kernel32.GetConsoleMode(STD_INPUT_HANDLE, byref(original_mode))
         windll.kernel32.SetConsoleMode(
             STD_INPUT_HANDLE,
@@ -45,28 +41,24 @@ class WindowsOutput(Vt100_Output):
         )
 
     def disable_mouse_support(self):
+        """Disable mouse support in terminal."""
         self.flush()
 
         original_mode = DWORD()
-
         windll.kernel32.GetConsoleMode(STD_INPUT_HANDLE, byref(original_mode))
         windll.kernel32.SetConsoleMode(
             STD_INPUT_HANDLE, original_mode.value & ~ENABLE_MOUSE_INPUT
         )
 
     def restore_console(self):
-        """
-        Restore console to original mode.
-        """
+        """Restore console to original mode."""
         super().restore_console()
 
         windll.kernel32.SetConsoleMode(STD_OUTPUT_HANDLE, self._original_mode)
 
 
 def is_vt100_enabled():
-    """
-    True if VT100 escape sequences are supported.
-    """
+    """Return true if VT100 escape sequences are supported."""
     # Get original console mode.
     original_mode = DWORD(0)
     windll.kernel32.GetConsoleMode(STD_OUTPUT_HANDLE, byref(original_mode))

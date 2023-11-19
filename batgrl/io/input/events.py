@@ -1,6 +1,4 @@
-"""
-Data structures for input events.
-"""
+"""Data structures for input events."""
 from collections import namedtuple
 from enum import Enum
 from functools import cache
@@ -59,21 +57,17 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
     shift: bool
 
     @cache
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # noqa
         return super().__new__(cls, *args, **kwargs)
 
     @property
     def meta(self):
-        """
-        Alias for `alt`.
-        """
+        """Alias for `alt`."""
         return self.alt
 
     @property
     def control(self):
-        """
-        Alias for `ctrl`.
-        """
+        """Alias for `ctrl`."""
         return self.ctrl
 
 
@@ -110,7 +104,7 @@ class KeyEvent(namedtuple("KeyEvent", "key mods")):
     mods: Mods
 
     @cache
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # noqa
         return super().__new__(cls, *args, **kwargs)
 
 

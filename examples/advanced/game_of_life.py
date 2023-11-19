@@ -1,5 +1,5 @@
 """
-Conway's Game of Life, but new cells are given the average color of their parents
+Conway's Game of Life, but new cells are given the average color of their parents.
 
 Press `r` to reset. Click to create new live cells with random colors.
 """

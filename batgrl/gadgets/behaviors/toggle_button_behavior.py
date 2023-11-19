@@ -1,6 +1,4 @@
-"""
-Toggle button behavior for a gadget.
-"""
+"""Toggle button behavior for a gadget."""
 from collections.abc import Hashable
 from enum import Enum
 from weakref import WeakValueDictionary
@@ -36,9 +34,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and
-        :attr:`allow_no_selection` is false this value will be ignored if all buttons
-        would be off.
+        Initial toggle state of button.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
 
@@ -62,7 +58,7 @@ class ToggleButtonBehavior(ButtonBehavior):
     update_on():
         Paint the on state.
     on_toggle():
-        Called when the toggle state changes.
+        Update gadget on toggle state change.
     update_normal():
         Paint the normal state.
     update_hover():
@@ -104,6 +100,12 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     @property
     def toggle_state(self) -> ToggleState:
+        """
+        Initial toggle state of button.
+
+        If button is in a group and :attr:`allow_no_selection` is false this value will
+        be ignored if all buttons would be off.
+        """
         return self._toggle_state
 
     @toggle_state.setter
@@ -149,16 +151,10 @@ class ToggleButtonBehavior(ButtonBehavior):
         super()._down()
 
     def update_off(self):
-        """
-        Paint the off state.
-        """
+        """Paint the off state."""
 
     def update_on(self):
-        """
-        Paint the on state.
-        """
+        """Paint the on state."""
 
     def on_toggle(self):
-        """
-        Called when the toggle state changes.
-        """
+        """Update gadget on toggle state change."""

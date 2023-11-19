@@ -10,9 +10,7 @@ from .unicode_chars import FLAG
 
 
 class Minefield(Grid):
-    """
-    A grid that becomes transparent when clicked revealing the counts underneath.
-    """
+    """A grid that becomes transparent when clicked revealing the counts underneath."""
 
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
@@ -90,9 +88,7 @@ class Minefield(Grid):
         return True
 
     def _cell_from_pos(self, mouse_position):
-        """
-        Return the cell-coordinates cooresponding to given mouse position.
-        """
+        """Return the cell-coordinates cooresponding to given mouse position."""
         y, x = self.to_local(mouse_position)
 
         if y == self.height - 1:
@@ -104,18 +100,14 @@ class Minefield(Grid):
         return y // self.V_SPACING, x // self.H_SPACING
 
     def _cell_center(self, cell):
-        """
-        A cell's center in grid-coordinates.
-        """
+        """Cell center in grid-coordinates."""
         y, x = cell
         vs, hs = self.V_SPACING, self.H_SPACING
 
         return y * vs + vs // 2, x * hs + hs // 2
 
     def _cell_slice(self, cell):
-        """
-        Return a tuple of slices that indicate a cell's rect in the grid.
-        """
+        """Return a tuple of slices that indicate a cell's rect in the grid."""
         y, x = cell
 
         vs, hs = self.V_SPACING, self.H_SPACING

@@ -1,6 +1,4 @@
-"""
-Focus behavior for a gadget.
-"""
+"""Focus behavior for a gadget."""
 from collections import deque
 from weakref import ReferenceType, WeakSet, ref
 
@@ -35,42 +33,38 @@ class Focusable:
     focus_previous():
         Focus previous focusable gadget.
     on_focus():
-        Called when gadget is focused.
+        Update gadget when it gains focus.
     on_blur():
-        Called when gadget loses focus.
+        Update gadget when it loses focus.
     """
 
     __focus_gadgets: deque[ReferenceType] = deque()
     __focused = WeakSet()
 
     def on_add(self):
+        """Add to focusable gadgets and focus on add."""
         super().on_add()
         Focusable.__focus_gadgets.append(ref(self))
         self.focus()
 
     def on_remove(self):
+        """Remove from focusable gadgets and blur on remove."""
         self.blur()
         Focusable.__focus_gadgets.remove(ref(self))
         super().on_remove()
 
     @property
     def is_focused(self) -> bool:
-        """
-        True if gadget has focus.
-        """
+        """True if gadget has focus."""
         return self in Focusable.__focused
 
     @property
     def any_focused(self) -> bool:
-        """
-        True if any gadget has focus.
-        """
+        """True if any gadget has focus."""
         return bool(Focusable.__focused)
 
     def focus(self):
-        """
-        Focus gadget.
-        """
+        """Focus gadget."""
         if not self.is_enabled:
             return
 
@@ -96,9 +90,7 @@ class Focusable:
                 focus_gadgets.rotate(-1)
 
     def blur(self):
-        """
-        Un-focus gadget.
-        """
+        """Un-focus gadget."""
         if self.is_focused:
             for ancestor in self.ancestors():
                 if isinstance(ancestor, Focusable):
@@ -109,9 +101,7 @@ class Focusable:
             self.on_blur()
 
     def focus_next(self):
-        """
-        Focus next focusable gadget.
-        """
+        """Focus next focusable gadget."""
         focus_gadgets = Focusable.__focus_gadgets
 
         if self.any_focused:
@@ -128,9 +118,7 @@ class Focusable:
                 return
 
     def focus_previous(self):
-        """
-        Focus previous focusable gadget.
-        """
+        """Focus previous focusable gadget."""
         focus_gadgets = Focusable.__focus_gadgets
 
         if self.any_focused:
@@ -147,6 +135,7 @@ class Focusable:
                 return
 
     def on_key(self, key_event):
+        """Focus next or previous focusable on tab or shift-tab, respectively."""
         if super().on_key(key_event):
             return True
 
@@ -160,12 +149,14 @@ class Focusable:
         return False
 
     def dispatch_mouse(self, mouse_event):
+        """Focus if mouse event is handled."""
         handled = super().dispatch_mouse(mouse_event)
         if handled and not self.is_focused and self.is_visible:
             self.focus()
         return handled
 
     def on_mouse(self, mouse_event):
+        """Focus on mouse down collision and blur otherwise."""
         if mouse_event.event_type is MouseEventType.MOUSE_DOWN and self.is_visible:
             collides = self.collides_point(mouse_event.position)
             if not self.is_focused and collides:
@@ -176,11 +167,7 @@ class Focusable:
         return super().on_mouse(mouse_event)
 
     def on_focus(self):
-        """
-        Called when gadget gains focus.
-        """
+        """Update gadget when it gains focus."""
 
     def on_blur(self):
-        """
-        Called when gadget loses focus.
-        """
+        """Update gadget when it loses focus."""

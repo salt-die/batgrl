@@ -12,16 +12,12 @@ from .particles import Air
 
 @partial(np.vectorize, otypes=[np.uint8, np.uint8, np.uint8])
 def particles_to_colors(particle):
-    """
-    Convert array of particles to array of colors.
-    """
+    """Convert array of particles to array of colors."""
     return particle.COLOR
 
 
 class Sandbox(Graphics):
-    """
-    Sandbox gadget.
-    """
+    """Sandbox gadget."""
 
     def __init__(self, size: Size):
         super().__init__(

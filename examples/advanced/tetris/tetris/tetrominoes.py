@@ -7,9 +7,7 @@ from .wall_kicks import ARIKA_I_WALL_KICKS, I_WALL_KICKS, JLSTZ_WALL_KICKS, O_WA
 
 
 class Orientation(IntFlag):
-    """
-    Orientation of a tetromino.
-    """
+    """Orientation of a tetromino."""
 
     UP = 0
     RIGHT = 1

@@ -59,9 +59,7 @@ class Camera:
 
     @property
     def pos(self):
-        """
-        Position of camera in world coordinates.
-        """
+        """Position of camera in world coordinates."""
         # General camera position is calculated as
         # `-self.plane.T @ self.translation`, but
         # translation for camera is [0, 0, Z],
@@ -94,9 +92,7 @@ class Camera:
         np.matmul(self.plane, rotation.z(theta), out=self.plane)
 
     def render_cube(self, cube, image, aspect_ratio=True):
-        """
-        Project and render a cube onto an image array.
-        """
+        """Project and render a cube onto an image array."""
         h, w, _ = image.shape
 
         if aspect_ratio:

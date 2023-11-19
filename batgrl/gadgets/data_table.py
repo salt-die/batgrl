@@ -1,6 +1,4 @@
-"""
-A data table gadget.
-"""
+"""A data table gadget."""
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
@@ -38,9 +36,7 @@ __all__ = [
 
 
 class SupportsLessThan(Protocol):
-    """
-    Supports the less than (`<`) operator.
-    """
+    """Supports the less than (`<`) operator."""
 
     def __lt__(self, other) -> bool:
         ...
@@ -111,9 +107,7 @@ class ColumnStyle:
 
 
 class _SortState(str, Enum):
-    """
-    Sorted state of a column in a data table.
-    """
+    """Sorted state of a column in a data table."""
 
     NOT_SORTED = "↕"
     ASCENDING = "↑"
@@ -133,9 +127,7 @@ _ALIGN_FORMATTER = {
 
 
 class _CellBase(ButtonBehavior, Text):
-    """
-    Base for cells in a data table.
-    """
+    """Base for cells in a data table."""
 
     def __init__(self, data_table: "DataTable", column_id: int, **kwargs):
         super().__init__(**kwargs)
@@ -145,16 +137,12 @@ class _CellBase(ButtonBehavior, Text):
 
     @property
     def style(self) -> ColumnStyle:
-        """
-        Style of column to which this cell belongs.
-        """
+        """Style of column to which this cell belongs."""
         return self.data_table._column_styles[self.column_id]
 
 
 class _ColumnLabel(_CellBase):
-    """
-    A column label cell in a data table.
-    """
+    """A column label cell in a data table."""
 
     def __init__(self, label: str, allow_sorting: bool, **kwargs):
         super().__init__(**kwargs)
@@ -187,9 +175,7 @@ class _ColumnLabel(_CellBase):
 
     @property
     def sort_state(self) -> _SortState:
-        """
-        Sorted state of column of which this label belongs.
-        """
+        """Sorted state of column of which this label belongs."""
         return self._sort_state
 
     @sort_state.setter
@@ -259,9 +245,7 @@ class _ColumnLabel(_CellBase):
 
 
 class _DataCell(_CellBase):
-    """
-    A data cell in a data table.
-    """
+    """A data cell in a data table."""
 
     def __init__(self, data: T, row_id: int, striped: bool = False, **kwargs):
         super().__init__(**kwargs)
@@ -317,7 +301,7 @@ class _DataCell(_CellBase):
 
 
 class DataTable(Themable, GadgetBase):
-    """
+    r"""
     A data table gadget.
 
     Parameters
@@ -424,18 +408,18 @@ class DataTable(Themable, GadgetBase):
     update_theme():
         Paint the gadget with current theme.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -462,13 +446,13 @@ class DataTable(Themable, GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     _IDS = count()
@@ -549,9 +533,7 @@ class DataTable(Themable, GadgetBase):
 
     @property
     def select_items(self) -> Literal["cell", "row", "column"]:
-        """
-        Determines which items are selected when data table is clicked.
-        """
+        """Determines which items are selected when data table is clicked."""
         return self._select_items
 
     @select_items.setter
@@ -565,9 +547,7 @@ class DataTable(Themable, GadgetBase):
 
     @property
     def zebra_stripes(self) -> bool:
-        """
-        Whether alternate rows are colored differently.
-        """
+        """Whether alternate rows are colored differently."""
         return self._zebra_stripes
 
     @zebra_stripes.setter
@@ -577,9 +557,7 @@ class DataTable(Themable, GadgetBase):
 
     @property
     def allow_sorting(self) -> bool:
-        """
-        Whether columns can be sorted.
-        """
+        """Whether columns can be sorted."""
         return self._allow_sorting
 
     @allow_sorting.setter
@@ -589,6 +567,7 @@ class DataTable(Themable, GadgetBase):
             column_label.allow_sorting = allow_sorting
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         primary = self.color_theme.primary
         self.background_color_pair = primary
         self._table.background_color_pair = primary
@@ -609,6 +588,7 @@ class DataTable(Themable, GadgetBase):
         self._update_hover(self._hover_column_id, self._hover_row_id)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
+        """Highlight row on mouse collision."""
         y, x = self.to_local(mouse_event.position)
         if not (
             0 <= y < self._scroll_view.port_height
@@ -859,7 +839,6 @@ class DataTable(Themable, GadgetBase):
         column_id : int
             The id of the column to remove.
         """
-
         column_index = self._column_ids.index(column_id)
         del self._column_ids[column_index]
         for row in self._table.children:
@@ -885,7 +864,7 @@ class DataTable(Themable, GadgetBase):
 
     def row_id_from_index(self, index: int) -> int:
         """
-        Returns the row id of the row at index.
+        Return the row id of the row at index.
 
         Parameters
         ----------
@@ -901,7 +880,7 @@ class DataTable(Themable, GadgetBase):
 
     def column_id_from_index(self, index: int) -> int:
         """
-        Returns the column id of the column at index.
+        Return the column id of the column at index.
 
         Parameters
         ----------

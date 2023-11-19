@@ -1,6 +1,4 @@
-"""
-ScrollView example.
-"""
+"""ScrollView example."""
 from batgrl.app import App
 from batgrl.colors import BLUE, GREEN, RED, WHITE, ColorPair, gradient
 from batgrl.gadgets.scroll_view import ScrollView

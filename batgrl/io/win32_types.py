@@ -1,3 +1,4 @@
+"""Ctypes for windows."""
 from ctypes import Structure, Union, windll
 from ctypes.wintypes import BOOL, CHAR, DWORD, HANDLE, LONG, LPVOID, SHORT, WCHAR
 
@@ -7,25 +8,28 @@ STD_OUTPUT_HANDLE = HANDLE(windll.kernel32.GetStdHandle(DWORD(-11)))
 
 class COORD(Structure):
     """
-    Struct in wincon.h
+    Windows coord struct.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx
     """
 
-    _fields_ = [
-        ("X", SHORT),
-        ("Y", SHORT),
-    ]
+    _fields_ = [("X", SHORT), ("Y", SHORT)]
 
 
 class UNICODE_OR_ASCII(Union):
-    _fields_ = [
-        ("AsciiChar", CHAR),
-        ("UnicodeChar", WCHAR),
-    ]
+    """Windows character."""
+
+    _fields_ = [("AsciiChar", CHAR), ("UnicodeChar", WCHAR)]
 
 
 class KEY_EVENT_RECORD(Structure):
     """
+    Windows key event record.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx
     """
 
@@ -41,6 +45,10 @@ class KEY_EVENT_RECORD(Structure):
 
 class MOUSE_EVENT_RECORD(Structure):
     """
+    Windows mouse event record.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx
     """
 
@@ -54,6 +62,10 @@ class MOUSE_EVENT_RECORD(Structure):
 
 class WINDOW_BUFFER_SIZE_RECORD(Structure):
     """
+    Windows buffer size record.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx
     """
 
@@ -62,6 +74,10 @@ class WINDOW_BUFFER_SIZE_RECORD(Structure):
 
 class MENU_EVENT_RECORD(Structure):
     """
+    Windows menu event record.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx
     """
 
@@ -70,6 +86,10 @@ class MENU_EVENT_RECORD(Structure):
 
 class FOCUS_EVENT_RECORD(Structure):
     """
+    Windows focus event record.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx
     """
 
@@ -77,6 +97,8 @@ class FOCUS_EVENT_RECORD(Structure):
 
 
 class EVENT_RECORD(Union):
+    """Windows event record."""
+
     _fields_ = [
         ("KeyEvent", KEY_EVENT_RECORD),
         ("MouseEvent", MOUSE_EVENT_RECORD),
@@ -88,6 +110,10 @@ class EVENT_RECORD(Union):
 
 class INPUT_RECORD(Structure):
     """
+    Windows input record.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx
     """
 
@@ -96,6 +122,10 @@ class INPUT_RECORD(Structure):
 
 class SECURITY_ATTRIBUTES(Structure):
     """
+    Windows security attributes.
+
+    References
+    ----------
     http://msdn.microsoft.com/en-us/library/windows/desktop/aa379560(v=vs.85).aspx
     """
 

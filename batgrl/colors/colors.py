@@ -1,6 +1,4 @@
-"""
-Commonly used colors.
-"""
+"""Commonly used colors."""
 from pygments.style import Style
 from pygments.token import (
     Comment,

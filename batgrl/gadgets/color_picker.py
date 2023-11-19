@@ -1,6 +1,4 @@
-"""
-A color picker gadget.
-"""
+"""A color picker gadget."""
 from collections.abc import Callable
 
 import numpy as np
@@ -157,7 +155,7 @@ class _HueSelector(Grabbable, Graphics):
 
 
 class ColorPicker(Themable, GadgetBase):
-    """
+    r"""
     A color picker gadget.
 
     Parameters
@@ -235,18 +233,18 @@ class ColorPicker(Themable, GadgetBase):
     update_theme():
         Paint the gadget with current theme.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -273,13 +271,13 @@ class ColorPicker(Themable, GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -342,6 +340,7 @@ class ColorPicker(Themable, GadgetBase):
         self.add_gadget(self._container)
 
     def on_size(self):
+        """Resize and reposition children."""
         h, w = self._size
 
         shades = self.shades
@@ -361,6 +360,7 @@ class ColorPicker(Themable, GadgetBase):
         label.left = shades.right + 1
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         primary = self.color_theme.primary
         self._container.background_color_pair = primary
         self.label.default_color_pair = primary

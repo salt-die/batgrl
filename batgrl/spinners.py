@@ -1,6 +1,8 @@
 """
-Spinners credit to `cli-spinners` (https://github.com/sindresorhus/cli-spinners):
-MIT License
+Spinners can be used as frames in a `TextAnimation`.
+
+Spinners credit to `cli-spinners` (https://github.com/sindresorhus/cli-spinners).
+`cli-spinners` is licensed under the MIT License:
 
 Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -20,10 +22,9 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRA
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
 
------------------------------------------------------------------------------------------
-
-Spinners can be used as frames in a `TextAnimation`. See `examples/basic/spinners.py`.
-
+See Also
+--------
+`examples/basic/spinners.py`.
 """
 SPINNERS = {
     "dots": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],

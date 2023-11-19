@@ -1,6 +1,4 @@
-"""
-A parallax gadget.
-"""
+"""A parallax gadget."""
 from collections.abc import Iterable, Sequence
 from numbers import Real
 from pathlib import Path
@@ -53,7 +51,7 @@ def _check_layer_speeds(
 
 
 class Parallax(GadgetBase):
-    """
+    r"""
     A parallax gadget.
 
     Parameters
@@ -89,8 +87,7 @@ class Parallax(GadgetBase):
     Attributes
     ----------
     offset : tuple[float, float]
-        Vertical and horizontal offset of first layer of the parallax. Other layers will
-        be adjusted automatically.
+        Vertical and horizontal offset of first layer of the parallax.
     layers : list[Image]
         Layers of the parallax.
     speeds : Sequence[Real]
@@ -98,7 +95,7 @@ class Parallax(GadgetBase):
     vertical_offset : float
         Vertical offset of first layer of the parallax.
     horizontal_offset : float
-        Horizontal offset of first layer of the parallax
+        Horizontal offset of first layer of the parallax.
     alpha : float
         Transparency of the parallax.
     interpolation : Interpolation
@@ -157,18 +154,18 @@ class Parallax(GadgetBase):
     from_images(images, ...):
         Create a :class:`Parallax` from an iterable of :class:`Image`.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -195,13 +192,13 @@ class Parallax(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -248,6 +245,7 @@ class Parallax(GadgetBase):
 
     @property
     def region(self) -> Region:
+        """The visible portion of the gadget on the screen."""
         return self._region
 
     @region.setter
@@ -257,15 +255,14 @@ class Parallax(GadgetBase):
             layer.region = region
 
     def on_size(self):
+        """Resize parallax layers."""
         for layer in self.layers:
             layer.size = self._size
         self._otextures = [layer.texture for layer in self.layers]
 
     @property
     def is_transparent(self) -> bool:
-        """
-        If false, `alpha` and alpha channels are ignored.
-        """
+        """If false, `alpha` and alpha channels are ignored."""
         return self._is_transparent
 
     @is_transparent.setter
@@ -276,9 +273,7 @@ class Parallax(GadgetBase):
 
     @property
     def alpha(self) -> float:
-        """
-        Transparency of gadget if :attr:`is_transparent` is true.
-        """
+        """Transparency of gadget if :attr:`is_transparent` is true."""
         return self._alpha
 
     @alpha.setter
@@ -290,9 +285,7 @@ class Parallax(GadgetBase):
 
     @property
     def interpolation(self) -> Interpolation:
-        """
-        Interpolation used when gadget is resized.
-        """
+        """Interpolation used when gadget is resized."""
         return self._interpolation
 
     @interpolation.setter
@@ -304,6 +297,7 @@ class Parallax(GadgetBase):
 
     @property
     def vertical_offset(self) -> float:
+        """Vertical offset of first layer of the parallax."""
         return self._vertical_offset
 
     @vertical_offset.setter
@@ -313,6 +307,7 @@ class Parallax(GadgetBase):
 
     @property
     def horizontal_offset(self) -> float:
+        """Horizontal offset of first layer of the parallax."""
         return self._horizontal_offset
 
     @horizontal_offset.setter
@@ -322,6 +317,11 @@ class Parallax(GadgetBase):
 
     @property
     def offset(self) -> tuple[float, float]:
+        """
+        Vertical and horizontal offset of first layer of the parallax.
+
+        Other layers will be adjusted automatically when offset is set.
+        """
         return self._vertical_offset, self._horizontal_offset
 
     @offset.setter
@@ -335,12 +335,14 @@ class Parallax(GadgetBase):
             self._otextures,
             self.layers,
         ):
-            rolls = -round(speed * self._vertical_offset), -round(
-                speed * self._horizontal_offset
+            rolls = (
+                -round(speed * self._vertical_offset),
+                -round(speed * self._horizontal_offset),
             )
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
         if self.layers:
             for layer in self.layers:
                 layer.render(canvas, colors)

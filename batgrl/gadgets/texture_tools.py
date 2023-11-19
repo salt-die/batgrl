@@ -1,6 +1,4 @@
-"""
-Tools for graphics.
-"""
+"""Tools for graphics."""
 from pathlib import Path
 from typing import Literal
 

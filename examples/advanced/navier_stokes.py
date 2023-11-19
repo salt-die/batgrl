@@ -8,12 +8,11 @@ texture's size plus a 2-width border and copying data into that border.
 import asyncio
 
 import numpy as np
-from cv2 import filter2D
-
 from batgrl.app import run_gadget_as_app
 from batgrl.colors import AColor
 from batgrl.gadgets.graphics import Graphics
 from batgrl.io import MouseButton
+from cv2 import filter2D
 
 # Kernels
 CONVECTION = np.array(

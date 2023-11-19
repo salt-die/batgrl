@@ -1,6 +1,4 @@
-"""
-Functions for creating color gradients.
-"""
+"""Functions for creating color gradients."""
 import numpy as np
 
 from ..geometry import lerp

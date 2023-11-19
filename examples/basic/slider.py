@@ -1,6 +1,4 @@
-"""
-Example slider gadget.
-"""
+"""Example slider gadget."""
 from batgrl.app import App
 from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.slider import Slider

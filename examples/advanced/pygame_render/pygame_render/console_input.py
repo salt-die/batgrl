@@ -2,7 +2,6 @@ from collections import OrderedDict
 from collections.abc import Iterable
 
 import pygame as pg
-
 from batgrl.geometry import Point, Size
 from batgrl.io import (
     Key,
@@ -109,9 +108,7 @@ def _handle_mods(event: pg.event.Event) -> None:
 
 
 def _handle_key(event: pg.event.Event) -> KeyEvent | PasteEvent | None:
-    """
-    Return a `KeyEvent` from a pygame event.
-    """
+    """Return a `KeyEvent` from a pygame event."""
     if key := _PYGAME_KEYS.get(event.key):
         return KeyEvent(key, _get_mods())
 
@@ -130,9 +127,7 @@ def _handle_key(event: pg.event.Event) -> KeyEvent | PasteEvent | None:
 
 
 def _handle_mouse(event: pg.event.Event) -> _PartialMouseEvent:
-    """
-    Return `_PartialMouseEvent` from a pygame event.
-    """
+    """Return `_PartialMouseEvent` from a pygame event."""
     if event.type == pg.MOUSEMOTION:
         event_type = MouseEventType.MOUSE_MOVE
         button_state = next(reversed(_PRESSED_BUTTONS))
@@ -162,9 +157,7 @@ def _handle_mouse(event: pg.event.Event) -> _PartialMouseEvent:
 
 
 def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
-    """
-    Yield input events.
-    """
+    """Yield input events."""
     for event in pg.event.get():
         if event.type == pg.QUIT:
             yield KeyEvent.CTRL_C

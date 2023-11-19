@@ -1,6 +1,4 @@
-"""
-A button gadget.
-"""
+"""A button gadget."""
 from collections.abc import Callable
 
 from numpy.typing import NDArray
@@ -34,7 +32,7 @@ __all__ = [
 
 
 class Button(Themable, ButtonBehavior, Gadget):
-    """
+    r"""
     A button gadget.
 
     Parameters
@@ -145,18 +143,18 @@ class Button(Themable, ButtonBehavior, Gadget):
     on_release():
         Triggered when a button is released.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -183,13 +181,13 @@ class Button(Themable, ButtonBehavior, Gadget):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -229,6 +227,7 @@ class Button(Themable, ButtonBehavior, Gadget):
         self.callback = callback
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         match self.state:
             case ButtonState.NORMAL:
                 self.update_normal()
@@ -239,6 +238,7 @@ class Button(Themable, ButtonBehavior, Gadget):
 
     @property
     def label(self) -> str:
+        """Button label."""
         return self._label
 
     @label.setter
@@ -248,20 +248,24 @@ class Button(Themable, ButtonBehavior, Gadget):
         self._label_gadget.apply_hints()
         self._label_gadget.add_str(label)
 
-    def on_release(self):
-        self.callback()
+    def update_normal(self):
+        """Paint the normal state."""
+        self.background_color_pair = self._label_gadget.colors[
+            :
+        ] = self.color_theme.button_normal
 
     def update_hover(self):
+        """Paint the hover state."""
         self.background_color_pair = self._label_gadget.colors[
             :
         ] = self.color_theme.button_hover
 
     def update_down(self):
+        """Paint the down state."""
         self.background_color_pair = self._label_gadget.colors[
             :
         ] = self.color_theme.button_press
 
-    def update_normal(self):
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_normal
+    def on_release(self):
+        """Triggered when button is released."""
+        self.callback()

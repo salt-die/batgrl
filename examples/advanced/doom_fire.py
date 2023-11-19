@@ -1,6 +1,4 @@
-"""
-Recreating the fire effect from Doom.
-"""
+"""Recreating the fire effect from Doom."""
 import asyncio
 
 import numpy as np

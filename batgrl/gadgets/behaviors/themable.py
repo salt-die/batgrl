@@ -1,6 +1,4 @@
-"""
-Themable behavior for gadgets.
-"""
+"""Themable behavior for gadgets."""
 from abc import ABC, abstractmethod
 
 from ...colors import DEFAULT_COLOR_THEME
@@ -27,11 +25,10 @@ class Themable(ABC):
     color_theme = DEFAULT_COLOR_THEME
 
     def on_add(self):
+        """Update theme."""
         super().on_add()
         self.update_theme()
 
     @abstractmethod
     def update_theme(self):
-        """
-        Paint the gadget with current theme.
-        """
+        """Paint the gadget with current theme."""

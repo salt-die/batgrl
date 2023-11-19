@@ -1,6 +1,4 @@
-"""
-Base for creating terminal applications.
-"""
+"""Base for creating terminal applications."""
 import asyncio
 import platform
 import sys
@@ -32,7 +30,7 @@ __all__ = ["App", "run_gadget_as_app"]
 
 
 class App(ABC):
-    """
+    r"""
     Base for creating terminal applications.
 
     Parameters
@@ -97,7 +95,7 @@ class App(ABC):
         Exit the app.
     add_gadget(gadget):
         Alias for :attr:`root.add_gadget`.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Alias for :attr:`root.add_gadgets`.
     """
 
@@ -142,6 +140,7 @@ class App(ABC):
 
     @property
     def color_theme(self) -> ColorTheme:
+        """Color theme for themable gadgets."""
         return Themable.color_theme
 
     @color_theme.setter
@@ -155,6 +154,7 @@ class App(ABC):
 
     @property
     def background_char(self) -> NDArray[Char]:
+        """Background character of app."""
         return self._background_char
 
     @background_char.setter
@@ -165,6 +165,7 @@ class App(ABC):
 
     @property
     def background_color_pair(self) -> ColorPair:
+        """Background color pair of app."""
         return self._background_color_pair
 
     @background_color_pair.setter
@@ -175,6 +176,7 @@ class App(ABC):
 
     @property
     def render_mode(self) -> Literal["regions", "painter"]:
+        """Render mode of app."""
         return self._render_mode
 
     @render_mode.setter
@@ -185,14 +187,10 @@ class App(ABC):
 
     @abstractmethod
     async def on_start(self):
-        """
-        Coroutine scheduled when app is run.
-        """
+        """Coroutine scheduled when app is run."""
 
     def run(self):
-        """
-        Run the app.
-        """
+        """Run the app."""
         try:
             with redirect_stderr(StringIO()) as defer_stderr:
                 asyncio.run(self._run_async())
@@ -206,18 +204,14 @@ class App(ABC):
                 print(defer_stderr.getvalue(), file=sys.stderr, end="")
 
     def exit(self):
-        """
-        Exit the app.
-        """
+        """Exit the app."""
         self.root.destroy()
         self.root = None
         for task in asyncio.all_tasks():
             task.cancel()
 
     def _create_io(self) -> tuple[ModuleType, Vt100_Output]:
-        """
-        Return platform specific io.
-        """
+        """Return platform specific io."""
         if not sys.stdin.isatty():
             raise RuntimeError("Interactive terminal required.")
 
@@ -240,9 +234,7 @@ class App(ABC):
             return vt100_input, Vt100_Output(self.asciicast_path)
 
     async def _run_async(self):
-        """
-        Build environment, create root, and schedule app-specific tasks.
-        """
+        """Build environment, create root, and schedule app-specific tasks."""
         env_in, env_out = self._create_io()
         with env_out:
             self.root = root = _Root(
@@ -290,9 +282,7 @@ class App(ABC):
                 return MouseEvent(*partial_mouse_event, last_mouse_nclicks)
 
             def read_from_input():
-                """
-                Read and process input.
-                """
+                """Read and process input."""
                 for event in env_in.events():
                     match event:
                         case KeyEvent.CTRL_C:
@@ -309,9 +299,7 @@ class App(ABC):
                             root.size = event
 
             async def auto_render():
-                """
-                Render screen every :attr:`render_interval` seconds.
-                """
+                """Render screen every :attr:`render_interval` seconds."""
                 while True:
                     root.render()
                     env_out.render_frame(root)
@@ -332,21 +320,19 @@ class App(ABC):
         self.root.add_gadget(gadget)
 
     def add_gadgets(self, *gadgets: GadgetBase):
-        """
+        r"""
         Alias for :attr:`root.add_gadgets`.
 
         Parameters
         ----------
-        \\*gadgets : GadgetBase
+        \*gadgets : GadgetBase
             Gadgets to add as children to the root gadget.
         """
         self.root.add_gadgets(*gadgets)
 
     @property
     def children(self) -> list[GadgetBase] | None:
-        """
-        Alias for :attr:`root.children`.
-        """
+        """Alias for :attr:`root.children`."""
         if self.root is not None:
             return self.root.children
 

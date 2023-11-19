@@ -1,6 +1,4 @@
-"""
-An interactive python console gadget.
-"""
+"""An interactive python console gadget."""
 import asyncio
 import builtins
 import sys
@@ -73,7 +71,7 @@ class _InteractiveConsole(InteractiveInterpreter):
         self.console_gadget._add_text_to_output(text)
 
     def input(self, prompt=""):
-        """Replaces `builtins.input` while executing code."""
+        """Replace `builtins.input` while executing code."""
         *lines, last_line = str(prompt).split("\n")
         self.output_buffer.write("\n".join(lines))
         self.flush()
@@ -224,7 +222,7 @@ class _Prompt(Text):
 
 
 class Console(Themable, Focusable, GadgetBase):
-    """
+    r"""
     An interactive python console gadget.
 
     Parameters
@@ -315,22 +313,22 @@ class Console(Themable, Focusable, GadgetBase):
     focus_previous():
         Focus previous focusable gadget.
     on_focus():
-        Called when gadget is focused.
+        Update gadget when it gains focus.
     on_blur():
-        Called when gadget loses focus.
+        Update gadget when it loses focus.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -357,13 +355,13 @@ class Console(Themable, Focusable, GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     # TODO: Add a max output lines option.
@@ -496,6 +494,7 @@ class Console(Themable, Focusable, GadgetBase):
         self._scroll_view.vertical_proportion = 1.0
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         primary = self.color_theme.primary
         self._container.background_color_pair = primary
         self._prompt.colors[:] = primary
@@ -507,18 +506,22 @@ class Console(Themable, Focusable, GadgetBase):
         self._input._cursor.background_color_pair = primary.reversed()
 
     def on_add(self):
+        """Add running app and root gadget to console's locals."""
         super().on_add()
         self._console.locals["app"] = self.app
         self._console.locals["root"] = self.root
 
     def on_focus(self):
+        """Enable cursor."""
         self._input.focus()
         self._input._cursor.is_enabled = True
 
     def on_blur(self):
+        """Disable cursor."""
         self._input._cursor.is_enabled = False
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
+        """Get previous inputs on up/down."""
         if key_event == KeyEvent(Key.Up, Mods.NO_MODS):
             if isinstance(self._history_index, float):
                 if len(self._history) + self._history_index - 0.5 >= 0:

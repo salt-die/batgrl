@@ -2,7 +2,6 @@ import asyncio
 from time import monotonic
 
 import numpy as np
-
 from batgrl.app import App
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.text import Text, add_text
@@ -170,9 +169,7 @@ KEYS = {
 
 
 def rainbow(texture):
-    """
-    Add a radial rainbow gradient to a texture.
-    """
+    """Add a radial rainbow gradient to a texture."""
     h, w, _ = texture.shape
     ys, xs = np.indices((h, w), dtype=float)
     ys -= 0.5 * h

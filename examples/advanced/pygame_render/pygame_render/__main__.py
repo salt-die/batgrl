@@ -1,7 +1,6 @@
 from types import ModuleType
 
 import numpy as np
-
 from batgrl.app import App
 from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.button import Button

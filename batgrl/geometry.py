@@ -1,6 +1,4 @@
-"""
-Data structures and functions for :mod:`batgrl` geometry.
-"""
+"""Data structures and functions for :mod:`batgrl` geometry."""
 from bisect import bisect
 from dataclasses import dataclass, field
 from numbers import Real
@@ -86,16 +84,12 @@ class Size(NamedTuple):
 
     @property
     def rows(self):
-        """
-        Alias for height.
-        """
+        """Alias for height."""
         return self.height
 
     @property
     def columns(self):
-        """
-        Alias for width.
-        """
+        """Alias for width."""
         return self.width
 
 
@@ -129,16 +123,12 @@ def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
 
 
 def lerp(a: Real, b: Real, p: Real) -> Real:
-    """
-    Linear interpolation of `a` to `b` with proportion `p`.
-    """
+    """Linear interpolation of `a` to `b` with proportion `p`."""
     return (1.0 - p) * a + p * b
 
 
 def sub(a: bool, b: bool) -> bool:
-    """
-    `a` and not `b`
-    """
+    """Return `a` and not `b`."""
     return a and not b
 
 
@@ -210,9 +200,7 @@ class Rect:
 
 @dataclass(slots=True)
 class _Band:
-    """
-    A row of mutually exclusive rects.
-    """
+    """A row of mutually exclusive rects."""
 
     y1: int
     """y-coordinate of top of band."""
@@ -235,9 +223,7 @@ class _Band:
 
 
 def _merge(op: Callable[[bool, bool], bool], a: list[int], b: list[int]) -> list[int]:
-    """
-    Merge the walls of two bands given a set operation.
-    """
+    """Merge the walls of two bands given a set operation."""
     i = j = 0
     inside_a = inside_b = inside_region = False
     walls = []
@@ -292,9 +278,7 @@ class Region:
     bands: list[_Band] = field(default_factory=list)
 
     def _coalesce(self):
-        """
-        Join contiguous bands with the same walls to reduce rects.
-        """
+        """Join contiguous bands with the same walls to reduce rects."""
         bands = self.bands = [band for band in self.bands if len(band.walls) > 0]
 
         i = 0
@@ -505,9 +489,7 @@ class Region:
         return cls([_Band(y, y + h, (x, x + w))])
 
     def __contains__(self, point: Point) -> bool:
-        """
-        Whether point is in region.
-        """
+        """Whether point is in region."""
         y, x = point
         i = bisect(self.bands, y)
         if i == 0:

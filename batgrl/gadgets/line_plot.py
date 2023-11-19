@@ -1,6 +1,4 @@
-"""
-A 2D line plot gadget.
-"""
+"""A 2D line plot gadget."""
 from collections.abc import Sequence
 from math import ceil
 from numbers import Real
@@ -92,7 +90,7 @@ class _LinePlotProperty:
 
 
 class LinePlot(GadgetBase):
-    """
+    r"""
     A 2D line plot gadget.
 
     Parameters
@@ -214,18 +212,18 @@ class LinePlot(GadgetBase):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -252,13 +250,13 @@ class LinePlot(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     xs: Sequence[Sequence[Real]] = _LinePlotProperty()
@@ -545,9 +543,11 @@ class LinePlot(GadgetBase):
         self._x_ticks.canvas["char"][0, plot_right - 1] = "┐"
 
     def on_size(self):
+        """Rebuild plot on resize."""
         self._build_plot()
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
+        """Zoom-in or -out on mouse wheel."""
         if not self.collides_point(mouse_event.position):
             return
 

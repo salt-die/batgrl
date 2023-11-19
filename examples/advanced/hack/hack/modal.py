@@ -44,7 +44,5 @@ class Modal(Gadget):
         self.is_enabled = True
 
     def on_mouse(self, mouse_event):
-        """
-        Stop mouse dispatching while modal is enabled.
-        """
+        """Stop mouse dispatching while modal is enabled."""
         return True

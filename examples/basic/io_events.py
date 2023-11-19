@@ -1,6 +1,4 @@
-"""
-Move/click mouse, press keys or paste in terminal to show IO events.
-"""
+"""Move/click mouse, press keys or paste in terminal to show IO events."""
 from textwrap import dedent
 
 from batgrl.app import run_gadget_as_app

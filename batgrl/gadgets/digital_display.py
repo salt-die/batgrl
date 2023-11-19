@@ -1,6 +1,4 @@
-"""
-A 7x8 14-segment (plus decimal point) display gadget.
-"""
+"""A 7x8 14-segment (plus decimal point) display gadget."""
 import numpy as np
 from numpy.typing import NDArray
 
@@ -147,8 +145,9 @@ class _Segment:
 
 class DigitalDisplay(Gadget):
     r"""
-    A 7x8 14-segment (plus decimal point) display gadget. Segments
-    are labeled according to the following diagram::
+    A 7x8 14-segment (plus decimal point) display gadget.
+
+    Segments are labeled according to the following diagram::
 
             a
           ━━━━━
@@ -292,18 +291,18 @@ class DigitalDisplay(Gadget):
     set_text(text, ...):
         Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -330,14 +329,15 @@ class DigitalDisplay(Gadget):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
+
     a = _Segment(np.s_[0, 1:6])
     b = _Segment(np.s_[1:3, 6])
     c = _Segment(np.s_[4:6, 6])
@@ -390,10 +390,10 @@ class DigitalDisplay(Gadget):
         self._display.set_text(
             " ━━━━━  \n"
             "┃\\ ┃ /┃ \n"
-            "┃ \┃/ ┃ \n"
+            "┃ \\┃/ ┃ \n"
             " ━━ ━━  \n"
             "┃ /┃\\ ┃ \n"
-            "┃/ ┃ \┃ \n"
+            "┃/ ┃ \\┃ \n"
             " ━━━━━ ●"
         )
         self.add_gadget(self._display)

@@ -1,6 +1,4 @@
-"""
-An animated toggle button gadget.
-"""
+"""An animated toggle button gadget."""
 import asyncio
 from collections.abc import Callable, Hashable
 
@@ -113,7 +111,7 @@ class _ToggleButtonProperty:
 
 
 class FlatToggle(Gadget):
-    """
+    r"""
     An animated toggle button gadget.
 
     Parameters
@@ -128,9 +126,7 @@ class FlatToggle(Gadget):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and
-        :attr:`allow_no_selection` is false this value will be ignored if all buttons
-        would be "off".
+        Initial toggle state of button.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
         size : Size, default: Size(10, 10)
@@ -221,18 +217,18 @@ class FlatToggle(Gadget):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -259,13 +255,13 @@ class FlatToggle(Gadget):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     group = _ToggleButtonProperty()
@@ -321,6 +317,7 @@ class FlatToggle(Gadget):
 
     @property
     def toggle_background_color(self) -> Color:
+        """Background color of toggle."""
         return Color(*self._toggle[0, 0, 3:])
 
     @toggle_background_color.setter

@@ -1,6 +1,4 @@
-"""
-Button showcase.
-"""
+"""Button showcase."""
 from batgrl.app import App
 from batgrl.gadgets.button import Button
 from batgrl.gadgets.flat_toggle import FlatToggle

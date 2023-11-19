@@ -1,6 +1,4 @@
-"""
-Color palette creator.
-"""
+"""Color palette creator."""
 import cv2
 import numpy as np
 from batgrl.app import App
@@ -29,25 +27,19 @@ VIBRANCES = 250, 189, 128, 67, 15
 
 
 def hues():
-    """
-    Hue selector colors.
-    """
+    """Hue selector colors."""
     hsv = np.full((1, W, 3), 255, np.uint8)
     hsv[0, :, 0] = np.arange(0, 180, 180 // W)
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
 
 def to_hex(rgb) -> str:
-    """
-    Convert a RGB color to a hex string.
-    """
+    """Convert a RGB color to a hex string."""
     return "".join(hex(channel)[2:].zfill(2) for channel in rgb)
 
 
 def text_color(rgb) -> Color:
-    """
-    Return text color depending on brightness of rgb.
-    """
+    """Return text color depending on brightness of rgb."""
     if rgb @ (0.2126, 0.7152, 0.0722) > 255 / 2:
         return BLACK
     return WHITE

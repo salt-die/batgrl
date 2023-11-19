@@ -1,6 +1,4 @@
-"""
-Button behavior for a gadget.
-"""
+"""Button behavior for a gadget."""
 from enum import Enum
 
 from ...io import MouseEventType
@@ -61,6 +59,7 @@ class ButtonBehavior:
         self.state = ButtonState.NORMAL
 
     def on_add(self):
+        """Paint normal state."""
         super().on_add()
         self._normal()
 
@@ -77,6 +76,7 @@ class ButtonBehavior:
         self.update_down()
 
     def on_mouse(self, mouse_event):
+        """Determine button state from mouse event."""
         if super().on_mouse(mouse_event):
             return True
 
@@ -108,21 +108,13 @@ class ButtonBehavior:
             self._hover()
 
     def update_normal(self):
-        """
-        Paint the NORMAL state.
-        """
+        """Paint the normal state."""
 
     def update_hover(self):
-        """
-        Paint the HOVER state.
-        """
+        """Paint the hover state."""
 
     def update_down(self):
-        """
-        Paint the DOWN state.
-        """
+        """Paint the down state."""
 
     def on_release(self):
-        """
-        Triggered when button is released.
-        """
+        """Triggered when button is released."""

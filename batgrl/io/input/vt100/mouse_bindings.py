@@ -1,3 +1,4 @@
+"""Mouse bindings for SGR and typical terminals."""
 from ..events import Mods, MouseButton, MouseEventType
 
 MOUSE_UP = MouseEventType.MOUSE_UP
@@ -128,6 +129,7 @@ TERM_SGR = {
     (89, "M"): (SCROLL_DOWN, NO_BUTTON, ALT_CONTROL),
     (93, "M"): (SCROLL_DOWN, NO_BUTTON, ALT_CONTROL_SHIFT),
 }
+"""Mouse bindings for SGR terminals."""
 
 TYPICAL = {
     32: (MOUSE_DOWN, LEFT, NO_MODS),
@@ -141,3 +143,4 @@ TYPICAL = {
     96: (SCROLL_UP, NO_BUTTON, NO_MODS),
     97: (SCROLL_DOWN, NO_BUTTON, NO_MODS),
 }
+"""Mouse bindings for typical terminals."""

@@ -1,6 +1,4 @@
-"""
-A text gadget.
-"""
+"""A text gadget."""
 from typing import Literal
 
 import numpy as np
@@ -75,7 +73,7 @@ Border = Literal[
 
 
 class Text(GadgetBase):
-    """
+    r"""
     A text gadget. Displays arbitrary text data.
 
     Parameters
@@ -174,18 +172,18 @@ class Text(GadgetBase):
     set_text(text, ...):
         Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -212,13 +210,13 @@ class Text(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -254,6 +252,7 @@ class Text(GadgetBase):
 
     @property
     def default_char(self) -> NDArray[Char]:
+        """Default character for text canvas."""
         return self._default_char
 
     @default_char.setter
@@ -261,7 +260,7 @@ class Text(GadgetBase):
         self._default_char = coerce_char(char, style_char(" "))
 
     def on_size(self):
-        # Preserve content as much as possible.
+        """Resize canvas and colors preserving as much content as possible."""
         old_h, old_w = self.canvas.shape
 
         h, w = self._size
@@ -280,13 +279,12 @@ class Text(GadgetBase):
 
     @property
     def default_fg_color(self) -> Color:
-        """
-        The default foreground color.
-        """
+        """The default foreground color."""
         return self.default_color_pair.fg_color
 
     @property
     def default_bg_color(self) -> Color:
+        """The default background color."""
         return self.default_color_pair.bg_color
 
     def add_border(
@@ -456,9 +454,7 @@ class Text(GadgetBase):
         write_chars_to_canvas(lines, self.canvas)
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """
-        Render visible region of gadget into root's `canvas` and `colors` arrays.
-        """
+        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
         abs_pos = self.absolute_pos
         if self.is_transparent:
             for rect in self.region.rects():

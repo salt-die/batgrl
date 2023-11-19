@@ -1,6 +1,4 @@
-"""
-An example usage of data tables.
-"""
+"""An example usage of data tables."""
 from batgrl.app import App
 from batgrl.gadgets.data_table import ColumnStyle, DataTable
 

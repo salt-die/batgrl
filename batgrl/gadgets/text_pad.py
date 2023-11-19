@@ -125,9 +125,9 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     focus_previous():
         Focus previous focusable gadget.
     on_focus():
-        Called when gadget is focused.
+        Update gadget when it gains focus.
     on_blur():
-        Called when gadget loses focus.
+        Update gadget when it loses focus.
     grab(mouse_event):
         Grab the gadget.
     ungrab(mouse_event):
@@ -135,18 +135,18 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     grab_update(mouse_event):
         Update gadget with incoming mouse events while grabbed.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -173,13 +173,13 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -222,6 +222,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self.add_gadget(self._scroll_view)
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         primary = self.color_theme.primary
 
         self._cursor.background_color_pair = primary.reversed()

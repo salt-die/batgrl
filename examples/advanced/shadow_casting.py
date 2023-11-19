@@ -4,7 +4,6 @@ import random
 from itertools import chain
 
 import numpy as np
-
 from batgrl.app import App
 from batgrl.colors import (
     ACYAN,

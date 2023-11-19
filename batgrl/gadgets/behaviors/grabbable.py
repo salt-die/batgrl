@@ -1,6 +1,4 @@
-"""
-Grabbable behavior for a gadget.
-"""
+"""Grabbable behavior for a gadget."""
 from ...io import MouseButton, MouseEvent, MouseEventType
 from ..gadget import Point
 
@@ -76,6 +74,7 @@ class Grabbable:
         self._mouse_dyx = Point(0, 0)
 
     def on_mouse(self, mouse_event):
+        """Determine if mouse event grabs or ungrabs gadget."""
         last_y, last_x = self._last_mouse_pos
         y, x = self._last_mouse_pos = mouse_event.position
         self._mouse_dyx = Point(y - last_y, x - last_x)
@@ -101,27 +100,22 @@ class Grabbable:
 
     @property
     def is_grabbed(self) -> bool:
+        """True if gadget is grabbed."""
         return self._is_grabbed
 
     @property
     def mouse_dyx(self) -> Point:
-        """
-        Last change in mouse position.
-        """
+        """Last change in mouse position."""
         return self._mouse_dyx
 
     @property
     def mouse_dy(self) -> int:
-        """
-        Vertical change in mouse position.
-        """
+        """Vertical change in mouse position."""
         return self._mouse_dyx[0]
 
     @property
     def mouse_dx(self) -> int:
-        """
-        Horizontal change in mouse position.
-        """
+        """Horizontal change in mouse position."""
         return self._mouse_dyx[1]
 
     def grab(self, mouse_event: MouseEvent):

@@ -1,6 +1,4 @@
-"""
-Horizontal and vertical stack layout gadgets.
-"""
+"""Horizontal and vertical stack layout gadgets."""
 import math
 
 from ..geometry import Point, Size
@@ -57,21 +55,24 @@ class _StackLayoutBase(GadgetBase):
         self._reposition_children()
 
     def on_size(self):
+        """Resize children on resize."""
         self.proportions = self.proportions
 
     def add_gadget(self, gadget: GadgetBase):
+        """Remove hints from gadget and resize children when child is added."""
         gadget.size_hint = {}
         gadget.pos_hint = {}
         super().add_gadget(gadget)
         self.proportions = self.proportions
 
     def remove_gadget(self, gadget: GadgetBase):
+        """Resize children when child is removed."""
         super().remove_gadget(gadget)
         self.proportions = self.proportions
 
 
 class VStackLayout(_StackLayoutBase):
-    """
+    r"""
     A vertical stack layout gadget.
 
     A vertical stack layout positions its children vertically and resizes them
@@ -153,18 +154,18 @@ class VStackLayout(_StackLayoutBase):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -191,13 +192,13 @@ class VStackLayout(_StackLayoutBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
 
     Notes
     -----
@@ -220,7 +221,7 @@ class VStackLayout(_StackLayoutBase):
 
 
 class HStackLayout(_StackLayoutBase):
-    """
+    r"""
     A horizontal stack layout gadget.
 
     A horizontal stack layout positions its children horizontally and resizes
@@ -302,18 +303,18 @@ class HStackLayout(_StackLayoutBase):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -340,13 +341,13 @@ class HStackLayout(_StackLayoutBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
 
     Notes
     -----

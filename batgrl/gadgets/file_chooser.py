@@ -1,6 +1,4 @@
-"""
-A file chooser gadget.
-"""
+"""A file chooser gadget."""
 import platform
 from collections.abc import Callable
 from pathlib import Path
@@ -185,18 +183,17 @@ class _FileView(TreeView):
 
 
 class FileChooser(GadgetBase):
-    """
+    r"""
     A file chooser gadget.
 
     Parameters
     ----------
     root_dir : Path | None, default: None
-        The root directory of the file chooser. If None, then
-        root_dir will be cwd.
+        The root directory of the file chooser or the cwd if not given.
     directories_only : bool, default: False
         If true, show only directories in the file view.
     show_hidden : bool, default: True
-        If false, hidden files won't be rendered.
+        If true, show hidden files.
     select_callback : Callable[[Path], None], default: lambda path: None
         Called with path of selected node when node is double-clicked
         or `enter` is pressed.
@@ -224,7 +221,7 @@ class FileChooser(GadgetBase):
     directories_only : bool
         If true, show only directories in the file view.
     show_hidden : bool
-        If false, hidden files won't be rendered.
+        If true, show hidden files.
     select_callback : Callable[[Path], None]
         Called with path of selected node when node is double-clicked or `enter` is
         pressed.
@@ -278,18 +275,18 @@ class FileChooser(GadgetBase):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -316,13 +313,13 @@ class FileChooser(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -363,12 +360,14 @@ class FileChooser(GadgetBase):
         self.add_gadget(self._scroll_view)
 
     def on_size(self):
+        """Update tree layout on resize."""
         super().on_size()
         if self._scroll_view is not None:
             self._scroll_view._view.update_tree_layout()
 
     @property
     def directories_only(self):
+        """If true, show only directories in the file view."""
         return self._view.directories_only
 
     @directories_only.setter
@@ -378,6 +377,7 @@ class FileChooser(GadgetBase):
 
     @property
     def show_hidden(self):
+        """If true, show hidden files."""
         return self._view.show_hidden
 
     @show_hidden.setter
@@ -387,6 +387,7 @@ class FileChooser(GadgetBase):
 
     @property
     def root_dir(self) -> Path:
+        """The root directory of the file chooser."""
         return self._root_dir
 
     @root_dir.setter

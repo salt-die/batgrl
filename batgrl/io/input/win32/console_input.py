@@ -1,6 +1,4 @@
-"""
-Parse and create events for each input record from a win32 console.
-"""
+"""Parse and create events for each input record from a win32 console."""
 from collections import OrderedDict
 from collections.abc import Iterable
 from ctypes import byref, windll
@@ -39,9 +37,7 @@ _TEXT: list[str] = []
 
 
 def _handle_mods(key_state: DWORD) -> Mods:
-    """
-    Return `Mods` from an event's `ControlKeyState`.
-    """
+    """Return `Mods` from an event's `ControlKeyState`."""
     # Magic numbers are:
     # LEFT_ALT | RIGHT_ALT => 0x0001 | 0x0002 => 0x0003
     # LEFT_CTRL | RIGHT_CTRL => 0x0004 | 0x0008 => 0x000C
@@ -53,9 +49,7 @@ def _handle_mods(key_state: DWORD) -> Mods:
 
 
 def _handle_key(ev: KEY_EVENT_RECORD) -> KeyEvent | None:
-    """
-    Return a `KeyEvent` or add a character to _TEXT from a `KEY_EVENT_RECORD`.
-    """
+    """Return a `KeyEvent` or add a character to _TEXT from a `KEY_EVENT_RECORD`."""
     key = KEY_CODES.get(ev.VirtualKeyCode, ev.uChar.UnicodeChar)
     if key == "\x00":
         return

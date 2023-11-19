@@ -4,9 +4,7 @@ CUBE_WIDTH = 0.9
 
 
 class Cube:
-    """
-    A 1 x 1 x 1 cube.
-    """
+    """A 1 x 1 x 1 cube."""
 
     __slots__ = (
         "pos",

@@ -38,9 +38,7 @@ class SPHSolver:
         self.size = h, int(WIDTH)
 
     def init_dam(self):
-        """
-        Position particles in a verticle column.
-        """
+        """Position particles in a verticle column."""
         h, w = self.size
         dam_width = w / 5
 

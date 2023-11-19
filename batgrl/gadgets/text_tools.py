@@ -1,6 +1,4 @@
-"""
-Tools for text.
-"""
+"""Tools for text."""
 import numpy as np
 from numpy.typing import NDArray
 from wcwidth import wcswidth, wcwidth
@@ -195,8 +193,8 @@ def parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
 
 def text_to_chars(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
     """
-    Convert chars to a list of lines of styled characters and the minimum canvas size to fit
-    them.
+    Convert chars to a list of lines of styled characters and the minimum canvas size to
+    fit them.
 
     Parameters
     ----------
@@ -306,9 +304,7 @@ def _smooth_bar(
     proportion: float,
     offset: float,
 ):
-    """
-    Create a smooth bar with given blocks.
-    """
+    """Create a smooth bar with given blocks."""
     if offset >= 1 or offset < 0:
         raise ValueError(
             f"Offset should greater than or equal to 0 and less than 1, but {offset} "
@@ -412,13 +408,13 @@ vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟�
 
 
 def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
-    """
+    r"""
     Convert a (h, w, 4, 2)-shaped boolean array into a (h, w) array of braille unicode
     characters.
 
     Parameters
     ----------
-    array_4x2 : NDArray[np.bool\\_]
+    array_4x2 : NDArray[np.bool\_]
         A (h, w, 4, 2)-shaped boolean numpy array.
 
     Returns
@@ -432,13 +428,13 @@ def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
 
 
 def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint0]) -> NDArray[np.dtype("<U1")]:
-    """
+    r"""
     Convert a (h, w, 2, 2)-shaped boolean array into a (h, w) array of box unicode
     characters.
 
     Parameters
     ----------
-    array_2x2 : NDArray[np.bool\\_]
+    array_2x2 : NDArray[np.bool\_]
         A (h, w, 2, 2)-shaped boolean numpy array.
 
     Returns

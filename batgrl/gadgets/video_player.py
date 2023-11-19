@@ -1,6 +1,4 @@
-"""
-A video player gadget.
-"""
+"""A video player gadget."""
 import asyncio
 import atexit
 import time
@@ -38,7 +36,7 @@ _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsof
 
 
 class VideoPlayer(Graphics):
-    """
+    r"""
     A video player.
 
     Parameters
@@ -149,18 +147,18 @@ class VideoPlayer(Graphics):
     to_png(path):
         Write :attr:`texture` to provided path as a `png` image.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -187,13 +185,13 @@ class VideoPlayer(Graphics):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -231,12 +229,14 @@ class VideoPlayer(Graphics):
         self.loop = loop
 
     def on_remove(self):
+        """Pause video and release resource on remove."""
         super().on_remove()
         self.pause()
         self._release_resource()
 
     @property
     def source(self) -> Path | str | int:
+        """A path, URL, or capturing device (by index) of the video."""
         return self._source
 
     @source.setter
@@ -248,9 +248,7 @@ class VideoPlayer(Graphics):
 
     @property
     def is_device(self):
-        """
-        Return true if source is a video capturing device.
-        """
+        """Return true if source is a video capturing device."""
         return isinstance(self._source, int)
 
     def _load_resource(self):
@@ -279,6 +277,7 @@ class VideoPlayer(Graphics):
             self.texture[:] = self.default_color
 
     def on_size(self):
+        """Resize current frame on resize."""
         h, w = self.size
         h *= 2
         self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
@@ -321,9 +320,7 @@ class VideoPlayer(Graphics):
             self.play()
 
     def pause(self):
-        """
-        Pause video.
-        """
+        """Pause video."""
         if self._video_task is not None:
             self._video_task.cancel()
 
@@ -345,18 +342,14 @@ class VideoPlayer(Graphics):
         return self._video_task
 
     def seek(self, time: float):
-        """
-        If supported, seek to certain time (in seconds) in the video.
-        """
+        """If supported, seek to certain time (in seconds) in the video."""
         if self._resource is not None and not self.is_device:
             self._resource.set(cv2.CAP_PROP_POS_MSEC, time * 1000)
             self._resource.grab()
             self._start_time = self._time_delta()
 
     def stop(self):
-        """
-        Stop video.
-        """
+        """Stop video."""
         self.pause()
         self.seek(0)
         self._current_frame = None

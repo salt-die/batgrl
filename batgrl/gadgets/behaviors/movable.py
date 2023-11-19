@@ -1,6 +1,4 @@
-"""
-Movable behavior for a gadget.
-"""
+"""Movable behavior for a gadget."""
 from ...io import MouseButton
 from ..gadget import clamp
 from .grabbable import Grabbable
@@ -82,6 +80,7 @@ class Movable(Grabbable):
         self.allow_horizontal_translation = allow_horizontal_translation
 
     def grab_update(self, mouse_event):
+        """Translate movable on grab update."""
         if self.allow_vertical_translation:
             self.top += self.mouse_dy
         if self.allow_horizontal_translation:

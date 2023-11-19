@@ -1,6 +1,4 @@
-"""
-Win32 Input.
-"""
+"""Win32 input."""
 from asyncio import get_event_loop
 from contextlib import contextmanager
 from ctypes import byref, windll
@@ -18,9 +16,7 @@ __all__ = [
 
 @contextmanager
 def attach(callback):
-    """
-    Context manager that makes this input active in the current event loop.
-    """
+    """Context manager that makes this input active in the current event loop."""
     try:
         loop = get_event_loop()
 
@@ -56,6 +52,7 @@ def attach(callback):
 
 @contextmanager
 def raw_mode():
+    """Put terminal into raw mode."""
     original_mode = DWORD()
 
     windll.kernel32.GetConsoleMode(STD_INPUT_HANDLE, byref(original_mode))

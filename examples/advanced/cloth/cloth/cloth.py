@@ -30,9 +30,7 @@ class Cloth(Graphics):
         )
 
     def step(self):
-        """
-        Step the mesh and draw a line for each link.
-        """
+        """Step the mesh and draw a line for each link."""
         texture = self.texture
         texture[:] = self.default_color
 

@@ -1,15 +1,12 @@
-"""
-Output for pygame.
-"""
+"""Output for pygame."""
 from pathlib import Path
 
 import numpy as np
 import pygame as pg
 import pygame.freetype as ft
-from wcwidth import wcwidth
-
 from batgrl.gadgets._root import _Root
 from batgrl.geometry import Size
+from wcwidth import wcwidth
 
 from . import FONT_FULL_WIDTH, FONT_HEIGHT, FONT_WIDTH
 

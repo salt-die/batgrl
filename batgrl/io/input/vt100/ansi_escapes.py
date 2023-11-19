@@ -1,6 +1,4 @@
-"""
-Mapping from VT100 (ANSI) escape sequences to the corresponding keys.
-"""
+"""Mapping from VT100 (ANSI) escape sequences to the corresponding keys."""
 from ..events import Key, KeyEvent, Mods
 
 NO_MODS = Mods.NO_MODS

@@ -1,6 +1,7 @@
 """
-Movable children behavior for a gadget. Translate a gadget's child by clicking and
-dragging them.
+Movable children behavior for a gadget.
+
+Translate movable's children by dragging them.
 """
 from ...io import MouseButton
 from ..gadget import clamp
@@ -11,8 +12,9 @@ __all__ = ["MovableChildren"]
 
 class MovableChildren(Grabbable):
     """
-    Movable children behavior for a gadget. Translate a gadget's child by
-    clicking and dragging them.
+    Movable children behavior for a gadget.
+
+    Translate movable's children by dragging them.
 
     Parameters
     ----------
@@ -80,6 +82,7 @@ class MovableChildren(Grabbable):
         self._grabbed_child = None
 
     def grab(self, mouse_event):
+        """Grab the gadget."""
         for child in reversed(self.children):
             if child.collides_point(mouse_event.position):
                 self._is_grabbed = True
@@ -93,10 +96,12 @@ class MovableChildren(Grabbable):
             super().grab(mouse_event)
 
     def ungrab(self, mouse_event):
+        """Ungrab the gadget."""
         self._grabbed_child = None
         super().ungrab(mouse_event)
 
     def grab_update(self, mouse_event):
+        """Update gadget with incoming mouse events while grabbed."""
         if grabbed_child := self._grabbed_child:
             dy, dx = self.mouse_dyx
             h, w = self.size

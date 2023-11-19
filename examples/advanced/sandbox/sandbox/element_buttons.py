@@ -9,9 +9,7 @@ MENU_BACKGROUND_COLOR = Color(222, 224, 127)  # Mustard
 
 
 class ElementButton(ButtonBehavior, Text):
-    """
-    Button which selects an element when pressed and updates the element display.
-    """
+    """Button which selects an element when pressed and updates the element display."""
 
     def __init__(self, pos, element):
         self.element = element
@@ -43,9 +41,7 @@ class ElementButton(ButtonBehavior, Text):
 
 
 class ButtonContainer(Gadget):
-    """
-    Container gadget of `ElementButton`s.
-    """
+    """Container gadget of `ElementButton`s."""
 
     def __init__(self):
         nelements = len(Element.all_elements)

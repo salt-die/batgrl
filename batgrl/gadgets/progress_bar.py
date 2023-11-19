@@ -140,18 +140,18 @@ class ProgressBar(Themable, Text):
     set_text(text, ...):
         Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -178,13 +178,13 @@ class ProgressBar(Themable, Text):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -303,6 +303,7 @@ class ProgressBar(Themable, Text):
         self.progress = self.progress  # Trigger a repaint by setting property.
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         self.colors[:] = self.color_theme.progress_bar
         self.default_color_pair = self.color_theme.progress_bar
 

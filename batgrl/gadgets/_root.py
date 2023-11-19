@@ -1,6 +1,4 @@
-"""
-Root gadget.
-"""
+"""Root gadget."""
 from threading import RLock
 from typing import TYPE_CHECKING, Literal
 
@@ -36,9 +34,7 @@ class _Root(Gadget):
         self.size = size
 
     def on_size(self):
-        """
-        Erase last render and re-make buffers.
-        """
+        """Erase last render and re-make buffers."""
         h, w = self._size
 
         self.canvas = np.full((h, w), self.background_char)
@@ -89,9 +85,7 @@ class _Root(Gadget):
         return 0 <= y < self.height and 0 <= x < self.width
 
     def render(self):
-        """
-        Render gadget tree into `canvas` and `colors`.
-        """
+        """Render gadget tree into `canvas` and `colors`."""
         # TODO: Optimize...
         # - Recalculating all regions every frame isn't necessary if gadget geometry
         #   hasn't changed.

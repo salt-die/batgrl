@@ -1,6 +1,4 @@
-"""
-Base class for all gadgets.
-"""
+"""Base class for all gadgets."""
 import asyncio
 from collections.abc import Callable, Iterator, Sequence
 from dataclasses import asdict, dataclass
@@ -171,9 +169,7 @@ class PosHint(_Hint):
 
     @property
     def y_anchor(self) -> float:
-        """
-        The y-coordinate of the anchor.
-        """
+        """The y-coordinate of the anchor."""
         if isinstance(self.anchor, str):
             return _ANCHOR_TO_POS[self.anchor][0]
 
@@ -185,9 +181,7 @@ class PosHint(_Hint):
 
     @property
     def x_anchor(self) -> float:
-        """
-        The x-coordinate of the anchor.
-        """
+        """The x-coordinate of the anchor."""
         if isinstance(self.anchor, str):
             return _ANCHOR_TO_POS[self.anchor][1]
 
@@ -392,9 +386,7 @@ Easing = Literal[
 
 
 def subscribable(setter):
-    """
-    A decorator for property setters that makes the properties subscribable.
-    """
+    """Decorate property setters to make them subscribable."""
     instances = WeakKeyDictionary()
 
     @wraps(setter)
@@ -411,7 +403,7 @@ def subscribable(setter):
 
 
 class GadgetBase:
-    """
+    r"""
     Base class for creating gadgets.
 
     Parameters
@@ -485,18 +477,18 @@ class GadgetBase:
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -523,13 +515,13 @@ class GadgetBase:
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -571,16 +563,14 @@ class GadgetBase:
         self.is_enabled = is_enabled
 
         self.region: Region = Region()
-        """The visible portion of the gadget on the screen, set by the root."""
+        """The visible portion of the gadget on the screen."""
 
     def __repr__(self):
         return f"{type(self).__name__}(size={self.size}, pos={self.pos})"
 
     @property
     def size(self) -> Size:
-        """
-        Size of gadget.
-        """
+        """Size of gadget."""
         return self._size
 
     @size.setter
@@ -610,9 +600,7 @@ class GadgetBase:
 
     @property
     def height(self) -> int:
-        """
-        Height of gadget.
-        """
+        """Height of gadget."""
         return self._size[0]
 
     @height.setter
@@ -623,9 +611,7 @@ class GadgetBase:
 
     @property
     def width(self) -> int:
-        """
-        Width of gadget.
-        """
+        """Width of gadget."""
         return self._size[1]
 
     @width.setter
@@ -636,9 +622,7 @@ class GadgetBase:
 
     @property
     def pos(self) -> Point:
-        """
-        Position relative to parent.
-        """
+        """Position relative to parent."""
         return self._pos
 
     @pos.setter
@@ -679,9 +663,7 @@ class GadgetBase:
 
     @property
     def bottom(self) -> int:
-        """
-        Y-coordinate of bottom of gadget.
-        """
+        """Y-coordinate of bottom of gadget."""
         return self.top + self.height
 
     @bottom.setter
@@ -690,9 +672,7 @@ class GadgetBase:
 
     @property
     def right(self) -> int:
-        """
-        X-coordinate of right side of gadget.
-        """
+        """X-coordinate of right side of gadget."""
         return self.left + self.width
 
     @right.setter
@@ -701,9 +681,7 @@ class GadgetBase:
 
     @property
     def center(self) -> Point:
-        """
-        Position of center of gadget.
-        """
+        """Position of center of gadget."""
         y, x = self.pos
         h, w = self.size
         return Point(y + h // 2, x + w // 2)
@@ -716,9 +694,7 @@ class GadgetBase:
 
     @property
     def absolute_pos(self) -> Point:
-        """
-        Absolute position on screen.
-        """
+        """Absolute position on screen."""
         if self.parent is None:
             return self.pos
         y, x = self.parent.absolute_pos
@@ -726,9 +702,7 @@ class GadgetBase:
 
     @property
     def size_hint(self) -> SizeHint:
-        """
-        GadgetBase's size as a proportion of its parent's size.
-        """
+        """GadgetBase's size as a proportion of its parent's size."""
         return self._size_hint
 
     @size_hint.setter
@@ -753,9 +727,7 @@ class GadgetBase:
 
     @property
     def pos_hint(self) -> PosHint:
-        """
-        GadgetBase's position as a proportion of its parent's size.
-        """
+        """GadgetBase's position as a proportion of its parent's size."""
         return self._pos_hint
 
     @pos_hint.setter
@@ -773,22 +745,16 @@ class GadgetBase:
 
     @property
     def root(self) -> Optional["GadgetBase"]:
-        """
-        Return the root gadget if connected to gadget tree.
-        """
+        """Return the root gadget if connected to gadget tree."""
         return self.parent and self.parent.root
 
     @property
     def app(self):
-        """
-        The running app.
-        """
+        """The running app."""
         return self.root.app
 
     def on_size(self):
-        """
-        Called when gadget is resized.
-        """
+        """Update gadget after a resize."""
 
     def apply_hints(self):
         """
@@ -865,7 +831,7 @@ class GadgetBase:
 
     def collides_point(self, point: Point) -> bool:
         """
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
 
         Parameters
         ----------
@@ -888,7 +854,7 @@ class GadgetBase:
 
     def collides_gadget(self, other: "GadgetBase") -> bool:
         """
-        True if some part of `other` is within bounding box.
+        Return true if other is within gadget's bounding box.
 
         Parameters
         ----------
@@ -931,12 +897,12 @@ class GadgetBase:
             gadget.on_add()
 
     def add_gadgets(self, *gadgets: "GadgetBase"):
-        """
+        r"""
         Add multiple child gadgets.
 
         Parameters
         ----------
-        \\*gadgets : GadgetBase
+        \*gadgets : GadgetBase
             Gadgets to add as children. Can also accept a single iterable of gadgets.
         """
         if len(gadgets) == 1 and not isinstance(gadgets[0], GadgetBase):
@@ -962,9 +928,7 @@ class GadgetBase:
         gadget.parent = None
 
     def pull_to_front(self):
-        """
-        Move gadget to end of gadget stack so that it is drawn last.
-        """
+        """Move gadget to end of gadget stack so that it is drawn last."""
         if self.parent is not None:
             self.parent.children.remove(self)
             self.parent.children.append(self)
@@ -1065,8 +1029,9 @@ class GadgetBase:
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Dispatch key press until handled. (A key press is handled if a handler returns
-        ``True``.)
+        Dispatch key press until handled.
+
+        A key press is handled if a handler returns ``True``.
 
         Parameters
         ----------
@@ -1086,8 +1051,9 @@ class GadgetBase:
 
     def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Dispatch mouse event until handled. (A mouse event is handled if a handler
-        returns ``True``.)
+        Dispatch mouse event until handled.
+
+        A mouse event is handled if a handler returns ``True``.
 
         Parameters
         ----------
@@ -1107,8 +1073,9 @@ class GadgetBase:
 
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Dispatch paste event until handled. (A paste event is handled if a handler
-        returns ``True``.)
+        Dispatch paste event until handled.
+
+        A paste event is handled if a handler returns ``True``.
 
         Parameters
         ----------
@@ -1175,15 +1142,11 @@ class GadgetBase:
         """
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """
-        Render visible region of gadget into root's `canvas` and `colors` arrays.
-        """
+        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
 
     @staticmethod
     def _tween_lerp(start, end, p):
-        """
-        Helper function to tween non-Real values.
-        """
+        """Tween non-real values."""
         if start is None or end is None:
             return end
 
@@ -1317,31 +1280,23 @@ class GadgetBase:
             on_complete()
 
     def on_add(self):
-        """
-        Called after a gadget is added to gadget tree.
-        """
+        """Apply size hints and call children's `on_add`."""
         self.apply_hints()
         for child in self.children:
             child.on_add()
 
     def on_remove(self):
-        """
-        Called before gadget is removed from gadget tree.
-        """
+        """Call children's `on_remove`."""
         for child in self.children:
             child.on_remove()
 
     def prolicide(self):
-        """
-        Recursively remove all children.
-        """
+        """Recursively remove all children."""
         for child in self.children.copy():
             child.destroy()
 
     def destroy(self):
-        """
-        Destroy this gadget and all descendents.
-        """
+        """Remove this gadget and recursively remove all its children."""
         self.prolicide()
         if self.parent:
             self.parent.remove_gadget(self)

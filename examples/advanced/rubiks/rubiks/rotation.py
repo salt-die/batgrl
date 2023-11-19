@@ -12,9 +12,7 @@ _ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
 
 
 def x(theta):
-    """
-    Rotation around x-axis.
-    """
+    """Rotation around x-axis."""
     cos = np.cos(theta)
     sin = np.sin(theta)
 
@@ -28,9 +26,7 @@ def x(theta):
 
 
 def y(theta):
-    """
-    Rotation around y-axis.
-    """
+    """Rotation around y-axis."""
     cos = np.cos(theta)
     sin = np.sin(theta)
 
@@ -44,9 +40,7 @@ def y(theta):
 
 
 def z(theta):
-    """
-    Rotation around z-axis.
-    """
+    """Rotation around z-axis."""
     cos = np.cos(theta)
     sin = np.sin(theta)
 

@@ -1,11 +1,8 @@
-"""
-Slime simulation.
-"""
+"""Slime simulation."""
 import asyncio
 
 import cv2
 import numpy as np
-
 from batgrl.app import App
 from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.gadget import Gadget

@@ -1,6 +1,4 @@
-"""
-Vt100 input for Posix systems.
-"""
+"""Vt100 input for Posix systems."""
 import asyncio
 import os
 import signal
@@ -21,9 +19,7 @@ __all__ = [
 
 @contextmanager
 def attach(callback):
-    """
-    Context manager that makes this input active in the current event loop.
-    """
+    """Context manager that makes this input active in the current event loop."""
     _EVENTS.clear()
 
     stdin = sys.stdin.fileno()
@@ -49,6 +45,7 @@ def attach(callback):
 
 @contextmanager
 def raw_mode():
+    """Put terminal into raw mode."""
     stdin = sys.stdin.fileno()
     attrs_before = termios.tcgetattr(stdin)
     attrs_raw = termios.tcgetattr(stdin)

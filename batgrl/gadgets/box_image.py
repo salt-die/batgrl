@@ -1,6 +1,4 @@
-"""
-An image painted with box unicode characters.
-"""
+"""An image painted with box unicode characters."""
 from pathlib import Path
 
 import cv2
@@ -23,7 +21,7 @@ __all__ = [
 
 
 class BoxImage(Text):
-    """
+    r"""
     An image painted with box unicode characters.
 
     Parameters
@@ -126,18 +124,18 @@ class BoxImage(Text):
     set_text(text, ...):
         Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -164,13 +162,13 @@ class BoxImage(Text):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -202,6 +200,7 @@ class BoxImage(Text):
 
     @property
     def path(self):
+        """Path to image."""
         return self._path
 
     @path.setter
@@ -210,6 +209,7 @@ class BoxImage(Text):
         self._load_texture()
 
     def on_size(self):
+        """Resize canvas and colors arrays."""
         h, w = self._size
 
         self.canvas = np.full((h, w), self.default_char)

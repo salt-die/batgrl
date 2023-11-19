@@ -10,9 +10,7 @@ random = np.random.default_rng().random
 
 
 class State(Enum):
-    """
-    Element states.
-    """
+    """Element states."""
 
     GAS = "GAS"
     LIQUID = "LIQUID"
@@ -36,9 +34,7 @@ class CycleColorBehavior:
 
 
 class ColorVariationBehavior:
-    """
-    Adds a small variation to the element color.
-    """
+    """Adds a small variation to the element color."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,9 +46,7 @@ class ColorVariationBehavior:
 
 
 class Element(ABC):
-    """
-    Base for elements.
-    """
+    """Base for elements."""
 
     COLOR = None
     DENSITY = None
@@ -85,9 +79,7 @@ class Element(ABC):
         self._update_task = asyncio.create_task(self.update())
 
     def sleep(self):
-        """
-        Stop updating.
-        """
+        """Stop updating."""
         self.inactivity = 0
         self._update_task.cancel()
 
@@ -102,24 +94,18 @@ class Element(ABC):
             self.inactivity += 1
 
     def wake(self):
-        """
-        Resume updating.
-        """
+        """Resume updating."""
         if self._update_task.done():
             self._update_task = asyncio.create_task(self.update())
 
     def replace(self, element=None):
-        """
-        Stop updating and replace with element or DEFAULT_REPLACEMENT or Air.
-        """
+        """Stop updating and replace with element or DEFAULT_REPLACEMENT or Air."""
         self.sleep()
         self.wake_neighbors()
         (element or self.DEFAULT_REPLACEMENT or Air)(self.world, self.pos)
 
     async def update(self):
-        """
-        Coroutine that steps the element.
-        """
+        """Coroutine that steps the element."""
         step = self.step
 
         while True:
@@ -133,9 +119,7 @@ class Element(ABC):
             await asyncio.sleep(self.SLEEP)
 
     def neighbors(self):
-        """
-        Yield all neighbors.
-        """
+        """Yield all neighbors."""
         world = self.world
         h, w = world.shape
         y, x = self.pos
@@ -155,16 +139,12 @@ class Element(ABC):
                 yield world[y + dy, x + dx]
 
     def wake_neighbors(self):
-        """
-        Wake all neighbors.
-        """
+        """Wake all neighbors."""
         for neighbor in self.neighbors():
             neighbor.wake()
 
     def update_neighbors(self):
-        """
-        Update all neighbors or until `update_neighbor` returns true.
-        """
+        """Update all neighbors or until `update_neighbor` returns true."""
         for neighbor in self.neighbors():
             if self.update_neighbor(neighbor):
                 return True
@@ -181,37 +161,25 @@ class Element(ABC):
 
     @abstractmethod
     def step(self):
-        """
-        Single step of an element's update.
-        """
+        """Single step of an element's update."""
 
 
 class InertElement(Element):
-    """
-    Base for inert elements.
-    """
+    """Base for inert elements."""
 
     def update_neighbor(self, neighbor):
-        """
-        Do nothing.
-        """
+        """Do nothing."""
 
     def step(self):
-        """
-        Cancel updating.
-        """
+        """Cancel updating."""
         self._update_task.cancel()
 
 
 class MovingElement(Element):
-    """
-    Base for moving elements.
-    """
+    """Base for moving elements."""
 
     def _move(self, dy, dx):
-        """
-        Try to move vertically by dy and horizontally by dx.  True if successful.
-        """
+        """Try to move vertically by dy and horizontally by dx.  True if successful."""
         world = self.world
         h, w = world.shape  # height, width
         y, x = self.pos
@@ -250,9 +218,7 @@ class MovingElement(Element):
         return True
 
     def update_neighbor(self, neighbor):
-        """
-        Default implementation.  Returns ``False``.
-        """
+        """Return ``False``."""
         return False
 
     def step(self):

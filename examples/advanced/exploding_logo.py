@@ -1,12 +1,15 @@
 """
-Click to explode the logo!
-Press `r` to reset.
+A particle field example.
+
+Controls:
+- 'ctrl+c' to quit
+- 'r' to reset
+- 'click' to poke
 """
 import asyncio
 from pathlib import Path
 
 import numpy as np
-
 from batgrl.app import App
 from batgrl.colors import BLACK, DEFAULT_COLOR_THEME, ColorPair, gradient
 from batgrl.figfont import FIGFont
@@ -87,9 +90,7 @@ class PokeParticleField(TextParticleField):
             self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
-        """
-        Coroutine that updates color and position due to velocity.
-        """
+        """Coroutine that updates color and position due to velocity."""
         positions = self.particle_positions
         real_positions = self.particle_properties["real_positions"]
         velocities = self.particle_properties["velocities"]
@@ -140,7 +141,8 @@ class PokeParticleField(TextParticleField):
 
     async def reset(self):
         """
-        Coroutine that returns a particle to its starting position with original color.
+        Coroutine that returns a particle to its starting position with original
+        color.
         """
         self._update_task.cancel()
         self.particle_properties["velocities"][:] = 0

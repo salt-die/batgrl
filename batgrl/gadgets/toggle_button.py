@@ -1,6 +1,4 @@
-"""
-A toggle button gadget.
-"""
+"""A toggle button gadget."""
 from collections.abc import Callable, Hashable
 
 from numpy.typing import NDArray
@@ -44,7 +42,7 @@ TOGGLE_ON = "◉ "
 
 
 class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
-    """
+    r"""
     A toggle button gadget. Without a group, a toggle button acts like a checkbox.
     With a group it behaves like a radio button (only a single button in a group is
     allowed to be in the "on" state).
@@ -61,9 +59,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and
-        :attr:`allow_no_selection` is false this value will be ignored if all buttons
-        would be "off".
+        Initial toggle state of button.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     background_char : NDArray[Char] | str | None, default: " "
@@ -168,7 +164,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     update_on():
         Paint the "on" state.
     on_toggle():
-        Called when the toggle state changes.
+        Update gadget on toggle state change.
     update_normal():
         Paint the normal state.
     update_hover():
@@ -178,18 +174,18 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     on_release():
         Triggered when a button is released.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -216,13 +212,13 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -273,6 +269,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         self.label = label
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         match self.state:
             case ButtonState.NORMAL:
                 self.update_normal()
@@ -283,6 +280,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
 
     @property
     def label(self) -> str:
+        """Toggle button label."""
         return self._label
 
     @label.setter
@@ -305,22 +303,26 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         self._label_gadget.apply_hints()
         self._label_gadget.add_str(text)
 
+    def update_normal(self):
+        """Paint the normal state."""
+        self.background_color_pair = self._label_gadget.colors[
+            :
+        ] = self.color_theme.button_normal
+
     def update_hover(self):
+        """Paint the hover state."""
         self.background_color_pair = self._label_gadget.colors[
             :
         ] = self.color_theme.button_hover
 
     def update_down(self):
+        """Paint the down state."""
         self.background_color_pair = self._label_gadget.colors[
             :
         ] = self.color_theme.button_press
 
-    def update_normal(self):
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_normal
-
     def on_toggle(self):
+        """Call callback on toggle state change."""
         if (
             self._label_gadget.parent is not None
         ):  # This will be false during initialization.

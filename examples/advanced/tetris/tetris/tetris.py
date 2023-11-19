@@ -36,9 +36,7 @@ def gravity(level):
 
 
 def tetromino_generator(tetrominos):
-    """
-    Yield each tetromino from a sequence of tetrominos in random order and repeat.
-    """
+    """Yield each tetromino from a sequence of tetrominos in random order and repeat."""
     bag = list(tetrominos)
     while True:
         shuffle(bag)
@@ -343,8 +341,8 @@ class Tetris(Image):
 
     def collides(self, offset, piece, orientation=None):
         """
-        True if piece collides with stack or boundaries of matrix
-        with given offset (from it's current position) and orientation.
+        Whether piece collides with stack or boundaries of matrix with given
+        offset (from it's current position) and orientation.
         """
         if orientation is None:
             orientation = piece.orientation
@@ -389,9 +387,7 @@ class Tetris(Image):
                 break
 
     def move_current_piece(self, dy=0, dx=0):
-        """
-        Move current piece. Returns true if the move was successful else false.
-        """
+        """Move current piece. Returns true if the move was successful else false."""
         current_piece = self.current_piece
 
         if not self.collides((dy, dx), current_piece):
@@ -421,9 +417,7 @@ class Tetris(Image):
         return False
 
     def affix_piece(self):
-        """
-        Affix current piece to the stack.
-        """
+        """Affix current piece to the stack."""
         self._lock_down_task.cancel()
 
         current_piece = self.current_piece
@@ -448,9 +442,7 @@ class Tetris(Image):
         self.new_piece()
 
     async def clear_lines(self, task_name):
-        """
-        Clear completed lines.
-        """
+        """Clear completed lines."""
         # To prevent multiple line clears from interfering with each
         # other they are run sequentially:
         queue = self._clear_lines_queue
@@ -507,9 +499,7 @@ class Tetris(Image):
             self.lines_to_next_level -= lines
 
     def drop_current_piece(self):
-        """
-        Drop piece.
-        """
+        """Drop piece."""
         while self.move_current_piece(dy=1):
             pass
 

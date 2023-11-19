@@ -1,5 +1,5 @@
 """
-You're stuck in the Labyrinth, a maze that re-arranges itself as you try to escape!
+You're stuck in the Labyrinth, a maze that re-arranges itself as you try to escape.
 
 Press arrow keys to move. Requires `networkx`.
 """
@@ -20,7 +20,8 @@ PLAYER_GRADIENT = cycle(gradient(BLUE, AWHITE, 50) + gradient(AWHITE, BLUE, 50))
 
 def _path_yx(a, b):
     """
-    Given two nodes in a maze, return the coordinate of the path that connects them.
+    Given two nodes in a maze, return the coordinate of the path that connects
+    them.
     """
     ay, ax = a
     by, bx = b

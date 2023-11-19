@@ -3,7 +3,6 @@ from pathlib import Path
 from random import random, randrange
 
 import numpy as np
-
 from batgrl.app import App
 from batgrl.colors import BLACK, RED, ColorPair, gradient, lerp_colors
 from batgrl.figfont import FIGFont

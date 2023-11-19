@@ -1,15 +1,12 @@
-"""
-Syntax highlighting example.
-"""
+"""Syntax highlighting example."""
 from pathlib import Path
-
-from pygments.styles import get_style_by_name
 
 from batgrl.app import App
 from batgrl.colors import DEFAULT_COLOR_THEME, Neptune
 from batgrl.gadgets.menu import MenuBar
 from batgrl.gadgets.scroll_view import ScrollView
 from batgrl.gadgets.text import Text
+from pygments.styles import get_style_by_name
 
 DARK_STYLES = [
     "dracula",

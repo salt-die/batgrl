@@ -1,4 +1,4 @@
-"""
+r"""
 Support for loading and rendering FIGfonts.
 
 A `FIGFont` (class) represents a FIGfont (file) which describe how to render ascii art
@@ -6,15 +6,17 @@ from normal text. `FIGFont.render_array` will render the ascii art into a numpy 
 that can be copied into a `Text` canvas. `FIGFont.render_str` will render the ascii art
 into a multiline string.
 
-References:
-    * http://www.figlet.org/
-    * http://www.jave.de/figlet/figfont.html
-    * https://github.com/cmatsuoka/figlet
-    * https://github.com/pwaller/pyfiglet
+References
+----------
+- http://www.figlet.org/
+- http://www.jave.de/figlet/figfont.html
+- https://github.com/cmatsuoka/figlet
+- https://github.com/pwaller/pyfiglet
 
-Fonts:
-    * http://www.figlet.org/fontdb.cgi
-    * https://github.com/salt-die/fig-fonts
+See Also
+--------
+- http://www.figlet.org/fontdb.cgi
+- https://github.com/salt-die/fig-fonts
 """
 import re
 import zipfile
@@ -31,54 +33,45 @@ __all__ = ["FullLayout", "FIGFont"]
 
 
 class FullLayout(IntFlag):
-    """
-    Layout controls how characters are fitted in rendered text. The layout modes are:
+    r"""
+    A layout controls how characters are fitted in rendered text.
 
-    * FullWidth:
+    The layout modes are:
+    - FullWidth:
         Each character occupies the full width or height of its arrangement of
         sub-characters.
-
-    * Kerning:
+    - Kerning:
         Each character is moved together until they touch.
-
-    * Smushing:
+    - Smushing:
         Each character is moved one step closer after they touch, so that they overlap.
         Additional smushing rules determine which sub-character is used for each
         overlap.
 
     There are two types of smushing:
-
-    * Controlled:
-        Uses a set of smushing rules.
-
-    * Universal:
+    - Universal:
         The sub-character from the earlier character is replaced by the sub-character
         from the later character. (This behavior can be reversed with
         `reverse_universal_smush`)
+    - Controlled:
+        Uses a set of smushing rules.
 
     The controlled smushing rules are:
-
-    * Equal:
+    - Equal:
         Two sub-characters are smushed into a single sub-character if they are equal
         (except for hardblanks).
-
-    * Underscore:
+    - Underscore:
         An underscore (`"_"`) will be replaced by any of: `"|"`, `"/"`, `"\\"`, `"["`,
         `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
-
-    * Hierarchy:
+    - Hierarchy:
         A hierarchy of six classes is used: `"|"`, `"/\"`, `"[]"`, `"{}"`, `"()"`, and
         `"<>"`. When two sub-characters are from different classes, the latter class
         will be used.
-
-    * Pair:
+    - Pair:
         Replaces opposite brackets (`"[]"` or `"]["`), braces (`"{}"` or `"}{"`), and
         parentheses (`"()"` or `")("`) with a vertical bar (`"|"`).
-
-    * BigX:
+    - BigX:
         Replaces `"/\\"` with `"|"`, `"\\/"` with `"Y"`, and `"><"` into `"X"`.
-
-    * HardBlank:
+    - HardBlank:
         Two hardblanks will be replaced with a single hardblank.
     """
 
@@ -95,6 +88,7 @@ class FullLayout(IntFlag):
 
     @classmethod
     def from_old_layout(cls, old_layout: int) -> "FullLayout":
+        """Return a full layout from an old layout."""
         return {-1: cls.FullWidth, 0: cls.Kerning}.get(
             old_layout, cls(old_layout | 128)
         )
@@ -192,16 +186,12 @@ class FIGFont:
 
     @classmethod
     def from_dict(cls, d: dict) -> "FIGFont":
-        """
-        Return a FIGFont from a dictionary.
-        """
+        """Return a FIGFont from a dictionary."""
         return cls(**{f.name: d[f.name] for f in fields(cls) if f.init and f.name in d})
 
     @classmethod
     def from_path(cls, path: Path) -> "FIGFont":
-        """
-        Load a FIGFont from a path.
-        """
+        """Load a FIGFont from a path."""
         HEADER_RE = (
             r"^[tf]lf2.(?P<hardblank>.) (?P<height>\d+) \d+ \d+ "
             r"(?P<old_layout>-?\d+) (?P<comment_lines>\d+)"
@@ -296,17 +286,13 @@ class FIGFont:
 
     @property
     def height(self) -> int:
-        """
-        Height of characters in this font.
-        """
+        """Height of characters in this font."""
         return next(v for v in self.font.values() if v is not None).shape[0]
 
     def _trim_char(
         self, fig_char: NDArray[np.dtype("<U1")]
     ) -> NDArray[np.dtype("<U1")]:
-        """
-        Remove leading and trailing whitespace.
-        """
+        """Remove leading and trailing whitespace."""
         while fig_char.shape[1] and (fig_char[:, 0] == " ").all():
             fig_char = fig_char[:, 1:]
 
@@ -386,8 +372,10 @@ class FIGFont:
         self, a: NDArray[np.dtype("<U1")], b: NDArray[np.dtype("<U1")]
     ) -> list[str] | None:
         """
-        Attempt to smush two columns of sub-characters. If smushing
-        fails, return None, else return the smushed column as a list of characters.
+        Attempt to smush two columns of sub-characters.
+
+        If smushing fails, return None, else return the smushed column as a list of
+        characters.
         """
         c = []
         for sub_a, sub_b in zip(a, b):
@@ -400,9 +388,7 @@ class FIGFont:
     def _add_char(
         self, buffer: NDArray[np.dtype("<U1")], prev_char_width: int, char: str
     ) -> tuple[NDArray[np.dtype("<U1")], int]:
-        """
-        Add a character to the line buffer.
-        """
+        """Add a character to the line buffer."""
         fig_char = self.font.get(char, self.font.get("\x00"))
         if fig_char is None:
             return buffer, 0
@@ -428,9 +414,7 @@ class FIGFont:
         return np.concatenate((a, b), axis=1), current_char_width
 
     def _render_line(self, line: str) -> NDArray[np.dtype("<U1")]:
-        """
-        Render a single line of text.
-        """
+        """Render a single line of text."""
         buffer, prev_char_width = np.zeros((self.height, 0), dtype=str), 0
         for char in line:
             buffer, prev_char_width = self._add_char(buffer, prev_char_width, char)

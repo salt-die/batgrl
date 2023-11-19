@@ -1,6 +1,4 @@
-"""
-A menu gadget.
-"""
+"""A menu gadget."""
 from collections.abc import Callable, Hashable, Iterable, Iterator
 from inspect import signature
 from typing import Optional, Union
@@ -42,24 +40,20 @@ __all__ = [
     "SizeHintDict",
 ]
 
-MenuDict = dict[
-    tuple[str, str],
-    Union[Callable[[], None], Callable[[ToggleState], None], "MenuDict"],
-]
+ItemCallback = Callable[[], None] | Callable[[ToggleState], None]
+MenuDict = dict[tuple[str, str], Union[ItemCallback, "MenuDict"]]
 NESTED_SUFFIX = " ▶"
 CHECK_OFF = "□"
 CHECK_ON = "▣"
 
 
 def nargs(callable: Callable) -> int:
-    """
-    Return the number of arguments of `callable`.
-    """
+    """Return the number of arguments of `callable`."""
     return len(signature(callable).parameters)
 
 
 class MenuItem(Themable, ToggleButtonBehavior, Gadget):
-    """
+    r"""
     A single item in a menu gadget. This should normally only be
     instantiated by :meth:`Menu.from_dict_of_dicts`.
 
@@ -71,7 +65,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         Right label of menu item.
     item_disabled : bool, default: False
         If true, item will not be selectable in menu.
-    item_callback : Callable[[], None] | Callable[[ToggleState], None], default: lambda: None
+    item_callback : ItemCallback, default: lambda: None
         Callback when item is selected. For toggle items, the callable should have a
         single argument that will be the current state of the item.
     group : None | Hashable, default: None
@@ -80,9 +74,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         If a group is provided, setting this to true allows no selection, i.e.,
         every button can be in the "off" state.
     toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button. If button is in a group and
-        :attr:`allow_no_selection` is false this value will be ignored if all buttons
-        would be "off".
+        Initial toggle state of button.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     background_char : NDArray[Char] | str | None, default: None
@@ -119,7 +111,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         Right label of menu item.
     item_disabled : bool
         If true, item will not be selectable in menu.
-    item_callback : Callable[[], None] | Callable[[ToggleState], None]
+    item_callback : ItemCallback
         Callback when item is selected. For toggle items, the callable should have a
         single argument that will be the current state of the item.
     submenu: Menu | None
@@ -198,7 +190,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
     update_on():
         Paint the "on" state.
     on_toggle():
-        Called when the toggle state changes.
+        Update gadget on toggle state change.
     update_normal():
         Paint the normal state.
     update_hover():
@@ -208,18 +200,18 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
     on_release():
         Triggered when a button is released.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -246,13 +238,13 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """  # noqa: E501
 
     def __init__(
@@ -261,7 +253,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         left_label: str = "",
         right_label: str = "",
         item_disabled: bool = False,
-        item_callback: Callable[[], None] = lambda: None,
+        item_callback: ItemCallback = lambda: None,
         submenu: Optional["Menu"] = None,
         group: None | Hashable = None,
         allow_no_selection: bool = False,
@@ -327,6 +319,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
 
     @property
     def item_disabled(self) -> bool:
+        """If true, item will not be selectable in menu."""
         return self._item_disabled
 
     @item_disabled.setter
@@ -335,9 +328,11 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         self._repaint()
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         self._repaint()
 
     def update_hover(self):
+        """Update parent menu and submenu on hover state."""
         self._repaint()
 
         index = self.parent.children.index(self)
@@ -351,6 +346,7 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
             self.submenu.open_menu()
 
     def update_normal(self):
+        """Update parent menu and submenu on normal state."""
         self._repaint()
         if self.parent is None:
             return
@@ -362,10 +358,12 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
             self.submenu.close_menu()
 
     def on_mouse(self, mouse_event):
+        """Save last mouse position."""
         self._last_mouse_pos = mouse_event.position
         return super().on_mouse(mouse_event)
 
     def on_release(self):
+        """Open submenu or call item callback on release."""
         if self.item_disabled:
             return
 
@@ -378,20 +376,23 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
                 self.parent.close_parents()
 
     def update_off(self):
+        """Paint the off state."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
             self.left_label.canvas["char"][0, 1] = CHECK_OFF
 
     def update_on(self):
+        """Paint the on state."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
             self.left_label.canvas["char"][0, 1] = CHECK_ON
 
     def on_toggle(self):
+        """Call item callback on toggle state change."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
             self.item_callback(self.toggle_state)
 
 
 class Menu(GridLayout):
-    """
+    r"""
     A menu gadget.
 
     Menus are meant to be constructed with the class method :meth:`from_dict_of_dicts`.
@@ -414,8 +415,7 @@ class Menu(GridLayout):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: "tb-lr"
-        The orientation of the grid. Describes how the grid fills as children are added.
-        The default is left-to-right then top-to-bottom.
+        The orientation of the grid.
     padding_left : int, default: 0
         Padding on left side of grid.
     padding_right : int, default: 0
@@ -543,18 +543,18 @@ class Menu(GridLayout):
     index_at(row, col):
         Return index of gadget in :attr:`children` at position `row, col` in the grid.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -581,13 +581,13 @@ class Menu(GridLayout):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -643,15 +643,11 @@ class Menu(GridLayout):
         self._menu_button = None
 
     def open_menu(self):
-        """
-        Open the menu.
-        """
+        """Open the menu."""
         self.is_enabled = True
 
     def close_menu(self):
-        """
-        Close the menu.
-        """
+        """Close the menu."""
         if (
             self._menu_button is not None
             and self._menu_button.toggle_state is ToggleState.ON
@@ -666,16 +662,19 @@ class Menu(GridLayout):
                 child._normal()
 
     def close_submenus(self):
+        """Close all submenus."""
         for menu in self._submenus:
             menu.close_menu()
 
     def close_parents(self):
+        """Close all parent menus."""
         if self._parent_menu is not None:
             self._parent_menu.close_parents()
         else:
             self.close_menu()
 
     def on_mouse(self, mouse_event):
+        """Close menus on non-colliding mouse down."""
         if (
             mouse_event.event_type is MouseEventType.MOUSE_DOWN
             and self.close_on_click
@@ -693,6 +692,7 @@ class Menu(GridLayout):
         return super().on_mouse(mouse_event)
 
     def on_key(self, key_event):
+        """Navigate menus with arrow keys and select menu items with enter."""
         for submenu in self._submenus:
             if submenu.is_enabled:
                 if submenu.on_key(key_event):
@@ -906,7 +906,7 @@ class _MenuButton(Themable, ToggleButtonBehavior, Text):
 
 
 class MenuBar(GridLayout):
-    """
+    r"""
     A menu bar.
 
     A menu bar is meant to be constructed with the class method :meth:`from_iterable`.
@@ -920,8 +920,7 @@ class MenuBar(GridLayout):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: "lr-bt"
-        The orientation of the grid. Describes how the grid fills as children are added.
-        The default is left-to-right then top-to-bottom.
+        The orientation of the grid.
     left_padding : int, default: 0
         Padding on left side of grid.
     right_padding : int, default: 0
@@ -1047,18 +1046,18 @@ class MenuBar(GridLayout):
     index_at(row, col):
         Return index of gadget in :attr:`children` at position `row, col` in the grid.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -1085,13 +1084,13 @@ class MenuBar(GridLayout):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     @classmethod

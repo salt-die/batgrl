@@ -1,6 +1,4 @@
-"""
-Draggable resize behavior for a gadget.
-"""
+"""Draggable resize behavior for a gadget."""
 from ..graphics import TRANSPARENT, AColor, Graphics, Size, clamp
 from .grabbable import Grabbable
 
@@ -98,11 +96,9 @@ class Resizable:
     allow_horizontal_resize : bool, default: True
         Allow horizontal resize.
     resize_min_height : int | None, default: None
-        Minimum height gadget can be resized by grabbing. Minimum height can't be less
-        than 2.
+        Minimum height gadget can be resized by grabbing.
     resize_min_width : int | None, default: None
-        Minimum width gadget can be resized by grabbing. Minimum
-        width will never be less than 4.
+        Minimum width gadget can be resized by grabbing.
     border_alpha : float, default: 1.0
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor, default: TRANSPARENT
@@ -162,6 +158,7 @@ class Resizable:
 
     @property
     def resize_min_height(self) -> int:
+        """Minimum height gadget can be resized by grabbing."""
         return self._resize_min_height
 
     @resize_min_height.setter
@@ -173,6 +170,7 @@ class Resizable:
 
     @property
     def resize_min_width(self) -> int:
+        """Minimum width gadget can be resized by grabbing."""
         return self._resize_min_width
 
     @resize_min_width.setter
@@ -184,9 +182,7 @@ class Resizable:
 
     @property
     def border_alpha(self) -> float:
-        """
-        Border transparency.
-        """
+        """Border transparency."""
         return self._border_alpha
 
     @border_alpha.setter
@@ -199,9 +195,7 @@ class Resizable:
 
     @property
     def border_color(self) -> AColor:
-        """
-        Color of border.
-        """
+        """Color of border."""
         return self._border_color
 
     @border_color.setter
@@ -213,5 +207,6 @@ class Resizable:
         self._border_color = border_color
 
     def pull_border_to_front(self):
+        """Pull borders to the front."""
         for border in self._borders:
             border.pull_to_front()

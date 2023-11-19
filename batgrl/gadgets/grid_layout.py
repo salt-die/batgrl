@@ -1,6 +1,4 @@
-"""
-A grid layout gadget.
-"""
+"""A grid layout gadget."""
 from itertools import accumulate, product
 from typing import Literal
 
@@ -63,7 +61,7 @@ class _RepositionProperty:
 
 
 class GridLayout(Gadget):
-    """
+    r"""
     A gadget that automatically positions children into a grid.
 
     Parameters
@@ -73,8 +71,7 @@ class GridLayout(Gadget):
     grid_columns : int, default: 1
         Number of columns.
     orientation : Orientation, default: "lr-tb"
-        The orientation of the grid. Describes how the grid fills as children are added.
-        The default is left-to-right then top-to-bottom.
+        The orientation of the grid.
     padding_left : int, default: 0
         Padding on left side of grid.
     padding_right : int, default: 0
@@ -192,18 +189,18 @@ class GridLayout(Gadget):
         Return index of the child gadget in :attr:`children` at position `row, col` in
         the grid.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -230,13 +227,13 @@ class GridLayout(Gadget):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
 
     Notes
     -----
@@ -313,6 +310,12 @@ class GridLayout(Gadget):
 
     @property
     def orientation(self) -> Orientation:
+        """
+        The orientation of the grid.
+
+        Describes how the grid fills as children are added. The default is left-to-right
+        then top-to-bottom.
+        """
         return self._orientation
 
     @orientation.setter
@@ -323,6 +326,7 @@ class GridLayout(Gadget):
         self._reposition_children()
 
     def on_size(self):
+        """Repositon children on resize."""
         self._reposition_children()
 
     def index_at(self, row: int, col: int) -> int:
@@ -364,9 +368,7 @@ class GridLayout(Gadget):
                 return (rows - row - 1) + (cols - col - 1) * rows
 
     def _row_height(self, i: int) -> int:
-        """
-        Height of row `i`.
-        """
+        """Height of row `i`."""
         return max(
             (
                 self.children[index].height
@@ -377,9 +379,7 @@ class GridLayout(Gadget):
         )
 
     def _col_width(self, i: int) -> int:
-        """
-        Width of column `i`.
-        """
+        """Width of column `i`."""
         return max(
             (
                 self.children[index].width
@@ -391,9 +391,7 @@ class GridLayout(Gadget):
 
     @property
     def minimum_grid_size(self) -> Size:
-        """
-        Return the minimum grid size to show all children.
-        """
+        """Return the minimum grid size to show all children."""
         nrows, ncols = self.grid_rows, self.grid_columns
         if nrows == 0 or ncols == 0:
             return Size(0, 0)
@@ -439,6 +437,7 @@ class GridLayout(Gadget):
                 self.children[i].pos = row_tops[row], col_lefts[col]
 
     def add_gadget(self, gadget):
+        """Check to see if grid is full before adding gadget and remove its hints."""
         if len(self.children) >= self.grid_rows * self.grid_columns:
             raise ValueError("too many children, grid is full")
 
@@ -449,5 +448,6 @@ class GridLayout(Gadget):
         self._reposition_children()
 
     def remove_gadget(self, gadget):
+        """Reposition children when a gadget is removed."""
         super().remove_gadget(gadget)
         self._reposition_children()

@@ -1,6 +1,4 @@
-"""
-Mapping from key codes to the corresponding keys.
-"""
+"""Mapping from key codes to the corresponding keys."""
 from ..keys import Key
 
 KEY_CODES = {
@@ -106,3 +104,4 @@ KEY_CODES = {
     221: "]",
     222: "'",
 }
+"""Mapping from key codes to the corresponding keys."""

@@ -1,6 +1,8 @@
 """
-Parse and create events from a VT100 input stream. Note size events aren't parsed from
-ansi and so are added separately to `_EVENTS` once input is active in the event loop.
+Parse and create events from a VT100 input stream.
+
+Size events aren't parsed from ansi and so are added separately to `_EVENTS` once input
+is active in the event loop.
 """
 import os
 import re
@@ -27,9 +29,7 @@ _EVENTS = []
 
 
 def read_stdin() -> str:
-    """
-    Read (non-blocking) from stdin and return it decoded.
-    """
+    """Read (non-blocking) from stdin and return it decoded."""
     if not select.select([STDIN], [], [], 0)[0]:
         return ""
 
@@ -40,9 +40,7 @@ def read_stdin() -> str:
 
 
 def _create_mouse_event(data) -> _PartialMouseEvent | None:
-    """
-    Create a _PartialMouseEvent from ansi escapes.
-    """
+    """Create a _PartialMouseEvent from ansi escapes."""
     mouse_info = None
 
     if data[2] == "M":  # Typical: "Esc[MaB*"
@@ -70,8 +68,10 @@ def _create_mouse_event(data) -> _PartialMouseEvent | None:
 
 def _find_longest_match(data: str) -> str:
     """
-    Iteratively look for an ANSI escape in data. If one is found an event will be
-    created and appended to `_EVENTS` and the remaining data returned.
+    Find an ANSI escape in data.
+
+    If an escape is found an event will be created and appended to `_EVENTS` and the
+    remaining data returned.
     """
     for i in range(min(MAX_ESCAPE_LENGTH, len(data)), 0, -1):
         prefix = data[:i]
@@ -111,9 +111,7 @@ def _find_longest_match(data: str) -> str:
 
 
 def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
-    """
-    Yield input events.
-    """
+    """Yield input events."""
     data = "".join(iter(read_stdin, ""))
 
     while data:

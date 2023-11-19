@@ -337,18 +337,18 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     grab_update(mouse_event):
         Update gadget with incoming mouse events while grabbed.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -375,13 +375,13 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -442,6 +442,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         self.show_vertical_bar = show_vertical_bar
 
     def update_theme(self):
+        """Paint the gadget with current theme."""
         self._background.background_color_pair = self.color_theme.primary.bg_color * 2
         self._corner.background_color_pair = self.color_theme.scroll_view_scrollbar * 2
         self._update_port_and_scrollbar()

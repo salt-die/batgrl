@@ -1,16 +1,13 @@
-"""
-Stable fluid simulation. Requires `scipy`.
-"""
+"""Stable fluid simulation. Requires `scipy`."""
 import asyncio
 from itertools import cycle
 
 import numpy as np
-from scipy.ndimage import convolve, map_coordinates
-
 from batgrl.app import App
 from batgrl.colors import ABLACK, DEFAULT_COLOR_THEME, AColor, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
 from batgrl.io import MouseButton, MouseEvent
+from scipy.ndimage import convolve, map_coordinates
 
 DIF_KERNEL = np.array([-0.5, 0.0, 0.5])
 GRAD_KERNEL = np.array([-1.0, 0.0, 1.0])
@@ -60,9 +57,7 @@ class StableFluid(Graphics):
         self.velocity = np.zeros((2, h, w))
 
     def on_mouse(self, mouse_event: MouseEvent):
-        """
-        Add dye on click.
-        """
+        """Add dye on click."""
         if mouse_event.button is MouseButton.NO_BUTTON or not self.collides_point(
             mouse_event.position
         ):

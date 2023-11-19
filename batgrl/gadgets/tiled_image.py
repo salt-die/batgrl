@@ -1,6 +1,4 @@
-"""
-A tiled image gadget.
-"""
+"""A tiled image gadget."""
 from math import ceil
 
 import numpy as np
@@ -30,7 +28,7 @@ __all__ = [
 
 
 class TiledImage(Graphics):
-    """
+    r"""
     A tiled image.
 
     Parameters
@@ -65,8 +63,7 @@ class TiledImage(Graphics):
     Attributes
     ----------
     tile : Graphics
-        The gadget to tile. Setting this attribute updates the
-        texture immediately.
+        The gadget to tile.
     texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
@@ -127,18 +124,18 @@ class TiledImage(Graphics):
     to_png(path):
         Write :attr:`texture` to provided path as a `png` image.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -165,13 +162,13 @@ class TiledImage(Graphics):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -206,6 +203,11 @@ class TiledImage(Graphics):
 
     @property
     def tile(self):
+        """
+        The gadget to tile.
+
+        Setting this attribute updates the texture immediately.
+        """
         return self._tile
 
     @tile.setter
@@ -214,9 +216,7 @@ class TiledImage(Graphics):
         self.on_size()
 
     def on_size(self):
-        """
-        Resize gadget.
-        """
+        """Retile gadget on resize."""
         h, w = self._size
         tile = self.tile
 

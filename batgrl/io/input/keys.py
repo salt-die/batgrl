@@ -1,13 +1,9 @@
-"""
-Keyboard special keys.
-"""
+"""Keyboard special keys."""
 from enum import Enum
 
 
 class Key(str, Enum):
-    """
-    Special keys.
-    """
+    """Special keys."""
 
     Escape = "escape"
     Left = "left"

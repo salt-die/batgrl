@@ -12,18 +12,14 @@ CHECKER_SIZE = Size(6, 13)
 
 
 def x_to_column(x):
-    """
-    Convert x coordinate of mouse position to Connect4 column.
-    """
+    """Convert x coordinate of mouse position to Connect4 column."""
     for i in range(1, 8):
         if x < i * CHECKER_SIZE.width:
             return i - 1
 
 
 class BoardPiece(Graphics):
-    """
-    A single square of a Connect4 board.
-    """
+    """A single square of a Connect4 board."""
 
     def __init__(self):
         super().__init__(size=CHECKER_SIZE, default_color=BOARD_COLOR)

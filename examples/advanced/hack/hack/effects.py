@@ -13,9 +13,7 @@ SKIP = 23  # Increase for a faster scanline.
 
 
 class Darken(Gadget):
-    """
-    Darken view.
-    """
+    """Darken view."""
 
     def render(self, canvas, colors):
         super().render(canvas, colors)
@@ -24,9 +22,7 @@ class Darken(Gadget):
 
 
 class BOLDCRT(Gadget):
-    """
-    Bold all text and apply a crt effect.
-    """
+    """Bold all text and apply a crt effect."""
 
     def on_add(self):
         super().on_add()

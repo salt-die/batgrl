@@ -1,5 +1,5 @@
 """
-A rigid body physics simulation in the terminal!
+A rigid body physics simulation in the terminal.
 
 Requires `pymunk`
 """

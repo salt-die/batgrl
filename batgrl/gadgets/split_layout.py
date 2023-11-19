@@ -1,6 +1,4 @@
-"""
-Draggable horizontal and vertical split layouts.
-"""
+"""Draggable horizontal and vertical split layouts."""
 from ..colors import AColor
 from .behaviors.grabbable import Grabbable
 from .gadget import Gadget
@@ -68,7 +66,7 @@ class _VSplitHandle(_Handle):
 
 
 class HSplitLayout(GadgetBase):
-    """
+    r"""
     A horizontal split layout. Add gadgets to the :attr:`top_pane` or
     :attr:`bottom_pane`, e.g., ``my_hsplit.top_pane.add_gadget(my_gadget)``.
 
@@ -171,18 +169,18 @@ class HSplitLayout(GadgetBase):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -209,13 +207,13 @@ class HSplitLayout(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -265,6 +263,7 @@ class HSplitLayout(GadgetBase):
 
     @property
     def handle_color(self) -> AColor:
+        """Color of the resize handle."""
         return self.handle.default_color
 
     @handle_color.setter
@@ -275,6 +274,7 @@ class HSplitLayout(GadgetBase):
 
     @property
     def min_split_height(self) -> int:
+        """Minimum height of either pane."""
         return self._min_split_height
 
     @min_split_height.setter
@@ -284,6 +284,10 @@ class HSplitLayout(GadgetBase):
 
     @property
     def split_row(self) -> int:
+        """
+        Height of top pane if :attr:`anchor_top_pane` is true, else height of
+        right pane.
+        """
         return self._split_col
 
     @split_row.setter
@@ -298,6 +302,7 @@ class HSplitLayout(GadgetBase):
 
     @property
     def split_resizable(self) -> bool:
+        """True if split is resizable with a grabbable handle."""
         return self.handle.is_grabbable
 
     @split_resizable.setter
@@ -305,6 +310,7 @@ class HSplitLayout(GadgetBase):
         self.handle.is_grabbable = split_resizable
 
     def on_size(self):
+        """Resize panes on resize."""
         if self.anchor_top_pane:
             anchored = self.top_pane
             not_anchored = self.bottom_pane
@@ -317,7 +323,7 @@ class HSplitLayout(GadgetBase):
 
 
 class VSplitLayout(GadgetBase):
-    """
+    r"""
     A vertical split layout. Add gadgets to the :attr:`left_pane` or :attr:`right_pane`,
     e.g., ``my_vsplit.left_pane.add_gadget(my_gadget)``.
 
@@ -420,18 +426,18 @@ class VSplitLayout(GadgetBase):
     Methods
     -------
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -458,13 +464,13 @@ class VSplitLayout(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -513,6 +519,7 @@ class VSplitLayout(GadgetBase):
 
     @property
     def handle_color(self) -> AColor:
+        """Color of the resize handle."""
         return self.handle.default_color
 
     @handle_color.setter
@@ -522,6 +529,7 @@ class VSplitLayout(GadgetBase):
 
     @property
     def min_split_width(self) -> int:
+        """Minimum width of either pane."""
         return self._min_split_width
 
     @min_split_width.setter
@@ -531,6 +539,10 @@ class VSplitLayout(GadgetBase):
 
     @property
     def split_col(self) -> int:
+        """
+        Width of left pane if :attr:`anchor_left_pane` is true, else width of
+        right pane.
+        """
         return self._split_row
 
     @split_col.setter
@@ -545,6 +557,7 @@ class VSplitLayout(GadgetBase):
 
     @property
     def split_resizable(self) -> bool:
+        """True if split is resizable with a grabbable handle."""
         return self.handle.is_grabbable
 
     @split_resizable.setter
@@ -552,6 +565,7 @@ class VSplitLayout(GadgetBase):
         self.handle.is_grabbable = split_resizable
 
     def on_size(self):
+        """Resize panes on resize."""
         if self.anchor_left_pane:
             anchored = self.left_pane
             not_anchored = self.right_pane

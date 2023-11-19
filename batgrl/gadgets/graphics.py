@@ -1,6 +1,4 @@
-"""
-A graphic gadget.
-"""
+"""A graphic gadget."""
 from math import prod
 from pathlib import Path
 
@@ -49,7 +47,7 @@ __all__ = [
 
 
 class Graphics(GadgetBase):
-    """
+    r"""
     A graphic gadget. Displays arbitrary RGBA textures.
 
     Graphic gadgets are gadgets that are rendered entirely with the upper half block
@@ -146,18 +144,18 @@ class Graphics(GadgetBase):
     to_png(path):
         Write :attr:`texture` to provided path as a `png` image.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -184,13 +182,13 @@ class Graphics(GadgetBase):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -230,9 +228,7 @@ class Graphics(GadgetBase):
 
     @property
     def alpha(self) -> float:
-        """
-        Transparency of gadget if :attr:`is_transparent` is true.
-        """
+        """Transparency of gadget if :attr:`is_transparent` is true."""
         return self._alpha
 
     @alpha.setter
@@ -241,6 +237,7 @@ class Graphics(GadgetBase):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     def on_size(self):
+        """Resize texture array."""
         h, w = self._size
 
         self.texture = cv2.resize(
@@ -251,9 +248,7 @@ class Graphics(GadgetBase):
 
     @property
     def interpolation(self) -> Interpolation:
-        """
-        Interpolation used when gadget is resized.
-        """
+        """Interpolation used when gadget is resized."""
         return self._interpolation
 
     @interpolation.setter
@@ -263,6 +258,7 @@ class Graphics(GadgetBase):
         self._interpolation = interpolation
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
         texture = self.texture
         foreground = colors[..., :3]
         background = colors[..., 3:]
@@ -320,8 +316,6 @@ class Graphics(GadgetBase):
                 canvas[dst] = style_char("▀")
 
     def to_png(self, path: Path):
-        """
-        Write :attr:`texture` to provided path as a `png` image.
-        """
+        """Write :attr:`texture` to provided path as a `png` image."""
         BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
         cv2.imwrite(str(path.absolute()), BGRA)

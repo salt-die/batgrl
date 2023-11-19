@@ -17,9 +17,7 @@ QUARTER_TURN = np.pi / 2
 
 
 class RubiksCube(Grabbable, Graphics):
-    """
-    A 3-dimensional Rubik's Cube.
-    """
+    """A 3-dimensional Rubik's Cube."""
 
     def __init__(self, *, aspect_ratio=True, **kwargs):
         super().__init__(**kwargs)
@@ -103,9 +101,7 @@ class RubiksCube(Grabbable, Graphics):
         return True
 
     def rotate_selected_cubes(self, is_clockwise, animate=True):
-        """
-        Rotate the currently selected plane.
-        """
+        """Rotate the currently selected plane."""
         if not self._rotate_task.done():
             return
 

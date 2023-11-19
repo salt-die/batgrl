@@ -4,7 +4,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-
 from batgrl.app import App
 from batgrl.gadgets.raycaster import Camera, Raycaster, Sprite
 from batgrl.gadgets.texture_tools import read_texture

@@ -1,6 +1,4 @@
-"""
-A slider gadget.
-"""
+"""A slider gadget."""
 from collections.abc import Callable
 
 from numpy.typing import NDArray
@@ -39,7 +37,7 @@ DEFAULT_SLIDER_HANDLE_COLOR_PAIR = ColorPair.from_hex("DDE4ED070C25")
 
 
 class Slider(Grabbable, Text):
-    """
+    r"""
     A slider gadget.
 
     Parameters
@@ -204,18 +202,18 @@ class Slider(Grabbable, Text):
     set_text(text, ...):
         Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
-        Called when gadget is resized.
+        Update gadget after a resize.
     apply_hints():
         Apply size and pos hints.
     to_local(point):
         Convert point in absolute coordinates to local coordinates.
     collides_point(point):
-        True if point collides with visible portion of gadget.
+        Return true if point collides with visible portion of gadget.
     collides_gadget(other):
-        True if other is within gadget's bounding box.
+        Return true if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -242,13 +240,13 @@ class Slider(Grabbable, Text):
     tween(...):
         Sequentially update gadget properties over time.
     on_add():
-        Called after a gadget is added to gadget tree.
+        Apply size hints and call children's `on_add`.
     on_remove():
-        Called before gadget is removed from gadget tree.
+        Call children's `on_remove`.
     prolicide():
         Recursively remove all children.
     destroy():
-        Destroy this gadget and all descendents.
+        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -312,6 +310,7 @@ class Slider(Grabbable, Text):
 
     @property
     def min(self) -> float:
+        """Minimum value of slider."""
         return self._min
 
     @min.setter
@@ -324,6 +323,7 @@ class Slider(Grabbable, Text):
 
     @property
     def max(self) -> float:
+        """Maximum value of slider."""
         return self._max
 
     @max.setter
@@ -336,6 +336,7 @@ class Slider(Grabbable, Text):
 
     @property
     def handle_color_pair(self) -> ColorPair:
+        """Color pair of slider handle."""
         return self._handle_color_pair
 
     @handle_color_pair.setter
@@ -345,6 +346,7 @@ class Slider(Grabbable, Text):
 
     @property
     def handle_char(self) -> NDArray[Char]:
+        """Character used for slider handle."""
         return self._handle_char
 
     @handle_char.setter
@@ -354,6 +356,7 @@ class Slider(Grabbable, Text):
 
     @property
     def fill_color(self) -> Color:
+        """Color of "filled" portion of slider."""
         return self._fill_color
 
     @fill_color.setter
@@ -363,6 +366,7 @@ class Slider(Grabbable, Text):
 
     @property
     def fill_char(self) -> NDArray[Char]:
+        """Character used for slider."""
         return self._fill_char
 
     @fill_char.setter
@@ -371,6 +375,7 @@ class Slider(Grabbable, Text):
         self.canvas[self.height // 2] = self._fill_char
 
     def on_size(self):
+        """Resize canvas and color arrays and reposition slider handle."""
         super().on_size()
         self.canvas[:] = self.default_char
         self.canvas[self.height // 2] = self.fill_char
@@ -379,6 +384,7 @@ class Slider(Grabbable, Text):
 
     @property
     def proportion(self) -> float:
+        """Current proportion of slider."""
         return self._proportion
 
     @proportion.setter
@@ -400,6 +406,7 @@ class Slider(Grabbable, Text):
 
     @property
     def value(self) -> float:
+        """Current value of slider."""
         return self._value
 
     @value.setter
@@ -410,12 +417,11 @@ class Slider(Grabbable, Text):
 
     @property
     def fill_width(self):
-        """
-        Width of the slider minus the width of the handle.
-        """
+        """Width of the slider minus the width of the handle."""
         return self.width - self._handle.width
 
     def grab(self, mouse_event: MouseEvent):
+        """Move handle to mouse position on grab."""
         if (
             mouse_event.event_type == MouseEventType.MOUSE_DOWN
             and self.collides_point(mouse_event.position)
@@ -425,6 +431,7 @@ class Slider(Grabbable, Text):
             self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event: MouseEvent):
+        """Update proportion and handle position on grab update."""
         x = clamp(self.to_local(mouse_event.position).x, 0, self.width - 1)
         self._handle.x = x
         self.proportion = 0 if self.fill_width == 0 else x / self.fill_width

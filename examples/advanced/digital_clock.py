@@ -54,9 +54,7 @@ class DigitalClock(Text):
 
 
 class TestDisplay(DigitalDisplay):
-    """
-    Display any key pressed.
-    """
+    """Display any key pressed."""
 
     def on_key(self, key_event):
         key = key_event.key

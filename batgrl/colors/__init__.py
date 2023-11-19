@@ -1,6 +1,4 @@
-"""
-Color-related functions and data structures.
-"""
+"""Color-related functions and data structures."""
 from .color_types import AColor, Color, ColorPair, ColorTheme
 from .colors import (
     ABLACK,

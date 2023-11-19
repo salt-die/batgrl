@@ -10,9 +10,7 @@ __all__ = ["attach", "raw_mode", "events"]
 
 @contextmanager
 def attach(callback):
-    """
-    Context manager that makes this input active in the current event loop.
-    """
+    """Context manager that makes this input active in the current event loop."""
 
     async def poll_events():
         while True:

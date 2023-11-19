@@ -1,6 +1,4 @@
-"""
-Data structures for input and output.
-"""
+"""Data structures for input and output."""
 from .input.events import _PartialMouseEvent  # noqa
 from .input.events import (
     Key,
