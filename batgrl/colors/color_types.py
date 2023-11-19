@@ -1,6 +1,4 @@
-"""
-Color data structures.
-"""
+"""Color data structures."""
 from dataclasses import dataclass
 from typing import NamedTuple
 
@@ -278,16 +276,12 @@ class ColorPair(NamedTuple):
 
     @property
     def fg_color(self) -> Color:
-        """
-        The foreground color.
-        """
+        """The foreground color."""
         return Color(*self[:3])
 
     @property
     def bg_color(self) -> Color:
-        """
-        The background color.
-        """
+        """The background color."""
         return Color(*self[3:])
 
     def reversed(self) -> "ColorPair":
@@ -355,13 +349,13 @@ class ColorTheme:
         Color pair of selected, hovered items in a data table.
     progress_bar : ColorPair, default: ColorPair(255, 224, 223, 42, 60, 160)
         Color pair of progress bar.
-    scroll_view_scrollbar_color : Color, default: Color(7, 12, 37)
+    scroll_view_scrollbar : Color, default: Color(7, 12, 37)
         Color of scrollbar in a scroll view.
-    scroll_view_indicator_normal_color : Color, default: Color(14, 24, 67)
+    scroll_view_indicator_normal : Color, default: Color(14, 24, 67)
         Color of indicator in a scroll view.
-    scroll_view_indicator_hover_color : Color, default: Color(17, 30, 79)
+    scroll_view_indicator_hover : Color, default: Color(17, 30, 79)
         Color of hovered indicator in a scroll view.
-    scroll_view_indicator_press_color : Color, default: Color(23, 40, 104)
+    scroll_view_indicator_press : Color, default: Color(23, 40, 104)
         Color of pressed indicator in a scroll view.
 
     Attributes
@@ -412,13 +406,13 @@ class ColorTheme:
         Color pair of selected, hovered items in a data table.
     progress_bar : ColorPair
         Color pair of progress bar.
-    scroll_view_scrollbar_color : Color
+    scroll_view_scrollbar : Color
         Color of scrollbar in a scroll view.
-    scroll_view_indicator_normal_color : Color
+    scroll_view_indicator_normal : Color
         Color of indicator in a scroll view.
-    scroll_view_indicator_hover_color : Color
+    scroll_view_indicator_hover : Color
         Color of hovered indicator in a scroll view.
-    scroll_view_indicator_press_color : Color
+    scroll_view_indicator_press : Color
         Color of pressed indicator in a scroll view.
     """  # noqa
 
@@ -445,7 +439,7 @@ class ColorTheme:
     data_table_selected: ColorPair = ColorPair(236, 243, 255, 17, 31, 94)
     data_table_selected_hover: ColorPair = ColorPair(236, 243, 255, 27, 36, 75)
     progress_bar: ColorPair = ColorPair(255, 224, 223, 42, 60, 160)
-    scroll_view_scrollbar_color: Color = Color(7, 12, 37)
-    scroll_view_indicator_normal_color: Color = Color(14, 24, 67)
-    scroll_view_indicator_hover_color: Color = Color(17, 30, 79)
-    scroll_view_indicator_press_color: Color = Color(23, 40, 104)
+    scroll_view_scrollbar: Color = Color(7, 12, 37)
+    scroll_view_indicator_normal: Color = Color(14, 24, 67)
+    scroll_view_indicator_hover: Color = Color(17, 30, 79)
+    scroll_view_indicator_press: Color = Color(23, 40, 104)

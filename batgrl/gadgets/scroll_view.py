@@ -58,16 +58,16 @@ class _ScrollbarBase(Grabbable, Text):
         sv: ScrollView = self.parent
 
         if self.is_grabbed:
-            indicator_color = sv.color_theme.scroll_view_indicator_press_color
+            indicator_color = sv.color_theme.scroll_view_indicator_press
         elif self.is_hovered:
-            indicator_color = sv.color_theme.scroll_view_indicator_hover_color
+            indicator_color = sv.color_theme.scroll_view_indicator_hover
         else:
-            indicator_color = sv.color_theme.scroll_view_indicator_normal_color
+            indicator_color = sv.color_theme.scroll_view_indicator_normal
 
         self.canvas["char"] = " "
 
         self.colors[..., :3] = indicator_color
-        self.colors[..., 3:] = sv.color_theme.scroll_view_scrollbar_color
+        self.colors[..., 3:] = sv.color_theme.scroll_view_scrollbar
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
@@ -107,7 +107,7 @@ class _VerticalScrollbar(_ScrollbarBase):
         y_offset = offset != 0
         self.colors[
             start + y_offset : stop, :, :3
-        ] = sv.color_theme.scroll_view_scrollbar_color
+        ] = sv.color_theme.scroll_view_scrollbar
         self.colors[start + y_offset : stop, :, 3:] = indicator_color
 
     def on_mouse(self, mouse_event):
@@ -164,7 +164,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
         if offset != 0:
-            self.colors[:, start, :3] = sv.color_theme.scroll_view_scrollbar_color
+            self.colors[:, start, :3] = sv.color_theme.scroll_view_scrollbar
             self.colors[:, start, 3:] = indicator_color
 
     def on_mouse(self, mouse_event):
@@ -443,9 +443,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     def update_theme(self):
         self._background.background_color_pair = self.color_theme.primary.bg_color * 2
-        self._corner.background_color_pair = (
-            self.color_theme.scroll_view_scrollbar_color * 2
-        )
+        self._corner.background_color_pair = self.color_theme.scroll_view_scrollbar * 2
         self._update_port_and_scrollbar()
 
     @property
