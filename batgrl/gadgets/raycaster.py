@@ -70,7 +70,7 @@ class Camera:
     """
     A camera view.
 
-    Paramaters
+    Parameters
     ----------
     pos : tuple[float, float], default: (0.0, 0.0)
         Position of camera on the map.
