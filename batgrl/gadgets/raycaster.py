@@ -162,7 +162,7 @@ class Raycaster(Graphics):
 
     Parameters
     ----------
-    map : Map
+    map : NDArray[np.ushort]
         An array-like with non-zero entries n indicating walls with texture
         `wall_textures[n - 1]`.
     camera : Camera
@@ -211,7 +211,7 @@ class Raycaster(Graphics):
 
     Attributes
     ----------
-    map : Map
+    map : NDArray[np.ushort]
         An array-like with non-zero entries n indicating walls with texture
         `wall_textures[n - 1]`.
     camera : Camera
