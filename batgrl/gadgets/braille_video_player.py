@@ -260,6 +260,8 @@ class BrailleVideoPlayer(Text):
     def source(self, source: Path | str | int):
         self.pause()
         self._release_resource()
+        if isinstance(source, Path) and not source.exists():
+            raise FileNotFoundError(str(source))
         self._source = source
         self._load_resource()
 
