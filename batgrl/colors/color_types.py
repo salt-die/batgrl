@@ -357,6 +357,24 @@ class ColorTheme:
         Color of hovered indicator in a scroll view.
     scroll_view_indicator_press : Color, default: Color(23, 40, 104)
         Color of pressed indicator in a scroll view.
+    markdown_link : ColorPair, default: ColorPair(55, 108, 255, 7, 12, 37)
+        Color pair of markdown link.
+    markdown_link_hover : ColorPair, default: ColorPair(70, 104, 255, 7, 12, 37)
+        Color pair of hovered markdown link.
+    markdown_inline_code : ColorPair, default: ColorPair(128, 106, 229, 8, 11, 26)
+        Color pair of markdown inline code.
+    markdown_quote : ColorPair, default: ColorPair(32, 84, 226, 12, 27, 75)
+        Color pair of markdown quote.
+    markdown_title : ColorPair, default: ColorPair(207, 209, 212, 41, 42, 45)
+        Color pair of markdown title.
+    markdown_image : ColorPair, default: ColorPair(246, 167, 169, 12, 21, 64)
+        Color pair of markdown image.
+    markdown_block_code_background : Color, default: Color(8, 11, 26)
+        Color of markdown block code background.
+    markdown_quote_block_code_background : Color, default: Color(17, 38, 93)
+        Color of markdown quoted block code background.
+    markdown_header_background : Color, default: Color(3, 6, 18)
+        Color of markdown header color.
 
     Attributes
     ----------
@@ -414,6 +432,24 @@ class ColorTheme:
         Color of hovered indicator in a scroll view.
     scroll_view_indicator_press : Color
         Color of pressed indicator in a scroll view.
+    markdown_link : ColorPair
+        Color pair of markdown link.
+    markdown_link_hover : ColorPair
+        Color pair of hovered markdown link.
+    markdown_inline_code : ColorPair
+        Color pair of markdown inline code.
+    markdown_quote : ColorPair
+        Color pair of markdown quote.
+    markdown_title : ColorPair
+        Color pair of markdown title.
+    markdown_image : ColorPair
+        Color pair of markdown image.
+    markdown_block_code_background : Color
+        Color of markdown block code background.
+    markdown_quote_block_code_background : Color
+        Color of markdown quoted block code background.
+    markdown_header_background : Color
+        Color of markdown header color.
     """  # noqa
 
     primary: ColorPair = ColorPair(246, 167, 169, 7, 12, 37)
@@ -443,3 +479,12 @@ class ColorTheme:
     scroll_view_indicator_normal: Color = Color(14, 24, 67)
     scroll_view_indicator_hover: Color = Color(17, 30, 79)
     scroll_view_indicator_press: Color = Color(23, 40, 104)
+    markdown_link: ColorPair = ColorPair(55, 108, 255, 7, 12, 37)
+    markdown_link_hover: ColorPair = ColorPair(70, 104, 255, 7, 12, 37)
+    markdown_inline_code: ColorPair = ColorPair(128, 106, 229, 8, 11, 26)
+    markdown_quote: ColorPair = ColorPair(32, 84, 226, 12, 27, 75)
+    markdown_title: ColorPair = ColorPair(207, 209, 212, 41, 42, 45)
+    markdown_image: ColorPair = ColorPair(246, 167, 169, 12, 21, 64)
+    markdown_block_code_background: Color = Color(8, 11, 26)
+    markdown_quote_block_code_background: Color = Color(17, 38, 93)
+    markdown_header_background: Color = Color(3, 6, 18)

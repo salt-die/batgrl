@@ -19,6 +19,7 @@ dependencies = [
     "opencv-python>=4.5.4.58",
     "wcwidth>=0.2.5",
     "Pygments>=2.16.1",
+    "mistletoe>=1.2.1",
 ]
 dynamic = ["version"]
 
