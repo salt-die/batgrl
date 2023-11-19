@@ -1,6 +1,4 @@
-"""
-A textbox gadget for single-line editable text.
-"""
+"""A textbox gadget for single-line editable text."""
 from collections.abc import Callable
 
 import numpy as np
@@ -39,7 +37,7 @@ __all__ = [
 
 
 class Textbox(Themable, Focusable, Grabbable, GadgetBase):
-    """
+    r"""
     A textbox gadget for single-line editable text.
 
     Supports pasting, mouse selection, and cursor navigation.
@@ -84,6 +82,12 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     ----------
     text : str
         The textbox's text.
+    cursor : int
+        The cursor column.
+    is_selecting : bool
+        Whether there is a selection.
+    has_nonempty_selection : bool
+        Whether selection is non-empty.
     placeholder : str
         Placeholder text for textbox.
     hide_input : bool
@@ -159,6 +163,24 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     Methods
     -------
+    undo():
+        Undo previous edit.
+    redo():
+        Redo previous undo.
+    select():
+        Start a new selection at cursor if none.
+    unselect():
+        Unselect current selection.
+    delete_selection():
+        Delete current selection.
+    move_cursor_left(n):
+        Move cursor left `n` characters.
+    move_cursor_right(n):
+        Move cursor right `n` characters.
+    move_word_left():
+        Move cursor a word left.
+    move_word_right():
+        Move cursor a word right.
     update_theme():
         Paint the gadget with current theme.
     focus():
@@ -275,13 +297,21 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self.add_gadgets(self._box)
 
         self.enter_callback = enter_callback
+        """
+        If provided, called when textbox has focus and `enter` is pressed.
+        The gadget will be passed as first argument to the callback.
+        """
         self.placeholder = placeholder
+        """Placeholder text for textbox."""
         self.hide_input = hide_input
+        """If true, input is hidden with :attr:`hide_char`."""
         self.hide_char = hide_char
         self.max_chars = max_chars
+        """Maximum allowed number of characters in textbox."""
 
     @property
     def hide_char(self) -> NDArray[Char]:
+        """Character to hide input when :attr:`hide_input` is true."""
         return self._hide_char
 
     @hide_char.setter
@@ -300,20 +330,24 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self._highlight_selection()
 
     def on_size(self):
+        """Resize and reposition children on resize."""
         self._box.width = max(self.width, self._line_length + 1)
         if self._box.x + self._line_length < self.width:
             self._box.x = min(0, self.width - self._line_length)
         self.cursor = self.cursor
 
     def on_focus(self):
+        """Show cursor and select all text on focus."""
         self._cursor.is_enabled = True
         if self._line_length > 0:
             self._ctrl_a()
 
     def on_blur(self):
+        """Hide cursor on blur."""
         self._cursor.is_enabled = False
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
+        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
         super().render(canvas, colors)
         if self.hide_input:
             hider_region = self._box.region & Region.from_rect(
@@ -324,6 +358,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     @property
     def placeholder(self) -> str:
+        """Placeholder text for textbox."""
         return self._placeholder
 
     @placeholder.setter
@@ -343,6 +378,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self._redo_stack.clear()
 
     def undo(self):
+        """Undo previous edit."""
         self._move_undo_buffer_to_stack()
         if self._undo_stack:
             redo = []
@@ -356,6 +392,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self._redo_stack.append(redo)
 
     def redo(self):
+        """Redo previous undo."""
         if self._redo_stack and not self._undo_buffer:
             undo = []
             for func, args, selection_start, selection_end, cursor in reversed(
@@ -369,6 +406,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     @property
     def text(self) -> str:
+        """The textbox's text."""
         return "".join(self._box.canvas["char"][0, : self._line_length])
 
     @text.setter
@@ -384,13 +422,12 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     @property
     def cursor(self) -> int:
+        """The cursor column."""
         return self._cursor.x
 
     @cursor.setter
     def cursor(self, cursor: int):
-        """
-        After setting cursor position, move textbox so that cursor is visible.
-        """
+        """After setting cursor position, move textbox so that cursor is visible."""
         self._cursor.x = cursor
         if self._line_length == 0 and self._placeholder:
             self._placeholder_gadget.is_enabled = True
@@ -425,20 +462,25 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     @property
     def is_selecting(self) -> bool:
+        """Whether there is a selection."""
         return self._selection_start is not None and self._selection_end is not None
 
     @property
     def has_nonempty_selection(self) -> bool:
+        """Whether selection is non-empty."""
         return self.is_selecting and self._selection_start != self._selection_end
 
     def select(self):
+        """Start a new selection at cursor if none."""
         if not self.is_selecting:
             self._selection_start = self._selection_end = self.cursor
 
     def unselect(self):
+        """Unselect current selection."""
         self._selection_start = self._selection_end = None
 
     def delete_selection(self):
+        """Delete current selection."""
         if self.has_nonempty_selection:
             return self._del_text(self._selection_start, self._selection_end)
 
@@ -491,6 +533,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
 
     def move_cursor_left(self, n: int = 1):
+        """Move cursor left `n` characters."""
         text_before_cursor = "".join(self._box.canvas["char"][0, : self.cursor])
         nchars_before_cursor = len(text_before_cursor)
         if n <= nchars_before_cursor:
@@ -499,6 +542,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self.cursor = 0
 
     def move_cursor_right(self, n: int = 1):
+        """Move cursor right `n` characters."""
         text_after_cursor = "".join(
             self._box.canvas["char"][0, self.cursor : self._line_length]
         )
@@ -509,6 +553,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self.cursor = self._line_length
 
     def move_word_left(self):
+        """Move cursor a word left."""
         last_x = self.cursor
         first_char_found = False
         while True:
@@ -530,6 +575,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
                 break
 
     def move_word_right(self):
+        """Move cursor a word right."""
         last_x = self.cursor
         first_char_found = False
         while True:
@@ -717,6 +763,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
+        """Process key press."""
         if not self.is_focused:
             return super().on_key(key_event)
 
@@ -730,6 +777,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         return True
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
+        """Add paste to textbox."""
         if not self.is_focused:
             return
 
@@ -744,6 +792,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         return True
 
     def grab(self, mouse_event):
+        """Start selection on grab."""
         if mouse_event.button is MouseButton.LEFT and self._box.collides_point(
             mouse_event.position
         ):
@@ -758,6 +807,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             self.select()  # Need at least an empty selection for `grab_update`.
 
     def grab_update(self, mouse_event: MouseEvent):
+        """Update selection on grab update."""
         if self._box.collides_point(mouse_event.position):
             _, x = self._box.to_local(mouse_event.position)
             self.cursor = min(x, self._line_length)
@@ -770,6 +820,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
                 self.move_cursor_right()
 
     def ungrab(self, mouse_event):
+        """Clear an empty selection on ungrab."""
         super().ungrab(mouse_event)
         if self._selection_start == self._selection_end:
             self.unselect()

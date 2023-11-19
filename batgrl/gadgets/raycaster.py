@@ -67,7 +67,34 @@ class Sprite:
 
 
 class Camera:
-    """A camera view."""
+    """
+    A camera view.
+
+    Paramaters
+    ----------
+    pos : tuple[float, float], default: (0.0, 0.0)
+        Position of camera on the map.
+    theta : float, default: 0.0
+        Direction of camera in radians.
+    fov : float, default: 0.66
+        Field of view of camera.
+
+    Attributes
+    ----------
+    pos : tuple[float, float]
+        Position of camera on the map.
+    theta : float
+        Direction of camera in radians.
+    fov : float
+        Field of view of camera.
+
+    Methods
+    -------
+    rotation_matrix(theta)
+        Return a 2-D rotation matrix from a given angle.
+    rotate(theta)
+        Rotate camera `theta` radians in-place.
+    """
 
     def __init__(
         self,
@@ -79,7 +106,7 @@ class Camera:
         self._build_plane(theta, fov)
 
     @staticmethod
-    def rotation_matrix(theta: float):
+    def rotation_matrix(theta: float) -> NDArray[np.float32]:
         """Return a 2-D rotation matrix from a given angle."""
         x = np.cos(theta)
         y = np.sin(theta)

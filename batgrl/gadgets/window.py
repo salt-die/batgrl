@@ -1,6 +1,4 @@
-"""
-A movable, resizable window gadget.
-"""
+"""A movable, resizable window gadget."""
 import numpy as np
 from wcwidth import wcswidth
 
@@ -54,7 +52,7 @@ class _TitleBar(Grabbable, Gadget):
 
 
 class Window(Themable, Focusable, Resizable, Graphics):
-    """
+    r"""
     A movable, resizable window gadget.
 
     The view can be set with the :attr:`view` property, e.g.,
@@ -69,11 +67,9 @@ class Window(Themable, Focusable, Resizable, Graphics):
     allow_horizontal_resize : bool, default: True
         Allow horizontal resize.
     resize_min_height : int | None, default: None
-        Minimum height gadget can be resized by grabbing. Minimum height can't be less
-        than 3.
+        Minimum height gadget can be resized by grabbing.
     resize_min_width : int | None, default: None
-        Minimum width gadget can be resized by grabbing. Minimum width can't be less
-        than 6 + column width of title.
+        Minimum width gadget can be resized by grabbing.
     border_alpha : float, default: 1.0
         Transparency of border. This value will be clamped between `0.0` and `1.0`.
     border_color : AColor, default: TRANSPARENT
@@ -305,6 +301,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     @property
     def resize_min_height(self) -> int:
+        """Minimum height gadget can be resized by grabbing."""
         return self._resize_min_height
 
     @resize_min_height.setter
@@ -316,6 +313,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     @property
     def resize_min_width(self) -> int:
+        """Minimum width gadget can be resized by grabbing."""
         return self._resize_min_width
 
     @resize_min_width.setter
@@ -328,9 +326,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     @property
     def view(self) -> GadgetBase | None:
-        """
-        The windowed gadget.
-        """
+        """The windowed gadget."""
         return self._view
 
     @view.setter
@@ -349,6 +345,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
             self.on_size()
 
     def on_size(self):
+        """Resize view on resize."""
         h, w = self._size
         self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
         self.texture[4:-2, 2:-2] = self.default_color
@@ -359,6 +356,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     @property
     def title(self):
+        """Title of window."""
         return self._title
 
     @title.setter
@@ -389,13 +387,16 @@ class Window(Themable, Focusable, Resizable, Graphics):
             self.border_color = self.color_theme.window_border_inactive
 
     def on_focus(self):
+        """Pull window to front and recolor borders on focus."""
         self.update_theme()
         self.pull_to_front()
 
     def on_blur(self):
+        """Recolor borders on blur."""
         self.update_theme()
 
     def dispatch_mouse(self, mouse_event):
+        """Handle any colliding mouse events."""
         return super().dispatch_mouse(mouse_event) or self.collides_point(
             mouse_event.position
         )

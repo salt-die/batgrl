@@ -1,6 +1,4 @@
-"""
-A tabbed gadget.
-"""
+"""A tabbed gadget."""
 import asyncio
 
 from ..colors import lerp_colors
@@ -96,7 +94,7 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
 
 
 class Tabs(Themable, GadgetBase):
-    """
+    r"""
     A tabbed gadget.
 
     Parameters

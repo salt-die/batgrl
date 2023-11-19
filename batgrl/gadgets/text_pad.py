@@ -1,6 +1,4 @@
-"""
-A text-pad gadget for multiline editable text.
-"""
+"""A text-pad gadget for multiline editable text."""
 from wcwidth import wcswidth
 
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
@@ -33,7 +31,7 @@ __all__ = [
 
 
 class TextPad(Themable, Grabbable, Focusable, GadgetBase):
-    """
+    r"""
     A text-pad gadget for multiline editable text.
 
     Supports pasting, mouse selection, and cursor navigation.
@@ -60,7 +58,15 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     Attributes
     ----------
     text : str
-        The textpad's text.
+        The text pad's text.
+    cursor : Point
+        The cursor position.
+    is_selecting : bool
+        Whether there is a selection.
+    has_nonempty_selection : bool
+        Whether selection is non-empty.
+    page_lines : int
+        Number of rows a page-up or -down moves.
     is_focused : bool
         Return true if gadget has focus.
     any_focused : bool
@@ -114,6 +120,28 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     Methods
     -------
+    undo():
+        Undo previous edit.
+    redo():
+        Redo previous undo.
+    select():
+        Start a new selection at cursor if none.
+    unselect():
+        Unselect current selection.
+    delete_selection():
+        Delete current selection.
+    move_cursor_left(n):
+        Move cursor left `n` characters.
+    move_cursor_right(n):
+        Move cursor right `n` characters.
+    move_cursor_up(n):
+        Move cursor up `n` rows.
+    move_cursor_down(n):
+        Move cursor down `n` rows.
+    move_word_left():
+        Move cursor a word left.
+    move_word_right():
+        Move cursor a word right.
     update_theme():
         Paint the gadget with current theme.
     focus():
@@ -233,14 +261,17 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self._highlight_selection()
 
     def on_size(self):
+        """Resize children on resize."""
         super().on_size()
         self._pad.width = max(self._scroll_view.port_width, max(self._line_lengths) + 1)
         self._highlight_selection()
 
     def on_focus(self):
+        """Show cursor on focus."""
         self._cursor.is_enabled = True
 
     def on_blur(self):
+        """Hide cursor on blur."""
         self._cursor.is_enabled = False
 
     def _move_undo_buffer_to_stack(self, buffer_type=None):
@@ -251,6 +282,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             self._redo_stack.clear()
 
     def undo(self):
+        """Undo previous edit."""
         self._move_undo_buffer_to_stack()
         if self._undo_stack:
             redo = []
@@ -264,6 +296,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             self._redo_stack.append(redo)
 
     def redo(self):
+        """Redo previous undo."""
         if self._redo_stack and not self._undo_buffer:
             undo = []
             for func, args, selection_start, selection_end, cursor in reversed(
@@ -277,6 +310,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     @property
     def text(self) -> str:
+        """The text pad's text."""
         return "\n".join(
             "".join(row[:line_length])
             for row, line_length in zip(self._pad.canvas["char"], self._line_lengths)
@@ -294,13 +328,12 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     @property
     def cursor(self) -> Point:
+        """The cursor position."""
         return self._cursor.pos
 
     @cursor.setter
     def cursor(self, cursor: Point):
-        """
-        After setting cursor position, move pad so that cursor is visible.
-        """
+        """After setting cursor position, move pad so that cursor is visible."""
         y, x = cursor
         self._cursor.pos = Point(y, x)
 
@@ -348,32 +381,36 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     @property
     def is_selecting(self) -> bool:
+        """Whether there is a selection."""
         return self._selection_start is not None and self._selection_end is not None
 
     @property
     def has_nonempty_selection(self) -> bool:
+        """Whether selection is non-empty."""
         return self.is_selecting and self._selection_start != self._selection_end
 
     @property
     def end_text_point(self) -> Point:
-        """
-        Point after last character in text.
-        """
+        """Point after last character in text."""
         ll = self._line_lengths
         return Point(len(ll) - 1, ll[-1])
 
     @property
     def page_lines(self) -> int:
+        """Number of rows a page-up or -down moves."""
         return self._scroll_view.port_height
 
     def select(self):
+        """Start a new selection at cursor if none."""
         if not self.is_selecting:
             self._selection_start = self._selection_end = self.cursor
 
     def unselect(self):
+        """Unselect current selection."""
         self._selection_start = self._selection_end = None
 
     def delete_selection(self):
+        """Delete current selection."""
         if self.has_nonempty_selection:
             return self._del_text(self._selection_start, self._selection_end)
 
@@ -484,6 +521,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         )
 
     def move_cursor_left(self, n: int = 1):
+        """Move cursor left `n` characters."""
         self._last_x = None
         y, x = self._cursor.pos
 
@@ -505,6 +543,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self.cursor = y, x
 
     def move_cursor_right(self, n: int = 1):
+        """Move cursor right `n` characters."""
         self._last_x = None
         y, x = self._cursor.pos
 
@@ -528,6 +567,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self.cursor = y, x
 
     def move_cursor_up(self, n: int = 1):
+        """Move cursor up `n` rows."""
         y, x = self._cursor.pos
 
         if self._last_x is None or y == x == 0:
@@ -542,6 +582,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self.cursor = y, x
 
     def move_cursor_down(self, n: int = 1):
+        """Move cursor down `n` rows."""
         y, x = self._cursor.pos
         ey, ex = self.end_text_point
 
@@ -557,6 +598,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self.cursor = y, x
 
     def move_word_left(self):
+        """Move cursor a word left."""
         last_x = self.cursor.x
         first_char_found = False
         while True:
@@ -578,6 +620,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
                 break
 
     def move_word_right(self):
+        """Move cursor a word right."""
         last_x = self.cursor.x
         first_char_found = False
         while True:
@@ -828,6 +871,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
+        """Process key press."""
         if not self.is_focused:
             return super().on_key(key_event)
 
@@ -841,6 +885,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         return True
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
+        """Add paste to text pad."""
         if not self.is_focused:
             return
 
@@ -855,6 +900,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         return True
 
     def grab(self, mouse_event):
+        """Start selection on grab."""
         if mouse_event.button is MouseButton.LEFT and self._pad.collides_point(
             mouse_event.position
         ):
@@ -870,6 +916,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             self.select()  # Need at least an empty selection for `grab_update`.
 
     def grab_update(self, mouse_event: MouseEvent):
+        """Update selection on grab update."""
         if self._pad.collides_point(mouse_event.position):
             y, x = self._pad.to_local(mouse_event.position)
             x = min(x, self._line_lengths[y])
@@ -892,6 +939,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
                     self.move_cursor_right()
 
     def ungrab(self, mouse_event):
+        """Clear an empty selection on ungrab."""
         super().ungrab(mouse_event)
-        if self._selection_start == self._selection_end:
+        if not self.has_nonempty_selection:
             self.unselect()

@@ -35,7 +35,7 @@ __all__ = [
 
 
 class TreeViewNode(Themable, ButtonBehavior, Text):
-    """
+    r"""
     A node of a :class:`TreeView`.
 
     Parameters
@@ -68,6 +68,8 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
     Attributes
     ----------
+    root_node : TreeViewNode
+        Root node of tree.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
@@ -140,7 +142,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
     remove_node(node: TreeViewNode):
         Remove a child node.
     toggle():
-        Close node if node is open else open node.
+        Toggle node open or closed.
     select():
         Select this node.
     unselect():
@@ -258,6 +260,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
             self.colors[:] = self.color_theme.menu_item_hover
 
     def on_size(self):
+        """Repaint tree on resize."""
         super().on_size()
         self._repaint()
 
@@ -266,19 +269,22 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self._repaint()
 
     def update_normal(self):
+        """Paint the normal state."""
         self._repaint()
 
     def update_hover(self):
+        """Paint the hover state."""
         self._repaint()
 
     def update_down(self):
+        """Paint the down state."""
         self._repaint()
 
     @property
-    def root_node(self):
+    def root_node(self) -> "TreeViewNode":
+        """Root node of tree."""
         if self.parent_node is None:
             return self
-
         return self.parent_node.root_node
 
     def iter_open_nodes(self) -> Iterator["TreeViewNode"]:
@@ -325,23 +331,17 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         node.parent_node = None
 
     def _toggle_update(self):
-        """
-        Update state after :meth:`toggle` is called.
-        """
+        """Update state after :meth:`toggle` is called."""
 
     def toggle(self):
-        """
-        Toggle node open or closed.
-        """
+        """Toggle node open or closed."""
         if not self.is_leaf:
             self.is_open = not self.is_open
             self._toggle_update()
             self.root_node.tree_view.update_tree_layout()
 
     def select(self):
-        """
-        Select node.
-        """
+        """Select node."""
         if self.root_node.tree_view.selected_node is not None:
             self.root_node.tree_view.selected_node.unselect()
 
@@ -350,20 +350,19 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self._repaint()
 
     def unselect(self):
-        """
-        Unselect node.
-        """
+        """Unselect node."""
         self.is_selected = False
         self.root_node.tree_view.selected_node = None
         self._repaint()
 
     def on_release(self):
+        """Select and toggle node on release."""
         self.select()
         self.toggle()
 
 
 class TreeView(GadgetBase):
-    """
+    r"""
     Base for creating tree-like views.
 
     Parameters
@@ -518,6 +517,4 @@ class TreeView(GadgetBase):
         root_node.toggle()
 
     def update_tree_layout(self):
-        """
-        Update tree layout after a child node is opened or closed.
-        """
+        """Update tree layout after a child node is opened or closed."""

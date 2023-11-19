@@ -1,6 +1,4 @@
-"""
-A scrollable view gadget.
-"""
+"""A scrollable view gadget."""
 from ..colors import Color
 from ..io import KeyEvent, MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
@@ -204,7 +202,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
 
 
 class ScrollView(Themable, Grabbable, GadgetBase):
-    """
+    r"""
     A scrollable view gadget.
 
     The view can be set with the :attr:`view` property, e.g.,
@@ -217,9 +215,9 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     allow_horizontal_scroll : bool, default: True
         Allow horizontal scrolling.
     show_vertical_bar : bool, default: True
-        Show the vertical scrollbar.
+        Whether the vertical scrollbar is shown.
     show_horizontal_bar : bool, default: True
-        Show the horizontal scrollbar.
+        Whether the horizontal scrollbar is shown.
     scrollwheel_enabled : bool, default: True
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool, default: True
@@ -256,17 +254,21 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     allow_horizontal_scroll : bool
         Allow horizontal scrolling.
     show_vertical_bar : bool
-        Show the vertical scrollbar.
+        Whether the vertical scrollbar is shown.
     show_horizontal_bar : bool
-        Show the horizontal scrollbar.
+        Whether the horizontal scrollbar is shown.
     scrollwheel_enabled : bool
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool
         Allow scrolling with arrow keys.
     vertical_proportion : float
-        Vertical scroll position as a proportion of total.
+        Vertical scroll position as a proportion of total height.
     horizontal_proportion : float
-        Horizontal scroll position as a proportion of total.
+        Horizontal scroll position as a proportion of total width.
+    port_height : int
+        Height of view.
+    port_width : int
+        Width of view.
     is_grabbable : bool
         If false, grabbable behavior is disabled.
     disable_ptf : bool
@@ -417,9 +419,13 @@ class ScrollView(Themable, Grabbable, GadgetBase):
             is_enabled=is_enabled,
         )
         self.allow_vertical_scroll = allow_vertical_scroll
+        """Allow vertical scrolling."""
         self.allow_horizontal_scroll = allow_horizontal_scroll
+        """Allow horizontal scrolling."""
         self.scrollwheel_enabled = scrollwheel_enabled
+        """Allow vertical scrolling with scrollwheel."""
         self.arrow_keys_enabled = arrow_keys_enabled
+        """Allow scrolling with arrow keys."""
 
         self._vertical_proportion = 0
         self._horizontal_proportion = 0
@@ -449,6 +455,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     @property
     def show_vertical_bar(self) -> bool:
+        """Whether the vertical scrollbar is shown."""
         return self._vertical_bar.is_enabled
 
     @show_vertical_bar.setter
@@ -459,6 +466,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     @property
     def show_horizontal_bar(self) -> bool:
+        """Whether the horizontal scrollbar is shown."""
         return self._horizontal_bar.is_enabled
 
     @show_horizontal_bar.setter
@@ -469,6 +477,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     @property
     def vertical_proportion(self) -> float:
+        """Vertical scroll position as a proportion of total height."""
         return self._vertical_proportion
 
     @vertical_proportion.setter
@@ -483,6 +492,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     @property
     def horizontal_proportion(self) -> float:
+        """Horizontal scroll position as a proportion of total width."""
         return self._horizontal_proportion
 
     @horizontal_proportion.setter
@@ -497,10 +507,12 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     @property
     def port_height(self) -> int:
+        """Height of view."""
         return self.height - self.show_horizontal_bar
 
     @property
     def port_width(self) -> int:
+        """Width of view."""
         return self.width - self.show_vertical_bar * 2
 
     @property
@@ -544,6 +556,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     @property
     def view(self) -> GadgetBase | None:
+        """The scrolled gadget."""
         return self._view
 
     @view.setter
@@ -568,6 +581,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
             self._update_port_and_scrollbar()
 
     def remove_gadget(self, gadget: GadgetBase):
+        """Unsubscribe from the view on its removal."""
         if gadget is self._view:
             self._view = None
             self.unsubscribe(gadget, "size")
@@ -575,6 +589,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         super().remove_gadget(gadget)
 
     def on_size(self):
+        """Resize and reposition scrollbars on resize."""
         self._vertical_bar.height = self.height - self.show_horizontal_bar
         self._vertical_bar.left = self.width - 2
         self._horizontal_bar.width = self.width - 2 * self.show_vertical_bar
@@ -582,6 +597,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         self._update_port_and_scrollbar()
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
+        """Scroll on arrows keys."""
         if not self.arrow_keys_enabled:
             return False
 
@@ -600,6 +616,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         return True
 
     def grab_update(self, mouse_event: MouseEvent):
+        """Scroll on grab update."""
         self._scroll_up(self.mouse_dy)
         self._scroll_left(self.mouse_dx)
 
@@ -628,6 +645,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         self._scroll_up(-n)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
+        """Scroll on mouse wheel."""
         if self.scrollwheel_enabled and self.collides_point(mouse_event.position):
             match mouse_event.event_type:
                 case MouseEventType.SCROLL_UP:

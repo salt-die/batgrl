@@ -74,7 +74,7 @@ class BlankLine(block_token.BlockToken):
         return [next(lines)]
 
 
-# Spaces are tokenized so that `BatgrlRenderer.render_inner` wraps at words.
+# Spaces are tokenized so that `_BatgrlRenderer.render_inner` wraps at words.
 class Spaces(span_token.SpanToken):
     pattern = re.compile(r"\b( +)\b")
 
@@ -299,11 +299,10 @@ class _Quote(GridLayout):
                 child.background_color_pair = self.background_color_pair
 
 
-class BatgrlRenderer(BaseRenderer):
+class _BatgrlRenderer(BaseRenderer):
     list_depth: int = 0
     quote_depth: int = 0
     last_token: span_token.SpanToken | block_token.BlockToken | None = None
-    spaces = 0
 
     def __init__(self, width, syntax_highlighting_style):
         super().__init__(BlankLine, Spaces, EmojiCode)
@@ -334,7 +333,6 @@ class BatgrlRenderer(BaseRenderer):
         return GadgetBase(size=(1, 1), is_transparent=True)
 
     def render_spaces(self, token: Spaces) -> Literal[" "]:
-        self.spaces += 1
         return " "
 
     def render_raw_text(self, token: span_token.RawText) -> Text:
@@ -707,9 +705,6 @@ class Markdown(Themable, Gadget):
     r"""
     A markdown gadget.
 
-    Largely a container for other gadgets, but can render a background character or
-    background color pair if given.
-
     Parameters
     ----------
     background_char : NDArray[Char] | str | None, default: None
@@ -740,6 +735,10 @@ class Markdown(Themable, Gadget):
 
     Attributes
     ----------
+    markdown : str
+        The markdown string.
+    syntax_highlighting_style : pygments.style.Style
+        The syntax highlighting style for code blocks.
     background_char : NDArray[Char] | None
         The background character of the gadget.
     background_color_pair : ColorPair | None
@@ -881,10 +880,11 @@ class Markdown(Themable, Gadget):
         self.add_gadgets(self._scroll_view, self._link_hint)
         self.markdown = markdown
         self.syntax_highlighting_style = syntax_highlighting_style
+        """The syntax highlighting style for code blocks."""
 
     @property
-    def markdown(self) -> Document:
-        """A `mistletoe.Document` of the markdown."""
+    def markdown(self) -> str:
+        """The markdown string."""
         return self._markdown
 
     @markdown.setter
@@ -896,10 +896,10 @@ class Markdown(Themable, Gadget):
         if not self.root:
             return
 
-        with BatgrlRenderer(
+        with _BatgrlRenderer(
             self._scroll_view.port_width, self.syntax_highlighting_style
         ) as renderer:
-            rendered = renderer.render(Document(self._markdown))
+            rendered = renderer.render(Document(self.markdown))
 
         self._scroll_view.view = rendered
         self._scroll_view.show_horizontal_bar = rendered.width > self.width
@@ -914,8 +914,10 @@ class Markdown(Themable, Gadget):
         self._build_markdown()
 
     def on_size(self):
+        """Rebuild markdown on resize."""
         self._build_markdown()
 
     def on_add(self):
+        """Build markdown on add."""
         super().on_add()
         self._build_markdown()
