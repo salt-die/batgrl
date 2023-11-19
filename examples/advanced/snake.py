@@ -11,11 +11,11 @@ from random import choice
 
 from batgrl.app import App
 from batgrl.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
-from batgrl.gadgets.animation import Animation
 from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.video_player import VideoPlayer
 
 ASSETS = Path(__file__).parent.parent / "assets"
-SPINNER = ASSETS / "spinner"
+SPINNER = ASSETS / "spinner.gif"
 HEIGHT, WIDTH = 20, 20
 SNAKE_START = HEIGHT // 2, WIDTH // 2
 SNAKE_START_2 = HEIGHT // 2 + 1, WIDTH // 2
@@ -63,9 +63,7 @@ class Snake(Graphics):
         self.current_direction = -1, 0
 
     def _check_neck(self, dy, dx):
-        """
-        Don't allow the head to turn directly into the bit trailing it.
-        """
+        """Prevent head from turning 180 degrees."""
         y, x = self.snake[0]
         if (dy + y, dx + x) == self.snake[1]:
             return self.current_direction
@@ -125,7 +123,9 @@ class SnakeApp(App):
         kwargs = dict(
             size=(HEIGHT // 2, WIDTH), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
-        background = Animation(path=SPINNER, alpha=0.5, **kwargs)
+        background = VideoPlayer(
+            source=SPINNER, alpha=0.5, is_transparent=True, **kwargs
+        )
         background.play()
         snake = Snake(**kwargs)
 

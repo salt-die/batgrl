@@ -1,6 +1,4 @@
-"""
-A raycaster gadget.
-"""
+"""A raycaster gadget."""
 from dataclasses import dataclass, field
 from typing import Literal, Protocol
 
@@ -24,7 +22,6 @@ from .graphics import (
 __all__ = [
     "Camera",
     "Interpolation",
-    "Map",
     "Point",
     "PosHint",
     "PosHintDict",
@@ -39,9 +36,7 @@ __all__ = [
 
 @dataclass(slots=True)
 class Sprite:
-    """
-    A sprite for a raycaster.
-    """
+    """A sprite for a raycaster."""
 
     pos: tuple[float, float]
     """Position of sprite on map."""
@@ -67,44 +62,55 @@ class Sprite:
         self.distance = value @ value
 
     def __lt__(self, other):
-        """
-        Sprites are ordered by their distance to camera.
-        """
+        """Sprites are ordered by their distance to camera."""
         return self.distance > other.distance
 
 
-class Map(Protocol):
-    """
-    Map with non-zero entries indicating walls.
+class Camera:
+    """A camera view."""
 
-    Notes
-    -----
-    Wall value `n` will have nth texture in raycaster's texture array, e.g.,
-    `wall_textures[n - 1]`.
-    """
+    def __init__(
+        self,
+        pos: tuple[float, float] = (0.0, 0.0),
+        theta: float = 0.0,
+        fov: float = 0.66,
+    ):
+        self.pos = np.array(pos, float)
+        self._build_plane(theta, fov)
 
-    ndim: Literal[2]
+    @staticmethod
+    def rotation_matrix(theta: float):
+        """Return a 2-D rotation matrix from a given angle."""
+        x = np.cos(theta)
+        y = np.sin(theta)
+        return np.array([[x, y], [-y, x]], float)
 
-    def __getitem__(self, y, x):
-        """
-        Supports numpy indexing. Returns a non-negative integer.
-        """
+    def _build_plane(self, theta: float, fov: float) -> NDArray[np.float64]:
+        initial_plane = np.array([[1.001, 0.001], [0.0, fov]], float)
+        self._plane = initial_plane @ self.rotation_matrix(theta)
 
+    @property
+    def theta(self) -> float:
+        """Direction of camera in radians."""
+        x2, x1 = self._plane[0]
+        return np.arctan2(x1, x2)
 
-class Camera(Protocol):
-    """
-    A camera view.
+    @theta.setter
+    def theta(self, theta: float):
+        self._build_plane(theta, self.fov)
 
-    Notes
-    -----
-    The renderer expects both `pos` and `plane` be numpy arrays with dtype
-    `float` and shapes (2,) and (2, 2) respectively.
-    """
+    @property
+    def fov(self) -> float:
+        """Field of view of camera."""
+        return (self._plane[1] ** 2).sum() ** 0.5
 
-    pos: NDArray[np.float64]
-    """Position of camera. Array should have shape `(2,)`."""
-    plane: NDArray[np.float64]
-    """Rotation of camera. Array should have shape `(2, 2)`."""
+    @fov.setter
+    def fov(self, fov: float):
+        self._build_plane(self.theta, fov)
+
+    def rotate(self, theta: float):
+        """Rotate camera `theta` radians."""
+        self._plane = self._plane @ self.rotation_matrix(theta)
 
 
 class Texture(Protocol):
@@ -119,14 +125,12 @@ class Texture(Protocol):
 
     shape: tuple[int, int, Literal[4]]  # (height, width, RGBA)
 
-    def __getitem__(self, key):
-        """
-        Supports numpy indexing. Return arrays or views with dtype `np.uint8`.
-        """
+    def __getitem__(self, key) -> NDArray[np.uint8] | np.uint8:
+        """Supports numpy indexing."""
 
 
 class Raycaster(Graphics):
-    """
+    r"""
     A raycaster gadget.
 
     Parameters
@@ -272,7 +276,7 @@ class Raycaster(Graphics):
         True if other is within gadget's bounding box.
     add_gadget(gadget):
         Add a child gadget.
-    add_gadgets(\\*gadgets):
+    add_gadgets(\*gadgets):
         Add multiple child gadgets.
     remove_gadget(gadget):
         Remove a child gadget.
@@ -313,7 +317,7 @@ class Raycaster(Graphics):
     def __init__(
         self,
         *,
-        map: Map,
+        map: NDArray[np.ushort],
         camera: Camera,
         wall_textures: list[Texture] | None,
         light_wall_textures: list[Texture] | None = None,
@@ -392,9 +396,7 @@ class Raycaster(Graphics):
         self._column_distances = np.zeros((w,), dtype=float)
 
     def cast_ray(self, column):
-        """
-        Cast a ray for a given column of the screen.
-        """
+        """Cast a ray for a given column of the screen."""
         camera = self.camera
         camera_pos = camera.pos
         map = self.map
@@ -480,8 +482,6 @@ class Raycaster(Graphics):
         floor = self.floor
 
         if ceiling is None and floor is None:
-            texture[:start, column] = self.ceiling_color
-            texture[end:, column] = self.floor_color
             return
 
         # Buffer views
@@ -511,9 +511,7 @@ class Raycaster(Graphics):
         np.mod(tex_frac, 1.0, out=tex_frac)
 
         # Paint ceiling
-        if ceiling is None:
-            texture[:start, column] = self.ceiling_color
-        else:
+        if ceiling is not None:
             # Note reversed order of texture coordinates from floor
             np.multiply(
                 ceiling.shape[:2], tex_frac[::-1], out=tex_int, casting="unsafe"
@@ -521,16 +519,12 @@ class Raycaster(Graphics):
             texture[:start, column] = ceiling[tex_int[:, 0], tex_int[:, 1]]
 
         # Paint floor
-        if floor is None:
-            texture[end:, column] = self.floor_color
-        else:
+        if floor is not None:
             np.multiply(floor.shape[:2], tex_frac, out=tex_int, casting="unsafe")
             texture[end:, column] = floor[tex_int[:, 0], tex_int[:, 1]]
 
     def cast_sprites(self):
-        """
-        Render all sprites.
-        """
+        """Render all sprites."""
         texture = self.texture[:, ::-1]
         h, w, _ = texture.shape
         half_w = w / 2
@@ -547,7 +541,7 @@ class Raycaster(Graphics):
         sprites.sort()
 
         # Camera Inverse used to calculate transformed position of sprites.
-        cam_inv = np.linalg.inv(-camera.plane)
+        cam_inv = np.linalg.inv(-camera._plane)
 
         # Draw each sprite from furthest to closest.
         for sprite in sprites:
@@ -611,32 +605,25 @@ class Raycaster(Graphics):
             texture[start_y:end_y, columns, :3] = sprite_rgb
 
     def render(self, canvas_view: NDArray[Char], colors_view: NDArray[np.uint8]):
-        camera = self.camera
-        pos_frac = self._pos_frac
-        rotated_angles = self._rotated_angles
-        deltas = self._deltas
-        steps = self._steps
-        sides = self._sides
-        multiply = np.multiply
-        cast_ray = self.cast_ray
-
         # Early calculations on rays can be vectorized:
-        np.dot(self._ray_angles, camera.plane, out=rotated_angles)
-
+        np.dot(self._ray_angles, self.camera._plane, out=self._rotated_angles)
         with np.errstate(divide="ignore"):
-            np.true_divide(1.0, rotated_angles, out=deltas)
-        np.absolute(deltas, out=deltas)
+            np.true_divide(1.0, self._rotated_angles, out=self._deltas)
+        np.absolute(self._deltas, out=self._deltas)
+        np.sign(self._rotated_angles, out=self._steps, casting="unsafe")
+        np.heaviside(self._steps, 1.0, out=self._sides)
+        np.mod(self.camera.pos, 1.0, out=self._pos_frac)
+        np.subtract(self._sides, self._pos_frac, out=self._sides)
+        np.multiply(self._sides, self._steps, out=self._sides)
+        np.multiply(self._sides, self._deltas, out=self._sides)
 
-        np.sign(rotated_angles, out=steps, casting="unsafe")
-
-        np.heaviside(steps, 1.0, out=sides)
-        np.mod(camera.pos, 1.0, out=pos_frac)
-        np.subtract(sides, pos_frac, out=sides)
-        multiply(sides, steps, out=sides)
-        multiply(sides, deltas, out=sides)
+        h = self.texture.shape[0] // 2
+        self.texture[:h, :, :3] = self.ceiling_color
+        self.texture[h:, :, :3] = self.floor_color
+        self.texture[..., 3] = 255
 
         for column in range(self.width):
-            cast_ray(column)
+            self.cast_ray(column)
 
         self.cast_sprites()
 
