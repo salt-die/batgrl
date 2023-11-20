@@ -1,6 +1,4 @@
-"""
-A progress bar gadget.
-"""
+"""A progress bar gadget."""
 import asyncio
 from itertools import chain, cycle
 
@@ -24,7 +22,7 @@ __all__ = [
 
 
 class ProgressBar(Themable, Text):
-    """
+    r"""
     A progress bar gadget.
 
     Setting :attr:`progress` to `None` will start a "loading" animation; otherwise
@@ -35,7 +33,7 @@ class ProgressBar(Themable, Text):
     animation_delay : float, default: 1/60
         Time between loading animation updates.
     is_horizontal : bool, default: True
-        If true, the bar will progress to the right, else the bar will progress upwards.
+        If true, the bar will progress to the right, else upwards.
     default_char : NDArray[Char] | str, default: " "
         Default background character. This should be a single unicode half-width
         grapheme.
@@ -61,13 +59,11 @@ class ProgressBar(Themable, Text):
     Attributes
     ----------
     progress : float | None
-        Current progress as a value between `0.0` and `1.0` or `None. If `None`, then
-        progress bar will start a "loading" animation.
+        Current progress as a value between `0.0` and `1.0` or `None`.
     animation_delay : float
         Time between loading animation updates.
     is_horizontal : bool
-        If true, the bar will progress to the right, else
-        the bar will progress upwards.
+        If true, the bar will progress to the right, else upwards.
     canvas : NDArray[Char]
         The array of characters for the gadget.
     colors : NDArray[np.uint8]
@@ -219,6 +215,11 @@ class ProgressBar(Themable, Text):
 
     @property
     def progress(self) -> float:
+        """
+        Current progress as a value between `0.0` and `1.0` or `None`.
+
+        If progress is `None`, a loading animation will play.
+        """
         return self._progress
 
     @progress.setter
@@ -236,6 +237,7 @@ class ProgressBar(Themable, Text):
 
     @property
     def is_horizontal(self) -> bool:
+        """If true, the bar will progress to the right, else upwards."""
         return self._is_horizontal
 
     @is_horizontal.setter
@@ -290,15 +292,18 @@ class ProgressBar(Themable, Text):
                 await asyncio.sleep(self.animation_delay)
 
     def on_add(self):
+        """Start loading animation on add if progress is None."""
         super().on_add()
-        self.progress = self.progress  # Trigger a repaint by setting property.
+        self.progress = self.progress  # Restart loading animation.
 
     def on_remove(self):
+        """Cancel loading animation on remove."""
         super().on_remove()
         if task := getattr(self, "_loading_task", False):
             task.cancel()
 
     def on_size(self):
+        """Repaint bar on resize."""
         super().on_size()
         self.progress = self.progress  # Trigger a repaint by setting property.
 
