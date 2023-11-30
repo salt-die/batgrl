@@ -198,8 +198,7 @@ class TiledImage(Graphics):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._tile = tile
-        self.on_size()
+        self.tile = tile
 
     @property
     def tile(self):
