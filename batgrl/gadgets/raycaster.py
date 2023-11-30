@@ -68,7 +68,7 @@ class Sprite:
 
 class Camera:
     """
-    A camera view.
+    A raycaster camera.
 
     Parameters
     ----------
