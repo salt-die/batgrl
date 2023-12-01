@@ -327,7 +327,10 @@ class BrailleVideoPlayer(Text):
             elif (seconds_ahead := self._start_time - self._time_delta()) < 0:
                 continue
 
-            await asyncio.sleep(seconds_ahead)
+            try:
+                await asyncio.sleep(seconds_ahead)
+            except asyncio.CancelledError:
+                return
 
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
