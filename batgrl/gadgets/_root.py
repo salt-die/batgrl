@@ -46,7 +46,7 @@ class _Root(Gadget):
         self._resized = True
 
     @property
-    def pos(self) -> Point:
+    def _pos(self) -> Point:
         return Point(0, 0)
 
     @property
