@@ -352,7 +352,7 @@ class Slider(Grabbable, Text):
     @handle_char.setter
     def handle_char(self, char: NDArray[Char] | str):
         self._handle_char = coerce_char(char, style_char("█"))
-        self._handle.canvas[:] = char
+        self._handle.canvas[:] = self._handle_char
 
     @property
     def fill_color(self) -> Color:
