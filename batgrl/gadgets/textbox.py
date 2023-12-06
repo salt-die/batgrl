@@ -345,6 +345,8 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     def on_blur(self):
         """Hide cursor on blur."""
         self._cursor.is_enabled = False
+        self.unselect()
+        self.cursor = self.cursor
 
     def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
         """Render visible region of gadget into root's `canvas` and `colors` arrays."""
