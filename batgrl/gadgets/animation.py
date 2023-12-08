@@ -425,7 +425,6 @@ class Animation(GadgetBase):
             A new animation gadget.
         """
         animation = cls(
-            frame_durations=frame_durations,
             loop=loop,
             reverse=reverse,
             alpha=alpha,
@@ -514,7 +513,6 @@ class Animation(GadgetBase):
             A new animation gadget.
         """
         animation = cls(
-            frame_durations=frame_durations,
             loop=loop,
             reverse=reverse,
             alpha=alpha,

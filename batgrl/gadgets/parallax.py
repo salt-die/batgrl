@@ -403,7 +403,6 @@ class Parallax(GadgetBase):
             A new parallax gadget.
         """
         parallax = cls(
-            speeds=speeds,
             alpha=alpha,
             interpolation=interpolation,
             is_transparent=is_transparent,
