@@ -273,6 +273,7 @@ Finally, add the ball to the game field.
         divider,
         left_score_label,
         right_score_label,
+        ball,
     )
     self.add_gadget(game_field)
 
