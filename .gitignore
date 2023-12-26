@@ -2,7 +2,3 @@
 *.egg-info
 dist/
 .vscode/
-TODO.md
-
-examples/_old
-garage/
