@@ -258,7 +258,6 @@ class BarChart(GadgetBase):
             show_horizontal_bar=False,
             show_vertical_bar=False,
             allow_vertical_scroll=False,
-            disable_ptf=True,
         )
         self._scrollview.view = self._bars
         self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})

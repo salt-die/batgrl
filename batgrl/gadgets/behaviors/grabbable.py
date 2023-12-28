@@ -23,8 +23,8 @@ class Grabbable:
     ----------
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
-        If true, gadget will not be pulled to front when grabbed.
+    ptf_on_grab : bool, default: False
+        If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: MouseButton.LEFT
         Mouse button used for grabbing.
 
@@ -32,8 +32,8 @@ class Grabbable:
     ----------
     is_grabbable : bool
         If false, grabbable behavior is disabled.
-    disable_ptf : bool
-        If true, gadget will not be pulled to front when grabbed.
+    ptf_on_grab : bool
+        If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
@@ -59,14 +59,14 @@ class Grabbable:
         self,
         *,
         is_grabbable: bool = True,
-        disable_ptf: bool = False,
+        ptf_on_grab: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.is_grabbable = is_grabbable
-        self.disable_ptf = disable_ptf
+        self.ptf_on_grab = ptf_on_grab
         self.mouse_button = mouse_button
         self._is_grabbed = False
 
@@ -129,7 +129,7 @@ class Grabbable:
         """
         self._is_grabbed = True
 
-        if not self.disable_ptf:
+        if self.ptf_on_grab:
             self.pull_to_front()
 
     def ungrab(self, mouse_event: MouseEvent):

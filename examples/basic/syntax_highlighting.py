@@ -109,7 +109,6 @@ class SyntaxApp(App):
                 "width_hint": 1.0,
                 "height_offset": -2,
             },
-            disable_ptf=True,
             show_horizontal_bar=False,
         )
         sv.view = text

@@ -321,17 +321,10 @@ class ColorPicker(Themable, GadgetBase):
         )
 
         self.shades = _ShadeSelector(
-            pos=(1, 1),
-            color_swatch=self.color_swatch,
-            label=self.label,
-            disable_ptf=True,
+            pos=(1, 1), color_swatch=self.color_swatch, label=self.label
         )
 
-        self.hues = _HueSelector(
-            pos=(1, 1),
-            shade_selector=self.shades,
-            disable_ptf=True,
-        )
+        self.hues = _HueSelector(pos=(1, 1), shade_selector=self.shades)
 
         self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
         self._container.add_gadgets(

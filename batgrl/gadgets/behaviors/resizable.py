@@ -7,7 +7,7 @@ __all__ = ["Resizable"]
 
 class _Border(Grabbable, Graphics):
     def __init__(self, y_edge, x_edge):
-        super().__init__(size=(1, 2), disable_ptf=True)
+        super().__init__(size=(1, 2))
         self.y_edge = y_edge
         self.x_edge = x_edge
 

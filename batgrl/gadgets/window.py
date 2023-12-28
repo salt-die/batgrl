@@ -37,7 +37,6 @@ class _TitleBar(Grabbable, Gadget):
         super().__init__(
             pos=(1, 2),
             size=(1, 2),
-            disable_ptf=True,
             background_char=" ",
             size_hint={"width_hint": 1.0, "width_offset": -4},
         )

@@ -314,7 +314,6 @@ class LinePlot(GadgetBase):
             show_vertical_bar=False,
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
-            disable_ptf=True,
         )
         self._scrollview.view = self._traces
 

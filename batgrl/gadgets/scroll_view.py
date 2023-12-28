@@ -224,8 +224,8 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         Allow scrolling with arrow keys.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
-        If true, gadget will not be pulled to front when grabbed.
+    ptf_on_grab : bool, default: False
+        If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: MouseButton.LEFT
         Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
@@ -271,8 +271,8 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         Width of view.
     is_grabbable : bool
         If false, grabbable behavior is disabled.
-    disable_ptf : bool
-        If true, gadget will not be pulled to front when grabbed.
+    ptf_on_grab : bool
+        If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
@@ -396,7 +396,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
         is_grabbable: bool = True,
-        disable_ptf: bool = False,
+        ptf_on_grab: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -408,7 +408,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     ):
         super().__init__(
             is_grabbable=is_grabbable,
-            disable_ptf=disable_ptf,
+            ptf_on_grab=ptf_on_grab,
             mouse_button=mouse_button,
             size=size,
             pos=pos,

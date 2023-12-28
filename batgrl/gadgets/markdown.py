@@ -871,7 +871,6 @@ class Markdown(Themable, Gadget):
                 "min_width": MIN_MARKDOWN_WIDTH,
             },
             show_horizontal_bar=False,
-            disable_ptf=True,
         )
         self._link_hint = _BorderedContent(
             default_color_pair=Themable.color_theme.markdown_title, border="outer"

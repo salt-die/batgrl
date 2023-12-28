@@ -20,8 +20,8 @@ class Movable(Grabbable):
         Allow horizontal translation.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
-    disable_ptf : bool, default: False
-        If true, gadget will not be pulled to front when grabbed.
+    ptf_on_grab : bool, default: False
+        If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: MouseButton.LEFT
         Mouse button used for grabbing.
 
@@ -35,8 +35,8 @@ class Movable(Grabbable):
         Allow horizontal translation.
     is_grabbable : bool
         If false, grabbable behavior is disabled.
-    disable_ptf : bool
-        If true, gadget will not be pulled to front when grabbed.
+    ptf_on_grab : bool
+        If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
@@ -65,13 +65,13 @@ class Movable(Grabbable):
         allow_vertical_translation=True,
         allow_horizontal_translation=True,
         is_grabbable: bool = True,
-        disable_ptf: bool = False,
+        ptf_on_grab: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
         **kwargs,
     ):
         super().__init__(
             is_grabbable=is_grabbable,
-            disable_ptf=disable_ptf,
+            ptf_on_grab=ptf_on_grab,
             mouse_button=mouse_button,
             **kwargs,
         )
