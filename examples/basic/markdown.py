@@ -81,11 +81,6 @@ class MarkdownApp(App):
             markdown=MARKDOWN_TEXT, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
         self.add_gadget(markdown)
-        import sys
-
-        for gadget in self.root.walk():
-            if gadget.width > 120:
-                print(gadget, gadget.children, file=sys.stderr)
 
 
 if __name__ == "__main__":
