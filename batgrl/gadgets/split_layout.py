@@ -30,25 +30,17 @@ AGRAY = AColor(127, 127, 127, 127)
 
 class _Handle(Grabbable, Graphics):
     def __init__(self, size_hint):
-        super().__init__(
-            size=(1, 1),
-            size_hint=size_hint,
-            is_visible=False,
-        )
+        super().__init__(size=(2, 2), size_hint=size_hint, alpha=0)
 
     def on_mouse(self, mouse_event):
-        self.is_visible = (
-            self.is_grabbable
-            and self.is_grabbed
-            or self.collides_point(mouse_event.position)
-        )
+        self.alpha = float(self.is_grabbed or self.collides_point(mouse_event.position))
         return super().on_mouse(mouse_event)
 
 
 class _HSplitHandle(_Handle):
     def on_size(self):
         super().on_size()
-        self.texture[-1] = 0
+        self.texture[[0, -1]] = 0
 
     def grab_update(self, mouse_event):
         if self.parent.anchor_top_pane:
@@ -249,7 +241,8 @@ class HSplitLayout(GadgetBase):
         self.handle_color = handle_color
 
         def adjust():
-            self.bottom_pane.top = self.handle.top = self.top_pane.bottom
+            self.bottom_pane.top = self.top_pane.bottom
+            self.handle.top = self.top_pane.bottom - 1
 
         self.handle.subscribe(self.top_pane, "size", adjust)
 
@@ -269,8 +262,7 @@ class HSplitLayout(GadgetBase):
     @handle_color.setter
     def handle_color(self, handle_color: AColor):
         self.handle.default_color = handle_color
-        self.handle.texture[:] = handle_color
-        self.handle.texture[-1] = 0
+        self.handle.texture[:-1] = handle_color
 
     @property
     def min_split_height(self) -> int:
@@ -505,7 +497,8 @@ class VSplitLayout(GadgetBase):
         self.handle_color = handle_color
 
         def adjust():
-            self.right_pane.left = self.handle.left = self.left_pane.right
+            self.right_pane.left = self.left_pane.right
+            self.handle.left = self.left_pane.right - 1
 
         self.handle.subscribe(self.left_pane, "size", adjust)
 
