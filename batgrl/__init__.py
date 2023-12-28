@@ -1,3 +1,3 @@
 """batgrl, the badass terminal graphics library."""
 
-__version__ = "0.31.1"
+__version__ = "0.32.0"

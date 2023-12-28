@@ -6,7 +6,6 @@ from numpy.typing import NDArray
 from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
 from pygments.style import Style
-from wcwidth import wcswidth
 
 from ..colors import WHITE_ON_BLACK, Color, ColorPair, Neptune
 from .gadget_base import (
@@ -27,9 +26,18 @@ from .gadget_base import (
     style_char,
     subscribable,
 )
-from .text_tools import add_text, parse_batgrl_md, text_to_chars, write_chars_to_canvas
+from .text_tools import (
+    add_text,
+    char_width,
+    parse_batgrl_md,
+    str_width,
+    text_to_chars,
+    write_chars_to_canvas,
+)
 
 __all__ = [
+    "char_width",
+    "str_width",
     "Anchor",
     "Border",
     "Char",
@@ -378,7 +386,7 @@ class Text(GadgetBase):
                 if len(line) == 0:
                     continue
 
-                end = x + wcswidth(line)
+                end = x + str_width(line)
                 if token_style["color"]:
                     self.colors[y, x:end, :3] = Color.from_hex(token_style["color"])
                 if token_style["bgcolor"]:

@@ -8,9 +8,9 @@ from pathlib import Path
 from sys import stdout
 
 import numpy as np
-from wcwidth import wcwidth
 
 from ...gadgets._root import _Root
+from ...gadgets.text_tools import char_width
 from ...geometry import Size
 
 MAX_MEM_USAGE = 5_000_000
@@ -164,21 +164,28 @@ class Vt100_Output:
 
         write("\x1b7")  # Save cursor
         for y, x, style, color_pair in zip(ys, xs, canvas[ys, xs], colors[ys, xs]):
-            char, bold, italic, underline, strikethrough, overline = style
+            char, bold, italic, underline, strikethrough, overline = style.item()
+
+            # The following conditions ensure full-width glyphs "have enough room" else
+            # they are not painted.
             if char == "":
                 # `""` is used to indicate the character before it is a full-width
                 # character. If this char is appearing in the diffs, we probably need to
                 # repaint the full-width character before it, but if the character
                 # before it isn't full-width paint whitespace instead.
-                if x > 0 and wcwidth(canvas["char"][y, x - 1]) == 2:
+                if x > 0 and char_width(canvas["char"][y, x - 1].item()) == 2:
                     x -= 1
                     char, bold, italic, underline, strikethrough, overline = canvas[
                         y, x
-                    ]
+                    ].item()
                     color_pair = colors[y, x]
                 else:
                     char = " "
-            elif x + 1 < w and canvas["char"][y, x + 1] != "" and wcwidth(char) == 2:
+            elif (
+                x + 1 < w
+                and canvas["char"][y, x + 1].item() != ""
+                and char_width(char) == 2
+            ):
                 # If the character is full-width, but the following character isn't
                 # `""`, assume the full-width character is being clipped, and paint
                 # whitespace instead.

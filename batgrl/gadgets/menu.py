@@ -4,7 +4,6 @@ from inspect import signature
 from typing import Optional, Union
 
 from numpy.typing import NDArray
-from wcwidth import wcswidth
 
 from ..colors import ColorPair
 from ..io import MouseEventType
@@ -25,7 +24,7 @@ from .gadget import (
     SizeHintDict,
 )
 from .grid_layout import GridLayout
-from .text import Text
+from .text import Text, str_width
 
 __all__ = [
     "Menu",
@@ -273,11 +272,11 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
 
         self._item_disabled = item_disabled
 
-        self.left_label = Text(size=(1, wcswidth(left_label)))
+        self.left_label = Text(size=(1, str_width(left_label)))
         self.left_label.add_str(left_label)
 
         self.right_label = Text(
-            size=(1, wcswidth(right_label)),
+            size=(1, str_width(right_label)),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
         )
         self.right_label.add_str(right_label)
@@ -806,8 +805,8 @@ class Menu(GridLayout):
         height = len(menu)
         width = max(
             (
-                wcswidth(right_label)
-                + wcswidth(left_label)
+                str_width(right_label)
+                + str_width(left_label)
                 + 7
                 + isinstance(callable_or_dict, dict) * 2
             )
@@ -864,7 +863,7 @@ class Menu(GridLayout):
 class _MenuButton(Themable, ToggleButtonBehavior, Text):
     def __init__(self, label, menu, group):
         super().__init__(
-            size=(1, wcswidth(label) + 2), group=group, allow_no_selection=True
+            size=(1, str_width(label) + 2), group=group, allow_no_selection=True
         )
         self.add_str(f" {label} ")
         self._menu = menu
@@ -1127,7 +1126,7 @@ class MenuBar(GridLayout):
         menubar = cls(
             grid_rows=1,
             grid_columns=len(menus),
-            size=(1, sum(wcswidth(menu_name) + 2 for menu_name, _ in menus)),
+            size=(1, sum(str_width(menu_name) + 2 for menu_name, _ in menus)),
             pos=pos,
         )
 

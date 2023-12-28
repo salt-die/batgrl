@@ -3,8 +3,6 @@ import platform
 from collections.abc import Callable
 from pathlib import Path
 
-from wcwidth import wcswidth
-
 from .gadget_base import (
     GadgetBase,
     Point,
@@ -15,6 +13,7 @@ from .gadget_base import (
     SizeHintDict,
 )
 from .scroll_view import ScrollView
+from .text_tools import str_width
 from .tree_view import TreeView, TreeViewNode
 
 __all__ = [
@@ -114,7 +113,7 @@ class _FileView(TreeView):
 
         max_width = self.parent.port_width if self.parent else 1
         for y, node in enumerate(it):
-            max_width = max(max_width, wcswidth(node.label))
+            max_width = max(max_width, str_width(node.label))
             node.y = y
             self.add_gadget(node)
         self.size = y + 1, max_width

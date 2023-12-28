@@ -2,7 +2,6 @@
 from collections.abc import Callable
 
 from numpy.typing import NDArray
-from wcwidth import wcswidth
 
 from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
@@ -17,7 +16,7 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
 )
-from .text import Text
+from .text import Text, str_width
 
 __all__ = [
     "Button",
@@ -244,7 +243,7 @@ class Button(Themable, ButtonBehavior, Gadget):
     @label.setter
     def label(self, label: str):
         self._label = label
-        self._label_gadget.size = 1, wcswidth(label)
+        self._label_gadget.size = 1, str_width(label)
         self._label_gadget.apply_hints()
         self._label_gadget.add_str(label)
 

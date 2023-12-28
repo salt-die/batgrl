@@ -1,8 +1,6 @@
 """A bar chart gadget."""
 from numbers import Real
 
-from wcwidth import wcswidth
-
 from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
 from .gadget import Gadget
 from .gadget_base import (
@@ -17,7 +15,7 @@ from .gadget_base import (
 )
 from .scroll_view import ScrollView
 from .text import Text, add_text
-from .text_tools import smooth_vertical_bar
+from .text_tools import smooth_vertical_bar, str_width
 
 __all__ = [
     "BarChart",
@@ -277,7 +275,7 @@ class BarChart(GadgetBase):
         self._show_grid_lines = show_grid_lines
         self._grid_line_color = grid_line_color
         if y_label is not None:
-            self._y_label_gadget.size = wcswidth(y_label), 1
+            self._y_label_gadget.size = str_width(y_label), 1
             add_text(self._y_label_gadget.canvas[:, 0], y_label)
         self.chart_color_pair = chart_color_pair
 
@@ -308,7 +306,7 @@ class BarChart(GadgetBase):
         self._y_label = y_label
 
         if y_label is not None:
-            self._y_label_gadget.size = wcswidth(y_label), 1
+            self._y_label_gadget.size = str_width(y_label), 1
             add_text(self._y_label_gadget.canvas[:, 0], y_label)
 
         self.build_chart()
@@ -326,7 +324,7 @@ class BarChart(GadgetBase):
         self._y_label_gadget.top = h // 2 - self._y_label_gadget.height // 2
 
         nbars = len(self.data)
-        min_bar_width = max(map(wcswidth, self.data))
+        min_bar_width = max(map(str_width, self.data))
         bars_width = max(
             BAR_SPACING + (min_bar_width + BAR_SPACING) * nbars,
             sv_width,

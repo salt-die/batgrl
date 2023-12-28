@@ -1,6 +1,5 @@
 """A movable, resizable window gadget."""
 import numpy as np
-from wcwidth import wcswidth
 
 from ..colors import TRANSPARENT, AColor
 from .behaviors.focusable import Focusable
@@ -19,7 +18,7 @@ from .gadget import (
 )
 from .gadget_base import GadgetBase
 from .graphics import Graphics, Interpolation
-from .text import Text
+from .text import Text, str_width
 
 __all__ = [
     "Interpolation",
@@ -318,7 +317,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     @resize_min_width.setter
     def resize_min_width(self, min_width: int | None):
-        w = 6 + wcswidth(self._title)
+        w = 6 + str_width(self._title)
         if min_width is None:
             self._resize_min_width = w
         else:
@@ -362,7 +361,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
     @title.setter
     def title(self, title: str):
         self._title = title
-        self._titlebar._label.width = wcswidth(title)
+        self._titlebar._label.width = str_width(title)
         self._titlebar._label.add_str(title)
         self.resize_min_width = self.resize_min_width
 

@@ -5,8 +5,8 @@ import numpy as np
 import pygame as pg
 import pygame.freetype as ft
 from batgrl.gadgets._root import _Root
+from batgrl.gadgets.text_tools import char_width
 from batgrl.geometry import Size
-from wcwidth import wcwidth
 
 from . import FONT_FULL_WIDTH, FONT_HEIGHT, FONT_WIDTH
 
@@ -65,11 +65,15 @@ class PygameOutput:
             char, bold, italic, underline, strikethrough, overline = style
 
             if char == "":
-                if x == 0 or wcwidth(canvas["char"][y, x - 1]) != 2:
+                if x == 0 or char_width(canvas["char"][y, x - 1].item()) != 2:
                     char = " "
                 else:
                     continue
-            elif x + 1 < w and canvas["char"][y, x + 1] != "" and wcwidth(char) == 2:
+            elif (
+                x + 1 < w
+                and canvas["char"][y, x + 1].item() != ""
+                and char_width(char.item()) == 2
+            ):
                 char = " "
 
             if ord(char) >= 0x1F000:  # Heuristic for emoji

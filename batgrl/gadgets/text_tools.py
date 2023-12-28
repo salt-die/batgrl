@@ -1,12 +1,17 @@
 """Tools for text."""
+from bisect import bisect
+from functools import lru_cache
+from operator import itemgetter
+
 import numpy as np
 from numpy.typing import NDArray
-from wcwidth import wcswidth, wcwidth
 
 from ..geometry import Size
 from ._batgrl_markdown import find_md_tokens
+from ._char_widths import CHAR_WIDTHS
 
 __all__ = [
+    "char_width",
     "is_word_char",
     "Char",
     "style_char",
@@ -20,6 +25,25 @@ __all__ = [
     "smooth_vertical_bar",
     "smooth_horizontal_bar",
 ]
+
+
+@lru_cache(maxsize=1024)
+def char_width(char: str) -> int:
+    """Return the column width of a character."""
+    o = ord(char)
+    i = bisect(CHAR_WIDTHS, o, key=itemgetter(0))
+    if i == 0:
+        return 1
+    _, high, width = CHAR_WIDTHS[i - 1]
+    if o <= high:
+        return width
+    return 1
+
+
+@lru_cache(maxsize=256)
+def str_width(chars: str) -> int:
+    """Return the total column width of a string."""
+    return sum(map(char_width, chars))
 
 
 def is_word_char(char: str) -> bool:
@@ -121,13 +145,13 @@ def coerce_char(
     NDArray[Char] | None
         The coerced Char (or None).
     """
-    if isinstance(char, str) and len(char) > 0 and wcwidth(char[0]) == 1:
+    if isinstance(char, str) and len(char) > 0 and char_width(char[0]) == 1:
         return style_char(char[0])
     if (
         isinstance(char, np.ndarray)
         and char.dtype == Char
         and char.shape == ()
-        and wcwidth(char["char"][()]) == 1
+        and char_width(char["char"].item()) == 1
     ):
         return char
     return default
@@ -172,17 +196,21 @@ def parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
     line_width = max_width = 0
 
     for char in chars:
-        if char["char"][()] == "\n":
+        ch = char["char"].item()
+        if ch == "":
+            continue
+
+        if ch == "\n":
             lines.append(line)
             line = []
             if line_width > max_width:
                 max_width = line_width
             line_width = 0
         else:
-            char_width = wcswidth(char["char"][()])
-            if char_width > 0:
+            width = char_width(ch)
+            line_width += width
+            if width > 0:
                 line.append(char)
-                line_width += char_width
 
     lines.append(line)
     if line_width > max_width:
@@ -211,9 +239,8 @@ def text_to_chars(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
     max_width = 0
     for line in lines:
         for char in line:
-            char_width = wcswidth(char["char"][()])
-            if char_width > 0:
-                line_width += char_width
+            width = char_width(char["char"].item())
+            line_width += width
         if line_width > max_width:
             max_width = line_width
         line_width = 0
@@ -241,8 +268,8 @@ def write_chars_to_canvas(lines: list[list[NDArray[Char]]], canvas: NDArray[Char
             if i >= columns:
                 break
 
-            width = wcswidth(char["char"][()])
-            if width <= 0:
+            width = char_width(char["char"].item())
+            if width == 0:
                 continue
 
             if width == 2 and i + 1 < columns:

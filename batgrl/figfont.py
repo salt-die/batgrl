@@ -27,7 +27,8 @@ from pathlib import Path
 
 import numpy as np
 from numpy.typing import NDArray
-from wcwidth import wcswidth, wcwidth
+
+from .gadgets.text_tools import char_width, str_width
 
 __all__ = ["FullLayout", "FIGFont"]
 
@@ -225,15 +226,13 @@ class FIGFont:
             if len(char_lines) < height:
                 return None
 
-            width = max(wcswidth(line) for line in char_lines)
-            if width < 0:
-                return None
+            width = max(str_width(line) for line in char_lines)
 
             char = np.full((height, width), " ")
             for i, line in enumerate(char_lines):
                 j = 0
                 for subchar in line:
-                    cwidth = wcwidth(subchar)
+                    cwidth = char_width(subchar)
                     if cwidth == 0:
                         continue
 

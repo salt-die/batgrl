@@ -7,8 +7,6 @@ from code import InteractiveInterpreter
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 
-from wcwidth import wcswidth
-
 from ..io import Key, KeyEvent, Mods, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
@@ -23,7 +21,7 @@ from .gadget_base import (
     SizeHintDict,
 )
 from .scroll_view import ScrollView
-from .text import Text
+from .text import Text, str_width
 from .textbox import Textbox
 
 __all__ = ["Console"]
@@ -484,7 +482,7 @@ class Console(Themable, Focusable, GadgetBase):
 
         self._container.width = self._min_line_length
         for i, line in enumerate(lines):
-            line_width = wcswidth(line)
+            line_width = str_width(line)
             if line_width > self._container.width:
                 self._min_line_length = line_width
                 self._container.width = line_width

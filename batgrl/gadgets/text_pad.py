@@ -1,6 +1,4 @@
 """A text-pad gadget for multiline editable text."""
-from wcwidth import wcswidth
-
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
@@ -17,7 +15,7 @@ from .gadget_base import (
 )
 from .scroll_view import ScrollView
 from .text import Text
-from .text_tools import is_word_char
+from .text_tools import is_word_char, str_width
 
 __all__ = [
     "Point",
@@ -473,7 +471,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         lines = text.split("\n")  # DO NOT USE `splitlines`.
         if len(lines) == 1:
             [line] = lines
-            width_line = wcswidth(line)
+            width_line = str_width(line)
 
             ll[y] += width_line
             if ll[y] >= pad.width:
@@ -486,17 +484,17 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         else:
             first, *lines, last = lines
             newlines = len(lines) + 1
-            width_last = wcswidth(last)
+            width_last = str_width(last)
             last_y = y + newlines
 
             pad.height += newlines
             pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
             pad.canvas[y, x : ll[y]] = pad.default_char
 
-            ll[y] = x + wcswidth(first)
+            ll[y] = x + str_width(first)
             for i, line in enumerate(lines, start=y + 1):
-                ll.insert(i, wcswidth(line))
-            ll.insert(last_y, width_last + wcswidth("".join(line_remaining["char"])))
+                ll.insert(i, str_width(line))
+            ll.insert(last_y, width_last + str_width("".join(line_remaining["char"])))
 
             max_width = max(ll)
             if max_width >= pad.width:
@@ -529,7 +527,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             text_before_cursor = "".join(self._pad.canvas["char"][y, :x])
             nchars_before_cursor = len(text_before_cursor)
             if n <= nchars_before_cursor:
-                x = wcswidth(text_before_cursor[:-n])
+                x = str_width(text_before_cursor[:-n])
                 break
 
             if y == 0:
@@ -553,7 +551,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             )
             nchars_after_cursor = len(text_after_cursor)
             if n <= nchars_after_cursor:
-                x += wcswidth(text_after_cursor[:n])
+                x += str_width(text_after_cursor[:n])
                 break
 
             if y == self.end_text_point.y:

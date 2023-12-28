@@ -2,7 +2,6 @@
 from collections.abc import Callable, Hashable
 
 from numpy.typing import NDArray
-from wcwidth import wcswidth
 
 from ..colors import ColorPair
 from .behaviors.themable import Themable
@@ -21,7 +20,7 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
 )
-from .text import Text
+from .text import Text, str_width
 
 __all__ = [
     "ButtonState",
@@ -300,7 +299,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
                 prefix = TOGGLE_ON
 
         text = prefix + label
-        self._label_gadget.size = 1, wcswidth(text)
+        self._label_gadget.size = 1, str_width(text)
         self._label_gadget.apply_hints()
         self._label_gadget.add_str(text)
 

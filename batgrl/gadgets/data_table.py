@@ -5,8 +5,6 @@ from enum import Enum
 from itertools import count, islice
 from typing import Literal, Protocol, TypeVar
 
-from wcwidth import wcswidth
-
 from ..io import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
@@ -21,7 +19,7 @@ from .gadget_base import (
 )
 from .grid_layout import GridLayout
 from .scroll_view import ScrollView
-from .text import Text, add_text
+from .text import Text, add_text, str_width
 
 __all__ = [
     "ColumnStyle",
@@ -116,7 +114,7 @@ class _SortState(str, Enum):
 
 _SORT_INDICATOR_SPACING = 1
 """Spaces between column label text and sort indicator."""
-_SORT_INDICATOR_WIDTH = wcswidth(_SortState.NOT_SORTED.value)
+_SORT_INDICATOR_WIDTH = str_width(_SortState.NOT_SORTED.value)
 """Character width of sort indicator. (Indicator values should be same width.)"""
 _ALIGN_FORMATTER = {
     "center": "^",
@@ -158,7 +156,7 @@ class _ColumnLabel(_CellBase):
         """Minimum allowed height of cells."""
         self.cell_min_width = max(
             (
-                max(wcswidth(line) for line in lines)
+                max(str_width(line) for line in lines)
                 + _SORT_INDICATOR_SPACING  # label width
                 + _SORT_INDICATOR_WIDTH
                 + 2 * self.style.padding
@@ -259,7 +257,7 @@ class _DataCell(_CellBase):
         """Minimum allowed height of cell."""
         self.cell_min_width = max(
             (
-                max(wcswidth(line) for line in lines)
+                max(str_width(line) for line in lines)
                 + 2 * self.style.padding  # width of rendered data
             ),
             self.style.min_width,
