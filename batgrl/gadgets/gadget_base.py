@@ -37,7 +37,12 @@ __all__ = [
 
 
 def round_down(n: float) -> int:
-    """Like the built-in `round`, but always rounds down."""
+    """
+    Like the built-in `round`, but always rounds down.
+
+    This is used instead of `round` so that small changes in gadget geometry don't cause
+    the gadget to "jump" around when hints are applied.
+    """
     i, r = divmod(n, 1)
     if r <= 0.5:
         return int(i)
@@ -172,11 +177,14 @@ class PosHint(_Hint):
         """The y-coordinate of the anchor."""
         if isinstance(self.anchor, str):
             return _ANCHOR_TO_POS[self.anchor][0]
+        return self.anchor[0]
 
     @y_anchor.setter
     def y_anchor(self, y_anchor: float):
         if isinstance(self.anchor, str):
             x_anchor = _ANCHOR_TO_POS[self.anchor][1]
+        else:
+            x_anchor = self.anchor[1]
         self.anchor = y_anchor, x_anchor
 
     @property
@@ -184,11 +192,14 @@ class PosHint(_Hint):
         """The x-coordinate of the anchor."""
         if isinstance(self.anchor, str):
             return _ANCHOR_TO_POS[self.anchor][1]
+        return self.anchor[1]
 
     @x_anchor.setter
     def x_anchor(self, x_anchor: float):
         if isinstance(self.anchor, str):
             y_anchor = _ANCHOR_TO_POS[self.anchor][0]
+        else:
+            y_anchor = self.anchor[0]
         self.anchor = x_anchor, y_anchor
 
 
