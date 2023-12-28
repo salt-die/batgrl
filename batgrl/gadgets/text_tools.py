@@ -30,13 +30,18 @@ __all__ = [
 @lru_cache(maxsize=1024)
 def char_width(char: str) -> int:
     """Return the column width of a character."""
-    o = ord(char)
-    i = bisect(CHAR_WIDTHS, o, key=itemgetter(0))
+    if char == "":
+        return 0
+
+    char_ord = ord(char)
+    i = bisect(CHAR_WIDTHS, char_ord, key=itemgetter(0))
     if i == 0:
         return 1
+
     _, high, width = CHAR_WIDTHS[i - 1]
-    if o <= high:
+    if char_ord <= high:
         return width
+
     return 1
 
 
