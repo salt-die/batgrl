@@ -12,9 +12,9 @@ The base gadget is little more than a container for other gadgets. Some other mo
 gadgets include:
 * `Pane`, a gadget with a background color. An `alpha` attribute can modify its transparency.
 * `Graphics`, a gadget for arbitrary RGBA textures.
-* `Text`, the most general gadget. Its content is represented by a NumPy array of cells.
-  The `Cell` dtype represents all the properties a terminal character can have such as its
-  character, whether it's bold, or the color of its foreground.
+* `Text`, the most general gadget. Its state is an array of cells where each cell carries
+attributes a terminal character can have such as its character, whether it's bold, or the
+color of its foreground.
 
 Size and Pos Hints
 ------------------

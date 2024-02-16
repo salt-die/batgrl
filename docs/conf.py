@@ -1,3 +1,4 @@
+"""Sphinx documentation builder configuration."""
 from datetime import datetime
 
 from batgrl import __version__

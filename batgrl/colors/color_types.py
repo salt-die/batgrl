@@ -144,14 +144,86 @@ class AColor(NamedTuple):
 
 
 class ColorPair(TypedDict):
-    """A foreground and background color."""
+    """
+    A foreground and background hexcode.
+
+    Methods
+    -------
+    clear():
+        Remove all items from the dictionary.
+    copy():
+        Return a shallow copy of the dictionary.
+    fromkeys(iterable, value):
+        Create a new dictionary with keys from iterable and values set to value.
+    get(key, default):
+        Return the value for key if key is in the dictionary, else default. If default
+        is not given, it defaults to None, so that this method never raises a KeyError.
+    items():
+        Return a new view of the dictionary’s items ((key, value) pairs). See the
+        documentation of view objects.
+    keys():
+        Return a new view of the dictionary’s keys. See the documentation of view
+        objects.
+    pop(key, default):
+        If key is in the dictionary, remove it and return its value, else return
+        default. If default is not given and key is not in the dictionary, a KeyError is
+        raised.
+    popitem():
+        Remove and return a (key, value) pair from the dictionary. Pairs are returned in
+        LIFO order.
+    setdefault(key, default):
+        If key is in the dictionary, return its value. If not, insert key with a value
+        of default and return default. default defaults to None.
+    update(other):
+        Update the dictionary with the key/value pairs from other, overwriting existing
+        keys. Return None.
+    values():
+        Return a new view of the dictionary’s values. See the documentation of view
+        objects.
+    """
 
     fg: Hexcode
     bg: Hexcode
 
 
 class ColorTheme(TypedDict, total=False):
-    """Colors for themable gadgets."""
+    """
+    Colors for themable gadgets.
+
+    Methods
+    -------
+    clear():
+        Remove all items from the dictionary.
+    copy():
+        Return a shallow copy of the dictionary.
+    fromkeys(iterable, value):
+        Create a new dictionary with keys from iterable and values set to value.
+    get(key, default):
+        Return the value for key if key is in the dictionary, else default. If default
+        is not given, it defaults to None, so that this method never raises a KeyError.
+    items():
+        Return a new view of the dictionary’s items ((key, value) pairs). See the
+        documentation of view objects.
+    keys():
+        Return a new view of the dictionary’s keys. See the documentation of view
+        objects.
+    pop(key, default):
+        If key is in the dictionary, remove it and return its value, else return
+        default. If default is not given and key is not in the dictionary, a KeyError is
+        raised.
+    popitem():
+        Remove and return a (key, value) pair from the dictionary. Pairs are returned in
+        LIFO order.
+    setdefault(key, default):
+        If key is in the dictionary, return its value. If not, insert key with a value
+        of default and return default. default defaults to None.
+    update(other):
+        Update the dictionary with the key/value pairs from other, overwriting existing
+        keys. Return None.
+    values():
+        Return a new view of the dictionary’s values. See the documentation of view
+        objects.
+    """
 
     primary: ColorPair
     text_pad_line_highlight: ColorPair
