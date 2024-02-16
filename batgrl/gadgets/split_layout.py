@@ -1,9 +1,8 @@
 """Draggable horizontal and vertical split layouts."""
 from ..colors import AColor
 from .behaviors.grabbable import Grabbable
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -57,7 +56,7 @@ class _VSplitHandle(_Handle):
             self.parent.split_col -= self.mouse_dx
 
 
-class HSplitLayout(GadgetBase):
+class HSplitLayout(Gadget):
     r"""
     A horizontal split layout. Add gadgets to the :attr:`top_pane` or
     :attr:`bottom_pane`, e.g., ``my_hsplit.top_pane.add_gadget(my_gadget)``.
@@ -86,7 +85,7 @@ class HSplitLayout(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -143,16 +142,16 @@ class HSplitLayout(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -286,9 +285,7 @@ class HSplitLayout(GadgetBase):
     def split_row(self, split_row: int):
         min_height = self.min_split_height
         self._split_col = clamp(
-            split_row,
-            min_height,
-            max(self.height - min_height, min_height),
+            split_row, min_height, max(self.height - min_height, min_height)
         )
         self.on_size()
 
@@ -314,7 +311,7 @@ class HSplitLayout(GadgetBase):
         not_anchored.height = self.height - self.split_row
 
 
-class VSplitLayout(GadgetBase):
+class VSplitLayout(Gadget):
     r"""
     A vertical split layout. Add gadgets to the :attr:`left_pane` or :attr:`right_pane`,
     e.g., ``my_vsplit.left_pane.add_gadget(my_gadget)``.
@@ -343,7 +340,7 @@ class VSplitLayout(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -400,16 +397,16 @@ class VSplitLayout(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App

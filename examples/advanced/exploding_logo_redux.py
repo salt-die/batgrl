@@ -162,7 +162,7 @@ class ExplodingLogoApp(App):
             particle_positions=particle_positions,
             particle_colors=logo.texture[pys, pxs],
             particle_properties=particle_properties,
-            particle_alphas=np.full(len(particle_positions), 0.7),
+            alpha=0.7,
             is_transparent=True,
         )
 

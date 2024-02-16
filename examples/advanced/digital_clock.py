@@ -2,8 +2,8 @@ import asyncio
 import time
 
 from batgrl.app import App
-from batgrl.gadgets.digital_display import BRIGHT_GREEN_ON_BLACK, DigitalDisplay
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.digital_display import BRIGHT_GREEN, DigitalDisplay
+from batgrl.gadgets.text import Text, style_char
 
 
 class DigitalClock(Text):
@@ -11,13 +11,13 @@ class DigitalClock(Text):
         self,
         pos=(0, 0),
         twelve_hour=False,
-        default_color_pair=BRIGHT_GREEN_ON_BLACK,
+        default_cell=style_char(fg_color=BRIGHT_GREEN),
         **kwargs,
     ):
         super().__init__(
             size=(7, 52),
             pos=pos,
-            default_color_pair=default_color_pair,
+            default_cell=default_cell,
             **kwargs,
         )
         self.twelve_hour = twelve_hour
@@ -60,7 +60,6 @@ class TestDisplay(DigitalDisplay):
         key = key_event.key
         if isinstance(key, str) and len(key) == 1:
             self.show_char(key)
-
             return True
 
 

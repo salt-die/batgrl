@@ -28,7 +28,7 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     Parameters
     ----------
-    group : None | Hashable, default: None
+    group : Hashable | None, default: None
         If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool, default: False
         If a group is provided, setting this to true allows no selection, i.e.,
@@ -40,7 +40,7 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     Attributes
     ----------
-    group : None | Hashable
+    group : Hashable | None
         If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool
         If true and button is in a group, every button can be in the off state.
@@ -73,7 +73,7 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     def __init__(
         self,
-        group: None | Hashable = None,
+        group: Hashable | None = None,
         allow_no_selection: bool = False,
         toggle_state: ToggleState = ToggleState.OFF,
         always_release: bool = False,

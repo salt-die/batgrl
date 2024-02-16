@@ -1,6 +1,6 @@
 """Grabbable behavior for a gadget."""
+from ...geometry import Point
 from ...io import MouseButton, MouseEvent, MouseEventType
-from ..gadget import Point
 
 __all__ = ["Grabbable"]
 

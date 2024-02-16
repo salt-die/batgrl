@@ -3,12 +3,13 @@ from threading import RLock
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-from numpy.typing import NDArray
 
 if TYPE_CHECKING:
     from ..app import App
 
-from .gadget import Char, ColorPair, Gadget, Point, Region, Size
+from ..colors import Color
+from .gadget import Gadget, Point, Region, Size
+from .text_tools import style_char
 
 
 class _Root(Gadget):
@@ -20,29 +21,22 @@ class _Root(Gadget):
 
     def __init__(
         self,
-        background_char: NDArray[Char] | str,
-        background_color_pair: ColorPair,
+        bg_color: Color,
         render_mode: Literal["regions", "painter"],
         size: Size,
     ):
+        self._cell = style_char(" ", bg_color=bg_color)
         self._render_lock = RLock()
+        self._size = -1, -1  # Forces `on_size()` when size is set.
         self.children = []
-        self.background_char = background_char
-        self.background_color_pair = background_color_pair
         self.render_mode = render_mode
-        self._size = -1, -1
         self.size = size
 
     def on_size(self):
         """Erase last render and re-make buffers."""
         h, w = self._size
-
-        self.canvas = np.full((h, w), self.background_char)
-        self.colors = np.full((h, w, 6), self.background_color_pair, dtype=np.uint8)
-
+        self.canvas = np.full((h, w), self._cell)
         self._last_canvas = self.canvas.copy()
-        self._last_colors = self.colors.copy()
-
         self._resized = True
 
     @property
@@ -84,8 +78,8 @@ class _Root(Gadget):
         y, x = point
         return 0 <= y < self.height and 0 <= x < self.width
 
-    def render(self):
-        """Render gadget tree into `canvas` and `colors`."""
+    def _render(self):
+        """Render gadget tree into `canvas`."""
         # TODO: Optimize...
         # - Recalculating all regions every frame isn't necessary if gadget geometry
         #   hasn't changed.
@@ -113,11 +107,9 @@ class _Root(Gadget):
                             self.region -= child.region
 
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
-            self.colors, self._last_colors = self._last_colors, self.colors
 
-            self.canvas[:] = self.background_char
-            self.colors[:] = self.background_color_pair
+            self.canvas[:] = self._cell
 
             for child in self.walk():
                 if child.is_enabled and child.is_visible:
-                    child.render(self.canvas, self.colors)
+                    child._render(self.canvas)

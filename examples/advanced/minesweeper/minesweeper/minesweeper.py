@@ -4,9 +4,10 @@ import cv2
 import numpy as np
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.gadget import Gadget, Point
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.pane import Pane
+from batgrl.gadgets.text import Text, style_char
 
-from .colors import DATA_BAR, FLAG_COLOR
+from .colors import COUNT_SQUARE, FLAG_COLOR, HIDDEN_SQUARE
 from .count import Count
 from .grid import Grid
 from .minefield import Minefield
@@ -45,32 +46,33 @@ class ResetButton(ButtonBehavior, Text):
 class MineSweeper(Gadget):
     def __init__(self, pos=Point(0, 0), **kwargs):
         h, w = SIZE
-
-        super().__init__(
-            pos=pos,
-            size=(V_SPACING * h + 2, H_SPACING * w + 1),
-            background_color_pair=DATA_BAR,
-            **kwargs,
-        )
+        default_cell = style_char(fg_color=HIDDEN_SQUARE, bg_color=COUNT_SQUARE)
+        super().__init__(pos=pos, size=(V_SPACING * h + 2, H_SPACING * w + 1), **kwargs)
 
         self.timer = Text(
             size=(1, 20),
             pos_hint={"x_hint": 0.95, "anchor": "top-right"},
-            default_color_pair=DATA_BAR,
+            default_cell=default_cell,
         )
         self.timer.add_str("Time Elapsed:")
         self._elapsed_time = 0
 
+        self.bg = Pane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, bg_color=COUNT_SQUARE
+        )
+
         self.mines_left = Text(
-            size=(1, 10), pos_hint={"x_hint": 0.05}, default_color_pair=DATA_BAR
+            size=(1, 10),
+            pos_hint={"x_hint": 0.05},
+            default_cell=default_cell,
         )
         self.mines_left.add_str("Mines:")
 
         self.reset_button = ResetButton(
-            size=(1, 2), default_color_pair=DATA_BAR, pos_hint={"x_hint": 0.5}
+            size=(1, 2), default_cell=default_cell, pos_hint={"x_hint": 0.5}
         )
 
-        self.add_gadgets(self.mines_left, self.timer, self.reset_button)
+        self.add_gadgets(self.bg, self.mines_left, self.timer, self.reset_button)
 
     def on_add(self):
         super().on_add()
@@ -88,7 +90,7 @@ class MineSweeper(Gadget):
     @mines.setter
     def mines(self, mines):
         self._mines = mines
-        self.mines_left.add_str(str(mines).zfill(3), (0, -3))
+        self.mines_left.add_str(str(mines).zfill(3), pos=(0, -3))
 
     def reset(self):
         if len(self.children) == 5:
@@ -108,7 +110,7 @@ class MineSweeper(Gadget):
 
     async def _time(self):
         while True:
-            self.timer.add_str(str(self._elapsed_time).zfill(6), (0, -6))
+            self.timer.add_str(str(self._elapsed_time).zfill(6), pos=(0, -6))
             await asyncio.sleep(1)
             self._elapsed_time += 1
 
@@ -127,7 +129,7 @@ class MineSweeper(Gadget):
                 minefield.canvas["char"] == FLAG
             )
             count.canvas["char"][bad_flags] = BAD_FLAG
-            count.colors[bad_flags, :3] = FLAG_COLOR
+            count.canvas["fg_color"][bad_flags] = FLAG_COLOR
         else:
             self.reset_button.add_str(COOL)
 

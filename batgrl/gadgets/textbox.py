@@ -1,17 +1,16 @@
 """A textbox gadget for single-line editable text."""
 from collections.abc import Callable
 
-import numpy as np
 from numpy.typing import NDArray
 
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
+from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import Gadget
-from .gadget_base import (
-    Char,
-    GadgetBase,
+from .gadget import (
+    Cell,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -35,7 +34,7 @@ __all__ = [
 ]
 
 
-class Textbox(Themable, Focusable, Grabbable, GadgetBase):
+class Textbox(Themable, Focusable, Grabbable, Gadget):
     r"""
     A textbox gadget for single-line editable text.
 
@@ -50,10 +49,12 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         Placeholder text for textbox.
     hide_input : bool, default: False
         If true, input is hidden with :attr:`hide_char`.
-    hide_char : NDArray[Char] | str, default: "*"
+    hide_char : NDArray[Cell] | str, default: "*"
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None, default: None
         Maximum allowed number of characters in textbox.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     is_grabbable : bool, default: True
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool, default: False
@@ -69,7 +70,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -79,6 +80,16 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
     Attributes
     ----------
+    placeholder : str
+        Placeholder text for textbox.
+    hide_input : bool
+        If true, input is hidden with :attr:`hide_char`.
+    hide_char : NDArray[Cell]
+        Character to hide input when :attr:`hide_input` is true.
+    max_chars : int | None
+        Maximum allowed number of characters in textbox.
+    alpha : float
+        Transparency of gadget.
     text : str
         The textbox's text.
     cursor : int
@@ -87,18 +98,10 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         Whether there is a selection.
     has_nonempty_selection : bool
         Whether selection is non-empty.
-    placeholder : str
-        Placeholder text for textbox.
-    hide_input : bool
-        If true, input is hidden with :attr:`hide_char`.
-    hide_char : NDArray[Char]
-        Character to hide input when :attr:`hide_input` is true.
-    max_chars : int | None
-        Maximum allowed number of characters in textbox.
     is_focused : bool
-        Return true if gadget has focus.
+        Whether gadget has focus.
     any_focused : bool
-        Return true if any gadget has focus.
+        Whether any gadget has focus.
     is_grabbable : bool
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool
@@ -145,16 +148,16 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -254,11 +257,12 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         enter_callback: Callable[["Textbox"], None] | None = None,
         placeholder: str = "",
         hide_input: bool = False,
-        hide_char: NDArray[Char] | str = "*",
+        hide_char: NDArray[Cell] | str = "*",
         max_chars: int | None = None,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -267,6 +271,10 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._placeholder_gadget = Text(alpha=0.0)
+        self._placeholder_gadget.set_text(placeholder)
+        self._cursor = Cursor()
+        self._box = Text(size=size)
         super().__init__(
             is_grabbable=is_grabbable,
             ptf_on_grab=ptf_on_grab,
@@ -287,12 +295,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self._undo_buffer = []
         self._undo_buffer_type = "add"
 
-        self._placeholder_gadget = Text()
-        self._placeholder_gadget.set_text(placeholder)
-        self._cursor = Gadget(size=(1, 1), is_enabled=False, is_transparent=True)
-        self._box = Text(size=self.size)
         self._box.add_gadgets(self._placeholder_gadget, self._cursor)
-
         self.add_gadgets(self._box)
 
         self.enter_callback = enter_callback
@@ -305,11 +308,32 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self.hide_input = hide_input
         """If true, input is hidden with :attr:`hide_char`."""
         self.hide_char = hide_char
+        """Character to hide input if :attr:`hide_input` is true."""
         self.max_chars = max_chars
         """Maximum allowed number of characters in textbox."""
+        self.alpha = alpha
 
     @property
-    def hide_char(self) -> NDArray[Char]:
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._box.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._box.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._box.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._box.is_transparent = is_transparent
+        self._placeholder_gadget.is_transparent = is_transparent
+
+    @property
+    def hide_char(self) -> NDArray[Cell]:
         """Character to hide input when :attr:`hide_input` is true."""
         return self._hide_char
 
@@ -320,11 +344,18 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     def update_theme(self):
         """Paint the gadget with current theme."""
         primary = self.color_theme.textbox_primary
+        fg = primary.fg
+        bg = primary.bg
+        self._box.canvas["fg_color"] = self._box.default_fg_color = fg
+        self._box.canvas["bg_color"] = self._box.default_bg_color = bg
+        self._cursor.fg_color = bg
+        self._cursor.bg_color = fg
 
-        self._placeholder_gadget.colors[:] = self.color_theme.textbox_placeholder
-        self._box.colors[:] = primary
-        self._box.default_color_pair = primary
-        self._cursor.background_color_pair = primary.reversed()
+        placeholder = self.color_theme.textbox_placeholder
+        self._placeholder_gadget.default_fg_color = placeholder.fg
+        self._placeholder_gadget.default_bg_color = placeholder.bg
+        self._placeholder_gadget.canvas["fg_color"] = placeholder.fg
+        self._placeholder_gadget.canvas["bg_color"] = placeholder.bg
 
         self._highlight_selection()
 
@@ -347,9 +378,9 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self.unselect()
         self.cursor = self.cursor
 
-    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
-        super().render(canvas, colors)
+    def _render(self, canvas: NDArray[Cell]):
+        """Render visible region of gadget."""
+        super()._render(canvas)
         if self.hide_input:
             hider_region = self._box.region & Region.from_rect(
                 self._box.absolute_pos, (1, self._line_length)
@@ -366,7 +397,6 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
     def placeholder(self, placeholder: str):
         self._placeholder = placeholder
         self._placeholder_gadget.set_text(placeholder)
-        self._placeholder_gadget.colors[:] = self.color_theme.textbox_placeholder
         self._placeholder_gadget.is_enabled = self._line_length == 0 and bool(
             placeholder
         )
@@ -448,8 +478,8 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
         self._highlight_selection()
 
     def _highlight_selection(self):
-        colors = self._box.colors
-        colors[:] = self._box.default_color_pair
+        colors = self._box.canvas[["fg_color", "bg_color"]]
+        colors[:] = self._box.default_fg_color, self._box.default_bg_color
 
         if self._selection_start != self._selection_end:
             if self._selection_start > self._selection_end:
@@ -503,7 +533,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
 
         box = self._box
         box.canvas[0, start : self._line_length] = box.canvas[0, end : end + len_end]
-        box.canvas[0, self._line_length :] = box.default_char
+        box.canvas[0, self._line_length :] = box.default_cell
 
         self.unselect()
         self.cursor = start
@@ -528,7 +558,7 @@ class Textbox(Themable, Focusable, Grabbable, GadgetBase):
             box.width = box_width + 1
 
         box.add_str(box_text)
-        box.canvas[0, box_width:] = box.default_char
+        box.canvas[0, box_width:] = box.default_cell
 
         self.cursor = min(box_width, x + str_width(text))
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor

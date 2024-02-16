@@ -1,13 +1,9 @@
 """A button gadget."""
 from collections.abc import Callable
 
-from numpy.typing import NDArray
-
-from ..colors import ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
 from .gadget import (
-    Char,
     Gadget,
     Point,
     PosHint,
@@ -16,7 +12,8 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
 )
-from .text import Text, str_width
+from .pane import Pane
+from .text import Text
 
 __all__ = [
     "Button",
@@ -42,15 +39,8 @@ class Button(Themable, ButtonBehavior, Gadget):
         Called when button is released.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    background_char : NDArray[Char] | str | None, default: " "
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -60,7 +50,7 @@ class Button(Themable, ButtonBehavior, Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -78,10 +68,8 @@ class Button(Themable, ButtonBehavior, Gadget):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -114,16 +102,16 @@ class Button(Themable, ButtonBehavior, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -197,16 +185,15 @@ class Button(Themable, ButtonBehavior, Gadget):
         always_release: bool = False,
         size=Size(10, 10),
         pos=Point(0, 0),
+        alpha: float = 1.0,
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = " ",
-        background_color_pair: ColorPair | None = None,
     ):
-        self._label_gadget = Text(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
-
+        self._pane = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._label = Text(pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_transparent=True)
         super().__init__(
             always_release=always_release,
             size=size,
@@ -216,14 +203,39 @@ class Button(Themable, ButtonBehavior, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
-
-        self.add_gadget(self._label_gadget)
-
+        self.add_gadgets(self._pane, self._label)
         self.label = label
         self.callback = callback
+        self.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._pane.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._pane.is_transparent = is_transparent
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._pane.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._pane.alpha = alpha
+
+    @property
+    def label(self) -> str:
+        """Button label."""
+        return self._lable_text
+
+    @label.setter
+    def label(self, label: str):
+        self._label_text = label
+        self._label.set_text(label)
 
     def update_theme(self):
         """Paint the gadget with current theme."""
@@ -235,35 +247,20 @@ class Button(Themable, ButtonBehavior, Gadget):
             case ButtonState.DOWN:
                 self.update_down()
 
-    @property
-    def label(self) -> str:
-        """Button label."""
-        return self._label
-
-    @label.setter
-    def label(self, label: str):
-        self._label = label
-        self._label_gadget.size = 1, str_width(label)
-        self._label_gadget.apply_hints()
-        self._label_gadget.add_str(label)
-
     def update_normal(self):
         """Paint the normal state."""
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_normal
+        self._pane.bg_color = self.color_theme.button_normal.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_normal.fg
 
     def update_hover(self):
         """Paint the hover state."""
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_hover
+        self._pane.bg_color = self.color_theme.button_hover.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_hover.fg
 
     def update_down(self):
         """Paint the down state."""
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_press
+        self._pane.bg_color = self.color_theme.button_press.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_press.fg
 
     def on_release(self):
         """Triggered when button is released."""

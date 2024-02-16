@@ -58,11 +58,10 @@ class PygameOutput:
 
     def render_frame(self, root: _Root):
         canvas = root.canvas
-        colors = root.colors
         h, w = root.size
         ys, xs = np.indices((h, w)).reshape(2, h * w)
-        for y, x, style, color_pair in zip(ys, xs, canvas[ys, xs], colors[ys, xs]):
-            char, bold, italic, underline, strikethrough, overline = style
+        for y, x, cell in zip(ys, xs, canvas[ys, xs]):
+            char, bold, italic, underline, strikethrough, overline, fg, bg = cell
 
             if char == "":
                 if x == 0 or char_width(canvas["char"][y, x - 1].item()) != 2:
@@ -81,7 +80,8 @@ class PygameOutput:
             else:
                 font = self.regular_font
 
-            fr, fg, fb, br, bg, bb = color_pair
+            fr, fg, fb = fg
+            br, bg, bb = bg
             font.fgcolor = fr, fg, fb, 255
             font.bgcolor = br, bg, bb, 255
             font.strong = bool(bold)

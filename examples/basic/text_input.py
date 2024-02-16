@@ -1,13 +1,18 @@
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
-from batgrl.gadgets.text import Text
+from batgrl.colors import (
+    DEFAULT_COLOR_THEME,
+    DEFAULT_PRIMARY_BG,
+    DEFAULT_PRIMARY_FG,
+    Color,
+)
+from batgrl.gadgets.text import Text, style_char
 from batgrl.gadgets.text_pad import TextPad
 from batgrl.gadgets.textbox import Textbox
 
-PRIMARY = DEFAULT_COLOR_THEME.primary
-SECONDARY = DEFAULT_COLOR_THEME.data_table_selected
-ACTIVE_BORDER = *DEFAULT_COLOR_THEME.titlebar_normal.fg_color, *SECONDARY.bg_color
-INACTIVE_BORDER = *DEFAULT_COLOR_THEME.titlebar_inactive.fg_color, *SECONDARY.bg_color
+SECONDARY_FG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected"]["fg"])
+SECONDARY_BG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected"]["bg"])
+ACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal"]["fg"])
+INACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal"]["bg"])
 
 JABBERWOCKY = """
             Jabberwocky
@@ -53,11 +58,11 @@ All mimsy were the borogoves,
 class BorderOnFocus:
     def on_focus(self):
         super().on_focus()
-        self.parent.add_border("mcgugan_wide", bold=True, color_pair=ACTIVE_BORDER)
+        self.parent.add_border("near", bold=True, fg_color=ACTIVE_COLOR)
 
     def on_blur(self):
         super().on_blur()
-        self.parent.add_border("mcgugan_wide", bold=False, color_pair=INACTIVE_BORDER)
+        self.parent.add_border("near", bold=False, fg_color=INACTIVE_COLOR)
 
 
 class BorderedOnFocusTextbox(BorderOnFocus, Textbox):
@@ -77,19 +82,21 @@ class TextPadApp(App):
             placeholder="Search...",
             max_chars=50,
         )
-        textbox_border = Text(pos=(2, 2), size=(3, 35), default_color_pair=PRIMARY)
+        default_cell = style_char(fg_color=DEFAULT_PRIMARY_FG, bg_color=SECONDARY_BG)
+        textbox_border = Text(pos=(2, 2), size=(3, 35), default_cell=default_cell)
         textbox_border.add_gadget(textbox)
         textbox_border.add_str("🔍", pos=(1, 1))
+        textbox_border.canvas["bg_color"][1, 1] = DEFAULT_PRIMARY_BG
 
         text_pad = BorderedOnFocusTextPad(pos=(1, 1), size=(13, 33))
         text_pad.text = JABBERWOCKY
-        text_pad_border = Text(pos=(6, 2), size=(15, 35), default_color_pair=PRIMARY)
+        text_pad_border = Text(pos=(6, 2), size=(15, 35), default_cell=default_cell)
         text_pad_border.add_gadget(text_pad)
 
         labels = Text(
             size=(22, 39),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
-            default_color_pair=SECONDARY,
+            default_cell=style_char(fg_color=SECONDARY_FG, bg_color=SECONDARY_BG),
         )
         labels.add_str("__Textbox__", pos=(1, 16), markdown=True)
         labels.add_str("__Text Pad__", pos=(5, 16), markdown=True)
@@ -98,4 +105,4 @@ class TextPadApp(App):
 
 
 if __name__ == "__main__":
-    TextPadApp(title="Text Input Example", background_color_pair=PRIMARY).run()
+    TextPadApp(title="Text Input Example", bg_color=DEFAULT_PRIMARY_BG).run()

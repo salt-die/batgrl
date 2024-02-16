@@ -1,10 +1,15 @@
-"""Stable fluid simulation. Requires `scipy`."""
+"""
+Stable fluid simulation. Requires `scipy`.
+
+Click to add fluid.
+"r" to reset.
+"""
 import asyncio
 from itertools import cycle
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import ABLACK, DEFAULT_COLOR_THEME, AColor, rainbow_gradient
+from batgrl.colors import ABLACK, DEFAULT_PRIMARY_BG, AColor, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
 from batgrl.io import MouseButton, MouseEvent
 from scipy.ndimage import convolve, map_coordinates
@@ -163,6 +168,4 @@ class StableFluidApp(App):
 
 
 if __name__ == "__main__":
-    StableFluidApp(
-        title="Stable Fluid Example", background_color_pair=DEFAULT_COLOR_THEME.primary
-    ).run()
+    StableFluidApp(title="Stable Fluid Example", bg_color=DEFAULT_PRIMARY_BG).run()

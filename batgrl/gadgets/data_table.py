@@ -8,8 +8,8 @@ from typing import Literal, Protocol, TypeVar
 from ..io import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -18,6 +18,7 @@ from .gadget_base import (
     SizeHintDict,
 )
 from .grid_layout import GridLayout
+from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, add_text, str_width
 
@@ -134,6 +135,28 @@ class _CellBase(ButtonBehavior, Text):
         """Column id to which this cell belongs."""
 
     @property
+    def table(self) -> "DataTable":
+        # Gadget hierarchy:
+        # Cell -> Row -> Table -> Scrollview -> DataTable
+        return self.parent.parent.parent.parent
+
+    @property
+    def is_transparent(self) -> bool:
+        return self.table.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        pass
+
+    @property
+    def alpha(self) -> float:
+        return self.table.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        pass
+
+    @property
     def style(self) -> ColumnStyle:
         """Style of column to which this cell belongs."""
         return self.data_table._column_styles[self.column_id]
@@ -144,14 +167,13 @@ class _ColumnLabel(_CellBase):
 
     def __init__(self, label: str, allow_sorting: bool, **kwargs):
         super().__init__(**kwargs)
-
         self._sort_state = _SortState.NOT_SORTED
-        self.label = label
-        """Display text of cell."""
-        self.allow_sorting = allow_sorting
 
         lines = label.split("\n")
 
+        self.allow_sorting = allow_sorting
+        self.label = label
+        """Display text of cell."""
         self.cell_min_height = len(lines)
         """Minimum allowed height of cells."""
         self.cell_min_width = max(
@@ -182,6 +204,17 @@ class _ColumnLabel(_CellBase):
         if self.allow_sorting:
             self.canvas["char"][self.indicator_pos] = self._sort_state.value
 
+    def _update_indicator(self):
+        if self._allow_sorting:
+            color_pair = self.data_table.color_theme.data_table_sort_indicator
+            char = self._sort_state.value
+        else:
+            color_pair = self.data_table.color_theme.primary
+            char = " "
+        self.canvas["fg_color"][self.indicator_pos] = color_pair.fg
+        self.canvas["bg_color"][self.indicator_pos] = color_pair.bg
+        self.canvas["char"][self.indicator_pos] = char
+
     @property
     def allow_sorting(self) -> bool:
         return self._allow_sorting
@@ -189,21 +222,11 @@ class _ColumnLabel(_CellBase):
     @allow_sorting.setter
     def allow_sorting(self, allow_sorting: bool):
         self._allow_sorting = allow_sorting and self.style.allow_sorting
-        if allow_sorting:
-            self.colors[
-                self.indicator_pos
-            ] = self.data_table.color_theme.data_table_sort_indicator
-            self.canvas["char"][self.indicator_pos] = self._sort_state.value
-        else:
-            self.colors[self.indicator_pos] = self.data_table.color_theme.primary
-            self.canvas["char"][self.indicator_pos] = " "
+        self._update_indicator()
 
     def on_size(self):
         super().on_size()
-
-        self.canvas["char"] = " "
-        self.colors[:] = self.data_table.color_theme.primary
-
+        self.canvas[:] = self.default_cell
         align = _ALIGN_FORMATTER[self.style.alignment]
         padding = self.style.padding
         content_width = (
@@ -214,12 +237,7 @@ class _ColumnLabel(_CellBase):
             for line in self.label.split("\n")
         )
         add_text(self.canvas[:, padding : -_SORT_INDICATOR_WIDTH - padding], content)
-
-        if self.allow_sorting:
-            self.colors[
-                self.indicator_pos
-            ] = self.data_table.color_theme.data_table_sort_indicator
-            self.canvas["char"][self.indicator_pos] = self._sort_state.value
+        self._update_indicator()
 
     def update_hover(self):
         self.data_table._update_hover()
@@ -272,14 +290,15 @@ class _DataCell(_CellBase):
 
     def on_size(self):
         super().on_size()
-
         self.canvas["char"] = " "
         if self.striped:
-            self.colors[:] = self.data_table.color_theme.data_table_stripe
+            color_pair = self.data_table.color_theme.data_table_stripe
         elif self.selected:
-            self.colors[:] = self.data_table.color_theme.data_table_selected
+            color_pair = self.data_table.color_theme.data_table_selected
         else:
-            self.colors[:] = self.data_table.color_theme.primary
+            color_pair = self.data_table.color_theme.primary
+        self.canvas["fg_color"] = color_pair.fg
+        self.canvas["bg_color"] = color_pair.bg
 
         align = _ALIGN_FORMATTER[self.style.alignment]
         padding = self.style.padding
@@ -298,15 +317,22 @@ class _DataCell(_CellBase):
         return True
 
 
-class DataTable(Themable, GadgetBase):
+class _FauxPane(Pane):
+    def _render(self, canvas):
+        data_table: DataTable = self.parent.parent
+        self.region -= data_table._table.region
+        super()._render(canvas)
+
+
+class DataTable(Themable, Gadget):
     r"""
     A data table gadget.
 
     Parameters
     ----------
     data : dict[str, Sequence[T]] | None=None, default: None
-        If given, construct a data table from this data. To gain more
-        control over column styling use :meth:`add_column`.
+        If given, construct a data table from this data. To gain more control over
+        column styling use :meth:`add_column`.
     default_style : ColumnStyle | None, default: None
         Default style for new columns.
     select_items : Literal["cell", "row", "column"], default: "row"
@@ -315,6 +341,8 @@ class DataTable(Themable, GadgetBase):
         Whether alternate rows are colored differently.
     allow_sorting : bool, default: True
         Whether columns can be sorted.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -324,7 +352,7 @@ class DataTable(Themable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -342,6 +370,8 @@ class DataTable(Themable, GadgetBase):
         Whether alternate rows are colored differently.
     allow_sorting : bool
         Whether columns can be sorted.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -374,16 +404,16 @@ class DataTable(Themable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -463,6 +493,7 @@ class DataTable(Themable, GadgetBase):
         select_items: Literal["cell", "row", "column"] = "row",
         zebra_stripes: bool = True,
         allow_sorting: bool = True,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -471,6 +502,26 @@ class DataTable(Themable, GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._column_labels = GridLayout(
+            grid_rows=1, grid_columns=0, orientation="lr-tb", is_transparent=True
+        )
+        """Grid layout containing column label cells."""
+        self._table = GridLayout(
+            grid_rows=1, grid_columns=1, orientation="tb-lr", is_transparent=True
+        )
+        """Grid layout of column label and row grid layouts."""
+
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
+        # Replace scroll view background with a pane that doesn't paint under _table.
+        self._scroll_view.remove_gadget(self._scroll_view._background)
+        self._scroll_view._background = _FauxPane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+        )
+        self._scroll_view.add_gadget(self._scroll_view._background)
+        self._scroll_view.children.insert(0, self._scroll_view.children.pop())
+
         super().__init__(
             size=size,
             pos=pos,
@@ -484,22 +535,12 @@ class DataTable(Themable, GadgetBase):
         """Column ids. Index of id corresponds to index of column in table."""
         self._column_styles: dict[int, ColumnStyle] = {}
         """Column id to column style."""
-        self._column_labels = GridLayout(
-            grid_rows=1, grid_columns=0, orientation="lr-tb"
-        )
-        """Grid layout containing column label cells."""
         self._rows: dict[int, GridLayout] = {}
         """Row id to grid layout for row."""
         self._hover_column_id = -1
-        """Column id of column that mouse is hovering or -1 if no columns are
-        hovered.
-        """
+        """Column id that mouse is hovering or -1 if no columns are hovered."""
         self._hover_row_id = -1
-        """Row id of row that mouse is hovering or -1 if no columns are hovered."""
-        self._table = GridLayout(grid_rows=1, grid_columns=1, orientation="tb-lr")
-        """Grid layout of column label and row grid layouts."""
-        self._table.add_gadget(self._column_labels)
-
+        """Row id that mouse is hovering or -1 if no columns are hovered."""
         self.default_style = default_style or ColumnStyle()
         """Default style for new columns."""
         self._select_items = select_items
@@ -508,10 +549,10 @@ class DataTable(Themable, GadgetBase):
         """Whether alternate rows are colored differently."""
         self._allow_sorting = allow_sorting
         """Whether columns can be sorted."""
+        self.alpha = alpha
+        """Transparency of gadget."""
 
-        self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}
-        )
+        self._table.add_gadget(self._column_labels)
         self._scroll_view.view = self._table
         self.add_gadget(self._scroll_view)
 
@@ -528,6 +569,24 @@ class DataTable(Themable, GadgetBase):
         if data is not None:
             for label, column_data in data.items():
                 self.add_column(label, data=column_data)
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._scroll_view.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._scroll_view.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._scroll_view.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._scroll_view.is_transparent = is_transparent
 
     @property
     def select_items(self) -> Literal["cell", "row", "column"]:
@@ -567,20 +626,18 @@ class DataTable(Themable, GadgetBase):
     def update_theme(self):
         """Paint the gadget with current theme."""
         primary = self.color_theme.primary
-        self.background_color_pair = primary
-        self._table.background_color_pair = primary
+        sort = self.color_theme.data_table_sort_indicator
+        self._table.bg_color = primary.bg
 
         label: _ColumnLabel
         for label in self._column_labels.children:
-            label.default_color_pair = primary
-            label.colors[:] = primary
-            label.colors[
-                label.indicator_pos
-            ] = self.color_theme.data_table_sort_indicator
+            label.default_fg_color = primary.fg
+            label.default_bg_color = primary.bg
+            label.canvas[["fg_color", "bg_color"]] = primary
+            label.canvas[["fg_color", "bg_color"]][label.indicator_pos] = sort
 
         cell: _DataCell
         for row in self._rows.values():
-            row.background_color_pair = primary
             for cell in row.children:
                 self._paint_cell_normal(cell)
         self._update_hover(self._hover_column_id, self._hover_row_id)
@@ -597,19 +654,21 @@ class DataTable(Themable, GadgetBase):
 
     def _paint_cell_hover(self, cell: _DataCell):
         if cell.selected:
-            cell.colors[:] = self.color_theme.data_table_selected_hover
+            color_pair = self.color_theme.data_table_selected_hover
         elif cell.striped:
-            cell.colors[:] = self.color_theme.data_table_stripe_hover
+            color_pair = self.color_theme.data_table_stripe_hover
         else:
-            cell.colors[:] = self.color_theme.data_table_hover
+            color_pair = self.color_theme.data_table_hover
+        cell.canvas[["fg_color", "bg_color"]] = color_pair
 
     def _paint_cell_normal(self, cell: _DataCell):
         if cell.selected:
-            cell.colors[:] = self.color_theme.data_table_selected
+            color_pair = self.color_theme.data_table_selected
         elif cell.striped:
-            cell.colors[:] = self.color_theme.data_table_stripe
+            color_pair = self.color_theme.data_table_stripe
         else:
-            cell.colors[:] = self.color_theme.primary
+            color_pair = self.color_theme.primary
+        cell.canvas[["fg_color", "bg_color"]] = color_pair
 
     def _repaint_cells(self):
         for row in self._iter_rows():
@@ -709,8 +768,7 @@ class DataTable(Themable, GadgetBase):
         self._table.size = self._table.minimum_grid_size
 
         # Remove hovered rows/columns:
-        self._hover_column_id = -1
-        self._hover_row_id = -1
+        self._hover_column_id = self._hover_row_id = -1
         self._repaint_cells()
 
     def _iter_rows(self):
@@ -769,7 +827,12 @@ class DataTable(Themable, GadgetBase):
             self._table.grid_rows += len(data)
             for item in data:
                 row_id = next(self._IDS)
-                row = GridLayout(grid_rows=1, grid_columns=1, orientation="lr-bt")
+                row = GridLayout(
+                    grid_rows=1,
+                    grid_columns=1,
+                    orientation="lr-bt",
+                    is_transparent=True,
+                )
                 row.add_gadget(
                     _DataCell(
                         data_table=self, column_id=column_id, data=item, row_id=row_id
@@ -814,7 +877,10 @@ class DataTable(Themable, GadgetBase):
 
         row_id = next(self._IDS)
         row_layout = GridLayout(
-            grid_rows=1, grid_columns=len(data), orientation="lr-bt"
+            grid_rows=1,
+            grid_columns=len(data),
+            orientation="lr-bt",
+            is_transparent=True,
         )
         row_layout.add_gadgets(
             _DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id)

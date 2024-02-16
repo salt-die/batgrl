@@ -38,9 +38,7 @@ class Connect4(Gadget):
         self._label_task.cancel()
 
     def display_message(self, message):
-        self._label.width = len(message)
-        self._label.apply_hints()  # Re-center label
-        self._label.add_str(message)
+        self._label.set_text(message)
 
     async def display_message_after(self, message, duration):
         await asyncio.sleep(duration)

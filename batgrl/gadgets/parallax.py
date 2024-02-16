@@ -1,14 +1,13 @@
 """A parallax gadget."""
 from collections.abc import Iterable, Sequence
-from numbers import Real
 from pathlib import Path
 
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget_base import (
-    Char,
-    GadgetBase,
+from .gadget import (
+    Cell,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -34,8 +33,8 @@ __all__ = [
 
 
 def _check_layer_speeds(
-    layers: Sequence[Image], speeds: Sequence[Real] | None
-) -> Sequence[Real]:
+    layers: Sequence[Image], speeds: Sequence[float] | None
+) -> Sequence[float]:
     """
     Raise `ValueError` if `layers` and `speeds` are incompatible, else return a sequence
     of layer speeds.
@@ -50,7 +49,7 @@ def _check_layer_speeds(
     return speeds
 
 
-class Parallax(GadgetBase):
+class Parallax(Gadget):
     r"""
     A parallax gadget.
 
@@ -59,11 +58,11 @@ class Parallax(GadgetBase):
     path : Path | None, default: None
         Path to directory of images for layers of the parallax (loaded
         in lexographical order of filenames) layered from background to foreground.
-    speeds : Sequence[Real] | None, default: None
-        The scrolling speed of each layer. Default speeds are `1/(N - i)`
-        where `N` is the number of layers and `i` is the index of a layer.
+    speeds : Sequence[float] | None, default: None
+        The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N` is
+        the number of layers and `i` is the index of a layer.
     alpha : float, default: 1.0
-        Transparency of the parallax.
+        Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
@@ -75,8 +74,7 @@ class Parallax(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -90,14 +88,14 @@ class Parallax(GadgetBase):
         Vertical and horizontal offset of first layer of the parallax.
     layers : list[Image]
         Layers of the parallax.
-    speeds : Sequence[Real]
+    speeds : Sequence[float]
         The scrolling speed of each layer.
     vertical_offset : float
         Vertical offset of first layer of the parallax.
     horizontal_offset : float
         Horizontal offset of first layer of the parallax.
     alpha : float
-        Transparency of the parallax.
+        Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
     size : Size
@@ -132,16 +130,16 @@ class Parallax(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -205,7 +203,7 @@ class Parallax(GadgetBase):
         self,
         *,
         path: Path | None = None,
-        speeds: Sequence[Real] | None = None,
+        speeds: Sequence[float] | None = None,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
         is_transparent: bool = True,
@@ -273,7 +271,7 @@ class Parallax(GadgetBase):
 
     @property
     def alpha(self) -> float:
-        """Transparency of gadget if :attr:`is_transparent` is true."""
+        """Transparency of gadget."""
         return self._alpha
 
     @alpha.setter
@@ -341,13 +339,13 @@ class Parallax(GadgetBase):
             )
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
-    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
+    def _render(self, canvas: NDArray[Cell]):
+        """Render visible region of gadget."""
         if self.layers:
             for layer in self.layers:
-                layer.render(canvas, colors)
+                layer._render(canvas)
         else:
-            super().render(canvas, colors)
+            super()._render(canvas)
 
     @classmethod
     def from_textures(
@@ -372,11 +370,11 @@ class Parallax(GadgetBase):
         ----------
         textures : Iterable[NDArray[np.uint8]]
             An iterable of RGBA textures that will be the layers of the parallax.
-        speeds : Sequence[Real] | None, default: None
-            The scrolling speed of each layer. Default speeds are `1/(N - i)`
-            where `N` is the number of layers and `i` is the index of a layer.
+        speeds : Sequence[float] | None, default: None
+            The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N`
+            is the number of layers and `i` is the index of a layer.
         alpha : float, default: 1.0
-            Transparency of the parallax.
+            Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
         size : Size, default: Size(10, 10)
@@ -388,8 +386,7 @@ class Parallax(GadgetBase):
         pos_hint : PosHint | PosHintDict | None , default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
-            If true, gadget is rendered with alpha compositing; otherwise, alpha values
-            are ignored.
+            Whether gadget is transparent.
         is_visible : bool, default: True
             Whether gadget is visible. Gadget will still receive input events if not
             visible.
@@ -450,11 +447,11 @@ class Parallax(GadgetBase):
         ----------
         textures : Iterable[Image]
             An iterable of images that will be the layers of the parallax.
-        speeds : Sequence[Real] | None, default: None
-            The scrolling speed of each layer. Default speeds are `1/(N - i)`
-            where `N` is the number of layers and `i` is the index of a layer.
+        speeds : Sequence[float] | None, default: None
+            The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N`
+            is the number of layers and `i` is the index of a layer.
         alpha : float, default: 1.0
-            Transparency of the parallax.
+            Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
         size : Size, default: Size(10, 10)
@@ -466,8 +463,7 @@ class Parallax(GadgetBase):
         pos_hint : PosHint | PosHintDict | None , default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
-            If true, gadget is rendered with alpha compositing; otherwise, alpha values
-            are ignored.
+            Whether gadget is transparent.
         is_visible : bool, default: True
             Whether gadget is visible. Gadget will still receive input events if not
             visible.

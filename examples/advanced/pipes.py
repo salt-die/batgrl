@@ -77,8 +77,7 @@ class Pipes(Text):
 
     async def run_pipes(self):
         while True:
-            self.canvas[:] = self.default_char
-            self.colors[:] = self.default_color_pair
+            self.canvas[:] = self.default_cell
             await asyncio.gather(*(self.pipe() for _ in range(self.npipes)))
 
     async def pipe(self):
@@ -91,12 +90,12 @@ class Pipes(Text):
 
         while monotonic() < end:
             self.canvas[y, x]["char"] = pipe_chars[last_dir]
-            self.colors[y, x, :3] = color
+            self.canvas["fg_color"][y, x] = color
             await asyncio.sleep(sleep)
 
             current_dir = (last_dir + randrange(-1, 2)) % 4
             self.canvas[y, x]["char"] = pipe_chars[last_dir, current_dir]
-            self.colors[y, x, :3] = color
+            self.canvas["fg_color"][y, x] = color
 
             match current_dir:
                 case 0:

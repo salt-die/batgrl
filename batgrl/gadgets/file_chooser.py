@@ -3,8 +3,8 @@ import platform
 from collections.abc import Callable
 from pathlib import Path
 
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -68,8 +68,7 @@ class _FileViewNode(TreeViewNode):
     def _toggle_update(self):
         if not self.child_nodes:
             paths = sorted(
-                self.path.iterdir(),
-                key=lambda path: (path.is_file(), path.name),
+                self.path.iterdir(), key=lambda path: (path.is_file(), path.name)
             )
 
             for path in paths:
@@ -102,19 +101,31 @@ class _FileView(TreeView):
         self.select_callback = select_callback
         super().__init__(root_node=root_node, **kwargs)
 
+    def on_add(self):
+        self.update_tree_layout()
+
     def update_tree_layout(self):
+        if self.root is None:
+            return
+
         self.prolicide()
 
+        alpha = self.root_node.alpha
+        is_transparent = self.root_node.is_transparent
         it = self.root_node.iter_open_nodes()
         if self.directories_only:
             it = (node for node in it if node.path.is_dir())
         if not self.show_hidden:
             it = (node for node in it if not _is_hidden(node.path))
 
-        max_width = self.parent.port_width if self.parent else 1
+        sv: ScrollView = self.parent
+        sv.size = sv.parent.size
+        max_width = sv.port_width
         for y, node in enumerate(it):
-            max_width = max(max_width, str_width(node.label))
+            node.alpha = alpha
+            node.is_transparent = is_transparent
             node.y = y
+            max_width = max(max_width, str_width(node.label))
             self.add_gadget(node)
         self.size = y + 1, max_width
 
@@ -166,22 +177,22 @@ class _FileView(TreeView):
                     self.selected_node.toggle()
                 elif self.selected_node.child_nodes:
                     self.selected_node.child_nodes[0].select()
-            case "enter":
-                if self.selected_node is not None:
-                    self.select_callback(self.selected_node.path)
+            case "enter" if self.selected_node is not None:
+                self.select_callback(self.selected_node.path)
             case _:
                 return super().on_key(key_event)
 
-        top = self.selected_node.top + self.top
-        if top < 0:
-            self.parent._scroll_up(-top)
-        elif top >= self.parent.height - 1:
-            self.parent._scroll_down(self.parent.height - top)
+        if self.selected_node is not None:
+            top = self.selected_node.top + self.top
+            if top < 0:
+                self.parent._scroll_up(-top)
+            elif top >= self.parent.height - 1:
+                self.parent._scroll_down(self.parent.height - top)
 
         return True
 
 
-class FileChooser(GadgetBase):
+class FileChooser(Gadget):
     r"""
     A file chooser gadget.
 
@@ -194,8 +205,9 @@ class FileChooser(GadgetBase):
     show_hidden : bool, default: True
         If true, show hidden files.
     select_callback : Callable[[Path], None], default: lambda path: None
-        Called with path of selected node when node is double-clicked
-        or `enter` is pressed.
+        Called with selected path on double-click or if `enter` is pressed.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -205,7 +217,7 @@ class FileChooser(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -222,8 +234,9 @@ class FileChooser(GadgetBase):
     show_hidden : bool
         If true, show hidden files.
     select_callback : Callable[[Path], None]
-        Called with path of selected node when node is double-clicked or `enter` is
-        pressed.
+        Called with selected path on double-click or if `enter` is pressed.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -256,16 +269,16 @@ class FileChooser(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -328,6 +341,7 @@ class FileChooser(GadgetBase):
         directories_only: bool = False,
         show_hidden: bool = True,
         select_callback: Callable[[Path], None] = lambda path: None,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -336,6 +350,17 @@ class FileChooser(GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._root_dir = root_dir or Path()
+        self._root_node = _FileViewNode(path=self._root_dir)
+        self._file_view = _FileView(
+            root_node=self._root_node,
+            directories_only=directories_only,
+            show_hidden=show_hidden,
+            select_callback=select_callback,
+        )
+        self._scroll_view = ScrollView(
+            arrow_keys_enabled=False, is_transparent=False, alpha=0
+        )
         super().__init__(
             size=size,
             pos=pos,
@@ -345,44 +370,57 @@ class FileChooser(GadgetBase):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._root_dir = root_dir or Path()
-        self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1, "width_hint": 1},
-            arrow_keys_enabled=False,
-        )
-        self._scroll_view.view = _FileView(
-            root_node=_FileViewNode(path=self._root_dir),
-            directories_only=directories_only,
-            show_hidden=show_hidden,
-            select_callback=select_callback,
-        )
+        self.alpha = alpha
+        self._scroll_view.view = self._file_view
         self.add_gadget(self._scroll_view)
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._root_node.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._root_node.alpha = alpha
+        for node in self._root_node.iter_open_nodes():
+            node.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._root_node.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._root_node.is_transparent = is_transparent
+        for node in self._root_node.iter_open_nodes():
+            node.is_transparent = is_transparent
+        self._file_view.is_transparent = is_transparent
+        self._scroll_view.is_transparent = is_transparent
 
     def on_size(self):
         """Update tree layout on resize."""
-        super().on_size()
-        if self._scroll_view is not None:
-            self._scroll_view._view.update_tree_layout()
+        self._file_view.update_tree_layout()
 
     @property
     def directories_only(self):
         """If true, show only directories in the file view."""
-        return self._view.directories_only
+        return self._file_view.directories_only
 
     @directories_only.setter
     def directories_only(self, directories_only):
-        self._view.directories_only = directories_only
-        self._view.update_tree_layout()
+        self._file_view.directories_only = directories_only
+        self._file_view.update_tree_layout()
 
     @property
     def show_hidden(self):
         """If true, show hidden files."""
-        return self._view.show_hidden
+        return self._file_view.show_hidden
 
     @show_hidden.setter
     def show_hidden(self, show_hidden):
-        self._view.show_hidden = show_hidden
-        self._view.update_tree_layout()
+        self._file_view.show_hidden = show_hidden
+        self._file_view.update_tree_layout()
 
     @property
     def root_dir(self) -> Path:
@@ -392,9 +430,9 @@ class FileChooser(GadgetBase):
     @root_dir.setter
     def root_dir(self, path: Path):
         self._root_dir = path
-        if selected := self._scroll_view._view.selected_node:
+        if selected := self._file_view.selected_node:
             selected.unselect()
-        root = self._scroll_view._view.root_node
+        root = self._root_node
         for node in root.child_nodes:
             node.level = -1
             node.parent_node = None

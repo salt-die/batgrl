@@ -1,9 +1,6 @@
 """A toggle button gadget."""
 from collections.abc import Callable, Hashable
 
-from numpy.typing import NDArray
-
-from ..colors import ColorPair
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import (
     ButtonState,
@@ -11,7 +8,6 @@ from .behaviors.toggle_button_behavior import (
     ToggleState,
 )
 from .gadget import (
-    Char,
     Gadget,
     Point,
     PosHint,
@@ -20,7 +16,8 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
 )
-from .text import Text, str_width
+from .pane import Pane
+from .text import Text
 
 __all__ = [
     "ButtonState",
@@ -62,15 +59,8 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Initial toggle state of button.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    background_char : NDArray[Char] | str | None, default: " "
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -80,7 +70,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -104,10 +94,8 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -140,16 +128,16 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -230,6 +218,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         allow_no_selection: bool = False,
         toggle_state: ToggleState = ToggleState.OFF,
         always_release: bool = False,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -237,19 +226,12 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = " ",
-        background_color_pair: ColorPair | None = None,
     ):
-        self.normal_color_pair = (0,) * 6  # Temporary assignment
-
-        self._label_gadget = Text(
-            pos_hint={"y_hint": 0.0, "x_hint": 0.0, "anchor": "left"}
+        self._pane = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._label = Text(
+            pos_hint={"y_hint": 0.5, "anchor": "left"}, is_transparent=True
         )
-
-        self.callback = callback  # This must be set before `super().__init__`.
-
         super().__init__(
-            background_char=background_char,
             group=group,
             allow_no_selection=allow_no_selection,
             toggle_state=toggle_state,
@@ -261,12 +243,50 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_color_pair=background_color_pair,
         )
-
-        self.add_gadget(self._label_gadget)
-
+        self.add_gadgets(self._pane, self._label)
         self.label = label
+        self.callback = callback
+        self.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._pane.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._pane.is_transparent = is_transparent
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._pane.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._pane.alpha = alpha
+
+    @property
+    def label(self) -> str:
+        """Toggle button label."""
+        return self._label_text
+
+    @label.setter
+    def label(self, label: str):
+        self._label_text = label
+
+        if self.group is None:
+            on, off = CHECK_ON, CHECK_OFF
+        else:
+            on, off = TOGGLE_ON, TOGGLE_OFF
+
+        if self.toggle_state is ToggleState.ON:
+            prefix = on
+        else:
+            prefix = off
+
+        self._label.set_text(prefix + label)
 
     def update_theme(self):
         """Paint the gadget with current theme."""
@@ -278,53 +298,20 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
             case ButtonState.DOWN:
                 self.update_down()
 
-    @property
-    def label(self) -> str:
-        """Toggle button label."""
-        return self._label
-
-    @label.setter
-    def label(self, label: str):
-        self._label = label
-
-        if self.group is None:
-            if self.toggle_state is ToggleState.OFF:
-                prefix = CHECK_OFF
-            else:
-                prefix = CHECK_ON
-        else:
-            if self.toggle_state is ToggleState.OFF:
-                prefix = TOGGLE_OFF
-            else:
-                prefix = TOGGLE_ON
-
-        text = prefix + label
-        self._label_gadget.size = 1, str_width(text)
-        self._label_gadget.apply_hints()
-        self._label_gadget.add_str(text)
-
     def update_normal(self):
         """Paint the normal state."""
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_normal
+        self._pane.bg_color = self.color_theme.button_normal.bg
 
     def update_hover(self):
         """Paint the hover state."""
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_hover
+        self._pane.bg_color = self.color_theme.button_hover.bg
 
     def update_down(self):
         """Paint the down state."""
-        self.background_color_pair = self._label_gadget.colors[
-            :
-        ] = self.color_theme.button_press
+        self._pane.bg_color = self.color_theme.button_press.bg
 
     def on_toggle(self):
         """Call callback on toggle state change."""
-        if (
-            self._label_gadget.parent is not None
-        ):  # This will be false during initialization.
+        if self.root:
             self.label = self.label  # Update radio button/checkbox
-        self.callback(self.toggle_state)
+            self.callback(self.toggle_state)

@@ -1,5 +1,4 @@
 """A graphic gadget."""
-from math import prod
 from pathlib import Path
 
 import cv2
@@ -7,11 +6,11 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
-from .gadget_base import (
+from .gadget import (
     Anchor,
-    Char,
+    Cell,
     Easing,
-    GadgetBase,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -21,14 +20,12 @@ from .gadget_base import (
     SizeHintDict,
     clamp,
     lerp,
-    style_char,
     subscribable,
 )
-from .texture_tools import Interpolation
+from .texture_tools import Interpolation, _composite
 
 __all__ = [
     "Anchor",
-    "Char",
     "Easing",
     "Graphics",
     "Interpolation",
@@ -41,12 +38,11 @@ __all__ = [
     "SizeHintDict",
     "clamp",
     "lerp",
-    "style_char",
     "subscribable",
 ]
 
 
-class Graphics(GadgetBase):
+class Graphics(Gadget):
     r"""
     A graphic gadget. Displays arbitrary RGBA textures.
 
@@ -60,8 +56,7 @@ class Graphics(GadgetBase):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If gadget is transparent, the alpha channel of the underlying texture will be
-        multiplied by this value. (0 <= alpha <= 1.0)
+        Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
@@ -73,8 +68,7 @@ class Graphics(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -89,7 +83,7 @@ class Graphics(GadgetBase):
     default_color : AColor
         Default texture color.
     alpha : float
-        Transparency of gadget if :attr:`is_transparent` is true.
+        Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
     size : Size
@@ -124,16 +118,16 @@ class Graphics(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -228,7 +222,7 @@ class Graphics(GadgetBase):
 
     @property
     def alpha(self) -> float:
-        """Transparency of gadget if :attr:`is_transparent` is true."""
+        """Transparency of gadget."""
         return self._alpha
 
     @alpha.setter
@@ -257,63 +251,34 @@ class Graphics(GadgetBase):
             raise TypeError(f"{interpolation} is not a valid interpolation type.")
         self._interpolation = interpolation
 
-    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
+    def _render(self, canvas: NDArray[Cell]):
+        """Render visible region of gadget."""
         texture = self.texture
-        foreground = colors[..., :3]
-        background = colors[..., 3:]
-
+        chars = canvas["char"]
+        styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
+        foreground = canvas["fg_color"]
+        background = canvas["bg_color"]
         abs_pos = self.absolute_pos
-        if self.is_transparent:
-            for rect in self.region.rects():
-                dst = rect.to_slices()
-                src_y, src_x = rect.to_slices(abs_pos)
+        alpha = self.alpha
+        for rect in self.region.rects():
+            dst = rect.to_slices()
+            src_y, src_x = rect.to_slices(abs_pos)
+            fg_rect = foreground[dst]
+            bg_rect = background[dst]
+            even_rows = texture[2 * src_y.start : 2 * src_y.stop : 2, src_x]
+            odd_rows = texture[2 * src_y.start + 1 : 2 * src_y.stop : 2, src_x]
 
-                mask = canvas["char"][dst] != "▀"
-                foreground[dst][mask] = background[dst][mask]
+            if self.is_transparent:
+                mask = chars[dst] != "▀"
+                fg_rect[mask] = bg_rect[mask]
+                _composite(fg_rect, even_rows[..., :3], even_rows[..., 3, None], alpha)
+                _composite(bg_rect, odd_rows[..., :3], odd_rows[..., 3, None], alpha)
+            else:
+                fg_rect[:] = even_rows[..., :3]
+                bg_rect[:] = odd_rows[..., :3]
 
-                even_rows = texture[2 * src_y.start : 2 * src_y.stop : 2, src_x]
-                odd_rows = texture[2 * src_y.start + 1 : 2 * src_y.stop : 2, src_x]
-
-                even_buffer = np.subtract(
-                    even_rows[..., :3], foreground[dst], dtype=float
-                )
-                odd_buffer = np.subtract(
-                    odd_rows[..., :3], background[dst], dtype=float
-                )
-
-                norm_alpha = (
-                    prod(
-                        ancestor.alpha
-                        for ancestor in self.ancestors()
-                        if isinstance(ancestor, Graphics)
-                    )
-                    * self.alpha
-                    / 255
-                )
-
-                even_buffer *= even_rows[..., 3, None]
-                even_buffer *= norm_alpha
-
-                odd_buffer *= odd_rows[..., 3, None]
-                odd_buffer *= norm_alpha
-
-                np.add(
-                    even_buffer, foreground[dst], out=foreground[dst], casting="unsafe"
-                )
-                np.add(
-                    odd_buffer, background[dst], out=background[dst], casting="unsafe"
-                )
-                canvas[dst] = style_char("▀")
-        else:
-            for rect in self.region.rects():
-                dst = rect.to_slices()
-                src_y, src_x = rect.to_slices(abs_pos)
-                even_rows = texture[2 * src_y.start : 2 * src_y.stop : 2, src_x]
-                odd_rows = texture[2 * src_y.start + 1 : 2 * src_y.stop : 2, src_x]
-                foreground[dst] = even_rows[..., :3]
-                background[dst] = odd_rows[..., :3]
-                canvas[dst] = style_char("▀")
+            chars[dst] = "▀"
+            styles[dst] = False
 
     def to_png(self, path: Path):
         """Write :attr:`texture` to provided path as a `png` image."""

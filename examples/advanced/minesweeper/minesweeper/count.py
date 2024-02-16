@@ -2,7 +2,19 @@ from functools import partial
 
 import numpy as np
 
-from .colors import COUNT, EIGHT, FIVE, FOUR, ONE, SEVEN, SIX, THREE, TWO, ZERO
+from .colors import (
+    BORDER,
+    COUNT_SQUARE,
+    EIGHT,
+    FIVE,
+    FOUR,
+    ONE,
+    SEVEN,
+    SIX,
+    THREE,
+    TWO,
+    ZERO,
+)
 from .grid import Grid
 from .unicode_chars import BOMB
 
@@ -35,17 +47,14 @@ class Count(Grid):
     """
 
     def __init__(self, count, minefield, **kwargs):
-        super().__init__(
-            size=count.shape,
-            is_light=True,
-            default_color_pair=COUNT,
-            **kwargs,
-        )
+        super().__init__(size=count.shape, is_light=True, **kwargs)
         v_center, h_center = self.cell_center_indices
 
+        self.canvas["fg_color"] = BORDER
+        self.canvas["bg_color"] = COUNT_SQUARE
         self.canvas["char"][v_center, h_center] = stringify(count)
         self.canvas["char"][v_center, h_center][minefield == 1] = BOMB
-        self.colors[v_center, h_center, :3] = np.dstack(colorify(count))
+        self.canvas["fg_color"][v_center, h_center] = np.dstack(colorify(count))
 
         ys, xs = (self.canvas["char"] == BOMB).nonzero()
         self.canvas["char"][ys, xs + 1] = ""

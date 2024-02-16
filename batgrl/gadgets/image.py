@@ -41,8 +41,7 @@ class Image(Graphics):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If gadget is transparent, the alpha channel of the underlying texture will be
-        multiplied by this value. (0 <= alpha <= 1.0)
+        Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
@@ -54,8 +53,7 @@ class Image(Graphics):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -72,7 +70,7 @@ class Image(Graphics):
     default_color : AColor
         Default texture color.
     alpha : float
-        Transparency of gadget if :attr:`is_transparent` is true.
+        Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
     size : Size
@@ -107,16 +105,16 @@ class Image(Graphics):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -260,8 +258,7 @@ class Image(Graphics):
         default_color : AColor, default: AColor(0, 0, 0, 0)
             Default texture color.
         alpha : float, default: 1.0
-            If gadget is transparent, the alpha channel of the underlying texture will
-            be multiplied by this value. (0 <= alpha <= 1.0)
+            Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
         size : Size, default: Size(10, 10)
@@ -273,8 +270,7 @@ class Image(Graphics):
         pos_hint : PosHint | PosHintDict | None , default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
-            If true, gadget is rendered with alpha compositing; otherwise, alpha values
-            are ignored.
+            Whether gadget is transparent.
         is_visible : bool, default: True
             Whether gadget is visible. Gadget will still receive input events if not
             visible.

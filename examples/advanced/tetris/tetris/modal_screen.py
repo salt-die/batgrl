@@ -1,16 +1,12 @@
 import asyncio
 
 import numpy as np
-from batgrl.colors import BLACK, Color, ColorPair, gradient
+from batgrl.colors import Color, gradient
 from batgrl.gadgets.text import Text
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")
-GRADIENT = gradient(
-    ColorPair.from_colors(DARK_PURPLE, BLACK),
-    ColorPair.from_colors(LIGHT_PURPLE, BLACK),
-    9,
-)
+GRADIENT = gradient(DARK_PURPLE, LIGHT_PURPLE, 9)
 LINE_GLOW_DURATION = 0.09
 
 ONE = """
@@ -21,9 +17,7 @@ ONE = """
   █   █
   █   █
   █▄▄▄█
-""".splitlines()[
-    1:
-]
+""".splitlines()[1:]
 
 TWO = """
  ▄▄▄▄▄▄▄
@@ -33,9 +27,7 @@ TWO = """
 █ ▄▄▄▄▄▄█
 █ █▄▄▄▄▄
 █▄▄▄▄▄▄▄█
-""".splitlines()[
-    1:
-]
+""".splitlines()[1:]
 
 THREE = """
  ▄▄▄▄▄▄▄
@@ -45,9 +37,7 @@ THREE = """
 █▄▄▄    █
  ▄▄▄█   █
 █▄▄▄▄▄▄▄█
-""".splitlines()[
-    1:
-]
+""".splitlines()[1:]
 
 GAME_OVER = """
  ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄
@@ -57,9 +47,7 @@ GAME_OVER = """
 █  █ █  █      █       █    ▄▄▄█  █  █▄█  █       █    ▄▄▄█    ▄▄  █
 █  █▄▄█ █  ▄   █ ██▄██ █   █▄▄▄   █       ██     ██   █▄▄▄█   █  █ █
 █▄▄▄▄▄▄▄█▄█ █▄▄█▄█   █▄█▄▄▄▄▄▄▄█  █▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█▄▄▄█  █▄█
-""".splitlines()[
-    1:
-]
+""".splitlines()[1:]
 
 PAUSED = """
            ▄▄▄▄▄▄▄ ▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄
@@ -69,9 +57,7 @@ PAUSED = """
           █    ▄▄▄█      █       █▄▄▄▄▄  █    ▄▄▄█ █▄█   █
           █   █   █  ▄   █       █▄▄▄▄▄█ █   █▄▄▄█       █
           █▄▄▄█   █▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄█
-""".splitlines()[
-    1:
-]
+""".splitlines()[1:]
 
 
 class ModalScreen(Text):
@@ -87,8 +73,7 @@ class ModalScreen(Text):
             is_enabled=is_enabled,
             **kwargs,
         )
-        for i, color in enumerate(GRADIENT):
-            self.colors[i, :] = color
+        self.canvas["fg_color"][:9].swapaxes(0, 1)[:] = GRADIENT
 
     def on_add(self):
         super().on_add()
@@ -110,7 +95,7 @@ class ModalScreen(Text):
         self.callback = callback
 
         for i, line in enumerate(GAME_OVER if is_game_over else PAUSED, start=1):
-            self.add_str(line, (i, 0))
+            self.add_str(line, pos=(i, 0))
 
         self._line_glow_task = asyncio.create_task(self._line_glow())
         self.is_enabled = True
@@ -120,7 +105,7 @@ class ModalScreen(Text):
             self.canvas["char"][:] = " "
 
             for i, line in enumerate(number, start=1):
-                self.add_str(line, (i, 31))
+                self.add_str(line, pos=(i, 31))
 
             await asyncio.sleep(1)
 
@@ -130,7 +115,7 @@ class ModalScreen(Text):
         self.callback()
 
     async def _line_glow(self):
-        colors = self.colors
+        colors = self.canvas["fg_color"]
 
         h = colors.shape[0]
         buffer = colors.copy()
@@ -142,8 +127,8 @@ class ModalScreen(Text):
                 start, stop, _ = slice(max(0, h - 3 - i), max(0, h - i)).indices(h)
                 lines = stop - start
 
-                colors[start:stop, :, :3].T[:] = (
-                    colors[start:stop, :, :3].T // alpha[:lines] + white[:lines]
+                colors[start:stop].T[:] = (
+                    colors[start:stop].T // alpha[:lines] + white[:lines]
                 )
 
                 try:

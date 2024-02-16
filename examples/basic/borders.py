@@ -1,12 +1,9 @@
 from batgrl.app import App
-from batgrl.colors import BLACK, Color, ColorPair, rainbow_gradient
+from batgrl.colors import rainbow_gradient
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.text import Border, Text
 
-border_colors = [
-    ColorPair.from_colors(fg, BLACK)
-    for fg in rainbow_gradient(len(Border.__args__), color_type=Color)
-]
+border_colors = rainbow_gradient(len(Border.__args__))
 
 
 class BordersApp(App):
@@ -14,7 +11,7 @@ class BordersApp(App):
         grid_layout = GridLayout(grid_columns=6, grid_rows=3)
         for border, color in zip(Border.__args__, border_colors):
             gadget = Text(size=(3, 17))
-            gadget.add_border(border, bold=True, color_pair=color)
+            gadget.add_border(border, fg_color=color)
             gadget.add_str(f"{f'*{border}*':^17}", pos=(1, 1), markdown=True)
             grid_layout.add_gadget(gadget)
 

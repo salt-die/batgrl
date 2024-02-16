@@ -3,8 +3,8 @@ Movable children behavior for a gadget.
 
 Translate movable's children by dragging them.
 """
+from ...geometry import clamp
 from ...io import MouseButton
-from ..gadget import clamp
 from .grabbable import Grabbable
 
 __all__ = ["MovableChildren"]

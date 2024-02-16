@@ -178,7 +178,7 @@ def rainbow(texture):
     colors = 0.5 + 0.5 * np.cos(
         np.arctan2(xs, ys)[..., None] + 3.0 * monotonic() + (0, 23, 21)
     )
-    texture[..., :3] = (colors * 255).astype(int)
+    texture[:] = (colors * 255).astype(int)
 
 
 class RainbowBehavior:
@@ -192,7 +192,7 @@ class RainbowBehavior:
 
     async def _rainbow(self):
         while True:
-            rainbow(self.colors)
+            rainbow(self.canvas["fg_color"])
             await asyncio.sleep(0)
 
 

@@ -1,53 +1,55 @@
-"""
-A text particle field.
-
-A particle field specializes in handling many single "pixel" children.
-"""
-from typing import Any
-
-import numpy as np
+"""A gadget with a background color that is composited if transparent."""
 from numpy.typing import NDArray
 
+from ..colors import BLACK, Color
 from .gadget import (
+    Anchor,
     Cell,
+    Easing,
     Gadget,
     Point,
     PosHint,
     PosHintDict,
+    Region,
     Size,
     SizeHint,
     SizeHintDict,
+    clamp,
+    lerp,
     style_char,
+    subscribable,
 )
-from .text_tools import cell_sans
+from .texture_tools import _composite
 
 __all__ = [
+    "Anchor",
+    "Cell",
+    "Easing",
     "Point",
     "PosHint",
     "PosHintDict",
     "Size",
     "SizeHint",
     "SizeHintDict",
-    "TextParticleField",
+    "Region",
+    "Pane",
+    "clamp",
+    "lerp",
+    "style_char",
+    "subscribable",
 ]
 
 
-class TextParticleField(Gadget):
+class Pane(Gadget):
     r"""
-    A text particle field.
-
-    A particle field specializes in rendering many single "pixel" children by
-    setting particle positions, chars, and color pairs. This is more efficient than
-    rendering many 1x1 gadgets.
+    A gadget with a background color that is composited if transparent.
 
     Parameters
     ----------
-    particle_positions : NDArray[np.int32] | None, default: None
-        An array of particle positions with shape `(N, 2)`.
-    particle_cells : NDArray[Cell] | None, default: None
-        An array of Cells of particles with shape `(N,)`.
-    particle_properties : dict[str, Any] | None, default: None
-        Additional particle properties.
+    bg_color : Color, default: BLACK
+        Background color of gadget.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -56,7 +58,7 @@ class TextParticleField(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
-    is_transparent : bool, default: False
+    is_transparent : bool, default: True
         Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
@@ -67,14 +69,10 @@ class TextParticleField(Gadget):
 
     Attributes
     ----------
-    nparticles : int
-        Number of particles in particle field.
-    particle_positions : NDArray[np.int32]
-        An array of particle positions with shape `(N, 2)`.
-    particle_cells : NDArray[Cell]
-        An array of Cells of particles with shape `(N,)`.
-    particle_properties : dict[str, Any]
-        Additional particle properties.
+    bg_color : Color
+        Background color of gadget.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -175,14 +173,13 @@ class TextParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_positions: NDArray[np.int32] | None = None,
-        particle_cells: NDArray[Cell] | None = None,
-        particle_properties: dict[str, Any] = None,
+        bg_color: Color = BLACK,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
-        is_transparent: bool = False,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
@@ -195,49 +192,34 @@ class TextParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
-        if particle_positions is None:
-            self.particle_positions = np.zeros((0, 2), dtype=int)
-        else:
-            self.particle_positions = particle_positions
-
-        if particle_cells is None:
-            self.particle_cells = np.full(len(self.particle_positions), style_char())
-        else:
-            self.particle_cells = particle_cells
-
-        if particle_properties is None:
-            self.particle_properties = {}
-        else:
-            self.particle_properties = particle_properties
+        self.bg_color: Color = bg_color
+        """Background color of gadget."""
+        self.alpha = alpha
 
     @property
-    def nparticles(self) -> int:
-        """Number of particles in particle field."""
-        return len(self.particle_positions)
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._alpha
+
+    @alpha.setter
+    @subscribable
+    def alpha(self, alpha: float):
+        self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
-        chars = canvas[cell_sans("bg_color")]
-        bg_color = canvas["bg_color"]
-        offy, offx = self.absolute_pos
-        ppos = self.particle_positions
-        pchars = self.particle_cells[cell_sans("bg_color")]
-        pbg_color = self.particle_cells["bg_color"]
+        chars = canvas["char"]
+        styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
+        foreground = canvas["fg_color"]
+        background = canvas["bg_color"]
         for rect in self.region.rects():
-            height = rect.bottom - rect.top
-            width = rect.right - rect.left
-            pos = ppos - (rect.top - offy, rect.left - offx)
-            inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
-
-            if self.is_transparent:
-                not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
-                where_inbounds = np.nonzero(inbounds & not_whitespace)
-            else:
-                where_inbounds = np.nonzero(inbounds)
-
-            ys, xs = pos[where_inbounds].T
             dst = rect.to_slices()
-            if not self.is_transparent:
-                bg_color[dst][ys, xs] = pbg_color[where_inbounds]
-            chars[dst][ys, xs] = pchars[where_inbounds]
+            fg_rect = foreground[dst]
+            bg_rect = background[dst]
+            if self.is_transparent:
+                _composite(fg_rect, self.bg_color, 255, self.alpha)
+                _composite(bg_rect, self.bg_color, 255, self.alpha)
+            else:
+                chars[dst] = " "
+                styles[dst] = False
+                fg_rect[:] = bg_rect[:] = self.bg_color

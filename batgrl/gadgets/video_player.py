@@ -49,8 +49,7 @@ class VideoPlayer(Graphics):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If gadget is transparent, the alpha channel of the underlying texture will be
-        multiplied by this value. (0 <= alpha <= 1.0)
+        Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
@@ -62,8 +61,7 @@ class VideoPlayer(Graphics):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -84,7 +82,7 @@ class VideoPlayer(Graphics):
     default_color : AColor
         Default texture color.
     alpha : float
-        Transparency of gadget if :attr:`is_transparent` is true.
+        Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
     size : Size
@@ -119,16 +117,16 @@ class VideoPlayer(Graphics):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -228,12 +226,6 @@ class VideoPlayer(Graphics):
         self.source = source
         self.loop = loop
 
-    def on_remove(self):
-        """Pause video and release resource on remove."""
-        super().on_remove()
-        self.pause()
-        self._release_resource()
-
     @property
     def source(self) -> Path | str | int:
         """A path, URL, or capturing device (by index) of the video."""
@@ -278,21 +270,17 @@ class VideoPlayer(Graphics):
             self._current_frame = None
             self.texture[:] = self.default_color
 
-    def on_size(self):
-        """Resize current frame on resize."""
-        h, w = self.size
-        h *= 2
-        self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
-
-        if self._current_frame is not None:
-            self.texture[:] = cv2.resize(
-                self._current_frame,
-                (w, h),
-                interpolation=Interpolation._to_cv_enum[self.interpolation],
-            )
-
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
+
+    def _display_current_frame(self):
+        h, w = self.size
+        if self._current_frame is not None:
+            self.texture = cv2.resize(
+                self._current_frame,
+                (w, 2 * h),
+                interpolation=Interpolation._to_cv_enum[self.interpolation],
+            )
 
     async def _play_video(self):
         if self._resource is None:
@@ -313,16 +301,23 @@ class VideoPlayer(Graphics):
 
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-
-            self.texture[:] = cv2.resize(
-                self._current_frame,
-                (self.width, 2 * self.height),
-                interpolation=Interpolation._to_cv_enum[self.interpolation],
-            )
+            self._display_current_frame()
 
         if self.loop:
             self.seek(0)
             self.play()
+
+    def on_size(self):
+        """Resize current frame on resize."""
+        h, w = self.size
+        self.texture = np.full((2 * h, w, 4), self.default_color, dtype=np.uint8)
+        self._display_current_frame()
+
+    def on_remove(self):
+        """Pause video and release resource on remove."""
+        super().on_remove()
+        self.pause()
+        self._release_resource()
 
     def pause(self):
         """Pause video."""

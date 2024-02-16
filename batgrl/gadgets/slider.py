@@ -1,25 +1,21 @@
 """A slider gadget."""
 from collections.abc import Callable
 
-from numpy.typing import NDArray
-
-from ..colors import Color, ColorPair
+from ..colors import BLACK, WHITE, Color
 from ..io import MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
-from .text import (
-    Char,
+from .pane import (
+    Pane,
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    Text,
     clamp,
-    coerce_char,
-    style_char,
     subscribable,
 )
+from .text import Text
 
 __all__ = [
     "Point",
@@ -31,12 +27,8 @@ __all__ = [
     "Slider",
 ]
 
-DEFAULT_SLIDER_COLOR_PAIR = ColorPair.from_hex("2A3CA0070C25")
-DEFAULT_SLIDER_FILL_COLOR = Color.from_hex("5A6FE8")
-DEFAULT_SLIDER_HANDLE_COLOR_PAIR = ColorPair.from_hex("DDE4ED070C25")
 
-
-class Slider(Grabbable, Text):
+class Slider(Grabbable, Pane):
     r"""
     A slider gadget.
 
@@ -50,16 +42,12 @@ class Slider(Grabbable, Text):
         Start value of slider. If `None`, start value is :attr:`min`.
     callback : Callable | None, default: None
         Single argument callable called with new value of slider when slider is updated.
-    handle_color_pair : ColorPair | None, default: DEFAULT_SLIDER_HANDLE_COLOR_PAIR
-        Color pair of slider handle. If `None`, handle color pair is
-        :attr:`default_color_pair`.
-    handle_char : NDArray[Char] | str, default: "█"
-        Character used for slider handle.
-    fill_color: Color | None, default: DEFAULT_SLIDER_FILL_COLOR
-        Color of "filled" portion of slider. If `None`, fill color is
-        :attr:`default_color_pair`.
-    fill_char: NDArray[Char] | str, default: "▬"
-        Character used for slider.
+    handle_color : Color, default: WHITE
+        Color of handle.
+    slider_color: Color, default: WHITE
+        Color of slider.
+    fill_color: Color, default: WHITE
+        Color of filled portion of slider.
     slider_enabled : bool, default: True
         Whether slider value can be changed.
     is_grabbable : bool, default: True
@@ -68,11 +56,10 @@ class Slider(Grabbable, Text):
         If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: MouseButton.LEFT
         Mouse button used for grabbing.
-    default_char : NDArray[Char] | str, default: " "
-        Default background character. This should be a single unicode half-width
-        grapheme.
-    default_color_pair : ColorPair, default: DEFAULT_SLIDER_COLOR_PAIR
-        Default color of gadget.
+    bg_color : Color, default: BLACK
+        Background color of gadget.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -82,7 +69,7 @@ class Slider(Grabbable, Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether whitespace is transparent.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -100,14 +87,12 @@ class Slider(Grabbable, Text):
         Current value of slider.
     callback : Callable
         Single argument callable called with new value of slider when slider is updated.
-    handle_color_pair : ColorPair
-        Color pair of slider handle.
-    handle_char : NDArray[Char]
-        Character used for slider handle.
-    fill_color : Color
-        Color of "filled" portion of slider.
-    fill_char : NDArray[Char]
-        Character used for slider.
+    slider_color: Color
+        Color of slider.
+    fill_color: Color
+        Color of filled portion of slider.
+    fill_color: Color
+        Color of filled portion of slider.
     slider_enabled : bool
         True if slider value can be changed.
     proportion : float
@@ -118,6 +103,10 @@ class Slider(Grabbable, Text):
         If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
+    bg_color : Color
+        Background color of gadget.
+    alpha : float
+        Transparency of gadget.
     is_grabbed : bool
         True if gadget is grabbed.
     mouse_dyx : Point
@@ -126,18 +115,6 @@ class Slider(Grabbable, Text):
         Last vertical change in mouse position.
     mouse_dx : int
         Last horizontal change in mouse position.
-    canvas : NDArray[Char]
-        The array of characters for the gadget.
-    colors : NDArray[np.uint8]
-        The array of color pairs for each character in `canvas`.
-    default_char : NDArray[Char]
-        Default background character.
-    default_color_pair : ColorPair
-        Default color pair of gadget.
-    default_fg_color : Color
-        The default foreground color.
-    default_bg_color : Color
-        The default background color.
     size : Size
         Size of gadget.
     height : int
@@ -170,16 +147,16 @@ class Slider(Grabbable, Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -193,14 +170,6 @@ class Slider(Grabbable, Text):
         Ungrab the gadget.
     grab_update(mouse_event):
         Update gadget with incoming mouse events while grabbed.
-    add_border(style="light", ...):
-        Add a border to the gadget.
-    add_syntax_highlighting(lexer, style):
-        Add syntax highlighting to current text in canvas.
-    add_str(str, pos, ...):
-        Add a single line of text to the canvas.
-    set_text(text, ...):
-        Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
         Update gadget after a resize.
     apply_hints():
@@ -256,16 +225,15 @@ class Slider(Grabbable, Text):
         max: float,
         start_value: float | None = None,
         callback: Callable | None = None,
-        handle_color_pair: ColorPair | None = DEFAULT_SLIDER_HANDLE_COLOR_PAIR,
-        handle_char: NDArray[Char] | str = "█",
-        fill_color: Color | None = DEFAULT_SLIDER_FILL_COLOR,
-        fill_char: NDArray[Char] | str = "▬",
+        handle_color: Color = WHITE,
+        slider_color: Color = WHITE,
+        fill_color: Color = WHITE,
         slider_enabled: bool = True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
-        default_char: NDArray[Char] | str = " ",
-        default_color_pair: ColorPair = DEFAULT_SLIDER_COLOR_PAIR,
+        bg_color: Color = BLACK,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -278,8 +246,8 @@ class Slider(Grabbable, Text):
             is_grabbable=is_grabbable,
             ptf_on_grab=ptf_on_grab,
             mouse_button=mouse_button,
-            default_char=default_char,
-            default_color_pair=default_color_pair,
+            bg_color=bg_color,
+            alpha=alpha,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -294,19 +262,24 @@ class Slider(Grabbable, Text):
         self._min = min
         self._max = max
 
-        self._handle = Text(size=(1, 1), pos_hint={"y_hint": 0.5, "anchor": "top"})
-        self.add_gadget(self._handle)
-        self.handle_color_pair = handle_color_pair or self.default_color_pair
-        self.handle_char = handle_char
+        self._slider = Text(
+            default_cell="▬",
+            size=(1, 1),
+            pos_hint={"y_hint": 0.5, "anchor": "top"},
+            size_hint={"width_hint": 1.0},
+            is_transparent=True,
+        )
+        self._handle = Text(
+            default_cell="█", size=(1, 1), pos_hint={"y_hint": 0.5, "anchor": "top"}
+        )
+        self.add_gadgets(self._slider, self._handle)
 
-        self.fill_color = fill_color or self.default_fg_color
-        self.fill_char = fill_char
-
+        self.handle_color = handle_color
+        self.slider_color = slider_color
+        self.fill_color = fill_color
         self.callback = callback
-
-        self.slider_enabled = True
-        self.value = self.min if start_value is None else start_value
         self.slider_enabled = slider_enabled
+        self.value = self.min if start_value is None else start_value
 
     @property
     def min(self) -> float:
@@ -317,7 +290,6 @@ class Slider(Grabbable, Text):
     def min(self, value: float):
         if value >= self.max:
             raise ValueError("Min can't be greater than or equal to max.")
-
         self._min = value
         self.proportion = self.proportion
 
@@ -330,29 +302,28 @@ class Slider(Grabbable, Text):
     def max(self, value: float):
         if value <= self.min:
             raise ValueError("Max can't be less than or equal to min.")
-
         self._max = value
         self.proportion = self.proportion
 
     @property
-    def handle_color_pair(self) -> ColorPair:
-        """Color pair of slider handle."""
-        return self._handle_color_pair
+    def handle_color(self) -> Color:
+        """Color of handle."""
+        return self._handle.default_fg_color
 
-    @handle_color_pair.setter
-    def handle_color_pair(self, color_pair: ColorPair):
-        self._handle_color_pair = color_pair
-        self._handle.colors[:] = color_pair
+    @handle_color.setter
+    def handle_color(self, handle_color: Color | str):
+        self._handle.default_fg_color = handle_color
+        self._handle.canvas["fg_color"] = handle_color
 
     @property
-    def handle_char(self) -> NDArray[Char]:
-        """Character used for slider handle."""
-        return self._handle_char
+    def slider_color(self) -> Color:
+        """Color of slider."""
+        return self._slider.default_fg_color
 
-    @handle_char.setter
-    def handle_char(self, char: NDArray[Char] | str):
-        self._handle_char = coerce_char(char, style_char("█"))
-        self._handle.canvas[:] = self._handle_char
+    @slider_color.setter
+    def slider_color(self, slider_color: Color | str):
+        self._slider.default_fg_color = slider_color
+        self._slider.canvas["fg_color"][:, self._handle.x :] = slider_color
 
     @property
     def fill_color(self) -> Color:
@@ -362,25 +333,7 @@ class Slider(Grabbable, Text):
     @fill_color.setter
     def fill_color(self, color: Color):
         self._fill_color = color
-        self.colors[self.height // 2, :, :3] = color
-
-    @property
-    def fill_char(self) -> NDArray[Char]:
-        """Character used for slider."""
-        return self._fill_char
-
-    @fill_char.setter
-    def fill_char(self, char: NDArray[Char] | str):
-        self._fill_char = coerce_char(char, style_char("▬"))
-        self.canvas[self.height // 2] = self._fill_char
-
-    def on_size(self):
-        """Resize canvas and color arrays and reposition slider handle."""
-        super().on_size()
-        self.canvas[:] = self.default_char
-        self.canvas[self.height // 2] = self.fill_char
-        self.colors[:] = self.default_color_pair
-        self.proportion = self.proportion
+        self._slider.canvas["fg_color"][:, : self._handle.x] = color
 
     @property
     def proportion(self) -> float:
@@ -397,9 +350,8 @@ class Slider(Grabbable, Text):
         self._value = (self.max - self.min) * self._proportion + self.min
 
         self._handle.x = x = round(self._proportion * self.fill_width)
-        y = self.height // 2
-        self.colors[y, :x, :3] = self.fill_color
-        self.colors[y, x:, :3] = self.default_fg_color
+        self._slider.canvas["fg_color"][:, :x] = self.fill_color
+        self._slider.canvas["fg_color"][:, x:] = self.slider_color
 
         if self.callback is not None:
             self.callback(self._value)
@@ -420,6 +372,16 @@ class Slider(Grabbable, Text):
         """Width of the slider minus the width of the handle."""
         return self.width - self._handle.width
 
+    def on_size(self):
+        """Resize canvas and color arrays and reposition slider handle."""
+        super().on_size()
+        self.proportion = self.proportion
+
+    def on_add(self):
+        """Resize canvas and color arrays and reposition slider handle."""
+        super().on_add()
+        self.proportion = self.proportion
+
     def grab(self, mouse_event: MouseEvent):
         """Move handle to mouse position on grab."""
         if (
@@ -432,6 +394,5 @@ class Slider(Grabbable, Text):
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update proportion and handle position on grab update."""
-        x = clamp(self.to_local(mouse_event.position).x, 0, self.width - 1)
-        self._handle.x = x
+        x = clamp(self.to_local(mouse_event.position).x, 0, self.fill_width)
         self.proportion = 0 if self.fill_width == 0 else x / self.fill_width

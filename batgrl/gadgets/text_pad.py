@@ -1,11 +1,11 @@
 """A text-pad gadget for multiline editable text."""
 from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
+from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -28,7 +28,7 @@ __all__ = [
 ]
 
 
-class TextPad(Themable, Grabbable, Focusable, GadgetBase):
+class TextPad(Themable, Grabbable, Focusable, Gadget):
     r"""
     A text-pad gadget for multiline editable text.
 
@@ -36,6 +36,8 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     Parameters
     ----------
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -45,7 +47,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -55,6 +57,8 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
     Attributes
     ----------
+    alpha : float
+        Transparency of gadget.
     text : str
         The text pad's text.
     cursor : Point
@@ -66,9 +70,9 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     page_lines : int
         Number of rows a page-up or -down moves.
     is_focused : bool
-        Return true if gadget has focus.
+        Whether gadget has focus.
     any_focused : bool
-        Return true if any gadget has focus.
+        Whether any gadget has focus.
     size : Size
         Size of gadget.
     height : int
@@ -101,16 +105,16 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -211,6 +215,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
     def __init__(
         self,
         *,
+        alpha: float = 1.0,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -219,6 +224,14 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._cursor = Cursor()
+        self._pad = Text(size=(1, 1))
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            arrow_keys_enabled=False,
+            is_grabbable=False,
+            alpha=0,
+        )
         super().__init__(
             size=size,
             pos=pos,
@@ -235,27 +248,41 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self._redo_stack = []
         self._undo_buffer = []
         self._undo_buffer_type = "add"
+        self.alpha = alpha
 
-        self._cursor = Gadget(size=(1, 1), is_enabled=False, is_transparent=True)
-        self._pad = Text(size=(1, 1))
         self._pad.add_gadget(self._cursor)
-        self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            arrow_keys_enabled=False,
-            is_grabbable=False,
-        )
         self._scroll_view.view = self._pad
         self.add_gadget(self._scroll_view)
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._pad.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._pad.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._pad.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._pad.is_transparent = is_transparent
+        self._scroll_view.is_transparent = is_transparent
 
     def update_theme(self):
         """Paint the gadget with current theme."""
         primary = self.color_theme.primary
+        fg = primary.fg
+        bg = primary.bg
 
-        self._cursor.background_color_pair = primary.reversed()
-        self._pad.colors[:] = primary
-        self._pad.default_color_pair = primary
-        self._scroll_view.background_color_pair = primary.bg_color * 2
-
+        self._cursor.bg_color = fg
+        self._cursor.fg_color = bg
+        self._pad.canvas["fg_color"] = self._pad.default_fg_color = fg
+        self._pad.canvas["bg_color"] = self._pad.default_bg_color = bg
         self._highlight_selection()
 
     def on_size(self):
@@ -354,8 +381,8 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         self._highlight_selection()
 
     def _highlight_selection(self):
-        colors = self._pad.colors
-        colors[:] = self._pad.default_color_pair
+        colors = self._pad.canvas[["fg_color", "bg_color"]]
+        colors[:] = self._pad.default_fg_color, self._pad.default_bg_color
 
         if self._selection_start != self._selection_end:
             if self._selection_start > self._selection_end:
@@ -364,10 +391,10 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             else:
                 sy, sx = self._selection_start
                 ey, ex = self._selection_end
+
             highlight = self.color_theme.text_pad_selection_highlight
             ll = self._line_lengths
-
-            if ey == sy:
+            if sy == ey:
                 colors[sy, sx:ex] = highlight
             else:
                 colors[sy, sx : ll[sy]] = highlight
@@ -444,7 +471,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
         len_start = ll[sy] = sx + len_end
 
         canvas[sy, sx:len_start] = canvas[ey, ex : ex + len_end]
-        canvas[sy, len_start:] = pad.default_char
+        canvas[sy, len_start:] = pad.default_cell
 
         remaining = canvas[ey + 1 :]
         canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
@@ -477,7 +504,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             if ll[y] >= pad.width:
                 pad.width = ll[y] + 1
 
-            pad.add_str(line, (y, x))
+            pad.add_str(line, pos=(y, x))
             pad.canvas[y, x + width_line : ll[y]] = line_remaining
 
             self.cursor = y, x + width_line
@@ -489,7 +516,7 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
 
             pad.height += newlines
             pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
-            pad.canvas[y, x : ll[y]] = pad.default_char
+            pad.canvas[y, x : ll[y]] = pad.default_cell
 
             ll[y] = x + str_width(first)
             for i, line in enumerate(lines, start=y + 1):
@@ -500,13 +527,13 @@ class TextPad(Themable, Grabbable, Focusable, GadgetBase):
             if max_width >= pad.width:
                 pad.width = max_width + 1
 
-            pad.add_str(first, (y, x))
+            pad.add_str(first, pos=(y, x))
             for i, line in enumerate(lines, start=y + 1):
-                pad.add_str(line.ljust(pad.width), (i, 0))
+                pad.add_str(line.ljust(pad.width), pos=(i, 0))
 
-            pad.add_str(last, (last_y, 0))
+            pad.add_str(last, pos=(last_y, 0))
             pad.canvas[last_y, width_last : ll[last_y]] = line_remaining
-            pad.canvas[last_y, ll[last_y] :] = pad.default_char
+            pad.canvas[last_y, ll[last_y] :] = pad.default_cell
 
             self.cursor = last_y, width_last
 

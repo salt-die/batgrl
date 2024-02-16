@@ -1,7 +1,7 @@
-from batgrl.colors import BLACK, Color, ColorPair
+from batgrl.colors import BLACK, WHITE, Color, lerp_colors
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
-from batgrl.gadgets.gadget import Gadget
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.pane import Pane
+from batgrl.gadgets.text import Text, style_char
 
 from .particles import Element
 
@@ -13,24 +13,19 @@ class ElementButton(ButtonBehavior, Text):
 
     def __init__(self, pos, element):
         self.element = element
-
+        self.down_color = lerp_colors(WHITE, element.COLOR, 0.5)
         super().__init__(
             size=(2, 4),
             pos=pos,
-            default_color_pair=ColorPair.from_colors(BLACK, element.COLOR),
+            default_cell=style_char(fg_color=BLACK, bg_color=element.COLOR),
             always_release=True,
         )
 
-        self.down_color = ColorPair.from_colors(
-            BLACK,
-            Color(*(127 + c // 2 for c in element.COLOR)),
-        )
-
     def update_down(self):
-        self.colors[:] = self.down_color
+        self.canvas["bg_color"] = self.down_color
 
     def update_normal(self):
-        self.colors[:] = self.default_color_pair
+        self.canvas["bg_color"] = self.default_bg_color
 
     def on_release(self):
         element = self.element
@@ -40,18 +35,12 @@ class ElementButton(ButtonBehavior, Text):
         sandbox.display.add_str(f"{element.__name__:^{sandbox.display.width}}")
 
 
-class ButtonContainer(Gadget):
+class ButtonContainer(Pane):
     """Container gadget of `ElementButton`s."""
 
     def __init__(self):
         nelements = len(Element.all_elements)
-
-        super().__init__(
-            size=(3 * nelements + 1, 8),
-            background_color_pair=ColorPair.from_colors(
-                MENU_BACKGROUND_COLOR, MENU_BACKGROUND_COLOR
-            ),
-        )
+        super().__init__(size=(3 * nelements + 1, 8), bg_color=MENU_BACKGROUND_COLOR)
 
         for i, element in enumerate(Element.all_elements.values()):
             self.add_gadget(ElementButton(pos=(3 * i + 1, 2), element=element))

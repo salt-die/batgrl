@@ -2,20 +2,14 @@
 import numpy as np
 
 from ..geometry import lerp
-from .color_types import AColor, Color, ColorPair
+from .color_types import AColor, Color
 
-__all__ = [
-    "rainbow_gradient",
-    "lerp_colors",
-    "gradient",
-]
+__all__ = ["gradient", "lerp_colors", "rainbow_gradient"]
 
-SomeColor = Color | AColor | ColorPair
+AnyColor = Color | AColor
 
 
-def rainbow_gradient(
-    n: int, *, color_type: type[Color | AColor] = Color
-) -> list[Color | AColor]:
+def rainbow_gradient(n: int, *, color_type: type[AnyColor] = Color) -> list[AnyColor]:
     """
     Return a rainbow gradient of `n` colors.
 
@@ -23,12 +17,12 @@ def rainbow_gradient(
     ----------
     n : int
         Number of colors in gradient.
-    color_type : Color | AColor, default: Color
+    color_type : AnyColor, default: Color
         Color type of gradient.
 
     Returns
     -------
-    list[Color | AColor]
+    list[AnyColor]
         A rainbow gradient of colors.
     """
     TAU = 2 * np.pi
@@ -41,43 +35,43 @@ def rainbow_gradient(
     ]
 
 
-def lerp_colors(start: SomeColor, end: SomeColor, p: float) -> SomeColor:
+def lerp_colors(start: AnyColor, end: AnyColor, p: float) -> AnyColor:
     """
     Linear interpolation from `start` to `end` with proportion `p`.
 
     Parameters
     ----------
-    start : SomeColor
+    start : AnyColor
         Start color.
-    end : SomeColor
+    end : AnyColor
         End Color
     p : float
         Proportion from start to end.
 
     Returns
     -------
-    SomeColor
+    AnyColor
         The linear interpolation of `start` and `end`.
     """
     return type(start)(*(round(lerp(a, b, p)) for a, b in zip(start, end)))
 
 
-def gradient(start: SomeColor, end: SomeColor, ncolors: int) -> list[SomeColor]:
+def gradient(start: AnyColor, end: AnyColor, ncolors: int) -> list[AnyColor]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
 
     Parameters
     ----------
-    start : SomeColor
+    start : AnyColor
         Start color or colorpair.
-    end : SomeColor
+    end : AnyColor
         End color of colorpair.
     ncolors : int
         Number of colors in gradient.
 
     Returns
     -------
-    list[SomeColor]
+    list[AnyColor]
         A gradient of colors from `start` to `end`.
     """
     if ncolors < 2:

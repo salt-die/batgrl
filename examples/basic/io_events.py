@@ -43,7 +43,7 @@ class ShowIOEvents(Text):
 
         lines = dedent(text.format(*event)).splitlines()
         for i, line in enumerate(lines):
-            self.add_str(line.ljust(self.width)[: self.width], (i, 0))
+            self.add_str(line.ljust(self.width)[: self.width], pos=(i, 0))
 
 
 if __name__ == "__main__":

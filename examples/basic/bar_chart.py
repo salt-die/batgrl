@@ -1,9 +1,7 @@
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.bar_chart import BarChart
-from batgrl.gadgets.text import Text
-
-PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
+from batgrl.gadgets.text import Text, style_char
 
 
 class BarChartApp(App):
@@ -31,13 +29,20 @@ class BarChartApp(App):
             size=(25, 75),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
         )
-        label = Text(default_color_pair=PRIMARY_COLOR, pos_hint={"x_hint": 0.5})
+        label = Text(
+            default_cell=style_char(
+                " ", fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            ),
+            pos_hint={"x_hint": 0.5},
+        )
         label.set_text("Top Programming Languages 2023")
         label.subscribe(
             bar_chart, "pos", lambda: setattr(label, "bottom", bar_chart.top)
         )
-        self.add_gadgets(label, bar_chart)
+        text_bg = Text(size=(25, 75), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
+
+        self.add_gadgets(text_bg, label, bar_chart)
 
 
 if __name__ == "__main__":
-    BarChartApp(title="Bar Chart Example", background_color_pair=PRIMARY_COLOR).run()
+    BarChartApp(title="Bar Chart Example", bg_color=DEFAULT_PRIMARY_BG).run()

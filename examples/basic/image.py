@@ -16,8 +16,7 @@ class ImageApp(App):
         )
 
         logo_flat = Image(
-            size_hint={"height_hint": 0.5, "width_hint": 0.5},
-            path=PATH_TO_LOGO_FLAT,
+            size_hint={"height_hint": 0.5, "width_hint": 0.5}, path=PATH_TO_LOGO_FLAT
         )
 
         logo_full = Image(

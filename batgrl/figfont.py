@@ -55,13 +55,13 @@ class FullLayout(IntFlag):
     - Equal: Two sub-characters are smushed into a single sub-character if they are
     equal (except for hardblanks).
     - Underscore: An underscore (`"_"`) will be replaced by any of: `"|"`, `"/"`,
-    `"\\"`, `"["`, `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
+    `"\"`, `"["`, `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
     - Hierarchy: A hierarchy of six classes is used: `"|"`, `"/\"`, `"[]"`, `"{}"`,
     `"()"`, and `"<>"`. When two sub-characters are from different classes, the latter
     class will be used.
     - Pair: Replaces opposite brackets (`"[]"` or `"]["`), braces (`"{}"` or `"}{"`),
     and parentheses (`"()"` or `")("`) with a vertical bar (`"|"`).
-    - BigX: Replaces `"/\\"` with `"|"`, `"\\/"` with `"Y"`, and `"><"` into `"X"`.
+    - BigX: Replaces `"/\"` with `"|"`, `"\/"` with `"Y"`, and `"><"` into `"X"`.
     - HardBlank: Two hardblanks will be replaced with a single hardblank.
     """
 
@@ -93,20 +93,15 @@ class FIGFont:
     ----------
     hardblank : str, default: "$"
         This character is used to represent whitespace that shouldn't be smushed.
-
     reverse_text : bool, default: False
         If true, text will be rendered right-to-left.
-
     layout : FullLayout, default: FullLayout.Universal
         Controls how characters are fitted in rendered text.
-
     reverse_universal_smush : bool, default: False
         If set to true univeral smushing will display earliest sub-character (instead of
         latest).
-
     font : dict[str, NDArray[np.dtype("<U1")]], default: {}
         A dictionary of characters to their ascii art representations.
-
     comments : str, default: ""
         Additional comments about this font.
 
@@ -114,20 +109,15 @@ class FIGFont:
     ----------
     hardblank : str
         This character is used to represent whitespace that shouldn't be smushed.
-
     reverse_text : bool
         If true, text will be rendered right-to-left.
-
     layout : FullLayout.Universal
         Controls how characters are fitted in rendered text.
-
     reverse_universal_smush : bool
         If set to true univeral smushing will display earliest sub-character (instead of
         latest).
-
     font : dict[str, NDArray[np.dtype("<U1")]]
         A dictionary of characters to their ascii art representations.
-
     comments : str
         Additional comments about this font.
 
@@ -135,49 +125,35 @@ class FIGFont:
     -------
     from_path(path):
         Load a FIGFont from a path.
-
     render_array(text):
         Render text as ascii art into a 2D "<U1" numpy array.
-
     render_str(text):
         Render text as ascii art into a multiline string.
     """
 
     hardblank: str = "$"
-    """
-    This character is used to represent whitespace that shouldn't be smushed.
-    """
-
+    """This character is used to represent whitespace that shouldn't be smushed."""
     reverse_text: bool = False
-    """
-    If true, text will be rendered right-to-left.
-    """
-
+    """If true, text will be rendered right-to-left."""
     layout: FullLayout = FullLayout.Universal
-    """
-    Controls how characters are fitted in rendered text.
-    """
-
+    """Controls how characters are fitted in rendered text."""
     reverse_universal_smush: bool = False
-    """
-    If set to true univeral smushing will display earliest sub-character (instead of
-    latest).
-    """
-
+    """If set to true univeral smushing will display earliest sub-character."""
     font: dict[str, NDArray[np.dtype("<U1")]] = field(repr=False, default_factory=dict)
-    """
-    A dictionary of characters to their ascii art representations.
-    """
-
+    """A dictionary of characters to their ascii art representations."""
     comments: str = field(repr=False, default="")
-    """
-    Additional comments about this font.
-    """
+    """Additional comments about this font."""
 
     @classmethod
-    def from_dict(cls, d: dict) -> "FIGFont":
+    def from_dict(cls, attrs: dict) -> "FIGFont":
         """Return a FIGFont from a dictionary."""
-        return cls(**{f.name: d[f.name] for f in fields(cls) if f.init and f.name in d})
+        return cls(
+            **{
+                field.name: attrs[field.name]
+                for field in fields(cls)
+                if field.init and field.name in attrs
+            }
+        )
 
     @classmethod
     def from_path(cls, path: Path) -> "FIGFont":

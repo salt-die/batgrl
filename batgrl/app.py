@@ -10,13 +10,13 @@ from time import monotonic
 from types import ModuleType
 from typing import Literal
 
-from numpy.typing import NDArray
-
-from .colors import BLACK_ON_BLACK, DEFAULT_COLOR_THEME, ColorPair, ColorTheme
+from .colors import BLACK, DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
+from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
-from .gadgets.gadget_base import Char, GadgetBase, Size, coerce_char, style_char
+from .gadgets.gadget import Gadget, Size
 from .io import (
+    Key,
     KeyEvent,
     MouseButton,
     MouseEvent,
@@ -35,10 +35,8 @@ class App(ABC):
 
     Parameters
     ----------
-    background_char : NDArray[Char] | str, default: " "
-        Background character for root gadget.
-    background_color_pair : ColorPair, default: BLACK_ON_BLACK
-        Background color pair for root gadget.
+    bg_color : Color, default: BLACK
+        Background color of app.
     title : str | None, default: None
         Set terminal title (if supported).
     double_click_timeout : float, default: 0.5
@@ -62,10 +60,8 @@ class App(ABC):
 
     Attributes
     ----------
-    background_char : NDArray[Char]
-        Background character for root gadget.
-    background_color_pair : ColorPair
-        Background color pair for root gadget.
+    bg_color : Color
+        Background color of app.
     title : str | None
         The terminal's title (if supported).
     double_click_timeout : float
@@ -82,7 +78,7 @@ class App(ABC):
         Path where stderr is saved.
     root : _Root | None
         Root of gadget tree.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Alias for :attr:`root.children`.
 
     Methods
@@ -102,8 +98,7 @@ class App(ABC):
     def __init__(
         self,
         *,
-        background_char: NDArray[Char] | str = " ",
-        background_color_pair: ColorPair = BLACK_ON_BLACK,
+        bg_color: Color = BLACK,
         title: str | None = None,
         double_click_timeout: float = 0.5,
         render_interval: float = 0.0,
@@ -114,8 +109,7 @@ class App(ABC):
     ):
         self.root = None
 
-        self.background_char = background_char
-        self.background_color_pair = background_color_pair
+        self.bg_color = bg_color
         self.title = title
         self.double_click_timeout = double_click_timeout
         self.render_interval = render_interval
@@ -127,8 +121,7 @@ class App(ABC):
     def __repr__(self):
         return (
             f"{type(self).__name__}(\n"
-            f"    background_char={self.background_char},\n"
-            f"    background_color_pair={(*self.background_color_pair,)},\n"
+            f"    bg_color={(*self.bg_color,)},\n"
             f"    title={self.title!r},\n"
             f"    double_click_timeout={self.double_click_timeout},\n"
             f"    render_interval={self.render_interval},\n"
@@ -141,11 +134,12 @@ class App(ABC):
     @property
     def color_theme(self) -> ColorTheme:
         """Color theme for themable gadgets."""
-        return Themable.color_theme
+        return self._color_theme
 
     @color_theme.setter
     def color_theme(self, color_theme: ColorTheme):
-        Themable.color_theme = color_theme
+        self._color_theme = color_theme
+        Themable.set_theme(color_theme)
 
         if self.root is not None:
             for gadget in self.root.walk():
@@ -153,26 +147,15 @@ class App(ABC):
                     gadget.update_theme()
 
     @property
-    def background_char(self) -> NDArray[Char]:
-        """Background character of app."""
-        return self._background_char
+    def bg_color(self) -> Color:
+        """Background color of app."""
+        return self._bg_color
 
-    @background_char.setter
-    def background_char(self, char: NDArray[Char] | str):
-        self._background_char = coerce_char(char, style_char(" "))
+    @bg_color.setter
+    def bg_color(self, bg_color: Color):
+        self._bg_color = bg_color
         if self.root is not None:
-            self.root.background_char = self._background_char
-
-    @property
-    def background_color_pair(self) -> ColorPair:
-        """Background color pair of app."""
-        return self._background_color_pair
-
-    @background_color_pair.setter
-    def background_color_pair(self, background_color_pair: ColorPair):
-        self._background_color_pair = background_color_pair
-        if self.root is not None:
-            self.root.background_color_pair = background_color_pair
+            self.root.bg_color = bg_color
 
     @property
     def render_mode(self) -> Literal["regions", "painter"]:
@@ -238,8 +221,7 @@ class App(ABC):
         env_in, env_out = self._create_io()
         with env_out:
             self.root = root = _Root(
-                background_char=self.background_char,
-                background_color_pair=self.background_color_pair,
+                bg_color=self.bg_color,
                 render_mode=self.render_mode,
                 size=env_out.get_size(),
             )
@@ -289,7 +271,11 @@ class App(ABC):
                             self.exit()
                             return
                         case KeyEvent():
-                            dispatch_key(event)
+                            if not dispatch_key(event) and event.key is Key.Tab:
+                                if event.mods.shift:
+                                    Focusable.focus_previous()
+                                else:
+                                    Focusable.focus_next()
                         case _PartialMouseEvent():
                             mouse_event = determine_nclicks(event)
                             dispatch_mouse(mouse_event)
@@ -301,49 +287,49 @@ class App(ABC):
             async def auto_render():
                 """Render screen every :attr:`render_interval` seconds."""
                 while True:
-                    root.render()
+                    root._render()
                     env_out.render_frame(root)
                     await asyncio.sleep(self.render_interval)
 
             with env_in.raw_mode(), env_in.attach(read_from_input):
                 await asyncio.gather(self.on_start(), auto_render())
 
-    def add_gadget(self, gadget: GadgetBase):
+    def add_gadget(self, gadget: Gadget):
         """
         Alias for :attr:`root.add_gadget`.
 
         Parameters
         ----------
-        gadget : GadgetBase
+        gadget : Gadget
             A gadget to add as a child to the root gadget.
         """
         self.root.add_gadget(gadget)
 
-    def add_gadgets(self, *gadgets: GadgetBase):
+    def add_gadgets(self, *gadgets: Gadget):
         r"""
         Alias for :attr:`root.add_gadgets`.
 
         Parameters
         ----------
-        \*gadgets : GadgetBase
+        \*gadgets : Gadget
             Gadgets to add as children to the root gadget.
         """
         self.root.add_gadgets(*gadgets)
 
     @property
-    def children(self) -> list[GadgetBase] | None:
+    def children(self) -> list[Gadget] | None:
         """Alias for :attr:`root.children`."""
         if self.root is not None:
             return self.root.children
 
 
-def run_gadget_as_app(gadget: GadgetBase):
+def run_gadget_as_app(gadget: Gadget):
     """
     Run a gadget as a full-screen app.
 
     Parameters
     ----------
-    gadget : GadgetBase
+    gadget : Gadget
         A gadget to run as a full screen app.
     """
 

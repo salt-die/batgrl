@@ -1,4 +1,4 @@
-from batgrl.colors import Color, ColorPair
+from batgrl.colors import Color
 
 ZERO = Color.from_hex("aba1ad")
 ONE = Color.from_hex("272ae5")
@@ -11,14 +11,6 @@ SEVEN = Color.from_hex("c013db")
 EIGHT = Color.from_hex("140116")
 
 BORDER = Color.from_hex("85698c")
-
 HIDDEN_SQUARE = Color.from_hex("56365e")
-HIDDEN = ColorPair.from_colors(HIDDEN_SQUARE, BORDER)
-HIDDEN_REVERSED = ColorPair.from_colors(BORDER, HIDDEN_SQUARE)
-
 COUNT_SQUARE = Color.from_hex("b0d9e5")
-COUNT = ColorPair.from_colors(BORDER, COUNT_SQUARE)
-
-DATA_BAR = ColorPair.from_colors(HIDDEN_SQUARE, COUNT_SQUARE)
-
 FLAG_COLOR = Color.from_hex("6d1004")

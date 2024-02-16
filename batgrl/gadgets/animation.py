@@ -6,9 +6,9 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget_base import (
-    Char,
-    GadgetBase,
+from .gadget import (
+    Cell,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -49,7 +49,7 @@ def _check_frame_durations(
     return frame_durations
 
 
-class Animation(GadgetBase):
+class Animation(Gadget):
     r"""
     An animation gadget.
 
@@ -59,14 +59,14 @@ class Animation(GadgetBase):
         Path to directory of images for frames in the animation (loaded
         in lexographical order of filenames).
     frame_durations : float | Sequence[float], default: 1/12
-        Time each frame is displayed. If a sequence is provided, it's length
-        should be equal to number of frames.
+        Time each frame is displayed. If a sequence is provided, it's length should be
+        equal to number of frames.
     loop : bool, default: True
         If true, restart animation after last frame.
     reverse : bool, default: False
         If true, play animation in reverse.
     alpha : float, default: 1.0
-        Transparency of the animation.
+        Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
@@ -78,8 +78,7 @@ class Animation(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -98,7 +97,7 @@ class Animation(GadgetBase):
     reverse : bool
         If true, animation is played in reverse.
     alpha : float
-        Transparency of the animation.
+        Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
     size : Size
@@ -133,16 +132,16 @@ class Animation(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -286,7 +285,7 @@ class Animation(GadgetBase):
 
     @property
     def alpha(self) -> float:
-        """Transparency of gadget if :attr:`is_transparent` is true."""
+        """Transparency of gadget."""
         return self._alpha
 
     @alpha.setter
@@ -358,12 +357,12 @@ class Animation(GadgetBase):
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
-    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
+    def _render(self, canvas: NDArray[Cell]):
+        """Render visible region of gadget."""
         if self.frames:
-            self.frames[self._i].render(canvas, colors)
+            self.frames[self._i]._render(canvas)
         else:
-            super().render(canvas, colors)
+            super()._render(canvas)
 
     @classmethod
     def from_textures(
@@ -391,14 +390,14 @@ class Animation(GadgetBase):
         textures : Iterable[NDArray[np.uint8]]
             An iterable of RGBA textures that will be the frames of the animation.
         frame_durations : float | Sequence[float], default: 1/12
-            Time each frame is displayed. If a sequence is provided, it's length
-            should be equal to number of frames.
+            Time each frame is displayed. If a sequence is provided, it's length should
+            be equal to number of frames.
         loop : bool, default: True
             If true, restart animation after last frame.
         reverse : bool, default: False
             If true, play animation in reverse.
         alpha : float, default: 1.0
-            Transparency of the animation.
+            Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
         size : Size, default: Size(10, 10)
@@ -410,8 +409,7 @@ class Animation(GadgetBase):
         pos_hint : PosHint | PosHintDict | None , default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
-            If true, gadget is rendered with alpha compositing; otherwise, alpha values
-            are ignored.
+            Whether gadget is transparent.
         is_visible : bool, default: True
             Whether gadget is visible. Gadget will still receive input events if not
             visible.
@@ -479,14 +477,14 @@ class Animation(GadgetBase):
         images : Iterable[Image]
             An iterable of images that will be the frames of the animation.
         frame_durations : float | Sequence[float], default: 1/12
-            Time each frame is displayed. If a sequence is provided, it's length
-            should be equal to number of frames.
+            Time each frame is displayed. If a sequence is provided, it's length should
+            be equal to number of frames.
         loop : bool, default: True
             If true, restart animation after last frame.
         reverse : bool, default: False
             If true, play animation in reverse.
         alpha : float, default: 1.0
-            Transparency of the animation.
+            Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
         size : Size, default: Size(10, 10)
@@ -498,8 +496,7 @@ class Animation(GadgetBase):
         pos_hint : PosHint | PosHintDict | None , default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
-            If true, gadget is rendered with alpha compositing; otherwise, alpha values
-            are ignored.
+            Whether gadget is transparent.
         is_visible : bool, default: True
             Whether gadget is visible. Gadget will still receive input events if not
             visible.

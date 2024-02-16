@@ -1,5 +1,6 @@
 """A color picker gadget."""
 from collections.abc import Callable
+from itertools import pairwise
 
 import numpy as np
 
@@ -16,15 +17,13 @@ from ..colors import (
     WHITE,
     AColor,
     Color,
-    ColorPair,
     gradient,
 )
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -33,7 +32,8 @@ from .gadget_base import (
     SizeHintDict,
 )
 from .graphics import Graphics
-from .text import Text
+from .pane import Pane
+from .text import Text, style_char
 
 __all__ = [
     "ColorPicker",
@@ -45,16 +45,14 @@ __all__ = [
     "SizeHintDict",
 ]
 
-GRAD = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
-GRAD = tuple(zip(GRAD, GRAD[1:]))
-WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
+GRAD = tuple(pairwise([ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED]))
 
 
 class _ShadeSelector(Grabbable, Graphics):
     def __init__(self, color_swatch, label, **kwargs):
         super().__init__(**kwargs)
 
-        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_char="○")
+        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_cell="○")
         self._shade_hint = 0.0, 1.0
         self.add_gadget(self._shade_indicator)
 
@@ -86,15 +84,14 @@ class _ShadeSelector(Grabbable, Graphics):
     def update_swatch_label(self):
         y, x = self._shade_indicator.pos
 
-        r, g, b, _ = self.texture[y * 2, x]
-        shade = ColorPair(*WHITE, r, g, b)
+        r, g, b = self.texture[y * 2, x, :3]
 
-        self.color_swatch.background_color_pair = shade
+        self.color_swatch.bg_color = r, g, b
 
-        self.label.add_str(hex(r * 2**16 + g * 2**8 + b)[2:], (1, 1))
-        self.label.add_str(f"R: {r:>3}", (3, 1))
-        self.label.add_str(f"G: {g:>3}", (4, 1))
-        self.label.add_str(f"B: {b:>3}", (5, 1))
+        self.label.add_str(hex(r * 2**16 + g * 2**8 + b)[2:], pos=(1, 1))
+        self.label.add_str(f"R: {r:>3}", pos=(3, 1))
+        self.label.add_str(f"G: {g:>3}", pos=(4, 1))
+        self.label.add_str(f"B: {b:>3}", pos=(5, 1))
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
@@ -117,7 +114,9 @@ class _HueSelector(Grabbable, Graphics):
         self.shade_selector = shade_selector
 
         self._hue_hint = 0.0
-        self._hue_indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_RED)
+        self._hue_indicator = Text(
+            size=(1, 1), default_cell=style_char(fg_color=WHITE, bg_color=RED)
+        )
         self._hue_indicator.add_str("▼")
 
         self.add_gadget(self._hue_indicator)
@@ -140,7 +139,7 @@ class _HueSelector(Grabbable, Graphics):
 
     def update_hue(self):
         x = self._hue_indicator.x
-        self._hue_indicator.colors[..., 3:] = self.texture[0, x, :3]
+        self._hue_indicator.canvas["bg_color"] = self.texture[0, x, :3]
         self.shade_selector.update_hue(AColor(*self.texture[0, x]))
 
     def grab(self, mouse_event):
@@ -154,7 +153,7 @@ class _HueSelector(Grabbable, Graphics):
             self.update_hue()
 
 
-class ColorPicker(Themable, GadgetBase):
+class ColorPicker(Themable, Gadget):
     r"""
     A color picker gadget.
 
@@ -162,6 +161,8 @@ class ColorPicker(Themable, GadgetBase):
     ----------
     ok_callback : Callable[[Color], None], default: lambda color: None
         Called with currently selected color when "OK" button is released.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -171,7 +172,7 @@ class ColorPicker(Themable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -181,6 +182,8 @@ class ColorPicker(Themable, GadgetBase):
 
     Attributes
     ----------
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -213,16 +216,16 @@ class ColorPicker(Themable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -284,6 +287,7 @@ class ColorPicker(Themable, GadgetBase):
         self,
         *,
         ok_callback: Callable[[Color], None] = lambda color: None,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -292,6 +296,26 @@ class ColorPicker(Themable, GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self.color_swatch = Pane(pos=(1, 1), bg_color=RED, is_transparent=False)
+        self.label = Text(size=(9, 8), alpha=0, is_transparent=True)
+        self.shades = _ShadeSelector(
+            pos=(1, 1),
+            color_swatch=self.color_swatch,
+            label=self.label,
+            is_transparent=False,
+        )
+        self.hues = _HueSelector(
+            pos=(1, 1), shade_selector=self.shades, is_transparent=False
+        )
+        ok_button = Button(
+            label="OK",
+            size=(1, 6),
+            pos=(7, 1),
+            callback=lambda: ok_callback(self.color_swatch.bg_color),
+        )
+        self._container = Pane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, is_transparent=False
+        )
         super().__init__(
             size=size,
             pos=pos,
@@ -301,60 +325,49 @@ class ColorPicker(Themable, GadgetBase):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
-        self.color_swatch = Gadget(
-            pos=(1, 1),
-            background_char=" ",
-            background_color_pair=WHITE_ON_RED,
-        )
-
-        self.label = Text(size=(9, 8))
-        self.label.add_gadget(
-            Button(
-                label="OK",
-                size=(1, 6),
-                pos=(7, 1),
-                callback=lambda: ok_callback(
-                    self.color_swatch.background_color_pair.bg_color
-                ),
-            )
-        )
-
-        self.shades = _ShadeSelector(
-            pos=(1, 1), color_swatch=self.color_swatch, label=self.label
-        )
-
-        self.hues = _HueSelector(pos=(1, 1), shade_selector=self.shades)
-
-        self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self.alpha = alpha
+        self.label.add_gadget(ok_button)
         self._container.add_gadgets(
             self.color_swatch, self.hues, self.shades, self.label
         )
         self.add_gadget(self._container)
 
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._container.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._container.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._container.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._container.is_transparent = is_transparent
+
     def on_size(self):
         """Resize and reposition children."""
         h, w = self._size
 
-        shades = self.shades
-        swatch = self.color_swatch
-        hues = self.hues
-        label = self.label
+        self.shades.size = max(10, h - 4), max(20, w - 11)
 
-        shades.size = max(10, h - 4), max(20, w - 11)
+        self.color_swatch.size = max(2, h - 12), 8
+        self.color_swatch.left = self.shades.right + 1
 
-        swatch.size = max(2, h - 12), 8
-        swatch.left = shades.right + 1
+        self.hues.size = 1, self.shades.width
+        self.hues.top = self.shades.bottom + 1
 
-        hues.size = 1, shades.width
-        hues.top = shades.bottom + 1
-
-        label.top = swatch.bottom + 1
-        label.left = shades.right + 1
+        self.label.top = self.color_swatch.bottom + 1
+        self.label.left = self.shades.right + 1
 
     def update_theme(self):
         """Paint the gadget with current theme."""
         primary = self.color_theme.primary
-        self._container.background_color_pair = primary
-        self.label.default_color_pair = primary
-        self.label.colors[:] = primary
+        self._container.bg_color = primary.bg
+        self.label.default_fg_color = self.label.canvas["fg_color"] = primary.fg
+        self.label.default_bg_color = self.label.canvas["bg_color"] = primary.bg

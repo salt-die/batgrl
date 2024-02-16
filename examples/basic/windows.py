@@ -2,7 +2,6 @@ from pathlib import Path
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.animation import Animation
 from batgrl.gadgets.color_picker import ColorPicker
 from batgrl.gadgets.file_chooser import FileChooser
@@ -21,17 +20,17 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class WindowsApp(App):
     async def on_start(self):
-        window_kwargs = dict(size=(25, 50), border_alpha=0.7)
+        window_kwargs = dict(size=(25, 50), alpha=0.7)
 
         animation = Animation(path=CAVEMAN_PATH, interpolation="nearest")
-        window_1 = Window(title=CAVEMAN_PATH.name, alpha=0.7, **window_kwargs)
+        window_1 = Window(title=CAVEMAN_PATH.name, **window_kwargs)
         window_1.view = animation
 
         window_2 = Window(title="File Chooser", **window_kwargs)
-        window_2.view = FileChooser(root_dir=ASSETS)
+        window_2.view = FileChooser(root_dir=ASSETS, alpha=0.5, is_transparent=True)
 
         window_3 = Window(title="Color Picker", **window_kwargs)
-        window_3.view = ColorPicker()
+        window_3.view = ColorPicker(is_transparent=True, alpha=0.5)
 
         window_4 = Window(title="Line Plot", **window_kwargs)
         window_4.view = LinePlot(
@@ -40,7 +39,8 @@ class WindowsApp(App):
             x_label="X Values",
             y_label="Y Values",
             legend_labels=("Before", "During", "After"),
-            plot_color_pair=DEFAULT_COLOR_THEME.primary,
+            alpha=0.5,
+            is_transparent=True,
         )
 
         self.add_gadgets(window_1, window_2, window_3, window_4)

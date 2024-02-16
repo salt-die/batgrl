@@ -43,20 +43,6 @@ def tetromino_generator(tetrominos):
         yield from bag
 
 
-def setup_background(gadget):
-    top = gadget.top
-    left = gadget.left
-    bottom = gadget.bottom
-    right = gadget.right
-
-    if isinstance(gadget.parent, Image):
-        gadget.colors[..., 3:] = (
-            gadget.parent.texture[2 * top + 1 : 2 * bottom : 2, left:right, :3] // 2
-        )
-    else:
-        gadget.colors[..., 3:] = gadget.parent.colors[top:bottom, left:right, 3:] // 2
-
-
 class Piece(Graphics):
     @property
     def tetromino(self):
@@ -98,17 +84,23 @@ class Tetris(Image):
         ##################################################################
         SPACING = 3
         BORDER_WIDTH = 1
-
-        display_geometry = {
-            "size": (4, 8),
-            "pos": (BORDER_WIDTH, 2 * BORDER_WIDTH),
-        }
-
         bsize = bh, bw = (
             4 + 2 * BORDER_WIDTH,
             8 + 4 * BORDER_WIDTH,
         )  # border size; border height, border width
         h, w = matrix_size
+
+        outer_kwargs = {
+            "size": bsize,
+            "is_transparent": True,
+            "alpha": 0.5,
+        }
+        inner_kwargs = {
+            "size": (4, 8),
+            "pos": (BORDER_WIDTH, 2 * BORDER_WIDTH),
+            "is_transparent": True,
+            "alpha": 0.0,
+        }
 
         # offsets for border gadgets
         top = SPACING
@@ -128,35 +120,32 @@ class Tetris(Image):
         self.is_paused = False
 
         # Setup HELD display
-        held_border = Text(size=bsize, pos=(top, left))
+        held_border = Text(pos=(top, left), **outer_kwargs)
         held_border.add_str(f"{'HOLD':^{bsize[1]}}")
-        held_space = Text(**display_geometry)
+        held_space = Text(**inner_kwargs)
 
         held_border.add_gadget(held_space)
 
         # Setup NEXT display
-        next_border = Text(size=bsize, pos=(top, right))
+        next_border = Text(pos=(top, right), **outer_kwargs)
         next_border.add_str(f"{'NEXT':^{bsize[1]}}")
-        next_space = Text(**display_geometry)
+        next_space = Text(**inner_kwargs)
         next_border.add_gadget(next_space)
 
         # Setup SCORE display
-        score_border = Text(size=bsize, pos=(bottom, left))
+        score_border = Text(pos=(bottom, left), **outer_kwargs)
         score_border.add_str(f"{'SCORE':^{bsize[1]}}")
-        self.score_display = Text(**display_geometry)
+        self.score_display = Text(**inner_kwargs)
         score_border.add_gadget(self.score_display)
 
         # Setup LEVEL Display
-        level_border = Text(size=bsize, pos=(bottom, right))
+        level_border = Text(pos=(bottom, right), **outer_kwargs)
         level_border.add_str(f"{'LEVEL':^{bsize[1]}}")
-        self.level_display = Text(**display_geometry)
+        self.level_display = Text(**inner_kwargs)
 
         level_border.add_gadget(self.level_display)
 
         self.add_gadgets(held_border, next_border, score_border, level_border)
-
-        for gadget in self.walk():
-            setup_background(gadget)
 
         self.held_piece = Piece(
             pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_enabled=False
@@ -239,7 +228,7 @@ class Tetris(Image):
     @score.setter
     def score(self, value):
         self._score = value
-        self.score_display.add_str(f"{value:^8}", (1, 0))
+        self.score_display.add_str(f"{value:^8}", pos=(1, 0))
 
     @property
     def level(self):
@@ -257,8 +246,8 @@ class Tetris(Image):
     @lines_to_next_level.setter
     def lines_to_next_level(self, value):
         self._lines_to_next_level = value
-        self.level_display.add_str(" Lines: ", (2, 0))
-        self.level_display.add_str(f"{value:^8}", (3, 0))
+        self.level_display.add_str(" Lines: ", pos=(2, 0))
+        self.level_display.add_str(f"{value:^8}", pos=(3, 0))
 
     async def _run_game(self):
         while True:
@@ -274,7 +263,9 @@ class Tetris(Image):
 
             modal = self.modal_screen
             modal.enable(callback=self.pause, is_game_over=False)
-            modal.add_str(f"{f'Current Score: {self.score}':^{modal.width}}", (-2, 0))
+            modal.add_str(
+                f"{f'Current Score: {self.score}':^{modal.width}}", pos=(-2, 0)
+            )
 
         self.is_paused = not self.is_paused
 
@@ -337,7 +328,7 @@ class Tetris(Image):
             self._game_task.cancel()
             modal = self.modal_screen
             modal.enable(callback=self.new_game, is_game_over=True)
-            modal.add_str(f"{f'Final Score: {self.score}':^{modal.width}}", (-2, 0))
+            modal.add_str(f"{f'Final Score: {self.score}':^{modal.width}}", pos=(-2, 0))
 
     def collides(self, offset, piece, orientation=None):
         """

@@ -12,7 +12,7 @@ from .camera import Camera
 from .cube import Cube
 
 ROTATION_FRAMES = 15
-ROTATION_FRAME_DURATION = 0.08
+ROTATION_FRAME_DURATION = 0.01
 QUARTER_TURN = np.pi / 2
 
 
@@ -175,7 +175,7 @@ class RubiksCube(Grabbable, Graphics):
         beta = np.pi * self.mouse_dx / self.width
         self.camera.rotate_y(beta)
 
-    def render(self, canvas, colors):
+    def _render(self, canvas):
         texture = self.texture
         texture[:] = 0
 
@@ -186,4 +186,4 @@ class RubiksCube(Grabbable, Graphics):
         for cube in cubes:
             cam.render_cube(cube, texture, self.aspect_ratio)
 
-        super().render(canvas, colors)
+        super()._render(canvas)
