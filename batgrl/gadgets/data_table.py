@@ -421,65 +421,65 @@ class DataTable(Themable, Gadget):
 
     Methods
     -------
-    add_column(label, ...):
+    add_column(label, ...)
         Add a column to the data table.
-    add_row(data):
+    add_row(data)
         Add a row to the data table.
-    remove_column(column_id):
+    remove_column(column_id)
         Remove a column by column id.
-    remove_row(row_id):
+    remove_row(row_id)
         Remove a row by row id.
-    row_id_from_index(index):
+    row_id_from_index(index)
         Returns the row id of the row at index.
-    column_id_from_index(index):
+    column_id_from_index(index)
         Returns the column id of the column at index.
-    update_theme():
+    update_theme()
         Paint the gadget with current theme.
-    on_size():
+    on_size()
         Update gadget after a resize.
-    apply_hints():
+    apply_hints()
         Apply size and pos hints.
-    to_local(point):
+    to_local(point)
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point):
+    collides_point(point)
         Return true if point collides with visible portion of gadget.
-    collides_gadget(other):
+    collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget):
+    add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets):
+    add_gadgets(\*gadgets)
         Add multiple child gadgets.
-    remove_gadget(gadget):
+    remove_gadget(gadget)
         Remove a child gadget.
-    pull_to_front():
+    pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root():
+    walk_from_root()
         Yield all descendents of the root gadget (preorder traversal).
-    walk():
+    walk()
         Yield all descendents of this gadget (preorder traversal).
-    walk_reverse():
+    walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
-    ancestors():
+    ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action):
+    subscribe(source, attr, action)
         Subscribe to a gadget property.
-    unsubscribe(source, attr):
+    unsubscribe(source, attr)
         Unsubscribe to a gadget property.
-    on_key(key_event):
+    on_key(key_event)
         Handle key press event.
-    on_mouse(mouse_event):
+    on_mouse(mouse_event)
         Handle mouse event.
-    on_paste(paste_event):
+    on_paste(paste_event)
         Handle paste event.
-    tween(...):
+    tween(...)
         Sequentially update gadget properties over time.
-    on_add():
+    on_add()
         Apply size hints and call children's `on_add`.
-    on_remove():
+    on_remove()
         Call children's `on_remove`.
-    prolicide():
+    prolicide()
         Recursively remove all children.
-    destroy():
+    destroy()
         Remove this gadget and recursively remove all its children.
     """
 

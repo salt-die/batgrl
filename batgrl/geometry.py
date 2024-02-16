@@ -32,9 +32,9 @@ class Point(NamedTuple):
 
     Methods
     -------
-    count(value):
+    count(value)
         Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807):
+    index(value, start=0, stop=9223372036854775807)
         Return first index of value.
     """
 
@@ -71,9 +71,9 @@ class Size(NamedTuple):
 
     Methods
     -------
-    count(value):
+    count(value)
         Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807):
+    index(value, start=0, stop=9223372036854775807)
         Return first index of value.
     """
 
@@ -148,11 +148,22 @@ class Rect:
     right : int
         x-coordinate of right of rect.
 
+    Attributes
+    ----------
+    top : int
+        y-coordinate of top of rect.
+    bottom : int
+        y-coordinate of bottom of rect.
+    left : int
+        x-coordinate of left of rect.
+    right : int
+        x-coordinate of right of rect.
+
     Methods
     -------
     offset(point)
         Return a new Rect moved up by `point.y` and moved left by `point.x`.
-    to_slices(offset=Point(0, 0))
+    to_slices(offset=(0, 0))
         Return slices for indexing the rect in a numpy array.
     """
 
@@ -270,7 +281,6 @@ class Region:
     -------
     rects()
         Yield rects that make up the region.
-
     from_rect(post, size)
         Return a new region from a rect position and size.
     """

@@ -47,11 +47,11 @@ class Grabbable:
 
     Methods
     -------
-    grab(mouse_event):
+    grab(mouse_event)
         Grab the gadget.
-    ungrab(mouse_event):
+    ungrab(mouse_event)
         Ungrab the gadget.
-    grab_update(mouse_event):
+    grab_update(mouse_event)
         Update gadget with incoming mouse events while grabbed.
     """
 

@@ -44,7 +44,7 @@ class Themable(ABC):
 
     Methods
     -------
-    update_theme():
+    update_theme()
         Paint the gadget with current theme.
     """
 

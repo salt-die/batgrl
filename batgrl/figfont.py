@@ -123,11 +123,11 @@ class FIGFont:
 
     Methods
     -------
-    from_path(path):
+    from_path(path)
         Load a FIGFont from a path.
-    render_array(text):
+    render_array(text)
         Render text as ascii art into a 2D "<U1" numpy array.
-    render_str(text):
+    render_str(text)
         Render text as ascii art into a multiline string.
     """
 

@@ -265,37 +265,37 @@ class PosHintDict(TypedDict, total=False):
 
     Methods
     -------
-    clear():
+    clear()
         Remove all items from the dictionary.
-    copy():
+    copy()
         Return a shallow copy of the dictionary.
-    fromkeys(iterable, value=None):
+    fromkeys(iterable, value=None)
         Create a new dictionary with keys from iterable and values set to value.
-    get(key, default=None):
+    get(key, default=None)
         Return the value for key if key is in the dictionary, else default. If default
         is not given, it defaults to None, so that this method never raises a KeyError.
-    items():
+    items()
         Return a new view of the dictionary’s items ((key, value) pairs). See the
         documentation of view objects.
-    keys():
+    keys()
         Return a new view of the dictionary’s keys. See the documentation of view
         objects.
-    pop(...):
+    pop(...)
         If key is in the dictionary, remove it and return its value, else return
         default. If default is not given and key is not in the dictionary, a KeyError is
         raised.
-    popitem():
+    popitem()
         Remove and return a (key, value) pair from the dictionary. Pairs are returned in
         LIFO order. popitem() is useful to destructively iterate over a dictionary, as
         often used in set algorithms. If the dictionary is empty, calling popitem()
         raises a KeyError.
-    setdefault(key, default=None):
+    setdefault(key, default=None)
         If key is in the dictionary, return its value. If not, insert key with a value
         of default and return default. default defaults to None.
-    update(...):
+    update(...)
         Update the dictionary with the key/value pairs from other, overwriting existing
         keys. Return None.
-    values():
+    values()
         Return a new view of the dictionary’s values. See the documentation of view
         objects.
     """
@@ -313,37 +313,37 @@ class SizeHintDict(TypedDict, total=False):
 
     Methods
     -------
-    clear():
+    clear()
         Remove all items from the dictionary.
-    copy():
+    copy()
         Return a shallow copy of the dictionary.
-    fromkeys(iterable, value=None):
+    fromkeys(iterable, value=None)
         Create a new dictionary with keys from iterable and values set to value.
-    get(key, default=None):
+    get(key, default=None)
         Return the value for key if key is in the dictionary, else default. If default
         is not given, it defaults to None, so that this method never raises a KeyError.
-    items():
+    items()
         Return a new view of the dictionary’s items ((key, value) pairs). See the
         documentation of view objects.
-    keys():
+    keys()
         Return a new view of the dictionary’s keys. See the documentation of view
         objects.
-    pop(...):
+    pop(...)
         If key is in the dictionary, remove it and return its value, else return
         default. If default is not given and key is not in the dictionary, a KeyError is
         raised.
-    popitem():
+    popitem()
         Remove and return a (key, value) pair from the dictionary. Pairs are returned in
         LIFO order. popitem() is useful to destructively iterate over a dictionary, as
         often used in set algorithms. If the dictionary is empty, calling popitem()
         raises a KeyError.
-    setdefault(key, default=None):
+    setdefault(key, default=None)
         If key is in the dictionary, return its value. If not, insert key with a value
         of default and return default. default defaults to None.
-    update(...):
+    update(...)
         Update the dictionary with the key/value pairs from other, overwriting existing
         keys. Return None.
-    values():
+    values()
         Return a new view of the dictionary’s values. See the documentation of view
         objects.
     """
@@ -485,51 +485,51 @@ class Gadget:
 
     Methods
     -------
-    on_size():
+    on_size()
         Update gadget after a resize.
-    apply_hints():
+    apply_hints()
         Apply size and pos hints.
-    to_local(point):
+    to_local(point)
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point):
+    collides_point(point)
         Return true if point collides with visible portion of gadget.
-    collides_gadget(other):
+    collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget):
+    add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets):
+    add_gadgets(\*gadgets)
         Add multiple child gadgets.
-    remove_gadget(gadget):
+    remove_gadget(gadget)
         Remove a child gadget.
-    pull_to_front():
+    pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root():
+    walk_from_root()
         Yield all descendents of the root gadget (preorder traversal).
-    walk():
+    walk()
         Yield all descendents of this gadget (preorder traversal).
-    walk_reverse():
+    walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
-    ancestors():
+    ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action):
+    subscribe(source, attr, action)
         Subscribe to a gadget property.
-    unsubscribe(source, attr):
+    unsubscribe(source, attr)
         Unsubscribe to a gadget property.
-    on_key(key_event):
+    on_key(key_event)
         Handle key press event.
-    on_mouse(mouse_event):
+    on_mouse(mouse_event)
         Handle mouse event.
-    on_paste(paste_event):
+    on_paste(paste_event)
         Handle paste event.
-    tween(...):
+    tween(...)
         Sequentially update gadget properties over time.
-    on_add():
+    on_add()
         Apply size hints and call children's `on_add`.
-    on_remove():
+    on_remove()
         Call children's `on_remove`.
-    prolicide():
+    prolicide()
         Recursively remove all children.
-    destroy():
+    destroy()
         Remove this gadget and recursively remove all its children.
     """
 

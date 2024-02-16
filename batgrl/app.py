@@ -83,15 +83,15 @@ class App(ABC):
 
     Methods
     -------
-    on_start():
+    on_start()
         Coroutine scheduled when app is run.
-    run():
+    run()
         Run the app.
-    exit():
+    exit()
         Exit the app.
-    add_gadget(gadget):
+    add_gadget(gadget)
         Alias for :attr:`root.add_gadget`.
-    add_gadgets(\*gadgets):
+    add_gadgets(\*gadgets)
         Alias for :attr:`root.add_gadgets`.
     """
 

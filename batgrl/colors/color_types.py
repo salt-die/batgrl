@@ -41,11 +41,11 @@ class Color(NamedTuple):
 
     Methods
     -------
-    from_hex(hexcode):
+    from_hex(hexcode)
         Create a :class:`Color` from a hex code.
-    count(value):
+    count(value)
         Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807):
+    index(value, start=0, stop=9223372036854775807)
         Return first index of value.
     """
 
@@ -103,11 +103,11 @@ class AColor(NamedTuple):
 
     Methods
     -------
-    from_hex(hexcode):
+    from_hex(hexcode)
         Create an :class:`AColor` from a hex code.
-    count(value):
+    count(value)
         Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807):
+    index(value, start=0, stop=9223372036854775807)
         Return first index of value.
     """
 
@@ -149,35 +149,37 @@ class ColorPair(TypedDict):
 
     Methods
     -------
-    clear():
+    clear()
         Remove all items from the dictionary.
-    copy():
+    copy()
         Return a shallow copy of the dictionary.
-    fromkeys(iterable, value):
+    fromkeys(iterable, value=None)
         Create a new dictionary with keys from iterable and values set to value.
-    get(key, default):
+    get(key, default=None)
         Return the value for key if key is in the dictionary, else default. If default
         is not given, it defaults to None, so that this method never raises a KeyError.
-    items():
+    items()
         Return a new view of the dictionary’s items ((key, value) pairs). See the
         documentation of view objects.
-    keys():
+    keys()
         Return a new view of the dictionary’s keys. See the documentation of view
         objects.
-    pop(key, default):
+    pop(...)
         If key is in the dictionary, remove it and return its value, else return
         default. If default is not given and key is not in the dictionary, a KeyError is
         raised.
-    popitem():
+    popitem()
         Remove and return a (key, value) pair from the dictionary. Pairs are returned in
-        LIFO order.
-    setdefault(key, default):
+        LIFO order. popitem() is useful to destructively iterate over a dictionary, as
+        often used in set algorithms. If the dictionary is empty, calling popitem()
+        raises a KeyError.
+    setdefault(key, default=None)
         If key is in the dictionary, return its value. If not, insert key with a value
         of default and return default. default defaults to None.
-    update(other):
+    update(...)
         Update the dictionary with the key/value pairs from other, overwriting existing
         keys. Return None.
-    values():
+    values()
         Return a new view of the dictionary’s values. See the documentation of view
         objects.
     """
@@ -192,35 +194,37 @@ class ColorTheme(TypedDict, total=False):
 
     Methods
     -------
-    clear():
+    clear()
         Remove all items from the dictionary.
-    copy():
+    copy()
         Return a shallow copy of the dictionary.
-    fromkeys(iterable, value):
+    fromkeys(iterable, value=None)
         Create a new dictionary with keys from iterable and values set to value.
-    get(key, default):
+    get(key, default=None)
         Return the value for key if key is in the dictionary, else default. If default
         is not given, it defaults to None, so that this method never raises a KeyError.
-    items():
+    items()
         Return a new view of the dictionary’s items ((key, value) pairs). See the
         documentation of view objects.
-    keys():
+    keys()
         Return a new view of the dictionary’s keys. See the documentation of view
         objects.
-    pop(key, default):
+    pop(...)
         If key is in the dictionary, remove it and return its value, else return
         default. If default is not given and key is not in the dictionary, a KeyError is
         raised.
-    popitem():
+    popitem()
         Remove and return a (key, value) pair from the dictionary. Pairs are returned in
-        LIFO order.
-    setdefault(key, default):
+        LIFO order. popitem() is useful to destructively iterate over a dictionary, as
+        often used in set algorithms. If the dictionary is empty, calling popitem()
+        raises a KeyError.
+    setdefault(key, default=None)
         If key is in the dictionary, return its value. If not, insert key with a value
         of default and return default. default defaults to None.
-    update(other):
+    update(...)
         Update the dictionary with the key/value pairs from other, overwriting existing
         keys. Return None.
-    values():
+    values()
         Return a new view of the dictionary’s values. See the documentation of view
         objects.
     """

@@ -131,81 +131,81 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
     Methods
     -------
-    iter_open_nodes():
+    iter_open_nodes()
         Yield all open descendent nodes.
-    add_node(node: TreeViewNode):
+    add_node(node: TreeViewNode)
         Add a child node.
-    remove_node(node: TreeViewNode):
+    remove_node(node: TreeViewNode)
         Remove a child node.
-    toggle():
+    toggle()
         Toggle node open or closed.
-    select():
+    select()
         Select this node.
-    unselect():
+    unselect()
         Unselect this node.
-    update_theme():
+    update_theme()
         Paint the gadget with current theme.
-    update_normal():
+    update_normal()
         Paint the normal state.
-    update_hover():
+    update_hover()
         Paint the hover state.
-    update_down():
+    update_down()
         Paint the down state.
-    on_release():
+    on_release()
         Triggered when a button is released.
-    add_border(style="light", ...):
+    add_border(style="light", ...)
         Add a border to the gadget.
-    add_syntax_highlighting(lexer, style):
+    add_syntax_highlighting(lexer, style)
         Add syntax highlighting to current text in canvas.
-    add_str(str, pos, ...):
+    add_str(str, pos, ...)
         Add a single line of text to the canvas.
-    set_text(text, ...):
+    set_text(text, ...)
         Resize gadget to fit text, erase canvas, then fill canvas with text.
-    on_size():
+    on_size()
         Update gadget after a resize.
-    apply_hints():
+    apply_hints()
         Apply size and pos hints.
-    to_local(point):
+    to_local(point)
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point):
+    collides_point(point)
         Return true if point collides with visible portion of gadget.
-    collides_gadget(other):
+    collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget):
+    add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets):
+    add_gadgets(\*gadgets)
         Add multiple child gadgets.
-    remove_gadget(gadget):
+    remove_gadget(gadget)
         Remove a child gadget.
-    pull_to_front():
+    pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root():
+    walk_from_root()
         Yield all descendents of the root gadget (preorder traversal).
-    walk():
+    walk()
         Yield all descendents of this gadget (preorder traversal).
-    walk_reverse():
+    walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
-    ancestors():
+    ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action):
+    subscribe(source, attr, action)
         Subscribe to a gadget property.
-    unsubscribe(source, attr):
+    unsubscribe(source, attr)
         Unsubscribe to a gadget property.
-    on_key(key_event):
+    on_key(key_event)
         Handle key press event.
-    on_mouse(mouse_event):
+    on_mouse(mouse_event)
         Handle mouse event.
-    on_paste(paste_event):
+    on_paste(paste_event)
         Handle paste event.
-    tween(...):
+    tween(...)
         Sequentially update gadget properties over time.
-    on_add():
+    on_add()
         Apply size hints and call children's `on_add`.
-    on_remove():
+    on_remove()
         Call children's `on_remove`.
-    prolicide():
+    prolicide()
         Recursively remove all children.
-    destroy():
+    destroy()
         Remove this gadget and recursively remove all its children.
     """
 
@@ -431,53 +431,53 @@ class TreeView(Gadget):
 
     Methods
     -------
-    update_tree_layout():
+    update_tree_layout()
         Update tree layout after a child node is toggled open or closed.
-    on_size():
+    on_size()
         Update gadget after a resize.
-    apply_hints():
+    apply_hints()
         Apply size and pos hints.
-    to_local(point):
+    to_local(point)
         Convert point in absolute coordinates to local coordinates.
-    collides_point(point):
+    collides_point(point)
         Return true if point collides with visible portion of gadget.
-    collides_gadget(other):
+    collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget):
+    add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets):
+    add_gadgets(\*gadgets)
         Add multiple child gadgets.
-    remove_gadget(gadget):
+    remove_gadget(gadget)
         Remove a child gadget.
-    pull_to_front():
+    pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root():
+    walk_from_root()
         Yield all descendents of the root gadget (preorder traversal).
-    walk():
+    walk()
         Yield all descendents of this gadget (preorder traversal).
-    walk_reverse():
+    walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
-    ancestors():
+    ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action):
+    subscribe(source, attr, action)
         Subscribe to a gadget property.
-    unsubscribe(source, attr):
+    unsubscribe(source, attr)
         Unsubscribe to a gadget property.
-    on_key(key_event):
+    on_key(key_event)
         Handle key press event.
-    on_mouse(mouse_event):
+    on_mouse(mouse_event)
         Handle mouse event.
-    on_paste(paste_event):
+    on_paste(paste_event)
         Handle paste event.
-    tween(...):
+    tween(...)
         Sequentially update gadget properties over time.
-    on_add():
+    on_add()
         Apply size hints and call children's `on_add`.
-    on_remove():
+    on_remove()
         Call children's `on_remove`.
-    prolicide():
+    prolicide()
         Recursively remove all children.
-    destroy():
+    destroy()
         Remove this gadget and recursively remove all its children.
     """
 
