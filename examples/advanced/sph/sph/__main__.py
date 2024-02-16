@@ -2,7 +2,7 @@ import asyncio
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import BLACK, WHITE_ON_BLACK, Color, ColorPair
+from batgrl.colors import Color
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
@@ -12,7 +12,6 @@ from .solver import SPHSolver
 
 WATER_COLOR = Color.from_hex("1e1ea8")
 FILL_COLOR = Color.from_hex("2fa399")
-WATER_ON_BLACK = ColorPair.from_colors(WATER_COLOR, BLACK)
 
 
 class SPH(Graphics):
@@ -91,11 +90,7 @@ class SPHApp(App):
         )
         sliders_height = (len(slider_settings) + 1) // 2 * 2
 
-        container = Text(
-            size=(height, width),
-            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
-            default_color_pair=WHITE_ON_BLACK,
-        )
+        container = Text(size=(height, width), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
         fluid = SPH(
             nparticles=225,
@@ -110,7 +105,7 @@ class SPHApp(App):
                     value = f"{v}"
                 else:
                     value = f"{v:.4}"
-                container.add_str(f"{caption}: {value}".ljust(width // 2), (y, x))
+                container.add_str(f"{caption}: {value}".ljust(width // 2), pos=(y, x))
 
             return update
 
@@ -118,18 +113,17 @@ class SPHApp(App):
         for i, (attr, caption, min, max) in enumerate(slider_settings):
             y = i // 2 * 2
             x = (i % 2) * (width // 2 + 1)
-            container.add_gadget(
-                Slider(
-                    pos=(y + 1, x),
-                    min=min,
-                    max=max,
-                    start_value=getattr(fluid.sph_solver, attr),
-                    callback=create_callback(caption, attr, y, x),
-                    size=(1, width // 2),
-                    fill_color=FILL_COLOR,
-                    default_color_pair=WATER_ON_BLACK,
-                )
+            slider = Slider(
+                pos=(y + 1, x),
+                min=min,
+                max=max,
+                start_value=getattr(fluid.sph_solver, attr),
+                callback=create_callback(caption, attr, y, x),
+                size=(1, width // 2),
+                fill_color=FILL_COLOR,
+                slider_color=WATER_COLOR,
             )
+            container.add_gadget(slider)
         self.add_gadget(container)
 
 

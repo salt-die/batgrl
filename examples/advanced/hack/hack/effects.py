@@ -1,24 +1,16 @@
-import asyncio
-
 import numpy as np
 from batgrl.gadgets.gadget import Gadget
-
-from .colors import BRIGHT_COLOR_PAIR
-
-CRT_LEN = 22 * 53
-PS = np.linspace(0.99, 0, CRT_LEN)[..., None] ** 0.5
-NPS = (1 - PS) * BRIGHT_COLOR_PAIR
-NPS_2 = (1 - PS) * BRIGHT_COLOR_PAIR.reversed()
-SKIP = 23  # Increase for a faster scanline.
 
 
 class Darken(Gadget):
     """Darken view."""
 
-    def render(self, canvas, colors):
-        super().render(canvas, colors)
+    def _render(self, canvas):
+        super()._render(canvas)
         for rect in self.region.rects():
-            colors[rect.to_slices()] >>= 1
+            s = rect.to_slices()
+            canvas["fg_color"][s] >>= 1
+            canvas["bg_color"][s] >>= 1
 
 
 class BOLDCRT(Gadget):
@@ -27,38 +19,26 @@ class BOLDCRT(Gadget):
     def on_add(self):
         super().on_add()
         self._i = 0
-        self._crt_task = asyncio.create_task(self._crt_effect())
+        self.pct = np.ones((*self.size, 1), float)
 
-    def on_remove(self):
-        self._crt_task.cancel()
-        super().on_remove()
-
-    async def _crt_effect(self):
-        while True:
-            y, x = self.size
-            self._i += SKIP
-            self._i %= y * x
-            await asyncio.sleep(0)
-
-    def render(self, canvas, colors):
+    def _render(self, canvas):
         py, px = self.absolute_pos
         h, w = self.size
+        size = h * w
 
-        dst = slice(py, py + h), slice(px, px + w)
-        canvas[dst]["bold"] = True
+        self.pct *= 0.9995
+        for _ in range(20):
+            y, x = divmod(self._i, w)
 
-        y, x = divmod(self._i, w)
-        nchars = 0
-        while nchars < CRT_LEN:
-            strip = colors[dst][y, x : x + CRT_LEN - nchars]
-            end = nchars + len(strip)
+            dst = slice(py, py + h), slice(px, px + w)
+            canvas[dst]["bold"] = True
 
-            normal = (strip * PS[nchars:end] + NPS[nchars:end]).astype(np.uint8)
-            reversed = (strip * PS[nchars:end] + NPS_2[nchars:end]).astype(np.uint8)
-            where_reversed = strip[:, :3].sum(axis=-1) < strip[:, 3:].sum(axis=-1)
-            strip[:] = normal
-            strip[where_reversed] = reversed[where_reversed]
-
-            nchars = end
-            y = (y + 1) % h
-            x = 0
+            self.pct[y, x] = 1
+            canvas["fg_color"][dst] = (canvas["fg_color"][dst] * self.pct).astype(
+                np.uint8
+            )
+            canvas["bg_color"][dst] = (canvas["bg_color"][dst] * self.pct).astype(
+                np.uint8
+            )
+            self._i += 1
+            self._i %= size

@@ -2,16 +2,13 @@
 import asyncio
 from collections.abc import Callable, Hashable
 
-from numpy.typing import NDArray
-
-from ..colors import BLACK, GREEN, Color, ColorPair
+from ..colors import BLACK, GREEN, Color
 from .behaviors.toggle_button_behavior import (
     ButtonState,
     ToggleButtonBehavior,
     ToggleState,
 )
 from .gadget import (
-    Char,
     Gadget,
     Point,
     PosHint,
@@ -53,19 +50,19 @@ class _AnimatedToggle(ToggleButtonBehavior, Text):
         )
         self._animation_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
 
-        self.colors[..., 3:] = bg_color
-        self.colors[..., :3] = DARK_GREY
-        self.colors[1, 1, 3:] = DARK_GREY
+        self.canvas["bg_color"] = bg_color
+        self.canvas["fg_color"] = DARK_GREY
+        self.canvas["bg_color"][1, 1] = DARK_GREY
 
         if self.toggle_state is ToggleState.ON:
             add_text(self.canvas, "▄▄▄▄\n█▊▊█\n▀▀▀▀")
-            self.colors[1, 1, :3] = GREEN
-            self.colors[1, 2, 3:] = GREEN
+            self.canvas["fg_color"][1, 1] = GREEN
+            self.canvas["bg_color"][1, 2] = GREEN
             self._animation_progess = 0
         else:
             add_text(self.canvas, "▄▄▄▄\n█▏▏█\n▀▀▀▀")
-            self.colors[1, 1, :3] = LIGHT_GREY
-            self.colors[1, 2, 3:] = LIGHT_GREY
+            self.canvas["fg_color"][1, 1] = LIGHT_GREY
+            self.canvas["bg_color"][1, 2] = LIGHT_GREY
             self._animation_progess = 5
 
     def on_remove(self):
@@ -73,12 +70,12 @@ class _AnimatedToggle(ToggleButtonBehavior, Text):
 
     async def _animate_toggle(self):
         if self.toggle_state is ToggleState.ON:
-            self.colors[1, 1, :3] = GREEN
-            self.colors[1, 2, 3:] = GREEN
+            self.canvas["fg_color"][1, 1] = GREEN
+            self.canvas["bg_color"][1, 2] = GREEN
             r = range(self._animation_progess - 1, -1, -1)
         else:
-            self.colors[1, 1, :3] = LIGHT_GREY
-            self.colors[1, 2, 3:] = LIGHT_GREY
+            self.canvas["fg_color"][1, 1] = LIGHT_GREY
+            self.canvas["bg_color"][1, 2] = LIGHT_GREY
             r = range(self._animation_progess + 1, 6)
 
         for i in r:
@@ -118,7 +115,7 @@ class FlatToggle(Gadget):
     ----------
     callback : Callable[[ToggleState], None], default: lambda state: None
         Called when toggle state changes. The new state is provided as first argument.
-    toggle_background_color: Color, default: BLACK
+    toggle_bg_color: Color, default: BLACK
         Background color of toggle.
     group : None | Hashable, default: None
         If a group is provided, only one button in a group can be in the "on" state.
@@ -131,15 +128,6 @@ class FlatToggle(Gadget):
         Whether a mouse up event outside the button will trigger it.
         size : Size, default: Size(10, 10)
         Size of gadget.
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -149,7 +137,7 @@ class FlatToggle(Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -163,10 +151,6 @@ class FlatToggle(Gadget):
         Toggle button callback.
     toggle_background: Color
         Background color of toggle.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -199,16 +183,16 @@ class FlatToggle(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -278,7 +262,7 @@ class FlatToggle(Gadget):
         *,
         size: Size = Size(3, 4),
         callback: Callable[[ToggleState], None] = lambda state: None,
-        toggle_background_color: Color = BLACK,
+        toggle_bg_color: Color = BLACK,
         group: None | Hashable = None,
         allow_no_selection: bool = False,
         toggle_state: ToggleState = ToggleState.OFF,
@@ -289,8 +273,6 @@ class FlatToggle(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             size=size,
@@ -300,8 +282,6 @@ class FlatToggle(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self.callback = callback
@@ -311,15 +291,15 @@ class FlatToggle(Gadget):
             allow_no_selection=allow_no_selection,
             toggle_state=toggle_state,
             always_release=always_release,
-            bg_color=toggle_background_color,
+            bg_color=toggle_bg_color,
         )
         self.add_gadget(self._toggle)
 
     @property
-    def toggle_background_color(self) -> Color:
+    def toggle_bg_color(self) -> Color:
         """Background color of toggle."""
-        return Color(*self._toggle[0, 0, 3:])
+        return Color(*self._toggle.canvas["bg_color"][0, 0])
 
-    @toggle_background_color.setter
-    def toggle_background_color(self, color: Color):
-        self._toggle.colors[[0, -1], :, 3:] = color
+    @toggle_bg_color.setter
+    def toggle_bg_color(self, color: Color):
+        self._toggle.canvas["bg_color"][[0, -1]] = color

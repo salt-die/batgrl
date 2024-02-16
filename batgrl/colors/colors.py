@@ -14,29 +14,29 @@ from pygments.token import (
     Token,
 )
 
-from .color_types import AColor, Color, ColorPair, ColorTheme
+from .color_types import AColor, Color, ColorTheme
 
 __all__ = [
-    "WHITE",
-    "BLACK",
-    "RED",
-    "GREEN",
-    "BLUE",
-    "YELLOW",
-    "CYAN",
-    "MAGENTA",
-    "AWHITE",
     "ABLACK",
-    "ARED",
-    "AGREEN",
     "ABLUE",
-    "AYELLOW",
     "ACYAN",
+    "AGREEN",
     "AMAGENTA",
-    "TRANSPARENT",
-    "WHITE_ON_BLACK",
-    "BLACK_ON_BLACK",
+    "ARED",
+    "AWHITE",
+    "AYELLOW",
+    "BLACK",
+    "BLUE",
+    "CYAN",
     "DEFAULT_COLOR_THEME",
+    "DEFAULT_PRIMARY_BG",
+    "DEFAULT_PRIMARY_FG",
+    "GREEN",
+    "MAGENTA",
+    "RED",
+    "TRANSPARENT",
+    "WHITE",
+    "YELLOW",
     "Neptune",
 ]
 
@@ -91,14 +91,51 @@ AMAGENTA = AColor(255, 0, 255)
 TRANSPARENT = AColor(0, 0, 0, 0)
 """Transparent black."""
 
-WHITE_ON_BLACK = ColorPair.from_colors(WHITE, BLACK)
-"""White on black color pair."""
-
-BLACK_ON_BLACK = ColorPair.from_colors(BLACK, BLACK)
-"""Black on black color pair."""
-
-DEFAULT_COLOR_THEME = ColorTheme()
+DEFAULT_COLOR_THEME: ColorTheme = {
+    "primary": {"fg": "f6a7a9", "bg": "070c25"},
+    "text_pad_line_highlight": {"fg": "f6a7a9", "bg": "0c0e30"},
+    "text_pad_selection_highlight": {"fg": "f6a7a9", "bg": "0f1847"},
+    "textbox_primary": {"fg": "fff0f6", "bg": "070c25"},
+    "textbox_selection_highlight": {"fg": "fff0f6", "bg": "0f1847"},
+    "textbox_placeholder": {"fg": "2a3a92", "bg": "070c25"},
+    "button_normal": {"fg": "dde4ed", "bg": "2a3ca0"},
+    "button_hover": {"fg": "fff0f6", "bg": "3248c0"},
+    "button_press": {"fg": "fff0f6", "bg": "c4a219"},
+    "menu_item_hover": {"fg": "f2babc", "bg": "111834"},
+    "menu_item_selected": {"fg": "ecf3ff", "bg": "1b244b"},
+    "menu_item_disabled": {"fg": "272b40", "bg": "070c25"},
+    "titlebar_normal": {"fg": "ffe0df", "bg": "070c25"},
+    "titlebar_inactive": {"fg": "7d6b71", "bg": "070c25"},
+    "data_table_sort_indicator": {"fg": "ecf3ff", "bg": "070c25"},
+    "data_table_hover": {"fg": "f6a7a9", "bg": "111834"},
+    "data_table_stripe": {"fg": "f6a7a9", "bg": "0b1238"},
+    "data_table_stripe_hover": {"fg": "f6a7a9", "bg": "0f184a"},
+    "data_table_selected": {"fg": "ecf3ff", "bg": "111f5e"},
+    "data_table_selected_hover": {"fg": "ecf3ff", "bg": "1b244b"},
+    "progress_bar": {"fg": "ffe0df", "bg": "2a3ca0"},
+    "markdown_link": {"fg": "376cff", "bg": "070c25"},
+    "markdown_link_hover": {"fg": "4668ff", "bg": "070c25"},
+    "markdown_inline_code": {"fg": "806ae5", "bg": "080b1a"},
+    "markdown_quote": {"fg": "2054e2", "bg": "0c1b4b"},
+    "markdown_title": {"fg": "cfd1d4", "bg": "292a2d"},
+    "markdown_image": {"fg": "f6a7a9", "bg": "0c1540"},
+    "markdown_block_code_background": "080b1a",
+    "markdown_quote_block_code_background": "11265d",
+    "markdown_header_background": "030612",
+    "scroll_view_scrollbar": "070c25",
+    "scroll_view_indicator_normal": "0e1843",
+    "scroll_view_indicator_hover": "111e4f",
+    "scroll_view_indicator_press": "172868",
+    "window_border_normal": "122162",
+    "window_border_inactive": "282c3e",
+}
 """Default color theme."""
+
+DEFAULT_PRIMARY_FG = Color.from_hex("f6a7a9")
+"""Default primary foreground color."""
+
+DEFAULT_PRIMARY_BG = Color.from_hex("070c25")
+"""Default primary background color."""
 
 
 class Neptune(Style):

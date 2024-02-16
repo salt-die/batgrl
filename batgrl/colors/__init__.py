@@ -1,5 +1,5 @@
 """Color-related functions and data structures."""
-from .color_types import AColor, Color, ColorPair, ColorTheme
+from .color_types import AColor, AHexcode, Color, ColorPair, ColorTheme, Hexcode
 from .colors import (
     ABLACK,
     ABLUE,
@@ -10,16 +10,16 @@ from .colors import (
     AWHITE,
     AYELLOW,
     BLACK,
-    BLACK_ON_BLACK,
     BLUE,
     CYAN,
     DEFAULT_COLOR_THEME,
+    DEFAULT_PRIMARY_BG,
+    DEFAULT_PRIMARY_FG,
     GREEN,
     MAGENTA,
     RED,
     TRANSPARENT,
     WHITE,
-    WHITE_ON_BLACK,
     YELLOW,
     Neptune,
 )
@@ -39,6 +39,8 @@ __all__ = [
     "BLUE",
     "CYAN",
     "DEFAULT_COLOR_THEME",
+    "DEFAULT_PRIMARY_BG",
+    "DEFAULT_PRIMARY_FG",
     "GREEN",
     "MAGENTA",
     "RED",
@@ -47,9 +49,11 @@ __all__ = [
     "WHITE_ON_BLACK",
     "YELLOW",
     "AColor",
+    "AHexcode",
     "Color",
     "ColorPair",
     "ColorTheme",
+    "Hexcode",
     "Neptune",
     "gradient",
     "lerp_colors",

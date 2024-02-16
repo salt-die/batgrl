@@ -5,20 +5,19 @@ from numbers import Real
 import numpy as np
 from numpy.typing import NDArray
 
-from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, lerp_colors
+from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, lerp_colors
 from ..io import MouseEvent
-from .gadget import Gadget
-from .text import (
-    Char,
+from ._cursor import Cursor
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    Text,
-    add_text,
 )
+from .text import Text, add_text
 from .text_tools import smooth_vertical_bar
 
 __all__ = [
@@ -31,10 +30,9 @@ __all__ = [
     "Sparkline",
 ]
 
-DEFAULT_TOOLTIP_COLORS = DEFAULT_COLOR_THEME.primary
-DEFAULT_MIN_COLOR = Color.from_hex("1B244B")
-DEFAULT_MAX_COLOR = Color.from_hex("4D67FF")
-DEFAULT_HIGHLIGHT_COLOR = Color.from_hex("7281FF")
+DEFAULT_MIN_COLOR = Color.from_hex("1b244b")
+DEFAULT_MAX_COLOR = Color.from_hex("4d67ff")
+DEFAULT_HIGHLIGHT_COLOR = Color.from_hex("7281ff")
 
 
 def _get_float_text(value: float) -> str:
@@ -49,7 +47,7 @@ class _Tooltip(Text):
         self.is_enabled = self.selector.is_enabled = False
 
 
-class Sparkline(Text):
+class Sparkline(Gadget):
     r"""
     A sparkline gadget for displaying sequential data.
 
@@ -61,17 +59,16 @@ class Sparkline(Text):
         Color of minimum value of the sparkline.
     max_color : Color, default: DEFAULT_MAX_COLOR
         Color of the maximum value of the sparkline.
-    show_tooltip : bool, default: True
-        Whether to show tooltip.
-    tooltip_color_pair : ColorPair, default: DEFAULT_TOOLTIP_COLORS
-        Color pair for tooltip.
     highlight_color : Color, default: DEFAULT_HIGHLIGHT_COLOR
         Color of highlighted value of the sparkline.
-    default_char : NDArray[Char] | str, default: " "
-        Default background character. This should be a single unicode half-width
-        grapheme.
-    default_color_pair : ColorPair, default: DEFAULT_COLOR_THEME.primary
-        Default color of gadget.
+    bg_color : Color, default: DEFAULT_PRIMARY_BG
+        Background color of gadget.
+    show_tooltip : bool, default: True
+        Whether to show tooltip.
+    tooltip_fg_color : Color, default: DEFAULT_PRIMARY_FG
+        Foreground color of tooltip.
+    tooltip_bg_color : Color, default: DEFAULT_PRIMARY_BG
+        Background color of tooltip.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -81,7 +78,7 @@ class Sparkline(Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether whitespace is transparent.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -98,24 +95,16 @@ class Sparkline(Text):
         Color of minimum value of the sparkline.
     max_color : Color
         Color of the maximum value of the sparkline.
-    show_tooltip : bool
-        Whether to show tooltip.
-    tooltip_color_pair : ColorPair
-        Color pair for tooltip.
     highlight_color : Color
         Color of highlighted value of the sparkline.
-    canvas : NDArray[Char]
-        The array of characters for the gadget.
-    colors : NDArray[np.uint8]
-        The array of color pairs for each character in :attr:`canvas`.
-    default_char : NDArray[Char]
-        Default background character.
-    default_color_pair : ColorPair
-        Default color pair of gadget.
-    default_fg_color : Color
-        The default foreground color.
-    default_bg_color : Color
-        The default background color.
+    bg_color : Color
+        Background color of gadget.
+    show_tooltip : bool
+        Whether to show tooltip.
+    tooltip_fg_color : Color
+        Foreground color of tooltip.
+    tooltip_bg_color : Color
+        Background color of tooltip.
     size : Size
         Size of gadget.
     height : int
@@ -148,16 +137,16 @@ class Sparkline(Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -165,14 +154,6 @@ class Sparkline(Text):
 
     Methods
     -------
-    add_border(style="light", ...):
-        Add a border to the gadget.
-    add_syntax_highlighting(lexer, style):
-        Add syntax highlighting to current text in canvas.
-    add_str(str, pos, ...):
-        Add a single line of text to the canvas.
-    set_text(text, ...):
-        Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
         Update gadget after a resize.
     apply_hints():
@@ -227,11 +208,11 @@ class Sparkline(Text):
         data: Sequence[Real] | None = None,
         min_color: Color = DEFAULT_MIN_COLOR,
         max_color: Color = DEFAULT_MAX_COLOR,
-        show_tooltip: bool = True,
-        tooltip_color_pair: ColorPair = DEFAULT_TOOLTIP_COLORS,
         highlight_color: Color = DEFAULT_HIGHLIGHT_COLOR,
-        default_char: NDArray[Char] | str = " ",
-        default_color_pair: ColorPair = DEFAULT_COLOR_THEME.primary,
+        bg_color: Color = DEFAULT_PRIMARY_BG,
+        show_tooltip: bool = True,
+        tooltip_fg_color: Color = DEFAULT_PRIMARY_FG,
+        tooltip_bg_color: Color = DEFAULT_PRIMARY_BG,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -240,9 +221,11 @@ class Sparkline(Text):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._sparkline = Text(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._selector = Cursor(size_hint={"height_hint": 1.0})
+        self._tooltip = _Tooltip(size=(7, 18), is_enabled=False)
+
         super().__init__(
-            default_char=default_char,
-            default_color_pair=default_color_pair,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -252,15 +235,6 @@ class Sparkline(Text):
             is_enabled=is_enabled,
         )
 
-        self._selector = Gadget(
-            size=(self.height, 1),
-            size_hint={"height_hint": 1.0},
-            is_enabled=False,
-            is_transparent=True,
-        )
-        self.add_gadget(self._selector)
-
-        self._tooltip = _Tooltip(size=(7, 18), is_enabled=False)
         self._tooltip.selector = self._selector
         self._tooltip.add_border(style="thick")
         add_text(
@@ -268,15 +242,20 @@ class Sparkline(Text):
             "*Start:*\n*Stop:*\n*Min:*\n*Max:*\n*Mean:*",
             markdown=True,
         )
+        self.add_gadget(self._sparkline)
+        self._sparkline.add_gadget(self._selector)
 
-        self.tooltip_color_pair = tooltip_color_pair
-        self.show_tooltip = show_tooltip
-        self.highlight_color = highlight_color
+        self.data = data
         self._min_color = min_color
         """Color of minimum value of the sparkline."""
         self._max_color = max_color
         """Color of the maximum value of the sparkline."""
-        self.data = data
+        self.highlight_color = highlight_color
+        self.bg_color = bg_color
+        self.show_tooltip = show_tooltip
+        self.tooltip_fg_color = tooltip_fg_color
+        self.tooltip_bg_color = tooltip_bg_color
+
         # Following are set in `_build_sparkline`:
         self._walls: NDArray[np.float64]
         """
@@ -291,16 +270,24 @@ class Sparkline(Text):
         """Arithmetic mean of each bin."""
 
     @property
+    def bg_color(self) -> Color:
+        """Background color of gadget."""
+        return self._selector.bg_color
+
+    @bg_color.setter
+    def bg_color(self, bg_color: Color):
+        self._selector.bg_color = bg_color
+        self._sparkline.default_bg_color = bg_color
+        self._sparkline.canvas["bg_color"] = bg_color
+
+    @property
     def highlight_color(self) -> Color:
         """Color of highlighted value of the sparkline."""
-        return self._highlight_color
+        return self._selector.fg_color
 
     @highlight_color.setter
     def highlight_color(self, highlight_color: Color):
-        self._highlight_color = highlight_color
-        self._selector.background_color_pair = ColorPair.from_colors(
-            highlight_color, self.default_bg_color
-        )
+        self._selector.fg_color = highlight_color
 
     @property
     def show_tooltip(self) -> bool:
@@ -314,14 +301,24 @@ class Sparkline(Text):
         self._selector.is_enabled = False
 
     @property
-    def tooltip_color_pair(self) -> ColorPair:
-        """Color pair for tooltip."""
-        return self._tooltip.default_color_pair
+    def tooltip_fg_color(self) -> Color:
+        """Foreground color of tooltip."""
+        return self._tooltip.default_fg_color
 
-    @tooltip_color_pair.setter
-    def tooltip_color_pair(self, tooltip_color_pair: ColorPair):
-        self._tooltip.default_color_pair = tooltip_color_pair
-        self._tooltip.colors[:] = tooltip_color_pair
+    @tooltip_fg_color.setter
+    def tooltip_fg_color(self, tooltip_fg_color: Color):
+        self._tooltip.default_fg_color = tooltip_fg_color
+        self._tooltip.canvas["fg_color"] = tooltip_fg_color
+
+    @property
+    def tooltip_bg_color(self) -> Color:
+        """Background color of tooltip."""
+        return self._tooltip.default_bg_color
+
+    @tooltip_bg_color.setter
+    def tooltip_bg_color(self, tooltip_bg_color: Color):
+        self._tooltip.default_bg_color = tooltip_bg_color
+        self._tooltip.canvas["bg_color"] = tooltip_bg_color
 
     @property
     def min_color(self) -> Color:
@@ -354,8 +351,10 @@ class Sparkline(Text):
         self._build_sparkline()
 
     def on_add(self):
-        """Add tooltip to root on add."""
+        """Add tooltip to root and build sparkline on add."""
+        super().on_add()
         self.root.add_gadget(self._tooltip)
+        self._build_sparkline()
 
     def on_remove(self):
         """Remove tooltip from root on remove."""
@@ -367,6 +366,9 @@ class Sparkline(Text):
         self._build_sparkline()
 
     def _build_sparkline(self):
+        if not self.root:
+            return
+
         self._selector.is_enabled = False
         self._tooltip.is_enabled = False
 
@@ -396,14 +398,13 @@ class Sparkline(Text):
                 self._means.max() - self._means.min()
             )
 
-        self.canvas[:] = self.default_char
-        chars = self.canvas["char"][::-1]
+        self._sparkline.canvas[:] = self._sparkline.default_cell
+        chars = self._sparkline.canvas["char"][::-1]
+        fg_color = self._sparkline.canvas["fg_color"]
         for i, bin_proportion in enumerate(bin_proportions):
             smooth_bar = smooth_vertical_bar(self.height, bin_proportion)
             chars[: len(smooth_bar), i] = smooth_bar
-            self.colors[:, i, :3] = lerp_colors(
-                self.min_color, self.max_color, bin_proportion
-            )
+            fg_color[:, i] = lerp_colors(self.min_color, self.max_color, bin_proportion)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Show tooltip and highlight column on mouse collision."""
@@ -427,6 +428,7 @@ class Sparkline(Text):
             my, mx = mouse_event.position
             rh, rw = self.root.size
 
+            # Keep the tooltip inbounds:
             if my + tth + 1 < rh:
                 tty = my + 1
             elif my - tth - 1 >= 0:

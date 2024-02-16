@@ -6,19 +6,22 @@ A particle field specializes in handling many single "pixel" children.
 from typing import Any
 
 import numpy as np
+from numpy.lib.recfunctions import structured_to_unstructured
 from numpy.typing import NDArray
 
-from .gadget_base import (
-    Char,
-    GadgetBase,
+from .gadget import (
+    Cell,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
     Size,
     SizeHint,
     SizeHintDict,
-    style_char,
+    clamp,
+    subscribable,
 )
+from .texture_tools import _composite
 
 __all__ = [
     "GraphicParticleField",
@@ -31,7 +34,7 @@ __all__ = [
 ]
 
 
-class GraphicParticleField(GadgetBase):
+class GraphicParticleField(Gadget):
     r"""
     A graphic particle field.
 
@@ -43,14 +46,13 @@ class GraphicParticleField(GadgetBase):
     Parameters
     ----------
     particle_positions : NDArray[np.int32] | None, default: None
-        Positions of particles. Expect int array with shape `N, 2`.
+        An array of particle positions with shape `(N, 2)`.
     particle_colors : NDArray[np.uint8] | None, default: None
-        Colors of particles. Expect uint8 array with shape `N, 4`.
-    particle_alphas : NDArray[np.float64] | None, default: None
-        Alphas of particles. Expect float array of values between
-        0 and 1 with shape `N,`.
+        An array of particle colors with shape `(N, 4)`.
     particle_properties : dict[str, NDArray[Any]] | None, default: None
         Additional particle properties.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -60,8 +62,7 @@ class GraphicParticleField(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -74,13 +75,13 @@ class GraphicParticleField(GadgetBase):
     nparticles : int
         Number of particles in particle field.
     particle_positions : NDArray[np.int32]
-        Positions of particles.
+        An array of particle positions with shape `(N, 2)`.
     particle_colors : NDArray[np.uint8]
-        Colors of particles.
-    particle_alphas : NDArray[np.float64]
-        Alphas of particles.
+        An array of particle colors with shape `(N, 4)`.
     particle_properties : dict[str, NDArray[Any]]
         Additional particle properties.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -113,16 +114,16 @@ class GraphicParticleField(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -183,8 +184,8 @@ class GraphicParticleField(GadgetBase):
         *,
         particle_positions: NDArray[np.int32] | None = None,
         particle_colors: NDArray[np.uint8] | None = None,
-        particle_alphas: NDArray[np.float64] | None = None,
         particle_properties: dict[str, NDArray[Any]] = None,
+        alpha: float = 1.0,
         is_transparent: bool = True,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -215,27 +216,36 @@ class GraphicParticleField(GadgetBase):
         else:
             self.particle_colors = particle_colors
 
-        if particle_alphas is None:
-            self.particle_alphas = np.ones(len(self.particle_positions), dtype=np.float)
-        else:
-            self.particle_alphas = particle_alphas
-
         if particle_properties is None:
             self.particle_properties = {}
         else:
             self.particle_properties = particle_properties
+
+        self.alpha = alpha
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._alpha
+
+    @alpha.setter
+    @subscribable
+    def alpha(self, alpha: float):
+        self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     @property
     def nparticles(self) -> int:
         """Number of particles in particle field."""
         return len(self.particle_positions)
 
-    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
+    def _render(self, canvas: NDArray[Cell]):
+        """Render visible region of gadget."""
+        chars = canvas["char"]
+        styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
+        colors = structured_to_unstructured(canvas[["fg_color", "bg_color"]], np.uint8)
         offy, offx = self.absolute_pos
-        palphas = self.particle_alphas
-        pcolors = self.particle_colors
         ppos = self.particle_positions
+        pcolors = self.particle_colors
         for rect in self.region.rects():
             height = rect.bottom - rect.top
             width = rect.right - rect.left
@@ -246,29 +256,30 @@ class GraphicParticleField(GadgetBase):
             ys, xs = pos[where_inbounds].T
 
             dst = rect.to_slices()
+            color_rect = colors[dst]
+
+            if self.is_transparent:
+                mask = chars[dst] != "▀"
+                color_rect[..., :3][mask] = color_rect[..., 3:][mask]
+
             texture = (
-                colors[dst]
-                .reshape(height, width, 2, 3)
+                color_rect.reshape(height, width, 2, 3)
                 .swapaxes(1, 2)
                 .reshape(2 * height, width, 3)
-            )
+            )  # Note this isn't a view.
             painted = pcolors[where_inbounds]
 
-            if not self.is_transparent:
-                texture[ys, xs] = painted[..., :3]
+            if self.is_transparent:
+                particles = texture[ys, xs]
+                _composite(particles, painted[:, :3], painted[:, 3, None], self.alpha)
+                texture[ys, xs] = particles
             else:
-                mask = canvas["char"][dst] != "▀"
-                colors[dst][..., :3][mask] = colors[dst][..., 3:][mask]
+                texture[ys, xs] = painted[..., :3]
 
-                buffer = np.subtract(painted[:, :3], texture[ys, xs], dtype=float)
-                buffer *= painted[:, 3, None]
-                buffer *= palphas[where_inbounds][:, None]
-                buffer /= 255
-                texture[ys, xs] = (buffer + texture[ys, xs]).astype(np.uint8)
-
-            colors[dst] = (
+            color_rect[:] = (
                 texture.reshape(height, 2, width, 3)
                 .swapaxes(1, 2)
                 .reshape(height, width, 6)
             )
-            canvas[dst] = style_char("▀")
+            chars[dst] = "▀"
+            styles[dst] = False

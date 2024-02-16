@@ -4,9 +4,9 @@ import asyncio
 import cv2
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
-from batgrl.gadgets.gadget import Gadget
+from batgrl.colors import DEFAULT_PRIMARY_BG
 from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.pane import Pane
 
 SENSE_SIZE = 7
 SENSE_ANGLE = np.pi / 4
@@ -108,9 +108,9 @@ class Slime(Graphics):
 
 class SlimeApp(App):
     async def on_start(self):
-        background = Gadget(
+        background = Pane(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            background_color_pair=DEFAULT_COLOR_THEME.primary,
+            bg_color=DEFAULT_PRIMARY_BG,
         )
         slime = Slime(size_hint={"height_hint": 1.0, "width_hint": 1.0})
         self.add_gadgets(background, slime)

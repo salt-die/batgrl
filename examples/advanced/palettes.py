@@ -48,7 +48,8 @@ def text_color(rgb) -> Color:
 class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.indicator = Text(size=(1, 1), default_color_pair=(255, 255, 255) * 2)
+        self.indicator = Text(size=(1, 1))
+        self.indicator.canvas["bg_color"] = WHITE
         self.add_gadget(self.indicator)
         self.callback = None
 
@@ -66,15 +67,15 @@ class Selector(Grabbable, Text):
 
 class PaletteApp(App):
     async def on_start(self):
-        hue_selector = Selector(size=(1, W), default_char="▬")
-        hue_selector.colors[..., :3] = hues()
+        hue_selector = Selector(size=(1, W), default_cell="▬")
+        hue_selector.canvas["fg_color"] = hues()
 
-        slope_selector = Selector(size=(1, W), pos=(1, 0), default_char="▬")
+        slope_selector = Selector(size=(1, W), pos=(1, 0), default_cell="▬")
 
         palette = Text(size=(H, W), pos=(2, 0))
 
         def update_palette():
-            start_rgb = hue_selector.colors[0, hue_selector.indicator.x, :3]
+            start_rgb = hue_selector.canvas["fg_color"][0, hue_selector.indicator.x]
             start_hue = cv2.cvtColor(start_rgb[None, None], cv2.COLOR_RGB2HSV)[0, 0, 0]
             hue_slopes = np.linspace(-36, 36, W, endpoint=True, dtype=int)
 
@@ -83,7 +84,9 @@ class PaletteApp(App):
             slope_hsv[0, :, 0] = (start_hue + hue_slopes) % 180
             slope_hsv[0, :, 1] = SATURATIONS[1]
             slope_hsv[0, :, 2] = VIBRANCES[1]
-            slope_selector.colors[..., :3] = cv2.cvtColor(slope_hsv, cv2.COLOR_HSV2RGB)
+            slope_selector.canvas["fg_color"] = cv2.cvtColor(
+                slope_hsv, cv2.COLOR_HSV2RGB
+            )
 
             # Create palette colors.
             slope = hue_slopes[slope_selector.indicator.x]
@@ -102,12 +105,14 @@ class PaletteApp(App):
                 x = w * i
                 rgb = palette_rgb[0, i]
 
-                palette.colors[:, x : x + w, 3:] = rgb
+                palette.canvas["bg_color"][:, x : x + w] = rgb
 
                 offset = (w - 6) // 2
                 if offset >= 0:
                     offset += x
-                    palette.colors[H // 2, offset : offset + 6, :3] = text_color(rgb)
+                    palette.canvas["fg_color"][
+                        H // 2, offset : offset + 6
+                    ] = text_color(rgb)
                     palette.add_str(to_hex(rgb).upper(), pos=(H // 2, offset))
 
         update_palette()

@@ -1,9 +1,35 @@
 """Themable behavior for gadgets."""
 from abc import ABC, abstractmethod
+from typing import NamedTuple
 
-from ...colors import DEFAULT_COLOR_THEME
+from ...colors import AColor, Color, ColorTheme
 
 __all__ = ["Themable"]
+
+
+class _ColorPair(NamedTuple):
+    fg: Color
+    bg: Color
+
+
+def _build_color_theme(color_theme: ColorTheme):
+    """
+    Convert a ColorTheme into a class with attribute names given by the color theme's
+    keys.
+
+    Attribute values are colors created from ColorTheme hexcodes.
+    """
+
+    def color(hexcode):
+        if isinstance(hexcode, dict):
+            return _ColorPair(
+                Color.from_hex(hexcode["fg"]), Color.from_hex(hexcode["bg"])
+            )
+        if len(hexcode) < 8:
+            return Color.from_hex(hexcode)
+        return AColor.from_hex(hexcode)
+
+    return type("_ColorTheme", (), {k: color(v) for k, v in color_theme.items()})
 
 
 class Themable(ABC):
@@ -22,7 +48,10 @@ class Themable(ABC):
         Paint the gadget with current theme.
     """
 
-    color_theme = DEFAULT_COLOR_THEME
+    @classmethod
+    def set_theme(cls, color_theme: ColorTheme):
+        """Set color theme."""
+        cls.color_theme = _build_color_theme(color_theme)
 
     def on_add(self):
         """Update theme."""

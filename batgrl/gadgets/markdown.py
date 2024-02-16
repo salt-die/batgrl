@@ -9,22 +9,23 @@ import cv2
 import numpy as np
 from mistletoe import Document, block_token, span_token
 from mistletoe.base_renderer import BaseRenderer
+from numpy.typing import NDArray
 from pygments.lexers import get_lexer_by_name
 from pygments.style import Style
 from pygments.util import ClassNotFound
 
-from ..colors import ColorPair, Neptune, lerp_colors
+from ..colors import Neptune, lerp_colors
 from ..emojis import EMOJIS
 from ..geometry import Point, Size
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .gadget import Gadget
-from .gadget_base import GadgetBase, PosHint, PosHintDict, SizeHint, SizeHintDict
+from .gadget import Gadget, PosHint, PosHintDict, SizeHint, SizeHintDict
 from .graphics import Graphics
 from .grid_layout import GridLayout
 from .image import Image
+from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Border, Text
+from .text import Border, Cell, Text, style_char
 from .video_player import VideoPlayer
 
 __all__ = ["Markdown"]
@@ -59,6 +60,11 @@ def _is_task_list_item(list_item: block_token.ListItem) -> re.Match | None:
             return None
 
 
+def _default_cell():
+    primary = Themable.color_theme.primary
+    return style_char(fg_color=primary.fg, bg_color=primary.bg)
+
+
 class BlankLine(block_token.BlockToken):
     pattern = re.compile(r"\s*\n$")
 
@@ -89,17 +95,16 @@ class EmojiCode(span_token.SpanToken):
 class _BorderedContent(Text):
     def __init__(
         self,
-        default_color_pair: ColorPair,
+        default_cell: NDArray[Cell],
         border: Border,
-        border_color_pair: ColorPair | None = None,
         padding: int = 0,
         content: Gadget | None = None,
     ):
-        super().__init__(default_color_pair=default_color_pair)
+        super().__init__(default_cell=default_cell)
 
         if content is None:
             self.content = Text(
-                pos=(1 + padding, 1 + padding), default_color_pair=default_color_pair
+                pos=(1 + padding, 1 + padding), default_cell=default_cell
             )
         else:
             self.content = content
@@ -110,7 +115,7 @@ class _BorderedContent(Text):
         def update():
             h, w = self.content.size
             self.size = h + 2 * (padding + 1), w + 2 * (padding + 1)
-            self.add_border(border, color_pair=border_color_pair or default_color_pair)
+            self.add_border(border)
 
         self.subscribe(self.content, "size", update)
         update()
@@ -162,18 +167,20 @@ class _HasTitle:
         self.link_hint.is_enabled = True
 
 
-class _Link(_HasTitle, ButtonBehavior, GadgetBase):
+class _Link(_HasTitle, ButtonBehavior, Gadget):
     def __init__(self, title, target, content):
         super().__init__(title=title)
         self.target = target
         self.texts = []
         self.graphics = []
         self.add_gadget(content)
+
         for child in self.walk():
             if isinstance(child, Text):
                 underline = child.canvas["underline"].copy()
-                mask = np.all(child.colors == Themable.color_theme.primary, axis=-1)
-                child.colors[mask] = Themable.color_theme.markdown_link
+                colors = child.canvas[["fg_color", "bg_color"]]
+                mask = colors == np.array(Themable.color_theme.primary, colors.dtype)
+                colors[mask] = Themable.color_theme.markdown_link
                 self.texts.append((child, underline, mask))
             # ! This condition can add to the gadget-tree while walking it, careful.
             elif isinstance(child, (_MarkdownImage, _MarkdownGif)):
@@ -189,15 +196,17 @@ class _Link(_HasTitle, ButtonBehavior, GadgetBase):
         webbrowser.open(self.target)
 
     def update_normal(self):
+        link = Themable.color_theme.markdown_link
         for text, underline, mask in self.texts:
-            text.colors[mask] = Themable.color_theme.markdown_link
+            text.canvas[["fg_color", "bg_color"]][mask] = link
             text.canvas["underline"] = underline
         for graphic in self.graphics:
             graphic.outline.is_enabled = False
 
     def update_hover(self):
+        hover = Themable.color_theme.markdown_link_hover
         for text, _, mask in self.texts:
-            text.colors[mask] = Themable.color_theme.markdown_link_hover
+            text.canvas[["fg_color", "bg_color"]][mask] = hover
             text.canvas["underline"] = True
         for graphic in self.graphics:
             graphic.outline.is_enabled = True
@@ -228,7 +237,7 @@ class _MarkdownGif(_HasTitle, VideoPlayer):
         super().on_remove()
 
 
-class _TextImage(_HasTitle, GadgetBase):
+class _TextImage(_HasTitle, Gadget):
     def __init__(self, title, content):
         super().__init__(title=title)
         self.add_gadget(content)
@@ -237,7 +246,7 @@ class _TextImage(_HasTitle, GadgetBase):
 
 class _BlockCode(Text):
     def __init__(self):
-        super().__init__(default_color_pair=Themable.color_theme.primary)
+        super().__init__(default_cell=_default_cell())
 
 
 class _List(GridLayout):
@@ -246,57 +255,59 @@ class _List(GridLayout):
             grid_rows=len(items),
             grid_columns=2,
             horizontal_spacing=1,
-            background_color_pair=Themable.color_theme.primary,
+            is_transparent=True,
         )
         if isinstance(prefix, int):  # ordered list
             for i, item in enumerate(items, start=prefix):
-                number = Text(default_color_pair=Themable.color_theme.primary)
+                number = Text(default_cell=_default_cell())
                 number.set_text(f"{i}.")
                 self.add_gadgets(number, item)
         else:  # unordered list
             for item in items:
-                bullet = Text(default_color_pair=Themable.color_theme.primary)
+                bullet = Text(default_cell=_default_cell())
                 bullet.set_text(getattr(item, "check", prefix))
                 self.add_gadgets(bullet, item)
 
         self.size = self.minimum_grid_size
 
 
-class _Quote(GridLayout):
+class _Quote(Pane):
     def __init__(self, content: Gadget, depth):
-        super().__init__(grid_rows=1, grid_columns=2)
+        super().__init__()
+        quote_colors = Themable.color_theme.markdown_quote
         margin = Text(
-            default_char="▎",
+            default_cell=style_char(
+                char="▎", fg_color=quote_colors.fg, bg_color=quote_colors.bg
+            ),
             size=(content.height, 1),
-            default_color_pair=Themable.color_theme.markdown_quote,
         )
         self.depth = depth
-        self.background_color = lerp_colors(
-            Themable.color_theme.markdown_quote.fg_color,
-            Themable.color_theme.markdown_quote.bg_color,
+        self.bg_color = lerp_colors(
+            Themable.color_theme.markdown_quote.fg,
+            Themable.color_theme.markdown_quote.bg,
             1 / (0.1 * depth + 1),
         )
-        self.background_color_pair = (0, 0, 0, *self.background_color)
-        self.add_gadgets(margin, content)
+        self.grid = GridLayout(grid_rows=1, grid_columns=2, is_transparent=True)
+        self.grid.add_gadgets(margin, content)
+        self.add_gadget(self.grid)
+        self.size = self.grid.size = self.grid.minimum_grid_size
         self.color_content()
 
-        self.size = self.minimum_grid_size
-
     def color_content(self):
-        self.is_colored = True
+        self._is_colored = True
         for child in self.walk():
-            if hasattr(child, "is_colored"):
+            if hasattr(child, "_is_colored"):
                 continue
 
-            child.is_colored = True
+            child._is_colored = True
             if isinstance(child, _BlockCode):
-                child.colors[
-                    ..., 3:
+                child.canvas[
+                    "bg_color"
                 ] = Themable.color_theme.markdown_quote_block_code_background
             elif isinstance(child, Text):
-                child.colors[..., 3:] = self.background_color
-            elif isinstance(child, Gadget):
-                child.background_color_pair = self.background_color_pair
+                child.canvas["bg_color"] = self.bg_color
+            elif isinstance(child, Pane):
+                child.bg_color = self.bg_color
 
 
 class _BatgrlRenderer(BaseRenderer):
@@ -318,9 +329,7 @@ class _BatgrlRenderer(BaseRenderer):
             self.width - 3 * self.list_depth - 2 * self.quote_depth, MIN_RENDER_WIDTH
         )
 
-    def render(
-        self, token: span_token.SpanToken | block_token.BlockToken
-    ) -> GadgetBase:
+    def render(self, token: span_token.SpanToken | block_token.BlockToken) -> Gadget:
         if isinstance(self.last_token, BlankLine) and isinstance(
             token, block_token.Paragraph
         ):
@@ -329,14 +338,14 @@ class _BatgrlRenderer(BaseRenderer):
         self.last_token = token
         return self.last_rendered
 
-    def render_blank_line(self, token: BlankLine) -> GadgetBase:
-        return GadgetBase(size=(1, 1), is_transparent=True)
+    def render_blank_line(self, token: BlankLine) -> Gadget:
+        return Gadget(size=(1, 1), is_transparent=True)
 
     def render_spaces(self, token: Spaces) -> Literal[" "]:
         return " "
 
     def render_raw_text(self, token: span_token.RawText) -> Text:
-        text = Text(default_color_pair=Themable.color_theme.primary)
+        text = Text(default_cell=_default_cell())
         text.set_text(token.content)
         width = self.render_width
         if text.width > width:
@@ -357,7 +366,7 @@ class _BatgrlRenderer(BaseRenderer):
 
     def render_inner(self, token: span_token.SpanToken) -> Text:
         width = self.render_width
-        text = Text(size=(1, 1), default_color_pair=Themable.color_theme.primary)
+        text = Text(size=(1, 1), default_cell=_default_cell())
         current_line_end = 0
         current_line_height = 1
         current_line_gadgets = []
@@ -393,9 +402,6 @@ class _BatgrlRenderer(BaseRenderer):
                 text.canvas[
                     -content.height :, current_line_end:new_line_end
                 ] = content.canvas
-                text.colors[
-                    -content.height :, current_line_end:new_line_end
-                ] = content.colors
                 current_line_end = getattr(content, "line_end", new_line_end)
                 continue
 
@@ -404,12 +410,9 @@ class _BatgrlRenderer(BaseRenderer):
                 current_line_height = content.height
                 text.height += height_dif
                 # Move text on current line down
-                old_text = text.canvas[:-height_dif, :current_line_end]
-                old_colors = text.colors[:-height_dif, :current_line_end]
-                text.canvas[height_dif:, :current_line_end] = old_text
-                text.colors[height_dif:, :current_line_end] = old_colors
-                old_text[:] = text.default_char
-                old_colors[:] = text.default_color_pair
+                old = text.canvas[:-height_dif, :current_line_end]
+                text.canvas[height_dif:, :current_line_end] = old
+                old[:] = text.default_cell
                 # Move links and images on current line down.
                 for gadget in current_line_gadgets:
                     gadget.y += height_dif
@@ -450,11 +453,13 @@ class _BatgrlRenderer(BaseRenderer):
 
     def render_inline_code(self, token: span_token.InlineCode) -> Text:
         text = self.render_raw_text(token.children[0])
+        inline = Themable.color_theme.markdown_inline_code
+        colors = text.canvas[["fg_color", "bg_color"]]
         if text.height > 1:
-            text.colors[:-1] = Themable.color_theme.markdown_inline_code
-            text.colors[-1, : text.line_end] = Themable.color_theme.markdown_inline_code
+            colors[:-1] = inline
+            colors[-1, : text.line_end] = inline
         else:
-            text.colors[:] = Themable.color_theme.markdown_inline_code
+            colors[:] = inline
         return text
 
     def render_image(
@@ -469,7 +474,7 @@ class _BatgrlRenderer(BaseRenderer):
             return _MarkdownImage(path=path, title=token.title, width=self.render_width)
         token.children.insert(0, span_token.RawText("🖼️ "))
         content = self.render_inner(token)
-        content.colors[:] = Themable.color_theme.markdown_image
+        content.canvas[["fg_color", "bg_color"]] = Themable.color_theme.markdown_image
         return _TextImage(title=token.title, content=content)
 
     def render_link(self, token: span_token.Link) -> _Link:
@@ -490,24 +495,22 @@ class _BatgrlRenderer(BaseRenderer):
         return text
 
     def render_heading(self, token: block_token.Heading) -> Text:
+        primary_bg = Themable.color_theme.primary.bg
+        header_bg = Themable.color_theme.markdown_header_background
         text = self.render_inner(token)
-        text.colors[..., 3:] = Themable.color_theme.markdown_header_background
         if token.level % 2 == 1:
             text.canvas["bold"] = True
-
         if token.level < 5:
-            default_color_pair = ColorPair.from_colors(
-                Themable.color_theme.primary.fg_color,
-                Themable.color_theme.markdown_header_background,
-            )
-            return _BorderedContent(
-                default_color_pair=default_color_pair,
-                border_color_pair=Themable.color_theme.primary,
+            text.canvas["bg_color"] = header_bg
+            primary = Themable.color_theme.primary
+            header = _BorderedContent(
+                default_cell=style_char(fg_color=primary.fg, bg_color=header_bg),
                 border="mcgugan_wide",
                 padding=int(token.level < 3),
                 content=text,
             )
-        text.colors[..., 3:] = Themable.color_theme.markdown_header_background
+            header.canvas["bg_color"][[0, -1]] = primary_bg
+            return header
         text.height += 1
         text.canvas["char"][-1] = "▔"
         return text
@@ -528,13 +531,12 @@ class _BatgrlRenderer(BaseRenderer):
 
         if len(items) == 1:
             quote = _Quote(items[0], self.quote_depth)
-            quote.width = max(quote.width, self.render_width)
-            return quote
+        else:
+            grid = GridLayout(grid_rows=len(items), is_transparent=True)
+            grid.add_gadgets(items)
+            grid.size = grid.minimum_grid_size
+            quote = _Quote(grid, self.quote_depth)
 
-        grid = GridLayout(grid_rows=len(items))
-        grid.add_gadgets(items)
-        grid.size = grid.minimum_grid_size
-        quote = _Quote(grid, self.quote_depth)
         quote.width = max(quote.width, self.render_width)
         return quote
 
@@ -552,7 +554,7 @@ class _BatgrlRenderer(BaseRenderer):
         except ClassNotFound:
             lexer = None
         text.add_syntax_highlighting(lexer=lexer, style=self.syntax_highlighting_style)
-        text.colors[..., 3:] = Themable.color_theme.markdown_block_code_background
+        text.canvas["bg_color"] = Themable.color_theme.markdown_block_code_background
         return text
 
     def render_list(self, token: block_token.List) -> _List:
@@ -592,9 +594,7 @@ class _BatgrlRenderer(BaseRenderer):
         if len(blocks) == 1:
             return blocks[0]
         list_item = GridLayout(
-            grid_columns=1,
-            grid_rows=len(blocks),
-            background_color_pair=Themable.color_theme.primary,
+            grid_columns=1, grid_rows=len(blocks), is_transparent=True
         )
         list_item.add_gadgets(blocks)
         list_item.size = list_item.minimum_grid_size
@@ -634,14 +634,10 @@ class _BatgrlRenderer(BaseRenderer):
                     offset_left = diff // 2
                     offset_right = diff - offset_left
                     cell.canvas[:, offset_left:-offset_right] = cell.canvas[:, :-diff]
-                    cell.colors[:, offset_left:-offset_right] = cell.colors[:, :-diff]
-                    cell.canvas[:, :offset_left] = cell.default_char
-                    cell.colors[:, :offset_left] = cell.default_color_pair
+                    cell.canvas[:, :offset_left] = cell.default_cell
                 elif alignment == 1:  # right-aligned
                     cell.canvas[:, diff:] = cell.canvas[:, :-diff]
-                    cell.colors[:, diff:] = cell.colors[:, :-diff]
-                    cell.canvas[:, :diff] = cell.default_char
-                    cell.colors[:, :diff] = cell.default_color_pair
+                    cell.canvas[:, :diff] = cell.default_cell
 
         OUTER_PAD = 1
         INNER_PAD = 2
@@ -652,7 +648,7 @@ class _BatgrlRenderer(BaseRenderer):
                 + OUTER_PAD * 2
                 + INNER_PAD * (len(column_widths) - 1),
             ),
-            default_color_pair=Themable.color_theme.primary,
+            default_cell=_default_cell(),
         )
         y = 0
         for i, row in enumerate(rendered_rows):
@@ -660,7 +656,6 @@ class _BatgrlRenderer(BaseRenderer):
             for cell in row:
                 h, w = cell.size
                 table.canvas[y : y + h, x : x + w] = cell.canvas
-                table.colors[y : y + h, x : x + w] = cell.colors
                 children = cell.children.copy()
                 for child in children:
                     cell.remove_gadget(child)
@@ -692,9 +687,7 @@ class _BatgrlRenderer(BaseRenderer):
         # All blocks need to be rendered before skipped blank lines can be determined.
         rendered = [self.render(child) for child in token.children]
         blocks = [block for block in rendered if not hasattr(block, "skip_blank_line")]
-        grid = GridLayout(
-            grid_rows=len(blocks), background_color_pair=Themable.color_theme.primary
-        )
+        grid = GridLayout(grid_rows=len(blocks), is_transparent=True)
         grid.add_gadgets(blocks)
         grid.size = grid.minimum_grid_size
         grid.footnotes = token.footnotes
@@ -707,15 +700,6 @@ class Markdown(Themable, Gadget):
 
     Parameters
     ----------
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -725,7 +709,7 @@ class Markdown(Themable, Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -739,10 +723,6 @@ class Markdown(Themable, Gadget):
         The markdown string.
     syntax_highlighting_style : pygments.style.Style
         The syntax highlighting style for code blocks.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -775,16 +755,16 @@ class Markdown(Themable, Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -872,8 +852,12 @@ class Markdown(Themable, Gadget):
             },
             show_horizontal_bar=False,
         )
+        title_color_pair = Themable.color_theme.markdown_title
         self._link_hint = _BorderedContent(
-            default_color_pair=Themable.color_theme.markdown_title, border="outer"
+            default_cell=style_char(
+                fg_color=title_color_pair.fg, bg_color=title_color_pair.bg
+            ),
+            border="outer",
         )
         self._link_hint.is_enabled = False
         self.add_gadgets(self._scroll_view, self._link_hint)
@@ -905,11 +889,12 @@ class Markdown(Themable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        self.background_color_pair = self.color_theme.primary
-        self._link_hint.default_color_pair = Themable.color_theme.markdown_title
-        self._link_hint.content.default_color_pair = Themable.color_theme.markdown_title
-        self._link_hint.colors[:] = Themable.color_theme.markdown_title
-        self._link_hint.content.colors[:] = Themable.color_theme.markdown_title
+        title = Themable.color_theme.markdown_title
+        title_cell = style_char(fg_color=title.fg, bg_color=title.bg)
+        self._link_hint.default_cell = title_cell
+        self._link_hint.content.default_cell = title_cell
+        self._link_hint.canvas[:] = title_cell
+        self._link_hint.content.canvas[:] = title_cell
         self._build_markdown()
 
     def on_size(self):

@@ -1,10 +1,8 @@
 """A 7x8 14-segment (plus decimal point) display gadget."""
 import numpy as np
-from numpy.typing import NDArray
 
-from ..colors import BLACK, Color, ColorPair
+from ..colors import BLACK, Color
 from .gadget import (
-    Char,
     Gadget,
     Point,
     PosHint,
@@ -27,9 +25,6 @@ __all__ = [
 
 DIM_GREEN = Color.from_hex("062b0f")
 BRIGHT_GREEN = Color.from_hex("33e860")
-
-DIM_GREEN_ON_BLACK = ColorPair.from_colors(DIM_GREEN, BLACK)
-BRIGHT_GREEN_ON_BLACK = ColorPair.from_colors(BRIGHT_GREEN, BLACK)
 
 _CHAR_TO_SEGMENTS = {
     " ": (),
@@ -135,12 +130,12 @@ class _Segment:
         self.slice = slice_
 
     def __get__(self, owner, instance):
-        return (instance._display.colors[self.slice] == instance.on_color_pair).all()
+        segment = instance._display.canvas["fg_color"][self.slice]
+        return (segment == instance.on_color).all()
 
     def __set__(self, instance, value):
-        instance._display.colors[self.slice] = (
-            instance.on_color_pair if value else instance.off_color_pair
-        )
+        fg = instance._display.canvas["fg_color"]
+        fg[self.slice] = instance.on_color if value else instance.off_color
 
 
 class DigitalDisplay(Gadget):
@@ -161,19 +156,14 @@ class DigitalDisplay(Gadget):
 
     Parameters
     ----------
-    off_color_pair : ColorPair, default: DIM_GREEN_ON_BLACK
-        Color pair of off segments.
-    on_color_pair : ColorPair, default: BRIGHT_GREEN_ON_BLACK
-        Color pair of on segments.
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
+    off_color : Color, default: DIM_GREEN
+        Color of off segments.
+    on_color : Color, default: BRIGHT_GREEN
+        Color of on segments.
+    bg_color : Color, default: BLACK
+        Background color of gadget.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -183,7 +173,7 @@ class DigitalDisplay(Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -193,44 +183,44 @@ class DigitalDisplay(Gadget):
 
     Attributes
     ----------
-    off_color_pair : ColorPair
-        Color pair of off segments.
-    on_color_pair : ColorPair
-        Color pair of on segments.
+    off_color : Color
+        Color of off segments.
+    on_color : Color
+        Color of on segments.
+    bg_color : Color
+        Background color of gadget.
+    alpha : float
+        Transparency of gadget.
     a : bool
-        If `a` segment of digital display is on.
+        Whether the `a` segment is on.
     b : bool
-        If `b` segment of digital display is on.
+        Whether the `b` segment is on.
     c : bool
-        If `c` segment of digital display is on.
+        Whether the `c` segment is on.
     d : bool
-        If `d` segment of digital display is on.
+        Whether the `d` segment is on.
     e : bool
-        If `e` segment of digital display is on.
+        Whether the `e` segment is on.
     f : bool
-        If `f` segment of digital display is on.
+        Whether the `f` segment is on.
     g1 : bool
-        If `g1` segment of digital display is on.
+        Whether the `g1` segment is on.
     g2 : bool
-        If `g2` segment of digital display is on.
+        Whether the `g2` segment is on.
     h : bool
-        If `h` segment of digital display is on.
+        Whether the `h` segment is on.
     i : bool
-        If `i` segment of digital display is on.
+        Whether the `i` segment is on.
     j : bool
-        If `j` segment of digital display is on.
+        Whether the `j` segment is on.
     k : bool
-        If `k` segment of digital display is on.
+        Whether the `k` segment is on.
     l : bool
-        If `l` segment of digital display is on.
+        Whether the `l` segment is on.
     m : bool
-        If `m` segment of digital display is on.
+        Whether the `m` segment is on.
     dp : bool
-        If `dp` segment of digital display is on.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
+        Whether the `dp` segment is on.
     size : Size
         Size of gadget.
     height : int
@@ -263,16 +253,16 @@ class DigitalDisplay(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -346,19 +336,21 @@ class DigitalDisplay(Gadget):
     f = _Segment(np.s_[1:3, 0])
     g1 = _Segment(np.s_[3, 1:3])
     g2 = _Segment(np.s_[3, 4:6])
-    h = _Segment(((1, 2), (1, 2)))
+    h = _Segment(np.s_[[1, 2], [1, 2]])
     i = _Segment(np.s_[1:3, 3])
-    j = _Segment(((1, 2), (5, 4)))
-    k = _Segment(((4, 5), (2, 1)))
+    j = _Segment(np.s_[[1, 2], [5, 4]])
+    k = _Segment(np.s_[[4, 5], [2, 1]])
     l = _Segment(np.s_[4:6, 3])  # noqa
-    m = _Segment(((4, 5), (4, 5)))
+    m = _Segment(np.s_[[4, 5], [4, 5]])
     dp = _Segment(np.s_[6, 7:8])
 
     def __init__(
         self,
         *,
-        off_color_pair: ColorPair = DIM_GREEN_ON_BLACK,
-        on_color_pair: ColorPair = BRIGHT_GREEN_ON_BLACK,
+        off_color: Color = DIM_GREEN,
+        on_color: Color = BRIGHT_GREEN,
+        bg_color: Color = BLACK,
+        alpha: float = 1.0,
         size=Size(7, 8),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -366,9 +358,18 @@ class DigitalDisplay(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
+        self._display = Text(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
+        self._display.set_text(
+            " ━━━━━\n"
+            "┃\\ ┃ /┃\n"
+            "┃ \\┃/ ┃\n"
+            " ━━ ━━\n"
+            "┃ /┃\\ ┃\n"
+            "┃/ ┃ \\┃\n"
+            " ━━━━━ ●"
+        )
+        self._display.canvas["fg_color"] = off_color
         super().__init__(
             size=size,
             pos=pos,
@@ -377,26 +378,64 @@ class DigitalDisplay(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
-        )
-
-        self.off_color_pair = off_color_pair
-        self.on_color_pair = on_color_pair
-
-        self._display = Text(
-            default_color_pair=off_color_pair, pos_hint={"y_hint": 0.5, "x_hint": 0.5}
-        )
-        self._display.set_text(
-            " ━━━━━  \n"
-            "┃\\ ┃ /┃ \n"
-            "┃ \\┃/ ┃ \n"
-            " ━━ ━━  \n"
-            "┃ /┃\\ ┃ \n"
-            "┃/ ┃ \\┃ \n"
-            " ━━━━━ ●"
         )
         self.add_gadget(self._display)
+        self._off_color = off_color
+        self._on_color = on_color
+        self.bg_color = bg_color
+        self.alpha = alpha
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._display.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._display.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._display.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._display.is_transparent = is_transparent
+
+    @property
+    def off_color(self) -> Color:
+        """Color of off segments."""
+        return self._off_color
+
+    @off_color.setter
+    def off_color(self, off_color: Color):
+        fg_color = self._display.canvas["fg_color"]
+        mask = np.all(fg_color == self.off_color, axis=-1)
+        fg_color[mask] = off_color
+        self._off_color = off_color
+
+    @property
+    def on_color(self) -> Color:
+        """Color of on segments."""
+        return self._on_color
+
+    @on_color.setter
+    def on_color(self, on_color: Color):
+        fg_color = self._display.canvas["fg_color"]
+        mask = np.all(fg_color == self.on_color, axis=-1)
+        fg_color[mask] = on_color
+        self._on_color = on_color
+
+    @property
+    def bg_color(self) -> Color:
+        """Background color of gadget."""
+        return self._bg_color
+
+    @bg_color.setter
+    def bg_color(self, bg_color: Color):
+        self._display.canvas["bg_color"] = bg_color
+        self._bg_color = bg_color
 
     def show_char(self, char: str):
         """
@@ -410,7 +449,7 @@ class DigitalDisplay(Gadget):
         if char not in _CHAR_TO_SEGMENTS:
             raise ValueError(f"{char} is not an ascii character")
 
-        self._display.colors[:] = self.off_color_pair
+        self._display.canvas["fg_color"] = self.off_color
 
         for segment in _CHAR_TO_SEGMENTS[char]:
             setattr(self, segment, True)

@@ -1,10 +1,9 @@
 """A bar chart gadget."""
 from numbers import Real
 
-from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -13,8 +12,9 @@ from .gadget_base import (
     SizeHintDict,
     lerp,
 )
+from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, add_text
+from .text import Text, style_char
 from .text_tools import smooth_vertical_bar, str_width
 
 __all__ = [
@@ -31,7 +31,7 @@ TICK_WIDTH = 11
 VERTICAL_SPACING = 5
 BAR_SPACING = 2
 PRECISION = 4
-DEFAULT_GRID_COLOR = Color.from_hex("272B40")
+DEFAULT_GRID_COLOR = Color.from_hex("272b40")
 
 
 class _BarChartProperty:
@@ -49,7 +49,7 @@ class _BarChartProperty:
         instance.build_chart()
 
 
-class BarChart(GadgetBase):
+class BarChart(Gadget):
     r"""
     A bar chart gadget.
 
@@ -63,8 +63,12 @@ class BarChart(GadgetBase):
         Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
     bar_colors : list[Color] | None, default: None
         Color of each bar. If `None`, a rainbow gradient is used.
-    chart_color_pair : ColorPair, default: DEFAULT_COLOR_THEME.primary
-        Color of text in the chart.
+    chart_fg_color: Color, default: DEFAULT_PRIMARY_FG
+        Foreground color of chart.
+    chart_bg_color: Color, default: DEFAULT_PRIMARY_BG
+        Background color of chart.
+    alpha: float, default: 1.0
+        Transparency of gadget.
     y_label : str | None, default: None
         Optional label for y-axis.
     show_grid_lines : bool, default: True
@@ -80,7 +84,7 @@ class BarChart(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -98,8 +102,12 @@ class BarChart(GadgetBase):
         Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
     bar_colors : list[Color] | None
         Color of each bar. If `None`, a rainbow gradient is used.
-    chart_color_pair : ColorPair
-        Color of text in the chart.
+    chart_fg_color: Color
+        Foreground color of chart.
+    chart_bg_color: Color
+        Background color of chart.
+    alpha: float
+        Transparency of gadget.
     y_label : str | None
         Optional label for y-axis.
     show_grid_lines : bool
@@ -138,16 +146,16 @@ class BarChart(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -208,19 +216,23 @@ class BarChart(GadgetBase):
     data: dict[str, Real] = _BarChartProperty()
     """Data for bar chart."""
     min_y: Real | None = _BarChartProperty()
-    """
-    Minimum y-value of chart. If `None`, min_y will be minimum of all chart values.
-    """
+    """Minimum y-value of chart. If `None`, min_y will be minimum of chart values."""
     max_y: Real | None = _BarChartProperty()
-    """
-    Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
-    """
+    """Maximum y-value of chart. If `None`, max_y will be maximum of chart values."""
     bar_colors: list[Color] | None = _BarChartProperty()
-    """olor of each bar. If `None`, a rainbow gradient is used."""
+    """Color of each bar. If `None`, a rainbow gradient is used."""
+    chart_fg_color: Color = _BarChartProperty()
+    """Foreground color of bar chart."""
+    chart_bg_color: Color = _BarChartProperty()
+    """Background color of bar chart."""
+    alpha: float = _BarChartProperty()
+    """Transparency of gadget."""
+    y_label: str = _BarChartProperty()
+    """Optional label for y-axis."""
     show_grid_lines: bool = _BarChartProperty()
     """Whether to show grid lines."""
     grid_line_color: Color = _BarChartProperty()
-    """olor of grid lines if shown."""
+    """Color of grid lines if shown."""
 
     def __init__(
         self,
@@ -229,7 +241,9 @@ class BarChart(GadgetBase):
         min_y: Real | None = 0,
         max_y: Real | None = None,
         bar_colors: list[Color] | None = None,
-        chart_color_pair: ColorPair = DEFAULT_COLOR_THEME.primary,
+        chart_fg_color: Color = DEFAULT_PRIMARY_FG,
+        chart_bg_color: Color = DEFAULT_PRIMARY_BG,
+        alpha: float = 1.0,
         y_label: str | None = None,
         show_grid_lines: bool = True,
         grid_line_color: Color = DEFAULT_GRID_COLOR,
@@ -241,6 +255,17 @@ class BarChart(GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._bars = Text()
+        self._scrollview = ScrollView(
+            show_horizontal_bar=False,
+            show_vertical_bar=False,
+            allow_vertical_scroll=False,
+            alpha=0,
+        )
+        self._scrollview.view = self._bars
+        self._y_ticks = Text()
+        self._y_label_gadget = Text()
+        self._container = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
         super().__init__(
             size=size,
             pos=pos,
@@ -250,70 +275,54 @@ class BarChart(GadgetBase):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
-        self._bars = Text()
-        self._y_ticks = Text()
-        self._y_label_gadget = Text()
-        self._scrollview = ScrollView(
-            show_horizontal_bar=False,
-            show_vertical_bar=False,
-            allow_vertical_scroll=False,
-        )
-        self._scrollview.view = self._bars
-        self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
         self._container.add_gadgets(
             self._scrollview, self._y_ticks, self._y_label_gadget
         )
         self.add_gadget(self._container)
 
-        self._data = data
-        self._min_y = min_y
-        self._max_y = max_y
-        self._bar_colors = bar_colors
-        self._y_label = y_label
-        self._show_grid_lines = show_grid_lines
-        self._grid_line_color = grid_line_color
-        if y_label is not None:
-            self._y_label_gadget.size = str_width(y_label), 1
-            add_text(self._y_label_gadget.canvas[:, 0], y_label)
-        self.chart_color_pair = chart_color_pair
+        self.data = data
+        self.min_y = min_y
+        self.max_y = max_y
+        self.bar_colors = bar_colors
+        self.chart_fg_color = chart_fg_color
+        self.chart_bg_color = chart_bg_color
+        self.alpha = alpha
+        self.y_label = y_label
+        self.show_grid_lines = show_grid_lines
+        self.grid_line_color = grid_line_color
 
     @property
-    def chart_color_pair(self) -> ColorPair:
-        """Color of text in the chart."""
-        return self._chart_color_pair
+    def is_transparent(self) -> bool:
+        """A transparent gadget allows regions beneath it to be painted."""
+        return self._container.is_transparent
 
-    @chart_color_pair.setter
-    def chart_color_pair(self, chart_color_pair: ColorPair):
-        self._chart_color_pair = chart_color_pair
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._container.is_transparent = is_transparent
+        self._y_ticks.is_transparent = is_transparent
+        self._y_label_gadget.is_transparent = is_transparent
+        self._scrollview.is_transparent = is_transparent
+        self._bars.is_transparent = is_transparent
 
-        for child in self.walk():
-            if isinstance(child, Text):
-                child.colors[:] = chart_color_pair
-            elif isinstance(child, Gadget):
-                child.background_color_pair = chart_color_pair
-
-        self.build_chart()
-
-    @property
-    def y_label(self) -> str | None:
-        """Optional label for y-axis."""
-        return self._y_label
-
-    @y_label.setter
-    def y_label(self, y_label: str | None):
-        self._y_label = y_label
-
-        if y_label is not None:
-            self._y_label_gadget.size = str_width(y_label), 1
-            add_text(self._y_label_gadget.canvas[:, 0], y_label)
-
+    def on_add(self):
+        """Build chart on add."""
+        super().on_add()
         self.build_chart()
 
     def build_chart(self):
         """Build bar chart and set canvas and color arrays."""
+        if not self.root:
+            return
+
+        self._container.bg_color = self.chart_bg_color
+        self._container.alpha = self.alpha
+
         h, w = self.size
         has_y_label = self._y_label_gadget.is_enabled = bool(self.y_label is not None)
+        if has_y_label:
+            self._y_label_gadget.set_text(self.y_label)
+            self._y_label_gadget.canvas["fg_color"] = self.chart_fg_color
+            self._y_label_gadget.canvas["bg_color"] = self.chart_bg_color
 
         sv_left = has_y_label + TICK_WIDTH
         sv_width = w - sv_left
@@ -330,19 +339,21 @@ class BarChart(GadgetBase):
         )
         bar_width = (bars_width - BAR_SPACING * (nbars + 1)) // nbars
         self._bars.size = h, bars_width
-        self._bars.canvas["char"] = " "
-        self._bars.colors[:] = self.chart_color_pair
+        self._bars.canvas[:] = style_char(
+            fg_color=self.chart_fg_color, bg_color=self.chart_bg_color
+        )
 
         min_y = min(self.data.values()) if self.min_y is None else self.min_y
         max_y = max(self.data.values()) if self.max_y is None else self.max_y
 
-        canvas_view = self._bars.canvas["char"][::-1]
-        colors_view = self._bars.colors[::-1]
+        chars = self._bars.canvas["char"][::-1]
+        fg_colors = self._bars.canvas["fg_color"][::-1]
 
         # Regenerate Ticks
-        self._y_ticks.size = h, TICK_WIDTH
-        self._y_ticks.colors[:] = self.chart_color_pair
         self._y_ticks.left = has_y_label
+        self._y_ticks.size = h, TICK_WIDTH
+        self._y_ticks.canvas["fg_color"] = self.chart_fg_color
+        self._y_ticks.canvas["bg_color"] = self.chart_bg_color
         self._y_ticks.canvas["char"][0, -1] = "┐"
         self._y_ticks.canvas["char"][1:-2, -1] = "│"
         self._y_ticks.canvas["char"][-2, -1] = "└"
@@ -352,11 +363,11 @@ class BarChart(GadgetBase):
             y_label = lerp(max_y, min_y, row / last_y)
             self._y_ticks.add_str(
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
-                (row, 0),
+                pos=(row, 0),
             )
             if self.show_grid_lines:
-                canvas_view[row, :-1] = "─"
-                colors_view[row, :, :3] = self.grid_line_color
+                chars[row, :-1] = "─"
+                fg_colors[row] = self.grid_line_color
 
         bar_colors = (
             rainbow_gradient(nbars) if self.bar_colors is None else self.bar_colors
@@ -367,14 +378,16 @@ class BarChart(GadgetBase):
         for i, (label, value) in enumerate(self.data.items()):
             x1 = BAR_SPACING + (bar_width + BAR_SPACING) * i
             x2 = x1 + bar_width
-            self._bars.add_str(label.center(bar_width), (h - 1, x1))
+            self._bars.add_str(label.center(bar_width), pos=(h - 1, x1))
             smooth_bar = smooth_vertical_bar(h - 3, (value - min_y) / y_delta, 0.5)
-            canvas_view.T[x1:x2, 2 : 2 + len(smooth_bar)] = smooth_bar
-            colors_view[2, x1:x2, :3] = self.chart_color_pair.bg_color
-            colors_view[2, x1:x2, 3:] = bar_colors[i]
-            colors_view[3 : 2 + len(smooth_bar), x1:x2, :3] = bar_colors[i]
-        canvas_view[1, :-1] = "─"
-        canvas_view[1, -1] = "┐"
+            chars.T[x1:x2, 2 : 2 + len(smooth_bar)] = smooth_bar
+            # Replace row of smooth bar with upper half-blocks so that alpha compositing
+            # works as expected. The colors of the first character of smooth bars is
+            # reversed, but this can cause issues when compositing the background color.
+            chars.T[x1:x2, 2] = "▀"
+            fg_colors[2 : 2 + len(smooth_bar), x1:x2] = bar_colors[i]
+        chars[1, :-1] = "─"
+        chars[1, -1] = "┐"
 
     def on_size(self):
         """Rebuild bar chart."""

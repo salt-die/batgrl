@@ -23,7 +23,6 @@ class BoardPiece(Graphics):
 
     def __init__(self):
         super().__init__(size=CHECKER_SIZE, default_color=BOARD_COLOR)
-
         h, w = self._size
         center = h, w // 2
         radius = w // 3
@@ -41,7 +40,6 @@ class BoardPiece(Graphics):
 class Checker(Graphics):
     def __init__(self, color):
         super().__init__(size=CHECKER_SIZE)
-
         h, w = self._size
         center = h, w // 2
         radius = w // 3
@@ -82,34 +80,22 @@ class Checker(Graphics):
 
 class Board(GridLayout):
     def __init__(self):
-        super().__init__(
-            grid_rows=6,
-            grid_columns=7,
-            pos=(2, 0),
-            is_transparent=True,
-        )
-
+        super().__init__(grid_rows=6, grid_columns=7, pos=(2, 0), is_transparent=True)
         self.add_gadgets(BoardPiece() for _ in range(42))
-
         self.size = self.minimum_grid_size
-
         self._last_col = -1
 
     def on_mouse(self, mouse_event):
         if not self.collides_point(mouse_event.position):
             for i in range(6):
                 self.children[self.index_at(i, self._last_col)].unselect()
-
             self._last_col = -1
-
             return False
 
         col = x_to_column(self.to_local(mouse_event.position).x)
-
         if col != self._last_col:
             for i in range(6):
                 if self._last_col != -1:
                     self.children[self.index_at(i, self._last_col)].unselect()
                 self.children[self.index_at(i, col)].select()
-
             self._last_col = col

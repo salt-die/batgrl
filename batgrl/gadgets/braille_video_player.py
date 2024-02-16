@@ -8,10 +8,19 @@ from platform import uname
 
 import cv2
 import numpy as np
-from numpy.typing import NDArray
 
-from ..colors import WHITE_ON_BLACK, ColorPair
-from .text import Char, Point, PosHint, PosHintDict, Size, SizeHint, SizeHintDict, Text
+from ..colors import BLACK, WHITE, Color
+from ..geometry import lerp
+from .gadget import (
+    Gadget,
+    Point,
+    PosHint,
+    PosHintDict,
+    Size,
+    SizeHint,
+    SizeHintDict,
+)
+from .text import Text
 from .text_tools import binary_to_braille
 
 __all__ = [
@@ -27,7 +36,7 @@ __all__ = [
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
 
-class BrailleVideoPlayer(Text):
+class BrailleVideoPlayer(Gadget):
     r"""
     A video player that renders to braille unicode characters in grayscale.
 
@@ -36,6 +45,10 @@ class BrailleVideoPlayer(Text):
     source : pathlib.Path | str | int
         A path to video, URL to video stream, or video capturing device (by index).
         Trying to open a video capturing device on WSL will issue a warning.
+    fg_color : Color, default: WHITE
+        Foreground color of video.
+    bg_color : Color, default: BLACK
+        Background color of video.
     loop : bool, default: True
         If true, restart video after last frame.
     gray_threshold : int, default: 127
@@ -45,11 +58,8 @@ class BrailleVideoPlayer(Text):
         normalized grays from the source.
     invert_colors : bool, default: False
         Invert the colors in the source before rendering.
-    default_char : NDArray[Char] | str, default: " "
-        Default background character. This should be a single unicode half-width
-        grapheme.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
-        Default color of gadget.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -59,7 +69,7 @@ class BrailleVideoPlayer(Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether whitespace is transparent.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -71,6 +81,10 @@ class BrailleVideoPlayer(Text):
     ----------
     source : Path | str | int
         A path, URL, or capturing device (by index) of the video.
+    fg_color : Color
+        Foreground color of video.
+    bg_color : Color
+        Background color of video.
     loop : bool
         If true, video will restart after last frame.
     gray_threshold : int
@@ -80,20 +94,10 @@ class BrailleVideoPlayer(Text):
         normalized grays from the source.
     invert_colors : bool
         If true, colors in the source are inverted before video is rendered.
+    alpha : float
+        Transparency of gadget.
     is_device : bool
         If true, video is from a video capturing device.
-    canvas : NDArray[Char]
-        The array of characters for the gadget.
-    colors : NDArray[np.uint8]
-        The array of color pairs for each character in :attr:`canvas`.
-    default_char : NDArray[Char]
-        Default background character.
-    default_color_pair : ColorPair
-        Default color pair of gadget.
-    default_fg_color : Color
-        The default foreground color.
-    default_bg_color : Color
-        The default background color.
     size : Size
         Size of gadget.
     height : int
@@ -126,16 +130,16 @@ class BrailleVideoPlayer(Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -151,14 +155,6 @@ class BrailleVideoPlayer(Text):
         Seek to certain time (in seconds) in the video.
     stop():
         Stop the video.
-    add_border(style="light", ...):
-        Add a border to the gadget.
-    add_syntax_highlighting(lexer, style):
-        Add syntax highlighting to current text in canvas.
-    add_str(str, pos, ...):
-        Add a single line of text to the canvas.
-    set_text(text, ...):
-        Resize gadget to fit text, erase canvas, then fill canvas with text.
     on_size():
         Update gadget after a resize.
     apply_hints():
@@ -211,12 +207,13 @@ class BrailleVideoPlayer(Text):
         self,
         *,
         source: Path | str | int,
+        fg_color: Color = WHITE,
+        bg_color: Color = BLACK,
         loop: bool = True,
         gray_threshold: int = 127,
         enable_shading: bool = False,
         invert_colors: bool = False,
-        default_char: NDArray[Char] | str = " ",
-        default_color_pair: ColorPair = WHITE_ON_BLACK,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -225,9 +222,8 @@ class BrailleVideoPlayer(Text):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._video = Text()
         super().__init__(
-            default_char=default_char,
-            default_color_pair=default_color_pair,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -239,17 +235,43 @@ class BrailleVideoPlayer(Text):
         self._current_frame = None
         self._resource = None
         self._video_task = None
+        self.add_gadget(self._video)
         self.source = source
+        self.fg_color = fg_color
+        self.bg_color = bg_color
         self.loop = loop
         self.gray_threshold = gray_threshold
         self.enable_shading = enable_shading
         self.invert_colors = invert_colors
+        self.alpha = alpha
 
-    def on_remove(self):
-        """Pause video and release resource."""
-        super().on_remove()
-        self.pause()
-        self._release_resource()
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._video.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._video.is_transparent = is_transparent
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._video.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._video.alpha = alpha
+
+    @property
+    def bg_color(self) -> Color:
+        """Background color of video."""
+        return self._video.default_bg_color
+
+    @bg_color.setter
+    def bg_color(self, bg_color: Color):
+        self._video.default_bg_color = bg_color
+        self._video.canvas["bg_color"] = bg_color
 
     @property
     def source(self) -> Path | str | int:
@@ -293,24 +315,24 @@ class BrailleVideoPlayer(Text):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self.canvas[:] = self.default_char
+            self._video.canvas["char"] = " "
 
-    def on_size(self):
-        """Resize canvas and colors arrays."""
+    def _paint_frame(self):
+        if self._current_frame is None:
+            return
+
         h, w = self.size
-        self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
-        self.canvas = np.full((h, w), self.default_char)
+        canvas = self._video.canvas
+        upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
+        sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
+        canvas["char"] = binary_to_braille(sectioned)
 
-        if self._current_frame is not None:
-            upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > 0
-            sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
-            self.canvas["char"] = binary_to_braille(sectioned)
-
-            if self.enable_shading:
-                grays_normalized = cv2.resize(self._current_frame, (w, h)) / 255
-                self.colors[..., :3] = (
-                    grays_normalized[..., None] * self.default_fg_color
-                ).astype(np.uint8)
+        if self.enable_shading:
+            normals = cv2.resize(self._current_frame, (w, h)) / 255
+            shades = lerp(self.bg_color, self.fg_color, normals[..., None])
+            canvas["fg_color"] = shades.astype(np.uint8)
+        else:
+            canvas["fg_color"] = self.default_fg_color
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -337,23 +359,24 @@ class BrailleVideoPlayer(Text):
             if self.invert_colors:
                 self._current_frame = 255 - self._current_frame
 
-            h, w = self.size
-
-            if self.enable_shading:
-                grays_normalized = cv2.resize(self._current_frame, (w, h)) / 255
-                self.colors[..., :3] = (
-                    grays_normalized[..., None] * self.default_fg_color
-                ).astype(np.uint8)
-
-            upscaled = (
-                cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
-            )
-            sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
-            self.canvas["char"][:] = binary_to_braille(sectioned)
+            self._paint_frame()
 
         if self.loop:
             self.seek(0)
             self.play()
+        else:
+            self._current_frame = None
+
+    def on_size(self):
+        """Resize canvas and colors arrays."""
+        self._video.size = self.size
+        self._paint_frame()
+
+    def on_remove(self):
+        """Pause video and release resource."""
+        super().on_remove()
+        self.pause()
+        self._release_resource()
 
     def pause(self):
         """Pause video."""
@@ -389,4 +412,4 @@ class BrailleVideoPlayer(Text):
         self.pause()
         self.seek(0)
         self._current_frame = None
-        self.canvas[:] = self.default_char
+        self.canvas[:] = self.default_cell

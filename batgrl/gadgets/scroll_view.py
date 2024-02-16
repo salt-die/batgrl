@@ -3,9 +3,8 @@ from ..colors import Color
 from ..io import KeyEvent, MouseButton, MouseEvent, MouseEventType
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -15,6 +14,7 @@ from .gadget_base import (
     clamp,
     subscribable,
 )
+from .pane import Pane
 from .text import Text
 from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 
@@ -64,8 +64,8 @@ class _ScrollbarBase(Grabbable, Text):
 
         self.canvas["char"] = " "
 
-        self.colors[..., :3] = indicator_color
-        self.colors[..., 3:] = sv.color_theme.scroll_view_scrollbar
+        self.canvas["fg_color"] = indicator_color
+        self.canvas["bg_color"] = sv.color_theme.scroll_view_scrollbar
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
@@ -103,10 +103,10 @@ class _VerticalScrollbar(_ScrollbarBase):
         self.canvas["char"][start:stop].T[:] = smooth_bar
 
         y_offset = offset != 0
-        self.colors[
-            start + y_offset : stop, :, :3
+        self.canvas["fg_color"][
+            start + y_offset : stop
         ] = sv.color_theme.scroll_view_scrollbar
-        self.colors[start + y_offset : stop, :, 3:] = indicator_color
+        self.canvas["bg_color"][start + y_offset : stop] = indicator_color
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
@@ -162,8 +162,8 @@ class _HorizontalScrollbar(_ScrollbarBase):
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
         if offset != 0:
-            self.colors[:, start, :3] = sv.color_theme.scroll_view_scrollbar
-            self.colors[:, start, 3:] = indicator_color
+            self.canvas["fg_color"][:, start] = sv.color_theme.scroll_view_scrollbar
+            self.canvas["bg_color"][:, start] = indicator_color
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
@@ -201,7 +201,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
             sv.horizontal_proportion += self.mouse_dx / self.fill_length
 
 
-class ScrollView(Themable, Grabbable, GadgetBase):
+class ScrollView(Themable, Grabbable, Gadget):
     r"""
     A scrollable view gadget.
 
@@ -228,6 +228,8 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         If true, gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: MouseButton.LEFT
         Mouse button used for grabbing.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -237,7 +239,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -247,7 +249,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     Attributes
     ----------
-    view : GadgetBase | None
+    view : Gadget | None
         The scrolled gadget.
     allow_vertical_scroll : bool
         Allow vertical scrolling.
@@ -283,6 +285,8 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         Last vertical change in mouse position.
     mouse_dx : int
         Last horizontal change in mouse position.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -315,16 +319,16 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -332,6 +336,8 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
     Methods
     -------
+    update_theme():
+        Paint the gadget with current theme.
     grab(mouse_event):
         Grab the gadget.
     ungrab(mouse_event):
@@ -398,6 +404,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = MouseButton.LEFT,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -406,6 +413,14 @@ class ScrollView(Themable, Grabbable, GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._corner = Pane(
+            size=(1, 2),
+            pos_hint={"y_hint": 1.0, "x_hint": 1.0, "anchor": "bottom-right"},
+            is_enabled=show_horizontal_bar or show_vertical_bar,
+            is_transparent=False,
+        )
+        self._background = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+
         super().__init__(
             is_grabbable=is_grabbable,
             ptf_on_grab=ptf_on_grab,
@@ -429,29 +444,42 @@ class ScrollView(Themable, Grabbable, GadgetBase):
 
         self._vertical_proportion = 0
         self._horizontal_proportion = 0
-        self._corner = Gadget(
-            size=(1, 2),
-            pos_hint={"y_hint": 1.0, "x_hint": 1.0, "anchor": "bottom-right"},
-            is_enabled=show_horizontal_bar and show_vertical_bar,
-        )
+
         self._vertical_bar = _VerticalScrollbar()
         self._horizontal_bar = _HorizontalScrollbar()
         self._view = None
-        self._background = Gadget(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}, background_char=" "
-        )
+
         self.add_gadgets(
             self._background, self._corner, self._vertical_bar, self._horizontal_bar
         )
 
         self.show_horizontal_bar = show_horizontal_bar
         self.show_vertical_bar = show_vertical_bar
+        self.alpha = alpha
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        self._background.background_color_pair = self.color_theme.primary.bg_color * 2
-        self._corner.background_color_pair = self.color_theme.scroll_view_scrollbar * 2
+        self._background.bg_color = self.color_theme.primary.bg
+        self._corner.bg_color = self.color_theme.scroll_view_scrollbar
         self._update_port_and_scrollbar()
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._background.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._background.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """A transparent gadget allows regions beneath it to be painted."""
+        return self._background.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._background.is_transparent = is_transparent
 
     @property
     def show_vertical_bar(self) -> bool:
@@ -462,6 +490,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     @subscribable
     def show_vertical_bar(self, show: bool):
         self._vertical_bar.is_enabled = show
+        self._corner.is_enabled = show or self._horizontal_bar.is_enabled
         self.on_size()
 
     @property
@@ -473,6 +502,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
     @subscribable
     def show_horizontal_bar(self, show: bool):
         self._horizontal_bar.is_enabled = show
+        self._corner.is_enabled = show or self._vertical_bar.is_enabled
         self.on_size()
 
     @property
@@ -555,12 +585,12 @@ class ScrollView(Themable, Grabbable, GadgetBase):
             self._horizontal_bar.paint_indicator()
 
     @property
-    def view(self) -> GadgetBase | None:
+    def view(self) -> Gadget | None:
         """The scrolled gadget."""
         return self._view
 
     @view.setter
-    def view(self, view: GadgetBase | None):
+    def view(self, view: Gadget | None):
         if self._view is not None:
             self.remove_gadget(self._view)
 
@@ -580,7 +610,7 @@ class ScrollView(Themable, Grabbable, GadgetBase):
             self.subscribe(view, "size", update_proportion)
             self._update_port_and_scrollbar()
 
-    def remove_gadget(self, gadget: GadgetBase):
+    def remove_gadget(self, gadget: Gadget):
         """Unsubscribe from the view on its removal."""
         if gadget is self._view:
             self._view = None

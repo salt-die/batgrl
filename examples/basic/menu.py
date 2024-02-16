@@ -1,3 +1,4 @@
+"""A simple menu example."""
 from batgrl.app import App
 from batgrl.gadgets.menu import MenuBar
 from batgrl.gadgets.text import Text

@@ -7,12 +7,11 @@ from typing import Literal
 import cv2
 import numpy as np
 
-from ..colors import DEFAULT_COLOR_THEME, Color, ColorPair, rainbow_gradient
+from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
 from ..io import MouseEvent, MouseEventType
 from .behaviors.movable import Movable
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -21,8 +20,9 @@ from .gadget_base import (
     SizeHintDict,
     lerp,
 )
+from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, add_text
+from .text import Text, add_text, style_char
 from .text_tools import binary_to_box, binary_to_braille, str_width
 
 __all__ = [
@@ -34,8 +34,6 @@ __all__ = [
     "SizeHint",
     "SizeHintDict",
 ]
-
-PLOT_MODES = Literal["braille", "box"]
 
 PLOT_ZOOM = [1.0, 1.25, 1.5, 2.0, 3.0]
 TICK_WIDTH = 11
@@ -61,16 +59,17 @@ class _Legend(Movable, Text):
             width = max(map(str_width, self.labels)) + 6
 
             self.size = height, width
-            self.colors[:] = plot.plot_color_pair
+            self.canvas["fg_color"] = plot.plot_fg_color
+            self.canvas["bg_color"] = plot.plot_bg_color
             self.canvas["char"][:] = " "
 
             self.add_border()
 
             self.canvas["char"][1:-1, 2] = "█"
-            self.colors[1:-1, 2, :3] = colors
+            self.canvas["fg_color"][1:-1, 2] = colors
 
             for i, name in enumerate(self.labels, start=1):
-                self.add_str(name, (i, 4))
+                self.add_str(name, pos=(i, 4))
 
 
 class _LinePlotProperty:
@@ -88,7 +87,7 @@ class _LinePlotProperty:
         instance._build_plot()
 
 
-class LinePlot(GadgetBase):
+class LinePlot(Gadget):
     r"""
     A 2D line plot gadget.
 
@@ -112,12 +111,16 @@ class LinePlot(GadgetBase):
         The color of each line plot. If `None`, a rainbow gradient is used.
     legend_labels : list[str] | None, default: None
         Labels for legend. If `None`, legend is hidden.
-    plot_color_pair : ColorPair, default: DEFAULT_COLOR_THEME.primary,
-        Color of text in the plot.
+    plot_fg_color : Color, default: DEFAULT_PRIMARY_FG,
+        Foreground color of the plot.
+    plot_bg_color : Color, default: DEFAULT_PRIMARY_BG,
+        Background color of the plot.
     x_label : str | None, default: None
         Optional label for x-axis.
     y_label : str | None, default: None
         Optional label for y-axis.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -127,7 +130,7 @@ class LinePlot(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -155,12 +158,16 @@ class LinePlot(GadgetBase):
         The color of each line plot. If `None`, a rainbow gradient is used.
     legend_labels : list[str] | None
         Labels for legend. If `None`, legend is hidden.
-    plot_color_pair : ColorPair
-        Color of text in the plot.
+    plot_fg_color : Color
+        Foreground color of the plot.
+    plot_bg_color : Color
+        Background color of the plot.
     x_label : str | None
         Optional label for x-axis.
     y_label : str | None
         Optional label for y-axis.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -193,16 +200,16 @@ class LinePlot(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -287,9 +294,11 @@ class LinePlot(GadgetBase):
         max_y: Real | None = None,
         line_colors: list[Color] | None = None,
         legend_labels: list[str] | None = None,
-        plot_color_pair: ColorPair = DEFAULT_COLOR_THEME.primary,
+        plot_fg_color: Color = DEFAULT_PRIMARY_FG,
+        plot_bg_color: Color = DEFAULT_PRIMARY_BG,
         x_label: str | None = None,
         y_label: str | None = None,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -298,6 +307,25 @@ class LinePlot(GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        default_cell = style_char(fg_color=plot_fg_color, bg_color=plot_bg_color)
+        self._traces = Text(default_cell=default_cell)
+        self._scrollview = ScrollView(
+            show_vertical_bar=False,
+            show_horizontal_bar=False,
+            scrollwheel_enabled=False,
+            alpha=0,
+        )
+        self._x_ticks = Text(default_cell=default_cell)
+        self._y_ticks = Text(default_cell=default_cell)
+        self._x_ticks_container = Gadget(is_transparent=True)
+        self._y_ticks_container = Gadget(is_transparent=True)
+        self._tick_corner = Text(size=(3, TICK_WIDTH + 1), default_cell=default_cell)
+        self._x_label_gadget = Text(default_cell=default_cell)
+        self._y_label_gadget = Text(default_cell=default_cell)
+        self._legend = _Legend(disable_oob=True, is_enabled=False)
+        self._container = Pane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, bg_color=plot_bg_color
+        )
         super().__init__(
             size=size,
             pos=pos,
@@ -307,50 +335,6 @@ class LinePlot(GadgetBase):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._traces_zoom_index = 0
-        """Index of size hint in `PLOT_ZOOM` that `_traces` is using."""
-        self._traces = Text()
-        self._scrollview = ScrollView(
-            show_vertical_bar=False,
-            show_horizontal_bar=False,
-            scrollwheel_enabled=False,
-        )
-        self._scrollview.view = self._traces
-
-        self._x_ticks = Text()
-
-        def set_x_left():
-            self._x_ticks.left = (
-                self._traces.left + TICK_WIDTH + (self.y_label is not None)
-            )
-
-        self._x_ticks.subscribe(self._traces, "pos", set_x_left)
-
-        self._y_ticks = Text()
-
-        def set_y_top():
-            self._y_ticks.top = self._traces.top
-
-        self._y_ticks.subscribe(self._traces, "pos", set_y_top)
-
-        self._tick_corner = Text(size=(3, TICK_WIDTH + 1))
-        self._tick_corner.canvas["char"][0, -1] = "└"
-
-        self._x_label_gadget = Text()
-        self._y_label_gadget = Text()
-        self._legend = _Legend(disable_oob=True, is_enabled=False)
-        self._legend.labels = legend_labels
-        self._container = Gadget(size_hint={"height_hint": 1.0, "width_hint": 1.0})
-        self._container.add_gadgets(
-            self._scrollview,
-            self._x_ticks,
-            self._y_ticks,
-            self._tick_corner,
-            self._x_label_gadget,
-            self._y_label_gadget,
-            self._legend,
-        )
-        self.add_gadget(self._container)
 
         self._xs = xs
         self._ys = ys
@@ -360,28 +344,98 @@ class LinePlot(GadgetBase):
         self._min_y = min_y
         self._max_y = max_y
         self._line_colors = line_colors
-
-        self.plot_color_pair = plot_color_pair
-        self._x_label = x_label
-        if x_label is not None:
-            self._x_label_gadget.set_text(x_label)
+        self._legend.labels = legend_labels
+        self._plot_fg_color = plot_fg_color
+        self._plot_bg_color = plot_bg_color
+        self.alpha = alpha
+        self.x_label = x_label
         self.y_label = y_label
+        self._traces_zoom_index = 0
+        """Index of size hint in `PLOT_ZOOM` that `_traces` is using."""
+
+        def set_x_left():
+            self._x_ticks.left = self._traces.left
+
+        def set_y_top():
+            self._y_ticks.top = self._traces.top
+
+        self._x_ticks.subscribe(self._traces, "pos", set_x_left)
+        self._y_ticks.subscribe(self._traces, "pos", set_y_top)
+        self._tick_corner.canvas["char"][0, -1] = "└"
+
+        self._scrollview.view = self._traces
+        self._x_ticks_container.add_gadget(self._x_ticks)
+        self._y_ticks_container.add_gadget(self._y_ticks)
+        self._container.add_gadgets(
+            self._scrollview,
+            self._x_ticks_container,
+            self._y_ticks_container,
+            self._tick_corner,
+            self._x_label_gadget,
+            self._y_label_gadget,
+            self._legend,
+        )
+        self.add_gadget(self._container)
+        self._legend._build_legend()
 
     @property
-    def plot_color_pair(self) -> ColorPair:
-        """Color of text in the plot."""
-        return self._plot_color_pair
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._container.is_transparent
 
-    @plot_color_pair.setter
-    def plot_color_pair(self, plot_color_pair: ColorPair):
-        self._plot_color_pair = plot_color_pair
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._traces.is_transparent = is_transparent
+        self._scrollview.is_transparent = is_transparent
+        self._x_ticks.is_transparent = is_transparent
+        self._y_ticks.is_transparent = is_transparent
+        self._tick_corner.is_transparent = is_transparent
+        self._x_label_gadget.is_transparent = is_transparent
+        self._y_label_gadget.is_transparent = is_transparent
+        self._container.is_transparent = is_transparent
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._container.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._container.alpha = alpha
+
+    @property
+    def plot_fg_color(self) -> Color:
+        """Foreground color of text in the plot."""
+        return self._plot_fg_color
+
+    @plot_fg_color.setter
+    def plot_fg_color(self, plot_fg_color: Color):
+        self._plot_fg_color = plot_fg_color
 
         for child in self.walk():
             if isinstance(child, Text):
-                child.colors[:] = plot_color_pair
-                child.default_color_pair = plot_color_pair
-            elif isinstance(child, Gadget):
-                child.background_color_pair = plot_color_pair
+                child.canvas["fg_color"] = plot_fg_color
+                child.default_fg_color = plot_fg_color
+            elif isinstance(child, Pane):
+                child.fg_color = plot_fg_color
+
+        self._legend._build_legend()
+
+    @property
+    def plot_bg_color(self) -> Color:
+        """Foreground color of text in the plot."""
+        return self._plot_bg_color
+
+    @plot_bg_color.setter
+    def plot_bg_color(self, plot_bg_color: Color):
+        self._plot_bg_color = plot_bg_color
+
+        for child in self.walk():
+            if isinstance(child, Text):
+                child.canvas["bg_color"] = plot_bg_color
+                child.default_bg_color = plot_bg_color
+            elif isinstance(child, Pane):
+                child.bg_color = plot_bg_color
 
         self._legend._build_legend()
 
@@ -425,6 +479,9 @@ class LinePlot(GadgetBase):
         self._build_plot()
 
     def _build_plot(self):
+        if self.root is None:
+            return
+
         h, w = self.size
         has_x_label = self._x_label_gadget.is_enabled = bool(self.x_label is not None)
         has_y_label = self._y_label_gadget.is_enabled = bool(self.y_label is not None)
@@ -432,6 +489,11 @@ class LinePlot(GadgetBase):
         sv_left = has_y_label + TICK_WIDTH
         self._scrollview.pos = 0, sv_left
         self._scrollview.size = h - 2 - has_x_label, w - sv_left
+        self._y_ticks_container.left = has_y_label
+        self._y_ticks_container.size = self._scrollview.height, TICK_WIDTH
+        self._x_ticks_container.top = self._scrollview.bottom
+        self._x_ticks_container.left = self._y_ticks_container.right
+        self._x_ticks_container.size = 2, self._scrollview.width
 
         self._x_label_gadget.pos = (
             h - 1,
@@ -459,15 +521,16 @@ class LinePlot(GadgetBase):
             return
 
         self._traces.canvas["char"][:] = " "
-        self._traces.colors[:] = self.plot_color_pair
+        self._traces.canvas["fg_color"] = self.plot_fg_color
+        self._traces.canvas["bg_color"] = self.plot_bg_color
 
         min_x = min(xs.min() for xs in self.xs) if self.min_x is None else self.min_x
         max_x = max(xs.max() for xs in self.xs) if self.max_x is None else self.max_x
         min_y = min(ys.min() for ys in self.ys) if self.min_y is None else self.min_y
         max_y = max(ys.max() for ys in self.ys) if self.max_y is None else self.max_y
 
-        canvas_view = self._traces.canvas[:, TICK_HALF:plot_right]
-        colors_view = self._traces.colors[:, TICK_HALF:plot_right, :3]
+        chars_view = self._traces.canvas["char"][:, TICK_HALF:plot_right]
+        colors_view = self._traces.canvas["fg_color"][:, TICK_HALF:plot_right]
 
         if self.line_colors is None:
             line_colors = rainbow_gradient(len(self.xs))
@@ -497,25 +560,25 @@ class LinePlot(GadgetBase):
                 braille = binary_to_braille(sectioned)
                 where_braille = braille != chr(0x2800)  # empty braille character
 
-                canvas_view["char"][where_braille] = braille[where_braille]
+                chars_view[where_braille] = braille[where_braille]
                 colors_view[where_braille] = color
             else:
                 sectioned = np.swapaxes(plot.reshape(offset_h, 2, offset_w, 2), 1, 2)
                 boxes = binary_to_box(sectioned)
                 where_boxes = boxes != " "
-                canvas_view["char"][where_boxes] = boxes[where_boxes]
+                chars_view[where_boxes] = boxes[where_boxes]
                 colors_view[where_boxes] = color
 
         # Regenerate Ticks
         self._y_ticks.size = self._traces.height, TICK_WIDTH
-        self._y_ticks.colors[:] = self.plot_color_pair
-        self._y_ticks.left = has_y_label
+        self._y_ticks.canvas["fg_color"] = self.plot_fg_color
+        self._y_ticks.canvas["bg_color"] = self.plot_bg_color
         self._y_ticks.canvas["char"][:, :-1] = " "
         self._y_ticks.canvas["char"][1:, -1] = "│"
 
         self._x_ticks.size = 2, self._traces.width
-        self._x_ticks.colors[:] = self.plot_color_pair
-        self._x_ticks.top = h - 2 - has_x_label
+        self._x_ticks.canvas["fg_color"] = self.plot_fg_color
+        self._x_ticks.canvas["bg_color"] = self.plot_bg_color
         self._x_ticks.canvas["char"][0, : plot_right - 1] = "─"
         self._x_ticks.canvas["char"][0, plot_right:] = " "
         self._x_ticks.canvas["char"][1:] = " "
@@ -527,7 +590,7 @@ class LinePlot(GadgetBase):
             y_label = lerp(max_y, min_y, row / last_y)
             self._y_ticks.add_str(
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
-                (row, 0),
+                pos=(row, 0),
             )
         self._y_ticks.canvas["char"][0, -1] = "┐"
 
@@ -537,7 +600,7 @@ class LinePlot(GadgetBase):
             self._x_ticks.canvas["char"][0, column + TICK_HALF] = "┬"
             self._x_ticks.add_str(
                 f"{x_label:^{TICK_WIDTH}.{PRECISION}g}"[:TICK_WIDTH],
-                (1, column),
+                pos=(1, column),
             )
         self._x_ticks.canvas["char"][0, plot_right - 1] = "┐"
 
@@ -563,3 +626,8 @@ class LinePlot(GadgetBase):
 
         self._build_plot()
         return True
+
+    def on_add(self):
+        """Built plot on add."""
+        super().on_add()
+        self._build_plot()

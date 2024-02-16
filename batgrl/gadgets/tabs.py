@@ -8,9 +8,8 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -19,6 +18,7 @@ from .gadget_base import (
     SizeHintDict,
     style_char,
 )
+from .pane import Pane
 from .text import Text
 
 __all__ = [
@@ -70,14 +70,16 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
 
     def _update(self):
         if self.toggle_state is ToggleState.ON:
-            self.colors[:] = self.color_theme.titlebar_normal
-            self.canvas["bold"] = True
+            color_pair = self.color_theme.titlebar_normal
+            bold = True
         elif self.state is ButtonState.HOVER:
-            self.colors[:] = self.hover_color_pair
-            self.canvas["bold"] = False
+            color_pair = self.hover_color_pair
+            bold = False
         else:
-            self.colors[:] = self.color_theme.titlebar_inactive
-            self.canvas["bold"] = False
+            color_pair = self.color_theme.titlebar_inactive
+            bold = False
+        self.canvas[["fg_color", "bg_color"]] = color_pair
+        self.canvas["bold"] = bold
 
     update_hover = _update
     update_normal = _update
@@ -85,15 +87,16 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
     update_off = _update
 
     def update_theme(self):
-        self.hover_color_pair = lerp_colors(
-            self.color_theme.titlebar_normal,
-            self.color_theme.titlebar_inactive,
-            0.5,
+        normal = self.color_theme.titlebar_normal
+        inactive = self.color_theme.titlebar_inactive
+        self.hover_color_pair = (
+            lerp_colors(normal.fg, inactive.fg, 0.5),
+            lerp_colors(normal.bg, inactive.bg, 0.5),
         )
         self._update()
 
 
-class Tabs(Themable, GadgetBase):
+class Tabs(Themable, Gadget):
     r"""
     A tabbed gadget.
 
@@ -108,7 +111,7 @@ class Tabs(Themable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -150,16 +153,16 @@ class Tabs(Themable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -245,8 +248,7 @@ class Tabs(Themable, GadgetBase):
         self.tabs: dict[str, Gadget] = {}
 
         h, w = self.size
-        self.tab_bar = Gadget(size_hint={"width_hint": 1.0}, size=(1, w))
-
+        self.tab_bar = Pane(size_hint={"width_hint": 1.0}, size=(1, w))
         self.separator = Text(size_hint={"width_hint": 1.0}, size=(1, w), pos=(1, 0))
 
         def _update_sep():
@@ -254,29 +256,28 @@ class Tabs(Themable, GadgetBase):
 
         self.separator.subscribe(self, "size", _update_sep)
 
-        self.tab_window = Gadget(
+        self.tab_window = Pane(
             size=(h - 2, w),
             pos=(2, 0),
             size_hint={"height_hint": 1.0, "width_hint": 1.0, "height_offset": -2},
         )
 
+        title_fg, title_bg = self.color_theme.titlebar_normal
+        tab_style = {"bold": True, "fg_color": title_fg, "bg_color": title_bg}
         self._tab_underline = Text(
             size=(1, 1),
             pos=(1, 0),
             is_enabled=False,
-            default_char=style_char("━", bold=True),
-            default_color_pair=self.color_theme.titlebar_normal,
+            default_cell=style_char("━", **tab_style),
         )
         tab_underline_left = Text(
             size=(1, 1),
-            default_char=style_char("╺", bold=True),
-            default_color_pair=self.color_theme.titlebar_normal,
+            default_cell=style_char("╺", **tab_style),
         )
         tab_underline_right = Text(
             size=(1, 1),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
-            default_char=style_char("╸", bold=True),
-            default_color_pair=self.color_theme.titlebar_normal,
+            default_cell=style_char("╸", **tab_style),
         )
         self._tab_underline.add_gadgets(tab_underline_left, tab_underline_right)
 
@@ -297,16 +298,16 @@ class Tabs(Themable, GadgetBase):
     def update_theme(self):
         """Paint the gadget with current theme."""
         title_inactive = self.color_theme.titlebar_inactive
-        self.tab_bar.background_color_pair = title_inactive
-        self.tab_window.background_color_pair = title_inactive
-        self.separator.default_color_pair = title_inactive
-        self.separator.colors[:] = title_inactive
+        self.tab_bar.bg_color = title_inactive.bg
+        self.tab_window.bg_color = title_inactive.bg
+        self.separator.default_cell[["fg_color", "bg_color"]] = title_inactive
+        self.separator.canvas[["fg_color", "bg_color"]] = title_inactive
 
         title_active = self.color_theme.titlebar_normal
-        self._tab_underline.default_color_pair = title_active
-        self._tab_underline.colors[:] = title_active
+        self._tab_underline.default_cell[["fg_color", "bg_color"]] = title_active
+        self._tab_underline.canvas[["fg_color", "bg_color"]] = title_active
 
-    def add_tab(self, title: str, content: GadgetBase):
+    def add_tab(self, title: str, content: Gadget):
         """
         Add a new tab. Tab titles are unique.
 
@@ -314,7 +315,7 @@ class Tabs(Themable, GadgetBase):
         ----------
         title : str
             Title of tab.
-        content : GadgetBase
+        content : Gadget
             Content of the tab.
         """
         if title in self.tabs:

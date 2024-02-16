@@ -1,11 +1,11 @@
-"""A menu gadget."""
-from collections.abc import Callable, Hashable, Iterable, Iterator
+"""A menu and menu bar gadget."""
+from collections.abc import Callable, Iterable, Iterator
 from inspect import signature
 from typing import Optional, Union
 
-from numpy.typing import NDArray
+from batgrl.io import KeyEvent
 
-from ..colors import ColorPair
+from ..geometry import clamp
 from ..io import MouseEventType
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import (
@@ -13,9 +13,9 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .gadget import (
-    Char,
-    Gadget,
+from .grid_layout import GridLayout
+from .pane import (
+    Pane,
     Point,
     PosHint,
     PosHintDict,
@@ -23,14 +23,12 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
 )
-from .grid_layout import GridLayout
 from .text import Text, str_width
 
 __all__ = [
     "Menu",
     "MenuBar",
     "MenuDict",
-    "MenuItem",
     "Point",
     "PosHint",
     "PosHintDict",
@@ -51,201 +49,7 @@ def nargs(callable: Callable) -> int:
     return len(signature(callable).parameters)
 
 
-class MenuItem(Themable, ToggleButtonBehavior, Gadget):
-    r"""
-    A single item in a menu gadget. This should normally only be
-    instantiated by :meth:`Menu.from_dict_of_dicts`.
-
-    Parameters
-    ----------
-    left_label : str, default: ""
-        Left label of menu item.
-    right_label : str, default: ""
-        Right label of menu item.
-    item_disabled : bool, default: False
-        If true, item will not be selectable in menu.
-    item_callback : ItemCallback, default: lambda: None
-        Callback when item is selected. For toggle items, the callable should have a
-        single argument that will be the current state of the item.
-    group : None | Hashable, default: None
-        If a group is provided, only one button in a group can be in the "on" state.
-    allow_no_selection : bool, default: False
-        If a group is provided, setting this to true allows no selection, i.e.,
-        every button can be in the "off" state.
-    toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button.
-    always_release : bool, default: False
-        Whether a mouse up event outside the button will trigger it.
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
-    size : Size, default: Size(10, 10)
-        Size of gadget.
-    pos : Point, default: Point(0, 0)
-        Position of upper-left corner in parent.
-    size_hint : SizeHint | SizeHintDict | None, default: None
-        Size as a proportion of parent's height and width.
-    pos_hint : PosHint | PosHintDict | None , default: None
-        Position as a proportion of parent's height and width.
-    is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
-    is_visible : bool, default: True
-        Whether gadget is visible. Gadget will still receive input events if not
-        visible.
-    is_enabled : bool, default: True
-        Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
-        input events.
-
-    Attributes
-    ----------
-    left_label : str
-        Left label of menu item.
-    right_label : str
-        Right label of menu item.
-    item_disabled : bool
-        If true, item will not be selectable in menu.
-    item_callback : ItemCallback
-        Callback when item is selected. For toggle items, the callable should have a
-        single argument that will be the current state of the item.
-    submenu: Menu | None
-        If provided, menu item will open submenu on hover.
-    label : str
-        Toggle button label.
-    callback : Callable[[ToggleState], None]
-        Button callback when toggled.
-    group : None | Hashable
-        If a group is provided, only one button in a group can be in the "on" state.
-    allow_no_selection : bool
-        If true and button is in a group, every button can be in the "off" state.
-    toggle_state : ToggleState
-        Toggle state of button.
-    always_release : bool
-        Whether a mouse up event outside the button will trigger it.
-    state : ButtonState
-        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
-    size : Size
-        Size of gadget.
-    height : int
-        Height of gadget.
-    rows : int
-        Alias for :attr:`height`.
-    width : int
-        Width of gadget.
-    columns : int
-        Alias for :attr:`width`.
-    pos : Point
-        Position of upper-left corner.
-    top : int
-        Y-coordinate of top of gadget.
-    y : int
-        Y-coordinate of top of gadget.
-    left : int
-        X-coordinate of left side of gadget.
-    x : int
-        X-coordinate of left side of gadget.
-    bottom : int
-        Y-coordinate of bottom of gadget.
-    right : int
-        X-coordinate of right side of gadget.
-    center : Point
-        Position of center of gadget.
-    absolute_pos : Point
-        Absolute position on screen.
-    size_hint : SizeHint
-        Size as a proportion of parent's height and width.
-    pos_hint : PosHint
-        Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
-        Parent gadget.
-    children : list[GadgetBase]
-        Children gadgets.
-    is_transparent : bool
-        True if gadget is transparent.
-    is_visible : bool
-        True if gadget is visible.
-    is_enabled : bool
-        True if gadget is enabled.
-    root : Gadget | None
-        If gadget is in gadget tree, return the root gadget.
-    app : App
-        The running app.
-
-    Methods
-    -------
-    update_theme():
-        Paint the gadget with current theme.
-    update_off():
-        Paint the "off" state.
-    update_on():
-        Paint the "on" state.
-    on_toggle():
-        Update gadget on toggle state change.
-    update_normal():
-        Paint the normal state.
-    update_hover():
-        Paint the hover state.
-    update_down():
-        Paint the down state.
-    on_release():
-        Triggered when a button is released.
-    on_size():
-        Update gadget after a resize.
-    apply_hints():
-        Apply size and pos hints.
-    to_local(point):
-        Convert point in absolute coordinates to local coordinates.
-    collides_point(point):
-        Return true if point collides with visible portion of gadget.
-    collides_gadget(other):
-        Return true if other is within gadget's bounding box.
-    add_gadget(gadget):
-        Add a child gadget.
-    add_gadgets(\*gadgets):
-        Add multiple child gadgets.
-    remove_gadget(gadget):
-        Remove a child gadget.
-    pull_to_front():
-        Move to end of gadget stack so gadget is drawn last.
-    walk_from_root():
-        Yield all descendents of the root gadget (preorder traversal).
-    walk():
-        Yield all descendents of this gadget (preorder traversal).
-    walk_reverse():
-        Yield all descendents of this gadget (reverse postorder traversal).
-    ancestors():
-        Yield all ancestors of this gadget.
-    subscribe(source, attr, action):
-        Subscribe to a gadget property.
-    unsubscribe(source, attr):
-        Unsubscribe to a gadget property.
-    on_key(key_event):
-        Handle key press event.
-    on_mouse(mouse_event):
-        Handle mouse event.
-    on_paste(paste_event):
-        Handle paste event.
-    tween(...):
-        Sequentially update gadget properties over time.
-    on_add():
-        Apply size hints and call children's `on_add`.
-    on_remove():
-        Call children's `on_remove`.
-    prolicide():
-        Recursively remove all children.
-    destroy():
-        Remove this gadget and recursively remove all its children.
-    """  # noqa: E501
-
+class _MenuItem(Themable, ToggleButtonBehavior, Pane):
     def __init__(
         self,
         *,
@@ -254,67 +58,56 @@ class MenuItem(Themable, ToggleButtonBehavior, Gadget):
         item_disabled: bool = False,
         item_callback: ItemCallback = lambda: None,
         submenu: Optional["Menu"] = None,
-        group: None | Hashable = None,
-        allow_no_selection: bool = False,
-        toggle_state: ToggleState = ToggleState.OFF,
-        always_release: bool = False,
-        size=Size(10, 10),
-        pos=Point(0, 0),
-        size_hint: SizeHint | SizeHintDict | None = None,
-        pos_hint: PosHint | PosHintDict | None = None,
-        is_transparent: bool = False,
-        is_visible: bool = True,
-        is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = None,
-        background_color_pair: ColorPair | None = None,
+        **kwargs,
     ):
-        self.normal_color_pair = (0,) * 6  # Temporary assignment
-
-        self._item_disabled = item_disabled
-
-        self.left_label = Text(size=(1, str_width(left_label)))
-        self.left_label.add_str(left_label)
-
+        self.left_label = Text(size=(1, str_width(left_label)), alpha=0.0)
         self.right_label = Text(
             size=(1, str_width(right_label)),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
+            alpha=0.0,
         )
-        self.right_label.add_str(right_label)
-
-        self.submenu = submenu
-
-        super().__init__(
-            group=group,
-            allow_no_selection=allow_no_selection,
-            toggle_state=toggle_state,
-            always_release=always_release,
-            size=size,
-            pos=pos,
-            size_hint=size_hint,
-            pos_hint=pos_hint,
-            is_transparent=is_transparent,
-            is_visible=is_visible,
-            is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
-        )
-
-        self.add_gadgets(self.left_label, self.right_label)
-
+        self._item_disabled = item_disabled
         self.item_callback = item_callback
+        self.submenu = submenu
+        super().__init__(**kwargs)
+
+        self.left_label.add_str(left_label)
+        self.right_label.add_str(right_label)
+        self.add_gadgets(self.left_label, self.right_label)
         self.update_off()
 
     def _repaint(self):
         if self.item_disabled:
-            color = self.color_theme.menu_item_disabled
+            color_pair = self.color_theme.menu_item_disabled
         elif self.state is ButtonState.NORMAL:
-            color = self.color_theme.primary
+            color_pair = self.color_theme.primary
         elif self.state is ButtonState.HOVER or self.state is ButtonState.DOWN:
-            color = self.color_theme.menu_item_hover
+            color_pair = self.color_theme.menu_item_hover
+        self.bg_color = color_pair.bg
+        self.left_label.canvas[["fg_color", "bg_color"]] = color_pair
+        self.right_label.canvas[["fg_color", "bg_color"]] = color_pair
 
-        self.background_color_pair = color
-        self.left_label.colors[:] = color
-        self.right_label.colors[:] = color
+    @property
+    def alpha(self) -> float:
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._alpha = alpha
+        if self.submenu is not None:
+            self.submenu.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        return self._is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._is_transparent = is_transparent
+        self.left_label.is_transparent = is_transparent
+        self.right_label.is_transparent = is_transparent
+        if self.submenu is not None:
+            self.submenu.is_transparent = is_transparent
 
     @property
     def item_disabled(self) -> bool:
@@ -394,12 +187,11 @@ class Menu(GridLayout):
     r"""
     A menu gadget.
 
-    Menus are meant to be constructed with the class method :meth:`from_dict_of_dicts`.
-    Each key of the dict should be a tuple of two strings for left and right labels and
-    each value should be either a callable with no arguments for a normal menu item, a
-    callable with one argument for a toggle menu item (the argument will be
-    :attr:`batgrl.gadgets.behaviors.toggle_button_behavior.ToggleButtonBehavior.toggle_state`
-    of the menu item), or a dict (for a submenu).
+    Menus are constructed with the class method :meth:`from_dict_of_dicts`. Each key of
+    the dict should be a tuple of two strings for left and right labels and each value
+    should be either a callable with no arguments for a normal menu item, a callable
+    with one argument for a toggle menu item (the argument will be the toggle state of
+    the menu item), or a dict (for a submenu).
 
     Once opened, a menu can be navigated with the mouse or arrow keys.
 
@@ -409,6 +201,8 @@ class Menu(GridLayout):
         If true, close the menu when an item is selected.
     close_on_click : bool, default: True
         If true, close the menu when a click doesn't collide with it.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     grid_rows : int, default: 1
         Number of rows.
     grid_columns : int, default: 1
@@ -427,15 +221,6 @@ class Menu(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -445,7 +230,7 @@ class Menu(GridLayout):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -459,6 +244,8 @@ class Menu(GridLayout):
         If true, close the menu when an item is selected.
     close_on_click : bool
         If true, close the menu when a click doesn't collide with it.
+    alpha : float
+        Transparency of gadget.
     minimum_grid_size : Size
         Minimum grid size needed to show all children.
     grid_rows : int
@@ -479,10 +266,6 @@ class Menu(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int
         Vertical spacing between children.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -515,16 +298,16 @@ class Menu(GridLayout):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -593,6 +376,7 @@ class Menu(GridLayout):
         self,
         close_on_release: bool = True,
         close_on_click: bool = True,
+        alpha: float = 1.0,
         orientation="tb-lr",
         grid_rows: int = 1,
         grid_columns: int = 1,
@@ -609,8 +393,6 @@ class Menu(GridLayout):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         super().__init__(
             orientation=orientation,
@@ -629,17 +411,38 @@ class Menu(GridLayout):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
         self.close_on_release = close_on_release
         self.close_on_click = close_on_click
+        self._alpha = alpha
 
         self._parent_menu = None
         self._current_selection = -1
         self._submenus = []
         self._menu_button = None
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._alpha = clamp(alpha, 0.0, 1.0)
+        for item in self.children:
+            item.alpha = self._alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._is_transparent = is_transparent
+        for item in self.children:
+            item.is_transparent = is_transparent
 
     def open_menu(self):
         """Open the menu."""
@@ -781,6 +584,7 @@ class Menu(GridLayout):
         pos: Point = Point(0, 0),
         close_on_release: bool = True,
         close_on_click: bool = True,
+        alpha: float = 1.0,
     ) -> Iterator["Menu"]:
         """
         Create and yield menus from a dict of dicts. Callables should either have no
@@ -796,6 +600,8 @@ class Menu(GridLayout):
             If true, close the menu when an item is selected.
         close_on_click : bool, default: True
             If true, close the menu when a click doesn't collide with it.
+        alpha : float, default: 1.0
+            Transparency of gadget.
 
         Yields
         ------
@@ -813,6 +619,7 @@ class Menu(GridLayout):
             for (right_label, left_label), callable_or_dict in menu.items()
         )
         menu_gadget = cls(
+            alpha=alpha,
             grid_rows=height,
             grid_columns=1,
             size=(height, width),
@@ -822,38 +629,39 @@ class Menu(GridLayout):
         )
 
         y, x = pos
-        for i, ((left_label, right_label), callable_or_dict) in enumerate(menu.items()):
-            match callable_or_dict:
+        for i, ((left_label, right_label), value) in enumerate(menu.items()):
+            match value:
                 case Callable():
-                    menu_item = MenuItem(
+                    menu_item = _MenuItem(
                         left_label=f"   {left_label}",
                         right_label=f"{right_label} ",
-                        item_callback=callable_or_dict,
+                        item_callback=value,
+                        alpha=alpha,
                         size=(1, width),
                     )
                 case dict():
-                    for nested in Menu.from_dict_of_dicts(
-                        callable_or_dict,
+                    submenus = Menu.from_dict_of_dicts(
+                        value,
                         pos=(y + i, x + width),
                         close_on_release=close_on_release,
                         close_on_click=close_on_click,
-                    ):
-                        nested._parent_menu = menu_gadget
-                        nested.is_enabled = False
-                        menu_gadget._submenus.append(nested)
+                        alpha=alpha,
+                    )
+                    for submenu in submenus:
+                        menu_gadget._submenus.append(submenu)
+                        submenu._parent_menu = menu_gadget
+                        submenu.is_enabled = False
+                        yield submenu
 
-                        yield nested
-
-                    menu_item = MenuItem(
+                    menu_item = _MenuItem(
                         left_label=f"   {left_label}",
                         right_label=f"{right_label}{NESTED_SUFFIX} ",
-                        submenu=nested,
+                        submenu=submenu,
+                        alpha=alpha,
                         size=(1, width),
                     )
                 case _:
-                    raise TypeError(
-                        f"expected Callable or dict, got {type(callable_or_dict)}"
-                    )
+                    raise TypeError(f"expected Callable or dict, got {type(value)}")
 
             menu_gadget.add_gadget(menu_item)
 
@@ -874,8 +682,8 @@ class _MenuButton(Themable, ToggleButtonBehavior, Text):
         else:
             color_pair = self.color_theme.primary
 
-        self.colors[:] = color_pair
-        self.default_color_pair = color_pair
+        self.default_fg_color, self.default_bg_color = color_pair
+        self.canvas[["fg_color", "bg_color"]] = color_pair
 
     def update_theme(self):
         self._repaint()
@@ -908,12 +716,17 @@ class MenuBar(GridLayout):
     r"""
     A menu bar.
 
-    A menu bar is meant to be constructed with the class method :meth:`from_iterable`.
-    The iterable should be pairs of `(str, MenuDict)` where `MenuDict` is the type
-    used for `Menu.from_dict_of_dicts`.
+    A menu bar is constructed with the class method :meth:`from_iterable` from an
+    iterable of `(str, MenuDict)`.
 
     Parameters
     ----------
+    close_on_release : bool, default: True
+        If true, close the menu when an item is selected.
+    close_on_click : bool, default: True
+        If true, close the menu when a click doesn't collide with it.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     grid_rows : int, default: 1
         Number of rows.
     grid_columns : int, default: 1
@@ -932,15 +745,10 @@ class MenuBar(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
+    fg_color : Color | None, default: WHITE
+        Foreground color of gadget.
+    bg_color : Color | None, default: BLACK
+        Background color of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -950,7 +758,7 @@ class MenuBar(GridLayout):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -964,6 +772,8 @@ class MenuBar(GridLayout):
         If true, close the menu when an item is selected.
     close_on_click : bool
         If true, close the menu when a click doesn't collide with it.
+    alpha : float
+        Transparency of gadget.
     grid_rows : int
         Number of rows.
     grid_columns : int
@@ -982,10 +792,10 @@ class MenuBar(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int
         Vertical spacing between children.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
+    fg_color : Color | None
+        Foreground color of gadget.
+    bg_color : Color | None
+        Background color of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -1018,16 +828,16 @@ class MenuBar(GridLayout):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -1092,6 +902,124 @@ class MenuBar(GridLayout):
         Remove this gadget and recursively remove all its children.
     """
 
+    def __init__(
+        self,
+        close_on_release: bool = True,
+        close_on_click: bool = True,
+        alpha: float = 1.0,
+        orientation="tb-lr",
+        grid_rows: int = 1,
+        grid_columns: int = 1,
+        padding_left: int = 0,
+        padding_right: int = 0,
+        padding_top: int = 0,
+        padding_bottom: int = 0,
+        horizontal_spacing: int = 0,
+        vertical_spacing: int = 0,
+        size=Size(10, 10),
+        pos=Point(0, 0),
+        size_hint: SizeHint | SizeHintDict | None = None,
+        pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = False,
+        is_visible: bool = True,
+        is_enabled: bool = True,
+    ):
+        self._close_on_release = close_on_release
+        self._close_on_click = close_on_click
+        self._alpha = alpha
+
+        super().__init__(
+            orientation=orientation,
+            grid_rows=grid_rows,
+            grid_columns=grid_columns,
+            padding_left=padding_left,
+            padding_right=padding_right,
+            padding_top=padding_top,
+            padding_bottom=padding_bottom,
+            horizontal_spacing=horizontal_spacing,
+            vertical_spacing=vertical_spacing,
+            size=size,
+            pos=pos,
+            size_hint=size_hint,
+            pos_hint=pos_hint,
+            is_transparent=is_transparent,
+            is_visible=is_visible,
+            is_enabled=is_enabled,
+        )
+
+    @property
+    def close_on_release(self) -> bool:
+        """If true, close the menu when an item is selected."""
+        return self._close_on_release
+
+    @close_on_release.setter
+    def close_on_release(self, close_on_release: bool):
+        self._close_on_release = close_on_release
+        button: _MenuButton
+        for button in self.children:
+            button._menu.close_on_release = close_on_release
+
+    @property
+    def close_on_click(self) -> bool:
+        """If true, close the menu when a click doesn't collide with it."""
+        return self._close_on_click
+
+    @close_on_click.setter
+    def close_on_click(self, close_on_click: bool):
+        self._close_on_click = close_on_click
+        button: _MenuButton
+        for button in self.children:
+            button._menu.close_on_click = close_on_click
+
+    @property
+    def alpha(self) -> float:
+        """Transparancy of gadget."""
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._alpha = clamp(alpha, 0.0, 1.0)
+        button: _MenuButton
+        for button in self.children:
+            button.alpha = self._alpha
+            button._menu.alpha = self._alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._is_transparent = is_transparent
+        button: _MenuButton
+        for button in self.children:
+            button.is_transparent = is_transparent
+            button._menu.is_transparent = is_transparent
+
+    def on_key(self, key_event: KeyEvent) -> bool | None:
+        """Navigate menu bar with left/right arrow keys."""
+        button: _MenuButton
+        for i, button in enumerate(self.children):
+            if button.toggle_state == "on":
+                break
+        else:
+            return super().on_key(key_event)
+
+        if button._menu.on_key(key_event):
+            return True
+
+        match key_event.key:
+            case "left":
+                i -= 1
+            case "right":
+                i += 1
+            case _:
+                return super().on_key(key_event)
+
+        i %= len(self.children)
+        self.children[i].toggle_state = "on"
+
     @classmethod
     def from_iterable(
         cls,
@@ -1099,6 +1027,7 @@ class MenuBar(GridLayout):
         pos: Point = Point(0, 0),
         close_on_release: bool = True,
         close_on_click: bool = True,
+        alpha: float = 1.0,
     ) -> Iterator[Union[Menu, "MenuBar"]]:
         """
         Create and yield a menu bar and menus from an iterable of
@@ -1115,6 +1044,8 @@ class MenuBar(GridLayout):
             If true, close the menu when an item is selected.
         close_on_click : bool, default: True
             If true, close the menu when a click doesn't collide with it.
+        alpha : float, default: 1.0
+            Transparency of gadget.
 
         Yields
         ------
@@ -1124,6 +1055,9 @@ class MenuBar(GridLayout):
         menus = list(iter)
 
         menubar = cls(
+            close_on_release=close_on_release,
+            close_on_click=close_on_click,
+            alpha=alpha,
             grid_rows=1,
             grid_columns=len(menus),
             size=(1, sum(str_width(menu_name) + 2 for menu_name, _ in menus)),
@@ -1137,6 +1071,7 @@ class MenuBar(GridLayout):
                 pos=(y + 1, x),
                 close_on_release=close_on_release,
                 close_on_click=close_on_click,
+                alpha=alpha,
             ):
                 menu.is_enabled = False
                 yield menu

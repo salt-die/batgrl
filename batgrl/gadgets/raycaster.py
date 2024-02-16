@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 
 from ..colors import BLACK, TRANSPARENT, AColor, Color
 from .graphics import (
-    Char,
+    Cell,
     Graphics,
     Interpolation,
     Point,
@@ -18,6 +18,7 @@ from .graphics import (
     SizeHintDict,
     clamp,
 )
+from .texture_tools import _composite
 
 __all__ = [
     "Camera",
@@ -187,8 +188,7 @@ class Raycaster(Graphics):
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
-        If gadget is transparent, the alpha channel of the underlying texture will be
-        multiplied by this value. (0 <= alpha <= 1.0)
+        Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
@@ -200,8 +200,7 @@ class Raycaster(Graphics):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -237,7 +236,7 @@ class Raycaster(Graphics):
     default_color : AColor
         Default texture color.
     alpha : float
-        Transparency of gadget if :attr:`is_transparent` is true.
+        Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
     size : Size
@@ -272,16 +271,16 @@ class Raycaster(Graphics):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -619,21 +618,13 @@ class Raycaster(Graphics):
             np.multiply(tex_xs, tex_width, out=tex_xs)
             np.divide(tex_xs, sprite_width, out=tex_xs)
 
-            sprite_rect = sprite_tex[rows.astype(int)][:, tex_xs.astype(int)].astype(
-                float
-            )
-            sprite_rgb = sprite_rect[..., :3]
-            tex_rect = texture[start_y:end_y, columns, :3]
+            sprite_rect = sprite_tex[rows.astype(int)][:, tex_xs.astype(int)]
+            dst = texture[start_y:end_y, columns, :3]
+            _composite(dst, sprite_rect[..., :3], sprite_rect[..., 3, None])
+            texture[start_y:end_y, columns, :3] = dst
 
-            np.subtract(sprite_rgb, tex_rect, out=sprite_rgb)
-            np.multiply(sprite_rgb, sprite_rect[..., 3, None], out=sprite_rgb)
-            np.divide(sprite_rgb, 255, out=sprite_rgb)
-            np.add(sprite_rgb, tex_rect, out=sprite_rgb)
-
-            texture[start_y:end_y, columns, :3] = sprite_rgb
-
-    def render(self, canvas_view: NDArray[Char], colors_view: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
+    def _render(self, canvas_view: NDArray[Cell]):
+        """Render visible region of gadget."""
         # Early calculations on rays can be vectorized:
         np.dot(self._ray_angles, self.camera._plane, out=self._rotated_angles)
         with np.errstate(divide="ignore"):
@@ -656,4 +647,4 @@ class Raycaster(Graphics):
 
         self.cast_sprites()
 
-        super().render(canvas_view, colors_view)
+        super()._render(canvas_view)

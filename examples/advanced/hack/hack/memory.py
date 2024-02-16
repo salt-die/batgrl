@@ -5,7 +5,7 @@ import numpy as np
 from batgrl.gadgets.text import Text
 from batgrl.io import MouseButton, MouseEventType
 
-from .colors import DEFAULT_COLOR_PAIR
+from .colors import BRIGHT_GREEN, DARK_GREEN
 
 NOISE = np.array(list("!\"#$%'()*+,-./:;<>?@[\\]^_`{|}="))
 
@@ -92,7 +92,8 @@ class MemoryGadget(Text):
         if mouse_event.event_type is MouseEventType.MOUSE_UP:
             return
 
-        self.colors[:] = DEFAULT_COLOR_PAIR
+        self.canvas["fg_color"] = BRIGHT_GREEN
+        self.canvas["bg_color"] = DARK_GREEN
 
         i = pos_to_memory(self.to_local(mouse_event.position))
         if i is None:
@@ -102,7 +103,8 @@ class MemoryGadget(Text):
         if (start := self.word_indices.get(i)) is not None:
             end = start + WORD_LENGTH
             for j in range(start, end):
-                self.colors[memory_to_pos(j)] = DEFAULT_COLOR_PAIR.reversed()
+                self.canvas["fg_color"][memory_to_pos(j)] = DARK_GREEN
+                self.canvas["bg_color"][memory_to_pos(j)] = BRIGHT_GREEN
 
             guess = self.memory[start:end]
             if (
@@ -113,7 +115,8 @@ class MemoryGadget(Text):
             else:
                 self.output.slow_add_str(guess)
         else:
-            self.colors[memory_to_pos(i)] = DEFAULT_COLOR_PAIR.reversed()
+            self.canvas["fg_color"][memory_to_pos(i)] = DARK_GREEN
+            self.canvas["bg_color"][memory_to_pos(i)] = BRIGHT_GREEN
             self.output.slow_add_str(self.memory[i])
 
         return True

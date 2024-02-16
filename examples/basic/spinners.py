@@ -1,16 +1,15 @@
 from math import ceil
 
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.scroll_view import ScrollView
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.text import Text, style_char
 from batgrl.gadgets.text_animation import TextAnimation
 from batgrl.spinners import SPINNERS
 
 COLUMNS = 2
-PRIMARY = DEFAULT_COLOR_THEME.primary
 
 
 class SpinnersApp(App):
@@ -25,17 +24,23 @@ class SpinnersApp(App):
             grid_columns=COLUMNS,
             horizontal_spacing=1,
             orientation="tb-lr",
-            background_color_pair=PRIMARY,
+            is_transparent=True,
         )
 
         for name, frames in SPINNERS.items():
             label = Text(
-                pos_hint={"y_hint": 0.5, "anchor": "left"}, default_color_pair=PRIMARY
+                pos_hint={"y_hint": 0.5, "anchor": "left"},
+                default_cell=style_char(
+                    fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                ),
             )
             label.set_text(f"{name}: ")
 
             animation = TextAnimation(
-                pos=(0, label.right), frames=frames, animation_color_pair=PRIMARY
+                pos=(0, label.right),
+                frames=frames,
+                animation_fg_color=DEFAULT_PRIMARY_FG,
+                animation_bg_color=DEFAULT_PRIMARY_BG,
             )
             animation.size = animation.frames[0].size
             animation.play()

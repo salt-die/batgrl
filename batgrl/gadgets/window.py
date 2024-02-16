@@ -1,10 +1,9 @@
 """A movable, resizable window gadget."""
-import numpy as np
+from typing import Literal
 
-from ..colors import TRANSPARENT, AColor
+from ..io import MouseEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
-from .behaviors.resizable import Resizable
 from .behaviors.themable import Themable
 from .gadget import (
     Gadget,
@@ -16,12 +15,10 @@ from .gadget import (
     SizeHintDict,
     clamp,
 )
-from .gadget_base import GadgetBase
-from .graphics import Graphics, Interpolation
+from .pane import Pane
 from .text import Text, str_width
 
 __all__ = [
-    "Interpolation",
     "Point",
     "PosHint",
     "PosHintDict",
@@ -32,13 +29,13 @@ __all__ = [
 ]
 
 
-class _TitleBar(Grabbable, Gadget):
+class _TitleBar(Grabbable, Pane):
     def __init__(self):
         super().__init__(
             pos=(1, 2),
             size=(1, 2),
-            background_char=" ",
             size_hint={"width_hint": 1.0, "width_offset": -4},
+            is_transparent=False,
         )
 
         self._label = Text(pos_hint={"x_hint": 0.5, "anchor": "top"})
@@ -49,7 +46,7 @@ class _TitleBar(Grabbable, Gadget):
         self.parent.left += self.mouse_dx
 
 
-class Window(Themable, Focusable, Resizable, Graphics):
+class Window(Themable, Focusable, Grabbable, Gadget):
     r"""
     A movable, resizable window gadget.
 
@@ -61,24 +58,15 @@ class Window(Themable, Focusable, Resizable, Graphics):
     title : str, default: ""
         Title of window.
     allow_vertical_resize : bool, default: True
-        Allow vertical resize.
+        Whether window can be resized vertically.
     allow_horizontal_resize : bool, default: True
-        Allow horizontal resize.
+        Whether window can be resized horizontally.
     resize_min_height : int | None, default: None
-        Minimum height gadget can be resized by grabbing.
+        Minimum height window can be resized.
     resize_min_width : int | None, default: None
-        Minimum width gadget can be resized by grabbing.
-    border_alpha : float, default: 1.0
-        Transparency of border. This value will be clamped between `0.0` and `1.0`.
-    border_color : AColor, default: TRANSPARENT
-        Color of border.
-    default_color : AColor, default: AColor(0, 0, 0, 0)
-        Default texture color.
+        Minimum width window can be resized.
     alpha : float, default: 1.0
-        If gadget is transparent, the alpha channel of the underlying texture will be
-        multiplied by this value. (0 <= alpha <= 1.0)
-    interpolation : Interpolation, default: "linear"
-        Interpolation used when gadget is resized.
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -88,8 +76,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted. Additionally,
-        non-transparent graphic gadgets are not alpha composited.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -99,34 +86,24 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     Attributes
     ----------
-    view : GadgetBase
+    view : Gadget
         The windowed gadget.
     title : str
         Title of window.
     is_focused : bool
-        True if gadget has focus.
+        Whether gadget has focus.
     any_focused : bool
-        True if any gadget has focus.
+        Whether any gadget has focus.
     allow_vertical_resize : bool
-        Allow vertical resize.
+        Whether window can be resized vertically.
     allow_horizontal_resize : bool
-        Allow horizontal resize.
+        Whether window can be resized horizontally.
     resize_min_height : int
-        Minimum height gadget can be resized by grabbing.
+        Minimum height window can be resized.
     resize_min_width : int
-        Minimum width gadget can be resized by grabbing.
-    border_alpha : float
-        Transparency of border. This value will be clamped between `0.0` and `1.0`.
-    border_color : AColor
-        Color of border.
-    texture : NDArray[np.uint8]
-        uint8 RGBA color array.
-    default_color : AColor
-        Default texture color.
+        Minimum width window can be resized.
     alpha : float
-        Transparency of gadget if :attr:`is_transparent` is true.
-    interpolation : Interpolation
-        Interpolation used when gadget is resized.
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -159,16 +136,16 @@ class Window(Themable, Focusable, Resizable, Graphics):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -258,48 +235,73 @@ class Window(Themable, Focusable, Resizable, Graphics):
         allow_horizontal_resize: bool = True,
         resize_min_height: int | None = None,
         resize_min_width: int | None = None,
-        border_alpha: float = 1.0,
-        border_color: AColor = TRANSPARENT,
-        is_transparent: bool = True,
-        default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
-        interpolation: Interpolation = "linear",
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
+        is_transparent: bool = True,
     ):
-        self._title = title
-
         super().__init__(
-            allow_vertical_resize=allow_vertical_resize,
-            allow_horizontal_resize=allow_horizontal_resize,
-            resize_min_height=resize_min_height,
-            resize_min_width=resize_min_width,
-            border_alpha=border_alpha,
-            border_color=border_color,
-            is_transparent=is_transparent,
-            default_color=default_color,
-            alpha=alpha,
-            interpolation=interpolation,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
+            is_transparent=is_transparent,
         )
-
+        self._y_edge: Literal[-1, 0, 1] = 0
+        self._x_edge: Literal[-1, 0, 1] = 0
         self._view = None
         self._titlebar = _TitleBar()
-        self.add_gadget(self._titlebar)
+        self._top_border = Pane(size=(1, 1), size_hint={"width_hint": 1.0})
+        self._bot_border = Pane(
+            size=(1, 1),
+            size_hint={"width_hint": 1.0},
+            pos_hint={"y_hint": 1.0, "anchor": "bottom"},
+        )
+        self._left_border = Pane(
+            pos=(1, 0),
+            size=(1, 2),
+            size_hint={"height_hint": 1.0, "height_offset": -2},
+        )
+        self._right_border = Pane(
+            pos=(1, 0),
+            size=(1, 2),
+            size_hint={"height_hint": 1.0, "height_offset": -2},
+            pos_hint={"x_hint": 1.0, "anchor": "right"},
+        )
+        self._background = Pane(
+            pos=(1, 2),
+            size_hint={
+                "height_hint": 1.0,
+                "width_hint": 1.0,
+                "height_offset": -2,
+                "width_offset": -4,
+            },
+        )
+        self.add_gadgets(
+            self._top_border,
+            self._bot_border,
+            self._left_border,
+            self._right_border,
+            self._background,
+            self._titlebar,
+        )
+        self._title = ""
+        self.allow_vertical_resize = allow_vertical_resize
+        self.allow_horizontal_resize = allow_horizontal_resize
+        self.resize_min_height = resize_min_height
+        self.resize_min_width = resize_min_width
+        self.alpha = alpha
         self.title = title
 
     @property
     def resize_min_height(self) -> int:
-        """Minimum height gadget can be resized by grabbing."""
+        """Minimum height gadget can be resized."""
         return self._resize_min_height
 
     @resize_min_height.setter
@@ -311,7 +313,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
 
     @property
     def resize_min_width(self) -> int:
-        """Minimum width gadget can be resized by grabbing."""
+        """Minimum width gadget can be resized."""
         return self._resize_min_width
 
     @resize_min_width.setter
@@ -323,12 +325,25 @@ class Window(Themable, Focusable, Resizable, Graphics):
             self._resize_min_width = clamp(min_width, w, None)
 
     @property
-    def view(self) -> GadgetBase | None:
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._background.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._top_border.alpha = alpha
+        self._bot_border.alpha = alpha
+        self._left_border.alpha = alpha
+        self._right_border.alpha = alpha
+        self._background.alpha = alpha
+
+    @property
+    def view(self) -> Gadget | None:
         """The windowed gadget."""
         return self._view
 
     @view.setter
-    def view(self, view: GadgetBase | None):
+    def view(self, view: Gadget | None):
         if self._view is not None:
             self.remove_gadget(self._view)
 
@@ -339,18 +354,7 @@ class Window(Themable, Focusable, Resizable, Graphics):
             view.pos_hint = {}
             view.pos = 2, 2
             self.add_gadget(view)
-            self.pull_border_to_front()
             self.on_size()
-
-    def on_size(self):
-        """Resize view on resize."""
-        h, w = self._size
-        self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
-        self.texture[4:-2, 2:-2] = self.default_color
-
-        if self._view is not None:
-            self._view.size = h - 3, w - 4
-            self._view.is_visible = h - 3 > 0 and w - 4 > 0
 
     @property
     def title(self):
@@ -364,25 +368,73 @@ class Window(Themable, Focusable, Resizable, Graphics):
         self._titlebar._label.add_str(title)
         self.resize_min_width = self.resize_min_width
 
+    def grab(self, mouse_event: MouseEvent):
+        """Grab window."""
+        super().grab(mouse_event)
+        y, x = self.to_local(mouse_event.position)
+        self._y_edge = -1 if y == 0 else 1 if y == self.height - 1 else 0
+        self._x_edge = (
+            -1 if x in (0, 1) else 1 if x in (self.width - 2, self.width - 1) else 0
+        )
+        if self._y_edge == 0 and self._x_edge == 0:
+            self.ungrab(mouse_event)
+
+    def grab_update(self, mouse_event: MouseEvent):
+        """Resize window if border is grabbed."""
+        y, x = self.to_local(mouse_event.position)
+
+        dy, dx = self.mouse_dyx
+        if (
+            (dy < 0 and y >= self.height - 1)
+            or (dy > 0 and y <= 0)
+            or (dx < 0 and x >= self.width - 1)
+            or (dx > 0 and x <= 0)
+        ):
+            return
+
+        verti = self.allow_vertical_resize and self._y_edge
+        horiz = self.allow_horizontal_resize and self._x_edge
+        h, w = self.size
+        new_size = Size(
+            clamp(h + verti * dy, self.resize_min_height, None),
+            clamp(w + horiz * dx, self.resize_min_width, None),
+        )
+        self.size = new_size
+        if self._y_edge == -1:
+            self.top += h - new_size.height
+        if self._x_edge == -1:
+            self.left += w - new_size.width
+
     def update_theme(self):
         """Paint the gadget with current theme."""
-        self.default_color = AColor(*self.color_theme.primary.bg_color)
-        self.texture[4:-2, 2:-2] = self.default_color
+        self._background.bg_color = self.color_theme.primary.bg
 
         if self.is_focused:
-            title_color = self.color_theme.titlebar_normal
-            self._titlebar.background_color_pair = title_color
-            self._titlebar._label.default_color_pair = title_color
-            self._titlebar._label.colors[:] = title_color
-
-            self.border_color = self.color_theme.window_border_normal
+            fg, bg = self.color_theme.titlebar_normal
+            border = self.color_theme.window_border_normal
         else:
-            title_color = self.color_theme.titlebar_inactive
-            self._titlebar.background_color_pair = title_color
-            self._titlebar._label.default_color_pair = title_color
-            self._titlebar._label.colors[:] = title_color
+            fg, bg = self.color_theme.titlebar_inactive
+            border = self.color_theme.window_border_inactive
 
-            self.border_color = self.color_theme.window_border_inactive
+        self._titlebar.fg_color = fg
+        self._titlebar.bg_color = bg
+        self._titlebar._label.default_fg_color = fg
+        self._titlebar._label.default_bg_color = bg
+        self._titlebar._label.canvas["fg_color"] = fg
+        self._titlebar._label.canvas["bg_color"] = bg
+        self._top_border.bg_color = border
+        self._bot_border.bg_color = border
+        self._left_border.bg_color = border
+        self._right_border.bg_color = border
+
+    def on_size(self):
+        """Resize view on resize."""
+        h, w = self._size
+        h -= 3
+        w -= 4
+        if self._view is not None:
+            self._view.size = h, w
+            self._view.is_visible = h > 0 and w > 0
 
     def on_focus(self):
         """Pull window to front and recolor borders on focus."""

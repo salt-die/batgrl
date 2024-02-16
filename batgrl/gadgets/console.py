@@ -10,9 +10,8 @@ from io import StringIO
 from ..io import Key, KeyEvent, Mods, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
-from .gadget import Gadget
-from .gadget_base import (
-    GadgetBase,
+from .gadget import (
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -20,6 +19,7 @@ from .gadget_base import (
     SizeHint,
     SizeHintDict,
 )
+from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, str_width
 from .textbox import Textbox
@@ -28,23 +28,15 @@ __all__ = ["Console"]
 
 PROMPT_1 = ">>> "
 PROMPT_2 = "... "
-DEFAULT_BANNER = (
-    "Welcome to the batgrl interactive console!\n"
-    'The root gadget is "root" and the running app is "app".\n'
-    f"Python {sys.version} on {sys.platform}\n"
-    'Type "help", "copyright", "credits" or "license" for more information.'
-)
+DEFAULT_BANNER = f"""\
+Welcome to the batgrl interactive console!
+The root gadget is "root" and the running app is "app".
+Python {sys.version} on {sys.platform}
+Type "help", "copyright", "credits" or "license" for more information."""
 
 
 class _InteractiveConsole(InteractiveInterpreter):
-    """
-    An interactive interpreter that redirects stdin, stderr, and stdout while executing
-    code in a separate thread.
-    """
-
-    # TODO: Add a custom ttypager (see: pydoc.ttypager) or interactive help.
-    # TODO: Add a getch (sys.stdin.read(1)).
-    # ? Console maybe should wait on the future in runcode before allowing more input.
+    """An custom interactive interpreter."""
 
     def __init__(self, console_gadget):
         super().__init__()
@@ -55,6 +47,8 @@ class _InteractiveConsole(InteractiveInterpreter):
         """Result of replaced stdin.read or stdin.readline."""
         self.output_buffer = StringIO()
         """Replaces stdout while executing code."""
+        self.exec_in_thread: bool = False
+        """Whether code is executed in a separate thread."""
 
         def read(size=-1):
             return self.input()
@@ -70,9 +64,17 @@ class _InteractiveConsole(InteractiveInterpreter):
 
     def input(self, prompt=""):
         """Replace `builtins.input` while executing code."""
+        if not self.exec_in_thread:
+            print("set `exec_in_thread` to True to enable `input`")
+
         *lines, last_line = str(prompt).split("\n")
         self.output_buffer.write("\n".join(lines))
         self.flush()
+
+        if not self.exec_in_thread:
+            print(last_line)
+            return ""
+
         self.console_gadget._input_mode = True
         self.console_gadget._prompt.set_text(last_line)
 
@@ -80,7 +82,6 @@ class _InteractiveConsole(InteractiveInterpreter):
             # Blocking
             while self.input_buffer is None:
                 time.sleep(0.01)
-
             return self.input_buffer
         finally:
             self.input_buffer = None
@@ -107,7 +108,10 @@ class _InteractiveConsole(InteractiveInterpreter):
                 self.flush()
 
     def runcode(self, code):
-        asyncio.get_event_loop().run_in_executor(None, self.exec, code)
+        if self.exec_in_thread:
+            asyncio.get_event_loop().run_in_executor(None, self.exec, code)
+        else:
+            self.exec(code)
 
     def push(self, line):
         self.src_buffer.append(line)
@@ -129,6 +133,10 @@ class _ConsoleTextbox(Textbox):
     """A custom textbox that grows and shrinks with its input."""
 
     @property
+    def console(self) -> "Console":
+        return self.parent.parent.parent
+
+    @property
     def cursor(self) -> int:
         return self._cursor.x
 
@@ -139,7 +147,7 @@ class _ConsoleTextbox(Textbox):
         if self.parent is None:
             return
 
-        console: Console = self.parent.parent.parent
+        console = self.console
         rel_x = console._container.x + console._prompt.width + cursor
         port_width = console._scroll_view.port_width
 
@@ -156,13 +164,11 @@ class _ConsoleTextbox(Textbox):
         self._highlight_selection()
 
     def on_size(self):
-        console: Console = self.parent.parent.parent
-        offset = console._prompt.right
-        if self.width + offset >= console._min_line_length:
-            console._container.width = self.width + offset
+        if self.right >= self.console._min_line_length:
+            self.console._container.width = self.right
         else:
-            console._container.width = console._min_line_length
-        self.cursor = self.cursor
+            self.console._container.width = self.console._min_line_length
+        # self.cursor = self.cursor
 
     def _del_text(self, start: int, end: int):
         result = super()._del_text(start, end)
@@ -203,9 +209,35 @@ class _ConsoleTextbox(Textbox):
     def on_blur(self):
         # A hack to prevent textbox from losing focus when console is clicked:
         if self.parent:
-            console: Console = self.parent.parent.parent
-            if console.is_focused:
+            if self.console.is_focused:
                 self.focus()
+
+
+def _enter_callback(textbox: Textbox):
+    """Add input to history then push input on enter for _ConsoleTextbox."""
+    text = textbox.text.rstrip()
+    textbox.text = ""
+    textbox.width = 1
+    console: Console = textbox.parent.parent.parent
+    console._add_text_to_output(text, with_prompt=True)
+
+    if (
+        isinstance(console._history_index, float)
+        or console._history_index >= -1
+        or text != console._history[console._history_index]
+    ):
+        console._history_index = 0
+
+    if text and (len(console._history) == 0 or console._history[-1] != text):
+        console._history.append(text)
+        console._history_index -= 0.5
+    elif console._history_index < 0:
+        console._history_index += 0.5
+
+    if console._input_mode:
+        console._console.input_buffer = text
+    else:
+        console._console.push(text)
 
 
 class _Prompt(Text):
@@ -219,7 +251,14 @@ class _Prompt(Text):
         super().set_text(text, **kwargs)
 
 
-class Console(Themable, Focusable, GadgetBase):
+class _AlmostPane(Pane):
+    def _render(self, canvas):
+        console: Console = self.parent.parent
+        self.region -= console._input.region
+        super()._render(canvas)
+
+
+class Console(Themable, Focusable, Gadget):
     r"""
     An interactive python console gadget.
 
@@ -228,8 +267,13 @@ class Console(Themable, Focusable, GadgetBase):
     banner : str | None, default: None
         The banner to print in the console before first interaction. If not provided, a
         default banner is printed.
+    exec_in_thread : bool, default: False
+        Whether code is executed in a separate thread. Code not executed in a separated
+        thread can block the event loop.
     size : Size, default: Size(10, 10)
         Size of gadget.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | SizeHintDict | None, default: None
@@ -237,7 +281,7 @@ class Console(Themable, Focusable, GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -247,10 +291,14 @@ class Console(Themable, Focusable, GadgetBase):
 
     Attributes
     ----------
+    exec_in_thread : bool
+        Whether code is executed in a separate thread.
+    alpha : float
+        Transparency of gadget.
     is_focused : bool
-        True if gadget has focus.
+        Whether gadget has focus.
     any_focused : bool
-        True if any gadget has focus.
+        Whether any gadget has focus.
     size : Size
         Size of gadget.
     height : int
@@ -283,16 +331,16 @@ class Console(Themable, Focusable, GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -369,6 +417,8 @@ class Console(Themable, Focusable, GadgetBase):
     def __init__(
         self,
         banner: str | None = None,
+        exec_in_thread: bool = False,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -377,6 +427,23 @@ class Console(Themable, Focusable, GadgetBase):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._output = Text(
+            pos=(-1, 0), size=(1, 1), alpha=0, is_visible=False, is_transparent=True
+        )
+        self._prompt = _Prompt(alpha=0, is_transparent=True)
+        self._input = _ConsoleTextbox(size=(1, 1), enter_callback=_enter_callback)
+        self._container = Gadget(size=(1, 1), is_transparent=True)
+
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, arrow_keys_enabled=False
+        )
+        # Replace scroll view background with a pane that doesn't paint under _input.
+        self._scroll_view.remove_gadget(self._scroll_view._background)
+        self._scroll_view._background = _AlmostPane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}
+        )
+        self._scroll_view.add_gadget(self._scroll_view._background)
+        self._scroll_view.children.insert(0, self._scroll_view.children.pop())
         super().__init__(
             size=size,
             pos=pos,
@@ -386,65 +453,39 @@ class Console(Themable, Focusable, GadgetBase):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._output = Text(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0, "height_offset": -1},
-            pos_hint={"y_hint": 1.0, "anchor": "bottom", "y_offset": -1},
-            is_visible=False,
-            size=(1, 1),
-        )
-        self._prompt = _Prompt(pos_hint={"y_hint": 1.0, "anchor": "bottom"})
-        self._prompt.set_text(PROMPT_1)
-        self._min_line_length = self._prompt.right + 1
-        self._input_mode: bool = False
         self._console = _InteractiveConsole(self)
+        self._input_mode: bool = False
         self._history = []
         self._history_index: float | int = 0
         """
-        Current index into history. If this value is a float then it is halfway between
-        two integer indices and an up or down key press will move it to one of them.
+        Current index into history.
+
+        If this value is a float then it is halfway between two integer indices and an
+        up or down key press will move it to one of them.
         """
-
-        def enter_callback(textbox: Textbox):
-            text = textbox.text.rstrip()
-            textbox.text = ""
-            textbox.width = 1
-            self._add_text_to_output(text, with_prompt=True)
-
-            if (
-                isinstance(self._history_index, float)
-                or self._history_index >= -1
-                or text != self._history[self._history_index]
-            ):
-                self._history_index = 0
-
-            if text and (len(self._history) == 0 or self._history[-1] != text):
-                self._history.append(text)
-                self._history_index -= 0.5
-            elif self._history_index < 0:
-                self._history_index += 0.5
-
-            if self._input_mode:
-                self._console.input_buffer = text
-            else:
-                self._console.push(text)
-
-        self._input = _ConsoleTextbox(
-            size=(1, 1),
-            pos_hint={"y_hint": 1.0, "anchor": "bottom"},
-            enter_callback=enter_callback,
-        )
+        self._min_line_length = str_width(PROMPT_1) + 1
+        self.exec_in_thread = exec_in_thread
+        self.alpha = alpha
 
         def fix_input_pos():
             self._input.left = self._prompt.right
 
-        self._input.subscribe(self._prompt, "size", fix_input_pos)
-        self._input.subscribe(self._prompt, "pos", fix_input_pos)
+        def update_bars():
+            self._scroll_view.show_vertical_bar = (
+                self._container.height > self._scroll_view.port_height
+            )
+            self._scroll_view.show_horizontal_bar = (
+                self._container.width > self._scroll_view.port_width
+            )
 
-        self._container = Gadget(size=(1, self._min_line_length), background_char=" ")
+        self.subscribe(self._prompt, "size", fix_input_pos)
+        self.subscribe(self._prompt, "pos", fix_input_pos)
+        self.subscribe(self._container, "size", update_bars)
+        self.subscribe(self._scroll_view, "size", update_bars)
+
+        self._prompt.set_text(PROMPT_1)
         self._container.add_gadgets(self._output, self._prompt, self._input)
-        self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}, arrow_keys_enabled=False
-        )
+
         self._scroll_view.view = self._container
         self.add_gadget(self._scroll_view)
 
@@ -452,17 +493,6 @@ class Console(Themable, Focusable, GadgetBase):
             self._add_text_to_output(DEFAULT_BANNER)
         else:
             self._add_text_to_output(str(banner))
-
-        self.subscribe(self._container, "size", self._update_bars)
-        self.subscribe(self._scroll_view, "size", self._update_bars)
-
-    def _update_bars(self):
-        self._scroll_view.show_vertical_bar = (
-            self._container.height > self._scroll_view.port_height
-        )
-        self._scroll_view.show_horizontal_bar = (
-            self._container.width > self._scroll_view.port_width
-        )
 
     def _add_text_to_output(self, text: str, with_prompt: bool = False):
         if with_prompt:
@@ -474,34 +504,76 @@ class Console(Themable, Focusable, GadgetBase):
                 return
 
         lines = text.split("\n")
-        line_number = self._output.height
-        if not self._output.is_visible:
-            self._output.is_visible = True
-            line_number -= 1
-        self._container.height += len(lines)
+        max_line_length = max(str_width(line) for line in lines)
 
+        if self._min_line_length < max_line_length:
+            self._min_line_length = max_line_length
+
+        if self._output.is_visible:
+            line_number = self._output.height
+            self._output.height += len(lines)
+        else:
+            self._output.is_visible = True
+            self._output.y = 0
+            line_number = 0
+            self._output.height = len(lines)
+
+        self._container.height += len(lines)
         self._container.width = self._min_line_length
+        self._output.width = self._min_line_length
         for i, line in enumerate(lines):
-            line_width = str_width(line)
-            if line_width > self._container.width:
-                self._min_line_length = line_width
-                self._container.width = line_width
-            self._output.add_str(line, (line_number + i, 0))
+            self._output.add_str(line, pos=(line_number + i, 0))
+        self._prompt.top = self._output.bottom
+        self._input.top = self._output.bottom
 
         self._scroll_view.horizontal_proportion = 0.0
         self._scroll_view.vertical_proportion = 1.0
 
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._scroll_view.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._scroll_view.alpha = alpha
+        self._input.alpha = alpha
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._scroll_view.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._scroll_view.is_transparent = is_transparent
+        self._input.is_transparent = is_transparent
+
+    @property
+    def exec_in_thread(self) -> bool:
+        """
+        Whether code is executed in a separate thread. Code not executed in a separated
+        thread can block the event loop.
+        """
+        return self._console.exec_in_thread
+
+    @exec_in_thread.setter
+    def exec_in_thread(self, exec_in_thread: bool):
+        self._console.exec_in_thread = exec_in_thread
+
     def update_theme(self):
         """Paint the gadget with current theme."""
         primary = self.color_theme.primary
-        self._container.background_color_pair = primary
-        self._prompt.colors[:] = primary
-        self._prompt.default_color_pair = primary
-        self._output.colors[:] = primary
-        self._output.default_color_pair = primary
-        self._input._box.colors[:] = primary
-        self._input._box.default_color_pair = primary
-        self._input._cursor.background_color_pair = primary.reversed()
+        self._prompt.default_fg_color = self._prompt.canvas["fg_color"] = primary.fg
+        self._prompt.default_bg_color = self._prompt.canvas["bg_color"] = primary.bg
+        self._output.default_fg_color = self._output.canvas["fg_color"] = primary.fg
+        self._output.default_bg_color = self._output.canvas["bg_color"] = primary.bg
+        self._input._box.canvas["fg_color"] = primary.fg
+        self._input._box.default_fg_color = primary.fg
+        self._input._box.canvas["bg_color"] = primary.bg
+        self._input._box.default_bg_color = primary.bg
+        self._input._cursor.fg_color = primary.bg
+        self._input._cursor.bg_color = primary.fg
 
     def on_add(self):
         """Add running app and root gadget to console's locals."""

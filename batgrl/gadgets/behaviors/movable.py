@@ -1,6 +1,6 @@
 """Movable behavior for a gadget."""
+from ...geometry import clamp
 from ...io import MouseButton
-from ..gadget import clamp
 from .grabbable import Grabbable
 
 __all__ = ["Movable"]

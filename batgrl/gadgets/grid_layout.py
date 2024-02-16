@@ -2,11 +2,7 @@
 from itertools import accumulate, product
 from typing import Literal
 
-from numpy.typing import NDArray
-
-from ..colors import ColorPair
 from .gadget import (
-    Char,
     Gadget,
     Point,
     PosHint,
@@ -84,15 +80,6 @@ class GridLayout(Gadget):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
-    background_char : NDArray[Char] | str | None, default: None
-        The background character of the gadget. If not given and not transparent, the
-        background characters of the root gadget are painted. If not given and
-        transparent, characters behind the gadget are visible. The character must be
-        single unicode half-width grapheme.
-    background_color_pair : ColorPair | None, default: None
-        The background color pair of the gadget. If not given and not transparent, the
-        background color pair of the root gadget is painted. If not given and
-        transparent, the color pairs behind the gadget are visible.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -102,7 +89,7 @@ class GridLayout(Gadget):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -132,10 +119,6 @@ class GridLayout(Gadget):
         Horizontal spacing between children.
     vertical_spacing : int
         Vertical spacing between children.
-    background_char : NDArray[Char] | None
-        The background character of the gadget.
-    background_color_pair : ColorPair | None
-        The background color pair of the gadget.
     size : Size
         Size of gadget.
     height : int
@@ -168,16 +151,16 @@ class GridLayout(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -248,19 +231,12 @@ class GridLayout(Gadget):
     """
 
     grid_rows: int = _RepositionProperty()
-
     grid_columns: int = _RepositionProperty()
-
     padding_left: int = _RepositionProperty()
-
     padding_right: int = _RepositionProperty()
-
     padding_top: int = _RepositionProperty()
-
     padding_bottom: int = _RepositionProperty()
-
     horizontal_spacing: int = _RepositionProperty()
-
     vertical_spacing: int = _RepositionProperty()
 
     def __init__(
@@ -282,8 +258,6 @@ class GridLayout(Gadget):
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
-        background_char: NDArray[Char] | str | None = None,
-        background_color_pair: ColorPair | None = None,
     ):
         self._grid_rows = grid_rows
         self._grid_columns = grid_columns
@@ -304,8 +278,6 @@ class GridLayout(Gadget):
             is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
-            background_char=background_char,
-            background_color_pair=background_color_pair,
         )
 
     @property

@@ -11,30 +11,32 @@ from pathlib import Path
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import BLACK, DEFAULT_COLOR_THEME, ColorPair, gradient
+from batgrl.colors import Color
 from batgrl.figfont import FIGFont
-from batgrl.gadgets.gadget import Char, Gadget
+from batgrl.gadgets.pane import Cell, Pane
 from batgrl.gadgets.text_field import TextParticleField
 from batgrl.io import MouseButton
 
-ASSETS = Path(__file__).parent.parent / "assets"
-BIG_FONT = FIGFont.from_path(ASSETS / "delta_corps_priest_1.flf")
-LOGO = BIG_FONT.render_array("batgrl")
+
+def make_logo():
+    assets = Path(__file__).parent.parent / "assets"
+    font = FIGFont.from_path(assets / "delta_corps_priest_1.flf")
+    logo = font.render_array("batgrl")
+    return np.append(
+        logo, [list("badass terminal graphics library".center(logo.shape[1]))], axis=0
+    )
+
+
+LOGO = make_logo()
 HEIGHT, WIDTH = LOGO.shape
-LOGO = np.append(LOGO, [list("badass terminal graphics library".center(WIDTH))], axis=0)
-HEIGHT += 1
 
 POWER = 2
 MAX_PARTICLE_SPEED = 10
 FRICTION = 0.99
 
 NCOLORS = 100
-YELLOW_ON_BLACK = ColorPair.from_colors(
-    DEFAULT_COLOR_THEME.button_press.bg_color, BLACK
-)
-BLUE_ON_BLACK = ColorPair.from_colors(DEFAULT_COLOR_THEME.primary.bg_color, BLACK)
-YELLOW_TO_BLACK = gradient(YELLOW_ON_BLACK, BLUE_ON_BLACK, NCOLORS // 2)
-GRADIENT = np.array(YELLOW_TO_BLACK + YELLOW_TO_BLACK[::-1])
+YELLOW = Color.from_hex("c4a219")
+BLUE = Color.from_hex("070c25")
 
 COLOR_CHANGE_SPEED = 5
 PERCENTS = tuple(np.linspace(0, 1, 30))
@@ -94,20 +96,11 @@ class PokeParticleField(TextParticleField):
         positions = self.particle_positions
         real_positions = self.particle_properties["real_positions"]
         velocities = self.particle_properties["velocities"]
-        color_pairs = self.particle_color_pairs
-        color_indices = self.particle_properties["indices"]
 
         while True:
             speeds = np.linalg.norm(velocities, axis=1)
             if (speeds < 0.001).all():
                 return
-
-            clipped_speeds = np.clip(speeds, None, MAX_PARTICLE_SPEED)
-
-            color_indices = (
-                color_indices + clipped_speeds * COLOR_CHANGE_SPEED
-            ).astype(int) % NCOLORS
-            color_pairs[:] = GRADIENT[color_indices]
 
             speed_mask = speeds > MAX_PARTICLE_SPEED
             velocities[speed_mask] *= MAX_PARTICLE_SPEED / speeds[:, None][speed_mask]
@@ -152,62 +145,44 @@ class PokeParticleField(TextParticleField):
         end = self.particle_properties["original_positions"]
         real = self.particle_properties["real_positions"]
 
-        indices = self.particle_properties["indices"]
-        start_indices = indices.copy()
-        end_indices = self.particle_properties["original_indices"]
-        color_pairs = self.particle_color_pairs
-
         for percent in PERCENTS:
             percent_left = 1 - percent
 
             real[:] = percent_left * start + percent * end
             pos[:] = real.astype(int)
 
-            indices[:] = (percent_left * start_indices + percent * end_indices).astype(
-                int
-            )
-            color_pairs[:] = GRADIENT[indices]
-
             await asyncio.sleep(0.03)
 
 
 class ExplodingLogoApp(App):
     async def on_start(self):
-        colors = np.full((HEIGHT, WIDTH), 0)
-
         particle_positions = np.argwhere(LOGO != " ")
         pys, pxs = particle_positions.T
 
         particles = LOGO[pys, pxs]
-        particle_chars = np.zeros_like(particles, dtype=Char)
-        particle_chars["char"] = particles
+        particle_cells = np.zeros_like(particles, dtype=Cell)
+        particle_cells["char"] = particles
+        particle_cells["fg_color"] = YELLOW
 
         particle_properties = dict(
-            indices=colors[pys, pxs],
             original_positions=particle_positions.copy(),
-            original_indices=colors[pys, pxs],
             real_positions=particle_positions.astype(float),
             velocities=np.zeros((len(particle_positions), 2), dtype=float),
-        )
-
-        particle_color_pairs = np.array(
-            GRADIENT[particle_properties["indices"]], dtype=np.uint8
         )
 
         field = PokeParticleField(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             particle_positions=particle_positions,
-            particle_chars=particle_chars,
-            particle_color_pairs=particle_color_pairs,
+            particle_cells=particle_cells,
             particle_properties=particle_properties,
             is_transparent=True,
         )
 
         # This background to show off field transparency.
-        bg = Gadget(
+        bg = Pane(
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
-            pos_hint={"x_hint": 0.5, "anchor": "top-left"},
-            background_color_pair=BLUE_ON_BLACK.reversed(),
+            pos_hint={"x_hint": 1.0, "anchor": "right"},
+            bg_color=BLUE,
         )
         self.add_gadgets(bg, field)
 

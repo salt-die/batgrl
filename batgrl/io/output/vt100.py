@@ -149,22 +149,28 @@ class Vt100_Output:
     def render_frame(self, root: _Root):
         """Render a frame of the running app."""
         canvas = root.canvas
-        colors = root.colors
         h, w = root.size
         if root._resized:
             root._resized = False
             ys, xs = np.indices((h, w)).reshape(2, h * w)
         else:
-            # Find differences between current render and last render; i.e.:
-            char_diffs = root._last_canvas != canvas
-            color_diffs = np.any(root._last_colors != colors, axis=-1)
-            ys, xs = (char_diffs | color_diffs).nonzero()
+            diffs = root._last_canvas != canvas
+            ys, xs = diffs.nonzero()
 
         write = self._buffer.append
 
         write("\x1b7")  # Save cursor
-        for y, x, style, color_pair in zip(ys, xs, canvas[ys, xs], colors[ys, xs]):
-            char, bold, italic, underline, strikethrough, overline = style.item()
+        for y, x, cell in zip(ys, xs, canvas[ys, xs]):
+            (
+                char,
+                bold,
+                italic,
+                underline,
+                strikethrough,
+                overline,
+                (fr, fg, fb),  # foreground color
+                (br, bg, bb),  # background color
+            ) = cell.item()
 
             # The following conditions ensure full-width glyphs "have enough room" else
             # they are not painted.
@@ -175,10 +181,16 @@ class Vt100_Output:
                 # before it isn't full-width paint whitespace instead.
                 if x > 0 and char_width(canvas["char"][y, x - 1].item()) == 2:
                     x -= 1
-                    char, bold, italic, underline, strikethrough, overline = canvas[
-                        y, x
-                    ].item()
-                    color_pair = colors[y, x]
+                    (
+                        char,
+                        bold,
+                        italic,
+                        underline,
+                        strikethrough,
+                        overline,
+                        (fr, fg, fb),
+                        (br, bg, bb),
+                    ) = canvas[y, x].item()
                 else:
                     char = " "
             elif (
@@ -191,7 +203,6 @@ class Vt100_Output:
                 # whitespace instead.
                 char = " "
 
-            fr, fg, fb, br, bg, bb = color_pair
             write(
                 f"\x1b[{y + 1};{x + 1}H"  # Move cursor to (y, x)
                 "\x1b[0;"  # Reset

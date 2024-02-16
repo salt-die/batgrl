@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget import Point, Region, Size
+from ..geometry import Point, Region, Size
 
 __all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
 
@@ -72,7 +72,7 @@ def resize_texture(
     NDArray[np.uint8]
         A new uint8 RGBA array.
     """
-    w, h = size
+    h, w = size
     return cv2.resize(
         texture,
         (w, h),
@@ -80,12 +80,30 @@ def resize_texture(
     )
 
 
+def _composite(
+    dest: NDArray[np.uint8],
+    rgb: tuple[int] | NDArray[np.uint8],
+    a: int | NDArray[np.uint8],
+    alpha: float = 1.0,
+) -> None:
+    """
+    Composite a texture onto `dest`.
+
+    This is an internal function used in various `_render()` methods.
+    """
+    buffer = np.subtract(rgb, dest, dtype=float)
+    buffer *= a
+    buffer *= alpha
+    buffer /= 255
+    np.add(buffer, dest, out=dest, casting="unsafe")
+
+
 def composite(
     source: NDArray[np.uint8],
     dest: NDArray[np.uint8],
     pos: Point = Point(0, 0),
     mask_mode: bool = False,
-):
+) -> None:
     """
     Composite source texture onto destination texture at given position.
 
@@ -118,7 +136,4 @@ def composite(
             mask = source_alpha == 255
             dest_tex[mask] = source_tex[mask]
         else:
-            buffer = np.subtract(source_tex, dest_tex, dtype=float)
-            buffer *= source_alpha[..., None]
-            buffer /= 255
-            np.add(buffer, dest_tex, out=dest_tex, casting="unsafe")
+            _composite(dest_tex, source_tex, source_alpha[..., None])

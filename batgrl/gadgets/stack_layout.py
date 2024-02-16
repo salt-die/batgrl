@@ -2,12 +2,12 @@
 import math
 
 from ..geometry import Point, Size
-from .gadget_base import GadgetBase, PosHint, PosHintDict, SizeHint, SizeHintDict
+from .gadget import Gadget, PosHint, PosHintDict, SizeHint, SizeHintDict
 
 __all__ = ["VStackLayout", "HStackLayout"]
 
 
-class _StackLayoutBase(GadgetBase):
+class _StackLayoutBase(Gadget):
     def __init__(
         self,
         *,
@@ -58,14 +58,14 @@ class _StackLayoutBase(GadgetBase):
         """Resize children on resize."""
         self.proportions = self.proportions
 
-    def add_gadget(self, gadget: GadgetBase):
+    def add_gadget(self, gadget: Gadget):
         """Remove hints from gadget and resize children when child is added."""
         gadget.size_hint = {}
         gadget.pos_hint = {}
         super().add_gadget(gadget)
         self.proportions = self.proportions
 
-    def remove_gadget(self, gadget: GadgetBase):
+    def remove_gadget(self, gadget: Gadget):
         """Resize children when child is removed."""
         super().remove_gadget(gadget)
         self.proportions = self.proportions
@@ -92,7 +92,7 @@ class VStackLayout(_StackLayoutBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -136,16 +136,16 @@ class VStackLayout(_StackLayoutBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -241,7 +241,7 @@ class HStackLayout(_StackLayoutBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -285,16 +285,16 @@ class HStackLayout(_StackLayoutBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App

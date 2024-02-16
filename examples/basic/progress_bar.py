@@ -1,18 +1,20 @@
 import asyncio
 
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.button import Button
 from batgrl.gadgets.progress_bar import ProgressBar
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.text import Text, style_char
 from batgrl.gadgets.text_animation import TextAnimation
-
-PRIMARY_COLOR = DEFAULT_COLOR_THEME.primary
 
 
 class ProgressBarApp(App):
     async def on_start(self):
-        label_a = Text(default_color_pair=PRIMARY_COLOR)
+        label_a = Text(
+            default_cell=style_char(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            )
+        )
         horizontal_a = ProgressBar(pos=(0, 10), size=(1, 50))
 
         label_b = TextAnimation(
@@ -20,7 +22,8 @@ class ProgressBarApp(App):
             frame_durations=1 / 12,
             size=(1, 10),
             pos=(2, 0),
-            animation_color_pair=PRIMARY_COLOR,
+            animation_fg_color=DEFAULT_PRIMARY_FG,
+            animation_bg_color=DEFAULT_PRIMARY_BG,
         )
         label_b.play()
 
@@ -57,6 +60,4 @@ class ProgressBarApp(App):
 
 
 if __name__ == "__main__":
-    ProgressBarApp(
-        title="Progress Bar Example", background_color_pair=PRIMARY_COLOR
-    ).run()
+    ProgressBarApp(title="Progress Bar Example", bg_color=DEFAULT_PRIMARY_BG).run()

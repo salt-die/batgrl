@@ -310,13 +310,7 @@ class Snow(ColorVariationBehavior, MovingElement):
 
 class Steam(CycleColorBehavior, MovingElement):
     LIFETIME = 1000
-    COLORS = cycle(
-        (
-            Color(148, 174, 204),
-            Color(199, 204, 234),
-            Color(219, 224, 255),
-        )
-    )
+    COLORS = cycle((Color(148, 174, 204), Color(199, 204, 234), Color(219, 224, 255)))
     DENSITY = -2.0
     STATE = State.GAS
     DEFAULT_REPLACEMENT = Water
@@ -330,26 +324,14 @@ class Oil(ColorVariationBehavior, MovingElement):
 
 class Smoke(CycleColorBehavior, MovingElement):
     LIFETIME = 850
-    COLORS = cycle(
-        (
-            Color(140, 140, 140),
-            Color(120, 120, 120),
-            Color(155, 155, 155),
-        )
-    )
+    COLORS = cycle((Color(140, 140, 140), Color(120, 120, 120), Color(155, 155, 155)))
     DENSITY = -1.0
     STATE = State.GAS
 
 
 class Fire(CycleColorBehavior, MovingElement):
     LIFETIME = 1000
-    COLORS = cycle(
-        (
-            Color(186, 105, 29),
-            Color(244, 146, 53),
-            Color(229, 179, 52),
-        )
-    )
+    COLORS = cycle((Color(186, 105, 29), Color(244, 146, 53), Color(229, 179, 52)))
     DENSITY = 0.1
     STATE = State.SOLID
 

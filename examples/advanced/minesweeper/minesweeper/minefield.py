@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from batgrl.io import MouseButton, MouseEventType
 
-from .colors import FLAG_COLOR, HIDDEN, HIDDEN_REVERSED
+from .colors import BORDER, FLAG_COLOR, HIDDEN_SQUARE
 from .grid import Grid
 from .unicode_chars import FLAG
 
@@ -14,11 +14,7 @@ class Minefield(Grid):
 
     def __init__(self, count, minefield, **kwargs):
         super().__init__(
-            size=count.shape,
-            is_light=False,
-            default_color_pair=HIDDEN,
-            is_transparent=True,
-            **kwargs,
+            size=count.shape, is_light=False, is_transparent=True, **kwargs
         )
         self.count = count
         self.minefield = minefield
@@ -28,7 +24,9 @@ class Minefield(Grid):
         vs, hs = self.V_SPACING, self.H_SPACING
         v_center, h_center = self.cell_center_indices
 
-        self.colors[v_center, h_center, :3] = FLAG_COLOR
+        self.canvas["fg_color"] = HIDDEN_SQUARE
+        self.canvas["bg_color"] = BORDER
+        self.canvas["fg_color"][v_center, h_center] = FLAG_COLOR
 
         # Build an array whose zero values indicate revealed areas.
         kernel = np.ones((vs + 1, hs + 1), dtype=np.uint8)
@@ -115,11 +113,12 @@ class Minefield(Grid):
 
         return slice(j, j + vs + 1), slice(i, i + hs + 1)
 
-    def _recolor_cell(self, cell, color_pair):
-        self.colors[self._cell_slice(cell)] = color_pair
+    def _recolor_cell(self, cell, fg, bg):
+        self.canvas["fg_color"][self._cell_slice(cell)] = fg
+        self.canvas["bg_color"][self._cell_slice(cell)] = bg
 
         u, v = self._cell_center(cell)
-        self.colors[u, v, :3] = FLAG_COLOR
+        self.canvas["fg_color"][u, v] = FLAG_COLOR
 
     def _neighbors(self, cell):
         y, x = cell
@@ -146,7 +145,7 @@ class Minefield(Grid):
         cell = self._pressed_cell
 
         if self.hidden_cells[cell] != 0 and not self.is_flagged(cell):
-            self._recolor_cell(cell, HIDDEN_REVERSED)
+            self._recolor_cell(cell, BORDER, HIDDEN_SQUARE)
 
     def _flag_press(self):
         cell = self._pressed_cell
@@ -164,11 +163,11 @@ class Minefield(Grid):
         cell = self._pressed_cell
 
         if self.hidden_cells[cell] != 0 and not self.is_flagged(cell):
-            self._recolor_cell(cell, HIDDEN_REVERSED)
+            self._recolor_cell(cell, BORDER, HIDDEN_SQUARE)
 
         for neighbor in self._neighbors(cell):
             if self.hidden_cells[neighbor] != 0 and not self.is_flagged(neighbor):
-                self._recolor_cell(neighbor, HIDDEN_REVERSED)
+                self._recolor_cell(neighbor, BORDER, HIDDEN_SQUARE)
 
     def _release(self):
         if not self._is_gameover:
@@ -176,11 +175,11 @@ class Minefield(Grid):
 
         cell = self._pressed_cell
 
-        self._recolor_cell(cell, HIDDEN)
+        self._recolor_cell(cell, HIDDEN_SQUARE, BORDER)
 
         if self._pressed_button == MouseButton.MIDDLE:
             for neighbor in self._neighbors(cell):
-                self._recolor_cell(neighbor, HIDDEN)
+                self._recolor_cell(neighbor, HIDDEN_SQUARE, BORDER)
 
         self._pressed_cell = self._pressed_button = None
 
@@ -216,12 +215,10 @@ class Minefield(Grid):
         self._is_gameover = True
         self.parent.game_over(win=win)
 
-    def render(self, canvas, colors):
+    def _render(self, canvas):
         abs_pos = self.absolute_pos
         for rect in self.region.rects():
             dst = rect.to_slices()
             src = rect.to_slices(abs_pos)
             visible = self.hidden[src] != 0
-
             canvas[dst][visible] = self.canvas[src][visible]
-            colors[dst][visible] = self.colors[src][visible]

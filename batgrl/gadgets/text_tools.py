@@ -6,6 +6,7 @@ from operator import itemgetter
 import numpy as np
 from numpy.typing import NDArray
 
+from ..colors import BLACK, WHITE, Color
 from ..geometry import Size
 from ._batgrl_markdown import find_md_tokens
 from ._char_widths import CHAR_WIDTHS
@@ -13,12 +14,9 @@ from ._char_widths import CHAR_WIDTHS
 __all__ = [
     "char_width",
     "is_word_char",
-    "Char",
+    "Cell",
     "style_char",
     "coerce_char",
-    "parse_batgrl_md",
-    "text_to_chars",
-    "write_chars_to_canvas",
     "add_text",
     "binary_to_box",
     "binary_to_braille",
@@ -29,7 +27,19 @@ __all__ = [
 
 @lru_cache(maxsize=1024)
 def char_width(char: str) -> int:
-    """Return the column width of a character."""
+    """
+    Return the column width of a character.
+
+    Parameters
+    ----------
+    char : str
+        A unicode character.
+
+    Returns
+    -------
+    int
+        The character column width.
+    """
     if char == "":
         return 0
 
@@ -47,7 +57,19 @@ def char_width(char: str) -> int:
 
 @lru_cache(maxsize=256)
 def str_width(chars: str) -> int:
-    """Return the total column width of a string."""
+    """
+    Return the total column width of a string.
+
+    Parameters
+    ----------
+    chars : str
+        A string.
+
+    Returns
+    -------
+    int
+        The total column width of the string.
+    """
     return sum(map(char_width, chars))
 
 
@@ -70,7 +92,7 @@ def is_word_char(char: str) -> bool:
     return char.isalnum() or char == "_"
 
 
-Char = np.dtype(
+Cell = np.dtype(
     [
         ("char", "U1"),
         ("bold", "?"),
@@ -78,83 +100,84 @@ Char = np.dtype(
         ("underline", "?"),
         ("strikethrough", "?"),
         ("overline", "?"),
+        ("fg_color", "u1", (3,)),
+        ("bg_color", "u1", (3,)),
     ]
 )
 """Data type of canvas arrays."""
 
 
+@lru_cache
+def cell_sans(*names: str) -> list[str]:
+    """Fields of a Cell array not in names."""
+    return [name for name in Cell.names if name not in names]
+
+
 def style_char(
-    char: str,
+    char: str = " ",
     bold: bool = False,
     italic: bool = False,
     underline: bool = False,
     strikethrough: bool = False,
     overline: bool = False,
-) -> NDArray[Char]:
+    fg_color: Color = WHITE,
+    bg_color: Color = BLACK,
+) -> NDArray[Cell]:
     """
-    Return a zero-dimensional `Char` array.
-
-    The primary use for this function is to paint a styled character into a ``Char``
-    array. For instance, ``my_gadget.canvas[:] = style_char("a", bold=True)`` would
-    fill the canvas with bold ``a``. Alternatively, one can avoid this function by
-    setting only the ``"char"`` field of a ``Char`` array, e.g.,
-    ``my_gadget.canvas["char"][:] = "a"``, but the boolean styling fields won't be
-    changed. Avoid setting `Char` arrays with strings; ``my_gadget.canvas[:] = "a"`` is
-    incorrect, ``"a"`` will be coerced into true for all the boolean styling fields, so
-    that `my_gadget` is filled with bold, italic, underline, strikethrough, and overline
-    ``a``.
+    Return ``Cell`` scalar.
 
     Parameters
     ----------
-    char : str
-        A single unicode character.
+    char : str, default: " "
+        The cell's character.
     bold : bool, default: False
-        Whether char is bold.
+        Whether cell is bold.
     italic : bool, default: False
-        Whether char is italic.
+        Whether cell is italic.
     underline : bool, default: False
-        Whether char is underlined.
+        Whether cell is underlined.
     strikethrough : bool, default: False
-        Whether char is strikethrough.
+        Whether cell is strikethrough.
     overline : bool, default: False
-        Whether char is overlined.
+        Whether cell is overlined.
+    fg_color : Color, default: WHITE
+        Foreground color of cell.
 
     Returns
     -------
-    NDArray[Char]
-        A zero-dimensional `Char` array with the styled character.
+    NDArray[Cell]
+        A ``Cell`` scalar.
     """
     return np.array(
-        (char, bold, italic, underline, strikethrough, overline), dtype=Char
+        (char, bold, italic, underline, strikethrough, overline, fg_color, bg_color),
+        dtype=Cell,
     )
 
 
-def coerce_char(
-    char: NDArray[Char] | str, default: NDArray[Char] | None = None
-) -> NDArray[Char] | None:
+def coerce_char(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Cell]:
     """
-    Try to coerce a string into a half-width zero-dimensional Char array.
+    Try to coerce a string or ``Cell`` scalar into a half-width ``Cell`` scalar.
 
-    This is mostly an internal function for setting background/default/x characters in
-    App, Gadget, Text, and a few other gadgets.
+    This is an internal function for background and default character setters in App,
+    Gadget, Text, and a few other gadgets.
 
     Parameters
     ----------
-    char : NDArray[Char] | str
+    char : NDArray[Cell] | str
         The character to coerce.
-    default : NDArray[Char] | None, default: None
+    default : NDArray[Cell] | None, default: None
         The fallback character (or None) if character can't be coerced.
 
     Returns
     -------
-    NDArray[Char] | None
-        The coerced Char (or None).
+    NDArray[Cell] | None
+        The coerced Cell or None if character can't be coerced.
     """
     if isinstance(char, str) and len(char) > 0 and char_width(char[0]) == 1:
         return style_char(char[0])
     if (
         isinstance(char, np.ndarray)
-        and char.dtype == Char
+        and char.dtype == Cell
         and char.shape == ()
         and char_width(char["char"].item()) == 1
     ):
@@ -162,7 +185,7 @@ def coerce_char(
     return default
 
 
-def parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
+def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     """
     Parse batgrl markdown and return the minimum canvas size to fit text and
     a list of lines of styled characters.
@@ -181,12 +204,12 @@ def parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
 
     Returns
     -------
-    tuple[Size, list[list[Char]]]
+    tuple[Size, list[list[Cell]]]
         Minimum canvas size to fit text and a list of lines of styled characters.
     """
     NO_CHAR = style_char("")
     matches, escapes = find_md_tokens(text)
-    chars = [style_char(char) for char in text]
+    chars = [style_char(char)[cell_sans("fg_color", "bg_color")] for char in text]
     for before, start, end, after, style in matches:
         chars[start - before : start] = [NO_CHAR] * before
         chars[end : end + after] = [NO_CHAR] * after
@@ -224,10 +247,10 @@ def parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
     return Size(len(lines), max_width), lines
 
 
-def text_to_chars(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
+def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     """
-    Convert chars to a list of lines of styled characters and the minimum canvas size to
-    fit them.
+    Convert some text to a list of lists of Cells and the minimum canvas size to fit
+    them.
 
     Parameters
     ----------
@@ -236,10 +259,13 @@ def text_to_chars(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
 
     Returns
     -------
-    tuple[Size, list[list[Char]]]
-        Minimum canvas size to fit text and a list of lines of styled characters.
+    tuple[Size, list[list[Cell]]]
+        Minimum canvas size to fit text and a list of lists of Cells.
     """
-    lines = [[style_char(char) for char in line] for line in text.split("\n")]
+    lines = [
+        [style_char(char)[cell_sans("fg_color", "bg_color")] for char in line]
+        for line in text.split("\n")
+    ]
     line_width = 0
     max_width = 0
     for line in lines:
@@ -252,43 +278,48 @@ def text_to_chars(text: str) -> tuple[Size, list[list[NDArray[Char]]]]:
     return Size(len(lines), max_width), lines
 
 
-def write_chars_to_canvas(lines: list[list[NDArray[Char]]], canvas: NDArray[Char]):
-    """
-    Write a list of lines of styled characters to a canvas array.
-
-    Full-width characters are succeeded by empty characters.
-
-    Parameters
-    ----------
-    lines : list[list[NDArray[Char]]]
-        Lines to write to a canvas.
-
-    canvas : NDArray[Char]
-        Canvas array where lines are written.
-    """
+def _write_lines_to_canvas(lines, canvas, fg_color, bg_color):
+    """Write a list of lists of Cells to a canvas array."""
     _, columns = canvas.shape
-    for chars, canvas_line in zip(lines, canvas):
+    for cells, canvas_line, fg, bg in zip(
+        lines,
+        canvas[cell_sans("fg_color", "bg_color")],
+        canvas["fg_color"],
+        canvas["bg_color"],
+    ):
         i = 0
-        for char in chars:
+        for cell in cells:
             if i >= columns:
                 break
 
-            width = char_width(char["char"].item())
+            width = char_width(cell["char"].item())
             if width == 0:
                 continue
 
-            if width == 2 and i + 1 < columns:
-                empty_char = char.copy()
-                empty_char["char"] = ""
-                canvas_line[i + 1] = empty_char
+            canvas_line[i] = cell
+            if fg_color is not None:
+                fg[i] = fg_color
+            if bg_color is not None:
+                bg[i] = bg_color
 
-            canvas_line[i] = char
+            if width == 2 and i + 1 < columns:
+                empty_cell = cell.copy()
+                empty_cell["char"] = ""
+                canvas_line[i + 1] = empty_cell
+                if fg_color is not None:
+                    fg[i + 1] = fg_color
+                if bg_color is not None:
+                    bg[i + 1] = bg_color
+
             i += width
 
 
 def add_text(
-    canvas: NDArray[Char],
+    canvas: NDArray[Cell],
     text: str,
+    *,
+    fg_color: Color | None = None,
+    bg_color: Color | None = None,
     markdown: bool = False,
     truncate_text: bool = False,
 ):
@@ -307,23 +338,27 @@ def add_text(
 
     Parameters
     ----------
-    canvas : NDArray[Char]
+    canvas : NDArray[Cell]
         A 1- or 2-dimensional view of a `Text` canvas.
     text : str
         Text to add to canvas.
+    fg_color : Color | None, default: None
+        Foreground color of text. If not given, current canvas foreground color is used.
+    bg_color : Color | None, default: None
+        Background color of text. If not given, current canvas background color is used.
     markdown : bool, default: False
         Whether to parse text for batgrl markdown.
     truncate_text : bool, default: False
         For text that doesn't fit on canvas, truncate text if true else raise an
         `IndexError`.
     """
-    size, lines = parse_batgrl_md(text) if markdown else text_to_chars(text)
+    size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
     rows, columns = canvas.shape
     if not truncate_text and (size.height > rows or size.width > columns):
         raise IndexError("Text does not fit in canvas.")
-    write_chars_to_canvas(lines, canvas)
+    _write_lines_to_canvas(lines, canvas, fg_color, bg_color)
 
 
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"

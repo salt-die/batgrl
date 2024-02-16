@@ -11,32 +11,31 @@ from batgrl.colors import (
     AWHITE,
     BLACK,
     BLUE,
-    DEFAULT_COLOR_THEME,
+    DEFAULT_PRIMARY_BG,
+    DEFAULT_PRIMARY_FG,
     RED,
     WHITE,
-    WHITE_ON_BLACK,
-    ColorPair,
     gradient,
 )
 from batgrl.gadgets.behaviors.grabbable import Grabbable
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.shadow_caster import Camera, LightSource, ShadowCaster
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.text import Text, style_char
 from batgrl.gadgets.toggle_button import ToggleButton
 
 PANEL_WIDTH = 23
 WHITE_TO_RED = gradient(WHITE, RED, PANEL_WIDTH)
 WHITE_TO_BLUE = gradient(WHITE, BLUE, PANEL_WIDTH)
 BLACK_TO_WHITE = gradient(BLACK, WHITE, PANEL_WIDTH)
-PRIMARY = DEFAULT_COLOR_THEME.primary
-SLIDER_COLOR_PAIR = ColorPair.from_colors(WHITE, PRIMARY.bg_color)
 
 
 class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.indicator = Text(size=(1, 1), default_color_pair=WHITE_ON_BLACK.reversed())
+        self.indicator = Text(
+            size=(1, 1), default_cell=style_char(fg_color=BLACK, bg_color=WHITE)
+        )
         self.add_gadget(self.indicator)
         self.callback = None
 
@@ -66,12 +65,15 @@ class ShadowCasterApp(App):
             restrictiveness="permissive",
         )
 
-        label_kwargs = dict(default_color_pair=PRIMARY)
+        label_kwargs = dict(
+            default_cell=style_char(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            )
+        )
         button_kwargs = dict(size=(1, PANEL_WIDTH), group=1)
         slider_kwargs = dict(
-            default_char="▬",
+            default_cell=style_char(char="▬", bg_color=DEFAULT_PRIMARY_BG),
             size=(1, PANEL_WIDTH),
-            default_color_pair=SLIDER_COLOR_PAIR,
         )
 
         def make_toggle_callback(mode):
@@ -108,17 +110,17 @@ class ShadowCasterApp(App):
 
         slider_a = Selector(**slider_kwargs)
         slider_a.callback = make_slider_callback(0, WHITE_TO_RED)
-        slider_a.colors[..., :3] = WHITE_TO_RED
+        slider_a.canvas["fg_color"] = WHITE_TO_RED
 
         slider_b = Selector(**slider_kwargs)
         slider_b.callback = make_slider_callback(1, WHITE_TO_BLUE)
-        slider_b.colors[..., :3] = WHITE_TO_BLUE
+        slider_b.canvas["fg_color"] = WHITE_TO_BLUE
 
         slider_c = Selector(**slider_kwargs)
         slider_c.callback = lambda i: setattr(
             caster, "ambient_light", BLACK_TO_WHITE[i]
         )
-        slider_c.colors[..., :3] = BLACK_TO_WHITE
+        slider_c.canvas["fg_color"] = BLACK_TO_WHITE
 
         slider_d = Selector(**slider_kwargs)
         slider_d.callback = lambda i: setattr(caster, "radius", 10 + round(30 / 23 * i))
@@ -219,4 +221,4 @@ class ShadowCasterApp(App):
 
 
 if __name__ == "__main__":
-    ShadowCasterApp(title="Shadow Casting", background_color_pair=PRIMARY).run()
+    ShadowCasterApp(title="Shadow Casting", bg_color=DEFAULT_PRIMARY_BG).run()

@@ -1,18 +1,14 @@
 """ScrollView example."""
 from batgrl.app import App
-from batgrl.colors import BLUE, GREEN, RED, WHITE, ColorPair, gradient
+from batgrl.colors import BLUE, GREEN, RED, gradient
 from batgrl.gadgets.scroll_view import ScrollView
 from batgrl.gadgets.text import Size, Text
 
 N = 20  # Number of coordinate pairs on each line.
 BIG_GADGET_SIZE = Size(50, 8 * N + N - 1)
 
-WHITE_ON_RED = ColorPair.from_colors(WHITE, RED)
-WHITE_ON_GREEN = ColorPair.from_colors(WHITE, GREEN)
-WHITE_ON_BLUE = ColorPair.from_colors(WHITE, BLUE)
-
-LEFT_GRADIENT = gradient(WHITE_ON_RED, WHITE_ON_GREEN, BIG_GADGET_SIZE.rows)
-RIGHT_GRADIENT = gradient(WHITE_ON_GREEN, WHITE_ON_BLUE, BIG_GADGET_SIZE.rows)
+LEFT_GRADIENT = gradient(RED, GREEN, BIG_GADGET_SIZE.rows)
+RIGHT_GRADIENT = gradient(GREEN, BLUE, BIG_GADGET_SIZE.rows)
 
 
 class ScrollViewApp(App):
@@ -20,8 +16,10 @@ class ScrollViewApp(App):
         big_gadget = Text(size=BIG_GADGET_SIZE)
 
         for y in range(BIG_GADGET_SIZE.rows):
-            big_gadget.add_str(" ".join(f"({y:<2}, {x:<2})" for x in range(N)), (y, 0))
-            big_gadget.colors[y] = gradient(
+            big_gadget.add_str(
+                " ".join(f"({y:<2}, {x:<2})" for x in range(N)), pos=(y, 0)
+            )
+            big_gadget.canvas["bg_color"][y] = gradient(
                 LEFT_GRADIENT[y], RIGHT_GRADIENT[y], BIG_GADGET_SIZE.columns
             )
 

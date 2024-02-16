@@ -3,11 +3,11 @@ import asyncio
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import Color, ColorPair
+from batgrl.colors import Color
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.slider import Slider
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.text import Text, style_char
 
 FIRE_PALETTE = np.array(
     [
@@ -53,9 +53,9 @@ FIRE_PALETTE = np.array(
 )
 
 MAX_STRENGTH = len(FIRE_PALETTE) - 1
-SLIDER_DEFAULT = ColorPair(215, 103, 15, 0, 0, 0)
+SLIDER_DEFAULT = Color(215, 103, 15)
 SLIDER_FILL = Color(159, 47, 7)
-SLIDER_HANDLE = ColorPair(239, 239, 199, 0, 0, 0)
+SLIDER_HANDLE = Color(239, 239, 199)
 
 
 class DoomFire(Graphics):
@@ -125,13 +125,15 @@ class DoomFireApp(App):
         strength_label = Text(
             size=(1, 22),
             pos_hint={"x_hint": 0.5, "anchor": "top"},
-            default_color_pair=SLIDER_DEFAULT,
+            default_cell=style_char(fg_color=SLIDER_DEFAULT),
         )
-        strength_label.add_str(f"Current Strength: {doomfire.fire_strength:2d}", (0, 1))
+        strength_label.add_str(
+            f"Current Strength: {doomfire.fire_strength:2d}", pos=(0, 1)
+        )
 
         def slider_update(v):
             doomfire.fire_strength = int(v)
-            strength_label.add_str(f"{doomfire.fire_strength:2d}", (0, 19))
+            strength_label.add_str(f"{doomfire.fire_strength:2d}", pos=(0, 19))
 
         slider = Slider(
             min=0,
@@ -139,9 +141,9 @@ class DoomFireApp(App):
             size=(1, 38),
             pos=(1, 0),
             callback=slider_update,
-            default_color_pair=SLIDER_DEFAULT,
+            slider_color=SLIDER_DEFAULT,
             fill_color=SLIDER_FILL,
-            handle_color_pair=SLIDER_HANDLE,
+            handle_color=SLIDER_HANDLE,
         )
 
         slider_container = Gadget(

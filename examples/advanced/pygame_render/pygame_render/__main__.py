@@ -2,7 +2,7 @@ from types import ModuleType
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
+from batgrl.colors import DEFAULT_PRIMARY_BG
 from batgrl.gadgets.button import Button
 from batgrl.gadgets.sparkline import Sparkline
 
@@ -42,6 +42,4 @@ class SparklineApp(PygameApp):
 
 
 if __name__ == "__main__":
-    SparklineApp(
-        title="Sparkline Example", background_color_pair=DEFAULT_COLOR_THEME.primary
-    ).run()
+    SparklineApp(title="Sparkline Example", bg_color=DEFAULT_PRIMARY_BG).run()

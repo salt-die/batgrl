@@ -6,12 +6,11 @@ from collections.abc import Iterator
 
 from numpy.typing import NDArray
 
-from ..colors import WHITE_ON_BLACK, ColorPair
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .gadget_base import (
-    Char,
-    GadgetBase,
+from .gadget import (
+    Cell,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -44,11 +43,10 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         True if node is a leaf node.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    default_char : NDArray[Char] | str, default: " "
-        Default background character. This should be a single unicode half-width
-        grapheme.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
-        Default color of gadget.
+    default_cell : NDArray[Cell] | str, default: " "
+        Default cell of text canvas.
+    alpha : float, default: 0.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -58,7 +56,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether whitespace is transparent.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -74,18 +72,16 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    canvas : NDArray[Char]
+    canvas : NDArray[Cell]
         The array of characters for the gadget.
-    colors : NDArray[np.uint8]
-        The array of color pairs for each character in :attr:`canvas`.
-    default_char : NDArray[Char]
-        Default background character.
-    default_color_pair : ColorPair
-        Default color pair of gadget.
+    default_cell : NDArray[Cell]
+        Default cell of text canvas.
     default_fg_color : Color
-        The default foreground color.
+        Foreground color of default cell.
     default_bg_color : Color
-        The default background color.
+        Background color of default cell.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -118,16 +114,16 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -217,8 +213,8 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self,
         is_leaf=True,
         always_release: bool = False,
-        default_char: NDArray[Char] | str = " ",
-        default_color_pair: ColorPair = WHITE_ON_BLACK,
+        default_cell: NDArray[Cell] | str = " ",
+        alpha: float = 0.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -228,20 +224,15 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         is_enabled: bool = True,
     ):
         self.is_leaf = is_leaf
-
         self.is_open = False
         self.is_selected = False
-
         self.parent_node = None
         self.child_nodes = []
         self.level = -1
-
-        self.normal_color_pair = (0,) * 6  # Temporary assignment
-
         super().__init__(
             always_release=always_release,
-            default_char=default_char,
-            default_color_pair=default_color_pair,
+            default_cell=default_cell,
+            alpha=alpha,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -253,11 +244,12 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
     def _repaint(self):
         if self.is_selected:
-            self.colors[:] = self.color_theme.menu_item_selected
+            color_pair = self.color_theme.menu_item_selected
         elif self.state is ButtonState.NORMAL:
-            self.colors[:] = self.color_theme.primary
-        elif self.state is ButtonState.HOVER:
-            self.colors[:] = self.color_theme.menu_item_hover
+            color_pair = self.color_theme.primary
+        else:
+            color_pair = self.color_theme.menu_item_hover
+        self.canvas[["fg_color", "bg_color"]] = color_pair
 
     def on_size(self):
         """Repaint tree on resize."""
@@ -361,7 +353,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self.toggle()
 
 
-class TreeView(GadgetBase):
+class TreeView(Gadget):
     r"""
     Base for creating tree-like views.
 
@@ -378,7 +370,7 @@ class TreeView(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        A transparent gadget allows regions beneath it to be painted.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -422,16 +414,16 @@ class TreeView(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App

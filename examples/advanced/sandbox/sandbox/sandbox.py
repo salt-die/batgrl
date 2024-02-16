@@ -1,9 +1,9 @@
 from functools import partial
 
 import numpy as np
-from batgrl.colors import ABLACK, ColorPair
+from batgrl.colors import ABLACK
 from batgrl.gadgets.graphics import Graphics, Size
-from batgrl.gadgets.text import Text
+from batgrl.gadgets.text import Text, style_char
 from batgrl.io import MouseButton
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
@@ -36,7 +36,7 @@ class Sandbox(Graphics):
             size=(1, 9),
             pos=(1, 0),
             pos_hint={"x_hint": 0.5},
-            default_color_pair=ColorPair.from_colors(Air.COLOR, MENU_BACKGROUND_COLOR),
+            default_cell=style_char(fg_color=Air.COLOR, bg_color=MENU_BACKGROUND_COLOR),
         )
         self.add_gadgets(self.display, ButtonContainer())
 
@@ -48,10 +48,10 @@ class Sandbox(Graphics):
         for particle in self.world.flatten():
             particle.sleep()
 
-    def render(self, canvas, colors):
+    def _render(self, canvas):
         # Color of each particle in `self.world` is written into color array.
         self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
-        super().render(canvas, colors)
+        super()._render(canvas)
 
     def on_mouse(self, mouse_event):
         if mouse_event.button != MouseButton.LEFT or not self.collides_point(

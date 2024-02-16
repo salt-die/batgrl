@@ -11,14 +11,11 @@ PATH_TO_BACKGROUND = ASSETS / "background.png"
 
 class RubiksApp(App):
     async def on_start(self):
-        self.add_gadgets(
-            Image(
-                path=PATH_TO_BACKGROUND,
-                size_hint={"height_hint": 1.0, "width_hint": 1.0},
-                alpha=0.2,
-            ),
-            RubiksCube(size_hint={"height_hint": 1.0, "width_hint": 1.0}),
+        background = Image(
+            path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
+        cube = RubiksCube(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self.add_gadgets(background, cube)
 
 
 if __name__ == "__main__":

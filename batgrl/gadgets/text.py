@@ -7,12 +7,12 @@ from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
 from pygments.style import Style
 
-from ..colors import WHITE_ON_BLACK, Color, ColorPair, Neptune
-from .gadget_base import (
+from ..colors import Color, Neptune
+from .gadget import (
     Anchor,
-    Char,
+    Cell,
     Easing,
-    GadgetBase,
+    Gadget,
     Point,
     PosHint,
     PosHintDict,
@@ -27,20 +27,22 @@ from .gadget_base import (
     subscribable,
 )
 from .text_tools import (
+    _parse_batgrl_md,
+    _text_to_cells,
+    _write_lines_to_canvas,
     add_text,
+    cell_sans,
     char_width,
-    parse_batgrl_md,
     str_width,
-    text_to_chars,
-    write_chars_to_canvas,
 )
+from .texture_tools import _composite
 
 __all__ = [
     "char_width",
     "str_width",
     "Anchor",
     "Border",
-    "Char",
+    "Cell",
     "Easing",
     "Point",
     "PosHint",
@@ -79,18 +81,38 @@ Border = Literal[
 ]
 """Border styles for :meth:`batgrl.text_gadget.Text.add_border`."""
 
+_BORDERS = {
+    "light": "┌┐││──└┘",
+    "heavy": "┏┓┃┃━━┗┛",
+    "double": "╔╗║║══╚╝",
+    "curved": "╭╮││──╰╯",
+    "ascii": "++||--++",
+    "outer": "▛▜▌▐▀▄▙▟",
+    "inner": "▗▖▐▌▄▀▝▘",
+    "thick": "████▀▄██",
+    "dashed": "┌┐╎╎╌╌└┘",
+    "dashed_2": "┌┐┆┆┄┄└┘",
+    "dashed_3": "┌┐┊┊┈┈└┘",
+    "heavy_dashed": "┏┓╏╏╍╍┗┛",
+    "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
+    "heavy_dashed_3": "┏┓┋┋┉┉┗┛",
+    "near": "  ▕▏▁▔  ",
+    "mcgugan_tall": "▕▏▕▏▔▁▕▏",
+    "mcgugan_wide": "▁▁▏▕▁▔▔▔",
+}
+"""Border characters for :meth:`batgrl.text_gadget.Text.add_border`."""
 
-class Text(GadgetBase):
+
+class Text(Gadget):
     r"""
     A text gadget. Displays arbitrary text data.
 
     Parameters
     ----------
-    default_char : NDArray[Char] | str, default: " "
-        Default background character. This should be a single unicode half-width
-        grapheme.
-    default_color_pair : ColorPair, default: WHITE_ON_BLACK
-        Default color of gadget.
+    default_cell : NDArray[Cell] | str, default: " "
+        Default cell of text canvas.
+    alpha : float, default: 0.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -100,7 +122,7 @@ class Text(GadgetBase):
     pos_hint : PosHint | PosHintDict | None , default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
-        Whether whitespace is transparent.
+        Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
@@ -110,18 +132,16 @@ class Text(GadgetBase):
 
     Attributes
     ----------
-    canvas : NDArray[Char]
+    canvas : NDArray[Cell]
         The array of characters for the gadget.
-    colors : NDArray[np.uint8]
-        The array of color pairs for each character in :attr:`canvas`.
-    default_char : NDArray[Char]
-        Default background character.
-    default_color_pair : ColorPair
-        Default color pair of gadget.
+    default_cell : NDArray[Cell]
+        Default cell of text canvas.
     default_fg_color : Color
-        The default foreground color.
+        Foreground color of default cell.
     default_bg_color : Color
-        The default background color.
+        Background color of default cell.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -154,16 +174,16 @@ class Text(GadgetBase):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint
         Position as a proportion of parent's height and width.
-    parent: GadgetBase | None
+    parent: Gadget | None
         Parent gadget.
-    children : list[GadgetBase]
+    children : list[Gadget]
         Children gadgets.
     is_transparent : bool
-        True if gadget is transparent.
+        Whether gadget is transparent.
     is_visible : bool
-        True if gadget is visible.
+        Whether gadget is visible.
     is_enabled : bool
-        True if gadget is enabled.
+        Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
     app : App
@@ -230,8 +250,8 @@ class Text(GadgetBase):
     def __init__(
         self,
         *,
-        default_char: NDArray[Char] | str = " ",
-        default_color_pair: ColorPair = WHITE_ON_BLACK,
+        default_cell: NDArray[Cell] | str = " ",
+        alpha: float = 0.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -249,57 +269,67 @@ class Text(GadgetBase):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
         size = self.size
-
-        self.default_char = default_char
-        self.default_color_pair = default_color_pair
-
-        self.canvas = np.full(size, self.default_char)
-        self.colors = np.full((*size, 6), default_color_pair, dtype=np.uint8)
+        self.default_cell = default_cell
+        self.canvas = np.full(size, self.default_cell)
+        self.alpha = alpha
 
     @property
-    def default_char(self) -> NDArray[Char]:
+    def default_cell(self) -> NDArray[Cell]:
         """Default character for text canvas."""
-        return self._default_char
+        return self._default_cell
 
-    @default_char.setter
-    def default_char(self, char: NDArray[Char] | str):
-        self._default_char = coerce_char(char, style_char(" "))
+    @default_cell.setter
+    def default_cell(self, char: NDArray[Cell] | str):
+        self._default_cell = coerce_char(char, style_char(" "))
+
+    @property
+    def default_fg_color(self) -> Color:
+        """Foreground color of default character."""
+        return Color(*self._default_cell["fg_color"])
+
+    @default_fg_color.setter
+    def default_fg_color(self, default_fg_color: Color):
+        self._default_cell["fg_color"] = default_fg_color
+
+    @property
+    def default_bg_color(self) -> Color:
+        """Background color of default character."""
+        return Color(*self._default_cell["bg_color"])
+
+    @default_bg_color.setter
+    def default_bg_color(self, default_bg_color: Color):
+        self._default_cell["bg_color"] = default_bg_color
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._alpha
+
+    @alpha.setter
+    @subscribable
+    def alpha(self, alpha: float):
+        self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     def on_size(self):
-        """Resize canvas and colors preserving as much content as possible."""
-        old_h, old_w = self.canvas.shape
+        """Resize canvas preserving as much content as possible."""
+        old_canvas = self.canvas
+        old_h, old_w = old_canvas.shape
 
         h, w = self._size
-
-        old_canvas = self.canvas
-        old_colors = self.colors
 
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full((h, w), self.default_char)
-        self.colors = np.full((h, w, 6), self.default_color_pair, dtype=np.uint8)
-
+        self.canvas = np.full((h, w), self.default_cell)
         self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
-        self.colors[:copy_h, :copy_w] = old_colors[:copy_h, :copy_w]
-
-    @property
-    def default_fg_color(self) -> Color:
-        """The default foreground color."""
-        return self.default_color_pair.fg_color
-
-    @property
-    def default_bg_color(self) -> Color:
-        """The default background color."""
-        return self.default_color_pair.bg_color
 
     def add_border(
         self,
         style: Border = "light",
         bold: bool = False,
-        color_pair: ColorPair | None = None,
+        fg_color: Color | None = None,
+        bg_color: Color | None = None,
     ):
         """
         Add a text border.
@@ -310,50 +340,32 @@ class Text(GadgetBase):
             Style of border. Default style uses light box-drawing characters.
         bold : bool, default: False
             Whether the border is bold.
-        color_pair : ColorPair | None, default: None
-            Border color pair if not None.
+        fg_color : Color | None, default: None
+            Foreground color of border if not None.
+        bg_color : Color | None, default: None
+            Background color of border if not None.
         """
-        BORDER_STYLES = {
-            "light": "┌┐││──└┘",
-            "heavy": "┏┓┃┃━━┗┛",
-            "double": "╔╗║║══╚╝",
-            "curved": "╭╮││──╰╯",
-            "ascii": "++||--++",
-            "outer": "▛▜▌▐▀▄▙▟",
-            "inner": "▗▖▐▌▄▀▝▘",
-            "thick": "████▀▄██",
-            "dashed": "┌┐╎╎╌╌└┘",
-            "dashed_2": "┌┐┆┆┄┄└┘",
-            "dashed_3": "┌┐┊┊┈┈└┘",
-            "heavy_dashed": "┏┓╏╏╍╍┗┛",
-            "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
-            "heavy_dashed_3": "┏┓┋┋┉┉┗┛",
-            "near": "  ▕▏▁▔  ",
-            "mcgugan_tall": "▕▏▕▏▔▁▕▏",
-            "mcgugan_wide": "▁▁▏▕▁▔▔▔",
-        }
-        tl, tr, lv, rv, th, bh, bl, br = BORDER_STYLES[style]
+        slices = [
+            np.s_[0, 0],
+            np.s_[0, -1],
+            np.s_[1:-1, 0],
+            np.s_[1:-1, -1],
+            np.s_[0, 1:-1],
+            np.s_[-1, 1:-1],
+            np.s_[-1, 0],
+            np.s_[-1, -1],
+        ]
+        view = cell_sans("fg_color", "bg_color")
+        cells = self.canvas[view]
+        for s, border in zip(slices, _BORDERS[style]):
+            cells[s] = style_char(border, bold=bold)[view]
 
-        canvas = self.canvas
-        canvas[0, 0] = style_char(tl, bold=bold)
-        canvas[0, -1] = style_char(tr, bold=bold)
-        canvas[1:-1, 0] = style_char(lv, bold=bold)
-        canvas[1:-1, -1] = style_char(rv, bold=bold)
-        canvas[0, 1:-1] = style_char(th, bold=bold)
-        canvas[-1, 1:-1] = style_char(bh, bold=bold)
-        canvas[-1, 0] = style_char(bl, bold=bold)
-        canvas[-1, -1] = style_char(br, bold=bold)
-
-        if color_pair is not None:
-            if style == "mcgugan_tall":
-                self.colors[[0, -1], :, :3] = color_pair[:3]
-                self.colors[:, [0, -1]] = color_pair
-            elif style == "mcgugan_wide":
-                self.colors[[0, -1]] = color_pair
-                self.colors[:, [0, -1], :3] = color_pair[:3]
-            else:
-                self.colors[[0, -1]] = color_pair
-                self.colors[:, [0, -1]] = color_pair
+        if fg_color is not None:
+            self.canvas["fg_color"][[0, -1]] = fg_color
+            self.canvas["fg_color"][:, [0, -1]] = fg_color
+        if bg_color is not None:
+            self.canvas["bg_color"][[0, -1]] = bg_color
+            self.canvas["bg_color"][:, [0, -1]] = bg_color
 
     def add_syntax_highlighting(
         self, lexer: Lexer | None = None, style: Style = Neptune
@@ -372,8 +384,8 @@ class Text(GadgetBase):
         if lexer is None:
             lexer = guess_lexer(text)
 
-        self.colors[..., :3] = 0
-        self.colors[..., 3:] = Color.from_hex(style.background_color)
+        self.canvas["fg_color"] = 0
+        self.canvas["bg_color"] = Color.from_hex(style.background_color)
         y = x = 0
         for ttype, value in lexer.get_tokens(text):
             lines = value.split("\n")
@@ -388,9 +400,13 @@ class Text(GadgetBase):
 
                 end = x + str_width(line)
                 if token_style["color"]:
-                    self.colors[y, x:end, :3] = Color.from_hex(token_style["color"])
+                    self.canvas[y, x:end]["fg_color"] = Color.from_hex(
+                        token_style["color"]
+                    )
                 if token_style["bgcolor"]:
-                    self.colors[y, x:end, 3:] = Color.from_hex(token_style["bgcolor"])
+                    self.canvas[y, x:end]["bg_color"] = Color.from_hex(
+                        token_style["bgcolor"]
+                    )
                 self.canvas[y, x:end]["bold"] = token_style["bold"]
                 self.canvas[y, x:end]["italic"] = token_style["italic"]
                 self.canvas[y, x:end]["underline"] = token_style["underline"]
@@ -399,7 +415,10 @@ class Text(GadgetBase):
     def add_str(
         self,
         str: str,
+        *,
         pos: Point = Point(0, 0),
+        fg_color: Color | None = None,
+        bg_color: Color | None = None,
         markdown: bool = False,
         truncate_str: bool = False,
     ):
@@ -420,6 +439,10 @@ class Text(GadgetBase):
         pos : Point, default: Point(0, 0)
             Position of first character of string. Negative coordinates position
             from the right or bottom of canvas (like negative indices).
+        fg_color : Color | None, default: None
+            Foreground color of text.
+        bg_color : Color | None, default: None
+            Background color of text.
         markdown : bool, default: False
             Whether to parse text for batgrl markdown.
         truncate_str : bool, default: False
@@ -430,9 +453,23 @@ class Text(GadgetBase):
         text_tools.add_text : Add multiple lines of text to a view of a canvas.
         """
         y, x = pos
-        add_text(self.canvas[y, x:], str, markdown, truncate_text=truncate_str)
+        add_text(
+            self.canvas[y, x:],
+            str,
+            fg_color=fg_color,
+            bg_color=bg_color,
+            markdown=markdown,
+            truncate_text=truncate_str,
+        )
 
-    def set_text(self, text: str, markdown: bool = False):
+    def set_text(
+        self,
+        text: str,
+        *,
+        fg_color: Color | None = None,
+        bg_color: Color | None = None,
+        markdown: bool = False,
+    ):
         """
         Resize gadget to fit text, erase canvas, then fill canvas with text.
 
@@ -447,6 +484,10 @@ class Text(GadgetBase):
         ----------
         text : str
             Text to add to canvas.
+        fg_color : Color | None, default: None
+            Foreground color of text.
+        bg_color : Color | None, default: None
+            Background color of text.
         markdown : bool, default: False
             Whether to parse text for batgrl markdown.
 
@@ -454,32 +495,30 @@ class Text(GadgetBase):
         --------
         text_tools.add_text : Add multiple lines of text to a view of a canvas.
         """
-        self.size, lines = parse_batgrl_md(text) if markdown else text_to_chars(text)
+        self.size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
+        self.canvas[:] = self.default_cell
+        _write_lines_to_canvas(lines, self.canvas, fg_color, bg_color)
 
-        self.canvas[:] = self.default_char
-        self.colors[:] = self.default_color_pair
-
-        write_chars_to_canvas(lines, self.canvas)
-
-    def render(self, canvas: NDArray[Char], colors: NDArray[np.uint8]):
-        """Render visible region of gadget into root's `canvas` and `colors` arrays."""
+    def _render(self, canvas: NDArray[Cell]):
+        """Render visible region of gadget."""
+        sans_bg = canvas[cell_sans("bg_color")]
+        foreground = canvas["fg_color"]
+        background = canvas["bg_color"]
+        text_chars = self.canvas["char"]
+        text_sans_bg = self.canvas[cell_sans("bg_color")]
+        text_bg = self.canvas["bg_color"]
         abs_pos = self.absolute_pos
-        if self.is_transparent:
-            for rect in self.region.rects():
-                dst_y, dst_x = rect.to_slices()
-                src_y, src_x = rect.to_slices(abs_pos)
-
-                visible = np.isin(
-                    self.canvas[src_y, src_x]["char"], (" ", "⠀"), invert=True
-                )
-
-                canvas[dst_y, dst_x][visible] = self.canvas[src_y, src_x][visible]
-                colors[dst_y, dst_x, :3][visible] = self.colors[src_y, src_x, :3][
-                    visible
-                ]
-        else:
-            for rect in self.region.rects():
-                dst = rect.to_slices()
-                src = rect.to_slices(abs_pos)
+        alpha = self.alpha
+        for rect in self.region.rects():
+            dst = rect.to_slices()
+            src = rect.to_slices(abs_pos)
+            if self.is_transparent:
+                visible = np.isin(text_chars[src], (" ", "⠀"), invert=True)
+                invisible = ~visible
+                sans_bg[dst][visible] = text_sans_bg[src][visible]
+                fg = foreground[dst][invisible]  # Not a view.
+                _composite(fg, text_bg[src][invisible], 255, alpha)
+                foreground[dst][invisible] = fg
+                _composite(background[dst], text_bg[src], 255, alpha)
+            else:
                 canvas[dst] = self.canvas[src]
-                colors[dst] = self.colors[src]

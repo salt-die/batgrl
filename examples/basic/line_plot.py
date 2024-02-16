@@ -1,6 +1,5 @@
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.line_plot import LinePlot
 from batgrl.gadgets.toggle_button import ToggleButton
@@ -22,7 +21,7 @@ class PlotApp(App):
             y_label="Y Values",
             legend_labels=["Before", "During", "After"],
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            plot_color_pair=DEFAULT_COLOR_THEME.primary,
+            mode="box",
         )
 
         def set_box_mode(toggle_state):

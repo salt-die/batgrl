@@ -1,13 +1,18 @@
 from batgrl.app import App
-from batgrl.colors import DEFAULT_COLOR_THEME
-from batgrl.gadgets.text import Text
+from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
+from batgrl.gadgets.text import Text, style_char
 from batgrl.gadgets.window import Window
 
 
 class SubscriptionApp(App):
     async def on_start(self):
         window = Window(title="Move/Resize Me")
-        label = Text(size=(2, 100), default_color_pair=DEFAULT_COLOR_THEME.primary)
+        label = Text(
+            size=(2, 100),
+            default_cell=style_char(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            ),
+        )
 
         label.subscribe(
             window,
@@ -19,7 +24,9 @@ class SubscriptionApp(App):
         label.subscribe(
             window,
             "size",
-            lambda: label.add_str(f"{window.size}".ljust(30), (1, 0), truncate_str=True)
+            lambda: label.add_str(
+                f"{window.size}".ljust(30), pos=(1, 0), truncate_str=True
+            )
             if label.height > 1
             else None,
         )
