@@ -23,7 +23,13 @@ from .colors import (
     YELLOW,
     Neptune,
 )
-from .gradients import gradient, lerp_colors, rainbow_gradient
+from .gradients import (
+    darken_only,
+    gradient,
+    lerp_colors,
+    lighten_only,
+    rainbow_gradient,
+)
 
 __all__ = [
     "ABLACK",
@@ -55,7 +61,9 @@ __all__ = [
     "ColorTheme",
     "Hexcode",
     "Neptune",
+    "darken_only",
     "gradient",
     "lerp_colors",
+    "lighten_only",
     "rainbow_gradient",
 ]

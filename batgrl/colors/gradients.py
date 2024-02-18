@@ -1,15 +1,107 @@
-"""Functions for creating color gradients."""
-import numpy as np
+"""Functions for blending colors and creating color gradients."""
+from math import sin, tau
 
 from ..geometry import lerp
-from .color_types import AColor, Color
+from .color_types import Color
 
-__all__ = ["gradient", "lerp_colors", "rainbow_gradient"]
-
-AnyColor = Color | AColor
+__all__ = ["darken_only", "lighten_only", "lerp_colors", "gradient", "rainbow_gradient"]
 
 
-def rainbow_gradient(n: int, *, color_type: type[AnyColor] = Color) -> list[AnyColor]:
+def darken_only(a: tuple, b: tuple) -> tuple:
+    """
+    Return a color that is the minimum of each channel in `a` and `b`.
+
+    Parameters
+    ----------
+    a : tuple
+        A color.
+    b : tuple
+        A color.
+
+    Returns
+    -------
+    tuple
+        A color with smallest components of `a` and `b`.
+    """
+    color = (min(c1, c2) for c1, c2 in zip(a, b))
+    if hasattr(a, "_fields"):  # NamedTuple
+        return type(a)(*color)
+    return tuple(color)
+
+
+def lighten_only(a: tuple, b: tuple) -> tuple:
+    """
+    Return a color that is the maximum of each channel in `a` and `b`.
+
+    Parameters
+    ----------
+    a : tuple
+        A color.
+    b : tuple
+        A color.
+
+    Returns
+    -------
+    tuple
+        A color with largest components of `a` and `b`.
+    """
+    color = (max(c1, c2) for c1, c2 in zip(a, b))
+    if hasattr(a, "_fields"):  # NamedTuple
+        return type(a)(*color)
+    return tuple(color)
+
+
+def lerp_colors(a: tuple, b: tuple, p: float) -> tuple:
+    """
+    Linear interpolation from `a` to `b` with proportion `p`.
+
+    If `a` is a named tuple the return type will be the same type.
+
+    Parameters
+    ----------
+    a : tuple
+        A color.
+    b : tuple
+        A color.
+    p : float
+        Proportion from a to b.
+
+    Returns
+    -------
+    tuple
+        The linear interpolation of `a` and `b`.
+    """
+    color = (round(lerp(c1, c2, p)) for c1, c2 in zip(a, b))
+    if hasattr(a, "_fields"):  # NamedTuple
+        return type(a)(*color)
+    return tuple(color)
+
+
+def gradient(start: tuple, end: tuple, ncolors: int) -> list[tuple]:
+    """
+    Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
+
+    Parameters
+    ----------
+    start : tuple
+        Start color of gradient.
+    end : tuple
+        End color of gradient.
+    ncolors : int
+        Number of colors in gradient.
+
+    Returns
+    -------
+    list[tuple]
+        A gradient of colors from `start` to `end`.
+    """
+    if ncolors < 2:
+        raise ValueError(f"not enough colors ({ncolors=})")
+
+    return [lerp_colors(start, end, i / (ncolors - 1)) for i in range(ncolors)]
+
+
+def rainbow_gradient(n: int, *, color_type: type[tuple] = Color) -> list[tuple]:
     """
     Return a rainbow gradient of `n` colors.
 
@@ -17,64 +109,20 @@ def rainbow_gradient(n: int, *, color_type: type[AnyColor] = Color) -> list[AnyC
     ----------
     n : int
         Number of colors in gradient.
-    color_type : AnyColor, default: Color
+    color_type : tuple, default: Color
         Color type of gradient.
 
     Returns
     -------
-    list[AnyColor]
+    list[tuple]
         A rainbow gradient of colors.
     """
-    TAU = 2 * np.pi
-    OFFSETS = np.array([0, TAU / 3, 2 * TAU / 3])
-    THETA = TAU / n
+    theta = tau / n
+    offsets = [0, tau / 3, 2 * tau / 3]
 
-    return [
-        color_type(*(int(j) for j in (np.sin(THETA * i + OFFSETS) * 127 + 128)))
-        for i in range(n)
-    ]
+    def color(i):
+        return (int(sin(i * theta + offset) * 127 + 128) for offset in offsets)
 
-
-def lerp_colors(start: AnyColor, end: AnyColor, p: float) -> AnyColor:
-    """
-    Linear interpolation from `start` to `end` with proportion `p`.
-
-    Parameters
-    ----------
-    start : AnyColor
-        Start color.
-    end : AnyColor
-        End Color
-    p : float
-        Proportion from start to end.
-
-    Returns
-    -------
-    AnyColor
-        The linear interpolation of `start` and `end`.
-    """
-    return type(start)(*(round(lerp(a, b, p)) for a, b in zip(start, end)))
-
-
-def gradient(start: AnyColor, end: AnyColor, ncolors: int) -> list[AnyColor]:
-    """
-    Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
-
-    Parameters
-    ----------
-    start : AnyColor
-        Start color or colorpair.
-    end : AnyColor
-        End color of colorpair.
-    ncolors : int
-        Number of colors in gradient.
-
-    Returns
-    -------
-    list[AnyColor]
-        A gradient of colors from `start` to `end`.
-    """
-    if ncolors < 2:
-        raise ValueError(f"not enough colors ({ncolors=})")
-
-    return [lerp_colors(start, end, i / (ncolors - 1)) for i in range(ncolors)]
+    if hasattr(color_type, "_fields"):
+        return [color_type(*color(i)) for i in range(n)]
+    return [color_type(color(i)) for i in range(n)]

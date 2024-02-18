@@ -6,7 +6,10 @@ __all__ = ["AColor", "AHexcode", "Color", "ColorTheme", "Hexcode"]
 
 
 Hexcode = NewType("Hexcode", str)
+"""Hexcode for a RGB color."""
+
 AHexcode = NewType("AHexcode", str)
+"""Hexcode for a RGBA color."""
 
 
 def validate_hexcode(hexcode: str) -> bool:
@@ -15,6 +18,10 @@ def validate_hexcode(hexcode: str) -> bool:
 
 def validate_ahexcode(ahexcode: str) -> bool:
     return bool(re.match(r"^#?[0-9a-fA-F]{8}$", ahexcode))
+
+
+def _to_hex(channel):
+    return hex(channel)[2:].zfill(2)
 
 
 class Color(NamedTuple):
@@ -73,6 +80,18 @@ class Color(NamedTuple):
 
         digits = hexcode.removeprefix("#")
         return cls(int(digits[:2], 16), int(digits[2:4], 16), int(digits[4:], 16))
+
+    def to_hex(self) -> Hexcode:
+        """
+        Return a color's hexcode.
+
+        Returns
+        -------
+        Hexcode
+            Hexcode of color.
+        """
+        hexcode = "".join(_to_hex(channel) for channel in self)
+        return f"#{hexcode}"
 
 
 class AColor(NamedTuple):
@@ -141,6 +160,18 @@ class AColor(NamedTuple):
             int(digits[4:6], 16),
             int(digits[6:] or "ff", 16),
         )
+
+    def to_hex(self) -> AHexcode:
+        """
+        Return a color's hexcode.
+
+        Returns
+        -------
+        AHexcode
+            AHexcode of color.
+        """
+        hexcode = "".join(_to_hex(channel) for channel in self)
+        return f"#{hexcode}"
 
 
 class ColorPair(TypedDict):
