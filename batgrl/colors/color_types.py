@@ -1,15 +1,8 @@
 """Color data structures."""
 import re
-from typing import NamedTuple, NewType, TypedDict
+from typing import NamedTuple, TypedDict
 
-__all__ = ["AColor", "AHexcode", "Color", "ColorTheme", "Hexcode"]
-
-
-Hexcode = NewType("Hexcode", str)
-"""Hexcode for a RGB color."""
-
-AHexcode = NewType("AHexcode", str)
-"""Hexcode for a RGBA color."""
+__all__ = ["AColor", "Color", "ColorTheme"]
 
 
 def validate_hexcode(hexcode: str) -> bool:
@@ -50,6 +43,8 @@ class Color(NamedTuple):
     -------
     from_hex(hexcode)
         Create a :class:`Color` from a hex code.
+    to_hex()
+        Return color's hexcode.
     count(value)
         Return number of occurrences of value.
     index(value, start=0, stop=9223372036854775807)
@@ -61,13 +56,13 @@ class Color(NamedTuple):
     blue: int
 
     @classmethod
-    def from_hex(cls, hexcode: Hexcode) -> "Color":
+    def from_hex(cls, hexcode: str) -> "Color":
         """
         Create a :class:`Color` from a hex code.
 
         Parameters
         ----------
-        hexcode : Hexcode
+        hexcode : str
             A color hex code.
 
         Returns
@@ -81,14 +76,14 @@ class Color(NamedTuple):
         digits = hexcode.removeprefix("#")
         return cls(int(digits[:2], 16), int(digits[2:4], 16), int(digits[4:], 16))
 
-    def to_hex(self) -> Hexcode:
+    def to_hex(self) -> str:
         """
-        Return a color's hexcode.
+        Return color's hexcode.
 
         Returns
         -------
-        Hexcode
-            Hexcode of color.
+        str
+            The hexcode of the color.
         """
         hexcode = "".join(_to_hex(channel) for channel in self)
         return f"#{hexcode}"
@@ -124,6 +119,8 @@ class AColor(NamedTuple):
     -------
     from_hex(hexcode)
         Create an :class:`AColor` from a hex code.
+    to_hex()
+        Return color's hexcode.
     count(value)
         Return number of occurrences of value.
     index(value, start=0, stop=9223372036854775807)
@@ -136,13 +133,13 @@ class AColor(NamedTuple):
     alpha: int = 255
 
     @classmethod
-    def from_hex(cls, hexcode: Hexcode | AHexcode) -> "AColor":
+    def from_hex(cls, hexcode: str) -> "AColor":
         """
         Create an :class:`AColor` from a hex code.
 
         Parameters
         ----------
-        hexcode : Hexcode | AHexcode
+        hexcode : str
             A color hex code.
 
         Returns
@@ -161,14 +158,14 @@ class AColor(NamedTuple):
             int(digits[6:] or "ff", 16),
         )
 
-    def to_hex(self) -> AHexcode:
+    def to_hex(self) -> str:
         """
-        Return a color's hexcode.
+        Return color's hexcode.
 
         Returns
         -------
-        AHexcode
-            AHexcode of color.
+        str
+            The hexcode of the color.
         """
         hexcode = "".join(_to_hex(channel) for channel in self)
         return f"#{hexcode}"
@@ -215,8 +212,8 @@ class ColorPair(TypedDict):
         objects.
     """
 
-    fg: Hexcode
-    bg: Hexcode
+    fg: str
+    bg: str
 
 
 class ColorTheme(TypedDict, total=False):
@@ -287,12 +284,12 @@ class ColorTheme(TypedDict, total=False):
     markdown_quote: ColorPair
     markdown_title: ColorPair
     markdown_image: ColorPair
-    markdown_block_code_background: Hexcode
-    markdown_quote_block_code_background: Hexcode
-    markdown_header_background: Hexcode
-    scroll_view_scrollbar: Hexcode
-    scroll_view_indicator_normal: Hexcode
-    scroll_view_indicator_hover: Hexcode
-    scroll_view_indicator_press: Hexcode
-    window_border_normal: AHexcode
-    window_border_inactive: AHexcode
+    markdown_block_code_background: str
+    markdown_quote_block_code_background: str
+    markdown_header_background: str
+    scroll_view_scrollbar: str
+    scroll_view_indicator_normal: str
+    scroll_view_indicator_hover: str
+    scroll_view_indicator_press: str
+    window_border_normal: str
+    window_border_inactive: str
