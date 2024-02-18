@@ -274,7 +274,7 @@ class Animation(Gadget):
 
     @property
     def is_transparent(self) -> bool:
-        """If false, `alpha` and alpha channels are ignored."""
+        """Whether gadget is transparent."""
         return self._is_transparent
 
     @is_transparent.setter
