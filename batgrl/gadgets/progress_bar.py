@@ -11,8 +11,8 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
+    bindable,
     clamp,
-    subscribable,
 )
 from .text import Text
 from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
@@ -203,7 +203,7 @@ class ProgressBar(Themable, Gadget):
         return self._progress
 
     @progress.setter
-    @subscribable
+    @bindable
     def progress(self, progress: float):
         self._progress = None if progress is None else clamp(progress, 0.0, 1.0)
         self._update_bar()

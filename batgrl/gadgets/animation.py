@@ -16,8 +16,8 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
+    bindable,
     clamp,
-    subscribable,
 )
 from .image import Image, Interpolation
 
@@ -289,7 +289,7 @@ class Animation(Gadget):
         return self._alpha
 
     @alpha.setter
-    @subscribable
+    @bindable
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
         for frame in self.frames:

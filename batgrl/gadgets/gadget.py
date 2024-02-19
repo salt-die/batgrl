@@ -33,7 +33,7 @@ __all__ = [
     "coerce_char",
     "lerp",
     "style_char",
-    "subscribable",
+    "bindable",
 ]
 
 _UID = count(1)
@@ -397,8 +397,8 @@ Easing = Literal[
 """Easings for :meth:`batgrl.gadgets.Gadget.tween`"""
 
 
-def subscribable(setter):
-    """Decorate property setters to make them subscribable."""
+def bindable(setter):
+    """Decorate property setters to make them bindable."""
     instances: WeakKeyDictionary[Gadget, Callable[[], None]] = WeakKeyDictionary()
 
     @wraps(setter)
@@ -588,7 +588,7 @@ class Gadget:
         return self._size
 
     @size.setter
-    @subscribable
+    @bindable
     def size(self, size: Size):
         if size == self._size:
             self._apply_pos_hints()
@@ -638,7 +638,7 @@ class Gadget:
         return self._pos
 
     @pos.setter
-    @subscribable
+    @bindable
     def pos(self, pos: Point):
         y, x = pos
         pos = Point(int(y), int(x))

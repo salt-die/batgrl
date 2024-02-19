@@ -14,10 +14,10 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
+    bindable,
     clamp,
     lerp,
     style_char,
-    subscribable,
 )
 from .texture_tools import _composite
 
@@ -36,7 +36,7 @@ __all__ = [
     "clamp",
     "lerp",
     "style_char",
-    "subscribable",
+    "bindable",
 ]
 
 
@@ -202,7 +202,7 @@ class Pane(Gadget):
         return self._alpha
 
     @alpha.setter
-    @subscribable
+    @bindable
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 

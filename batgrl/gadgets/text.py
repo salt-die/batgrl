@@ -20,11 +20,11 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
+    bindable,
     clamp,
     coerce_char,
     lerp,
     style_char,
-    subscribable,
 )
 from .text_tools import (
     _parse_batgrl_md,
@@ -57,7 +57,7 @@ __all__ = [
     "coerce_char",
     "lerp",
     "style_char",
-    "subscribable",
+    "bindable",
 ]
 
 Border = Literal[
@@ -307,7 +307,7 @@ class Text(Gadget):
         return self._alpha
 
     @alpha.setter
-    @subscribable
+    @bindable
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 

@@ -11,8 +11,8 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
+    bindable,
     clamp,
-    subscribable,
 )
 from .pane import Pane
 from .text import Text
@@ -487,7 +487,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         return self._vertical_bar.is_enabled
 
     @show_vertical_bar.setter
-    @subscribable
+    @bindable
     def show_vertical_bar(self, show: bool):
         self._vertical_bar.is_enabled = show
         self._corner.is_enabled = show or self._horizontal_bar.is_enabled
@@ -499,7 +499,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         return self._horizontal_bar.is_enabled
 
     @show_horizontal_bar.setter
-    @subscribable
+    @bindable
     def show_horizontal_bar(self, show: bool):
         self._horizontal_bar.is_enabled = show
         self._corner.is_enabled = show or self._vertical_bar.is_enabled
@@ -511,7 +511,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         return self._vertical_proportion
 
     @vertical_proportion.setter
-    @subscribable
+    @bindable
     def vertical_proportion(self, vertical_proportion: float):
         if self.allow_vertical_scroll:
             if self._view is None or self.total_vertical_distance <= 0:
@@ -526,7 +526,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         return self._horizontal_proportion
 
     @horizontal_proportion.setter
-    @subscribable
+    @bindable
     def horizontal_proportion(self, horizontal_proportion: float):
         if self.allow_horizontal_scroll:
             if self._view is None or self.total_horizontal_distance <= 0:

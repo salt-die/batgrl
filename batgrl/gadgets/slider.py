@@ -12,8 +12,8 @@ from .pane import (
     Size,
     SizeHint,
     SizeHintDict,
+    bindable,
     clamp,
-    subscribable,
 )
 from .text import Text
 
@@ -341,7 +341,7 @@ class Slider(Grabbable, Pane):
         return self._proportion
 
     @proportion.setter
-    @subscribable
+    @bindable
     def proportion(self, value: float):
         if not self.slider_enabled:
             return
@@ -362,7 +362,7 @@ class Slider(Grabbable, Pane):
         return self._value
 
     @value.setter
-    @subscribable
+    @bindable
     def value(self, value: float):
         value = clamp(value, self.min, self.max)
         self.proportion = (value - self.min) / (self.max - self.min)
