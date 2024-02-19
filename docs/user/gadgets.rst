@@ -31,9 +31,6 @@ Each gadget has `on_key()`, `on_mouse()`, and `on_paste()` methods to enable res
 events. Input events are dispatched to every gadget until one of these methods return True to
 signal that the event was handled.
 
-In addition to input events, gadgets may want to update when other gadget properties change.
-Gadgets have a `subscribe()` method that allows you to register a callback when some property
-changes.
 
 Collisions
 ----------

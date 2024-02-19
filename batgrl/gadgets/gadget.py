@@ -3,6 +3,7 @@ import asyncio
 from collections.abc import Callable, Iterator, Sequence
 from dataclasses import asdict, dataclass
 from functools import wraps
+from itertools import count
 from numbers import Real
 from time import monotonic
 from typing import Coroutine, Literal, Optional, TypedDict
@@ -34,6 +35,8 @@ __all__ = [
     "style_char",
     "subscribable",
 ]
+
+_UID = count(1)
 
 
 def round_down(n: float) -> int:
@@ -396,15 +399,14 @@ Easing = Literal[
 
 def subscribable(setter):
     """Decorate property setters to make them subscribable."""
-    instances = WeakKeyDictionary()
+    instances: WeakKeyDictionary[Gadget, Callable[[], None]] = WeakKeyDictionary()
 
     @wraps(setter)
     def wrapper(self, *args, **kwargs):
         setter(self, *args, **kwargs)
-
-        if subscribers := instances.get(self):
-            for action in subscribers.values():
-                action()
+        if bindings := instances.get(self):
+            for callback in bindings.values():
+                callback()
 
     wrapper.instances = instances
 
@@ -511,10 +513,10 @@ class Gadget:
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action)
-        Subscribe to a gadget property.
-    unsubscribe(source, attr)
-        Unsubscribe to a gadget property.
+    bind(prop, callback)
+        Bind `callback` to a gadget property.
+    unbind(uid)
+        Unbind a callback from a gadget property.
     on_key(key_event)
         Handle key press event.
     on_mouse(mouse_event)
@@ -532,6 +534,9 @@ class Gadget:
     destroy()
         Remove this gadget and recursively remove all its children.
     """
+
+    __bindings: dict[int, str] = {}
+    """UID to property name mapping."""
 
     def __init__(
         self,
@@ -999,49 +1004,45 @@ class Gadget:
             yield self.parent
             yield from self.parent.ancestors()
 
-    def subscribe(
-        self,
-        source: "Gadget",
-        attr: str,
-        action: Callable[[], None],
-    ):
+    def bind(self, prop: str, callback: Callable[[], None]) -> int:
         """
-        Subscribe to a gadget property. When property is modified, `action` will be
-        called.
+        Bind `callback` to a gadget property. When the property is updated, `callback`
+        is called with no arguments.
 
         Parameters
         ----------
-        source : Gadget
-            The source of the gadget property.
-        attr : str
+        prop : str
             The name of the gadget property.
-        action : Callable[[], None]
-            Called when the property is updated.
-        """
-        setter = getattr(type(source), attr).fset
-        subscribers = setter.instances.setdefault(source, WeakKeyDictionary())
-        subscribers[self] = action
-
-    def unsubscribe(self, source: "Gadget", attr: str) -> Callable[[], None] | None:
-        """
-        Unsubscribe to a gadget event and return the action that was subscribed to the
-        property or ``None`` if subscription isn't found.
-
-        Parameters
-        ----------
-        source : Gadget
-            The source of the gadget property.
-        attr : str
-            The name of the gadget property.
+        callback : Callable[[], None]
+            Callback to bind to property.
 
         Returns
         -------
-        Callable[[], None] | None
-            The action that was subscribed to the property or `None` if no subscription
-            was found.
+        int
+            A unique id used to unbind the callback.
         """
-        setter = getattr(type(source), attr).fset
-        return setter.instances[source].pop(self, None)
+        uid = next(_UID)
+        setter = getattr(type(self), prop).fset
+        bindings = setter.instances.setdefault(self, {})
+        bindings[uid] = callback
+        self.__bindings[uid] = prop
+        return uid
+
+    def unbind(self, uid: int) -> None:
+        """
+        Unbind a callback from a gadget property.
+
+        Parameters
+        ----------
+        uid : int
+            Unique id returned by the :meth:`bind` method.
+        """
+        prop = self.__bindings.pop(uid, None)
+        if prop is None:
+            return
+        setter = getattr(type(self), prop).fset
+        if self in setter.instances:
+            setter.instances[self].pop(uid, None)
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """

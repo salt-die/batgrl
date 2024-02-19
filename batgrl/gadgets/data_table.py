@@ -461,10 +461,10 @@ class DataTable(Themable, Gadget):
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action)
-        Subscribe to a gadget property.
-    unsubscribe(source, attr)
-        Unsubscribe to a gadget property.
+    bind(prop, callback)
+        Bind `callback` to a gadget property.
+    unbind(uid)
+        Unbind a callback from a gadget property.
     on_key(key_event)
         Handle key press event.
     on_mouse(mouse_event)
@@ -564,7 +564,7 @@ class DataTable(Themable, Gadget):
                 self._table.height > self._scroll_view.port_height
             )
 
-        self.subscribe(self._table, "size", update_bars)
+        self._table.bind("size", update_bars)
 
         if data is not None:
             for label, column_data in data.items():

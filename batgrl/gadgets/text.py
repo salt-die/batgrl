@@ -225,10 +225,10 @@ class Text(Gadget):
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action)
-        Subscribe to a gadget property.
-    unsubscribe(source, attr)
-        Unsubscribe to a gadget property.
+    bind(prop, callback)
+        Bind `callback` to a gadget property.
+    unbind(uid)
+        Unbind a callback from a gadget property.
     on_key(key_event)
         Handle key press event.
     on_mouse(mouse_event)

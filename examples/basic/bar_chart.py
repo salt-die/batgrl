@@ -36,9 +36,7 @@ class BarChartApp(App):
             pos_hint={"x_hint": 0.5},
         )
         label.set_text("Top Programming Languages 2023")
-        label.subscribe(
-            bar_chart, "pos", lambda: setattr(label, "bottom", bar_chart.top)
-        )
+        bar_chart.bind("pos", lambda: setattr(label, "bottom", bar_chart.top))
         text_bg = Text(size=(25, 75), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
         self.add_gadgets(text_bg, label, bar_chart)

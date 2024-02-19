@@ -90,7 +90,10 @@ class SyntaxApp(App):
 
             return callback
 
-        text.subscribe(text, "size", callback_for(last_style))
+        def repaint():
+            text.add_syntax_highlighting(style=get_style_by_name_(last_style))
+
+        text.bind("size", repaint)
 
         dark_menu = {(style, ""): callback_for(style) for style in DARK_STYLES}
         light_menu = {(style, ""): callback_for(style) for style in LIGHT_STYLES}

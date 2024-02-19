@@ -370,10 +370,10 @@ class ScrollView(Themable, Grabbable, Gadget):
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
-    subscribe(source, attr, action)
-        Subscribe to a gadget property.
-    unsubscribe(source, attr)
-        Unsubscribe to a gadget property.
+    bind(prop, callback)
+        Bind `callback` to a gadget property.
+    unbind(uid)
+        Unbind a callback from a gadget property.
     on_key(key_event)
         Handle key press event.
     on_mouse(mouse_event)
@@ -607,14 +607,15 @@ class ScrollView(Themable, Grabbable, Gadget):
                 self.vertical_proportion = 0 if h == 0 else -y / h
                 self.horizontal_proportion = 0 if w == 0 else -x / w
 
-            self.subscribe(view, "size", update_proportion)
+            self._view_uid = view.bind("size", update_proportion)
             self._update_port_and_scrollbar()
 
     def remove_gadget(self, gadget: Gadget):
-        """Unsubscribe from the view on its removal."""
+        """Unbind from the view on its removal."""
         if gadget is self._view:
+            self._view.unbind(self._view_uid)
             self._view = None
-            self.unsubscribe(gadget, "size")
+            del self._view_uid
 
         super().remove_gadget(gadget)
 
