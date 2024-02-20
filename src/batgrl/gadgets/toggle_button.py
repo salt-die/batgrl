@@ -48,8 +48,10 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     ----------
     label : str, default: ""
         Toggle button label.
-    callback : Callable[[ToggleState], None], default: lambda: None
+    callback : Callable[[ToggleState], None] | None, default: None
         Called when toggle state changes. The new state is provided as first argument.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     group : None | Hashable, default: None
         If a group is provided, only one button in a group can be in the "on" state.
     allow_no_selection : bool, default: False
@@ -59,8 +61,6 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Initial toggle state of button.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    alpha : float, default: 1.0
-        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -82,8 +82,10 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     ----------
     label : str
         Toggle button label.
-    callback : Callable[[ToggleState], None]
-        Button callback when toggled.
+    callback : Callable[[ToggleState], None] | None
+        Called when toggle state changes.
+    alpha : float
+        Transparency of gadget.
     group : None | Hashable
         If a group is provided, only one button in a group can be in the "on" state.
     allow_no_selection : bool
@@ -94,8 +96,6 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    alpha : float
-        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -213,12 +213,12 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         self,
         *,
         label: str = "",
-        callback: Callable[[ToggleState], None] = lambda state: None,
+        callback: Callable[[ToggleState], None] | None = None,
+        alpha: float = 1.0,
         group: None | Hashable = None,
         allow_no_selection: bool = False,
         toggle_state: ToggleState = ToggleState.OFF,
         always_release: bool = False,
-        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -312,6 +312,9 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
 
     def on_toggle(self):
         """Call callback on toggle state change."""
-        if self.root:
-            self.label = self.label  # Update radio button/checkbox
+        if self.root is None:
+            return
+
+        self.label = self.label  # Update radio button/checkbox
+        if self.callback is not None:
             self.callback(self.toggle_state)

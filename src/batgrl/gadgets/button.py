@@ -35,12 +35,12 @@ class Button(Themable, ButtonBehavior, Gadget):
     ----------
     label : str, default: ""
         Button label.
-    callback : Callable[[], None], default: lambda: None
+    callback : Callable[[], None] | None, default: None
         Called when button is released.
-    always_release : bool, default: False
-        Whether a mouse up event outside the button will trigger it.
     alpha : float, default: 1.0
         Transparency of gadget.
+    always_release : bool, default: False
+        Whether a mouse up event outside the button will trigger it.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -62,14 +62,14 @@ class Button(Themable, ButtonBehavior, Gadget):
     ----------
     label : str
         Button label.
-    callback : Callable[[], None]
+    callback : Callable[[], None] | None
         Called when button is released.
+    alpha : float
+        Transparency of gadget.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
     state : ButtonState
         Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
-    alpha : float
-        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -181,11 +181,11 @@ class Button(Themable, ButtonBehavior, Gadget):
         self,
         *,
         label: str = "",
-        callback: Callable[[], None] = lambda: None,
+        callback: Callable[[], None] | None = None,
         always_release: bool = False,
+        alpha: float = 1.0,
         size=Size(10, 10),
         pos=Point(0, 0),
-        alpha: float = 1.0,
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
         is_transparent: bool = False,
@@ -264,4 +264,5 @@ class Button(Themable, ButtonBehavior, Gadget):
 
     def on_release(self):
         """Triggered when button is released."""
-        self.callback()
+        if self.callback is not None:
+            self.callback()
