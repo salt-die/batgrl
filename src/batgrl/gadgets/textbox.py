@@ -18,9 +18,8 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
-    coerce_char,
 )
-from .text import Text, style_char
+from .text import Text
 from .text_tools import is_word_char, str_width
 
 __all__ = [
@@ -34,6 +33,17 @@ __all__ = [
 ]
 
 
+class _Box(Text):
+    def _render(self, canvas):
+        super()._render(canvas)
+        textbox: Textbox = self.parent
+        if textbox.hide_input:
+            hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_length))
+            hider_region = self.region & hider_rect
+            for rect in hider_region.rects():
+                canvas["char"][rect.to_slices()] = textbox.hide_char
+
+
 class Textbox(Themable, Focusable, Grabbable, Gadget):
     r"""
     A textbox gadget for single-line editable text.
@@ -43,13 +53,12 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     Parameters
     ----------
     enter_callback : Callable[[Textbox], None] | None, default: None
-        If provided, called when textbox has focus and `enter` is pressed.
-        The gadget will be passed as first argument to the callback.
+        Called when textbox has focus and `enter` is pressed.
     placeholder : str, default: ""
         Placeholder text for textbox.
     hide_input : bool, default: False
         If true, input is hidden with :attr:`hide_char`.
-    hide_char : NDArray[Cell] | str, default: "*"
+    hide_char : str, default: "*"
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None, default: None
         Maximum allowed number of characters in textbox.
@@ -80,11 +89,13 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     Attributes
     ----------
+    enter_callback : Callable[[Textbox], None] | None
+        Called when textbox has focus and `enter` is pressed.
     placeholder : str
         Placeholder text for textbox.
     hide_input : bool
         If true, input is hidden with :attr:`hide_char`.
-    hide_char : NDArray[Cell]
+    hide_char : str
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None
         Maximum allowed number of characters in textbox.
@@ -274,7 +285,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._placeholder_gadget = Text(alpha=0.0)
         self._placeholder_gadget.set_text(placeholder)
         self._cursor = Cursor()
-        self._box = Text(size=size)
+        self._box = _Box(size=size)
         super().__init__(
             is_grabbable=is_grabbable,
             ptf_on_grab=ptf_on_grab,
@@ -299,10 +310,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self.add_gadgets(self._box)
 
         self.enter_callback = enter_callback
-        """
-        If provided, called when textbox has focus and `enter` is pressed.
-        The gadget will be passed as first argument to the callback.
-        """
+        """Called when textbox has focus and `enter` is pressed."""
         self.placeholder = placeholder
         """Placeholder text for textbox."""
         self.hide_input = hide_input
@@ -333,13 +341,13 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._placeholder_gadget.is_transparent = is_transparent
 
     @property
-    def hide_char(self) -> NDArray[Cell]:
+    def hide_char(self) -> str:
         """Character to hide input when :attr:`hide_input` is true."""
         return self._hide_char
 
     @hide_char.setter
-    def hide_char(self, char: NDArray | str):
-        self._hide_char = coerce_char(char, style_char("*"))
+    def hide_char(self, char: str):
+        self._hide_char = char[:1] or "*"
 
     def update_theme(self):
         """Paint the gadget with current theme."""
@@ -377,16 +385,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._cursor.is_enabled = False
         self.unselect()
         self.cursor = self.cursor
-
-    def _render(self, canvas: NDArray[Cell]):
-        """Render visible region of gadget."""
-        super()._render(canvas)
-        if self.hide_input:
-            hider_region = self._box.region & Region.from_rect(
-                self._box.absolute_pos, (1, self._line_length)
-            )
-            for rect in hider_region.rects():
-                canvas[rect.to_slices()] = self.hide_char
 
     @property
     def placeholder(self) -> str:

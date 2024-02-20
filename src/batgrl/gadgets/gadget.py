@@ -15,7 +15,7 @@ from numpy.typing import NDArray
 from .. import easings
 from ..geometry import Point, Region, Size, clamp, lerp
 from ..io import KeyEvent, MouseEvent, PasteEvent
-from .text_tools import Cell, coerce_char, style_char
+from .text_tools import Cell, cell
 
 __all__ = [
     "Anchor",
@@ -24,16 +24,15 @@ __all__ = [
     "Point",
     "PosHint",
     "PosHintDict",
+    "Region",
     "Size",
     "SizeHint",
     "SizeHintDict",
-    "Region",
     "Gadget",
-    "clamp",
-    "coerce_char",
-    "lerp",
-    "style_char",
     "bindable",
+    "cell",
+    "clamp",
+    "lerp",
 ]
 
 _UID = count(1)

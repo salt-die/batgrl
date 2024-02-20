@@ -12,16 +12,16 @@ from ._batgrl_markdown import find_md_tokens
 from ._char_widths import CHAR_WIDTHS
 
 __all__ = [
-    "char_width",
-    "is_word_char",
     "Cell",
-    "style_char",
-    "coerce_char",
     "add_text",
     "binary_to_box",
     "binary_to_braille",
-    "smooth_vertical_bar",
+    "cell",
+    "char_width",
+    "is_word_char",
     "smooth_horizontal_bar",
+    "smooth_vertical_bar",
+    "str_width",
 ]
 
 
@@ -113,7 +113,7 @@ def cell_sans(*names: str) -> list[str]:
     return [name for name in Cell.names if name not in names]
 
 
-def style_char(
+def cell(
     char: str = " ",
     bold: bool = False,
     italic: bool = False,
@@ -124,7 +124,7 @@ def style_char(
     bg_color: Color = BLACK,
 ) -> NDArray[Cell]:
     """
-    Return ``Cell`` scalar.
+    Create a ``Cell`` scalar.
 
     Parameters
     ----------
@@ -154,7 +154,7 @@ def style_char(
     )
 
 
-def coerce_char(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Cell]:
+def _coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Cell]:
     """
     Try to coerce a string or ``Cell`` scalar into a half-width ``Cell`` scalar.
 
@@ -174,7 +174,7 @@ def coerce_char(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Ce
         The coerced Cell or None if character can't be coerced.
     """
     if isinstance(char, str) and len(char) > 0 and char_width(char[0]) == 1:
-        return style_char(char[0])
+        return cell(char=char[0])
     if (
         isinstance(char, np.ndarray)
         and char.dtype == Cell
@@ -207,9 +207,9 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     tuple[Size, list[list[Cell]]]
         Minimum canvas size to fit text and a list of lines of styled characters.
     """
-    NO_CHAR = style_char("")
+    NO_CHAR = cell(char="")
     matches, escapes = find_md_tokens(text)
-    chars = [style_char(char)[cell_sans("fg_color", "bg_color")] for char in text]
+    chars = [cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
     for before, start, end, after, style in matches:
         chars[start - before : start] = [NO_CHAR] * before
         chars[end : end + after] = [NO_CHAR] * after
@@ -263,7 +263,7 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
         Minimum canvas size to fit text and a list of lists of Cells.
     """
     lines = [
-        [style_char(char)[cell_sans("fg_color", "bg_color")] for char in line]
+        [cell(char=char)[cell_sans("fg_color", "bg_color")] for char in line]
         for line in text.split("\n")
     ]
     line_width = 0

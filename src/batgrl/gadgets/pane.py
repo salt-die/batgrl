@@ -3,40 +3,27 @@ from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
 from .gadget import (
-    Anchor,
     Cell,
-    Easing,
     Gadget,
     Point,
     PosHint,
     PosHintDict,
-    Region,
     Size,
     SizeHint,
     SizeHintDict,
     bindable,
     clamp,
-    lerp,
-    style_char,
 )
 from .texture_tools import _composite
 
 __all__ = [
-    "Anchor",
-    "Cell",
-    "Easing",
+    "Pane",
     "Point",
     "PosHint",
     "PosHintDict",
     "Size",
     "SizeHint",
     "SizeHintDict",
-    "Region",
-    "Pane",
-    "clamp",
-    "lerp",
-    "style_char",
-    "bindable",
 ]
 
 

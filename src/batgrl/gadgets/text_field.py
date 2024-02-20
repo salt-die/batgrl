@@ -17,7 +17,7 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
-    style_char,
+    cell,
 )
 from .text_tools import cell_sans
 
@@ -202,7 +202,7 @@ class TextParticleField(Gadget):
             self.particle_positions = particle_positions
 
         if particle_cells is None:
-            self.particle_cells = np.full(len(self.particle_positions), style_char())
+            self.particle_cells = np.full(len(self.particle_positions), cell())
         else:
             self.particle_cells = particle_cells
 

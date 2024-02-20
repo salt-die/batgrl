@@ -17,16 +17,7 @@ class Cursor(Gadget):
 
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
-        sibling = self.parent.children[0]
-        if sibling is not self and sibling.is_enabled:
-            pos = sibling.absolute_pos
-            src_canvas = sibling.canvas
-        else:
-            pos = self.parent.absolute_pos
-            src_canvas = self.parent.canvas
-
         for rect in self.region.rects():
             dst = rect.to_slices()
-            canvas[dst] = src_canvas[rect.to_slices(pos)]
             canvas[dst]["fg_color"] = self.fg_color
             canvas[dst]["bg_color"] = self.bg_color

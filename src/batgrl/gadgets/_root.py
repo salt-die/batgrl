@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 from ..colors import Color
 from .gadget import Gadget, Point, Region, Size
-from .text_tools import style_char
+from .text_tools import cell
 
 
 class _Root(Gadget):
@@ -25,7 +25,7 @@ class _Root(Gadget):
         render_mode: Literal["regions", "painter"],
         size: Size,
     ):
-        self._cell = style_char(" ", bg_color=bg_color)
+        self._cell = cell(bg_color=bg_color)
         self._render_lock = RLock()
         self._size = -1, -1  # Forces `on_size()` when size is set.
         self.children = []

@@ -22,7 +22,7 @@ from .gadget import (
 )
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, add_text, style_char
+from .text import Text, add_text, cell
 from .text_tools import binary_to_box, binary_to_braille, str_width
 
 __all__ = [
@@ -307,7 +307,7 @@ class LinePlot(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        default_cell = style_char(fg_color=plot_fg_color, bg_color=plot_bg_color)
+        default_cell = cell(fg_color=plot_fg_color, bg_color=plot_bg_color)
         self._traces = Text(default_cell=default_cell)
         self._scrollview = ScrollView(
             show_vertical_bar=False,

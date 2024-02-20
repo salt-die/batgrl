@@ -14,7 +14,7 @@ from .gadget import (
 )
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, style_char
+from .text import Text, cell
 from .text_tools import smooth_vertical_bar, str_width
 
 __all__ = [
@@ -339,7 +339,7 @@ class BarChart(Gadget):
         )
         bar_width = (bars_width - BAR_SPACING * (nbars + 1)) // nbars
         self._bars.size = h, bars_width
-        self._bars.canvas[:] = style_char(
+        self._bars.canvas[:] = cell(
             fg_color=self.chart_fg_color, bg_color=self.chart_bg_color
         )
 

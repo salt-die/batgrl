@@ -9,24 +9,20 @@ from pygments.style import Style
 
 from ..colors import Color, Neptune
 from .gadget import (
-    Anchor,
     Cell,
-    Easing,
     Gadget,
     Point,
     PosHint,
     PosHintDict,
-    Region,
     Size,
     SizeHint,
     SizeHintDict,
     bindable,
+    cell,
     clamp,
-    coerce_char,
-    lerp,
-    style_char,
 )
 from .text_tools import (
+    _coerce_cell,
     _parse_batgrl_md,
     _text_to_cells,
     _write_lines_to_canvas,
@@ -38,26 +34,18 @@ from .text_tools import (
 from .texture_tools import _composite
 
 __all__ = [
-    "char_width",
-    "str_width",
-    "Anchor",
     "Border",
     "Cell",
-    "Easing",
     "Point",
     "PosHint",
     "PosHintDict",
-    "Region",
     "Size",
     "SizeHint",
     "SizeHintDict",
     "Text",
     "add_text",
-    "clamp",
-    "coerce_char",
-    "lerp",
-    "style_char",
-    "bindable",
+    "char_width",
+    "str_width",
 ]
 
 Border = Literal[
@@ -280,8 +268,8 @@ class Text(Gadget):
         return self._default_cell
 
     @default_cell.setter
-    def default_cell(self, char: NDArray[Cell] | str):
-        self._default_cell = coerce_char(char, style_char(" "))
+    def default_cell(self, cell_: NDArray[Cell] | str):
+        self._default_cell = _coerce_cell(cell_, cell())
 
     @property
     def default_fg_color(self) -> Color:
@@ -358,7 +346,7 @@ class Text(Gadget):
         view = cell_sans("fg_color", "bg_color")
         cells = self.canvas[view]
         for s, border in zip(slices, _BORDERS[style]):
-            cells[s] = style_char(border, bold=bold)[view]
+            cells[s] = cell(char=border, bold=bold)[view]
 
         if fg_color is not None:
             self.canvas["fg_color"][[0, -1]] = fg_color

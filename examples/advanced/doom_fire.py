@@ -7,7 +7,7 @@ from batgrl.colors import Color
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.slider import Slider
-from batgrl.gadgets.text import Text, style_char
+from batgrl.gadgets.text import Text, cell
 
 FIRE_PALETTE = np.array(
     [
@@ -125,7 +125,7 @@ class DoomFireApp(App):
         strength_label = Text(
             size=(1, 22),
             pos_hint={"x_hint": 0.5, "anchor": "top"},
-            default_cell=style_char(fg_color=SLIDER_DEFAULT),
+            default_cell=cell(fg_color=SLIDER_DEFAULT),
         )
         strength_label.add_str(
             f"Current Strength: {doomfire.fire_strength:2d}", pos=(0, 1)

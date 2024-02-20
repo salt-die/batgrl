@@ -1,11 +1,11 @@
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.gadget import Gadget
-from batgrl.gadgets.text import Text, style_char
+from batgrl.gadgets.text import Text, cell
 
 from .colors import BRIGHT_GREEN, DARK_GREEN
 from .effects import Darken
 
-DEFAULT_CELL = style_char(fg_color=BRIGHT_GREEN, bg_color=DARK_GREEN)
+DEFAULT_CELL = cell(fg_color=BRIGHT_GREEN, bg_color=DARK_GREEN)
 
 
 class OKButton(ButtonBehavior, Text):

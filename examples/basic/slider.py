@@ -2,16 +2,14 @@
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.slider import Slider
-from batgrl.gadgets.text import Text, style_char
+from batgrl.gadgets.text import Text, cell
 
 
 class SliderApp(App):
     async def on_start(self):
         display = Text(
             size=(3, 30),
-            default_cell=style_char(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
-            ),
+            default_cell=cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG),
         )
         slider_1 = Slider(
             size=(1, 20),

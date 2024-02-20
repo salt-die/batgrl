@@ -3,7 +3,7 @@ import time
 
 from batgrl.app import App
 from batgrl.gadgets.digital_display import BRIGHT_GREEN, DigitalDisplay
-from batgrl.gadgets.text import Text, style_char
+from batgrl.gadgets.text import Text, cell
 
 
 class DigitalClock(Text):
@@ -11,7 +11,7 @@ class DigitalClock(Text):
         self,
         pos=(0, 0),
         twelve_hour=False,
-        default_cell=style_char(fg_color=BRIGHT_GREEN),
+        default_cell=cell(fg_color=BRIGHT_GREEN),
         **kwargs,
     ):
         super().__init__(

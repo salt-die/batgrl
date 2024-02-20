@@ -5,7 +5,7 @@ import numpy as np
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.gadget import Gadget, Point
 from batgrl.gadgets.pane import Pane
-from batgrl.gadgets.text import Text, style_char
+from batgrl.gadgets.text import Text, cell
 
 from .colors import COUNT_SQUARE, FLAG_COLOR, HIDDEN_SQUARE
 from .count import Count
@@ -46,7 +46,7 @@ class ResetButton(ButtonBehavior, Text):
 class MineSweeper(Gadget):
     def __init__(self, pos=Point(0, 0), **kwargs):
         h, w = SIZE
-        default_cell = style_char(fg_color=HIDDEN_SQUARE, bg_color=COUNT_SQUARE)
+        default_cell = cell(fg_color=HIDDEN_SQUARE, bg_color=COUNT_SQUARE)
         super().__init__(pos=pos, size=(V_SPACING * h + 2, H_SPACING * w + 1), **kwargs)
 
         self.timer = Text(

@@ -21,7 +21,7 @@ from batgrl.gadgets.behaviors.grabbable import Grabbable
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.shadow_caster import Camera, LightSource, ShadowCaster
-from batgrl.gadgets.text import Text, style_char
+from batgrl.gadgets.text import Text, cell
 from batgrl.gadgets.toggle_button import ToggleButton
 
 PANEL_WIDTH = 23
@@ -34,7 +34,7 @@ class Selector(Grabbable, Text):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.indicator = Text(
-            size=(1, 1), default_cell=style_char(fg_color=BLACK, bg_color=WHITE)
+            size=(1, 1), default_cell=cell(fg_color=BLACK, bg_color=WHITE)
         )
         self.add_gadget(self.indicator)
         self.callback = None
@@ -66,13 +66,11 @@ class ShadowCasterApp(App):
         )
 
         label_kwargs = dict(
-            default_cell=style_char(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
-            )
+            default_cell=cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG)
         )
         button_kwargs = dict(size=(1, PANEL_WIDTH), group=1)
         slider_kwargs = dict(
-            default_cell=style_char(char="▬", bg_color=DEFAULT_PRIMARY_BG),
+            default_cell=cell(char="▬", bg_color=DEFAULT_PRIMARY_BG),
             size=(1, PANEL_WIDTH),
         )
 
