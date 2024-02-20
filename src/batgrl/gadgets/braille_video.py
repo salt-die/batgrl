@@ -1,4 +1,4 @@
-"""A video player that renders to braille unicode characters in grayscale."""
+"""A video gadget that renders to braille unicode characters in grayscale."""
 import asyncio
 import atexit
 import time
@@ -24,7 +24,7 @@ from .text import Text
 from .text_tools import binary_to_braille
 
 __all__ = [
-    "BrailleVideoPlayer",
+    "BrailleVideo",
     "Point",
     "PosHint",
     "PosHintDict",
@@ -36,9 +36,9 @@ __all__ = [
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
 
-class BrailleVideoPlayer(Gadget):
+class BrailleVideo(Gadget):
     r"""
-    A video player that renders to braille unicode characters in grayscale.
+    A video gadget that renders to braille unicode characters in grayscale.
 
     Parameters
     ----------

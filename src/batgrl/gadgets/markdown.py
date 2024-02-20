@@ -26,7 +26,7 @@ from .image import Image
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Border, Cell, Text, cell
-from .video_player import VideoPlayer
+from .video import Video
 
 __all__ = [
     "Markdown",
@@ -228,7 +228,7 @@ class _MarkdownImage(_HasTitle, Image):
         self.size = int(oh * width / ow) // 2, width
 
 
-class _MarkdownGif(_HasTitle, VideoPlayer):
+class _MarkdownGif(_HasTitle, Video):
     def __init__(self, title: str, path: Path, width: int):
         super().__init__(title=title, source=path)
         oh = self._resource.get(cv2.CAP_PROP_FRAME_HEIGHT)

@@ -12,7 +12,7 @@ from random import choice
 from batgrl.app import App
 from batgrl.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
-from batgrl.gadgets.video_player import VideoPlayer
+from batgrl.gadgets.video import Video
 
 ASSETS = Path(__file__).parent.parent / "assets"
 SPINNER = ASSETS / "spinner.gif"
@@ -123,9 +123,7 @@ class SnakeApp(App):
         kwargs = dict(
             size=(HEIGHT // 2, WIDTH), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
-        background = VideoPlayer(
-            source=SPINNER, alpha=0.5, is_transparent=True, **kwargs
-        )
+        background = Video(source=SPINNER, alpha=0.5, is_transparent=True, **kwargs)
         background.play()
         snake = Snake(**kwargs)
 

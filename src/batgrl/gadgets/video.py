@@ -1,4 +1,4 @@
-"""A video player gadget."""
+"""A video gadget."""
 import asyncio
 import atexit
 import time
@@ -29,15 +29,15 @@ __all__ = [
     "Size",
     "SizeHint",
     "SizeHintDict",
-    "VideoPlayer",
+    "Video",
 ]
 
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
 
-class VideoPlayer(Graphics):
+class Video(Graphics):
     r"""
-    A video player.
+    A video gadget.
 
     Parameters
     ----------

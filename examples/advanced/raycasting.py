@@ -7,7 +7,7 @@ import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.raycaster import Camera, Raycaster, Sprite
 from batgrl.gadgets.texture_tools import read_texture
-from batgrl.gadgets.video_player import VideoPlayer
+from batgrl.gadgets.video import Video
 
 ASSETS = Path(__file__).parent.parent / "assets"
 SPINNER = ASSETS / "spinner.gif"
@@ -30,7 +30,7 @@ MAP = np.array(
 )
 
 
-class VideoTexture(VideoPlayer):
+class VideoTexture(Video):
     """A video player that implements the `Texture` protocol."""
 
     def __init__(self, source):
