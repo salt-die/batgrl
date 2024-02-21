@@ -217,7 +217,7 @@ class Minefield(Grid):
 
     def _render(self, canvas):
         abs_pos = self.absolute_pos
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             dst = rect.to_slices()
             src = rect.to_slices(abs_pos)
             visible = self.hidden[src] != 0

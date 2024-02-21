@@ -242,15 +242,15 @@ class Parallax(Gadget):
         self._vertical_offset = self._horizontal_offset = 0.0
 
     @property
-    def region(self) -> Region:
+    def _region(self) -> Region:
         """The visible portion of the gadget on the screen."""
-        return self._region
+        return self._region_value
 
-    @region.setter
-    def region(self, region: Region):
-        self._region = region
+    @_region.setter
+    def _region(self, region: Region):
+        self._region_value = region
         for layer in self.layers:
-            layer.region = region
+            layer._region = region
 
     def on_size(self):
         """Resize parallax layers."""

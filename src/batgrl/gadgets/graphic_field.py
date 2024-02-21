@@ -245,7 +245,7 @@ class GraphicParticleField(Gadget):
         offy, offx = self.absolute_pos
         ppos = self.particle_positions
         pcolors = self.particle_colors
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             height = rect.bottom - rect.top
             width = rect.right - rect.left
             pos = ppos - (rect.top - offy, rect.left - offx)

@@ -575,7 +575,7 @@ class Gadget:
         self.is_visible = is_visible
         self.is_enabled = is_enabled
 
-        self.region: Region = Region()
+        self._region: Region = Region()
         """The visible portion of the gadget on the screen."""
 
     def __repr__(self):
@@ -866,8 +866,8 @@ class Gadget:
         if not self.is_visible or not self.is_enabled:
             return False
 
-        return point in self.region or any(
-            point in child.region
+        return point in self._region or any(
+            point in child._region
             for child in self.walk()
             if child.is_visible or child.is_enabled
         )

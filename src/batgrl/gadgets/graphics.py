@@ -260,7 +260,7 @@ class Graphics(Gadget):
         background = canvas["bg_color"]
         abs_pos = self.absolute_pos
         alpha = self.alpha
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             dst = rect.to_slices()
             src_y, src_x = rect.to_slices(abs_pos)
             fg_rect = foreground[dst]

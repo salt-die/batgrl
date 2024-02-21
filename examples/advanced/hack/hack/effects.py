@@ -7,7 +7,7 @@ class Darken(Gadget):
 
     def _render(self, canvas):
         super()._render(canvas)
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             s = rect.to_slices()
             canvas["fg_color"][s] >>= 1
             canvas["bg_color"][s] >>= 1

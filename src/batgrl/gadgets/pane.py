@@ -199,7 +199,7 @@ class Pane(Gadget):
         styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
         foreground = canvas["fg_color"]
         background = canvas["bg_color"]
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             dst = rect.to_slices()
             fg_rect = foreground[dst]
             bg_rect = background[dst]

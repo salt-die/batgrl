@@ -293,7 +293,7 @@ class BarChart(Gadget):
 
     @property
     def is_transparent(self) -> bool:
-        """A transparent gadget allows regions beneath it to be painted."""
+        """Whether gadget is transparent."""
         return self._container.is_transparent
 
     @is_transparent.setter

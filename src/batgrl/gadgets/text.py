@@ -497,7 +497,7 @@ class Text(Gadget):
         text_bg = self.canvas["bg_color"]
         abs_pos = self.absolute_pos
         alpha = self.alpha
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             dst = rect.to_slices()
             src = rect.to_slices(abs_pos)
             if self.is_transparent:

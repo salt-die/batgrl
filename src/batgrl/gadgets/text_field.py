@@ -224,7 +224,7 @@ class TextParticleField(Gadget):
         ppos = self.particle_positions
         pchars = self.particle_cells[cell_sans("bg_color")]
         pbg_color = self.particle_cells["bg_color"]
-        for rect in self.region.rects():
+        for rect in self._region.rects():
             height = rect.bottom - rect.top
             width = rect.right - rect.left
             pos = ppos - (rect.top - offy, rect.left - offx)

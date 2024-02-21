@@ -254,7 +254,7 @@ class _Prompt(Text):
 class _AlmostPane(Pane):
     def _render(self, canvas):
         console: Console = self.parent.parent
-        self.region -= console._input.region
+        self._region -= console._input._region
         super()._render(canvas)
 
 

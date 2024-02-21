@@ -39,7 +39,7 @@ class _Box(Text):
         textbox: Textbox = self.parent
         if textbox.hide_input:
             hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_length))
-            hider_region = self.region & hider_rect
+            hider_region = self._region & hider_rect
             for rect in hider_region.rects():
                 canvas["char"][rect.to_slices()] = textbox.hide_char
 

@@ -89,11 +89,11 @@ class _Root(Gadget):
         #   geometry has been static for some time.
 
         with self._render_lock:
-            self.region = Region.from_rect(self.pos, self.size)
+            self._region = Region.from_rect(self.pos, self.size)
 
             for child in self.walk():
-                child.region = (
-                    child.parent.region
+                child._region = (
+                    child.parent._region
                     & Region.from_rect(child.absolute_pos, child.size)
                     if child.is_enabled and child.is_visible
                     else Region()
@@ -102,9 +102,9 @@ class _Root(Gadget):
             if self.render_mode == "regions":
                 for child in self.walk_reverse():
                     if child.is_enabled:
-                        child.region &= self.region
+                        child._region &= self._region
                         if child.is_visible and not child.is_transparent:
-                            self.region -= child.region
+                            self._region -= child._region
 
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
 

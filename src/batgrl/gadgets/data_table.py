@@ -320,7 +320,7 @@ class _DataCell(_CellBase):
 class _FauxPane(Pane):
     def _render(self, canvas):
         data_table: DataTable = self.parent.parent
-        self.region -= data_table._table.region
+        self._region -= data_table._table._region
         super()._render(canvas)
 
 
