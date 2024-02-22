@@ -398,7 +398,7 @@ class Sparkline(Gadget):
                 self._means.max() - self._means.min()
             )
 
-        self._sparkline.canvas[:] = self._sparkline.default_cell
+        self._sparkline.clear()
         chars = self._sparkline.canvas["char"][::-1]
         fg_color = self._sparkline.canvas["fg_color"]
         for i, bin_proportion in enumerate(bin_proportions):

@@ -280,6 +280,10 @@ class DigitalDisplay(Gadget):
         Add a single line of text to the canvas.
     set_text(text, ...)
         Resize gadget to fit text, erase canvas, then fill canvas with text.
+    clear()
+        Fill canvas with default cell.
+    shift(n=1)
+        Shift content in canvas up (or down in case of negative `n`).
     on_size()
         Update gadget after a resize.
     apply_hints()

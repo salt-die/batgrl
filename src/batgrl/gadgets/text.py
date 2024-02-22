@@ -187,6 +187,10 @@ class Text(Gadget):
         Add a single line of text to the canvas.
     set_text(text, ...)
         Resize gadget to fit text, erase canvas, then fill canvas with text.
+    clear()
+        Fill canvas with default cell.
+    shift(n=1)
+        Shift content in canvas up (or down in case of negative `n`).
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -484,8 +488,25 @@ class Text(Gadget):
         text_tools.add_text : Add multiple lines of text to a view of a canvas.
         """
         self.size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
-        self.canvas[:] = self.default_cell
+        self.clear()
         _write_lines_to_canvas(lines, self.canvas, fg_color, bg_color)
+
+    def clear(self):
+        """Fill canvas with default cell."""
+        self.canvas[:] = self.default_cell
+
+    def shift(self, n: int = 1):
+        """
+        Shift content in canvas up (or down in case of negative `n`).
+
+        Rows at the bottom (or top) will be filled with the default cell.
+        """
+        if n > 0:
+            self.canvas[:-n] = self.canvas[n:]
+            self.canvas[-n:] = self.default_cell
+        elif n < 0:
+            self.canvas[-n:] = self.canvas[:n]
+            self.canvas[:-n] = self.default_cell
 
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""

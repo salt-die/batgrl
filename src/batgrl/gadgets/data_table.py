@@ -226,7 +226,7 @@ class _ColumnLabel(_CellBase):
 
     def on_size(self):
         super().on_size()
-        self.canvas[:] = self.default_cell
+        self.clear()
         align = _ALIGN_FORMATTER[self.style.alignment]
         padding = self.style.padding
         content_width = (

@@ -412,4 +412,4 @@ class BrailleVideo(Gadget):
         self.pause()
         self.seek(0)
         self._current_frame = None
-        self.canvas[:] = self.default_cell
+        self.clear()

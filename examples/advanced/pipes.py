@@ -77,7 +77,7 @@ class Pipes(Text):
 
     async def run_pipes(self):
         while True:
-            self.canvas[:] = self.default_cell
+            self.clear()
             await asyncio.gather(*(self.pipe() for _ in range(self.npipes)))
 
     async def pipe(self):
