@@ -336,6 +336,16 @@ class ScrollView(Themable, Grabbable, Gadget):
 
     Methods
     -------
+    scroll_left(n=1)
+        Scroll the view left `n` characters.
+    scroll_right(n=1)
+        Scroll the view right `n` characters.
+    scroll_up(n=1)
+        Scroll the view up `n` lines.
+    scroll_down(n=1)
+        Scroll the view down `n` lines.
+    scroll_to_rect(pos, size=(1, 1))
+        Scroll the view so that a given rect is visible.
     update_theme()
         Paint the gadget with current theme.
     grab(mouse_event)
@@ -634,13 +644,13 @@ class ScrollView(Themable, Grabbable, Gadget):
 
         match key_event.key:
             case "up":
-                self._scroll_up()
+                self.scroll_up()
             case "down":
-                self._scroll_down()
+                self.scroll_down()
             case "left":
-                self._scroll_left()
+                self.scroll_left()
             case "right":
-                self._scroll_right()
+                self.scroll_right()
             case _:
                 return super().on_key(key_event)
 
@@ -648,10 +658,24 @@ class ScrollView(Themable, Grabbable, Gadget):
 
     def grab_update(self, mouse_event: MouseEvent):
         """Scroll on grab update."""
-        self._scroll_up(self.mouse_dy)
-        self._scroll_left(self.mouse_dx)
+        self.scroll_up(self.mouse_dy)
+        self.scroll_left(self.mouse_dx)
 
-    def _scroll_left(self, n=1):
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
+        """Scroll on mouse wheel."""
+        if self.scrollwheel_enabled and self.collides_point(mouse_event.position):
+            match mouse_event.event_type:
+                case MouseEventType.SCROLL_UP:
+                    self.scroll_up()
+                    return True
+                case MouseEventType.SCROLL_DOWN:
+                    self.scroll_down()
+                    return True
+
+        return super().on_mouse(mouse_event)
+
+    def scroll_left(self, n=1):
+        """Scroll the view left `n` characters."""
         if self._view is not None:
             if self.total_horizontal_distance == 0:
                 self.horizontal_proportion = 0
@@ -660,10 +684,12 @@ class ScrollView(Themable, Grabbable, Gadget):
                     (-self.view.left - n) / self.total_horizontal_distance, 0, 1
                 )
 
-    def _scroll_right(self, n=1):
-        self._scroll_left(-n)
+    def scroll_right(self, n=1):
+        """Scroll the view right `n` characters."""
+        self.scroll_left(-n)
 
-    def _scroll_up(self, n=1):
+    def scroll_up(self, n=1):
+        """Scroll the view up `n` lines."""
         if self._view is not None:
             if self.total_vertical_distance == 0:
                 self.vertical_proportion = 0
@@ -672,18 +698,39 @@ class ScrollView(Themable, Grabbable, Gadget):
                     (-self.view.top - n) / self.total_vertical_distance, 0, 1
                 )
 
-    def _scroll_down(self, n=1):
-        self._scroll_up(-n)
+    def scroll_down(self, n=1):
+        """Scroll the view down `n` lines."""
+        self.scroll_up(-n)
 
-    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        """Scroll on mouse wheel."""
-        if self.scrollwheel_enabled and self.collides_point(mouse_event.position):
-            match mouse_event.event_type:
-                case MouseEventType.SCROLL_UP:
-                    self._scroll_up()
-                    return True
-                case MouseEventType.SCROLL_DOWN:
-                    self._scroll_down()
-                    return True
+    def scroll_to_rect(self, pos: Point, size: Size = Size(1, 1)):
+        """
+        Scroll the view so that a given rect is visible.
 
-        return super().on_mouse(mouse_event)
+        The rect is assumed to be within the view's bounding box.
+
+        Parameters
+        ----------
+        pos : Point
+            Position of rect.
+
+        size : Size, default: Size(1, 1)
+            Size of rect.
+        """
+        if self.view is None:
+            return
+
+        y, x = pos
+        h, w = size
+        h = clamp(h, 1, None)
+        w = clamp(w, 1, None)
+        gy, gx = self.view.pos
+        ay, ax = gy + y, gx + x
+        if ay < 0:
+            self.scroll_up(-ay)
+        elif ay + h >= self.port_height:
+            self.scroll_down(ay + h - self.port_height)
+
+        if ax < 0:
+            self.scroll_left(-ax)
+        elif ax + w >= self.port_width:
+            self.scroll_right(ax + w - self.port_width)

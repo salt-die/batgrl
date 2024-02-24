@@ -183,11 +183,7 @@ class _FileView(TreeView):
                 return super().on_key(key_event)
 
         if self.selected_node is not None:
-            top = self.selected_node.top + self.top
-            if top < 0:
-                self.parent._scroll_up(-top)
-            elif top >= self.parent.height - 1:
-                self.parent._scroll_down(self.parent.height - top)
+            self.parent.scroll_to_rect(self.selected_node.pos)
 
         return True
 

@@ -147,16 +147,7 @@ class _ConsoleTextbox(Textbox):
         if self.parent is None:
             return
 
-        console = self.console
-        rel_x = console._container.x + console._prompt.width + cursor
-        port_width = console._scroll_view.port_width
-
-        if cursor == 0:
-            console._scroll_view.horizontal_proportion = 0
-        elif rel_x < 0:
-            console._scroll_view._scroll_right(rel_x)
-        elif rel_x >= port_width:
-            console._scroll_view._scroll_right(rel_x - port_width + 1)
+        self.console._scroll_view.scroll_to_rect((0, cursor + self.x), (1, 1))
 
         if self.is_selecting:
             self._selection_end = self.cursor
@@ -192,6 +183,9 @@ class _ConsoleTextbox(Textbox):
     def on_key(self, key_event: KeyEvent) -> bool | None:
         if key_event == KeyEvent(Key.Tab, Mods.NO_MODS):
             self._tab()
+            return True
+        if key_event == KeyEvent(Key.Left, Mods.NO_MODS) and self.cursor == 0:
+            self.console._scroll_view.horizontal_proportion = 0
             return True
         return super().on_key(key_event)
 
@@ -471,12 +465,16 @@ class Console(Themable, Focusable, Gadget):
             self._input.left = self._prompt.right
 
         def update_bars():
-            self._scroll_view.show_vertical_bar = (
-                self._container.height > self._scroll_view.port_height
+            show_vertical_bar = self._container.height > self._scroll_view.port_height
+            show_horizontal_bar = self._container.width > self._scroll_view.port_width
+            update_cursor = (
+                show_vertical_bar != self._scroll_view.show_vertical_bar
+                or show_horizontal_bar != self._scroll_view.show_horizontal_bar
             )
-            self._scroll_view.show_horizontal_bar = (
-                self._container.width > self._scroll_view.port_width
-            )
+            self._scroll_view.show_vertical_bar = show_vertical_bar
+            self._scroll_view.show_horizontal_bar = show_horizontal_bar
+            if update_cursor:
+                self._input.cursor = self._input.cursor
 
         self._prompt.bind("size", fix_input_pos)
         self._prompt.bind("pos", fix_input_pos)

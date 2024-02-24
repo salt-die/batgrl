@@ -361,23 +361,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """After setting cursor position, move pad so that cursor is visible."""
         y, x = cursor
         self._cursor.pos = Point(y, x)
-
-        max_y = self._scroll_view.port_height - 1
-        if (rel_y := y + self._pad.y) > max_y:
-            self._scroll_view._scroll_down(rel_y - max_y)
-        elif rel_y < 0:
-            self._scroll_view._scroll_up(-rel_y)
-
-        max_x = self._scroll_view.port_width - 1
-        rel_x = x + self._pad.x
-        if rel_x > max_x:
-            self._scroll_view._scroll_right(rel_x - max_x)
-        elif rel_x < 0:
-            self._scroll_view._scroll_right(rel_x)
-
+        self._scroll_view.scroll_to_rect(cursor)
         if self.is_selecting:
             self._selection_end = self.cursor
-
         self._highlight_selection()
 
     def _highlight_selection(self):
@@ -624,6 +610,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def move_word_left(self):
         """Move cursor a word left."""
+        self._last_x = None
         last_x = self.cursor.x
         first_char_found = False
         while True:
@@ -646,6 +633,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def move_word_right(self):
         """Move cursor a word right."""
+        self._last_x = None
         last_x = self.cursor.x
         first_char_found = False
         while True:
@@ -798,10 +786,12 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _home(self):
         self.unselect()
+        self._last_x = None
         self.cursor = self.cursor.y, 0
 
     def _end(self):
         self.unselect()
+        self._last_x = None
         y = self.cursor.y
         self.cursor = y, self._line_lengths[y]
 
@@ -839,10 +829,12 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _shift_home(self):
         self.select()
+        self._last_x = None
         self.cursor = self.cursor.y, 0
 
     def _shift_end(self):
         self.select()
+        self._last_x = None
         y = self.cursor.y
         self.cursor = y, self._line_lengths[y]
 
