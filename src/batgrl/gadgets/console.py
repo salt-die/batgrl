@@ -147,7 +147,8 @@ class _ConsoleTextbox(Textbox):
         if self.parent is None:
             return
 
-        self.console._scroll_view.scroll_to_rect((0, cursor + self.x), (1, 1))
+        y, x = self.pos
+        self.console._scroll_view.scroll_to_rect((y, cursor + x), (1, 1))
 
         if self.is_selecting:
             self._selection_end = self.cursor
