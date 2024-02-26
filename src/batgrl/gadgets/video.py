@@ -275,12 +275,14 @@ class Video(Graphics):
 
     def _display_current_frame(self):
         h, w = self.size
-        if self._current_frame is not None:
-            self.texture = cv2.resize(
-                self._current_frame,
-                (w, 2 * h),
-                interpolation=Interpolation._to_cv_enum[self.interpolation],
-            )
+        if self._current_frame is None or h == 0 or w == 0:
+            return
+
+        self.texture = cv2.resize(
+            self._current_frame,
+            (w, 2 * h),
+            interpolation=Interpolation._to_cv_enum[self.interpolation],
+        )
 
     async def _play_video(self):
         if self._resource is None:

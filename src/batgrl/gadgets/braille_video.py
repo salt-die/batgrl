@@ -54,8 +54,7 @@ class BrailleVideo(Gadget):
     gray_threshold : int, default: 127
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool, default: False
-        If true, foreground will be set to `default_fg_color` multiplied by the
-        normalized grays from the source.
+        Whether foreground colors are shaded.
     invert_colors : bool, default: False
         Invert the colors in the source before rendering.
     alpha : float, default: 1.0
@@ -90,8 +89,7 @@ class BrailleVideo(Gadget):
     gray_threshold : int
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool
-        If true, foreground will be set to `default_fg_color` multiplied by the
-        normalized grays from the source.
+        Whether foreground colors are shaded.
     invert_colors : bool
         If true, colors in the source are inverted before video is rendered.
     alpha : float
@@ -315,13 +313,13 @@ class BrailleVideo(Gadget):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self._video.canvas["char"] = " "
+            self._video.clear()
 
     def _paint_frame(self):
-        if self._current_frame is None:
+        h, w = self.size
+        if self._current_frame is None or h == 0 or w == 0:
             return
 
-        h, w = self.size
         canvas = self._video.canvas
         upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
         sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
@@ -332,7 +330,7 @@ class BrailleVideo(Gadget):
             shades = lerp(self.bg_color, self.fg_color, normals[..., None])
             canvas["fg_color"] = shades.astype(np.uint8)
         else:
-            canvas["fg_color"] = self.default_fg_color
+            canvas["fg_color"] = self.fg_color
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -366,6 +364,7 @@ class BrailleVideo(Gadget):
             self.play()
         else:
             self._current_frame = None
+            self._video.clear()
 
     def on_size(self):
         """Resize canvas and colors arrays."""
@@ -412,4 +411,4 @@ class BrailleVideo(Gadget):
         self.pause()
         self.seek(0)
         self._current_frame = None
-        self.clear()
+        self._video.clear()

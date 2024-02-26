@@ -402,6 +402,8 @@ class ShadowCaster(Graphics):
     def cast_shadows(self):
         """Update texture by shadow casting all light sources."""
         h, w, _ = self.texture.shape
+        if h == 0 or w == 0:
+            return
 
         cy, cx = self.camera.pos
         ch, cw = self.camera.size

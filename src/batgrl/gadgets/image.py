@@ -1,7 +1,6 @@
 """An image gadget."""
 from pathlib import Path
 
-import cv2
 import numpy as np
 from numpy.typing import NDArray
 
@@ -16,7 +15,7 @@ from .graphics import (
     SizeHint,
     SizeHintDict,
 )
-from .texture_tools import read_texture
+from .texture_tools import read_texture, resize_texture
 
 __all__ = [
     "Image",
@@ -214,23 +213,18 @@ class Image(Graphics):
         return self._path
 
     @path.setter
-    def path(self, new_path: Path | None):
-        self._path = new_path
-        if new_path is not None:
-            self._otexture = read_texture(new_path)
+    def path(self, path: Path | None):
+        self._path = path
+        if path is None:
+            self._otexture = np.full((1, 1, 4), self.default_color, dtype=np.uint8)
         else:
-            self._otexture = np.full((2, 1, 4), self.default_color, dtype=np.uint8)
-
+            self._otexture = read_texture(path)
         self.on_size()
 
     def on_size(self):
         """Resize texture array."""
         h, w = self._size
-        self.texture = cv2.resize(
-            self._otexture,
-            (w, 2 * h),
-            interpolation=Interpolation._to_cv_enum[self.interpolation],
-        )
+        self.texture = resize_texture(self._otexture, (2 * h, w), self.interpolation)
 
     @classmethod
     def from_texture(

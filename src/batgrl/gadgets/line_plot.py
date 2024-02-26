@@ -479,10 +479,10 @@ class LinePlot(Gadget):
         self._build_plot()
 
     def _build_plot(self):
-        if self.root is None:
+        h, w = self.size
+        if self.root is None or h == 0 or w == 0:
             return
 
-        h, w = self.size
         has_x_label = self._x_label_gadget.is_enabled = bool(self.x_label is not None)
         has_y_label = self._y_label_gadget.is_enabled = bool(self.y_label is not None)
 

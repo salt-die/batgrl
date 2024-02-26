@@ -237,12 +237,7 @@ def _enter_callback(textbox: Textbox):
 
 class _Prompt(Text):
     def set_text(self, text: str, **kwargs):
-        # To fake a 0-width prompt move the prompt offscreen when text is empty.
         self._text = text
-        if len(text) == 0:
-            self.left = -1
-        else:
-            self.left = 0
         super().set_text(text, **kwargs)
 
 
@@ -495,8 +490,7 @@ class Console(Themable, Focusable, Gadget):
 
     def _add_text_to_output(self, text: str, with_prompt: bool = False):
         if with_prompt:
-            prompt = self._prompt._text
-            text = f"{prompt}{text}"
+            text = f"{self._prompt._text}{text}"
         else:
             text = text.rstrip("\n")
             if not text:

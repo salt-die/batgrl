@@ -22,7 +22,7 @@ from .gadget import (
     clamp,
     lerp,
 )
-from .texture_tools import Interpolation, _composite
+from .texture_tools import Interpolation, _composite, resize_texture
 
 __all__ = [
     "Anchor",
@@ -214,11 +214,7 @@ class Graphics(Gadget):
         self.alpha = alpha
 
         h, w = self.size
-        self.texture = np.full(
-            (2 * h, w, 4),
-            default_color,
-            dtype=np.uint8,
-        )
+        self.texture = np.full((2 * h, w, 4), default_color, dtype=np.uint8)
 
     @property
     def alpha(self) -> float:
@@ -232,13 +228,8 @@ class Graphics(Gadget):
 
     def on_size(self):
         """Resize texture array."""
-        h, w = self._size
-
-        self.texture = cv2.resize(
-            self.texture,
-            (w, 2 * h),
-            interpolation=Interpolation._to_cv_enum[self.interpolation],
-        )
+        h, w = self.size
+        self.texture = resize_texture(self.texture, (2 * h, w), self.interpolation)
 
     @property
     def interpolation(self) -> Interpolation:

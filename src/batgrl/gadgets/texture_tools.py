@@ -61,7 +61,7 @@ def resize_texture(
     Parameters
     ----------
     texture : NDArray[np.uint8]
-        The texture to resize.
+        An RGBA texture to resize.
     size : Size
         The new size of the texture.
     interpolation : Interpolation, default: "linear"
@@ -72,7 +72,10 @@ def resize_texture(
     NDArray[np.uint8]
         A new uint8 RGBA array.
     """
+    old_h, old_w, _ = texture.shape
     h, w = size
+    if old_h == 0 or old_w == 0 or h == 0 or w == 0:
+        return np.zeros((h, w, 4), np.uint8)
     return cv2.resize(
         texture,
         (w, h),

@@ -552,7 +552,7 @@ class Gadget:
         self.children: list[Gadget] = []
 
         h, w = size
-        self._size = Size(clamp(h, 1, None), clamp(w, 1, None))
+        self._size = Size(clamp(h, 0, None), clamp(w, 0, None))
         self._pos = Point(*pos)
 
         if size_hint is None:
@@ -594,7 +594,7 @@ class Gadget:
             return
 
         h, w = size
-        size = Size(clamp(int(h), 1, None), clamp(int(w), 1, None))
+        size = Size(clamp(int(h), 0, None), clamp(int(w), 0, None))
 
         if self.root:
             self.root._render_lock.acquire()

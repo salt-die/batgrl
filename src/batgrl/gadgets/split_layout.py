@@ -271,7 +271,7 @@ class HSplitLayout(Gadget):
     @min_split_height.setter
     def min_split_height(self, min_split_height: int):
         self._min_split_height = clamp(min_split_height, 1, None)
-        self.split_row = self.split_row  # Clamp split and call `on_size`
+        self.split_row = self.split_row
 
     @property
     def split_row(self) -> int:

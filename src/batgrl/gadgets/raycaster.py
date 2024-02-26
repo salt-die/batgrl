@@ -625,6 +625,10 @@ class Raycaster(Graphics):
 
     def _render(self, canvas_view: NDArray[Cell]):
         """Render visible region of gadget."""
+        h, w = self.size
+        if h == 0 or w == 0:
+            return
+
         # Early calculations on rays can be vectorized:
         np.dot(self._ray_angles, self.camera._plane, out=self._rotated_angles)
         with np.errstate(divide="ignore"):
@@ -637,7 +641,6 @@ class Raycaster(Graphics):
         np.multiply(self._sides, self._steps, out=self._sides)
         np.multiply(self._sides, self._deltas, out=self._sides)
 
-        h = self.texture.shape[0] // 2
         self.texture[:h, :, :3] = self.ceiling_color
         self.texture[h:, :, :3] = self.floor_color
         self.texture[..., 3] = 255

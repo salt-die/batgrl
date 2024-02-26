@@ -203,13 +203,18 @@ class BrailleImage(Gadget):
         self._image.alpha = alpha
 
     @property
-    def path(self):
+    def path(self) -> Path | None:
         """Path to image."""
         return self._path
 
     @path.setter
-    def path(self, value):
-        self._path = value
+    def path(self, path: Path | None):
+        self._path: Path | None = path
+
+        if path is None:
+            self._otexture = np.zeros((1, 1, 3), dtype=np.uint8)
+        else:
+            self._otexture = cv2.imread(str(path.absolute()), cv2.IMREAD_COLOR)
         self._load_texture()
 
     def on_size(self):
@@ -219,11 +224,11 @@ class BrailleImage(Gadget):
 
     def _load_texture(self):
         h, w = self.size
+        if h == 0 or w == 0:
+            return
+
         canvas = self._image.canvas
-
-        img = cv2.imread(str(self.path.absolute()), cv2.IMREAD_COLOR)
-        img_bgr = cv2.resize(img, (2 * w, 4 * h))
-
+        img_bgr = cv2.resize(self._otexture, (2 * w, 4 * h))
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
         img_hls = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HLS)
 

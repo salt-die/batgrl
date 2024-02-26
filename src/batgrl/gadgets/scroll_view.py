@@ -721,8 +721,6 @@ class ScrollView(Themable, Grabbable, Gadget):
 
         y, x = pos
         h, w = size
-        h = clamp(h, 1, None)
-        w = clamp(w, 1, None)
         gy, gx = self.view.pos
         ay, ax = gy + y, gx + x
         if ay < 0:
