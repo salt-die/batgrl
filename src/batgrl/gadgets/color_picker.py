@@ -73,6 +73,8 @@ class _ShadeSelector(Grabbable, Graphics):
         self.hue = hue
 
         h, w = self._size
+        if w == 0:
+            return
         left_side = gradient(AWHITE, ABLACK, 2 * h)
         right_side = gradient(hue, ABLACK, 2 * h)
 
@@ -102,8 +104,8 @@ class _ShadeSelector(Grabbable, Graphics):
             y, x = self._shade_indicator.pos = self.to_local(mouse_event.position)
             h, w = self.size
             self._shade_hint = (
-                0 if h == 1 else y / (h - 1),
-                0 if w == 1 else x / (w - 1),
+                0 if h <= 1 else y / (h - 1),
+                0 if w <= 1 else x / (w - 1),
             )
             self.update_swatch_label()
 
@@ -149,7 +151,7 @@ class _HueSelector(Grabbable, Graphics):
     def grab_update(self, mouse_event):
         if self.collides_point(mouse_event.position):
             x = self._hue_indicator.x = self.to_local(mouse_event.position).x
-            self._hue_hint = 0 if self.width == 1 else x / (self.width - 1)
+            self._hue_hint = 0 if self.width <= 1 else x / (self.width - 1)
             self.update_hue()
 
 

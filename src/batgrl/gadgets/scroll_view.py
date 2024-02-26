@@ -548,12 +548,12 @@ class ScrollView(Themable, Grabbable, Gadget):
     @property
     def port_height(self) -> int:
         """Height of view."""
-        return self.height - self.show_horizontal_bar
+        return max(0, self.height - self.show_horizontal_bar)
 
     @property
     def port_width(self) -> int:
         """Width of view."""
-        return self.width - self.show_vertical_bar * 2
+        return max(0, self.width - self.show_vertical_bar * 2)
 
     @property
     def total_vertical_distance(self) -> int:
