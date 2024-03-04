@@ -17,7 +17,7 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
 )
-from .text import Text, add_text
+from .text import Text
 
 __all__ = [
     "ButtonState",
@@ -32,65 +32,83 @@ __all__ = [
 ]
 
 TOGGLE_BLOCK = "▊▋▌▍▎▏"
-DARK_GREY = Color.from_hex("333333")
+DARK_GREY = Color.from_hex("222222")
 LIGHT_GREY = Color.from_hex("666666")
+DARK_RED = Color.from_hex("4f0908")
+DARK_GREEN = Color.from_hex("0e4f08")
 
 
 class _AnimatedToggle(ToggleButtonBehavior, Text):
-    def __init__(
-        self, group, allow_no_selection, toggle_state, always_release, bg_color
-    ):
+    def __init__(self, group, allow_no_selection, always_release, bg_color):
         super().__init__(
-            size=(3, 4),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             group=group,
             allow_no_selection=allow_no_selection,
-            toggle_state=toggle_state,
             always_release=always_release,
         )
-        self._animation_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
+        self._animation_task = None
+
+        if self.toggle_state == "on":
+            self.set_text("▄▄▄▄\n█▊▊█\n▀▀▀▀")
+            self._animation_progess = 0
+        else:
+            self.set_text("▄▄▄▄\n█▏▏█\n▀▀▀▀")
+            self._animation_progess = 5
 
         self.canvas["bg_color"] = bg_color
         self.canvas["fg_color"] = DARK_GREY
         self.canvas["bg_color"][1, 1] = DARK_GREY
-
-        if self.toggle_state is ToggleState.ON:
-            add_text(self.canvas, "▄▄▄▄\n█▊▊█\n▀▀▀▀")
-            self.canvas["fg_color"][1, 1] = GREEN
-            self.canvas["bg_color"][1, 2] = GREEN
-            self._animation_progess = 0
+        if self.toggle_state == "on":
+            self.update_on()
         else:
-            add_text(self.canvas, "▄▄▄▄\n█▏▏█\n▀▀▀▀")
-            self.canvas["fg_color"][1, 1] = LIGHT_GREY
-            self.canvas["bg_color"][1, 2] = LIGHT_GREY
-            self._animation_progess = 5
+            self.update_off()
 
-    def on_remove(self):
-        self._animation_task.cancel()
+    def update_off(self):
+        self.canvas["fg_color"][1, 1] = LIGHT_GREY
+        self.canvas["bg_color"][1, 2] = LIGHT_GREY
+
+    def update_on(self):
+        self.canvas["fg_color"][1, 1] = GREEN
+        self.canvas["bg_color"][1, 2] = GREEN
+
+    def update_normal(self):
+        if self.toggle_state == "off":
+            self.update_off()
+        else:
+            self.update_on()
+
+    def update_hover(self):
+        self.update_normal()
+
+    def update_down(self):
+        self.update_normal()
+
+    def update_disallowed(self):
+        color = DARK_RED if self.toggle_state == "off" else DARK_GREEN
+        self.canvas["fg_color"][1, 1] = color
+        self.canvas["bg_color"][1, 2] = color
 
     async def _animate_toggle(self):
-        if self.toggle_state is ToggleState.ON:
-            self.canvas["fg_color"][1, 1] = GREEN
-            self.canvas["bg_color"][1, 2] = GREEN
-            r = range(self._animation_progess - 1, -1, -1)
+        if self.toggle_state == "on":
+            it = range(self._animation_progess - 1, -1, -1)
         else:
-            self.canvas["fg_color"][1, 1] = LIGHT_GREY
-            self.canvas["bg_color"][1, 2] = LIGHT_GREY
-            r = range(self._animation_progess + 1, 6)
+            it = range(self._animation_progess + 1, 6)
 
-        for i in r:
+        for i in it:
             self._animation_progess = i
             self.canvas["char"][1, 1:3] = TOGGLE_BLOCK[i]
             await asyncio.sleep(0.05)
 
-        self.parent.callback(self.toggle_state)
-
     def on_toggle(self):
-        if not hasattr(self, "_animation_task"):
-            # Initializing...
-            return
-        self._animation_task.cancel()
+        if self._animation_task is not None:
+            self._animation_task.cancel()
+        if self.parent.callback is not None:
+            self.parent.callback(self.toggle_state)
         self._animation_task = asyncio.create_task(self._animate_toggle())
+
+    def on_remove(self):
+        if self._animation_task is not None:
+            self._animation_task.cancel()
 
 
 class _ToggleButtonProperty:
@@ -113,21 +131,17 @@ class FlatToggle(Gadget):
 
     Parameters
     ----------
-    callback : Callable[[ToggleState], None], default: lambda state: None
-        Called when toggle state changes. The new state is provided as first argument.
+    callback : Callable[[ToggleState], None] | None, default: None
+       Called when button is toggled. The toggle state is provided as first argument.
     toggle_bg_color: Color, default: BLACK
         Background color of toggle.
-    group : None | Hashable, default: None
-        If a group is provided, only one button in a group can be in the "on" state.
+    group : Hashable | None, default: None
+        If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool, default: False
         If a group is provided, setting this to true allows no selection, i.e.,
-        every button can be in the "off" state.
-    toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button.
+        every button can be in the off state.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-        size : Size, default: Size(10, 10)
-        Size of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -147,10 +161,20 @@ class FlatToggle(Gadget):
 
     Attributes
     ----------
-    callback : Callable[[ToggleState], None]
-        Toggle button callback.
+    callback : Callable[[ToggleState], None] | None
+        Called when button is toggled.
     toggle_background: Color
         Background color of toggle.
+    group : Hashable | None
+        If a group is provided, only one button in a group can be in the on state.
+    allow_no_selection : bool
+        If true and button is in a group, every button can be in the off state.
+    toggle_state : ToggleState
+        Toggle state of button.
+    always_release : bool
+        Whether a mouse up event outside the button will trigger it.
+    button_state : ButtonState
+        Current button state.
     size : Size
         Size of gadget.
     height : int
@@ -256,16 +280,17 @@ class FlatToggle(Gadget):
     """Toggle state of button."""
     always_release = _ToggleButtonProperty()
     """Whether a mouse up event outside the button will trigger it."""
+    button_state = _ToggleButtonProperty()
+    """Current button state."""
 
     def __init__(
         self,
         *,
         size: Size = Size(3, 4),
-        callback: Callable[[ToggleState], None] = lambda state: None,
+        callback: Callable[[ToggleState], None] = None,
         toggle_bg_color: Color = BLACK,
         group: None | Hashable = None,
         allow_no_selection: bool = False,
-        toggle_state: ToggleState = ToggleState.OFF,
         always_release: bool = False,
         pos=Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
@@ -283,13 +308,10 @@ class FlatToggle(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
         self.callback = callback
-
         self._toggle = _AnimatedToggle(
             group=group,
             allow_no_selection=allow_no_selection,
-            toggle_state=toggle_state,
             always_release=always_release,
             bg_color=toggle_bg_color,
         )

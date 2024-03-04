@@ -68,8 +68,8 @@ class Button(Themable, ButtonBehavior, Gadget):
         Transparency of gadget.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
-    state : ButtonState
-        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+    button_state : ButtonState
+        Current button state.
     size : Size
         Size of gadget.
     height : int
@@ -121,14 +121,16 @@ class Button(Themable, ButtonBehavior, Gadget):
     -------
     update_theme()
         Paint the gadget with current theme.
+    on_release()
+        Triggered when a button is released.
     update_normal()
         Paint the normal state.
     update_hover()
         Paint the hover state.
     update_down()
         Paint the down state.
-    on_release()
-        Triggered when a button is released.
+    update_disallowed()
+        Paint the disallowed state.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -239,13 +241,7 @@ class Button(Themable, ButtonBehavior, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        match self.state:
-            case ButtonState.NORMAL:
-                self.update_normal()
-            case ButtonState.HOVER:
-                self.update_hover()
-            case ButtonState.DOWN:
-                self.update_down()
+        getattr(self, f"update_{self.button_state}")()
 
     def update_normal(self):
         """Paint the normal state."""
@@ -262,7 +258,12 @@ class Button(Themable, ButtonBehavior, Gadget):
         self._pane.bg_color = self.color_theme.button_press.bg
         self._label.canvas["fg_color"] = self.color_theme.button_press.fg
 
+    def update_disallowed(self):
+        """Paint the disallowd state."""
+        self._pane.bg_color = self.color_theme.button_disallowed.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_disallowed.fg
+
     def on_release(self):
         """Triggered when button is released."""
-        if self.callback is not None:
+        if self.root is not None and self.callback is not None:
             self.callback()

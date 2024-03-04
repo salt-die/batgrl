@@ -249,7 +249,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
     def _repaint(self):
         if self.is_selected:
             color_pair = self.color_theme.menu_item_selected
-        elif self.state is ButtonState.NORMAL:
+        elif self.button_state == "normal":
             color_pair = self.color_theme.primary
         else:
             color_pair = self.color_theme.menu_item_hover

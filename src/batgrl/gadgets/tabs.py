@@ -3,11 +3,7 @@ import asyncio
 
 from ..colors import lerp_colors
 from .behaviors.themable import Themable
-from .behaviors.toggle_button_behavior import (
-    ButtonState,
-    ToggleButtonBehavior,
-    ToggleState,
-)
+from .behaviors.toggle_button_behavior import ToggleButtonBehavior
 from .gadget import (
     Gadget,
     Point,
@@ -45,7 +41,7 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
     def on_toggle(self):
         if self.parent is None:
             return
-        if self.toggle_state is ToggleState.ON:
+        if self.toggle_state == "on":
             self.content.is_enabled = True
 
             tabbed: Tabs = self.parent.parent
@@ -69,10 +65,10 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
             self.content.is_enabled = False
 
     def _update(self):
-        if self.toggle_state is ToggleState.ON:
+        if self.toggle_state == "on":
             color_pair = self.color_theme.titlebar_normal
             bold = True
-        elif self.state is ButtonState.HOVER:
+        elif self.button_state == "hover":
             color_pair = self.hover_color_pair
             bold = False
         else:
@@ -329,7 +325,7 @@ class Tabs(Themable, Gadget):
 
         self.tab_window.add_gadget(content)
         self._history.append(title)
-        self.tabs[title].toggle_state = ToggleState.ON
+        self.tabs[title].toggle_state = "on"
         self._tab_underline.is_enabled = True
 
     def remove_tab(self, title: str):
@@ -353,7 +349,7 @@ class Tabs(Themable, Gadget):
         if self._active_tab is title:
             if self._history:
                 self._active_tab = self._history[-1]
-                self.tabs[self._active_tab].toggle_state = ToggleState.ON
+                self.tabs[self._active_tab].toggle_state = "on"
             else:
                 self._active_tab = None
                 self._tab_underline.is_enabled = False

@@ -1,29 +1,21 @@
 """Toggle button behavior for a gadget."""
 from collections.abc import Hashable
-from enum import Enum
+from typing import Literal
 from weakref import WeakValueDictionary
 
 from .button_behavior import ButtonBehavior, ButtonState
 
 __all__ = ["ButtonState", "ToggleState", "ToggleButtonBehavior"]
 
-
-class ToggleState(str, Enum):
-    """
-    Toggle button states.
-
-    :class:`ToggleState` is one of "on", "off".
-    """
-
-    ON = "on"
-    OFF = "off"
+ToggleState = Literal["on", "off"]
+"""Toggle button behavior states."""
 
 
 class ToggleButtonBehavior(ButtonBehavior):
     """
     Toggle button behavior for gadgets.
 
-    Without a group, toggle button's states switch between on and off when pressed.
+    Without a group, toggle button's states switch between "on" and "off" when pressed.
     With a group, only a single button in the group can be in the "on" state at a time.
 
     Parameters
@@ -32,9 +24,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool, default: False
         If a group is provided, setting this to true allows no selection, i.e.,
-        every button can be in the "off" state.
-    toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button.
+        every button can be in the off state.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
 
@@ -48,25 +38,27 @@ class ToggleButtonBehavior(ButtonBehavior):
         Toggle state of button.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
-    state : ButtonState
-        Current button state. One of normal, hover or down.
+    button_state : ButtonState
+        Current button state.
 
     Methods
     -------
+    on_toggle()
+        Triggled on toggle state change.
     update_off()
         Paint the off state.
     update_on()
         Paint the on state.
-    on_toggle()
-        Update gadget on toggle state change.
+    on_release()
+        Triggered when a button is released.
     update_normal()
         Paint the normal state.
     update_hover()
         Paint the hover state.
     update_down()
         Paint the down state.
-    on_release()
-        Triggered when a button is released.
+    update_disallowed()
+        Paint the disallowed state.
     """
 
     _toggle_groups = WeakValueDictionary()
@@ -75,86 +67,69 @@ class ToggleButtonBehavior(ButtonBehavior):
         self,
         group: Hashable | None = None,
         allow_no_selection: bool = False,
-        toggle_state: ToggleState = ToggleState.OFF,
         always_release: bool = False,
         **kwargs,
     ):
+        self._toggle_state = "off"
+        super().__init__(always_release=always_release, **kwargs)
         self.group = group
         self.allow_no_selection = allow_no_selection
-        self._toggle_state = ToggleState.OFF
 
         if (
             group is not None
-            and toggle_state is ToggleState.OFF
-            and ToggleButtonBehavior._toggle_groups.get(group) is None
             and not allow_no_selection
+            and ToggleButtonBehavior._toggle_groups.get(group) is None
         ):
-            # If a group requires a selection, the first member of the group
-            # will be forced on and initial toggle state will be ignored.
-            toggle_state = ToggleState.ON
             ToggleButtonBehavior._toggle_groups[group] = self
-
-        super().__init__(always_release=always_release, **kwargs)
-
-        self.toggle_state = toggle_state
+            self._toggle_state = "on"
+            self.update_on()
+        else:
+            self.update_off()
 
     @property
     def toggle_state(self) -> ToggleState:
-        """
-        Initial toggle state of button.
-
-        If button is in a group and :attr:`allow_no_selection` is false this value will
-        be ignored if all buttons would be off.
-        """
+        """Toggle state of button."""
         return self._toggle_state
 
     @toggle_state.setter
     def toggle_state(self, toggle_state: ToggleState):
-        toggle_state = ToggleState(toggle_state)
+        if toggle_state not in {"on", "off"}:
+            toggle_state = "off"
 
-        if self._toggle_state is toggle_state or (
-            self.group is not None
-            and toggle_state is ToggleState.OFF
-            and not self.allow_no_selection
-        ):
+        if self._toggle_state == toggle_state:
             return
 
-        self._toggle_state = toggle_state
+        groups = ToggleButtonBehavior._toggle_groups
+        grouped_on = groups.get(self.group)
 
-        if toggle_state is ToggleState.ON:
-            if (
-                self.group is not None
-                and (last_on := ToggleButtonBehavior._toggle_groups.get(self.group))
-                is not None
-                and last_on
-                is not self  # last condition is false if initialized in the "on" state
-            ):
-                last_on._toggle_state = ToggleState.OFF
-                last_on.update_off()
-                last_on.on_toggle()
-            ToggleButtonBehavior._toggle_groups[self.group] = self
+        if toggle_state == "on":
+            if grouped_on is not None:
+                grouped_on._toggle_state = "off"
+                grouped_on.update_off()
+                grouped_on.on_toggle()
+            if self.group is not None:
+                groups[self.group] = self
             self.update_on()
         else:
-            if (
-                self.group is not None
-                and ToggleButtonBehavior._toggle_groups.get(self.group) is self
-            ):
-                del ToggleButtonBehavior._toggle_groups[self.group]
+            if grouped_on is self:
+                if self.allow_no_selection:
+                    del groups[self.group]
+                else:
+                    return
             self.update_off()
 
+        self._toggle_state = toggle_state
         self.on_toggle()
 
-    def _down(self):
-        self.toggle_state = (
-            ToggleState.OFF if self.toggle_state is ToggleState.ON else ToggleState.ON
-        )
-        super()._down()
+    def on_toggle(self):
+        """Update gadget on toggle state change."""
+
+    def on_release(self):
+        """Triggered when button is released."""
+        self.toggle_state = "off" if self.toggle_state == "on" else "on"
 
     def update_off(self):
         """Paint the off state."""
 
     def update_on(self):
         """Paint the on state."""
-
-    def on_toggle(self):
-        """Update gadget on toggle state change."""

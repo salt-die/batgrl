@@ -4,7 +4,7 @@ from batgrl.gadgets.button import Button
 from batgrl.gadgets.flat_toggle import FlatToggle
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.text import Text
-from batgrl.gadgets.toggle_button import ToggleButton, ToggleState
+from batgrl.gadgets.toggle_button import ToggleButton
 
 
 class ButtonApp(App):
@@ -19,7 +19,7 @@ class ButtonApp(App):
 
         def toggle_button_callback(i):
             def callback(state):
-                prefix = "un" if state is ToggleState.OFF else ""
+                prefix = "un" if state == "off" else ""
                 display.add_str(f"Button {i + 1} {prefix}toggled!".ljust(20))
 
             return callback
@@ -36,13 +36,10 @@ class ButtonApp(App):
             horizontal_spacing=1,
         )
 
-        # Buttons
         grid_layout.add_gadgets(
             Button(size=(1, 10), label=f"Button {i + 1}", callback=button_callback(i))
             for i in range(5)
         )
-
-        # Independent toggle buttons
         grid_layout.add_gadgets(
             ToggleButton(
                 size=(1, 12),
@@ -51,18 +48,15 @@ class ButtonApp(App):
             )
             for i in range(5, 10)
         )
-
-        # Grouped radio buttons
         grid_layout.add_gadgets(
             ToggleButton(
                 size=(1, 12),
-                group="a",
+                group=0,
                 label=f"Button {i + 1}",
                 callback=toggle_button_callback(i),
             )
             for i in range(10, 15)
         )
-
         grid_layout.size = grid_layout.minimum_grid_size
 
         flat_grid = GridLayout(
@@ -72,20 +66,14 @@ class ButtonApp(App):
             orientation="lr-tb",
             horizontal_spacing=1,
         )
-
-        # Independent flat toggles
         flat_grid.add_gadgets(
             FlatToggle(callback=toggle_button_callback(i)) for i in range(15, 20)
         )
-
-        # Grouped flat toggles
         flat_grid.add_gadgets(
-            FlatToggle(group="b", callback=toggle_button_callback(i))
+            FlatToggle(group=1, callback=toggle_button_callback(i))
             for i in range(20, 25)
         )
-
         flat_grid.size = flat_grid.minimum_grid_size
-
         self.add_gadgets(display, grid_layout, flat_grid)
 
 

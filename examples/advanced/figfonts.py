@@ -6,7 +6,7 @@ import numpy as np
 from batgrl.app import App
 from batgrl.colors import BLACK, RED, WHITE, gradient, lerp_colors
 from batgrl.figfont import FIGFont
-from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior, ButtonState
+from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.text import Text
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -73,24 +73,26 @@ class Bleed(Text):
 
 class TextButton(ButtonBehavior, Text):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._dark_red = lerp_colors(RED, BLACK, 0.35)
+        self._color_task = None
         self._grad = gradient(WHITE, RED, 20)
+        self._dark_red = lerp_colors(RED, BLACK, 0.35)
         self._i = 0
+        super().__init__(**kwargs)
 
     def on_add(self):
         self._color_task = asyncio.create_task(self._to_white())
         super().on_add()
 
     def on_remove(self):
-        self._color_task.cancel()
+        if self._color_task is not None:
+            self._color_task.cancel()
         super().on_remove()
 
     async def _to_red(self):
         self.canvas["fg_color"] = self._grad[self._i]
         while self._i < len(self._grad) - 1:
             self._i += 1
-            if self.state is not ButtonState.DOWN:
+            if self.button_state != "down":
                 self.canvas["fg_color"] = self._grad[self._i]
             await asyncio.sleep(0.01)
 
@@ -102,12 +104,14 @@ class TextButton(ButtonBehavior, Text):
             await asyncio.sleep(0.01)
 
     def update_hover(self):
-        self._color_task.cancel()
+        if self._color_task is not None:
+            self._color_task.cancel()
         self._color_task = asyncio.create_task(self._to_red())
         self.canvas["fg_color"] = self._grad[self._i]
 
     def update_normal(self):
-        self._color_task.cancel()
+        if self._color_task is not None:
+            self._color_task.cancel()
         self._color_task = asyncio.create_task(self._to_white())
         self.canvas["fg_color"] = self._grad[self._i]
 

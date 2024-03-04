@@ -8,11 +8,7 @@ from batgrl.io import KeyEvent
 from ..geometry import clamp
 from ..io import MouseEventType
 from .behaviors.themable import Themable
-from .behaviors.toggle_button_behavior import (
-    ButtonState,
-    ToggleButtonBehavior,
-    ToggleState,
-)
+from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .grid_layout import GridLayout
 from .pane import (
     Pane,
@@ -55,7 +51,6 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         *,
         left_label: str = "",
         right_label: str = "",
-        item_disabled: bool = False,
         item_callback: ItemCallback = lambda: None,
         submenu: Optional["Menu"] = None,
         **kwargs,
@@ -66,7 +61,6 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
             pos_hint={"x_hint": 1.0, "anchor": "right"},
             alpha=0.0,
         )
-        self._item_disabled = item_disabled
         self.item_callback = item_callback
         self.submenu = submenu
         super().__init__(**kwargs)
@@ -77,11 +71,11 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         self.update_off()
 
     def _repaint(self):
-        if self.item_disabled:
-            color_pair = self.color_theme.menu_item_disabled
-        elif self.state is ButtonState.NORMAL:
+        if self.button_state == "disallowed":
+            color_pair = self.color_theme.menu_item_disallowed
+        elif self.button_state == "normal":
             color_pair = self.color_theme.primary
-        elif self.state is ButtonState.HOVER or self.state is ButtonState.DOWN:
+        elif self.button_state == "hover" or self.button_state == "down":
             color_pair = self.color_theme.menu_item_hover
         self.bg_color = color_pair.bg
         self.left_label.canvas[["fg_color", "bg_color"]] = color_pair
@@ -109,16 +103,6 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         if self.submenu is not None:
             self.submenu.is_transparent = is_transparent
 
-    @property
-    def item_disabled(self) -> bool:
-        """If true, item will not be selectable in menu."""
-        return self._item_disabled
-
-    @item_disabled.setter
-    def item_disabled(self, item_disabled: bool):
-        self._item_disabled = item_disabled
-        self._repaint()
-
     def update_theme(self):
         """Paint the gadget with current theme."""
         self._repaint()
@@ -131,7 +115,8 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         if self.parent._current_selection not in {-1, index}:
             self.parent.close_submenus()
             if self.parent._current_selection != -1:
-                self.parent.children[self.parent._current_selection]._normal()
+                last_hovered = self.parent.children[self.parent._current_selection]
+                last_hovered.button_state = "normal"
 
         self.parent._current_selection = index
         if self.submenu is not None:
@@ -149,23 +134,10 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         elif not self.submenu.collides_point(self._last_mouse_pos):
             self.submenu.close_menu()
 
-    def on_mouse(self, mouse_event):
-        """Save last mouse position."""
-        self._last_mouse_pos = mouse_event.position
-        return super().on_mouse(mouse_event)
-
-    def on_release(self):
-        """Open submenu or call item callback on release."""
-        if self.item_disabled:
-            return
-
+    def update_disallowed(self):
+        self._repaint()
         if self.submenu is not None:
-            self.submenu.open_menu()
-        elif nargs(self.item_callback) == 0:
-            self.item_callback()
-
-            if self.parent.close_on_release:
-                self.parent.close_parents()
+            self.submenu.close_menu()
 
     def update_off(self):
         """Paint the off state."""
@@ -176,6 +148,23 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         """Paint the on state."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
             self.left_label.canvas["char"][0, 1] = CHECK_ON
+
+    def on_mouse(self, mouse_event):
+        """Save last mouse position."""
+        self._last_mouse_pos = mouse_event.position
+        return super().on_mouse(mouse_event)
+
+    def on_release(self):
+        """Open submenu or call item callback on release."""
+        if self.submenu is not None:
+            self.submenu.open_menu()
+        elif nargs(self.item_callback) == 0:
+            self.item_callback()
+
+            if self.parent.close_on_release:
+                self.parent.close_parents()
+        else:
+            super().on_release()
 
     def on_toggle(self):
         """Call item callback on toggle state change."""
@@ -450,18 +439,18 @@ class Menu(GridLayout):
 
     def close_menu(self):
         """Close the menu."""
-        if (
-            self._menu_button is not None
-            and self._menu_button.toggle_state is ToggleState.ON
-        ):
-            self._menu_button.toggle_state = ToggleState.OFF
+        if self._menu_button is not None and self._menu_button.toggle_state == "on":
+            self._menu_button.toggle_state = "off"
         else:
+            if self._menu_button is not None:
+                self._menu_button.update_off()
+
             self.is_enabled = False
             self._current_selection = -1
             self.close_submenus()
 
             for child in self.children:
-                child._normal()
+                child.button_state = "normal"
 
     def close_submenus(self):
         """Close all submenus."""
@@ -510,7 +499,7 @@ class Menu(GridLayout):
                     i = len(self.children) - 1
                 else:
                     i = self._current_selection
-                    self.children[i]._normal()
+                    self.children[i].button_state = "normal"
                     i = (i - 1) % len(self.children)
 
                 for _ in self.children:
@@ -530,7 +519,7 @@ class Menu(GridLayout):
                 if i == -1:
                     i = 0
                 else:
-                    self.children[i]._normal()
+                    self.children[i].button_state = "normal"
                     i = (i + 1) % len(self.children)
 
                 for _ in self.children:
@@ -677,7 +666,7 @@ class _MenuButton(Themable, ToggleButtonBehavior, Text):
         self._menu = menu
 
     def _repaint(self):
-        if self.state is not ButtonState.NORMAL or self.toggle_state is ToggleState.ON:
+        if self.button_state != "normal" or self.toggle_state == "on":
             color_pair = self.color_theme.menu_item_hover
         else:
             color_pair = self.color_theme.primary
@@ -697,7 +686,7 @@ class _MenuButton(Themable, ToggleButtonBehavior, Text):
     def update_hover(self):
         self._repaint()
         if self._toggle_groups.get(self.group):
-            self.toggle_state = ToggleState.ON
+            self.toggle_state = "on"
 
     def update_on(self):
         self._repaint()
@@ -706,7 +695,7 @@ class _MenuButton(Themable, ToggleButtonBehavior, Text):
         self._repaint()
 
     def on_toggle(self):
-        if self.toggle_state is ToggleState.ON:
+        if self.toggle_state == "on":
             self._menu.open_menu()
         else:
             self._menu.close_menu()

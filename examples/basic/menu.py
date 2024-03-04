@@ -51,7 +51,7 @@ class MenuApp(App):
             )
         )
 
-        self.children[-2].children[1].item_disabled = True
+        self.children[-2].children[1].button_state = "disallowed"
 
 
 if __name__ == "__main__":

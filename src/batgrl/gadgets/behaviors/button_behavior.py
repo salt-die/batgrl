@@ -1,31 +1,25 @@
 """Button behavior for a gadget."""
-from enum import Enum
+from typing import Literal
 
 from ...io import MouseEventType
 
 __all__ = ["ButtonState", "ButtonBehavior"]
 
-
-class ButtonState(str, Enum):
-    """
-    State of a button gadget.
-
-    :class:`ButtonState` is one of "normal", "hover", "down".
-    """
-
-    NORMAL = "normal"
-    HOVER = "hover"
-    DOWN = "down"
+ButtonState = Literal["normal", "hover", "down", "disallowed"]
+"""Button behavior states."""
 
 
 class ButtonBehavior:
     """
     Button behavior for a gadget.
 
-    A button has three states: 'normal', 'hover', and 'down'.
+    A button has four states: "normal", "hover", "down", and "disallowed".
 
     When a button's state changes one of the following methods are called:
-    :meth:`update_normal`, :meth:`update_hover`, and :meth:`update_down`.
+    - :meth:`update_normal`
+    - :meth:`update_hover`
+    - :meth:`update_down`
+    - :meth:`update_disallowed`
 
     When a button is released, the :meth:`on_release` method is called.
 
@@ -38,45 +32,52 @@ class ButtonBehavior:
     ----------
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
-    state : ButtonState
-        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+    button_state : ButtonState
+        Current button state.
 
     Methods
     -------
+    on_release()
+        Triggered when a button is released.
     update_normal()
         Paint the normal state.
     update_hover()
         Paint the hover state.
     update_down()
         Paint the down state.
-    on_release()
-        Triggered when a button is released.
+    update_disallowed()
+        Paint the disallowed state.
     """
 
     def __init__(self, *, always_release: bool = False, **kwargs):
         super().__init__(**kwargs)
         self.always_release = always_release
-        self.state = ButtonState.NORMAL
+        self.button_state: ButtonState = "normal"
 
-    def on_add(self):
-        """Paint normal state."""
-        super().on_add()
-        self._normal()
+    @property
+    def button_state(self) -> ButtonState:
+        """Current button state."""
+        return self._button_state
 
-    def _normal(self):
-        self.state = ButtonState.NORMAL
-        self.update_normal()
+    @button_state.setter
+    def button_state(self, button_state: ButtonState):
+        dispatch = {
+            "normal": self.update_normal,
+            "hover": self.update_hover,
+            "down": self.update_down,
+            "disallowed": self.update_disallowed,
+        }
+        if button_state not in dispatch:
+            button_state = "normal"
 
-    def _hover(self):
-        self.state = ButtonState.HOVER
-        self.update_hover()
+        self._button_state = button_state
+        dispatch[button_state]()
 
-    def _down(self):
-        self.state = ButtonState.DOWN
-        self.update_down()
-
-    def on_mouse(self, mouse_event):
+    def on_mouse(self, mouse_event) -> bool | None:
         """Determine button state from mouse event."""
+        if self.button_state == "disallowed":
+            return False
+
         if super().on_mouse(mouse_event):
             return True
 
@@ -84,28 +85,31 @@ class ButtonBehavior:
 
         if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
             if collides:
-                self._down()
+                self.button_state = "down"
                 return True
 
         elif (
             mouse_event.event_type is MouseEventType.MOUSE_UP
-            and self.state is ButtonState.DOWN
+            and self.button_state == "down"
         ):
             if collides:
-                self._hover()
                 self.on_release()
+                self.button_state = "hover"
                 return True
 
-            self._normal()
+            self.button_state = "normal"
 
             if self.always_release:
                 self.on_release()
                 return True
 
-        if not collides and self.state is ButtonState.HOVER:
-            self._normal()
-        elif collides and self.state is ButtonState.NORMAL:
-            self._hover()
+        if not collides and self.button_state == "hover":
+            self.button_state = "normal"
+        elif collides and self.button_state == "normal":
+            self.button_state = "hover"
+
+    def on_release(self):
+        """Triggered when button is released."""
 
     def update_normal(self):
         """Paint the normal state."""
@@ -116,5 +120,5 @@ class ButtonBehavior:
     def update_down(self):
         """Paint the down state."""
 
-    def on_release(self):
-        """Triggered when button is released."""
+    def update_disallowed(self):
+        """Paint the disallowed state."""

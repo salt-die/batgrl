@@ -52,13 +52,11 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Called when toggle state changes. The new state is provided as first argument.
     alpha : float, default: 1.0
         Transparency of gadget.
-    group : None | Hashable, default: None
-        If a group is provided, only one button in a group can be in the "on" state.
+    group : Hashable | None, default: None
+        If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool, default: False
         If a group is provided, setting this to true allows no selection, i.e.,
-        every button can be in the "off" state.
-    toggle_state : ToggleState, default: ToggleState.OFF
-        Initial toggle state of button.
+        every button can be in the off state.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     size : Size, default: Size(10, 10)
@@ -86,16 +84,16 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         Called when toggle state changes.
     alpha : float
         Transparency of gadget.
-    group : None | Hashable
-        If a group is provided, only one button in a group can be in the "on" state.
+    group : Hashable | None
+        If a group is provided, only one button in a group can be in the on state.
     allow_no_selection : bool
-        If true and button is in a group, every button can be in the "off" state.
+        If true and button is in a group, every button can be in the off state.
     toggle_state : ToggleState
         Toggle state of button.
     always_release : bool
         Whether a mouse up event outside the button will trigger it.
-    state : ButtonState
-        Current button state. One of `NORMAL`, `HOVER`, `DOWN`.
+    button_state : ButtonState
+        Current button state.
     size : Size
         Size of gadget.
     height : int
@@ -147,20 +145,22 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     -------
     update_theme()
         Paint the gadget with current theme.
-    update_off()
-        Paint the "off" state.
-    update_on()
-        Paint the "on" state.
     on_toggle()
-        Update gadget on toggle state change.
+        Triggled on toggle state change.
+    update_off()
+        Paint the off state.
+    update_on()
+        Paint the on state.
+    on_release()
+        Triggered when a button is released.
     update_normal()
         Paint the normal state.
     update_hover()
         Paint the hover state.
     update_down()
         Paint the down state.
-    on_release()
-        Triggered when a button is released.
+    update_disallowed()
+        Paint the disallowed state.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -217,7 +217,6 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         alpha: float = 1.0,
         group: None | Hashable = None,
         allow_no_selection: bool = False,
-        toggle_state: ToggleState = ToggleState.OFF,
         always_release: bool = False,
         size=Size(10, 10),
         pos=Point(0, 0),
@@ -234,7 +233,6 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         super().__init__(
             group=group,
             allow_no_selection=allow_no_selection,
-            toggle_state=toggle_state,
             always_release=always_release,
             size=size,
             pos=pos,
@@ -281,7 +279,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         else:
             on, off = TOGGLE_ON, TOGGLE_OFF
 
-        if self.toggle_state is ToggleState.ON:
+        if self.toggle_state == "on":
             prefix = on
         else:
             prefix = off
@@ -290,25 +288,27 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        match self.state:
-            case ButtonState.NORMAL:
-                self.update_normal()
-            case ButtonState.HOVER:
-                self.update_hover()
-            case ButtonState.DOWN:
-                self.update_down()
+        getattr(self, f"update_{self.button_state}")()
 
     def update_normal(self):
         """Paint the normal state."""
         self._pane.bg_color = self.color_theme.button_normal.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_normal.fg
 
     def update_hover(self):
         """Paint the hover state."""
         self._pane.bg_color = self.color_theme.button_hover.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_hover.fg
 
     def update_down(self):
         """Paint the down state."""
         self._pane.bg_color = self.color_theme.button_press.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_press.fg
+
+    def update_disallowed(self):
+        """Paint the disallowed state."""
+        self._pane.bg_color = self.color_theme.button_disallowed.bg
+        self._label.canvas["fg_color"] = self.color_theme.button_disallowed.fg
 
     def on_toggle(self):
         """Call callback on toggle state change."""

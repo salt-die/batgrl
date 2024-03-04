@@ -266,9 +266,10 @@ class ColorTheme(TypedDict, total=False):
     button_normal: ColorPair
     button_hover: ColorPair
     button_press: ColorPair
+    button_disallowed: ColorPair
     menu_item_hover: ColorPair
     menu_item_selected: ColorPair
-    menu_item_disabled: ColorPair
+    menu_item_disallowed: ColorPair
     titlebar_normal: ColorPair
     titlebar_inactive: ColorPair
     data_table_sort_indicator: ColorPair
