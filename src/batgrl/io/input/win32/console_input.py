@@ -77,7 +77,7 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     # through ev.ButtonState. To get behavior roughly consistent with linux, the most
     # recent mouse button pressed is determined from the last button state, the current
     # button state, and the order mouse buttons were pressed (stored in
-    # _PRESSED_BUTTONS).
+    # _PRESSED_BUTTONS) instead of using ev.ButtonState.
 
     # Double-click can be determined from ev.EventFlags (0x0002), but to be consistent
     # with linux mouse-handling we determine double/triple-clicks with
