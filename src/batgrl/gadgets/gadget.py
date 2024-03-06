@@ -540,8 +540,8 @@ class Gadget:
     def __init__(
         self,
         *,
-        size=Size(10, 10),
-        pos=Point(0, 0),
+        size: Size = Size(10, 10),
+        pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
         is_transparent: bool = False,
