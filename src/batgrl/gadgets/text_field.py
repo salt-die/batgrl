@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
+from ..geometry import clamp
 from .gadget import (
     Cell,
     Gadget,
@@ -20,6 +21,7 @@ from .gadget import (
     cell,
 )
 from .text_tools import cell_sans
+from .texture_tools import _composite
 
 __all__ = [
     "Point",
@@ -48,6 +50,8 @@ class TextParticleField(Gadget):
         An array of Cells of particles with shape `(N,)`.
     particle_properties : dict[str, Any] | None, default: None
         Additional particle properties.
+    alpha : float, default: 0.0
+        Transparency of particles.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -75,6 +79,8 @@ class TextParticleField(Gadget):
         An array of Cells of particles with shape `(N,)`.
     particle_properties : dict[str, Any]
         Additional particle properties.
+    alpha : float
+        Transparency of particles.
     size : Size
         Size of gadget.
     height : int
@@ -124,6 +130,8 @@ class TextParticleField(Gadget):
 
     Methods
     -------
+    particles_from_cells(cells)
+        Return positions and cells of non-whitespace characters of a Cell array.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -178,8 +186,9 @@ class TextParticleField(Gadget):
         particle_positions: NDArray[np.int32] | None = None,
         particle_cells: NDArray[Cell] | None = None,
         particle_properties: dict[str, Any] = None,
-        size=Size(10, 10),
-        pos=Point(0, 0),
+        alpha: float = 0.0,
+        size: Size = Size(10, 10),
+        pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
         is_transparent: bool = False,
@@ -211,6 +220,17 @@ class TextParticleField(Gadget):
         else:
             self.particle_properties = particle_properties
 
+        self.alpha = alpha
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of particles."""
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._alpha = clamp(alpha, 0.0, 1.0)
+
     @property
     def nparticles(self) -> int:
         """Number of particles in particle field."""
@@ -235,9 +255,24 @@ class TextParticleField(Gadget):
                 where_inbounds = np.nonzero(inbounds & not_whitespace)
             else:
                 where_inbounds = np.nonzero(inbounds)
+            painted = pbg_color[where_inbounds]
 
             ys, xs = pos[where_inbounds].T
             dst = rect.to_slices()
-            if not self.is_transparent:
-                bg_color[dst][ys, xs] = pbg_color[where_inbounds]
+            if self.is_transparent:
+                background = bg_color[dst][ys, xs]
+                _composite(background, painted, 255, self.alpha)
+                bg_color[dst][ys, xs] = background
+            else:
+                bg_color[dst][ys, xs] = painted
+
             chars[dst][ys, xs] = pchars[where_inbounds]
+
+    @classmethod
+    def particles_from_cells(
+        cls, cells: NDArray[Cell]
+    ) -> tuple[NDArray[np.int32], NDArray[Cell]]:
+        """Return positions and cells of non-whitespace characters of a Cell array."""
+        positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
+        pys, pxs = positions.T
+        return positions, cells[pys, pxs]

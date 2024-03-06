@@ -12,10 +12,11 @@ from pathlib import Path
 import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.graphic_field import GraphicParticleField
-from batgrl.gadgets.image import Image
+from batgrl.gadgets.image import Image, Size
+from batgrl.gadgets.texture_tools import read_texture, resize_texture
 from batgrl.io import MouseButton
 
-HEIGHT, WIDTH = 18, 36
+LOGO_SIZE = Size(36, 36)
 POWER = 2
 MAX_PARTICLE_SPEED = 10
 FRICTION = 0.99
@@ -45,11 +46,13 @@ class PokeParticleField(GraphicParticleField):
         oh, ow = self._old_middle
         h = self.height
         w = self.width // 2
-        nh, nw = self._old_middle = h - HEIGHT, w - WIDTH // 2
+        nh = h - LOGO_SIZE.height // 2
+        nw = w - LOGO_SIZE.width // 2
+        self._old_middle = nh, nw
 
+        self.particle_properties["original_positions"] += nh - oh, nw - ow
         real_positions = self.particle_properties["real_positions"]
         real_positions += nh - oh, nw - ow
-        self.particle_properties["original_positions"] += nh - oh, nw - ow
         self.particle_positions[:] = real_positions.astype(int)
 
     def on_mouse(self, mouse_event):
@@ -145,23 +148,20 @@ class ExplodingLogoApp(App):
         background = Image(
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
+        texture = resize_texture(read_texture(PATH_TO_LOGO_FULL), LOGO_SIZE)
+        positions, colors = PokeParticleField.particles_from_texture(texture)
 
-        logo = Image(size=(HEIGHT, WIDTH), path=PATH_TO_LOGO_FULL)
-
-        particle_positions = np.argwhere(logo.texture[..., 3])
-        pys, pxs = particle_positions.T
-
-        particle_properties = dict(
-            original_positions=particle_positions.copy(),
-            real_positions=particle_positions.astype(float),
-            velocities=np.zeros((len(particle_positions), 2), dtype=float),
+        props = dict(
+            original_positions=positions.copy(),
+            real_positions=positions.astype(float),
+            velocities=np.zeros((len(positions), 2), dtype=float),
         )
 
         field = PokeParticleField(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            particle_positions=particle_positions,
-            particle_colors=logo.texture[pys, pxs],
-            particle_properties=particle_properties,
+            particle_positions=positions,
+            particle_colors=colors,
+            particle_properties=props,
             alpha=0.7,
             is_transparent=True,
         )

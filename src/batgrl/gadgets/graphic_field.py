@@ -130,6 +130,8 @@ class GraphicParticleField(Gadget):
 
     Methods
     -------
+    particles_from_texture(texture)
+        Return positions and colors of visible pixels of an RGBA texture.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -185,20 +187,20 @@ class GraphicParticleField(Gadget):
         particle_colors: NDArray[np.uint8] | None = None,
         particle_properties: dict[str, NDArray[Any]] = None,
         alpha: float = 1.0,
-        is_transparent: bool = True,
-        size=Size(10, 10),
-        pos=Point(0, 0),
+        size: Size = Size(10, 10),
+        pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
         super().__init__(
-            is_transparent=is_transparent,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -269,9 +271,9 @@ class GraphicParticleField(Gadget):
             painted = pcolors[where_inbounds]
 
             if self.is_transparent:
-                particles = texture[ys, xs]
-                _composite(particles, painted[:, :3], painted[:, 3, None], self.alpha)
-                texture[ys, xs] = particles
+                background = texture[ys, xs]
+                _composite(background, painted[:, :3], painted[:, 3, None], self.alpha)
+                texture[ys, xs] = background
             else:
                 texture[ys, xs] = painted[..., :3]
 
@@ -282,3 +284,12 @@ class GraphicParticleField(Gadget):
             )
             chars[dst] = "▀"
             styles[dst] = False
+
+    @classmethod
+    def particles_from_texture(
+        cls, texture: NDArray[np.uint8]
+    ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
+        """Return positions and colors of visible pixels of an RGBA texture."""
+        positions = np.argwhere(texture[..., 3])
+        pys, pxs = positions.T
+        return positions, texture[pys, pxs]

@@ -156,25 +156,22 @@ class PokeParticleField(TextParticleField):
 
 class ExplodingLogoApp(App):
     async def on_start(self):
-        particle_positions = np.argwhere(LOGO != " ")
-        pys, pxs = particle_positions.T
+        cell_arr = np.zeros_like(LOGO, dtype=Cell)
+        cell_arr["char"] = LOGO
+        cell_arr["fg_color"] = YELLOW
+        positions, cells = PokeParticleField.particles_from_cells(cell_arr)
 
-        particles = LOGO[pys, pxs]
-        particle_cells = np.zeros_like(particles, dtype=Cell)
-        particle_cells["char"] = particles
-        particle_cells["fg_color"] = YELLOW
-
-        particle_properties = dict(
-            original_positions=particle_positions.copy(),
-            real_positions=particle_positions.astype(float),
-            velocities=np.zeros((len(particle_positions), 2), dtype=float),
+        props = dict(
+            original_positions=positions.copy(),
+            real_positions=positions.astype(float),
+            velocities=np.zeros((len(positions), 2), dtype=float),
         )
 
         field = PokeParticleField(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            particle_positions=particle_positions,
-            particle_cells=particle_cells,
-            particle_properties=particle_properties,
+            particle_positions=positions,
+            particle_cells=cells,
+            particle_properties=props,
             is_transparent=True,
         )
 
