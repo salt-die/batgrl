@@ -188,10 +188,17 @@ class App(ABC):
 
     def exit(self):
         """Exit the app."""
-        self.root.destroy()
-        self.root = None
-        for task in asyncio.all_tasks():
-            task.cancel()
+        if self.root is not None:
+            self.root.destroy()
+            self.root = None
+
+        try:
+            tasks = asyncio.all_tasks()
+        except RuntimeError:
+            pass
+        else:
+            for task in tasks:
+                task.cancel()
 
     def _create_io(self) -> tuple[ModuleType, Vt100_Output]:
         """Return platform specific io."""
@@ -221,11 +228,11 @@ class App(ABC):
         env_in, env_out = self._create_io()
         with env_out:
             self.root = root = _Root(
-                bg_color=self.bg_color,
+                app=self,
                 render_mode=self.render_mode,
+                bg_color=self.bg_color,
                 size=env_out.get_size(),
             )
-            self.root._app = self
 
             if self.title:
                 env_out.set_title(self.title)
