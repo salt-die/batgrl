@@ -768,27 +768,28 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             self._undo_buffer.append(self._add_text(self.cursor, key))
 
     __HANDLERS = {
-        (Key.Enter, Mods.NO_MODS): _enter,
-        (Key.Backspace, Mods.NO_MODS): _backspace,
-        (Key.Delete, Mods.NO_MODS): _delete,
-        (Key.Left, Mods.NO_MODS): _left,
-        (Key.Right, Mods.NO_MODS): _right,
-        (Key.Left, Mods(False, True, False)): _ctrl_left,
-        (Key.Right, Mods(False, True, False)): _ctrl_right,
-        (Key.Home, Mods.NO_MODS): _home,
-        (Key.End, Mods.NO_MODS): _end,
-        (Key.Left, Mods(False, False, True)): _shift_left,
-        (Key.Right, Mods(False, False, True)): _shift_right,
-        (Key.Left, Mods(False, True, True)): _shift_ctrl_left,
-        (Key.Right, Mods(False, True, True)): _shift_ctrl_right,
-        (Key.Home, Mods(False, False, True)): _shift_home,
-        (Key.End, Mods(False, False, True)): _shift_end,
-        (Key.Escape, Mods.NO_MODS): _escape,
-        ("z", Mods(False, True, False)): undo,
-        ("z", Mods(False, True, True)): redo,
-        ("r", Mods(False, True, False)): redo,
-        ("a", Mods(False, True, False)): _ctrl_a,
-        ("d", Mods(False, True, False)): _ctrl_d,
+        KeyEvent(Key.Enter): _enter,
+        KeyEvent(Key.Backspace): _backspace,
+        KeyEvent(Key.Delete): _delete,
+        KeyEvent(Key.Left): _left,
+        KeyEvent(Key.Right): _right,
+        KeyEvent(Key.Left, Mods(ctrl=True)): _ctrl_left,
+        KeyEvent(Key.Right, Mods(ctrl=True)): _ctrl_right,
+        KeyEvent(Key.Home): _home,
+        KeyEvent(Key.End): _end,
+        KeyEvent(Key.Left, Mods(shift=True)): _shift_left,
+        KeyEvent(Key.Right, Mods(shift=True)): _shift_right,
+        KeyEvent(Key.Left, Mods(ctrl=True, shift=True)): _shift_ctrl_left,
+        KeyEvent(Key.Right, Mods(ctrl=True, shift=True)): _shift_ctrl_right,
+        KeyEvent(Key.Home, Mods(shift=True)): _shift_home,
+        KeyEvent(Key.End, Mods(shift=True)): _shift_end,
+        KeyEvent(Key.Escape): _escape,
+        KeyEvent("z", Mods(ctrl=True)): undo,
+        KeyEvent("z", Mods(ctrl=True, shift=True)): redo,
+        KeyEvent("y", Mods(ctrl=True)): redo,  # ctrl + shift + z won't work on linux
+        KeyEvent("r", Mods(ctrl=True)): redo,
+        KeyEvent("a", Mods(ctrl=True)): _ctrl_a,
+        KeyEvent("d", Mods(ctrl=True)): _ctrl_d,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
@@ -796,7 +797,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         if not self.is_focused:
             return super().on_key(key_event)
 
-        if key_event.mods == Mods.NO_MODS and len(key_event.key) == 1:
+        if key_event.mods == Mods() and len(key_event.key) == 1:
             self._ascii(key_event.key)
         elif handler := self.__HANDLERS.get(key_event):
             handler(self)

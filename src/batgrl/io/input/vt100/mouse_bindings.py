@@ -13,14 +13,14 @@ RIGHT = MouseButton.RIGHT
 NO_BUTTON = MouseButton.NO_BUTTON
 UNKNOWN_BUTTON = MouseButton.UNKNOWN_BUTTON
 
-NO_MODS = Mods.NO_MODS
-ALT = Mods(True, False, False)
-CONTROL = Mods(False, True, False)
-SHIFT = Mods(False, False, True)
-ALT_CONTROL = Mods(True, True, False)
-ALT_SHIFT = Mods(True, False, True)
-CONTROL_SHIFT = Mods(False, True, True)
-ALT_CONTROL_SHIFT = Mods(True, True, True)
+NO_MODS = Mods()
+ALT = Mods(alt=True)
+CONTROL = Mods(ctrl=True)
+SHIFT = Mods(shift=True)
+ALT_CONTROL = Mods(alt=True, ctrl=True)
+ALT_SHIFT = Mods(alt=True, shift=True)
+CONTROL_SHIFT = Mods(ctrl=True, shift=True)
+ALT_CONTROL_SHIFT = Mods(alt=True, ctrl=True, shift=True)
 
 TERM_SGR = {
     (0, "m"): (MOUSE_UP, LEFT, NO_MODS),

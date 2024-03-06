@@ -7,7 +7,7 @@ from code import InteractiveInterpreter
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 
-from ..io import Key, KeyEvent, Mods, PasteEvent
+from ..io import Key, KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
 from .gadget import (
@@ -182,10 +182,10 @@ class _ConsoleTextbox(Textbox):
         self._redo_stack.clear()
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
-        if key_event == KeyEvent(Key.Tab, Mods.NO_MODS):
+        if key_event == KeyEvent(Key.Tab):
             self._tab()
             return True
-        if key_event == KeyEvent(Key.Left, Mods.NO_MODS) and self.cursor == 0:
+        if key_event == KeyEvent(Key.Left) and self.cursor == 0:
             self.console._scroll_view.horizontal_proportion = 0
             return True
         return super().on_key(key_event)
@@ -585,7 +585,7 @@ class Console(Themable, Focusable, Gadget):
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
         """Get previous inputs on up/down."""
-        if key_event == KeyEvent(Key.Up, Mods.NO_MODS):
+        if key_event == KeyEvent(Key.Up):
             if isinstance(self._history_index, float):
                 if len(self._history) + self._history_index - 0.5 >= 0:
                     self._history_index = int(self._history_index - 0.5)
@@ -593,7 +593,7 @@ class Console(Themable, Focusable, Gadget):
             elif len(self._history) + self._history_index - 1 >= 0:
                 self._history_index -= 1
                 self._input.text = self._history[self._history_index]
-        elif key_event == KeyEvent(Key.Down, Mods.NO_MODS):
+        elif key_event == KeyEvent(Key.Down):
             if isinstance(self._history_index, float):
                 if self._history_index + 0.5 < 0:
                     self._history_index = int(self._history_index + 0.5)

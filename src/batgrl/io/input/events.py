@@ -17,6 +17,9 @@ __all__ = [
     "PasteEvent",
 ]
 
+# Mods and KeyEvent below inherit from namedtuple instead of NamedTuple so that
+# `__new__` can be cached.
+
 
 class Mods(namedtuple("Mods", "alt ctrl shift")):
     """
@@ -24,11 +27,11 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
 
     Parameters
     ----------
-    alt : bool
+    alt : bool, default: False
         True if `alt` was pressed.
-    ctrl : bool
+    ctrl : bool, default: False
         True if `ctrl` was pressed.
-    shift : bool
+    shift : bool, default: False
         True if `shift` was pressed.
 
     Attributes
@@ -52,13 +55,9 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
         Return first index of value.
     """
 
-    alt: bool
-    ctrl: bool
-    shift: bool
-
     @cache
-    def __new__(cls, *args, **kwargs):  # noqa
-        return super().__new__(cls, *args, **kwargs)
+    def __new__(cls, alt: bool = False, ctrl: bool = False, shift: bool = False):  # noqa
+        return super().__new__(cls, alt, ctrl, shift)
 
     @property
     def meta(self):
@@ -71,9 +70,6 @@ class Mods(namedtuple("Mods", "alt ctrl shift")):
         return self.ctrl
 
 
-Mods.NO_MODS = Mods(False, False, False)
-
-
 class KeyEvent(namedtuple("KeyEvent", "key mods")):
     """
     A key press event.
@@ -82,7 +78,7 @@ class KeyEvent(namedtuple("KeyEvent", "key mods")):
     ----------
     key : Key | str
         The key pressed.
-    mods : Mods
+    mods : Mods, default: Mods(False, False, False)
         Modifiers for the key.
 
     Attributes
@@ -100,17 +96,13 @@ class KeyEvent(namedtuple("KeyEvent", "key mods")):
         Return first index of value.
     """
 
-    key: Key | str
-    mods: Mods
-
     @cache
-    def __new__(cls, *args, **kwargs):  # noqa
-        return super().__new__(cls, *args, **kwargs)
+    def __new__(cls, key: Key | str, mods: Mods = Mods()):  # noqa
+        return super().__new__(cls, key, mods)
 
 
 KeyEvent.CTRL_C = KeyEvent("c", Mods(False, True, False))
-KeyEvent.ENTER = KeyEvent(Key.Enter, Mods.NO_MODS)
-KeyEvent.ESCAPE = KeyEvent(Key.Escape, Mods.NO_MODS)
+KeyEvent.ESCAPE = KeyEvent(Key.Escape)
 
 
 class MouseEventType(str, Enum):

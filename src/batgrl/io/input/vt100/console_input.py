@@ -13,7 +13,7 @@ from collections.abc import Iterable
 
 from ....geometry import Point, Size
 from ..events import Key, KeyEvent, PasteEvent, _PartialMouseEvent
-from .ansi_escapes import ALT, ANSI_ESCAPES, NO_MODS
+from .ansi_escapes import ALT, ANSI_ESCAPES
 from .mouse_bindings import TERM_SGR, TYPICAL
 
 DECODER = getincrementaldecoder("utf-8")("surrogateescape")
@@ -106,7 +106,7 @@ def _find_longest_match(data: str) -> str:
                 _EVENTS.append(key)
                 return suffix
 
-    _EVENTS.append(KeyEvent(prefix, NO_MODS))
+    _EVENTS.append(KeyEvent(prefix))
     return suffix
 
 
