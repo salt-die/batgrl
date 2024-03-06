@@ -21,15 +21,18 @@ class _Root(Gadget):
 
     def __init__(
         self,
-        bg_color: Color,
+        app: "App",
         render_mode: Literal["regions", "painter"],
+        bg_color: Color,
         size: Size,
     ):
-        self._cell = cell(bg_color=bg_color)
         self._render_lock = RLock()
-        self._size = -1, -1  # Forces `on_size()` when size is set.
+        self._size = -1, -1
         self.children = []
+
+        self._app = app
         self.render_mode = render_mode
+        self._cell = cell(bg_color=bg_color)
         self.size = size
 
     def on_size(self):
@@ -69,7 +72,16 @@ class _Root(Gadget):
 
     @property
     def app(self) -> "App":
+        """The running app."""
         return self._app
+
+    @property
+    def bg_color(self) -> Color:
+        return Color(*self._cell["bg_color"].item())
+
+    @bg_color.setter
+    def bg_color(self, color: Color):
+        self._cell["bg_color"] = color
 
     def to_local(self, point: Point) -> Point:
         return point
