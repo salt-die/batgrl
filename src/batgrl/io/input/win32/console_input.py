@@ -34,6 +34,10 @@ _INT_TO_KEYS = {
 # handling. OrderedDict is being used as an ordered-set.
 _PRESSED_BUTTONS = OrderedDict.fromkeys([0])
 _TEXT: list[str] = []
+MAX_RECORDS = 1024
+"""The max number of input records to read at once."""
+RecordArrayType = INPUT_RECORD * MAX_RECORDS
+"""Sized array type of MAX_RECORDS input records."""
 
 
 def _handle_mods(key_state: DWORD) -> Mods:
@@ -112,8 +116,8 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
 def _purge_text() -> Iterable[PasteEvent | KeyEvent]:
     """
     While generating events, key events are collected into _TEXT to determine if a paste
-    event has occurred. If there many key events or there are non-ascii character keys,
-    this function yields a single PasteEvent. Otherwise yields KeyEvents from _TEXT.
+    event has occurred. If there are more than two key events or there are non-ascii
+    character keys, yield a single PasteEvent. Otherwise, yield KeyEvents from _TEXT.
     _TEXT is cleared afterwards.
     """
     if len(_TEXT) == 0:
@@ -128,7 +132,7 @@ def _purge_text() -> Iterable[PasteEvent | KeyEvent]:
         yield PasteEvent(chars)
     else:
         for char in chars:
-            yield KeyEvent(Key.Enter if char == "\n" else char, Mods.NO_MODS)
+            yield KeyEvent(Key.Enter if char == "\n" else char)
 
 
 def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
@@ -137,10 +141,10 @@ def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
 
     http://msdn.microsoft.com/en-us/library/windows/desktop/ms684961(v=vs.85).aspx
     """
-    input_records = (INPUT_RECORD * 1024)()
+    input_records = RecordArrayType()
 
     windll.kernel32.ReadConsoleInputW(
-        STD_INPUT_HANDLE, input_records, 1024, byref(DWORD(0))
+        STD_INPUT_HANDLE, input_records, MAX_RECORDS, byref(DWORD(0))
     )
 
     for ir in input_records:
