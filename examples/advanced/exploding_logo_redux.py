@@ -80,7 +80,6 @@ class PokeParticleField(GraphicParticleField):
             self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
-        """Coroutine that updates color and position due to velocity."""
         positions = self.particle_positions
         real_positions = self.particle_properties["real_positions"]
         velocities = self.particle_properties["velocities"]
@@ -122,10 +121,6 @@ class PokeParticleField(GraphicParticleField):
             await asyncio.sleep(0)
 
     async def reset(self):
-        """
-        Coroutine that returns a particle to its starting position with original
-        color.
-        """
         self._update_task.cancel()
         self.particle_properties["velocities"][:] = 0
 

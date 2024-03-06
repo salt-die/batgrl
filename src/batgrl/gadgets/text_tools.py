@@ -142,6 +142,8 @@ def cell(
         Whether cell is overlined.
     fg_color : Color, default: WHITE
         Foreground color of cell.
+    bg_color : Color, default: BLACK
+        Background color of cell.
 
     Returns
     -------
