@@ -1,17 +1,23 @@
 """Data structures and functions for :mod:`batgrl` geometry."""
 from bisect import bisect
 from dataclasses import dataclass, field
+from math import comb
 from numbers import Real
 from typing import Callable, Iterator, NamedTuple
+
+import numpy as np
+from numpy.typing import NDArray
 
 __all__ = [
     "clamp",
     "lerp",
+    "points_on_circle",
     "round_down",
     "Point",
     "Size",
     "Rect",
     "Region",
+    "BezierCurve",
 ]
 
 
@@ -47,6 +53,35 @@ def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
 def lerp(a: Real, b: Real, p: Real) -> Real:
     """Linear interpolation of `a` to `b` with proportion `p`."""
     return (1.0 - p) * a + p * b
+
+
+def points_on_circle(
+    n: int,
+    radius: float = 1.0,
+    center: tuple[float, float] = (0.0, 0.0),
+    offset: float = 0.0,
+) -> NDArray[np.float32]:
+    """
+    Return `n` points on a circle.
+
+    Parameters
+    ----------
+    n : int
+        Number of points on a circle.
+    radius : float, default: 1.0
+        Radius of circle.
+    center : tuple[float, float], default: (0.0, 0.0)
+        Center of circle.
+    offset : float, default: 0.0
+        Rotate output points by `offset` radians.
+
+    Returns
+    -------
+    NDArray[np.float32]
+        An `(n, 2)`-shaped NDArray of points on a circle.
+    """
+    angles = np.linspace(0, 2 * np.pi, endpoint=False, num=n) + offset
+    return radius * np.stack([np.sin(angles), np.cos(angles)]).T + center
 
 
 def round_down(n: float) -> int:
@@ -527,3 +562,66 @@ class Region:
 
         j = bisect(band.walls, x)
         return j % 2 == 1
+
+
+@dataclass
+class BezierCurve:
+    """A Bezier curve."""
+
+    control_points: NDArray[np.float32]
+    """Array of control points of Bezier curve with shape `(N, 2)`."""
+    arc_length_approximation: int = 50
+    """Number of evaluations for arc length approximation."""
+
+    def __post_init__(self):
+        if self.degree == -1:
+            raise ValueError("There must be at least one control point.")
+
+        self.coef = np.array([comb(self.degree, i) for i in range(self.degree + 1)])
+        """Binomial coefficients of Bezier curve."""
+
+        evaluated = self.evaluate(np.linspace(0, 1, self.arc_length_approximation))
+        norms = np.linalg.norm(evaluated[1:] - evaluated[:-1], axis=-1)
+        self.arc_lengths = np.append(0, norms.cumsum())
+        """Approximate arc lengths along Bezier curve."""
+
+    @property
+    def degree(self) -> int:
+        """Degree of Bezier curve."""
+        return len(self.control_points) - 1
+
+    @property
+    def length(self) -> float:
+        """Approximate length of Bezier curve."""
+        return self.arc_lengths[-1]
+
+    def evaluate(self, t: float | NDArray[np.float32]) -> NDArray[np.float32]:
+        """Evaluate the Bezier curve at `t` (0 <= t <= 1)."""
+        t = np.asarray(t)
+        terms = np.logspace(0, self.degree, num=self.degree + 1, base=t).T
+        terms *= np.logspace(self.degree, 0, num=self.degree + 1, base=1 - t).T
+        terms *= self.coef
+        return terms @ self.control_points
+
+    def arc_length_proportion(self, p: float) -> NDArray[np.float32]:
+        """Evaluate the Bezier curve at a proportion of its total arc length."""
+        if p == 0.0:
+            return self.evaluate(0.0)
+        if p == 1.0:
+            return self.evaluate(1.0)
+
+        target_length = self.length * p
+        i = np.searchsorted(self.arc_lengths, target_length)
+
+        right = target_length - self.arc_lengths[i - 1]
+        left = target_length - self.arc_lengths[i]
+        if abs(right) < abs(left):
+            i -= 1
+            target_dif = right
+        else:
+            target_dif = left
+
+        arc_dif = self.arc_lengths[i + 1] - self.arc_lengths[i]
+
+        t = (i + target_dif / arc_dif) / self.arc_length_approximation
+        return self.evaluate(t)

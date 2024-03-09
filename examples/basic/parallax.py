@@ -1,9 +1,10 @@
 import asyncio
+from itertools import cycle
 from pathlib import Path
 
-import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.parallax import Parallax
+from batgrl.geometry import points_on_circle
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PARALLAX = ASSETS / "space_parallax"
@@ -16,16 +17,8 @@ class ParallaxApp(App):
         )
         self.add_gadget(parallax)
 
-        async def circle_movement():
-            angles = np.linspace(0, 2 * np.pi, 100)
-            radius = 50
-
-            while True:
-                for theta in angles:
-                    parallax.offset = radius * np.cos(theta), radius * np.sin(theta)
-                    await asyncio.sleep(0)
-
-        await circle_movement()
+        for parallax.offset in cycle(points_on_circle(100, radius=50)):
+            await asyncio.sleep(0)
 
 
 if __name__ == "__main__":
