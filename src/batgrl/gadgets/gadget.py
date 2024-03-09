@@ -13,7 +13,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .. import easings
-from ..geometry import Point, Region, Size, clamp, lerp
+from ..geometry import Point, Region, Size, clamp, lerp, round_down
 from ..io import KeyEvent, MouseEvent, PasteEvent
 from .text_tools import Cell, cell
 
@@ -36,19 +36,6 @@ __all__ = [
 ]
 
 _UID = count(1)
-
-
-def round_down(n: float) -> int:
-    """
-    Like the built-in `round`, but always rounds down.
-
-    This is used instead of `round` so that small changes in gadget geometry don't cause
-    the gadget to "jump" around when hints are applied.
-    """
-    i, r = divmod(n, 1)
-    if r <= 0.5:
-        return int(i)
-    return int(i + 1)
 
 
 Anchor = Literal[

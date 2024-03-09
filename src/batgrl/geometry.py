@@ -2,8 +2,63 @@
 from bisect import bisect
 from dataclasses import dataclass, field
 from numbers import Real
-from operator import and_, or_, xor
 from typing import Callable, Iterator, NamedTuple
+
+__all__ = [
+    "clamp",
+    "lerp",
+    "round_down",
+    "Point",
+    "Size",
+    "Rect",
+    "Region",
+]
+
+
+def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
+    """
+    If `value` is less than `min`, returns `min`; otherwise if `max` is less than
+    `value`, returns `max`; otherwise returns `value`. A one-sided clamp is possible by
+    setting `min` or `max` to `None`.
+
+    Parameters
+    ----------
+    value : Real
+        Value to clamp.
+    min : Real | None
+        Minimum of clamped value.
+    max : Real | None
+        Maximum of clamped value.
+
+    Returns
+    -------
+    Real
+        A value between `min` and `max`, inclusive.
+    """
+    if min is not None and value < min:
+        return min
+
+    if max is not None and value > max:
+        return max
+
+    return value
+
+
+def lerp(a: Real, b: Real, p: Real) -> Real:
+    """Linear interpolation of `a` to `b` with proportion `p`."""
+    return (1.0 - p) * a + p * b
+
+
+def round_down(n: float) -> int:
+    """
+    Like the built-in `round`, but always rounds down.
+
+    Used instead of `round` for smoother geometry.
+    """
+    i, r = divmod(n, 1)
+    if r <= 0.5:
+        return int(i)
+    return int(i) + 1
 
 
 class Point(NamedTuple):
@@ -91,45 +146,6 @@ class Size(NamedTuple):
     def columns(self):
         """Alias for width."""
         return self.width
-
-
-def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
-    """
-    If `value` is less than `min`, returns `min`; otherwise if `max` is less than
-    `value`, returns `max`; otherwise returns `value`. A one-sided clamp is possible by
-    setting `min` or `max` to `None`.
-
-    Parameters
-    ----------
-    value : Real
-        Value to clamp.
-    min : Real | None
-        Minimum of clamped value.
-    max : Real | None
-        Maximum of clamped value.
-
-    Returns
-    -------
-    Real
-        A value between `min` and `max`, inclusive.
-    """
-    if min is not None and value < min:
-        return min
-
-    if max is not None and value > max:
-        return max
-
-    return value
-
-
-def lerp(a: Real, b: Real, p: Real) -> Real:
-    """Linear interpolation of `a` to `b` with proportion `p`."""
-    return (1.0 - p) * a + p * b
-
-
-def sub(a: bool, b: bool) -> bool:
-    """Return `a` and not `b`."""
-    return a and not b
 
 
 @dataclass(slots=True)
@@ -441,19 +457,19 @@ class Region:
     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
 
     def __and__(self, other: "Region") -> "Region":
-        return self._merge_regions(other, and_)
+        return self._merge_regions(other, lambda a, b: a & b)
 
     def __or__(self, other: "Region") -> "Region":
-        return self._merge_regions(other, or_)
+        return self._merge_regions(other, lambda a, b: a | b)
 
     def __add__(self, other: "Region") -> "Region":
-        return self._merge_regions(other, or_)
+        return self._merge_regions(other, lambda a, b: a | b)
 
     def __sub__(self, other: "Region") -> "Region":
-        return self._merge_regions(other, sub)
+        return self._merge_regions(other, lambda a, b: a & (not b))
 
     def __xor__(self, other: "Region") -> "Region":
-        return self._merge_regions(other, xor)
+        return self._merge_regions(other, lambda a, b: a ^ b)
 
     def __bool__(self):
         return len(self.bands) > 0
