@@ -10,6 +10,7 @@ from pygments.style import Style
 from ..colors import Color, Neptune
 from .gadget import (
     Cell,
+    Easing,
     Gadget,
     Point,
     PosHint,
@@ -36,6 +37,7 @@ from .texture_tools import _composite
 __all__ = [
     "Border",
     "Cell",
+    "Easing",
     "Point",
     "PosHint",
     "PosHintDict",
