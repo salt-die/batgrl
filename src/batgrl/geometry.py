@@ -1,12 +1,17 @@
 """Data structures and functions for :mod:`batgrl` geometry."""
+import asyncio
 from bisect import bisect
 from dataclasses import dataclass, field
+from itertools import accumulate
 from math import comb
 from numbers import Real
-from typing import Callable, Iterator, NamedTuple
+from time import monotonic
+from typing import Callable, Iterator, NamedTuple, Protocol
 
 import numpy as np
 from numpy.typing import NDArray
+
+from .easings import EASINGS, Easing
 
 __all__ = [
     "clamp",
@@ -566,7 +571,38 @@ class Region:
 
 @dataclass
 class BezierCurve:
-    """A Bezier curve."""
+    """
+    A Bezier curve.
+
+    Parameters
+    ----------
+    control_points : NDArray[np.float32]
+        Array of control points of Bezier curve with shape `(N, 2)`.
+    arc_length_approximation : int, default: 50
+        Number of evaluations for arc length approximation.
+
+    Attributes
+    ----------
+    arc_length : float
+        Approximate length of Bezier curve.
+    arc_length_approximation : int
+        Number of evaluations for arc length approximation.
+    arc_lengths : NDArray[np.float32]
+        Approximate arc lengths along Bezier curve.
+    coef : NDArray[np.float32]
+        Binomial coefficients of Bezier curve.
+    control_points : NDArray[np.float32]
+        Array of control points of Bezier curve with shape `(N, 2)`.
+    degree : int
+        Degree of Bezier curve.
+
+    Methods
+    -------
+    evaluate(t)
+        Evaluate the Bezier curve at `t` (0 <= t <= 1).
+    arc_length_proportion(p)
+        Evaluate the Bezier curve at a proportion of its total arc length.
+    """
 
     control_points: NDArray[np.float32]
     """Array of control points of Bezier curve with shape `(N, 2)`."""
@@ -577,12 +613,14 @@ class BezierCurve:
         if self.degree == -1:
             raise ValueError("There must be at least one control point.")
 
-        self.coef = np.array([comb(self.degree, i) for i in range(self.degree + 1)])
+        self.coef: NDArray[np.float32] = np.array(
+            [comb(self.degree, i) for i in range(self.degree + 1)], dtype=float
+        )
         """Binomial coefficients of Bezier curve."""
 
         evaluated = self.evaluate(np.linspace(0, 1, self.arc_length_approximation))
         norms = np.linalg.norm(evaluated[1:] - evaluated[:-1], axis=-1)
-        self.arc_lengths = np.append(0, norms.cumsum())
+        self.arc_lengths: NDArray[np.float32] = np.append(0, norms.cumsum())
         """Approximate arc lengths along Bezier curve."""
 
     @property
@@ -591,7 +629,7 @@ class BezierCurve:
         return len(self.control_points) - 1
 
     @property
-    def length(self) -> float:
+    def arc_length(self) -> float:
         """Approximate length of Bezier curve."""
         return self.arc_lengths[-1]
 
@@ -605,23 +643,72 @@ class BezierCurve:
 
     def arc_length_proportion(self, p: float) -> NDArray[np.float32]:
         """Evaluate the Bezier curve at a proportion of its total arc length."""
-        if p == 0.0:
-            return self.evaluate(0.0)
-        if p == 1.0:
-            return self.evaluate(1.0)
+        target_length = self.arc_length * p
+        n = self.arc_length_approximation
+        i = clamp(bisect(self.arc_lengths, target_length) - 1, 0, n - 1)
 
-        target_length = self.length * p
-        i = np.searchsorted(self.arc_lengths, target_length)
+        previous_length = self.arc_lengths[i]
+        if previous_length == target_length:
+            return self.evaluate(i / n)
 
-        right = target_length - self.arc_lengths[i - 1]
-        left = target_length - self.arc_lengths[i]
-        if abs(right) < abs(left):
-            i -= 1
-            target_dif = right
+        target_dif = target_length - previous_length
+        if i < n - 1:
+            arc_dif = self.arc_lengths[i + 1] - previous_length
         else:
-            target_dif = left
+            arc_dif = previous_length - self.arc_lengths[i - 1]
 
-        arc_dif = self.arc_lengths[i + 1] - self.arc_lengths[i]
-
-        t = (i + target_dif / arc_dif) / self.arc_length_approximation
+        t = (i + target_dif / arc_dif) / n
         return self.evaluate(t)
+
+
+class HasPos(Protocol):
+    """An object with a position."""
+
+    pos: Point
+
+
+async def move_along_path(
+    has_pos: HasPos,
+    path: list[BezierCurve],
+    speed: float = 1.0,
+    easing: Easing = "linear",
+):
+    """
+    Move `has_pos` along a path of Bezier curves at some speed (in cells per second).
+
+    Parameters
+    ----------
+    has_pos : HasPos
+        Object to be moved along path.
+    path : list[BezierCurve]
+        A path made up of Bezier curves.
+    speed : float, default: 1.0
+        Speed of movement in approximately cells per second.
+    """
+    cumulative_arc_lengths = [
+        *accumulate((curve.arc_length for curve in path), initial=0)
+    ]
+    total_arc_length = cumulative_arc_lengths[-1]
+    easing_function = EASINGS[easing]
+    has_pos.pos = path[0].evaluate(0.0)
+    last_time = monotonic()
+    distance_traveled = 0.0
+
+    while True:
+        await asyncio.sleep(0)
+
+        current_time = monotonic()
+        elapsed = current_time - last_time
+        last_time = current_time
+        distance_traveled += speed * elapsed
+        if distance_traveled >= total_arc_length:
+            has_pos.pos = path[-1].evaluate(1.0)
+            return
+
+        p = distance_traveled / total_arc_length
+        eased_distance = easing_function(p) * total_arc_length
+
+        i = clamp(bisect(cumulative_arc_lengths, eased_distance) - 1, 0, len(path) - 1)
+        distance_on_curve = eased_distance - cumulative_arc_lengths[i]
+        curve_p = distance_on_curve / path[i].arc_length
+        has_pos.pos = path[i].arc_length_proportion(curve_p)
