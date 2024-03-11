@@ -12,7 +12,7 @@ from weakref import WeakKeyDictionary
 import numpy as np
 from numpy.typing import NDArray
 
-from .. import easings
+from ..easings import EASINGS, Easing
 from ..geometry import Point, Region, Size, clamp, lerp, round_down
 from ..io import KeyEvent, MouseEvent, PasteEvent
 from .text_tools import Cell, cell
@@ -345,42 +345,6 @@ class SizeHintDict(TypedDict, total=False):
     min_height: int | None
     max_width: int | None
     min_width: int | None
-
-
-Easing = Literal[
-    "linear",
-    "in_quad",
-    "out_quad",
-    "in_out_quad",
-    "in_cubic",
-    "out_cubic",
-    "in_out_cubic",
-    "in_quart",
-    "out_quart",
-    "in_out_quart",
-    "in_quint",
-    "out_quint",
-    "in_out_quint",
-    "in_sine",
-    "out_sine",
-    "in_out_sine",
-    "in_exp",
-    "out_exp",
-    "in_out_exp",
-    "in_circ",
-    "out_circ",
-    "in_out_circ",
-    "in_elastic",
-    "out_elastic",
-    "in_out_elastic",
-    "in_back",
-    "out_back",
-    "in_out_back",
-    "in_bounce",
-    "out_bounce",
-    "in_out_bounce",
-]
-"""Easings for :meth:`batgrl.gadgets.Gadget.tween`"""
 
 
 def bindable(setter):
@@ -1250,7 +1214,7 @@ class Gadget:
             else getattr(self, attr)
             for attr in properties
         )
-        easing_function = getattr(easings, easing)
+        easing_function = EASINGS[easing]
 
         if pos_hint := properties.get("pos_hint"):
             if isinstance(pos_hint, dict):

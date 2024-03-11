@@ -1,7 +1,11 @@
 """Easing functions."""
+from collections.abc import Callable
 from math import cos, pi, sin
+from typing import Literal
 
-__all__ = [
+__all__ = ["Easing", "EASINGS"]
+
+Easing = Literal[
     "linear",
     "in_quad",
     "out_quad",
@@ -34,6 +38,7 @@ __all__ = [
     "out_bounce",
     "in_out_bounce",
 ]
+"""Easings."""
 
 
 def linear(p: float) -> float:
@@ -243,3 +248,38 @@ def in_out_bounce(p: float) -> float:
         return 0.5 * in_bounce(2.0 * p)
 
     return 0.5 * out_bounce(2.0 * p - 1.0) + 0.5
+
+
+EASINGS: dict[Easing, Callable[[float], float]] = {
+    "linear": linear,
+    "in_quad": in_quad,
+    "out_quad": out_quad,
+    "in_out_quad": in_out_quad,
+    "in_cubic": in_cubic,
+    "out_cubic": out_cubic,
+    "in_out_cubic": in_out_cubic,
+    "in_quart": in_quart,
+    "out_quart": out_quart,
+    "in_out_quart": in_out_quart,
+    "in_quint": in_quint,
+    "out_quint": out_quint,
+    "in_out_quint": in_out_quint,
+    "in_sine": in_sine,
+    "out_sine": out_sine,
+    "in_out_sine": in_out_sine,
+    "in_exp": in_exp,
+    "out_exp": out_exp,
+    "in_out_exp": in_out_exp,
+    "in_circ": in_circ,
+    "out_circ": out_circ,
+    "in_out_circ": in_out_circ,
+    "in_elastic": in_elastic,
+    "out_elastic": out_elastic,
+    "in_out_elastic": in_out_elastic,
+    "in_back": in_back,
+    "out_back": out_back,
+    "in_out_back": in_out_back,
+    "in_bounce": in_bounce,
+    "out_bounce": out_bounce,
+    "in_out_bounce": in_out_bounce,
+}
