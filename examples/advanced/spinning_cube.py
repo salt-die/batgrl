@@ -101,7 +101,7 @@ class SpinningCube(Graphics):
         x_angle = y_angle = z_angle = 0
 
         while True:
-            self.texture[:] = self.default_color
+            self.clear()
 
             h, w = self.size
             scale = w // 4, h // 2

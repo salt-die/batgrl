@@ -167,8 +167,6 @@ class Window(Themable, Focusable, Grabbable, Gadget):
         Update gadget when it gains focus.
     on_blur()
         Update gadget when it loses focus.
-    to_png(path)
-        Write :attr:`texture` to provided path as a `png` image.
     on_size()
         Update gadget after a resize.
     apply_hints()

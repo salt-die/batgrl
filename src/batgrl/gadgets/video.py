@@ -144,6 +144,8 @@ class Video(Graphics):
         Stop the video.
     to_png(path)
         Write :attr:`texture` to provided path as a `png` image.
+    clear()
+        Fill texture with default color.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -268,7 +270,7 @@ class Video(Graphics):
             atexit.unregister(self._resource.release)
             self._resource = None
             self._current_frame = None
-            self.texture[:] = self.default_color
+            self.clear()
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -355,4 +357,4 @@ class Video(Graphics):
         self.pause()
         self.seek(0)
         self._current_frame = None
-        self.texture[:] = self.default_color
+        self.clear()

@@ -203,7 +203,7 @@ class Tetris(Image):
             self._clear_lines_queue.popleft().cancel()
 
         self.matrix[:] = 0
-        self.matrix_gadget.texture[:] = 0
+        self.matrix_gadget.clear()
 
         self.current_piece.is_enabled = False
         self.next_piece.is_enabled = False

@@ -74,7 +74,7 @@ class SpaceRenderer(Graphics):
         return round(x), 2 * self.height - round(y) - 1
 
     def _draw_space(self):
-        self.texture[:] = self.default_color
+        self.clear()
         to_tex_coords = self._to_texture_coords
 
         for shape in self.space.shapes:

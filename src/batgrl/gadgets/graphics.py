@@ -137,6 +137,8 @@ class Graphics(Gadget):
     -------
     to_png(path)
         Write :attr:`texture` to provided path as a `png` image.
+    clear()
+        Fill texture with default color.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -275,3 +277,7 @@ class Graphics(Gadget):
         """Write :attr:`texture` to provided path as a `png` image."""
         BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
         cv2.imwrite(str(path.absolute()), BGRA)
+
+    def clear(self):
+        """Fill texture with default color."""
+        self.texture[:] = self.default_color

@@ -72,7 +72,7 @@ class WorldGadget(Graphics):
             self.paint_world()
 
     def paint_world(self):
-        self.texture[:] = self.default_color
+        self.clear()
         water_tx = int(monotonic() * 12) % len(WATER_TILES)
 
         for y, row in enumerate(self.tile_map):

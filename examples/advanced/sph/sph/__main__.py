@@ -69,7 +69,7 @@ class SPH(Graphics):
             ys = np.clip(ys, 0, 2 * self.height - 1)
             xs = np.clip(xs, 0, self.width - 1)
 
-            self.texture[:] = self.default_color
+            self.clear()
             self.texture[ys, xs, :3] = WATER_COLOR
 
             await asyncio.sleep(0)

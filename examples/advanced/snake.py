@@ -46,7 +46,7 @@ class Snake(Graphics):
         self.reset()
 
     def reset(self):
-        self.texture[:] = self.default_color
+        self.clear()
 
         # Keep track of empty positions to quickly find a place for an apple.
         self.empty_positions = list(product(range(HEIGHT), range(WIDTH)))

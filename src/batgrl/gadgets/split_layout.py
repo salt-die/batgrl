@@ -515,7 +515,7 @@ class VSplitLayout(Gadget):
     @handle_color.setter
     def handle_color(self, handle_color: AColor):
         self.handle.default_color = handle_color
-        self.handle.texture[:] = handle_color
+        self.handle.clear()
 
     @property
     def min_split_width(self) -> int:

@@ -125,6 +125,8 @@ class Image(Graphics):
         Create an :class:`Image` from a uint8 RGBA numpy array.
     to_png(path)
         Write :attr:`texture` to provided path as a `png` image.
+    clear()
+        Fill texture with default color.
     on_size()
         Update gadget after a resize.
     apply_hints()
