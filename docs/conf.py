@@ -29,9 +29,10 @@ html_theme = "pydata_sphinx_theme"
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 
 html_theme_options = {
-    "github_url": "https://github.com/salt-die/batgrl",
-    "show_prev_next": False,
     "footer_start": ["copyright"],
+    "github_url": "https://github.com/salt-die/batgrl",
+    "navigation_with_keys": False,
+    "show_prev_next": False,
 }
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
