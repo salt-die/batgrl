@@ -104,7 +104,7 @@ Cell = np.dtype(
         ("bg_color", "u1", (3,)),
     ]
 )
-"""Data type of canvas arrays."""
+"""A structured array type that represents a single cell in a terminal."""
 
 
 @lru_cache
@@ -125,6 +125,8 @@ def cell(
 ) -> NDArray[Cell]:
     """
     Create a ``Cell`` scalar.
+
+    A Cell is a structured array type that represents a single cell in a terminal.
 
     Parameters
     ----------
