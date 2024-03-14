@@ -11,7 +11,10 @@ from pathlib import Path
 
 import numpy as np
 from batgrl.app import App
-from batgrl.gadgets.graphic_field import GraphicParticleField
+from batgrl.gadgets.graphic_field import (
+    GraphicParticleField,
+    particle_data_from_texture,
+)
 from batgrl.gadgets.image import Image, Size
 from batgrl.gadgets.texture_tools import read_texture, resize_texture
 from batgrl.io import MouseButton
@@ -144,7 +147,7 @@ class ExplodingLogoApp(App):
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
         texture = resize_texture(read_texture(PATH_TO_LOGO_FULL), LOGO_SIZE)
-        positions, colors = PokeParticleField.particles_from_texture(texture)
+        positions, colors = particle_data_from_texture(texture)
 
         props = dict(
             original_positions=positions.copy(),

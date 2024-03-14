@@ -14,7 +14,7 @@ from batgrl.app import App
 from batgrl.colors import Color
 from batgrl.figfont import FIGFont
 from batgrl.gadgets.pane import Cell, Pane
-from batgrl.gadgets.text_field import TextParticleField
+from batgrl.gadgets.text_field import TextParticleField, particle_data_from_cells
 from batgrl.io import MouseButton
 
 
@@ -154,7 +154,7 @@ class ExplodingLogoApp(App):
         cell_arr = np.zeros_like(LOGO, dtype=Cell)
         cell_arr["char"] = LOGO
         cell_arr["fg_color"] = YELLOW
-        positions, cells = PokeParticleField.particles_from_cells(cell_arr)
+        positions, cells = particle_data_from_cells(cell_arr)
 
         props = dict(
             original_positions=positions.copy(),

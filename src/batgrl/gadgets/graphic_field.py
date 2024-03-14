@@ -285,11 +285,11 @@ class GraphicParticleField(Gadget):
             chars[dst] = "▀"
             styles[dst] = False
 
-    @classmethod
-    def particles_from_texture(
-        cls, texture: NDArray[np.uint8]
-    ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
-        """Return positions and colors of visible pixels of an RGBA texture."""
-        positions = np.argwhere(texture[..., 3])
-        pys, pxs = positions.T
-        return positions, texture[pys, pxs]
+
+def particle_data_from_texture(
+    texture: NDArray[np.uint8]
+) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
+    """Return positions and colors of visible pixels of an RGBA texture."""
+    positions = np.argwhere(texture[..., 3])
+    pys, pxs = positions.T
+    return positions, texture[pys, pxs]

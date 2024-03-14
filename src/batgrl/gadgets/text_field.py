@@ -268,11 +268,11 @@ class TextParticleField(Gadget):
 
             chars[dst][ys, xs] = pchars[where_inbounds]
 
-    @classmethod
-    def particles_from_cells(
-        cls, cells: NDArray[Cell]
-    ) -> tuple[NDArray[np.int32], NDArray[Cell]]:
-        """Return positions and cells of non-whitespace characters of a Cell array."""
-        positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
-        pys, pxs = positions.T
-        return positions, cells[pys, pxs]
+
+def particle_data_from_cells(
+    cells: NDArray[Cell]
+) -> tuple[NDArray[np.int32], NDArray[Cell]]:
+    """Return positions and cells of non-whitespace characters of a Cell array."""
+    positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
+    pys, pxs = positions.T
+    return positions, cells[pys, pxs]
