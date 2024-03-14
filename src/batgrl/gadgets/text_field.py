@@ -208,12 +208,12 @@ class TextParticleField(Gadget):
         if particle_positions is None:
             self.particle_positions = np.zeros((0, 2), dtype=int)
         else:
-            self.particle_positions = particle_positions
+            self.particle_positions = np.asarray(particle_positions, dtype=int)
 
         if particle_cells is None:
             self.particle_cells = np.full(len(self.particle_positions), cell())
         else:
-            self.particle_cells = particle_cells
+            self.particle_cells = np.asarray(particle_cells, dtype=Cell)
 
         if particle_properties is None:
             self.particle_properties = {}

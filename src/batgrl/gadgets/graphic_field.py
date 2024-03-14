@@ -208,14 +208,14 @@ class GraphicParticleField(Gadget):
         if particle_positions is None:
             self.particle_positions = np.zeros((0, 2), dtype=int)
         else:
-            self.particle_positions = particle_positions
+            self.particle_positions = np.asarray(particle_positions, dtype=int)
 
         if particle_colors is None:
             self.particle_colors = np.zeros(
                 (len(self.particle_positions), 4), dtype=np.uint8
             )
         else:
-            self.particle_colors = particle_colors
+            self.particle_colors = np.asarray(particle_colors, dtype=np.uint8)
 
         if particle_properties is None:
             self.particle_properties = {}
