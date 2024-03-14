@@ -1,6 +1,6 @@
 """Parse and create events for each input record from a win32 console."""
 from collections import OrderedDict
-from collections.abc import Iterable
+from collections.abc import Iterator
 from ctypes import byref, windll
 from ctypes.wintypes import DWORD
 
@@ -113,7 +113,7 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     )
 
 
-def _purge_text() -> Iterable[PasteEvent | KeyEvent]:
+def _purge_text() -> Iterator[PasteEvent | KeyEvent]:
     """
     While generating events, key events are collected into _TEXT to determine if a paste
     event has occurred. If there are more than two key events or there are non-ascii
@@ -135,7 +135,7 @@ def _purge_text() -> Iterable[PasteEvent | KeyEvent]:
             yield KeyEvent(Key.Enter if char == "\n" else char)
 
 
-def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
+def events() -> Iterator[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
     """
     Yield input events.
 

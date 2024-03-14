@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from collections.abc import Iterable
+from collections.abc import Iterator
 
 import pygame as pg
 from batgrl.geometry import Point, Size
@@ -156,7 +156,7 @@ def _handle_mouse(event: pg.event.Event) -> _PartialMouseEvent:
     )
 
 
-def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
+def events() -> Iterator[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
     """Yield input events."""
     for event in pg.event.get():
         if event.type == pg.QUIT:

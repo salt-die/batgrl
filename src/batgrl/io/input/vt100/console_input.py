@@ -9,7 +9,7 @@ import re
 import select
 import sys
 from codecs import getincrementaldecoder
-from collections.abc import Iterable
+from collections.abc import Iterator
 
 from ....geometry import Point, Size
 from ..events import Key, KeyEvent, PasteEvent, _PartialMouseEvent
@@ -110,7 +110,7 @@ def _find_longest_match(data: str) -> str:
     return suffix
 
 
-def events() -> Iterable[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
+def events() -> Iterator[KeyEvent | PasteEvent | Size | _PartialMouseEvent]:
     """Yield input events."""
     data = "".join(iter(read_stdin, ""))
 
