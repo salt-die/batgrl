@@ -31,6 +31,7 @@ __all__ = [
     "Size",
     "SizeHint",
     "SizeHintDict",
+    "particle_data_from_texture",
 ]
 
 
@@ -289,7 +290,19 @@ class GraphicParticleField(Gadget):
 def particle_data_from_texture(
     texture: NDArray[np.uint8]
 ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
-    """Return positions and colors of visible pixels of an RGBA texture."""
+    """
+    Return positions and colors of visible pixels of an RGBA texture.
+
+    Parameters
+    ----------
+    texture : NDArray[np.uint8]
+        A uint8 RGBA numpy array.
+
+    Returns
+    -------
+    tuple[NDArray[np.int32], NDArray[np.uint8]]
+        Position and colors of visible pixels of the texture.
+    """
     positions = np.argwhere(texture[..., 3])
     pys, pxs = positions.T
     return positions, texture[pys, pxs]

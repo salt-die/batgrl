@@ -31,6 +31,7 @@ __all__ = [
     "SizeHint",
     "SizeHintDict",
     "TextParticleField",
+    "particle_data_from_canvas",
 ]
 
 
@@ -269,10 +270,22 @@ class TextParticleField(Gadget):
             chars[dst][ys, xs] = pchars[where_inbounds]
 
 
-def particle_data_from_cells(
-    cells: NDArray[Cell]
+def particle_data_from_canvas(
+    canvas: NDArray[Cell]
 ) -> tuple[NDArray[np.int32], NDArray[Cell]]:
-    """Return positions and cells of non-whitespace characters of a Cell array."""
-    positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
+    """
+    Return positions and cells of non-whitespace characters of a Cell array.
+
+    Parameters
+    ----------
+    canvas : NDArray[Cell]
+        A Cell numpy array (such as a :class:`Text` gadget's canvas).
+
+    Returns
+    -------
+    tuple[NDArray[np.int32], NDArray[Cell]]
+        Position and cells of non-whitespace characters of the canvas.
+    """
+    positions = np.argwhere(np.isin(canvas["char"], (" ", "⠀"), invert=True))
     pys, pxs = positions.T
-    return positions, cells[pys, pxs]
+    return positions, canvas[pys, pxs]
