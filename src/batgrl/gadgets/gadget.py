@@ -1146,7 +1146,7 @@ class Gadget:
         duration: float = 1.0,
         easing: Easing = "linear",
         on_start: Callable[[], None] | None = None,
-        on_progress: Callable[[], None] | None = None,
+        on_progress: Callable[[float], None] | None = None,
         on_complete: Callable[[], None] | None = None,
         **properties: dict[
             str,
@@ -1171,8 +1171,8 @@ class Gadget:
             The easing used for tweening.
         on_start : Callable[[], None] | None, default: None
             Called when tween starts.
-        on_progress : Callable[[], None] | None, default: None
-            Called when tween updates.
+        on_progress : Callable[[float], None] | None, default: None
+            Called as tween updates with current progress.
         on_complete : Callable[[], None] | None, default: None
             Called when tween completes.
         **properties : dict[
@@ -1226,7 +1226,7 @@ class Gadget:
                 size_hint = SizeHint(**properties["size_hint"])
             properties["size_hint"] = asdict(size_hint)
 
-        if on_start:
+        if on_start is not None:
             on_start()
 
         while (current_time := monotonic()) < end_time:
@@ -1235,15 +1235,15 @@ class Gadget:
             for start_value, (prop, target) in zip(start_values, properties.items()):
                 setattr(self, prop, Gadget._tween_lerp(start_value, target, p))
 
-            if on_progress:
-                on_progress()
+            if on_progress is not None:
+                on_progress(p)
 
             await asyncio.sleep(0)
 
         for prop, target in properties.items():
             setattr(self, prop, target)
 
-        if on_complete:
+        if on_complete is not None:
             on_complete()
 
     def on_add(self):
