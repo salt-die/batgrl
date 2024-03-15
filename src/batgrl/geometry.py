@@ -670,8 +670,12 @@ class HasPos(Protocol):
 async def move_along_path(
     has_pos: HasPos,
     path: list[BezierCurve],
+    *,
     speed: float = 1.0,
     easing: Easing = "linear",
+    on_start: Callable[[], None] | None = None,
+    on_progress: Callable[[float], None] | None = None,
+    on_complete: Callable[[], None] | None = None,
 ):
     """
     Move `has_pos` along a path of Bezier curves at some speed (in cells per second).
@@ -684,6 +688,12 @@ async def move_along_path(
         A path made up of Bezier curves.
     speed : float, default: 1.0
         Speed of movement in approximately cells per second.
+    on_start : Callable[[], None] | None, default: None
+        Called when motion starts.
+    on_progress : Callable[[float], None] | None, default: None
+        Called as motion updates with current progress.
+    on_complete : Callable[[], None] | None, default: None
+        Called when motion completes.
     """
     cumulative_arc_lengths = [
         *accumulate((curve.arc_length for curve in path), initial=0)
@@ -694,6 +704,9 @@ async def move_along_path(
     last_time = monotonic()
     distance_traveled = 0.0
 
+    if on_start is not None:
+        on_start()
+
     while True:
         await asyncio.sleep(0)
 
@@ -703,12 +716,18 @@ async def move_along_path(
         distance_traveled += speed * elapsed
         if distance_traveled >= total_arc_length:
             has_pos.pos = path[-1].evaluate(1.0)
-            return
+            break
 
-        p = distance_traveled / total_arc_length
-        eased_distance = easing_function(p) * total_arc_length
+        p = easing_function(distance_traveled / total_arc_length)
+        eased_distance = p * total_arc_length
 
         i = clamp(bisect(cumulative_arc_lengths, eased_distance) - 1, 0, len(path) - 1)
         distance_on_curve = eased_distance - cumulative_arc_lengths[i]
         curve_p = distance_on_curve / path[i].arc_length
         has_pos.pos = path[i].arc_length_proportion(curve_p)
+
+        if on_progress is not None:
+            on_progress(p)
+
+    if on_complete is not None:
+        on_complete()
