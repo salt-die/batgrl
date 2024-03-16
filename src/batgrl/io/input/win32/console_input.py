@@ -72,7 +72,9 @@ def _handle_mouse(ev: MOUSE_EVENT_RECORD) -> _PartialMouseEvent:
     """
     Return `_PartialMouseEvent` from `EVENT_RECORD`.
 
-    Reference: https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str
+    References
+    ----------
+    https://docs.microsoft.com/en-us/windows/console/mouse-event-record-str
     """
     last_button_state = sum(_PRESSED_BUTTONS)
 
