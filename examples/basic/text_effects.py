@@ -25,7 +25,7 @@ def make_logo():
 LOGO = make_logo()
 
 
-class BlackHoleApp(App):
+class TextEffectsApp(App):
     async def on_start(self):
         text = Text(
             size=(30, 80),
@@ -43,4 +43,4 @@ class BlackHoleApp(App):
 
 
 if __name__ == "__main__":
-    BlackHoleApp(title="Black Hole Effect", bg_color=DEFAULT_PRIMARY_BG).run()
+    TextEffectsApp(title="Text Effects", bg_color=DEFAULT_PRIMARY_BG).run()
