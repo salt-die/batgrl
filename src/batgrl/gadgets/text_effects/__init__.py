@@ -7,8 +7,8 @@ References
 ----------
 https://github.com/ChrisBuilds/terminaltexteffects
 
-Warning
--------
+Warnings
+--------
 Modifying the text size while effect is running will break the effect.
 """
 from .beams import beams_effect

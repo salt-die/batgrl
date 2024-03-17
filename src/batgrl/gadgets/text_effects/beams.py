@@ -27,8 +27,8 @@ async def beams_effect(text: Text):
     text : Text
         The text gadget which to run the effect.
 
-    Warning
-    -------
+    Warnings
+    --------
     Modifying `text` size while effect is running will break the effect.
     """
     cover = Text(size=text.size)

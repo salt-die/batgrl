@@ -26,8 +26,8 @@ async def ring_effect(text: Text):
     text : Text
         The text gadget which to run the effect.
 
-    Warning
-    -------
+    Warnings
+    --------
     Modifying `text` size while effect is running will break the effect.
     """
     pos, cells = particle_data_from_canvas(text.canvas)
