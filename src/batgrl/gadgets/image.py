@@ -17,16 +17,7 @@ from .graphics import (
 )
 from .texture_tools import read_texture, resize_texture
 
-__all__ = [
-    "Image",
-    "Interpolation",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["Image", "Interpolation", "Point", "Size"]
 
 
 class Image(Graphics):

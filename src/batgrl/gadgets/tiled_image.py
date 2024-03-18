@@ -15,16 +15,7 @@ from .graphics import (
     SizeHintDict,
 )
 
-__all__ = [
-    "Interpolation",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "TiledImage",
-]
+__all__ = ["TiledImage", "Interpolation", "Point", "Size"]
 
 
 class TiledImage(Graphics):

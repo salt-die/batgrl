@@ -13,16 +13,7 @@ from .gadget import (
 )
 from .graphics import Graphics
 
-__all__ = [
-    "HSplitLayout",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "VSplitLayout",
-]
+__all__ = ["HSplitLayout", "VSplitLayout", "Point", "Size"]
 
 AGRAY = AColor(127, 127, 127, 127)
 

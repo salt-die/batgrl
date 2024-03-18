@@ -23,16 +23,7 @@ from .gadget import (
 )
 from .texture_tools import _composite
 
-__all__ = [
-    "GraphicParticleField",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "particle_data_from_texture",
-]
+__all__ = ["GraphicParticleField", "particle_data_from_texture", "Point", "Size"]
 
 
 class GraphicParticleField(Gadget):

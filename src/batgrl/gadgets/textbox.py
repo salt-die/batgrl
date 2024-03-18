@@ -22,15 +22,7 @@ from .gadget import (
 from .text import Text
 from .text_tools import is_word_char, str_width
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "Textbox",
-]
+__all__ = ["Textbox", "Point", "Size"]
 
 
 class _Box(Text):

@@ -35,15 +35,7 @@ from .graphics import Graphics
 from .pane import Pane
 from .text import Text, cell
 
-__all__ = [
-    "ColorPicker",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["ColorPicker", "Point", "Size"]
 
 GRAD = tuple(pairwise([ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED]))
 

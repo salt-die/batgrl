@@ -18,15 +18,7 @@ from .gadget import (
 from .pane import Pane
 from .text import Text, str_width
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "Window",
-]
+__all__ = ["Window", "Point", "Size"]
 
 
 class _TitleBar(Grabbable, Pane):

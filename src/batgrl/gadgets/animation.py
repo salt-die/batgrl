@@ -21,16 +21,7 @@ from .gadget import (
 )
 from .image import Image, Interpolation
 
-__all__ = [
-    "Animation",
-    "Interpolation",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["Animation", "Interpolation", "Point", "Size"]
 
 
 def _check_frame_durations(

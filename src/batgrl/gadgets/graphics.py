@@ -7,39 +7,20 @@ from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
 from .gadget import (
-    Anchor,
     Cell,
-    Easing,
     Gadget,
     Point,
     PosHint,
     PosHintDict,
-    Region,
     Size,
     SizeHint,
     SizeHintDict,
     bindable,
     clamp,
-    lerp,
 )
 from .texture_tools import Interpolation, _composite, resize_texture
 
-__all__ = [
-    "Anchor",
-    "Easing",
-    "Graphics",
-    "Interpolation",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Region",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "clamp",
-    "lerp",
-    "bindable",
-]
+__all__ = ["Graphics", "Interpolation", "Point", "Size"]
 
 
 class Graphics(Gadget):

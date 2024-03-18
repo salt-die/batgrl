@@ -17,15 +17,7 @@ from .scroll_view import ScrollView
 from .text import Text, cell
 from .text_tools import smooth_vertical_bar, str_width
 
-__all__ = [
-    "BarChart",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["BarChart", "Point", "Size"]
 
 TICK_WIDTH = 11
 VERTICAL_SPACING = 5

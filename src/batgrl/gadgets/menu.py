@@ -21,17 +21,7 @@ from .pane import (
 )
 from .text import Text, str_width
 
-__all__ = [
-    "Menu",
-    "MenuBar",
-    "MenuDict",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["Menu", "MenuBar", "MenuDict", "Point", "Size"]
 
 ItemCallback = Callable[[], None] | Callable[[ToggleState], None]
 MenuDict = dict[tuple[str, str], Union[ItemCallback, "MenuDict"]]

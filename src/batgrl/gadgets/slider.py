@@ -17,15 +17,7 @@ from .pane import (
 )
 from .text import Text
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "Slider",
-]
+__all__ = ["Slider", "Point", "Size"]
 
 
 class Slider(Grabbable, Pane):

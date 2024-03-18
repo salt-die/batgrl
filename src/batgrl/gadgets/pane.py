@@ -16,15 +16,7 @@ from .gadget import (
 )
 from .texture_tools import _composite
 
-__all__ = [
-    "Pane",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["Pane", "Point", "Size"]
 
 
 class Pane(Gadget):

@@ -17,15 +17,7 @@ from .gadget import (
 from .pane import Pane
 from .text import Text
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "Tabs",
-]
+__all__ = ["Tabs", "Point", "Size"]
 
 # TODO: Movable tabs?
 TAB_SPACING = 3

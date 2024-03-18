@@ -17,15 +17,7 @@ from .scroll_view import ScrollView
 from .text import Text
 from .text_tools import is_word_char, str_width
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "TextPad",
-]
+__all__ = ["TextPad", "Point", "Size"]
 
 
 class TextPad(Themable, Grabbable, Focusable, Gadget):

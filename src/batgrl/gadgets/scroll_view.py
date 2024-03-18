@@ -18,15 +18,7 @@ from .pane import Pane
 from .text import Text
 from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "ScrollView",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["ScrollView", "Point", "Size"]
 
 
 class _ScrollbarBase(Grabbable, Text):

@@ -16,15 +16,7 @@ from .gadget import (
 from .pane import Pane
 from .text import Text
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "TextAnimation",
-]
+__all__ = ["TextAnimation", "Point", "Size"]
 
 
 class _Frame(Text):

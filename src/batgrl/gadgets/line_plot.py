@@ -25,15 +25,7 @@ from .scroll_view import ScrollView
 from .text import Text, add_text, cell
 from .text_tools import binary_to_box, binary_to_braille, str_width
 
-__all__ = [
-    "LinePlot",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["LinePlot", "Point", "Size"]
 
 PLOT_ZOOM = [1.0, 1.25, 1.5, 2.0, 3.0]
 TICK_WIDTH = 11

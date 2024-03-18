@@ -15,16 +15,7 @@ from .gadget import (
 from .pane import Pane
 from .text import Text
 
-__all__ = [
-    "Button",
-    "ButtonState",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["Button", "ButtonState", "Point", "Size"]
 
 
 class Button(Themable, ButtonBehavior, Gadget):

@@ -4,7 +4,7 @@ import math
 from ..geometry import Point, Size
 from .gadget import Gadget, PosHint, PosHintDict, SizeHint, SizeHintDict
 
-__all__ = ["VStackLayout", "HStackLayout"]
+__all__ = ["VStackLayout", "HStackLayout", "Point", "Size"]
 
 
 class _StackLayoutBase(Gadget):

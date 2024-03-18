@@ -11,32 +11,20 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import AWHITE, BLACK, TRANSPARENT, WHITE, AColor, Color
+from ..geometry import Region
 from .graphics import (
     Graphics,
     Interpolation,
     Point,
     PosHint,
     PosHintDict,
-    Region,
     Size,
     SizeHint,
     SizeHintDict,
     clamp,
 )
 
-__all__ = [
-    "Camera",
-    "Interpolation",
-    "LightSource",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Restrictiveness",
-    "ShadowCaster",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["ShadowCaster", "Restrictiveness", "Camera", "LightSource", "Point", "Size"]
 
 AGRAY = AColor(50, 50, 50)
 QUADS = tuple(product((1, -1), (1, -1), (False, True)))

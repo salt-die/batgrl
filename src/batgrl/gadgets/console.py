@@ -24,7 +24,7 @@ from .scroll_view import ScrollView
 from .text import Text, str_width
 from .textbox import Textbox
 
-__all__ = ["Console"]
+__all__ = ["Console", "Point", "Size"]
 
 PROMPT_1 = ">>> "
 PROMPT_2 = "... "

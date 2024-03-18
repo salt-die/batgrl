@@ -20,16 +20,7 @@ from .gadget import (
 )
 from .image import Image, Interpolation
 
-__all__ = [
-    "Interpolation",
-    "Parallax",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["Parallax", "Interpolation", "Point", "Size"]
 
 
 def _check_layer_speeds(

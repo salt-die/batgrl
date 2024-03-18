@@ -4,7 +4,8 @@ from pathlib import Path
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.image import Image
-from batgrl.gadgets.text import Easing, Text, cell
+from batgrl.gadgets.text import Text, cell
+from batgrl.geometry import Easing
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "logo_solo_flat_256.png"

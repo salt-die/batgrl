@@ -16,15 +16,7 @@ from .gadget import (
 from .text import Text
 from .text_tools import binary_to_box
 
-__all__ = [
-    "BoxImage",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["BoxImage", "Point", "Size"]
 
 
 class BoxImage(Gadget):

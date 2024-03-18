@@ -23,16 +23,7 @@ from .gadget import (
 from .text_tools import cell_sans
 from .texture_tools import _composite
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "TextParticleField",
-    "particle_data_from_canvas",
-]
+__all__ = ["TextParticleField", "particle_data_from_canvas", "Point", "Size"]
 
 
 class TextParticleField(Gadget):

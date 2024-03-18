@@ -16,15 +16,7 @@ from .gadget import (
 from .text import Text
 from .text_tools import binary_to_braille
 
-__all__ = [
-    "BrailleImage",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["BrailleImage", "Point", "Size"]
 
 
 class BrailleImage(Gadget):

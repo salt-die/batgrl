@@ -20,15 +20,7 @@ from .gadget import (
 from .text import Text, add_text
 from .text_tools import smooth_vertical_bar
 
-__all__ = [
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-    "Sparkline",
-]
+__all__ = ["Sparkline", "Point", "Size"]
 
 DEFAULT_MIN_COLOR = Color.from_hex("1b244b")
 DEFAULT_MAX_COLOR = Color.from_hex("4d67ff")

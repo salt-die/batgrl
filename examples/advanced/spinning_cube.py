@@ -5,8 +5,9 @@ import cv2
 import numpy as np
 from batgrl.app import App
 from batgrl.colors import Color
-from batgrl.gadgets.graphics import Graphics, lerp
+from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.image import Image
+from batgrl.geometry import lerp
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BACKGROUND = ASSETS / "loudypixelsky.png"

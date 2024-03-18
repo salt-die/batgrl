@@ -13,15 +13,7 @@ from .gadget import (
 )
 from .text import Text
 
-__all__ = [
-    "DigitalDisplay",
-    "Point",
-    "PosHint",
-    "PosHintDict",
-    "Size",
-    "SizeHint",
-    "SizeHintDict",
-]
+__all__ = ["DigitalDisplay", "Point", "Size"]
 
 DIM_GREEN = Color.from_hex("062b0f")
 BRIGHT_GREEN = Color.from_hex("33e860")
