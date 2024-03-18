@@ -6,14 +6,14 @@ from time import monotonic
 
 import numpy as np
 
-from ...colors import BLUE, RED, WHITE, Color, gradient, lerp_colors
+from ...colors import BLUE, WHITE, Color, gradient, lerp_colors
 from ...geometry import BezierCurve, Point, Size, move_along_path
 from ..text import Text
 from ..text_field import TextParticleField, particle_data_from_canvas
 from ._particle import Particle
 
 RNG = np.random.default_rng()
-RING_COLORS = gradient(RED, WHITE, 10)
+RING_COLORS = [Color.from_hex("8a008a"), Color.from_hex("00d1ff")]
 DISPERSE_COLORS = gradient(BLUE, WHITE, 10)
 
 
@@ -113,6 +113,9 @@ def _random_nearby_point(p: Point) -> tuple[float, float]:
 async def _move_to_rings(
     particles: list[Particle], radii: list[int], center: Point
 ) -> dict[int, list[Particle]]:
+    ring_colors = {
+        radius: RING_COLORS[i % len(RING_COLORS)] for i, radius in enumerate(radii)
+    }
     radius_to_particles = {radius: [] for radius in radii}
     paths = []
     for particle in particles:
@@ -123,10 +126,11 @@ async def _move_to_rings(
         p = _closest_point_on_circle(particle.pos, radius, center)
         paths.append([BezierCurve(np.array([particle.pos, p]))])
         particle.ring_point = p
+        particle.ring_color = ring_colors[radius]
 
     def create_fade(particle):
         a = Color(*particle.cell["fg_color"].tolist())
-        b = choice(RING_COLORS)
+        b = particle.ring_color
 
         def fade_particle(p):
             particle.cell["fg_color"] = lerp_colors(a, b, p)
@@ -137,7 +141,7 @@ async def _move_to_rings(
         move_along_path(
             particle,
             path,
-            speed=10,
+            speed=5,
             easing="out_cubic",
             on_progress=create_fade(particle),
         )
