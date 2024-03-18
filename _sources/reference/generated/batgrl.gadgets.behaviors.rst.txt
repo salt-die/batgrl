@@ -1,0 +1,37 @@
+batgrl.gadgets.behaviors
+========================
+
+.. automodule:: batgrl.gadgets.behaviors
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   batgrl.gadgets.behaviors.button_behavior
+   batgrl.gadgets.behaviors.focusable
+   batgrl.gadgets.behaviors.grabbable
+   batgrl.gadgets.behaviors.movable
+   batgrl.gadgets.behaviors.movable_children
+   batgrl.gadgets.behaviors.themable
+   batgrl.gadgets.behaviors.toggle_button_behavior
+

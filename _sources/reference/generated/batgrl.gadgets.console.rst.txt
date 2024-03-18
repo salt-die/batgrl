@@ -1,0 +1,29 @@
+batgrl.gadgets.console
+======================
+
+.. automodule:: batgrl.gadgets.console
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Console
+   
+   
+
+   
+   
+   
+
+
+

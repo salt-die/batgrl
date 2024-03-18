@@ -1,0 +1,30 @@
+batgrl.gadgets.split\_layout
+============================
+
+.. automodule:: batgrl.gadgets.split_layout
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      HSplitLayout
+      VSplitLayout
+   
+   
+
+   
+   
+   
+
+
+

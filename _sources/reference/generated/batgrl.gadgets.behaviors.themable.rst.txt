@@ -1,0 +1,29 @@
+batgrl.gadgets.behaviors.themable
+=================================
+
+.. automodule:: batgrl.gadgets.behaviors.themable
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Themable
+   
+   
+
+   
+   
+   
+
+
+

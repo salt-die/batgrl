@@ -1,0 +1,75 @@
+﻿batgrl.gadgets
+==============
+
+.. automodule:: batgrl.gadgets
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   batgrl.gadgets.animation
+   batgrl.gadgets.bar_chart
+   batgrl.gadgets.behaviors
+   batgrl.gadgets.box_image
+   batgrl.gadgets.braille_image
+   batgrl.gadgets.braille_video
+   batgrl.gadgets.button
+   batgrl.gadgets.color_picker
+   batgrl.gadgets.console
+   batgrl.gadgets.data_table
+   batgrl.gadgets.digital_display
+   batgrl.gadgets.file_chooser
+   batgrl.gadgets.flat_toggle
+   batgrl.gadgets.gadget
+   batgrl.gadgets.graphic_field
+   batgrl.gadgets.graphics
+   batgrl.gadgets.grid_layout
+   batgrl.gadgets.image
+   batgrl.gadgets.line_plot
+   batgrl.gadgets.markdown
+   batgrl.gadgets.menu
+   batgrl.gadgets.pane
+   batgrl.gadgets.parallax
+   batgrl.gadgets.progress_bar
+   batgrl.gadgets.raycaster
+   batgrl.gadgets.scroll_view
+   batgrl.gadgets.shadow_caster
+   batgrl.gadgets.slider
+   batgrl.gadgets.sparkline
+   batgrl.gadgets.split_layout
+   batgrl.gadgets.stack_layout
+   batgrl.gadgets.tabs
+   batgrl.gadgets.text
+   batgrl.gadgets.text_animation
+   batgrl.gadgets.text_effects
+   batgrl.gadgets.text_field
+   batgrl.gadgets.text_pad
+   batgrl.gadgets.text_tools
+   batgrl.gadgets.textbox
+   batgrl.gadgets.texture_tools
+   batgrl.gadgets.tiled_image
+   batgrl.gadgets.toggle_button
+   batgrl.gadgets.tree_view
+   batgrl.gadgets.video
+   batgrl.gadgets.window
+

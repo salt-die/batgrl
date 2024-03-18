@@ -1,0 +1,29 @@
+batgrl.gadgets.sparkline
+========================
+
+.. automodule:: batgrl.gadgets.sparkline
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Sparkline
+   
+   
+
+   
+   
+   
+
+
+

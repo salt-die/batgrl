@@ -1,0 +1,37 @@
+batgrl.gadgets.texture\_tools
+=============================
+
+.. automodule:: batgrl.gadgets.texture_tools
+
+   
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      Interpolation
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      composite
+      read_texture
+      resize_texture
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

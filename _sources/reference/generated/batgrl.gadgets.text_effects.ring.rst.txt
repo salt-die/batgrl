@@ -1,0 +1,29 @@
+batgrl.gadgets.text\_effects.ring
+=================================
+
+.. automodule:: batgrl.gadgets.text_effects.ring
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      ring_effect
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

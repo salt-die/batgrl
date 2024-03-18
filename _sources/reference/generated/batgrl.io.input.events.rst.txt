@@ -1,0 +1,34 @@
+﻿batgrl.io.input.events
+======================
+
+.. automodule:: batgrl.io.input.events
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      KeyEvent
+      Mods
+      MouseButton
+      MouseEvent
+      MouseEventType
+      PasteEvent
+   
+   
+
+   
+   
+   
+
+
+
