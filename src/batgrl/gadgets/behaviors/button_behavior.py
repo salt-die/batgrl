@@ -71,7 +71,13 @@ class ButtonBehavior:
             button_state = "normal"
 
         self._button_state = button_state
-        dispatch[button_state]()
+        if self.root:
+            dispatch[button_state]()
+
+    def on_add(self):
+        """Paint normal state on add."""
+        super().on_add()
+        self.update_normal()
 
     def on_mouse(self, mouse_event) -> bool | None:
         """Determine button state from mouse event."""
