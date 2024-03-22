@@ -1,5 +1,6 @@
 """A raycaster gadget."""
-from dataclasses import dataclass, field
+
+from dataclasses import dataclass
 from typing import Literal, Protocol
 
 import numpy as np
@@ -23,32 +24,27 @@ from .texture_tools import _composite
 __all__ = ["Raycaster", "Sprite", "Camera", "Texture", "Point", "Size"]
 
 
-@dataclass(slots=True)
+@dataclass
 class Sprite:
     """A sprite for a raycaster."""
 
     pos: tuple[float, float]
     """Position of sprite on map."""
-
     texture_idx: int
     """Index of sprite texture."""
 
-    _relative: NDArray[np.float64] = field(
-        init=False, default_factory=lambda: np.zeros(2)
-    )
-
-    distance: np.float64 = field(init=False)
-    """Distance from camera, set when :attr:`relative` is set."""
+    def __post_init__(self):
+        self.relative: NDArray[np.float64] = np.zeros(2)
 
     @property
-    def relative(self):
-        """Vector from camera to sprite, set by the caster."""
+    def relative(self) -> NDArray[np.float64]:
+        """Vector from camera to sprite."""
         return self._relative
 
     @relative.setter
-    def relative(self, value):
-        self._relative = value
-        self.distance = value @ value
+    def relative(self, relative):
+        self._relative = relative
+        self.distance = relative @ relative
 
     def __lt__(self, other):
         """Sprites are ordered by their distance to camera."""
@@ -562,7 +558,7 @@ class Raycaster(Graphics):
 
         # Draw each sprite from furthest to closest.
         for sprite in sprites:
-            # Transformed position of sprites due to camera position
+            # Transformed position of sprites due to camera position.
             y, x = sprite.relative @ cam_inv
 
             if y <= 0:
@@ -571,25 +567,16 @@ class Raycaster(Graphics):
 
             # Sprite x-position on screen
             sprite_x = int(half_w * (1 + x / y))
-
             sprite_height = int(h / y)
             sprite_width = int(half_w / y)
+            # Is sprite too small?
             if sprite_height == 0 or sprite_width == 0:
-                # Sprite too small.
                 continue
 
             start_x = clamp(sprite_x - sprite_width // 2, 0, w)
             end_x = clamp(sprite_x + sprite_width // 2, 0, w)
             columns = np.arange(start_x, end_x)
-
-            # Remove columns that are behind walls or off-screen; buffered version of:
-            #     (0 <= columns) & (columns <= w) & (y <= column_distances[columns])
-            _where_buffer_1 = 0 <= columns
-            _where_buffer_2 = columns <= w
-            np.logical_and(_where_buffer_1, _where_buffer_2, out=_where_buffer_1)
-            np.less_equal(y, column_distances[columns], out=_where_buffer_2)
-            np.logical_and(_where_buffer_1, _where_buffer_2, out=_where_buffer_1)
-            columns = columns[_where_buffer_1]
+            columns = columns[y <= column_distances[columns]]
 
             start_y = clamp(int((h - sprite_height) / 2), 0, h)
             end_y = clamp(int((h + sprite_height) / 2), 0, h)
