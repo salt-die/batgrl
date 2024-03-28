@@ -1,3 +1,11 @@
+"""
+An example of text effects.
+
+Text effects are recreations of the effects from https://github.com/ChrisBuilds/terminaltexteffects.
+To use a text effect simply pass in a `Text` gadget and await the effect.
+"""
+
+import asyncio
 from pathlib import Path
 
 import numpy as np
@@ -37,8 +45,11 @@ class TextEffectsApp(App):
 
         # Note: Do not modify text's size during effects.
         await beams_effect(text)
+        await asyncio.sleep(2)
         await black_hole_effect(text)
+        await asyncio.sleep(2)
         await ring_effect(text)
+        await asyncio.sleep(2)
         await spotlights_effect(text)
 
 
