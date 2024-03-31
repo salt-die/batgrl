@@ -1,4 +1,5 @@
 """A shadow caster gadget."""
+
 from bisect import bisect
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -289,8 +290,10 @@ class ShadowCaster(Graphics):
     to_map_coords(point: Point):
         Convert a point in the gadget's local coordinates to a point in the map's
         coordinates.
-    to_png(path):
+    to_png(path)
         Write :attr:`texture` to provided path as a `png` image.
+    clear()
+        Fill texture with default color.
     on_size()
         Update gadget after a resize.
     apply_hints()
