@@ -1,4 +1,5 @@
 """A ring effect."""
+
 import asyncio
 from math import cos, dist, sin, tau
 from random import choice, random
@@ -142,7 +143,7 @@ async def _move_to_rings(
             particle,
             path,
             speed=5,
-            easing="out_cubic",
+            easing="in_circ",
             on_progress=create_fade(particle),
         )
         for particle, path in zip(particles, paths)
