@@ -20,7 +20,7 @@ from batgrl.colors import (
 from batgrl.gadgets.behaviors.grabbable import Grabbable
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.grid_layout import GridLayout
-from batgrl.gadgets.shadow_caster import Camera, LightSource, ShadowCaster
+from batgrl.gadgets.shadow_caster import LightSource, ShadowCaster, ShadowCasterCamera
 from batgrl.gadgets.text import Text, cell
 from batgrl.gadgets.toggle_button import ToggleButton
 
@@ -58,7 +58,7 @@ class ShadowCasterApp(App):
         caster = ShadowCaster(
             size=(17, 34),
             map=map_,
-            camera=Camera((0, 0), (34, 34)),
+            camera=ShadowCasterCamera((0, 0), (34, 34)),
             tile_colors=[AWHITE, ACYAN, AMAGENTA],
             light_sources=[LightSource(), LightSource()],
             radius=40,

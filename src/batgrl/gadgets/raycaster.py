@@ -8,7 +8,6 @@ from numpy.typing import NDArray
 
 from ..colors import BLACK, TRANSPARENT, AColor, Color
 from .graphics import (
-    Cell,
     Graphics,
     Interpolation,
     Point,
@@ -21,7 +20,7 @@ from .graphics import (
 )
 from .texture_tools import _composite
 
-__all__ = ["Raycaster", "Sprite", "Camera", "Texture", "Point", "Size"]
+__all__ = ["Raycaster", "Sprite", "RaycasterCamera", "Texture", "Point", "Size"]
 
 
 @dataclass
@@ -51,7 +50,7 @@ class Sprite:
         return self.distance > other.distance
 
 
-class Camera:
+class RaycasterCamera:
     """
     A raycaster camera.
 
@@ -150,7 +149,7 @@ class Raycaster(Graphics):
     map : NDArray[np.ushort]
         An array-like with non-zero entries n indicating walls with texture
         `wall_textures[n - 1]`.
-    camera : Camera
+    camera : RaycasterCamera
         A view in the map.
     wall_textures : List[Texture]
         Textures for walls.
@@ -197,7 +196,7 @@ class Raycaster(Graphics):
     map : NDArray[np.ushort]
         An array-like with non-zero entries n indicating walls with texture
         `wall_textures[n - 1]`.
-    camera : Camera
+    camera : RaycasterCamera
         A view in the map.
     wall_textures : List[Texture]
         East/west-faced walls' textures.
@@ -272,6 +271,8 @@ class Raycaster(Graphics):
 
     Methods
     -------
+    cast_rays()
+        Update texture by casting all rays.
     to_png(path)
         Write :attr:`texture` to provided path as a `png` image.
     clear()
@@ -330,7 +331,7 @@ class Raycaster(Graphics):
         self,
         *,
         map: NDArray[np.ushort],
-        camera: Camera,
+        camera: RaycasterCamera,
         wall_textures: list[Texture] | None,
         light_wall_textures: list[Texture] | None = None,
         sprites: list[Sprite] | None = None,
@@ -339,7 +340,6 @@ class Raycaster(Graphics):
         ceiling_color: Color = BLACK,
         floor: Texture | None = None,
         floor_color: Color = BLACK,
-        is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
@@ -347,11 +347,11 @@ class Raycaster(Graphics):
         pos: Point = Point(0, 0),
         size_hint: SizeHint | SizeHintDict | None = None,
         pos_hint: PosHint | PosHintDict | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
         super().__init__(
-            is_transparent=is_transparent,
             default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
@@ -359,6 +359,7 @@ class Raycaster(Graphics):
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -408,7 +409,34 @@ class Raycaster(Graphics):
         self._tex_int = np.zeros_like(weights, dtype=int)
         self._column_distances = np.zeros((w,), dtype=float)
 
-    def cast_ray(self, column):
+    def cast_rays(self):
+        """Update texture by casting all rays."""
+        h, w = self.size
+        if h == 0 or w == 0:
+            return
+
+        # Early calculations on rays can be vectorized:
+        np.dot(self._ray_angles, self.camera._plane, out=self._rotated_angles)
+        with np.errstate(divide="ignore"):
+            np.true_divide(1.0, self._rotated_angles, out=self._deltas)
+        np.absolute(self._deltas, out=self._deltas)
+        np.sign(self._rotated_angles, out=self._steps, casting="unsafe")
+        np.heaviside(self._steps, 1.0, out=self._sides)
+        np.mod(self.camera.pos, 1.0, out=self._pos_frac)
+        np.subtract(self._sides, self._pos_frac, out=self._sides)
+        np.multiply(self._sides, self._steps, out=self._sides)
+        np.multiply(self._sides, self._deltas, out=self._sides)
+
+        self.texture[:h, :, :3] = self.ceiling_color
+        self.texture[h:, :, :3] = self.floor_color
+        self.texture[..., 3] = 255
+
+        for column in range(self.width):
+            self._cast_ray(column)
+
+        self._cast_sprites()
+
+    def _cast_ray(self, column):
         """Cast a ray for a given column of the screen."""
         camera = self.camera
         camera_pos = camera.pos
@@ -536,7 +564,7 @@ class Raycaster(Graphics):
             np.multiply(floor.shape[:2], tex_frac, out=tex_int, casting="unsafe")
             texture[end:, column] = floor[tex_int[:, 0], tex_int[:, 1]]
 
-    def cast_sprites(self):
+    def _cast_sprites(self):
         """Render all sprites."""
         texture = self.texture[:, ::-1]
         h, w, _ = texture.shape
@@ -599,32 +627,3 @@ class Raycaster(Graphics):
             dst = texture[start_y:end_y, columns, :3]
             _composite(dst, sprite_rect[..., :3], sprite_rect[..., 3, None])
             texture[start_y:end_y, columns, :3] = dst
-
-    def _render(self, canvas_view: NDArray[Cell]):
-        """Render visible region of gadget."""
-        h, w = self.size
-        if h == 0 or w == 0:
-            return
-
-        # Early calculations on rays can be vectorized:
-        np.dot(self._ray_angles, self.camera._plane, out=self._rotated_angles)
-        with np.errstate(divide="ignore"):
-            np.true_divide(1.0, self._rotated_angles, out=self._deltas)
-        np.absolute(self._deltas, out=self._deltas)
-        np.sign(self._rotated_angles, out=self._steps, casting="unsafe")
-        np.heaviside(self._steps, 1.0, out=self._sides)
-        np.mod(self.camera.pos, 1.0, out=self._pos_frac)
-        np.subtract(self._sides, self._pos_frac, out=self._sides)
-        np.multiply(self._sides, self._steps, out=self._sides)
-        np.multiply(self._sides, self._deltas, out=self._sides)
-
-        self.texture[:h, :, :3] = self.ceiling_color
-        self.texture[h:, :, :3] = self.floor_color
-        self.texture[..., 3] = 255
-
-        for column in range(self.width):
-            self.cast_ray(column)
-
-        self.cast_sprites()
-
-        super()._render(canvas_view)

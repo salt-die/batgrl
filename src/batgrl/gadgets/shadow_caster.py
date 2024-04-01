@@ -25,7 +25,14 @@ from .graphics import (
     clamp,
 )
 
-__all__ = ["ShadowCaster", "Restrictiveness", "Camera", "LightSource", "Point", "Size"]
+__all__ = [
+    "ShadowCaster",
+    "Restrictiveness",
+    "ShadowCasterCamera",
+    "LightSource",
+    "Point",
+    "Size",
+]
 
 AGRAY = AColor(50, 50, 50)
 QUADS = tuple(product((1, -1), (1, -1), (False, True)))
@@ -43,7 +50,7 @@ points are visible. For "moderate", the center and either end must be visible. F
 
 
 @dataclass(slots=True)
-class Camera:
+class ShadowCasterCamera:
     """
     The camera determines the visible portion of the map.
 
@@ -164,7 +171,7 @@ class ShadowCaster(Graphics):
     ----------
     map : NDArray[np.uint32]
         A 2-d map. Non-zero values are walls.
-    camera : Camera
+    camera : ShadowCasterCamera
         A camera that determines the visible portion of the map.
     tile_colors : list[AColor] | None, default: None
         A value `n` in the map will be colored ``tile_colors[n]``. If ``None``,
@@ -210,7 +217,7 @@ class ShadowCaster(Graphics):
     ----------
     map : NDArray[np.uint32]
         A 2-d map. Non-zero values are walls.
-    camera : Camera
+    camera : ShadowCasterCamera
         A camera that determines the visible portion of the map.
     tile_colors : list[AColor]
         A value `n` in the map will be colored ``tile_colors[n]``.
@@ -346,7 +353,7 @@ class ShadowCaster(Graphics):
         self,
         *,
         map: NDArray[np.uint32],
-        camera: Camera,
+        camera: ShadowCasterCamera,
         tile_colors: list[AColor] | None = None,
         light_sources: list[LightSource] | None = None,
         ambient_light: Color = BLACK,

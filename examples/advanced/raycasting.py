@@ -1,11 +1,12 @@
 """A raycaster example that includes an animated texture."""
+
 import asyncio
 from pathlib import Path
 
 import cv2
 import numpy as np
 from batgrl.app import App
-from batgrl.gadgets.raycaster import Camera, Raycaster, Sprite
+from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, Sprite
 from batgrl.gadgets.texture_tools import read_texture
 from batgrl.gadgets.video import Video
 
@@ -57,7 +58,7 @@ class RaycasterApp(App):
 
         video = VideoTexture(source=SPINNER)
         video.play()
-        camera = Camera(pos=points[0], theta=angles[0])
+        camera = RaycasterCamera(pos=points[0], theta=angles[0])
         raycaster = Raycaster(
             map=MAP,
             camera=camera,
@@ -75,8 +76,10 @@ class RaycasterApp(App):
                 if v > u:
                     v -= 2 * np.pi
                 for camera.theta in np.linspace(u, v, 10):
+                    raycaster.cast_rays()
                     await asyncio.sleep(0.01)
                 for camera.pos in np.linspace(points[i], points[(i + 1) % 4], 20):
+                    raycaster.cast_rays()
                     await asyncio.sleep(0.01)
 
 
