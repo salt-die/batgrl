@@ -32,7 +32,7 @@ MAP = np.array(
 
 
 class VideoTexture(Video):
-    """A video player that implements the `Texture` protocol."""
+    """A video player that implements the `RgbaTexture` protocol."""
 
     def __init__(self, source):
         super().__init__(source=source)

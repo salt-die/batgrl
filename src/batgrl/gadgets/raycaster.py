@@ -20,7 +20,7 @@ from .graphics import (
 )
 from .texture_tools import _composite
 
-__all__ = ["Raycaster", "Sprite", "RaycasterCamera", "Texture", "Point", "Size"]
+__all__ = ["Raycaster", "Sprite", "RaycasterCamera", "RgbaTexture", "Point", "Size"]
 
 
 @dataclass
@@ -124,9 +124,9 @@ class RaycasterCamera:
         self._plane = self._plane @ self.rotation_matrix(theta)
 
 
-class Texture(Protocol):
+class RgbaTexture(Protocol):
     """
-    A texture. Typically a numpy array.
+    A RGBA texture. Typically a numpy array.
 
     Notes
     -----
@@ -151,20 +151,20 @@ class Raycaster(Graphics):
         `wall_textures[n - 1]`.
     camera : RaycasterCamera
         A view in the map.
-    wall_textures : List[Texture]
+    wall_textures : List[RgbaTexture]
         Textures for walls.
-    light_wall_textures : list[Texture] | None, default: None
+    light_wall_textures : list[RgbaTexture] | None, default: None
         If provided, walls north/south face will use textures in
         :attr:`light_wall_textures` instead of :attr:`wall_textures`.
     sprites : list[Sprite] | None, default: None
         List of sprites.
-    sprite_textures : list[Texture] | None, default: None
+    sprite_textures : list[RgbaTexture] | None, default: None
         Textures for sprites.
-    ceiling : Texture | None, default: None
+    ceiling : RgbaTexture | None, default: None
         Ceiling texture.
     ceiling_color : Color, default: BLACK
         Color of ceiling if no ceiling texture.
-    floor : Texture | None, default: None
+    floor : RgbaTexture | None, default: None
         Floor texture.
     floor_color : Color, default: BLACK
         Color of floor if no floor texture.
@@ -198,19 +198,19 @@ class Raycaster(Graphics):
         `wall_textures[n - 1]`.
     camera : RaycasterCamera
         A view in the map.
-    wall_textures : List[Texture]
+    wall_textures : List[RgbaTexture]
         East/west-faced walls' textures.
-    light_wall_textures : list[Texture]
+    light_wall_textures : list[RgbaTexture]
         North/south-faced walls' textures.
     sprites : list[Sprite]
         List of sprites.
-    sprite_textures : list[Texture]
+    sprite_textures : list[RgbaTexture]
         Textures for sprites.
-    ceiling : Texture | None
+    ceiling : RgbaTexture | None
         Ceiling texture.
     ceiling_color : Color
         Color of ceiling if no ceiling texture.
-    floor : Texture
+    floor : RgbaTexture
         Floor texture.
     floor_color : Color
         Color of floor if no floor texture.
@@ -332,13 +332,13 @@ class Raycaster(Graphics):
         *,
         map: NDArray[np.ushort],
         camera: RaycasterCamera,
-        wall_textures: list[Texture] | None,
-        light_wall_textures: list[Texture] | None = None,
+        wall_textures: list[RgbaTexture] | None,
+        light_wall_textures: list[RgbaTexture] | None = None,
         sprites: list[Sprite] | None = None,
-        sprite_textures: list[Texture] | None = None,
-        ceiling: Texture | None = None,
+        sprite_textures: list[RgbaTexture] | None = None,
+        ceiling: RgbaTexture | None = None,
         ceiling_color: Color = BLACK,
-        floor: Texture | None = None,
+        floor: RgbaTexture | None = None,
         floor_color: Color = BLACK,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
