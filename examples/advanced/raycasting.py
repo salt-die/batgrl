@@ -1,7 +1,9 @@
 """A raycaster example that includes an animated texture."""
 
 import asyncio
+from itertools import cycle, pairwise
 from pathlib import Path
+from time import monotonic
 
 import cv2
 import numpy as np
@@ -9,6 +11,7 @@ from batgrl.app import App
 from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, Sprite
 from batgrl.gadgets.texture_tools import read_texture
 from batgrl.gadgets.video import Video
+from batgrl.geometry import lerp
 
 ASSETS = Path(__file__).parent.parent / "assets"
 SPINNER = ASSETS / "spinner.gif"
@@ -53,7 +56,7 @@ class RaycasterApp(App):
     """A raycaster app."""
 
     async def on_start(self):
-        points = [(2.5, 2.5), (2.5, 7.5), (7.5, 7.5), (7.5, 2.5)]
+        points = np.array([[2.5, 2.5], [2.5, 7.5], [7.5, 7.5], [7.5, 2.5]])
         angles = [np.pi, np.pi / 2, 0, 3 * np.pi / 2]
 
         video = VideoTexture(source=SPINNER)
@@ -70,17 +73,39 @@ class RaycasterApp(App):
         )
         self.add_gadget(raycaster)
 
-        while True:
-            for i in range(4):
-                u, v = angles[i], angles[(i + 1) % 4]
-                if v > u:
-                    v -= 2 * np.pi
-                for camera.theta in np.linspace(u, v, 10):
-                    raycaster.cast_rays()
-                    await asyncio.sleep(0.01)
-                for camera.pos in np.linspace(points[i], points[(i + 1) % 4], 20):
-                    raycaster.cast_rays()
-                    await asyncio.sleep(0.01)
+        last_time = monotonic()
+        elapsed = 0
+
+        TURN_DURATION = 0.75
+        MOVE_DURATION = 1.5
+
+        for i, j in pairwise(cycle(range(4))):
+            u, v = angles[i], angles[j]
+            if v > u:
+                v -= 2 * np.pi
+
+            while elapsed < TURN_DURATION:
+                current_time = monotonic()
+                elapsed += current_time - last_time
+                last_time = current_time
+                camera.theta = lerp(u, v, elapsed / TURN_DURATION)
+                raycaster.cast_rays()
+                await asyncio.sleep(0)
+
+            camera.theta = v
+            elapsed -= TURN_DURATION
+
+            while elapsed < MOVE_DURATION:
+                current_time = monotonic()
+                elapsed += current_time - last_time
+                last_time = current_time
+
+                camera.pos = lerp(points[i], points[j], elapsed / MOVE_DURATION)
+                raycaster.cast_rays()
+                await asyncio.sleep(0)
+
+            camera.pos = points[j]
+            elapsed -= MOVE_DURATION
 
 
 if __name__ == "__main__":
