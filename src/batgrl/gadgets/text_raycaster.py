@@ -33,7 +33,7 @@ class TextRaycaster(Text):
         Textures for walls.
     sprites : list[Sprite] | None, default: None
         A list of sprites.
-    sprite_textures : list[NDArray[np.str_]] | None, default: None
+    sprite_textures : list[NDArray[np.str\_]] | None, default: None
         Textures for sprites.
     max_hops : int, default: 20
         Determines how far rays are cast.
@@ -70,7 +70,7 @@ class TextRaycaster(Text):
         Textures for walls.
     sprites : list[Sprite]
         A list of sprites.
-    sprite_textures : list[NDArray[np.str_]]
+    sprite_textures : list[NDArray[np.str\_]]
         Textures for sprites.
     max_hops : int
         Determines how far rays are cast.
