@@ -146,28 +146,28 @@ class Raycaster(Graphics):
 
     Parameters
     ----------
-    map : NDArray[np.ushort]
-        An array-like with non-zero entries n indicating walls with texture
-        `wall_textures[n - 1]`.
+    caster_map : NDArray[np.ushort]
+        The raycaster map.
     camera : RaycasterCamera
-        A view in the map.
+        The raycaster camera.
     wall_textures : List[RgbaTexture]
         Textures for walls.
     light_wall_textures : list[RgbaTexture] | None, default: None
-        If provided, walls north/south face will use textures in
-        :attr:`light_wall_textures` instead of :attr:`wall_textures`.
+        Optional wall textures for north/south facing walls.
     sprites : list[Sprite] | None, default: None
-        List of sprites.
+        A list of sprites.
     sprite_textures : list[RgbaTexture] | None, default: None
         Textures for sprites.
     ceiling : RgbaTexture | None, default: None
-        Ceiling texture.
+        Optional ceiling texture.
     ceiling_color : Color, default: BLACK
         Color of ceiling if no ceiling texture.
     floor : RgbaTexture | None, default: None
-        Floor texture.
+        Optional floor texture.
     floor_color : Color, default: BLACK
         Color of floor if no floor texture.
+    max_hops : int, default: 20
+        Determines how far rays are cast.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -193,27 +193,28 @@ class Raycaster(Graphics):
 
     Attributes
     ----------
-    map : NDArray[np.ushort]
-        An array-like with non-zero entries n indicating walls with texture
-        `wall_textures[n - 1]`.
+    caster_map : NDArray[np.ushort]
+        The raycaster map.
     camera : RaycasterCamera
-        A view in the map.
+        The raycaster camera.
     wall_textures : List[RgbaTexture]
-        East/west-faced walls' textures.
+        Textures for walls.
     light_wall_textures : list[RgbaTexture]
-        North/south-faced walls' textures.
+        Wall textures for north/sourth facing walls.
     sprites : list[Sprite]
-        List of sprites.
+        A list of sprites.
     sprite_textures : list[RgbaTexture]
         Textures for sprites.
     ceiling : RgbaTexture | None
-        Ceiling texture.
+        The ceiling texture.
     ceiling_color : Color
         Color of ceiling if no ceiling texture.
     floor : RgbaTexture
-        Floor texture.
+        The floor texture.
     floor_color : Color
         Color of floor if no floor texture.
+    max_hops : int
+        Determines how far rays are cast.
     texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
@@ -325,12 +326,10 @@ class Raycaster(Graphics):
         Remove this gadget and recursively remove all its children.
     """
 
-    HOPS = 20  # How far rays are cast.
-
     def __init__(
         self,
         *,
-        map: NDArray[np.ushort],
+        caster_map: NDArray[np.ushort],
         camera: RaycasterCamera,
         wall_textures: list[RgbaTexture] | None,
         light_wall_textures: list[RgbaTexture] | None = None,
@@ -340,6 +339,7 @@ class Raycaster(Graphics):
         ceiling_color: Color = BLACK,
         floor: RgbaTexture | None = None,
         floor_color: Color = BLACK,
+        max_hops: int = 20,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
@@ -363,17 +363,28 @@ class Raycaster(Graphics):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
-        self.map = map
+        self.caster_map = caster_map
+        """The raycaster map."""
         self.camera = camera
+        """The raycaster camera."""
         self.wall_textures = wall_textures
+        """Textures for walls."""
         self.light_wall_textures = light_wall_textures or wall_textures
+        """Optional wall textures for north/south facing walls."""
         self.sprites = sprites
+        """A list of sprites."""
         self.sprite_textures = sprite_textures
+        """Textures for sprites."""
         self.ceiling = ceiling
+        """Optional ceiling texture."""
         self.ceiling_color = ceiling_color
+        """Color of ceiling if no ceiling texture."""
         self.floor = floor
+        """Optional floor texture."""
         self.floor_color = floor_color
+        """Color of floor if no floor texture."""
+        self.max_hops = max_hops
+        """Determines how far rays are cast."""
 
         # Buffers
         self._pos_int = np.zeros((2,), dtype=int)
@@ -440,7 +451,7 @@ class Raycaster(Graphics):
         """Cast a ray for a given column of the screen."""
         camera = self.camera
         camera_pos = camera.pos
-        map = self.map
+        caster_map = self.caster_map
 
         ray_pos = self._pos_int
         ray_pos[:] = camera_pos
@@ -450,13 +461,13 @@ class Raycaster(Graphics):
         step = self._steps[column]
         sides = self._sides[column]
 
-        # Casting #
-        for _ in range(self.HOPS):
+        # Cast a ray until we hit a wall or hit max_hops
+        for _ in range(self.max_hops):
             side = 0 if sides[0] < sides[1] else 1
             sides[side] += delta[side]
             ray_pos[side] += step[side]
 
-            if texture_index := map[tuple(ray_pos)]:
+            if texture_index := caster_map[tuple(ray_pos)]:
                 # Distance from wall to camera plane.
                 # Note that distance of wall to camera is not used
                 # as it would result in a "fish-eye" effect.
@@ -464,19 +475,17 @@ class Raycaster(Graphics):
                     ray_pos[side] - camera_pos[side] + (0 if step[side] == 1 else 1)
                 ) / ray_angle[side]
                 break
-
         else:  # No walls in range.
-            distance = 1000  # 1000 == infinity, roughly
+            distance = 10000
 
         self._column_distances[column] = distance
 
-        # Rendering #
         texture = self.texture[:, ::-1]
         height = texture.shape[0]
 
-        column_height = (
-            int(height / distance) if distance else 1000
-        )  # 1000 == infinity, roughly
+        column_height = int(height / distance) if distance else 10000
+        if column_height == 0:
+            return
 
         # Start and end y-coordinates of column.
         half_height = height >> 1
@@ -614,14 +623,13 @@ class Raycaster(Graphics):
             tex_height, tex_width, _ = sprite_tex.shape
 
             clip_y = (sprite_height - h) / 2
-            np.add(rows, clip_y, out=rows)
-            np.multiply(rows, tex_height / sprite_height, out=rows)
+            rows += clip_y
+            rows *= tex_height / sprite_height
             np.clip(rows, 0, None, out=rows)
 
             clip_x = sprite_x - sprite_width / 2
             tex_xs = columns - clip_x
-            np.multiply(tex_xs, tex_width, out=tex_xs)
-            np.divide(tex_xs, sprite_width, out=tex_xs)
+            tex_xs *= tex_width / sprite_width
 
             sprite_rect = sprite_tex[rows.astype(int)][:, tex_xs.astype(int)]
             dst = texture[start_y:end_y, columns, :3]

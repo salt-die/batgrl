@@ -1,4 +1,4 @@
-"""A raycaster example that includes an animated texture."""
+"""Showcase of batgrl's raycasters."""
 
 import asyncio
 from itertools import cycle, pairwise
@@ -8,15 +8,36 @@ from time import monotonic
 import cv2
 import numpy as np
 from batgrl.app import App
-from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, Sprite
+from batgrl.colors import GREEN
+from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, RgbaTexture, Sprite
+from batgrl.gadgets.text_raycaster import TextRaycaster
+from batgrl.gadgets.text_tools import cell
 from batgrl.gadgets.texture_tools import read_texture
 from batgrl.gadgets.video import Video
 from batgrl.geometry import lerp
 
-ASSETS = Path(__file__).parent.parent / "assets"
-SPINNER = ASSETS / "spinner.gif"
-CHECKER = ASSETS / "checkered.png"
-SPRITE = ASSETS / "pixel_python.png"
+
+def load_assets():
+    assets = Path(__file__).parent.parent / "assets"
+
+    yield assets / "spinner.gif"
+
+    checker = assets / "checkered.png"
+    yield read_texture(checker)
+
+    python_sprite = assets / "pixel_python.png"
+    yield read_texture(python_sprite)
+
+    wall = assets / "wall.txt"
+    yield np.array(
+        [[int(char) for char in line] for line in wall.read_text().splitlines()]
+    )
+
+    tree = assets / "tree.txt"
+    yield np.array([list(line) for line in tree.read_text().splitlines()])
+
+
+SPINNER, CHECKER, PYTHON, WALL, TREE = load_assets()
 MAP = np.array(
     [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -34,7 +55,7 @@ MAP = np.array(
 )
 
 
-class VideoTexture(Video):
+class VideoTexture(Video, RgbaTexture):
     """A video player that implements the `RgbaTexture` protocol."""
 
     def __init__(self, source):
@@ -63,50 +84,61 @@ class RaycasterApp(App):
         video.play()
         camera = RaycasterCamera(pos=points[0], theta=angles[0])
         raycaster = Raycaster(
-            map=MAP,
+            caster_map=MAP,
             camera=camera,
             wall_textures=[video],
             sprites=[Sprite(pos=points[i], texture_idx=0) for i in range(4)],
-            sprite_textures=[read_texture(SPRITE)],
-            floor=read_texture(CHECKER),
-            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            sprite_textures=[PYTHON],
+            floor=CHECKER,
+            size_hint={"height_hint": 1.0, "width_hint": 0.5},
         )
-        self.add_gadget(raycaster)
+        text_raycaster = TextRaycaster(
+            caster_map=MAP,
+            camera=camera,
+            wall_textures=[WALL],
+            sprites=[Sprite(pos=points[i], texture_idx=0) for i in range(4)],
+            sprite_textures=[TREE],
+            default_cell=cell(fg_color=GREEN),
+            size_hint={"height_hint": 1.0, "width_hint": 0.5},
+            pos_hint={"x_hint": 0.5, "anchor": "left"},
+        )
+        self.add_gadgets(raycaster, text_raycaster)
 
+        turn_duration = 0.75
+        move_duration = 1.5
         last_time = monotonic()
         elapsed = 0
-
-        TURN_DURATION = 0.75
-        MOVE_DURATION = 1.5
 
         for i, j in pairwise(cycle(range(4))):
             u, v = angles[i], angles[j]
             if v > u:
                 v -= 2 * np.pi
 
-            while elapsed < TURN_DURATION:
+            while elapsed < turn_duration:
                 current_time = monotonic()
                 elapsed += current_time - last_time
                 last_time = current_time
-                camera.theta = lerp(u, v, elapsed / TURN_DURATION)
+                camera.theta = lerp(u, v, elapsed / turn_duration)
                 raycaster.cast_rays()
+                text_raycaster.cast_rays()
                 await asyncio.sleep(0)
 
             camera.theta = v
-            elapsed -= TURN_DURATION
+            elapsed -= turn_duration
 
-            while elapsed < MOVE_DURATION:
+            while elapsed < move_duration:
                 current_time = monotonic()
                 elapsed += current_time - last_time
                 last_time = current_time
 
-                camera.pos = lerp(points[i], points[j], elapsed / MOVE_DURATION)
+                camera.pos = lerp(points[i], points[j], elapsed / move_duration)
                 raycaster.cast_rays()
+                text_raycaster.cast_rays()
                 await asyncio.sleep(0)
 
             camera.pos = points[j]
-            elapsed -= MOVE_DURATION
+            elapsed -= move_duration
 
 
 if __name__ == "__main__":
-    RaycasterApp(title="Raycaster Example").run()
+    RaycasterApp(title="Raycasting Example").run()
