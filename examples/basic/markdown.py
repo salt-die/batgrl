@@ -1,4 +1,5 @@
 """A markdown example."""
+
 from batgrl.app import App
 from batgrl.gadgets.markdown import Markdown
 
@@ -76,7 +77,6 @@ class MarkdownApp(App):
     """A markdown app."""
 
     async def on_start(self):
-        """Coroutine scheduled when app is run."""
         markdown = Markdown(
             markdown=MARKDOWN_TEXT, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
