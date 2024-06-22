@@ -51,7 +51,7 @@ class Link:
             self.b.acceleration -= momentum
 
 
-def make_mesh(size: Size, nanchors: int) -> tuple[list[Node], list[Link]]:
+def make_mesh(size: Size) -> tuple[list[Node], list[Link]]:
     height, width = size
 
     nodes = [
