@@ -1,4 +1,5 @@
 """Tools for text."""
+
 from bisect import bisect
 from functools import lru_cache
 from operator import itemgetter
@@ -498,7 +499,7 @@ def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
     )
 
 
-def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint0]) -> NDArray[np.dtype("<U1")]:
+def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint]) -> NDArray[np.dtype("<U1")]:
     r"""
     Convert a (h, w, 2, 2)-shaped boolean array into a (h, w) array of box unicode
     characters.
