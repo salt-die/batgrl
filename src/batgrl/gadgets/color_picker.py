@@ -1,4 +1,5 @@
 """A color picker gadget."""
+
 from collections.abc import Callable
 from itertools import pairwise
 
@@ -78,7 +79,7 @@ class _ShadeSelector(Grabbable, Graphics):
     def update_swatch_label(self):
         y, x = self._shade_indicator.pos
 
-        r, g, b = self.texture[y * 2, x, :3]
+        r, g, b = self.texture[y * 2, x, :3].tolist()
 
         self.color_swatch.bg_color = r, g, b
 
