@@ -1,0 +1,44 @@
+﻿batgrl.geometry
+===============
+
+.. automodule:: batgrl.geometry
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      clamp
+      lerp
+      move_along_path
+      points_on_circle
+      round_down
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BezierCurve
+      HasPos
+      Point
+      Rect
+      Region
+      Size
+   
+   
+
+   
+   
+   
+
+
+

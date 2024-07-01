@@ -1,0 +1,32 @@
+batgrl.gadgets.raycaster
+========================
+
+.. automodule:: batgrl.gadgets.raycaster
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Raycaster
+      RaycasterCamera
+      RgbaTexture
+      Sprite
+   
+   
+
+   
+   
+   
+
+
+

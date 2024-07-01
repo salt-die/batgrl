@@ -1,0 +1,29 @@
+batgrl.gadgets.digital\_display
+===============================
+
+.. automodule:: batgrl.gadgets.digital_display
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DigitalDisplay
+   
+   
+
+   
+   
+   
+
+
+

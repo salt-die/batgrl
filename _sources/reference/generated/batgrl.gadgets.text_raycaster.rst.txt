@@ -1,0 +1,29 @@
+batgrl.gadgets.text\_raycaster
+==============================
+
+.. automodule:: batgrl.gadgets.text_raycaster
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TextRaycaster
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,29 @@
+batgrl.gadgets.slider
+=====================
+
+.. automodule:: batgrl.gadgets.slider
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Slider
+   
+   
+
+   
+   
+   
+
+
+

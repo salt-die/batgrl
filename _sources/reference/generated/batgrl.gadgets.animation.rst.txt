@@ -1,0 +1,29 @@
+batgrl.gadgets.animation
+========================
+
+.. automodule:: batgrl.gadgets.animation
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Animation
+   
+   
+
+   
+   
+   
+
+
+

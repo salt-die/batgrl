@@ -1,0 +1,37 @@
+batgrl.gadgets.shadow\_caster
+=============================
+
+.. automodule:: batgrl.gadgets.shadow_caster
+
+   
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      Restrictiveness
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      LightSource
+      ShadowCaster
+      ShadowCasterCamera
+   
+   
+
+   
+   
+   
+
+
+

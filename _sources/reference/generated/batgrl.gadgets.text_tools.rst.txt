@@ -1,0 +1,46 @@
+batgrl.gadgets.text\_tools
+==========================
+
+.. automodule:: batgrl.gadgets.text_tools
+
+   
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      Cell
+      vectorized_chr
+      vectorized_box_map
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      add_text
+      binary_to_box
+      binary_to_braille
+      cell
+      cell_sans
+      char_width
+      is_word_char
+      smooth_horizontal_bar
+      smooth_vertical_bar
+      str_width
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

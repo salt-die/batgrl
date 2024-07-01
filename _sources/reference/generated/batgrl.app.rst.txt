@@ -1,0 +1,35 @@
+﻿batgrl.app
+==========
+
+.. automodule:: batgrl.app
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      run_gadget_as_app
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      App
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,32 @@
+batgrl.gadgets.markdown
+=======================
+
+.. automodule:: batgrl.gadgets.markdown
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BlankLine
+      EmojiCode
+      Markdown
+      Spaces
+   
+   
+
+   
+   
+   
+
+
+

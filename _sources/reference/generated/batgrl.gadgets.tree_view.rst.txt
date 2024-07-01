@@ -1,0 +1,30 @@
+batgrl.gadgets.tree\_view
+=========================
+
+.. automodule:: batgrl.gadgets.tree_view
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TreeView
+      TreeViewNode
+   
+   
+
+   
+   
+   
+
+
+

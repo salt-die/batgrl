@@ -1,0 +1,29 @@
+batgrl.gadgets.scroll\_view
+===========================
+
+.. automodule:: batgrl.gadgets.scroll_view
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ScrollView
+   
+   
+
+   
+   
+   
+
+
+

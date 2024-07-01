@@ -1,0 +1,29 @@
+batgrl.gadgets.file\_chooser
+============================
+
+.. automodule:: batgrl.gadgets.file_chooser
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FileChooser
+   
+   
+
+   
+   
+   
+
+
+
