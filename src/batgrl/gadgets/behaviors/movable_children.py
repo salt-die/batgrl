@@ -3,6 +3,7 @@ Movable children behavior for a gadget.
 
 Translate movable's children by dragging them.
 """
+
 from ...geometry import clamp
 from ...io import MouseButton
 from .grabbable import Grabbable
@@ -14,7 +15,7 @@ class MovableChildren(Grabbable):
     """
     Movable children behavior for a gadget.
 
-    Translate movable's children by dragging them.
+    Translate a gadget's child by clicking and dragging it.
 
     Parameters
     ----------

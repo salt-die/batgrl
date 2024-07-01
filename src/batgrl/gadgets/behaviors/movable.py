@@ -1,4 +1,5 @@
 """Movable behavior for a gadget."""
+
 from ...geometry import clamp
 from ...io import MouseButton
 from .grabbable import Grabbable
@@ -8,7 +9,9 @@ __all__ = ["Movable"]
 
 class Movable(Grabbable):
     """
-    Movable behavior for a gadget. Translate a gadget by clicking and dragging it.
+    Movable behavior for a gadget.
+
+    Translate a gadget by clicking and dragging it.
 
     Parameters
     ----------
