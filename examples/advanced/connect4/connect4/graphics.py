@@ -86,13 +86,13 @@ class Board(GridLayout):
         self._last_col = -1
 
     def on_mouse(self, mouse_event):
-        if not self.collides_point(mouse_event.position):
+        if not self.collides_point(mouse_event.pos):
             for i in range(6):
                 self.children[self.index_at(i, self._last_col)].unselect()
             self._last_col = -1
             return False
 
-        col = x_to_column(self.to_local(mouse_event.position).x)
+        col = x_to_column(self.to_local(mouse_event.pos).x)
         if col != self._last_col:
             for i in range(6):
                 if self._last_col != -1:

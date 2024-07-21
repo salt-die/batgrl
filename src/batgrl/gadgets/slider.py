@@ -1,8 +1,9 @@
 """A slider gadget."""
+
 from collections.abc import Callable
 
 from ..colors import BLACK, WHITE, Color
-from ..io import MouseButton, MouseEvent, MouseEventType
+from ..terminal.events import MouseButton, MouseEvent
 from .behaviors.grabbable import Grabbable
 from .pane import (
     Pane,
@@ -46,7 +47,7 @@ class Slider(Grabbable, Pane):
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool, default: False
         If true, gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
+    mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
     bg_color : Color, default: BLACK
         Background color of gadget.
@@ -101,12 +102,6 @@ class Slider(Grabbable, Pane):
         Transparency of gadget.
     is_grabbed : bool
         True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
     size : Size
         Size of gadget.
     height : int
@@ -193,11 +188,13 @@ class Slider(Grabbable, Pane):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -223,7 +220,7 @@ class Slider(Grabbable, Pane):
         slider_enabled: bool = True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
+        mouse_button: MouseButton = "left",
         bg_color: Color = BLACK,
         alpha: float = 1.0,
         size: Size = Size(10, 10),
@@ -377,14 +374,14 @@ class Slider(Grabbable, Pane):
     def grab(self, mouse_event: MouseEvent):
         """Move handle to mouse position on grab."""
         if (
-            mouse_event.event_type == MouseEventType.MOUSE_DOWN
-            and self.collides_point(mouse_event.position)
-            and self.to_local(mouse_event.position).y == self.height // 2
+            mouse_event.event_type == "mouse_down"
+            and self.collides_point(mouse_event.pos)
+            and self.to_local(mouse_event.pos).y == self.height // 2
         ):
             super().grab(mouse_event)
             self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update proportion and handle position on grab update."""
-        x = clamp(self.to_local(mouse_event.position).x, 0, self.fill_width)
+        x = clamp(self.to_local(mouse_event.pos).x, 0, self.fill_width)
         self.proportion = 0 if self.fill_width == 0 else x / self.fill_width

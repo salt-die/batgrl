@@ -46,4 +46,4 @@ class ButtonContainer(Pane):
             self.add_gadget(ElementButton(pos=(3 * i + 1, 2), element=element))
 
     def on_mouse(self, mouse_event):
-        return self.collides_point(mouse_event.position)
+        return self.collides_point(mouse_event.pos)

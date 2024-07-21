@@ -2,7 +2,6 @@ from itertools import product
 
 import cv2
 import numpy as np
-from batgrl.io import MouseButton, MouseEventType
 
 from .colors import BORDER, FLAG_COLOR, HIDDEN_SQUARE
 from .grid import Grid
@@ -39,29 +38,27 @@ class Minefield(Grid):
         self._pressed_cell = self._pressed_button = None
 
     def on_mouse(self, mouse_event):
-        position, event_type, button, _, _ = mouse_event
-
-        if event_type not in (MouseEventType.MOUSE_DOWN, MouseEventType.MOUSE_UP):
+        if mouse_event.event_type not in ("mouse_down", "mouse_up"):
             return False
 
-        if not self.collides_point(position):
-            if event_type == MouseEventType.MOUSE_UP and self._pressed_cell:
+        if not self.collides_point(mouse_event.pos):
+            if mouse_event.event_type == "mouse_up" and self._pressed_cell:
                 self._release()
 
             return False
 
-        if event_type == MouseEventType.MOUSE_DOWN:
+        if mouse_event.event_type == "mouse_down":
             if self._pressed_cell:
                 self._release()
 
-            self._pressed_cell = self._cell_from_pos(position)
-            self._pressed_button = button
+            self._pressed_cell = self._cell_from_pos(mouse_event.pos)
+            self._pressed_button = mouse_event.button
 
-            if button == MouseButton.LEFT:
+            if mouse_event.button == "left":
                 self._normal_press()
-            elif button == MouseButton.RIGHT:
+            elif mouse_event.button == "right":
                 self._flag_press()
-            elif button == MouseButton.MIDDLE:
+            elif mouse_event.button == "middle":
                 self._super_press()
             else:
                 return False
@@ -71,14 +68,14 @@ class Minefield(Grid):
                 return False
 
             if self._cell_from_pos(
-                position
+                mouse_event.pos
             ) == self._pressed_cell and self._pressed_button in (
-                MouseButton.LEFT,
-                MouseButton.MIDDLE,
+                "left",
+                "middle",
             ):
                 self.reveal_cell(
                     self._pressed_cell,
-                    reveal_neighbors=self._pressed_button == MouseButton.MIDDLE,
+                    reveal_neighbors=self._pressed_button == "middle",
                 )
 
             self._release()
@@ -177,7 +174,7 @@ class Minefield(Grid):
 
         self._recolor_cell(cell, HIDDEN_SQUARE, BORDER)
 
-        if self._pressed_button == MouseButton.MIDDLE:
+        if self._pressed_button == "middle":
             for neighbor in self._neighbors(cell):
                 self._recolor_cell(neighbor, HIDDEN_SQUARE, BORDER)
 

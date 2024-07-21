@@ -1,8 +1,8 @@
 .. module:: batgrl
 
-##################
+################
 batgrl Reference
-##################
+################
 
 :Release: |release|
 :Date: |today|
@@ -11,11 +11,10 @@ batgrl Reference
    :toctree: generated
    :recursive:
 
-   colors
-   gadgets
-   io.input.events
-   io.input.keys
    app
+   colors
    easings
    figfont
+   gadgets
    geometry
+   terminal.events

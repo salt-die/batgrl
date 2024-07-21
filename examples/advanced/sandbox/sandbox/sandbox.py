@@ -4,7 +4,6 @@ import numpy as np
 from batgrl.colors import ABLACK
 from batgrl.gadgets.graphics import Graphics, Size
 from batgrl.gadgets.text import Text, cell
-from batgrl.io import MouseButton
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air
@@ -54,14 +53,12 @@ class Sandbox(Graphics):
         super()._render(canvas)
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button != MouseButton.LEFT or not self.collides_point(
-            mouse_event.position
-        ):
+        if mouse_event.button != "left" or not self.collides_point(mouse_event.pos):
             return
 
         world = self.world
         particle_type = self.particle_type
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
 
         world[2 * y, x].replace(particle_type)
         world[2 * y + 1, x].replace(particle_type)

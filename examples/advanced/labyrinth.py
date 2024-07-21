@@ -3,6 +3,7 @@ You're stuck in the Labyrinth, a maze that re-arranges itself as you try to esca
 
 Press arrow keys to move. Requires `networkx`.
 """
+
 import asyncio
 from itertools import cycle
 from random import choice, random
@@ -76,9 +77,9 @@ class Labyrinth(Graphics):
         )
 
         self.texture[:] = self._texture_gradient
-        self.texture[-1] = self.texture[
-            :, w - 1 + w % 2 :
-        ] = 0  # Extra line of pixels removed.
+        self.texture[-1] = self.texture[:, w - 1 + w % 2 :] = (
+            0  # Extra line of pixels removed.
+        )
         self.texture[(1, -3), (0, w % 2 - 2)] = 0  # Ends of maze.
 
         for y, x in maze.nodes:
@@ -116,17 +117,16 @@ class Labyrinth(Graphics):
             self.texture[yx] = self._texture_gradient[yx]
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "up":
-                dy, dx = -1, 0
-            case "left":
-                dy, dx = 0, -1
-            case "right":
-                dy, dx = 0, 1
-            case "down":
-                dy, dx = 1, 0
-            case _:
-                return False
+        if key_event.key == "up":
+            dy, dx = -1, 0
+        elif key_event.key == "left":
+            dy, dx = 0, -1
+        elif key_event.key == "right":
+            dy, dx = 0, 1
+        elif key_event.key == "down":
+            dy, dx = 1, 0
+        else:
+            return False
 
         y, x = self.player
         py, px = y + dy, x + dx

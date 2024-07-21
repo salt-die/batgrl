@@ -3,6 +3,7 @@ Classic snake game.
 
 Move snake with arrow keys. Pause with `space`.
 """
+
 import asyncio
 from collections import deque
 from itertools import cycle, product
@@ -74,17 +75,20 @@ class Snake(Graphics):
         if not self.snake_is_moving:
             self.snake_is_moving = True
 
-        match key_event.key:
-            case "up":
-                self.current_direction = self._check_neck(-1, 0)
-            case "left":
-                self.current_direction = self._check_neck(0, -1)
-            case "right":
-                self.current_direction = self._check_neck(0, 1)
-            case "down":
-                self.current_direction = self._check_neck(1, 0)
-            case " ":
-                self.snake_is_moving = False
+        if key_event.key == "up":
+            self.current_direction = self._check_neck(-1, 0)
+        elif key_event.key == "left":
+            self.current_direction = self._check_neck(0, -1)
+        elif key_event.key == "right":
+            self.current_direction = self._check_neck(0, 1)
+        elif key_event.key == "down":
+            self.current_direction = self._check_neck(1, 0)
+        elif key_event.key == " ":
+            self.snake_is_moving = False
+        else:
+            return False
+
+        return True
 
     async def _paint_apple(self):
         while True:

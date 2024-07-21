@@ -25,7 +25,7 @@ class BarChartApp(App):
         bar_chart = BarChart(
             bar_chart_data,
             min_y=0,
-            y_label="Age",
+            y_label="Popularity",
             size=(25, 75),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
         )

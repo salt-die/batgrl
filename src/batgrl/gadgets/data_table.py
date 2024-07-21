@@ -1,11 +1,12 @@
 """A data table gadget."""
+
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
 from itertools import count, islice
 from typing import Literal, Protocol, TypeVar
 
-from ..io import MouseEvent
+from ..terminal.events import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .gadget import (
@@ -28,8 +29,7 @@ __all__ = ["DataTable", "ColumnStyle", "Point", "Size"]
 class SupportsLessThan(Protocol):
     """Supports the less than (`<`) operator."""
 
-    def __lt__(self, other) -> bool:
-        ...
+    def __lt__(self, other) -> bool: ...
 
 
 T = TypeVar("T", bound=SupportsLessThan)
@@ -457,11 +457,13 @@ class DataTable(Themable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -635,7 +637,7 @@ class DataTable(Themable, Gadget):
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Highlight row on mouse collision."""
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
         if not (
             0 <= y < self._scroll_view.port_height
             and 0 <= x < self._scroll_view.port_width
@@ -676,60 +678,57 @@ class DataTable(Themable, Gadget):
     def _update_hover(self, column_id: int = -1, row_id: int = -1):
         cell: _DataCell
 
-        match self.select_items:
-            case "row":
-                if self._hover_row_id != row_id:
-                    if self._hover_row_id != -1:
-                        for cell in self._rows[self._hover_row_id].children:
-                            self._paint_cell_normal(cell)
-                    if row_id != -1:
-                        for cell in self._rows[row_id].children:
-                            self._paint_cell_hover(cell)
-            case "column":
-                if self._hover_column_id != column_id:
-                    if self._hover_column_id != -1:
-                        old_column_index = self._column_ids.index(self._hover_column_id)
-                        for row in self._rows.values():
-                            self._paint_cell_normal(row.children[old_column_index])
-                    if column_id != -1:
-                        new_column_index = self._column_ids.index(column_id)
-                        for row in self._rows.values():
-                            self._paint_cell_hover(row.children[new_column_index])
-            case "cell":
-                if self._hover_column_id != column_id or self._hover_row_id != row_id:
-                    if self._hover_column_id != -1 and self._hover_row_id != -1:
-                        old_column_index = self._column_ids.index(self._hover_column_id)
-                        self._paint_cell_normal(
-                            self._rows[self._hover_row_id].children[old_column_index]
-                        )
-                    if column_id != -1 and row_id != -1:
-                        new_column_index = self._column_ids.index(column_id)
-                        self._paint_cell_hover(
-                            self._rows[row_id].children[new_column_index]
-                        )
+        if self.select_items == "row":
+            if self._hover_row_id != row_id:
+                if self._hover_row_id != -1:
+                    for cell in self._rows[self._hover_row_id].children:
+                        self._paint_cell_normal(cell)
+                if row_id != -1:
+                    for cell in self._rows[row_id].children:
+                        self._paint_cell_hover(cell)
+        elif self.select_items == "column":
+            if self._hover_column_id != column_id:
+                if self._hover_column_id != -1:
+                    old_column_index = self._column_ids.index(self._hover_column_id)
+                    for row in self._rows.values():
+                        self._paint_cell_normal(row.children[old_column_index])
+                if column_id != -1:
+                    new_column_index = self._column_ids.index(column_id)
+                    for row in self._rows.values():
+                        self._paint_cell_hover(row.children[new_column_index])
+        elif self.select_items == "cell":
+            if self._hover_column_id != column_id or self._hover_row_id != row_id:
+                if self._hover_column_id != -1 and self._hover_row_id != -1:
+                    old_column_index = self._column_ids.index(self._hover_column_id)
+                    self._paint_cell_normal(
+                        self._rows[self._hover_row_id].children[old_column_index]
+                    )
+                if column_id != -1 and row_id != -1:
+                    new_column_index = self._column_ids.index(column_id)
+                    self._paint_cell_hover(
+                        self._rows[row_id].children[new_column_index]
+                    )
 
         self._hover_row_id = row_id
         self._hover_column_id = column_id
 
     def _on_release(self):
         cell: _DataCell
-
-        match self.select_items:
-            case "row":
-                for cell in self._rows[self._hover_row_id].children:
-                    cell.selected = not cell.selected
-                    self._paint_cell_hover(cell)
-            case "column":
-                column_index = self._column_ids.index(self._hover_column_id)
-                for row in self._rows.values():
-                    cell = row.children[column_index]
-                    cell.selected = not cell.selected
-                    self._paint_cell_hover(cell)
-            case "cell":
-                column_index = self._column_ids.index(self._hover_column_id)
-                cell = self._rows[self._hover_row_id].children[column_index]
+        if self.select_items == "row":
+            for cell in self._rows[self._hover_row_id].children:
                 cell.selected = not cell.selected
                 self._paint_cell_hover(cell)
+        elif self.select_items == "column":
+            column_index = self._column_ids.index(self._hover_column_id)
+            for row in self._rows.values():
+                cell = row.children[column_index]
+                cell.selected = not cell.selected
+                self._paint_cell_hover(cell)
+        elif self.select_items == "cell":
+            column_index = self._column_ids.index(self._hover_column_id)
+            cell = self._rows[self._hover_row_id].children[column_index]
+            cell.selected = not cell.selected
+            self._paint_cell_hover(cell)
 
     def _sort(self, column_id: int, sort_state: _SortState):
         column_index = self._column_ids.index(column_id)

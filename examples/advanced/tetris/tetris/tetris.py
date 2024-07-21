@@ -157,7 +157,7 @@ class Tetris(Image):
         )
         next_space.add_gadget(self.next_piece)
 
-        self.matrix = np.zeros(matrix_size, dtype=np.bool8)
+        self.matrix = np.zeros(matrix_size, dtype=np.bool)
         """Bool array representation of mino positions."""
         self.matrix_gadget = MatrixGadget(size=(h, 2 * w), pos=(0, 2 * SPACING + bw))
         """The "matrix", where minos land."""
@@ -495,27 +495,26 @@ class Tetris(Image):
             pass
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "f1":
-                self.pause()
-            case "enter":
-                self.new_game()
-            case "right" | "6":
-                self.move_current_piece(dx=1)
-            case "left" | "4":
-                self.move_current_piece(dx=-1)
-            case "down" | "2":
-                if not self.move_current_piece(dy=1):
-                    self.affix_piece()
-            case " " | "8":
-                self.drop_current_piece()
-            case "c" | "0":
-                self.new_piece(from_held=True)
-            case "z" | "1" | "5" | "9":
-                self.rotate_current_piece(clockwise=False)
-            case "x" | "up" | "3" | "7":
-                self.rotate_current_piece()
-            case _:
-                return False
+        if key_event.key == "f1":
+            self.pause()
+        elif key_event.key == "enter":
+            self.new_game()
+        elif key_event.key in {"right", "6"}:
+            self.move_current_piece(dx=1)
+        elif key_event.key in {"left", "4"}:
+            self.move_current_piece(dx=-1)
+        elif key_event.key in {"down", "2"}:
+            if not self.move_current_piece(dy=1):
+                self.affix_piece()
+        elif key_event.key in {" ", "8"}:
+            self.drop_current_piece()
+        elif key_event.key in {"c", "0"}:
+            self.new_piece(from_held=True)
+        elif key_event.key in {"z", "1", "5", "9"}:
+            self.rotate_current_piece(clockwise=False)
+        elif key_event.key in {"x", "up", "3", "7"}:
+            self.rotate_current_piece()
+        else:
+            return False
 
         return True

@@ -44,9 +44,7 @@ class Selector(Grabbable, Text):
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        self.indicator.x = clamp(
-            self.to_local(mouse_event.position).x, 0, self.width - 1
-        )
+        self.indicator.x = clamp(self.to_local(mouse_event.pos).x, 0, self.width - 1)
         if self.callback:
             self.callback(self.indicator.x)
 
@@ -202,7 +200,6 @@ class ShadowCasterApp(App):
                 map_[:] = 0
                 map_[8:12, 5 + i : 5 + i + 4] = 1
                 map_[22:26, 25 - i : 25 - i + 4] = 2
-
                 # Move light sources
                 theta = (theta + 0.1) % math.tau
                 caster.light_sources[0].coords = (
@@ -219,4 +216,9 @@ class ShadowCasterApp(App):
 
 
 if __name__ == "__main__":
-    ShadowCasterApp(title="Shadow Casting", bg_color=DEFAULT_PRIMARY_BG).run()
+    ShadowCasterApp(
+        title="Shadow Casting",
+        bg_color=DEFAULT_PRIMARY_BG,
+        inline=True,
+        inline_height=17,
+    ).run()

@@ -1,8 +1,7 @@
 """Focus behavior for a gadget."""
+
 from collections import deque
 from weakref import ReferenceType, WeakSet, ref
-
-from ...io import MouseEventType
 
 __all__ = ["Focusable"]
 
@@ -150,8 +149,8 @@ class Focusable:
 
     def on_mouse(self, mouse_event) -> bool | None:
         """Focus on mouse down collision and blur otherwise."""
-        if mouse_event.event_type is MouseEventType.MOUSE_DOWN and self.is_visible:
-            collides = self.collides_point(mouse_event.position)
+        if mouse_event.event_type == "mouse_down" and self.is_visible:
+            collides = self.collides_point(mouse_event.pos)
             if not self.is_focused and collides:
                 self.focus()
             elif self.is_focused and not collides:

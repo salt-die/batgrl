@@ -71,11 +71,8 @@ class Element(ABC):
     def __init__(self, world, pos):
         self.world = world
         self.pos = pos
-
         self.world[pos] = self
-
         self.inactivity = 0
-
         self._update_task = asyncio.create_task(self.update())
 
     def sleep(self):
@@ -181,7 +178,7 @@ class MovingElement(Element):
     def _move(self, dy, dx):
         """Try to move vertically by dy and horizontally by dx.  True if successful."""
         world = self.world
-        h, w = world.shape  # height, width
+        h, w = world.shape
         y, x = self.pos
         new_y = y + dy
         new_x = x + dx
@@ -241,11 +238,6 @@ class MovingElement(Element):
             self.inactivity = 0
         else:
             self.sleep_if_inactive()
-
-
-################
-# Particle Zoo #
-################
 
 
 class Air(InertElement):

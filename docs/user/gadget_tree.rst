@@ -41,6 +41,6 @@ be dispatched to its children in reversed order. For the following tree::
                           a   b  c
 
 dispatching would visit *c B b a A Root*. If any gadget returns True from its event handler,
-the dispatching will stop. The event handlers are `on_key()`, `on_mouse()`, and `on_paste()`.
-They handle key presses, mouse events, and paste events respectively. The structure of the different
-input events can be found `here <https://github.com/salt-die/batgrl/blob/main/batgrl/io/input/events.py>`_.
+the dispatching will stop. The event handlers are `on_key()`, `on_mouse()`, `on_paste()`, and `on_terminal_focus()`.
+They handle key events, mouse events, paste events, and focus events respectively. The structure of the different
+input events can be found `here <https://github.com/salt-die/batgrl/blob/main/batgrl/terminal/events.py>`_.

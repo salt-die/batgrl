@@ -1,4 +1,5 @@
 """Root gadget."""
+
 from threading import RLock
 from typing import TYPE_CHECKING, Literal
 
@@ -87,8 +88,7 @@ class _Root(Gadget):
         return point
 
     def collides_point(self, point: Point) -> bool:
-        y, x = point
-        return 0 <= y < self.height and 0 <= x < self.width
+        return point in self.size
 
     def _render(self):
         """Render gadget tree into `canvas`."""

@@ -3,12 +3,12 @@ Conway's Game of Life, but new cells are given the average color of their parent
 
 Press `r` to reset. Click to create new live cells with random colors.
 """
+
 import asyncio
 
 import numpy as np
 from batgrl.app import run_gadget_as_app
 from batgrl.gadgets.graphics import Graphics
-from batgrl.io import MouseButton
 from cv2 import BORDER_CONSTANT, filter2D
 
 KERNEL = np.array(
@@ -60,16 +60,13 @@ class Life(Graphics):
             await asyncio.sleep(UPDATE_SPEED)
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "r":
-                self._reset()
-                return True
+        if key_event.key == "r":
+            self._reset()
+            return True
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button is not MouseButton.NO_BUTTON and self.collides_point(
-            mouse_event.position
-        ):
-            h, w = self.to_local(mouse_event.position)
+        if mouse_event.button != "no_button" and self.collides_point(mouse_event.pos):
+            h, w = self.to_local(mouse_event.pos)
             h *= 2
 
             self.universe[h - 1 : h + 3, w - 1 : w + 2] = 1

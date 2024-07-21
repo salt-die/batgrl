@@ -3,6 +3,7 @@ A graphic particle field.
 
 A particle field specializes in handling many single "pixel" children.
 """
+
 from typing import Any
 
 import numpy as np
@@ -155,11 +156,13 @@ class GraphicParticleField(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -279,7 +282,7 @@ class GraphicParticleField(Gadget):
 
 
 def particle_data_from_texture(
-    texture: NDArray[np.uint8]
+    texture: NDArray[np.uint8],
 ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
     """
     Return positions and colors of visible pixels of an RGBA texture.

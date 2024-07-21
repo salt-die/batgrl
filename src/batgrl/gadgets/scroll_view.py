@@ -1,6 +1,7 @@
 """A scrollable view gadget."""
+
 from ..colors import Color
-from ..io import KeyEvent, MouseButton, MouseEvent, MouseEventType
+from ..terminal.events import KeyEvent, MouseButton, MouseEvent
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .gadget import (
@@ -95,15 +96,15 @@ class _VerticalScrollbar(_ScrollbarBase):
         self.canvas["char"][start:stop].T[:] = smooth_bar
 
         y_offset = offset != 0
-        self.canvas["fg_color"][
-            start + y_offset : stop
-        ] = sv.color_theme.scroll_view_scrollbar
+        self.canvas["fg_color"][start + y_offset : stop] = (
+            sv.color_theme.scroll_view_scrollbar
+        )
         self.canvas["bg_color"][start + y_offset : stop] = indicator_color
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
 
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
         start = round(self.indicator_progress * self.fill_length)
         self.is_hovered = 0 <= x < 2 and start <= y < start + self.indicator_length
 
@@ -125,16 +126,14 @@ class _VerticalScrollbar(_ScrollbarBase):
             if self.fill_length == 0:
                 sv.vertical_proportion = 0
             else:
-                sv.vertical_proportion = (
-                    self.to_local(mouse_event.position).y / self.length
-                )
+                sv.vertical_proportion = self.to_local(mouse_event.pos).y / self.length
 
     def grab_update(self, mouse_event):
         sv: ScrollView = self.parent
         if self.fill_length == 0:
             sv.vertical_proportion = 0
         else:
-            sv.vertical_proportion += self.mouse_dy / self.fill_length
+            sv.vertical_proportion += mouse_event.dy / self.fill_length
 
 
 class _HorizontalScrollbar(_ScrollbarBase):
@@ -160,7 +159,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
 
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
         start = round(self.indicator_progress * self.fill_length)
         self.is_hovered = y == 0 and start <= x < start + self.indicator_length
 
@@ -182,7 +181,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
                 sv.horizontal_proportion = 0
             else:
                 sv.horizontal_proportion = (
-                    self.to_local(mouse_event.position).x / self.length
+                    self.to_local(mouse_event.pos).x / self.length
                 )
 
     def grab_update(self, mouse_event):
@@ -190,7 +189,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
         if self.fill_length == 0:
             sv.horizontal_proportion = 0
         else:
-            sv.horizontal_proportion += self.mouse_dx / self.fill_length
+            sv.horizontal_proportion += mouse_event.dx / self.fill_length
 
 
 class ScrollView(Themable, Grabbable, Gadget):
@@ -218,7 +217,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool, default: False
         If true, gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
+    mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
     alpha : float, default: 1.0
         Transparency of gadget.
@@ -271,12 +270,6 @@ class ScrollView(Themable, Grabbable, Gadget):
         Mouse button used for grabbing.
     is_grabbed : bool
         True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
     alpha : float
         Transparency of gadget.
     size : Size
@@ -377,11 +370,13 @@ class ScrollView(Themable, Grabbable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -405,7 +400,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         arrow_keys_enabled: bool = True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
+        mouse_button: MouseButton = "left",
         alpha: float = 1.0,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
@@ -634,35 +629,33 @@ class ScrollView(Themable, Grabbable, Gadget):
         if not self.arrow_keys_enabled:
             return False
 
-        match key_event.key:
-            case "up":
-                self.scroll_up()
-            case "down":
-                self.scroll_down()
-            case "left":
-                self.scroll_left()
-            case "right":
-                self.scroll_right()
-            case _:
-                return super().on_key(key_event)
+        if key_event.key == "up":
+            self.scroll_up()
+        elif key_event.key == "down":
+            self.scroll_down()
+        elif key_event.key == "left":
+            self.scroll_left()
+        elif key_event.key == "right":
+            self.scroll_right()
+        else:
+            return super().on_key(key_event)
 
         return True
 
     def grab_update(self, mouse_event: MouseEvent):
         """Scroll on grab update."""
-        self.scroll_up(self.mouse_dy)
-        self.scroll_left(self.mouse_dx)
+        self.scroll_up(mouse_event.dy)
+        self.scroll_left(mouse_event.dx)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Scroll on mouse wheel."""
-        if self.scrollwheel_enabled and self.collides_point(mouse_event.position):
-            match mouse_event.event_type:
-                case MouseEventType.SCROLL_UP:
-                    self.scroll_up()
-                    return True
-                case MouseEventType.SCROLL_DOWN:
-                    self.scroll_down()
-                    return True
+        if self.scrollwheel_enabled and self.collides_point(mouse_event.pos):
+            if mouse_event.event_type == "scroll_up":
+                self.scroll_up()
+                return True
+            elif mouse_event.event_type == "scroll_down":
+                self.scroll_down()
+                return True
 
         return super().on_mouse(mouse_event)
 

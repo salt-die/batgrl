@@ -1,4 +1,5 @@
 """A gadget that re-colors cells beneath it."""
+
 from numpy.typing import NDArray
 
 from ..colors import BLACK, WHITE, Color
@@ -17,7 +18,9 @@ class Cursor(Gadget):
 
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
+        pos = self.parent.absolute_pos
         for rect in self._region.rects():
             dst = rect.to_slices()
             canvas[dst]["fg_color"] = self.fg_color
             canvas[dst]["bg_color"] = self.bg_color
+            canvas[dst]["char"] = self.parent.canvas[rect.to_slices(pos)]["char"]

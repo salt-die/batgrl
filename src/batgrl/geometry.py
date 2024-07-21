@@ -1,4 +1,5 @@
 """Data structures and functions for :mod:`batgrl` geometry."""
+
 import asyncio
 from bisect import bisect
 from dataclasses import dataclass, field
@@ -6,7 +7,7 @@ from itertools import accumulate
 from math import comb
 from numbers import Real
 from time import monotonic
-from typing import Callable, Iterator, NamedTuple, Protocol
+from typing import Callable, Iterator, NamedTuple, Protocol, Self
 
 import numpy as np
 from numpy.typing import NDArray
@@ -138,6 +139,16 @@ class Point(NamedTuple):
     x: int
     """X-coordinate of point."""
 
+    def __add__(self, other: Self) -> Self:
+        y, x = self
+        oy, ox = other
+        return Point(y + oy, x + ox)
+
+    def __sub__(self, other: Self) -> Self:
+        y, x = self
+        oy, ox = other
+        return Point(y - oy, x - ox)
+
 
 class Size(NamedTuple):
     """
@@ -163,6 +174,8 @@ class Size(NamedTuple):
         Alias for height.
     columns : int
         Alias for width.
+    center : Point
+        Center of area.
 
     Methods
     -------
@@ -186,6 +199,18 @@ class Size(NamedTuple):
     def columns(self):
         """Alias for width."""
         return self.width
+
+    def __contains__(self, point: Point) -> bool:
+        """Whether a point is within the rectangle."""
+        y, x = point
+        h, w = self
+        return 0 <= y < h and 0 <= x < w
+
+    @property
+    def center(self):
+        """Center of area."""
+        h, w = self
+        return Point(h // 2, w // 2)
 
 
 @dataclass(slots=True)

@@ -3,7 +3,6 @@ from random import choice, randrange, sample
 
 import numpy as np
 from batgrl.gadgets.text import Text
-from batgrl.io import MouseButton, MouseEventType
 
 from .colors import BRIGHT_GREEN, DARK_GREEN
 
@@ -89,13 +88,13 @@ class MemoryGadget(Text):
         self.output.add_str(">█".ljust(13), pos=(-1, 0))
 
     def on_mouse(self, mouse_event):
-        if mouse_event.event_type is MouseEventType.MOUSE_UP:
+        if mouse_event.event_type == "mouse_up":
             return
 
         self.canvas["fg_color"] = BRIGHT_GREEN
         self.canvas["bg_color"] = DARK_GREEN
 
-        i = pos_to_memory(self.to_local(mouse_event.position))
+        i = pos_to_memory(self.to_local(mouse_event.pos))
         if i is None:
             self.output.slow_add_str("")
             return
@@ -107,10 +106,7 @@ class MemoryGadget(Text):
                 self.canvas["bg_color"][memory_to_pos(j)] = BRIGHT_GREEN
 
             guess = self.memory[start:end]
-            if (
-                mouse_event.button is MouseButton.LEFT
-                and mouse_event.event_type is MouseEventType.MOUSE_DOWN
-            ):
+            if mouse_event.button == "left" and mouse_event.event_type == "mouse_down":
                 self.output.attempt(guess)
             else:
                 self.output.slow_add_str(guess)

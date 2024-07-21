@@ -5,7 +5,6 @@ from batgrl.app import run_gadget_as_app
 from batgrl.colors import ARED, AYELLOW
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.text import Text
-from batgrl.io import MouseEventType
 
 from .graphics import CHECKER_SIZE, Board, Checker, x_to_column
 
@@ -63,9 +62,9 @@ class Connect4(Gadget):
         return PLAYER_NAMES[self._player]
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "r" | "R":
-                self.reset()
+        if key_event.key.lower() == "r":
+            self.reset()
+            return True
 
     def check_game(self):
         if checkers := self.is_connect_four():
@@ -132,12 +131,12 @@ class Connect4(Gadget):
 
     def on_mouse(self, mouse_event):
         if (
-            mouse_event.event_type is MouseEventType.MOUSE_DOWN
+            mouse_event.event_type == "mouse_down"
             and not self._game_over
             and self._animation_task.done()
-            and self.collides_point(mouse_event.position)
+            and self.collides_point(mouse_event.pos)
         ):
-            col = x_to_column(self.to_local(mouse_event.position).x)
+            col = x_to_column(self.to_local(mouse_event.pos).x)
 
             if (row := (5 - len(self._columns[col]))) == -1:
                 self.display_message(COLUMN_FULL_MESSAGE)

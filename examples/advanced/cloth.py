@@ -8,7 +8,6 @@ from batgrl.colors import AWHITE, AColor
 from batgrl.gadgets.graphics import Graphics, Size
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
-from batgrl.io import MouseButton
 from numpy.typing import NDArray
 
 MESH_SIZE = 11, 21
@@ -79,7 +78,7 @@ def make_mesh(size: Size) -> tuple[list[Node], list[Link]]:
 class Cloth(Graphics):
     def __init__(self, mesh_size: Size, scale=5, mesh_color: AColor = AWHITE, **kwargs):
         super().__init__(**kwargs)
-        self.nodes, self.links = make_mesh(mesh_size, nanchors=21)
+        self.nodes, self.links = make_mesh(mesh_size)
         self.scale = scale
         self.mesh_color = mesh_color
         self.on_size()
@@ -108,9 +107,9 @@ class Cloth(Graphics):
             )
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button != MouseButton.LEFT:
+        if mouse_event.button != "left":
             return False
-        mouse_pos = np.array(self.to_local(mouse_event.position))
+        mouse_pos = np.array(self.to_local(mouse_event.pos))
         for node in self.nodes:
             force_direction = self.scale_pos(node.position) - mouse_pos
             magnitude = np.linalg.norm(force_direction)

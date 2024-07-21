@@ -5,7 +5,6 @@ import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.text import Text, add_text
-from batgrl.io import Key, MouseButton, MouseEventType
 
 KEYBOARD = """\
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
@@ -90,20 +89,20 @@ SHIFTS = dict(
     )
 )
 KEYS = {
-    # KEY             POS      SIZE
-    Key.Escape: ((2, 3), (3, 5)),
-    Key.F1: ((2, 12), (3, 5)),
-    Key.F2: ((2, 16), (3, 5)),
-    Key.F3: ((2, 20), (3, 5)),
-    Key.F4: ((2, 24), (3, 5)),
-    Key.F5: ((2, 31), (3, 5)),
-    Key.F6: ((2, 35), (3, 5)),
-    Key.F7: ((2, 39), (3, 5)),
-    Key.F8: ((2, 43), (3, 5)),
-    Key.F9: ((2, 50), (3, 5)),
-    Key.F10: ((2, 54), (3, 5)),
-    Key.F11: ((2, 58), (3, 5)),
-    Key.F12: ((2, 62), (3, 5)),
+    # KEY: (POS, SIZE)
+    "escape": ((2, 3), (3, 5)),
+    "f1": ((2, 12), (3, 5)),
+    "f2": ((2, 16), (3, 5)),
+    "f3": ((2, 20), (3, 5)),
+    "f4": ((2, 24), (3, 5)),
+    "f5": ((2, 31), (3, 5)),
+    "f6": ((2, 35), (3, 5)),
+    "f7": ((2, 39), (3, 5)),
+    "f8": ((2, 43), (3, 5)),
+    "f9": ((2, 50), (3, 5)),
+    "f10": ((2, 54), (3, 5)),
+    "f11": ((2, 58), (3, 5)),
+    "f12": ((2, 62), (3, 5)),
     "`": ((5, 3), (4, 5)),
     "1": ((5, 7), (4, 5)),
     "2": ((5, 11), (4, 5)),
@@ -117,11 +116,11 @@ KEYS = {
     "0": ((5, 43), (4, 5)),
     "-": ((5, 47), (4, 5)),
     "=": ((5, 51), (4, 5)),
-    Key.Backspace: ((5, 55), (4, 12)),
-    Key.Insert: ((5, 69), (4, 6)),
-    Key.Home: ((5, 74), (4, 6)),
-    Key.PageUp: ((5, 79), (4, 6)),
-    Key.Tab: ((8, 3), (4, 7)),
+    "backspace": ((5, 55), (4, 12)),
+    "insert": ((5, 69), (4, 6)),
+    "home": ((5, 74), (4, 6)),
+    "page_up": ((5, 79), (4, 6)),
+    "tab": ((8, 3), (4, 7)),
     "q": ((8, 9), (4, 5)),
     "w": ((8, 13), (4, 5)),
     "e": ((8, 17), (4, 5)),
@@ -135,9 +134,9 @@ KEYS = {
     "[": ((8, 49), (4, 5)),
     "]": ((8, 53), (4, 5)),
     "\\": ((8, 57), (4, 10)),
-    Key.Delete: ((8, 69), (4, 6)),
-    Key.End: ((8, 74), (4, 6)),
-    Key.PageDown: ((8, 79), (4, 6)),
+    "delete": ((8, 69), (4, 6)),
+    "end": ((8, 74), (4, 6)),
+    "page_down": ((8, 79), (4, 6)),
     "a": ((11, 10), (4, 5)),
     "s": ((11, 14), (4, 5)),
     "d": ((11, 18), (4, 5)),
@@ -149,7 +148,7 @@ KEYS = {
     "l": ((11, 42), (4, 5)),
     ";": ((11, 46), (4, 5)),
     "'": ((11, 50), (4, 5)),
-    Key.Enter: ((11, 54), (4, 13)),
+    "enter": ((11, 54), (4, 13)),
     "z": ((14, 11), (4, 5)),
     "x": ((14, 15), (4, 5)),
     "c": ((14, 19), (4, 5)),
@@ -160,11 +159,11 @@ KEYS = {
     ",": ((14, 39), (4, 5)),
     ".": ((14, 43), (4, 5)),
     "/": ((14, 47), (4, 5)),
-    Key.Up: ((14, 74), (4, 6)),
+    "up": ((14, 74), (4, 6)),
     " ": ((17, 18), (4, 29)),
-    Key.Left: ((17, 69), (4, 6)),
-    Key.Down: ((17, 74), (4, 6)),
-    Key.Right: ((17, 79), (4, 6)),
+    "left": ((17, 69), (4, 6)),
+    "down": ((17, 74), (4, 6)),
+    "right": ((17, 79), (4, 6)),
 }
 
 
@@ -221,8 +220,7 @@ class KeyboardGadget(RainbowBehavior, Text):
         for child in self.children:
             child.add_border("heavy", bold=True)
 
-    def _show_mods(self, mods, in_shift=False):
-        alt, ctrl, shift = mods
+    def _show_mods(self, alt, ctrl, shift, in_shift=False):
         shift |= in_shift
         self._lalt.is_visible = alt
         self._ralt.is_visible = alt
@@ -232,11 +230,10 @@ class KeyboardGadget(RainbowBehavior, Text):
         self._rshift.is_visible = shift
 
     def on_key(self, key_event):
-        key, mods = key_event
         showkey = self._key_border
 
         try:
-            pos, size = KEYS[SHIFTS.get(key, key)]
+            pos, size = KEYS[SHIFTS.get(key_event.key, key_event.key)]
         except KeyError:
             showkey.is_visible = False
         else:
@@ -245,11 +242,13 @@ class KeyboardGadget(RainbowBehavior, Text):
             showkey.canvas["char"][:] = " "
             showkey.add_border("heavy", bold=True)
             showkey.is_visible = True
-        self._show_mods(mods, key in SHIFTS)
+        self._show_mods(
+            key_event.alt, key_event.ctrl, key_event.shift, key_event.key in SHIFTS
+        )
 
     def on_mouse(self, mouse_event):
         self._key_border.is_visible = False
-        self._show_mods(mouse_event.mods)
+        self._show_mods(mouse_event.alt, mouse_event.ctrl, mouse_event.shift)
 
 
 class MouseGadget(RainbowBehavior, Text):
@@ -281,23 +280,21 @@ class MouseGadget(RainbowBehavior, Text):
         self._wheel.is_visible = False
         self._move.is_visible = False
 
-        _, event_type, button, _, _ = mouse_event
-
-        if event_type is MouseEventType.SCROLL_UP:
+        if mouse_event.event_type == "scroll_up":
             self._wheel.is_visible = True
             self._wheel.canvas["char"][1, 1] = "↑"
-        elif event_type is MouseEventType.SCROLL_DOWN:
+        elif mouse_event.event_type == "scroll_down":
             self._wheel.is_visible = True
             self._wheel.canvas["char"][1, 1] = "↓"
-        elif button is MouseButton.MIDDLE:
+        elif mouse_event.button == "middle":
             self._wheel.is_visible = True
             self._wheel.canvas["char"][1, 1] = " "
-        elif button is MouseButton.LEFT:
+        elif mouse_event.button == "left":
             self._left_button.is_visible = True
-        elif button is MouseButton.RIGHT:
+        elif mouse_event.button == "right":
             self._right_button.is_visible = True
 
-        if event_type is MouseEventType.MOUSE_MOVE:
+        if mouse_event.event_type == "mouse_move":
             self._move.is_visible = True
 
 

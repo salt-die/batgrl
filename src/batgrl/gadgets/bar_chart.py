@@ -1,4 +1,5 @@
 """A bar chart gadget."""
+
 from numbers import Real
 
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
@@ -15,7 +16,7 @@ from .gadget import (
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, cell
-from .text_tools import smooth_vertical_bar, str_width
+from .text_tools import add_text, smooth_vertical_bar, str_width
 
 __all__ = ["BarChart", "Point", "Size"]
 
@@ -188,11 +189,13 @@ class BarChart(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -310,18 +313,21 @@ class BarChart(Gadget):
         self._container.alpha = self.alpha
 
         h, w = self.size
-        has_y_label = self._y_label_gadget.is_enabled = bool(self.y_label is not None)
+        has_y_label = self._y_label_gadget.is_enabled = self.y_label is not None
         if has_y_label:
-            self._y_label_gadget.set_text(self.y_label)
-            self._y_label_gadget.canvas["fg_color"] = self.chart_fg_color
-            self._y_label_gadget.canvas["bg_color"] = self.chart_bg_color
+            self._y_label_gadget.size = str_width(self.y_label), 1
+            self._y_label_gadget.top = h // 2 - self._y_label_gadget.height // 2
+            add_text(
+                self._y_label_gadget.canvas[:, 0],
+                self.y_label,
+                fg_color=self.chart_fg_color,
+                bg_color=self.chart_bg_color,
+            )
 
         sv_left = has_y_label + TICK_WIDTH
         sv_width = w - sv_left
         self._scrollview.pos = 0, sv_left
         self._scrollview.size = h, sv_width
-
-        self._y_label_gadget.top = h // 2 - self._y_label_gadget.height // 2
 
         nbars = len(self.data)
         min_bar_width = max(map(str_width, self.data))

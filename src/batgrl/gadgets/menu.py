@@ -1,12 +1,12 @@
 """A menu and menu bar gadget."""
+
 from collections.abc import Callable, Iterable, Iterator
 from inspect import signature
 from typing import Optional, Union
 
-from batgrl.io import KeyEvent
+from batgrl.terminal.events import KeyEvent
 
 from ..geometry import clamp
-from ..io import MouseEventType
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .grid_layout import GridLayout
@@ -141,7 +141,7 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
 
     def on_mouse(self, mouse_event):
         """Save last mouse position."""
-        self._last_mouse_pos = mouse_event.position
+        self._last_mouse_pos = mouse_event.pos
         return super().on_mouse(mouse_event)
 
     def on_release(self):
@@ -334,11 +334,13 @@ class Menu(GridLayout):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -457,12 +459,12 @@ class Menu(GridLayout):
     def on_mouse(self, mouse_event):
         """Close menus on non-colliding mouse down."""
         if (
-            mouse_event.event_type is MouseEventType.MOUSE_DOWN
+            mouse_event.event_type == "mouse_down"
             and self.close_on_click
             and not (
-                self.collides_point(mouse_event.position)
+                self.collides_point(mouse_event.pos)
                 or any(
-                    submenu.collides_point(mouse_event.position)
+                    submenu.collides_point(mouse_event.pos)
                     for submenu in self._submenus
                 )
             )
@@ -481,78 +483,74 @@ class Menu(GridLayout):
                 else:
                     break
 
-        match key_event.key:
-            case "up":
+        if key_event.key == "up":
+            i = self._current_selection
+            if i == -1:
+                i = len(self.children) - 1
+            else:
                 i = self._current_selection
+                self.children[i].button_state = "normal"
+                i = (i - 1) % len(self.children)
 
-                if i == -1:
-                    i = len(self.children) - 1
-                else:
-                    i = self._current_selection
-                    self.children[i].button_state = "normal"
+            for _ in self.children:
+                if self.children[i].item_disabled:
                     i = (i - 1) % len(self.children)
-
-                for _ in self.children:
-                    if self.children[i].item_disabled:
-                        i = (i - 1) % len(self.children)
-                    else:
-                        self._current_selection = i
-                        self.children[i]._hover()
-                        self.close_submenus()
-                        return True
-
-                return False
-
-            case "down":
-                i = self._current_selection
-
-                if i == -1:
-                    i = 0
                 else:
-                    self.children[i].button_state = "normal"
+                    self._current_selection = i
+                    self.children[i]._hover()
+                    self.close_submenus()
+                    return True
+
+            return False
+
+        if key_event.key == "down":
+            i = self._current_selection
+            if i == -1:
+                i = 0
+            else:
+                self.children[i].button_state = "normal"
+                i = (i + 1) % len(self.children)
+
+            for _ in self.children:
+                if self.children[i].item_disabled:
                     i = (i + 1) % len(self.children)
-
-                for _ in self.children:
-                    if self.children[i].item_disabled:
-                        i = (i + 1) % len(self.children)
-                    else:
-                        self._current_selection = i
-                        self.children[i]._hover()
-                        self.close_submenus()
-                        return True
-
-                return False
-
-            case "left":
-                if self._current_selection != -1 and (
-                    (submenu := self.children[self._current_selection].submenu)
-                    and submenu.is_enabled
-                ):
-                    submenu.close_menu()
+                else:
+                    self._current_selection = i
+                    self.children[i]._hover()
+                    self.close_submenus()
                     return True
 
-            case "right":
-                if self._current_selection != -1 and (
-                    (submenu := self.children[self._current_selection].submenu)
-                    and not submenu.is_enabled
-                ):
-                    submenu.open_menu()
-                    if submenu.children:
-                        submenu.children[0]._hover()
-                        submenu.close_submenus()
-                    return True
+            return False
 
-            case "enter":
-                if (
-                    self._current_selection != -1
-                    and (child := self.children[self._current_selection]).submenu
-                    is None
-                ):
-                    if (n := nargs(child.item_callback)) == 0:
-                        child.on_release()
-                    elif n == 1:
-                        child._down()
-                    return True
+        if key_event.key == "left":
+            if self._current_selection != -1 and (
+                (submenu := self.children[self._current_selection].submenu)
+                and submenu.is_enabled
+            ):
+                submenu.close_menu()
+                return True
+
+        if key_event.key == "right":
+            if self._current_selection != -1 and (
+                (submenu := self.children[self._current_selection].submenu)
+                and not submenu.is_enabled
+            ):
+                submenu.open_menu()
+                if submenu.children:
+                    submenu.children[0]._hover()
+                    submenu.close_submenus()
+                return True
+
+        if key_event.key == "enter":
+            if (
+                self._current_selection != -1
+                and (child := self.children[self._current_selection]).submenu is None
+            ):
+                if (n := nargs(child.item_callback)) == 0:
+                    child.on_release()
+                elif n == 1:
+                    child._down()
+                return True
 
         return super().on_key(key_event)
 
@@ -609,38 +607,37 @@ class Menu(GridLayout):
 
         y, x = pos
         for i, ((left_label, right_label), value) in enumerate(menu.items()):
-            match value:
-                case Callable():
-                    menu_item = _MenuItem(
-                        left_label=f"   {left_label}",
-                        right_label=f"{right_label} ",
-                        item_callback=value,
-                        alpha=alpha,
-                        size=(1, width),
-                    )
-                case dict():
-                    submenus = Menu.from_dict_of_dicts(
-                        value,
-                        pos=(y + i, x + width),
-                        close_on_release=close_on_release,
-                        close_on_click=close_on_click,
-                        alpha=alpha,
-                    )
-                    for submenu in submenus:
-                        menu_gadget._submenus.append(submenu)
-                        submenu._parent_menu = menu_gadget
-                        submenu.is_enabled = False
-                        yield submenu
+            if isinstance(value, Callable):
+                menu_item = _MenuItem(
+                    left_label=f"   {left_label}",
+                    right_label=f"{right_label} ",
+                    item_callback=value,
+                    alpha=alpha,
+                    size=(1, width),
+                )
+            elif isinstance(value, dict):
+                submenus = Menu.from_dict_of_dicts(
+                    value,
+                    pos=(y + i, x + width),
+                    close_on_release=close_on_release,
+                    close_on_click=close_on_click,
+                    alpha=alpha,
+                )
+                for submenu in submenus:
+                    menu_gadget._submenus.append(submenu)
+                    submenu._parent_menu = menu_gadget
+                    submenu.is_enabled = False
+                    yield submenu
 
-                    menu_item = _MenuItem(
-                        left_label=f"   {left_label}",
-                        right_label=f"{right_label}{NESTED_SUFFIX} ",
-                        submenu=submenu,
-                        alpha=alpha,
-                        size=(1, width),
-                    )
-                case _:
-                    raise TypeError(f"expected Callable or dict, got {type(value)}")
+                menu_item = _MenuItem(
+                    left_label=f"   {left_label}",
+                    right_label=f"{right_label}{NESTED_SUFFIX} ",
+                    submenu=submenu,
+                    alpha=alpha,
+                    size=(1, width),
+                )
+            else:
+                raise TypeError(f"expected Callable or dict, got {type(value)}")
 
             menu_gadget.add_gadget(menu_item)
 
@@ -864,11 +861,13 @@ class MenuBar(GridLayout):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -988,16 +987,16 @@ class MenuBar(GridLayout):
         if button._menu.on_key(key_event):
             return True
 
-        match key_event.key:
-            case "left":
-                i -= 1
-            case "right":
-                i += 1
-            case _:
-                return super().on_key(key_event)
+        if key_event.key == "left":
+            i -= 1
+        elif key_event.key == "right":
+            i += 1
+        else:
+            return super().on_key(key_event)
 
         i %= len(self.children)
         self.children[i].toggle_state = "on"
+        return True
 
     @classmethod
     def from_iterable(

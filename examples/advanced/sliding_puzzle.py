@@ -5,7 +5,6 @@ from batgrl.app import run_gadget_as_app
 from batgrl.colors import ABLACK, AWHITE
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.texture_tools import read_texture, resize_texture
-from batgrl.io import MouseButton, MouseEventType
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "python_discord_logo.png"
@@ -18,9 +17,9 @@ class _SlidingPiece(Graphics):
     def on_mouse(self, mouse_event):
         if (
             not self.parent._sliding
-            and mouse_event.button is MouseButton.LEFT
-            and mouse_event.event_type is MouseEventType.MOUSE_DOWN
-            and self.collides_point(mouse_event.position)
+            and mouse_event.button == "left"
+            and mouse_event.event_type == "mouse_down"
+            and self.collides_point(mouse_event.pos)
         ):
             y, x = self._grid_pos
             grid = self.parent._grid

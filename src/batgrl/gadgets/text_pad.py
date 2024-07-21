@@ -1,5 +1,8 @@
 """A text-pad gadget for multiline editable text."""
-from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
+
+from dataclasses import astuple
+
+from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
 from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
@@ -187,11 +190,13 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -277,11 +282,23 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self._pad.canvas["bg_color"] = self._pad.default_bg_color = bg
         self._highlight_selection()
 
-    def on_size(self):
-        """Resize children on resize."""
-        super().on_size()
-        self._pad.width = max(self._scroll_view.port_width, max(self._line_lengths) + 1)
-        self._highlight_selection()
+    def on_add(self):
+        """Bind pad resize to scroll view resize."""
+        super().on_add()
+
+        def resize_pad():
+            height = max(len(self._line_lengths), self._scroll_view.port_height)
+            width = max(max(self._line_lengths) + 1, self._scroll_view.port_width)
+            self._pad.size = height, width
+            self._highlight_selection()
+
+        resize_pad()
+        self._bind_uid = self._scroll_view.bind("size", resize_pad)
+
+    def on_remove(self):
+        """Unbind pad resize from scroll view resize."""
+        self._scroll_view.unbind(self._bind_uid)
+        super().on_remove()
 
     def on_focus(self):
         """Show cursor on focus."""
@@ -351,8 +368,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     @cursor.setter
     def cursor(self, cursor: Point):
         """After setting cursor position, move pad so that cursor is visible."""
-        y, x = cursor
-        self._cursor.pos = Point(y, x)
+        self._cursor.pos = cursor
         self._scroll_view.scroll_to_rect(cursor)
         if self.is_selecting:
             self._selection_end = self.cursor
@@ -453,10 +469,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         remaining = canvas[ey + 1 :]
         canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
-        pad.height -= ey - sy
 
         del ll[sy + 1 : ey + 1]
-        pad.width = max(max(ll) + 1, self._scroll_view.port_width)
+        height = max(len(ll), self._scroll_view.port_height)
+        width = max(max(ll) + 1, self._scroll_view.port_width)
+        pad.size = height, width
 
         self.unselect()
         self._last_x = None
@@ -475,7 +492,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         lines = text.split("\n")  # DO NOT USE `splitlines`.
         if len(lines) == 1:
-            [line] = lines
+            line = lines[0]
             width_line = str_width(line)
 
             ll[y] += width_line
@@ -484,7 +501,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
             pad.add_str(line, pos=(y, x))
             pad.canvas[y, x + width_line : ll[y]] = line_remaining
-
             self.cursor = y, x + width_line
         else:
             first, *lines, last = lines
@@ -492,18 +508,18 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             width_last = str_width(last)
             last_y = y + newlines
 
-            pad.height += newlines
-            pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
-            pad.canvas[y, x : ll[y]] = pad.default_cell
-
             ll[y] = x + str_width(first)
             for i, line in enumerate(lines, start=y + 1):
                 ll.insert(i, str_width(line))
             ll.insert(last_y, width_last + str_width("".join(line_remaining["char"])))
 
+            height = max(len(ll), self._scroll_view.port_height)
             max_width = max(ll)
-            if max_width >= pad.width:
-                pad.width = max_width + 1
+            width = pad.width if max_width < pad.width else max_width + 1
+            pad.size = height, width
+
+            pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
+            pad.canvas[y, ll[y] :] = pad.default_cell
 
             pad.add_str(first, pos=(y, x))
             for i, line in enumerate(lines, start=y + 1):
@@ -847,37 +863,36 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self._undo_buffer.append(self._add_text(self.cursor, key))
 
     __HANDLERS = {
-        KeyEvent(Key.Enter): _enter,
-        KeyEvent(Key.Tab): _tab,
-        KeyEvent(Key.Backspace): _backspace,
-        KeyEvent(Key.Delete): _delete,
-        KeyEvent(Key.Left): _left,
-        KeyEvent(Key.Right): _right,
-        KeyEvent(Key.Left, Mods(ctrl=True)): _ctrl_left,
-        KeyEvent(Key.Right, Mods(ctrl=True)): _ctrl_right,
-        KeyEvent(Key.Up): _up,
-        KeyEvent(Key.Down): _down,
-        KeyEvent(Key.PageUp): _pgup,
-        KeyEvent(Key.PageDown): _pgdn,
-        KeyEvent(Key.Home): _home,
-        KeyEvent(Key.End): _end,
-        KeyEvent(Key.Left, Mods(shift=True)): _shift_left,
-        KeyEvent(Key.Right, Mods(shift=True)): _shift_right,
-        KeyEvent(Key.Left, Mods(shift=True, ctrl=True)): _shift_ctrl_left,
-        KeyEvent(Key.Right, Mods(shift=True, ctrl=True)): _shift_ctrl_right,
-        KeyEvent(Key.Up, Mods(shift=True)): _shift_up,
-        KeyEvent(Key.Down, Mods(shift=True)): _shift_down,
-        KeyEvent(Key.PageUp, Mods(shift=True)): _shift_pgup,
-        KeyEvent(Key.PageDown, Mods(shift=True)): _shift_pgdn,
-        KeyEvent(Key.Home, Mods(shift=True)): _shift_home,
-        KeyEvent(Key.End, Mods(shift=True)): _shift_end,
-        KeyEvent(Key.Escape): _escape,
-        KeyEvent("z", Mods(ctrl=True)): undo,
-        KeyEvent("z", Mods(ctrl=True, shift=True)): redo,
-        KeyEvent("y", Mods(ctrl=True)): redo,  # ctrl + shift + z won't work on linux
-        KeyEvent("r", Mods(ctrl=True)): redo,
-        KeyEvent("a", Mods(ctrl=True)): _ctrl_a,
-        KeyEvent("d", Mods(ctrl=True)): _ctrl_d,
+        ("enter", False, False, False): _enter,
+        ("tab", False, False, False): _tab,
+        ("backspace", False, False, False): _backspace,
+        ("delete", False, False, False): _delete,
+        ("left", False, False, False): _left,
+        ("right", False, False, False): _right,
+        ("left", False, True, False): _ctrl_left,
+        ("right", False, True, False): _ctrl_right,
+        ("up", False, False, False): _up,
+        ("down", False, False, False): _down,
+        ("page_up", False, False, False): _pgup,
+        ("page_down", False, False, False): _pgdn,
+        ("home", False, False, False): _home,
+        ("end", False, False, False): _end,
+        ("left", False, False, True): _shift_left,
+        ("right", False, False, True): _shift_right,
+        ("left", False, True, True): _shift_ctrl_left,
+        ("right", False, True, True): _shift_ctrl_right,
+        ("up", False, False, True): _shift_up,
+        ("down", False, False, True): _shift_down,
+        ("page_up", False, False, True): _shift_pgup,
+        ("page_down", False, False, True): _shift_pgdn,
+        ("home", False, False, True): _shift_home,
+        ("end", False, False, True): _shift_end,
+        ("escape", False, False, False): _escape,
+        ("z", False, True, False): undo,
+        ("y", False, True, False): redo,
+        ("r", False, True, False): redo,
+        ("a", False, True, False): _ctrl_a,
+        ("d", False, True, False): _ctrl_d,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
@@ -885,9 +900,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         if not self.is_focused:
             return super().on_key(key_event)
 
-        if key_event.mods == Mods() and len(key_event.key) == 1:
+        if (
+            not key_event.alt
+            and not key_event.ctrl
+            and not key_event.shift
+            and len(key_event.key) == 1
+        ):
             self._ascii(key_event.key)
-        elif handler := self.__HANDLERS.get(key_event):
+        elif handler := self.__HANDLERS.get(astuple(key_event)):
             handler(self)
         else:
             return super().on_key(key_event)
@@ -911,15 +931,15 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def grab(self, mouse_event):
         """Start selection on grab."""
-        if mouse_event.button is MouseButton.LEFT and self._pad.collides_point(
-            mouse_event.position
-        ):
+        if mouse_event.button == "left" and self._pad.collides_point(mouse_event.pos):
             super().grab(mouse_event)
 
-            y, x = self._pad.to_local(mouse_event.position)
-            x = min(x, self._line_lengths[y])
+            y, x = self._pad.to_local(mouse_event.pos)
+            if y >= len(self._line_lengths):
+                return
 
-            if not mouse_event.mods.shift:
+            x = min(x, self._line_lengths[y])
+            if not mouse_event.shift:
                 self.unselect()
 
             self.cursor = y, x
@@ -927,13 +947,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update selection on grab update."""
-        if self._pad.collides_point(mouse_event.position):
-            y, x = self._pad.to_local(mouse_event.position)
-            x = min(x, self._line_lengths[y])
-            self.cursor = y, x
+        if self._pad.collides_point(mouse_event.pos):
+            y, x = self._pad.to_local(mouse_event.pos)
+            if y < len(self._line_lengths):
+                x = min(x, self._line_lengths[y])
+                self.cursor = y, x
         else:
             cy, cx = self.cursor
-            y, x = self.to_local(mouse_event.position)
+            y, x = self.to_local(mouse_event.pos)
             h, w = self.size
 
             if y < 0:

@@ -1,7 +1,6 @@
 """Button behavior for a gadget."""
-from typing import Literal
 
-from ...io import MouseEventType
+from typing import Literal
 
 __all__ = ["ButtonState", "ButtonBehavior"]
 
@@ -87,17 +86,14 @@ class ButtonBehavior:
         if super().on_mouse(mouse_event):
             return True
 
-        collides = self.collides_point(mouse_event.position)
+        collides = self.collides_point(mouse_event.pos)
 
-        if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
+        if mouse_event.event_type == "mouse_down":
             if collides:
                 self.button_state = "down"
                 return True
 
-        elif (
-            mouse_event.event_type is MouseEventType.MOUSE_UP
-            and self.button_state == "down"
-        ):
+        elif mouse_event.event_type == "mouse_up" and self.button_state == "down":
             if collides:
                 self.on_release()
                 self.button_state = "hover"

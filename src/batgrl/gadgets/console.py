@@ -1,4 +1,5 @@
 """An interactive python console gadget."""
+
 import asyncio
 import builtins
 import sys
@@ -7,7 +8,7 @@ from code import InteractiveInterpreter
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 
-from ..io import Key, KeyEvent, PasteEvent
+from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
 from .gadget import (
@@ -109,7 +110,8 @@ class _InteractiveConsole(InteractiveInterpreter):
 
     def runcode(self, code):
         if self.exec_in_thread:
-            asyncio.get_event_loop().run_in_executor(None, self.exec, code)
+            loop = asyncio.get_running_loop()
+            loop.run_in_executor(None, self.exec, code)
         else:
             self.exec(code)
 
@@ -148,7 +150,7 @@ class _ConsoleTextbox(Textbox):
             return
 
         y, x = self.pos
-        self.console._scroll_view.scroll_to_rect((y, cursor + x), (1, 1))
+        self.console._scroll_view.scroll_to_rect((y, cursor + x))
 
         if self.is_selecting:
             self._selection_end = self.cursor
@@ -182,10 +184,21 @@ class _ConsoleTextbox(Textbox):
         self._redo_stack.clear()
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
-        if key_event == KeyEvent(Key.Tab):
+        if (
+            key_event.key == "tab"
+            and not key_event.alt
+            and not key_event.ctrl
+            and not key_event.shift
+        ):
             self._tab()
             return True
-        if key_event == KeyEvent(Key.Left) and self.cursor == 0:
+        if (
+            key_event.key == "left"
+            and not key_event.alt
+            and not key_event.ctrl
+            and not key_event.shift
+            and self.cursor == 0
+        ):
             self.console._scroll_view.horizontal_proportion = 0
             return True
         return super().on_key(key_event)
@@ -383,11 +396,13 @@ class Console(Themable, Focusable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -585,7 +600,12 @@ class Console(Themable, Focusable, Gadget):
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
         """Get previous inputs on up/down."""
-        if key_event == KeyEvent(Key.Up):
+        if (
+            key_event.key == "up"
+            and not key_event.alt
+            and not key_event.ctrl
+            and not key_event.shift
+        ):
             if isinstance(self._history_index, float):
                 if len(self._history) + self._history_index - 0.5 >= 0:
                     self._history_index = int(self._history_index - 0.5)
@@ -593,7 +613,12 @@ class Console(Themable, Focusable, Gadget):
             elif len(self._history) + self._history_index - 1 >= 0:
                 self._history_index -= 1
                 self._input.text = self._history[self._history_index]
-        elif key_event == KeyEvent(Key.Down):
+        elif (
+            key_event.key == "down"
+            and not key_event.alt
+            and not key_event.ctrl
+            and not key_event.shift
+        ):
             if isinstance(self._history_index, float):
                 if self._history_index + 0.5 < 0:
                     self._history_index = int(self._history_index + 0.5)

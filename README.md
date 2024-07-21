@@ -1,5 +1,4 @@
-# batgrl
-<sup>**b**ad**a**ss **t**erminal **gr**aphics **l**ibrary</sup>
+# batgrl - badass terminal graphics library
 
 Create games:
 

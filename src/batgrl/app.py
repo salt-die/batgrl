@@ -1,30 +1,31 @@
 """Base for creating terminal applications."""
+
 import asyncio
-import platform
 import sys
 from abc import ABC, abstractmethod
 from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from time import monotonic
-from types import ModuleType
 from typing import Literal
 
 from .colors import BLACK, DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
-from .gadgets.gadget import Gadget, Size
-from .io import (
-    Key,
+from .gadgets.gadget import Gadget
+from .geometry import Point, Size
+from .rendering import render_root
+from .terminal import Vt100Terminal, app_mode, get_platform_terminal
+from .terminal.events import (
+    Event,
+    FocusEvent,
     KeyEvent,
     MouseButton,
     MouseEvent,
-    MouseEventType,
     PasteEvent,
-    _PartialMouseEvent,
+    ResizeEvent,
 )
-from .io.output.vt100 import Vt100_Output
 
 __all__ = ["App", "run_gadget_as_app"]
 
@@ -38,44 +39,45 @@ class App(ABC):
     bg_color : Color, default: BLACK
         Background color of app.
     title : str | None, default: None
-        Set terminal title (if supported).
-    double_click_timeout : float, default: 0.5
-        Max duration of a double-click. Max duration of a triple-click
-        is double this value.
-    render_interval : float, default: 0.0
-        Seconds between screen renders.
+        The terminal's title.
+    inline : bool, default: False
+        Whether to render app inline or in the alternate screen.
+    inline_height :int, default: 10
+        Height of app if rendered inline.
     color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
-        Color theme used for :class:`batgrl.gadgets.behaviors.themable.Themable`
-        gadgets.
-    asciicast_path : Path | None, default: None
-        Record the terminal in asciicast v2 file format if a path is provided.
-        Resizing the terminal while recording isn't currently supported by
-        the asciicast format -- doing so will corrupt the recording.
+        Color theme for :class:`batgrl.gadgets.behaviors.themable.Themable` gadgets.
+    double_click_timeout : float, default: 0.5
+        Max duration of a double-click.
+    render_interval : float, default: 0.0
+        Duration in seconds between consecutive frame renders.
     redirect_stderr : Path | None, default: None
         If provided, stderr is written to this path.
     render_mode : Literal["regions", "painter"], default: "regions"
-        Determines how the gadget tree is rendered. "painter" fully paints every gadget
-        back-to-front. "regions" only paints the visible portion of each gadget.
-        "painter" may be more efficient for a large number of non-overlapping gadgets.
+        Determines how the gadget tree is rendered. ``"painter"`` fully paints every
+        gadget back-to-front. ``"regions"`` only paints the visible portion of each
+        gadget. ``"painter"`` may be more efficient for a large number of
+        non-overlapping gadgets.
 
     Attributes
     ----------
     bg_color : Color
         Background color of app.
     title : str | None
-        The terminal's title (if supported).
-    double_click_timeout : float
-        Max duration of a double-click. Max duration of a triple-click
-        is double this value.
-    render_interval : float
-        Seconds between screen renders.
+        The terminal's title.
+    inline : bool
+        Whether to render app inline or in the alternate screen buffer.
+    inline_height :int
+        Height of app if rendered inline.
     color_theme : ColorTheme
-        Color theme used for :class:`batgrl.gadgets.behaviors.themable.Themable`
-        gadgets.
-    asciicast_path : Path | None
-        Path where asciicast recording will be saved.
+        Color theme for :class:`batgrl.gadgets.behaviors.themable.Themable` gadgets.
+    double_click_timeout : float
+        Max duration of a double-click.
+    render_interval : float
+        Duration in seconds between consecutive frame renders.
     redirect_stderr : Path | None
         Path where stderr is saved.
+    render_mode : Literal["regions", "painter"]
+        Determines how the gadget tree is rendered.
     root : _Root | None
         Root of gadget tree.
     children : list[Gadget]
@@ -100,36 +102,96 @@ class App(ABC):
         *,
         bg_color: Color = BLACK,
         title: str | None = None,
+        inline: bool = False,
+        inline_height: int = 10,
+        color_theme: ColorTheme = DEFAULT_COLOR_THEME,
         double_click_timeout: float = 0.5,
         render_interval: float = 0.0,
-        color_theme: ColorTheme = DEFAULT_COLOR_THEME,
-        asciicast_path: Path | None = None,
         redirect_stderr: Path | None = None,
         render_mode: Literal["regions", "painter"] = "regions",
     ):
-        self.root = None
-
+        self.root: _Root | None = None
+        """Root of gadget tree (only set while app is running)."""
         self.bg_color = bg_color
+        """Background color of app."""
         self.title = title
-        self.double_click_timeout = double_click_timeout
-        self.render_interval = render_interval
+        """The terminal's title."""
+        self._inline = inline
+        """Whether to render app inline or in the alternate screen buffer."""
+        self.inline_height = inline_height
+        """Height of app if rendered inline."""
         self.color_theme = color_theme
-        self.asciicast_path = asciicast_path
+        """Color theme for Themable gadgets."""
+        self.double_click_timeout = double_click_timeout
+        """Max duration of a double-click."""
+        self.render_interval = render_interval
+        """Duration in seconds between consecutive frame renders."""
         self.redirect_stderr = redirect_stderr
+        """Path where stderr is saved."""
         self.render_mode = render_mode
+        """Determines how the gadget tree is rendered."""
+        self._inline_needs_clear: bool = False
+        """Whether to clear terminal when switching to inline mode."""
+        self._terminal: Vt100Terminal | None = None
+        """Platform-specific terminal (only set while app is running)."""
 
     def __repr__(self):
         return (
             f"{type(self).__name__}(\n"
             f"    bg_color={(*self.bg_color,)},\n"
             f"    title={self.title!r},\n"
+            f"    inline={self.inline},\n"
+            f"    inline_height={self.inline_height},\n"
             f"    double_click_timeout={self.double_click_timeout},\n"
             f"    render_interval={self.render_interval},\n"
-            f"    asciicast_path={self.asciicast_path},\n"
             f"    redirect_stderr={self.redirect_stderr},\n"
             f"    render_mode={self.render_mode!r},\n"
             ")"
         )
+
+    @property
+    def inline(self) -> bool:
+        """Whether to render app inline or in the alternate screen buffer."""
+        return self._inline
+
+    @inline.setter
+    def inline(self, inline: bool):
+        if inline == self._inline:
+            return
+
+        self._inline = inline
+        if self._terminal is None:
+            return
+
+        if inline:
+            self._terminal.exit_alternate_screen()
+            height, _ = self._terminal.get_size()
+            self.root.height = min(self.inline_height, height)
+            if self._inline_needs_clear:
+                self._terminal.move_cursor(Point(0, 0))
+                self._terminal.erase_in_display()
+                self._terminal.request_cursor_position_report()
+            else:
+                self._terminal.move_cursor()
+        else:
+            self.root.size = self._terminal.get_size()
+            self._terminal.enter_alternate_screen()
+
+    @property
+    def inline_height(self) -> int:
+        """
+        Height of app if rendered inline.
+
+        ``inline_height`` will be clipped to terminal height if too great.
+        """
+        return self._inline_height
+
+    @inline_height.setter
+    def inline_height(self, inline_height: int):
+        self._inline_height = inline_height
+        if self.inline and self.root is not None:
+            height, _ = self._terminal.get_size()
+            self.root.height = min(inline_height, height)
 
     @property
     def color_theme(self) -> ColorTheme:
@@ -172,7 +234,7 @@ class App(ABC):
     async def on_start(self):
         """Coroutine scheduled when app is run."""
 
-    def run(self):
+    def run(self) -> None:
         """Run the app."""
         try:
             with redirect_stderr(StringIO()) as defer_stderr:
@@ -186,11 +248,12 @@ class App(ABC):
             else:
                 print(defer_stderr.getvalue(), file=sys.stderr, end="")
 
-    def exit(self):
+    def exit(self) -> None:
         """Exit the app."""
         if self.root is not None:
             self.root.destroy()
             self.root = None
+        self._terminal = None
 
         try:
             tasks = asyncio.all_tasks()
@@ -200,108 +263,109 @@ class App(ABC):
             for task in tasks:
                 task.cancel()
 
-    def _create_io(self) -> tuple[ModuleType, Vt100_Output]:
-        """Return platform specific io."""
-        if not sys.stdin.isatty():
-            raise RuntimeError("Interactive terminal required.")
-
-        if platform.system() == "Windows":
-            from .io.output.windows import WindowsOutput, is_vt100_enabled
-
-            if not is_vt100_enabled():
-                raise RuntimeError(
-                    "batgrl not supported on non-vt100 enabled terminals"
-                )
-
-            from .io.input.win32 import win32_input
-
-            return win32_input, WindowsOutput(self.asciicast_path)
-
-        else:
-            from .io.input.vt100 import vt100_input
-            from .io.output.vt100 import Vt100_Output
-
-            return vt100_input, Vt100_Output(self.asciicast_path)
-
     async def _run_async(self):
         """Build environment, create root, and schedule app-specific tasks."""
-        env_in, env_out = self._create_io()
-        with env_out:
-            self.root = root = _Root(
-                app=self,
-                render_mode=self.render_mode,
-                bg_color=self.bg_color,
-                size=env_out.get_size(),
-            )
+        self._inline_needs_clear = False
+        terminal = self._terminal = get_platform_terminal()
+        last_size: Size = terminal.get_size()
+        self.root = root = _Root(
+            app=self,
+            render_mode=self.render_mode,
+            bg_color=self.bg_color,
+            size=last_size,
+        )
+        if self.inline:
+            root.height = min(self.inline_height, last_size.height)
 
+        last_mouse_button: MouseButton = "no_button"
+        last_mouse_time = monotonic()
+        last_mouse_nclicks = 0
+
+        def determine_nclicks(mouse_event: MouseEvent) -> None:
+            """Determine number of consecutive clicks for a `MouseEvent`."""
+            nonlocal last_mouse_button, last_mouse_time, last_mouse_nclicks
+            current_time = monotonic()
+
+            if mouse_event.event_type != "mouse_down":
+                return
+
+            if (
+                last_mouse_button != mouse_event.button
+                or current_time - last_mouse_time > self.double_click_timeout
+            ):
+                mouse_event.nclicks = 1
+            else:
+                mouse_event.nclicks = last_mouse_nclicks % 3 + 1
+
+            last_mouse_button = mouse_event.button
+            last_mouse_nclicks = mouse_event.nclicks
+            last_mouse_time = current_time
+
+        def dispatch_events(events: list[Event]) -> None:
+            """Dispatch input events."""
+            for event in events:
+                if isinstance(event, KeyEvent):
+                    if (
+                        event.key == "c"
+                        and event.ctrl
+                        and not event.alt
+                        and not event.shift
+                    ):
+                        self.exit()
+                        return
+                    if (
+                        not root.dispatch_key(event)
+                        and event.key == "tab"
+                        and not event.alt
+                        and not event.ctrl
+                    ):
+                        if event.shift:
+                            Focusable.focus_previous()
+                        else:
+                            Focusable.focus_next()
+                elif isinstance(event, MouseEvent):
+                    determine_nclicks(event)
+                    if self.inline:
+                        event.pos -= terminal.last_cursor_position_response
+                    root.dispatch_mouse(event)
+                elif isinstance(event, PasteEvent):
+                    root.dispatch_paste(event)
+                elif isinstance(event, FocusEvent):
+                    root.dispatch_terminal_focus(event)
+                elif isinstance(event, ResizeEvent):
+                    nonlocal last_size
+                    if event.size == last_size:
+                        # Sometimes spurious resize events can appear such as when a
+                        # terminal first enables VT100 processing or when
+                        # entering/exiting the alternate screen buffer.
+                        continue
+                    last_size = event.size
+                    if self.inline:
+                        terminal.move_cursor(Point(0, 0))
+                        terminal.erase_in_display()
+                        terminal.request_cursor_position_report()
+                        height, width = last_size
+                        root.size = min(self.inline_height, height), width
+                    else:
+                        self._inline_needs_clear = True
+                        root.size = event.size
+
+        async def auto_render():
+            """Render screen every :attr:`render_interval` seconds."""
+            while True:
+                root._render()
+                render_root(root, terminal)
+                await asyncio.sleep(self.render_interval)
+
+        with app_mode(terminal, dispatch_events):
+            terminal.request_cursor_position_report()
             if self.title:
-                env_out.set_title(self.title)
+                terminal.set_title(self.title)
+            if not self.inline:
+                terminal.enter_alternate_screen()
+            await asyncio.gather(self.on_start(), auto_render())
 
-            dispatch_key = root.dispatch_key
-            dispatch_mouse = root.dispatch_mouse
-            dispatch_paste = root.dispatch_paste
-
-            last_mouse_button = MouseButton.NO_BUTTON
-            last_mouse_time = monotonic()
-            last_mouse_nclicks = 0
-
-            def determine_nclicks(
-                partial_mouse_event: _PartialMouseEvent,
-            ) -> MouseEvent:
-                """
-                Determine number of consecutive clicks for a :class:`_PartialMouseEvent`
-                and create a :class:`MouseEvent`.
-                """
-                nonlocal last_mouse_button, last_mouse_time, last_mouse_nclicks
-                current_time = monotonic()
-
-                if partial_mouse_event.event_type is not MouseEventType.MOUSE_DOWN:
-                    return MouseEvent(*partial_mouse_event, 0)
-
-                if (
-                    last_mouse_button is not partial_mouse_event.button
-                    or current_time - last_mouse_time > self.double_click_timeout
-                ):
-                    last_mouse_button = partial_mouse_event.button
-                    last_mouse_nclicks = 1
-                else:
-                    last_mouse_nclicks = last_mouse_nclicks % 3 + 1
-
-                last_mouse_time = current_time
-                return MouseEvent(*partial_mouse_event, last_mouse_nclicks)
-
-            def read_from_input():
-                """Read and process input."""
-                for event in env_in.events():
-                    match event:
-                        case KeyEvent.CTRL_C:
-                            self.exit()
-                            return
-                        case KeyEvent():
-                            if not dispatch_key(event) and event.key is Key.Tab:
-                                if event.mods.shift:
-                                    Focusable.focus_previous()
-                                else:
-                                    Focusable.focus_next()
-                        case _PartialMouseEvent():
-                            mouse_event = determine_nclicks(event)
-                            dispatch_mouse(mouse_event)
-                        case PasteEvent():
-                            dispatch_paste(event)
-                        case Size():
-                            root.size = event
-
-            async def auto_render():
-                """Render screen every :attr:`render_interval` seconds."""
-                while True:
-                    root._render()
-                    env_out.render_frame(root)
-                    await asyncio.sleep(self.render_interval)
-
-            with env_in.raw_mode(), env_in.attach(read_from_input):
-                await asyncio.gather(self.on_start(), auto_render())
-
-    def add_gadget(self, gadget: Gadget):
+    def add_gadget(self, gadget: Gadget) -> None:
         """
         Alias for :attr:`root.add_gadget`.
 
@@ -312,7 +376,7 @@ class App(ABC):
         """
         self.root.add_gadget(gadget)
 
-    def add_gadgets(self, *gadgets: Gadget):
+    def add_gadgets(self, *gadgets: Gadget) -> None:
         r"""
         Alias for :attr:`root.add_gadgets`.
 
@@ -330,7 +394,7 @@ class App(ABC):
             return self.root.children
 
 
-def run_gadget_as_app(gadget: Gadget):
+def run_gadget_as_app(gadget: Gadget) -> None:
     """
     Run a gadget as a full-screen app.
 

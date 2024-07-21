@@ -1,4 +1,5 @@
 """A file chooser gadget."""
+
 import platform
 from collections.abc import Callable
 from pathlib import Path
@@ -71,7 +72,7 @@ class _FileViewNode(TreeViewNode):
             mouse_event.nclicks == 2
             and self.is_leaf
             and self.parent.selected_node is self
-            and self.collides_point(mouse_event.position)
+            and self.collides_point(mouse_event.pos)
         ):
             self.parent.select_callback(self.path)
             return True
@@ -129,50 +130,49 @@ class _FileView(TreeView):
         if not self.children:
             return False
 
-        match key_event.key:
-            case "up":
-                if self.selected_node is None:
-                    self.children[0].select()
-                else:
-                    try:
-                        index = self.children.index(self.selected_node)
-                        if index == 0:
-                            index += 1
-                    except ValueError:
-                        index = 1
+        if key_event.key == "up":
+            if self.selected_node is None:
+                self.children[0].select()
+            else:
+                try:
+                    index = self.children.index(self.selected_node)
+                    if index == 0:
+                        index += 1
+                except ValueError:
+                    index = 1
 
-                    self.children[index - 1].select()
-            case "down":
-                if self.selected_node is None:
-                    self.children[0].select()
-                else:
-                    try:
-                        index = self.children.index(self.selected_node)
-                        if index == len(self.children) - 1:
-                            index -= 1
-                    except ValueError:
-                        index = -1
-                    self.children[index + 1].select()
-            case "left":
-                if self.selected_node is None:
-                    self.children[0].select()
-                elif self.selected_node.is_open:
-                    self.selected_node.toggle()
-                elif self.selected_node.parent_node is not self.root_node:
-                    self.selected_node.parent_node.select()
-            case "right":
-                if self.selected_node is None:
-                    self.children[0].select()
-                elif self.selected_node.is_leaf:
-                    pass
-                elif not self.selected_node.is_open:
-                    self.selected_node.toggle()
-                elif self.selected_node.child_nodes:
-                    self.selected_node.child_nodes[0].select()
-            case "enter" if self.selected_node is not None:
-                self.select_callback(self.selected_node.path)
-            case _:
-                return super().on_key(key_event)
+                self.children[index - 1].select()
+        elif key_event.key == "down":
+            if self.selected_node is None:
+                self.children[0].select()
+            else:
+                try:
+                    index = self.children.index(self.selected_node)
+                    if index == len(self.children) - 1:
+                        index -= 1
+                except ValueError:
+                    index = -1
+                self.children[index + 1].select()
+        elif key_event.key == "left":
+            if self.selected_node is None:
+                self.children[0].select()
+            elif self.selected_node.is_open:
+                self.selected_node.toggle()
+            elif self.selected_node.parent_node is not self.root_node:
+                self.selected_node.parent_node.select()
+        elif key_event.key == "right":
+            if self.selected_node is None:
+                self.children[0].select()
+            elif self.selected_node.is_leaf:
+                pass
+            elif not self.selected_node.is_open:
+                self.selected_node.toggle()
+            elif self.selected_node.child_nodes:
+                self.selected_node.child_nodes[0].select()
+        elif key_event.key == "enter" and self.selected_node is not None:
+            self.select_callback(self.selected_node.path)
+        else:
+            return super().on_key(key_event)
 
         if self.selected_node is not None:
             self.parent.scroll_to_rect(self.selected_node.pos)
@@ -305,11 +305,13 @@ class FileChooser(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()

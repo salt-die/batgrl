@@ -332,11 +332,13 @@ class ShadowCaster(Graphics):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -508,13 +510,12 @@ class ShadowCaster(Graphics):
             if end_visible and interval.end in obstruction:
                 end_visible = False
 
-        match self.restrictiveness:
-            case "permissive":
-                return center_visible or start_visible or end_visible
-            case "moderate":
-                return center_visible and (start_visible or end_visible)
-            case "restrictive":
-                return center_visible and start_visible and end_visible
+        if self.restrictiveness == "permissive":
+            return center_visible or start_visible or end_visible
+        if self.restrictiveness == "moderate":
+            return center_visible and (start_visible or end_visible)
+        if self.restrictiveness == "restrictive":
+            return center_visible and start_visible and end_visible
 
     def _add_obstruction(self, obstructions, obstruction: _Interval):
         start = obstruction.start

@@ -8,7 +8,7 @@ from batgrl.colors import AWHITE
 from batgrl.gadgets.graphics import Graphics, Point, Size
 from batgrl.gadgets.scroll_view import ScrollView
 from batgrl.gadgets.texture_tools import composite, read_texture
-from batgrl.io import MouseButton, MouseEvent, MouseEventType
+from batgrl.terminal.events import MouseEvent
 
 ASSETS = Path(__file__).parent.parent / "assets"
 TILES_PATH = ASSETS / "isometric_demo.png"
@@ -100,18 +100,16 @@ class WorldGadget(Graphics):
                         composite(HIGHLIGHTED_TILE, self.texture, uv)
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        if mouse_event.button is MouseButton.MIDDLE or not self.collides_point(
-            mouse_event.position
-        ):
+        if mouse_event.button == "middle" or not self.collides_point(mouse_event.pos):
             return
 
-        if mouse_event.event_type is MouseEventType.MOUSE_DOWN:
+        if mouse_event.event_type == "mouse_down":
             y, x = self.selected_tile
 
             if 0 <= y < WORLD_SIZE.height and 0 <= x < WORLD_SIZE.width:
-                if mouse_event.button is MouseButton.LEFT:
+                if mouse_event.button == "left":
                     self.tile_map[y][x] += 1
-                elif mouse_event.button is MouseButton.RIGHT:
+                elif mouse_event.button == "right":
                     self.tile_map[y][x] += -1
 
                 self.tile_map[y][x] %= len(TILES)
@@ -119,7 +117,7 @@ class WorldGadget(Graphics):
 
             return True
 
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
         y *= 2
 
         tile_y, tile_offset_y = divmod(y, TILE_SIZE.height)
@@ -150,7 +148,7 @@ class IsoTileApp(App):
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             show_vertical_bar=False,
             show_horizontal_bar=False,
-            mouse_button=MouseButton.MIDDLE,
+            mouse_button="middle",
         )
         sv.view = WorldGadget()
         self.add_gadget(sv)

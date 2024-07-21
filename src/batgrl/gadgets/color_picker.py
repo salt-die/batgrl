@@ -93,8 +93,8 @@ class _ShadeSelector(Grabbable, Graphics):
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        if self.collides_point(mouse_event.position):
-            y, x = self._shade_indicator.pos = self.to_local(mouse_event.position)
+        if self.collides_point(mouse_event.pos):
+            y, x = self._shade_indicator.pos = self.to_local(mouse_event.pos)
             h, w = self.size
             self._shade_hint = (
                 0 if h <= 1 else y / (h - 1),
@@ -142,8 +142,8 @@ class _HueSelector(Grabbable, Graphics):
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        if self.collides_point(mouse_event.position):
-            x = self._hue_indicator.x = self.to_local(mouse_event.position).x
+        if self.collides_point(mouse_event.pos):
+            x = self._hue_indicator.x = self.to_local(mouse_event.pos).x
             self._hue_hint = 0 if self.width <= 1 else x / (self.width - 1)
             self.update_hue()
 
@@ -261,11 +261,13 @@ class ColorPicker(Themable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()

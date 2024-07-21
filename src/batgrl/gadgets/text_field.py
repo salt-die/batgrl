@@ -3,6 +3,7 @@ A text particle field.
 
 A particle field specializes in handling many single "pixel" children.
 """
+
 from typing import Any
 
 import numpy as np
@@ -155,11 +156,13 @@ class TextParticleField(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -262,7 +265,7 @@ class TextParticleField(Gadget):
 
 
 def particle_data_from_canvas(
-    canvas: NDArray[Cell]
+    canvas: NDArray[Cell],
 ) -> tuple[NDArray[np.int32], NDArray[Cell]]:
     """
     Return positions and cells of non-whitespace characters of a Cell array.

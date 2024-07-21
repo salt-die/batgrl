@@ -4,6 +4,7 @@ Stable fluid simulation. Requires `scipy`.
 Click to add fluid.
 "r" to reset.
 """
+
 import asyncio
 from itertools import cycle
 
@@ -11,7 +12,7 @@ import numpy as np
 from batgrl.app import App
 from batgrl.colors import ABLACK, DEFAULT_PRIMARY_BG, AColor, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
-from batgrl.io import MouseButton, MouseEvent
+from batgrl.terminal.events import MouseEvent
 from scipy.ndimage import convolve, map_coordinates
 
 DIF_KERNEL = np.array([-0.5, 0.0, 0.5])
@@ -63,12 +64,12 @@ class StableFluid(Graphics):
 
     def on_mouse(self, mouse_event: MouseEvent):
         """Add dye on click."""
-        if mouse_event.button is MouseButton.NO_BUTTON or not self.collides_point(
-            mouse_event.position
+        if mouse_event.button == "no_button" or not self.collides_point(
+            mouse_event.pos
         ):
             return False
 
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
         y *= 2
 
         ys, xs = self.indices
@@ -76,7 +77,7 @@ class StableFluid(Graphics):
         rx = xs - x
         d = ry**2 + rx**2 + EPSILON
 
-        if mouse_event.button is MouseButton.LEFT:
+        if mouse_event.button == "left":
             self.velocity[0] += ry / d
             self.velocity[1] += rx / d
         else:
@@ -89,10 +90,9 @@ class StableFluid(Graphics):
         return True
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "r" | "R":
-                self.on_size()  # Reset
-                return True
+        if key_event.key.lower() == "r":
+            self.on_size()  # Reset
+            return True
 
     async def _update(self):
         while True:

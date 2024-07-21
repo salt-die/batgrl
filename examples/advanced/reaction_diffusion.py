@@ -34,8 +34,8 @@ class ReactionDiffusion(Text):
         self.B[: h // 5, : w // 5] = 1
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button == "left" and self.collides_point(mouse_event.position):
-            y, x = self.to_local(mouse_event.position)
+        if mouse_event.button == "left" and self.collides_point(mouse_event.pos):
+            y, x = self.to_local(mouse_event.pos)
             self.B[y - 1 : y + 3, x - 1 : x + 2] += 0.5
             return True
 

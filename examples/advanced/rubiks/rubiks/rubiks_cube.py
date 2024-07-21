@@ -80,23 +80,22 @@ class RubiksCube(Grabbable, Graphics):
         return self.cubes[self.selected_indices].flat
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "r":
-                self.rotate_selected_cubes(is_clockwise=False)
-            case "R":
-                self.rotate_selected_cubes(is_clockwise=True)
-            case "up":
-                self.selected_row += 1
-            case "down":
-                self.selected_row -= 1
-            case "left":
-                self.selected_axis -= 1
-            case "right":
-                self.selected_axis += 1
-            case "s":
-                self.scramble()
-            case _:
-                return False
+        if key_event.key == "r":
+            self.rotate_selected_cubes(is_clockwise=False)
+        elif key_event.key == "R":
+            self.rotate_selected_cubes(is_clockwise=True)
+        elif key_event.key == "up":
+            self.selected_row += 1
+        elif key_event.key == "down":
+            self.selected_row -= 1
+        elif key_event.key == "left":
+            self.selected_axis -= 1
+        elif key_event.key == "right":
+            self.selected_axis += 1
+        elif key_event.key == "s":
+            self.scramble()
+        else:
+            return False
 
         return True
 
@@ -168,11 +167,11 @@ class RubiksCube(Grabbable, Graphics):
     def grab_update(self, mouse_event):
         # Horizontal movement rotates around vertical axis and vice-versa.
         alpha = (
-            np.pi * -self.mouse_dy / self.height
+            np.pi * -mouse_event.dy / self.height
         )  # vertical movement flipped, world coordinates opposite screen coordinates
         self.camera.rotate_x(alpha)
 
-        beta = np.pi * self.mouse_dx / self.width
+        beta = np.pi * mouse_event.dx / self.width
         self.camera.rotate_y(beta)
 
     def _render(self, canvas):

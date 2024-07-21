@@ -1,4 +1,5 @@
 """A markdown gadget."""
+
 import asyncio
 import re
 import webbrowser
@@ -147,10 +148,10 @@ class _HasTitle:
         if not self.title:
             return super().on_mouse(mouse_event)
 
-        self._myx = mouse_event.position
+        self._myx = mouse_event.pos
 
         self._hint_task.cancel()
-        if self.collides_point(mouse_event.position):
+        if self.collides_point(mouse_event.pos):
             self.link_hint.content.set_text(self.title)
             self._hint_task = asyncio.create_task(self.show_hint_soon())
         else:
@@ -301,9 +302,9 @@ class _Quote(Pane):
 
             child._is_colored = True
             if isinstance(child, _BlockCode):
-                child.canvas[
-                    "bg_color"
-                ] = Themable.color_theme.markdown_quote_block_code_background
+                child.canvas["bg_color"] = (
+                    Themable.color_theme.markdown_quote_block_code_background
+                )
             elif isinstance(child, Text):
                 child.canvas["bg_color"] = self.bg_color
             elif isinstance(child, Pane):
@@ -399,9 +400,9 @@ class _BatgrlRenderer(BaseRenderer):
                 if content.height > 1:
                     text.height += content.height - 1
 
-                text.canvas[
-                    -content.height :, current_line_end:new_line_end
-                ] = content.canvas
+                text.canvas[-content.height :, current_line_end:new_line_end] = (
+                    content.canvas
+                )
                 current_line_end = getattr(content, "line_end", new_line_end)
                 continue
 
@@ -805,11 +806,13 @@ class Markdown(Themable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()

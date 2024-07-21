@@ -1,4 +1,5 @@
 """A sparkline gadget."""
+
 from collections.abc import Sequence
 from numbers import Real
 
@@ -6,7 +7,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, lerp_colors
-from ..io import MouseEvent
+from ..terminal.events import MouseEvent
 from ._cursor import Cursor
 from .gadget import (
     Gadget,
@@ -177,11 +178,13 @@ class Sparkline(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -400,10 +403,10 @@ class Sparkline(Gadget):
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Show tooltip and highlight column on mouse collision."""
-        if not self.collides_point(mouse_event.position):
+        if not self.collides_point(mouse_event.pos):
             return
 
-        _, x = self.to_local(mouse_event.position)
+        _, x = self.to_local(mouse_event.pos)
         if self.show_tooltip and len(self._means) > x:
             start = f"{self._walls[x]:8d}"
             stop = f"{self._walls[x + 1]:8d}"
@@ -417,7 +420,7 @@ class Sparkline(Gadget):
             )
 
             tth, ttw = self._tooltip.size
-            my, mx = mouse_event.position
+            my, mx = mouse_event.pos
             rh, rw = self.root.size
 
             # Keep the tooltip inbounds:

@@ -6,6 +6,7 @@ Controls:
 - 'r' to reset
 - 'click' to poke
 """
+
 import asyncio
 from pathlib import Path
 
@@ -17,7 +18,6 @@ from batgrl.gadgets.graphic_field import (
 )
 from batgrl.gadgets.image import Image, Size
 from batgrl.gadgets.texture_tools import read_texture, resize_texture
-from batgrl.io import MouseButton
 
 LOGO_SIZE = Size(36, 36)
 POWER = 2
@@ -59,10 +59,8 @@ class PokeParticleField(GraphicParticleField):
         self.particle_positions[:] = real_positions.astype(int)
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button is MouseButton.LEFT and self.collides_point(
-            mouse_event.position
-        ):
-            y, x = self.to_local(mouse_event.position)
+        if mouse_event.button == "left" and self.collides_point(mouse_event.pos):
+            y, x = self.to_local(mouse_event.pos)
             y *= 2
 
             relative_distances = self.particle_positions - (y, x)

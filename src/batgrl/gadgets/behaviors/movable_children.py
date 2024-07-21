@@ -5,7 +5,7 @@ Translate movable's children by dragging them.
 """
 
 from ...geometry import clamp
-from ...io import MouseButton
+from ...terminal.events import MouseButton
 from .grabbable import Grabbable
 
 __all__ = ["MovableChildren"]
@@ -27,7 +27,7 @@ class MovableChildren(Grabbable):
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool, default: False
         If true, gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
+    mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
 
     Attributes
@@ -44,12 +44,6 @@ class MovableChildren(Grabbable):
         Mouse button used for grabbing.
     is_grabbed : bool
         True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
 
     Methods
     -------
@@ -68,7 +62,7 @@ class MovableChildren(Grabbable):
         disable_child_ptf=False,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
+        mouse_button: MouseButton = "left",
         **kwargs,
     ):
         super().__init__(
@@ -85,7 +79,7 @@ class MovableChildren(Grabbable):
     def grab(self, mouse_event):
         """Grab the gadget."""
         for child in reversed(self.children):
-            if child.collides_point(mouse_event.position):
+            if child.collides_point(mouse_event.pos):
                 self._is_grabbed = True
                 self._grabbed_child = child
 
@@ -104,16 +98,15 @@ class MovableChildren(Grabbable):
     def grab_update(self, mouse_event):
         """Update gadget with incoming mouse events while grabbed."""
         if grabbed_child := self._grabbed_child:
-            dy, dx = self.mouse_dyx
             h, w = self.size
             ch, cw = grabbed_child.size
             ct, cl = grabbed_child.pos
 
             if self.disable_child_oob:
-                grabbed_child.top = clamp(ct + dy, 0, h - ch)
-                grabbed_child.left = clamp(cl + dx, 0, w - cw)
+                grabbed_child.top = clamp(ct + mouse_event.dy, 0, h - ch)
+                grabbed_child.left = clamp(cl + mouse_event.dx, 0, w - cw)
             else:
-                grabbed_child.top = ct + dy
-                grabbed_child.left = cl + dx
+                grabbed_child.top = ct + mouse_event.dy
+                grabbed_child.left = cl + mouse_event.dx
         else:
             super().grab_update(mouse_event)

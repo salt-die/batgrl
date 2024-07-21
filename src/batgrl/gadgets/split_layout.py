@@ -1,4 +1,5 @@
 """Draggable horizontal and vertical split layouts."""
+
 from ..colors import AColor
 from .behaviors.grabbable import Grabbable
 from .gadget import (
@@ -23,7 +24,7 @@ class _Handle(Grabbable, Graphics):
         super().__init__(size=(2, 2), size_hint=size_hint, alpha=0)
 
     def on_mouse(self, mouse_event):
-        self.alpha = float(self.is_grabbed or self.collides_point(mouse_event.position))
+        self.alpha = float(self.is_grabbed or self.collides_point(mouse_event.pos))
         return super().on_mouse(mouse_event)
 
 
@@ -34,17 +35,17 @@ class _HSplitHandle(_Handle):
 
     def grab_update(self, mouse_event):
         if self.parent.anchor_top_pane:
-            self.parent.split_row += self.mouse_dy
+            self.parent.split_row += mouse_event.dy
         else:
-            self.parent.split_row -= self.mouse_dy
+            self.parent.split_row -= mouse_event.dy
 
 
 class _VSplitHandle(_Handle):
     def grab_update(self, mouse_event):
         if self.parent.anchor_left_pane:
-            self.parent.split_col += self.mouse_dx
+            self.parent.split_col += mouse_event.dx
         else:
-            self.parent.split_col -= self.mouse_dx
+            self.parent.split_col -= mouse_event.dx
 
 
 class HSplitLayout(Gadget):
@@ -181,11 +182,13 @@ class HSplitLayout(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -436,11 +439,13 @@ class VSplitLayout(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()

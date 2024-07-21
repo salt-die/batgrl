@@ -1,4 +1,5 @@
 """A 2D line plot gadget."""
+
 from collections.abc import Sequence
 from math import ceil
 from numbers import Real
@@ -8,7 +9,7 @@ import cv2
 import numpy as np
 
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
-from ..io import MouseEvent, MouseEventType
+from ..terminal.events import MouseEvent
 from .behaviors.movable import Movable
 from .gadget import (
     Gadget,
@@ -240,11 +241,13 @@ class LinePlot(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -475,8 +478,8 @@ class LinePlot(Gadget):
         if self.root is None or h == 0 or w == 0:
             return
 
-        has_x_label = self._x_label_gadget.is_enabled = bool(self.x_label is not None)
-        has_y_label = self._y_label_gadget.is_enabled = bool(self.y_label is not None)
+        has_x_label = self._x_label_gadget.is_enabled = self.x_label is not None
+        has_y_label = self._y_label_gadget.is_enabled = self.y_label is not None
 
         sv_left = has_y_label + TICK_WIDTH
         self._scrollview.pos = 0, sv_left
@@ -602,14 +605,14 @@ class LinePlot(Gadget):
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Zoom-in or -out on mouse wheel."""
-        if not self.collides_point(mouse_event.position):
+        if not self.collides_point(mouse_event.pos):
             return
 
-        if mouse_event.event_type is MouseEventType.SCROLL_UP:
+        if mouse_event.event_type == "scroll_up":
             if self._traces_zoom_index >= len(PLOT_ZOOM) - 1:
                 return True
             self._traces_zoom_index += 1
-        elif mouse_event.event_type is MouseEventType.SCROLL_DOWN:
+        elif mouse_event.event_type == "scroll_down":
             if self._traces_zoom_index <= 0:
                 return True
             self._traces_zoom_index -= 1

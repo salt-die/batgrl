@@ -1,9 +1,11 @@
-"""Move/click mouse, press keys or paste in terminal to show IO events."""
-from textwrap import dedent
+"""Move/click mouse, press keys, paste, or gain/lose focus to show IO events."""
 
-from batgrl.app import run_gadget_as_app
+from dataclasses import fields
+
+from batgrl.app import App
 from batgrl.gadgets.text import Text
-from batgrl.io import KeyEvent, MouseEvent, PasteEvent
+from batgrl.gadgets.text_tools import add_text
+from batgrl.terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
 
 
 class ShowIOEvents(Text):
@@ -17,34 +19,31 @@ class ShowIOEvents(Text):
         self._on_io(mouse_event)
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
-        self._on_io(paste_event)
+        self.clear()
+        add_text(self.canvas, "PasteEvent:\n" + paste_event.paste, truncate_text=True)
+
+    def on_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
+        self._on_io(focus_event)
 
     def _on_io(self, event):
-        self.canvas["char"][:] = " "
+        self.clear()
+        event_repr = str(event)
+        if len(event_repr) <= self.width:
+            self.add_str(event_repr)
+        else:
+            fields_repr = "".join(
+                f"    {field.name}={getattr(event, field.name)!r},\n"
+                for field in fields(event)
+            )
+            full_repr = f"{type(event).__name__}(\n{fields_repr})"
+            add_text(self.canvas, full_repr, truncate_text=True)
 
-        match event:
-            case KeyEvent():
-                text = """
-                Got key event:
-                    key: {}
-                    mods: {}
-                """
-            case MouseEvent():
-                text = """
-                Got mouse event:
-                    position: {}
-                    type: {}
-                    button: {}
-                    mods: {}
-                    nclicks: {}
-                """
-            case PasteEvent():
-                text = "\nGot paste event:\n{}"
 
-        lines = dedent(text.format(*event)).splitlines()
-        for i, line in enumerate(lines):
-            self.add_str(line.ljust(self.width)[: self.width], pos=(i, 0))
+class IoApp(App):
+    async def on_start(self):
+        events = ShowIOEvents(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self.add_gadget(events)
 
 
 if __name__ == "__main__":
-    run_gadget_as_app(ShowIOEvents(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    IoApp().run()

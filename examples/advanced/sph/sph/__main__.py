@@ -6,7 +6,6 @@ from batgrl.colors import Color
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
-from batgrl.io import MouseButton
 
 from .solver import SPHSolver
 
@@ -29,21 +28,19 @@ class SPH(Graphics):
         self._update_task.cancel()
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "r":
-                self.sph_solver.init_dam()
-                return True
-
+        if key_event.key == "r":
+            self.sph_solver.init_dam()
+            return True
         return False
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button is MouseButton.NO_BUTTON or not self.collides_point(
-            mouse_event.position
+        if mouse_event.button == "no_button" or not self.collides_point(
+            mouse_event.pos
         ):
             return False
 
         # Apply a force from click to every particle in the solver.
-        my, mx = self.to_local(mouse_event.position)
+        my, mx = self.to_local(mouse_event.pos)
 
         relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
 

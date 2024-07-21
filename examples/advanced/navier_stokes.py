@@ -5,13 +5,13 @@ Click to add fluid. `r` to reset.
 manually by creating pressure and momentum arrays with sizes equal to the gadget's
 texture's size plus a 2-width border and copying data into that border.
 """
+
 import asyncio
 
 import numpy as np
 from batgrl.app import run_gadget_as_app
 from batgrl.colors import AColor
 from batgrl.gadgets.graphics import Graphics
-from batgrl.io import MouseButton
 from cv2 import filter2D
 
 # Kernels
@@ -71,11 +71,11 @@ class Fluid(Graphics):
         self.momentum = np.zeros(size_with_border, dtype=float)
 
     def on_mouse(self, mouse_event):
-        if not self.collides_point(mouse_event.position):
+        if not self.collides_point(mouse_event.pos):
             return False
 
-        if mouse_event.button is not MouseButton.NO_BUTTON:
-            y, x = self.to_local(mouse_event.position)
+        if mouse_event.button != "no_button":
+            y, x = self.to_local(mouse_event.pos)
 
             Y = 2 * y + 2
 
@@ -84,10 +84,9 @@ class Fluid(Graphics):
             return True
 
     def on_key(self, key_event):
-        match key_event.key:
-            case "r" | "R":
-                self.on_size()  # Reset
-                return True
+        if key_event.key.lower() == "r":
+            self.on_size()  # Reset
+            return True
 
     async def _update(self):
         while True:

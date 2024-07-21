@@ -1,7 +1,8 @@
 """A movable, resizable window gadget."""
+
 from typing import Literal
 
-from ..io import MouseEvent
+from ..terminal.events import MouseEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
@@ -34,8 +35,8 @@ class _TitleBar(Grabbable, Pane):
         self.add_gadget(self._label)
 
     def grab_update(self, mouse_event):
-        self.parent.top += self.mouse_dy
-        self.parent.left += self.mouse_dx
+        self.parent.top += mouse_event.dy
+        self.parent.left += mouse_event.dx
 
 
 class Window(Themable, Focusable, Grabbable, Gadget):
@@ -190,11 +191,13 @@ class Window(Themable, Focusable, Grabbable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -359,7 +362,7 @@ class Window(Themable, Focusable, Grabbable, Gadget):
     def grab(self, mouse_event: MouseEvent):
         """Grab window."""
         super().grab(mouse_event)
-        y, x = self.to_local(mouse_event.position)
+        y, x = self.to_local(mouse_event.pos)
         self._y_edge = -1 if y == 0 else 1 if y == self.height - 1 else 0
         self._x_edge = (
             -1 if x in (0, 1) else 1 if x in (self.width - 2, self.width - 1) else 0
@@ -369,9 +372,9 @@ class Window(Themable, Focusable, Grabbable, Gadget):
 
     def grab_update(self, mouse_event: MouseEvent):
         """Resize window if border is grabbed."""
-        y, x = self.to_local(mouse_event.position)
-
-        dy, dx = self.mouse_dyx
+        y, x = self.to_local(mouse_event.pos)
+        dy = mouse_event.dy
+        dx = mouse_event.dx
         if (
             (dy < 0 and y >= self.height - 1)
             or (dy > 0 and y <= 0)
@@ -436,5 +439,5 @@ class Window(Themable, Focusable, Grabbable, Gadget):
     def dispatch_mouse(self, mouse_event):
         """Handle any colliding mouse events."""
         return super().dispatch_mouse(mouse_event) or self.collides_point(
-            mouse_event.position
+            mouse_event.pos
         )

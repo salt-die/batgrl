@@ -1,4 +1,5 @@
 """A grid layout gadget."""
+
 from itertools import accumulate, product
 from typing import Literal
 
@@ -193,11 +194,13 @@ class GridLayout(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -312,23 +315,22 @@ class GridLayout(Gadget):
         rows = self.grid_rows
         cols = self.grid_columns
 
-        match self.orientation:
-            case "lr-tb":
-                return col + row * cols
-            case "lr-bt":
-                return col + (rows - row - 1) * cols
-            case "rl-tb":
-                return (cols - col - 1) + row * cols
-            case "rl-bt":
-                return (cols - col - 1) + (rows - row - 1) * cols
-            case "tb-lr":
-                return row + col * rows
-            case "tb-rl":
-                return row + (cols - col - 1) * rows
-            case "bt-lr":
-                return (rows - row - 1) + col * rows
-            case "bt-rl":
-                return (rows - row - 1) + (cols - col - 1) * rows
+        if self.orientation == "lr-tb":
+            return col + row * cols
+        if self.orientation == "lr-bt":
+            return col + (rows - row - 1) * cols
+        if self.orientation == "rl-tb":
+            return (cols - col - 1) + row * cols
+        if self.orientation == "rl-bt":
+            return (cols - col - 1) + (rows - row - 1) * cols
+        if self.orientation == "tb-lr":
+            return row + col * rows
+        if self.orientation == "tb-rl":
+            return row + (cols - col - 1) * rows
+        if self.orientation == "bt-lr":
+            return (rows - row - 1) + col * rows
+        if self.orientation == "bt-rl":
+            return (rows - row - 1) + (cols - col - 1) * rows
 
     def _row_height(self, i: int) -> int:
         """Height of row `i`."""

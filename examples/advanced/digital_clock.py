@@ -57,9 +57,8 @@ class TestDisplay(DigitalDisplay):
     """Display any key pressed."""
 
     def on_key(self, key_event):
-        key = key_event.key
-        if isinstance(key, str) and len(key) == 1:
-            self.show_char(key)
+        if key_event.key.isascii():
+            self.show_char(key_event.key)
             return True
 
 

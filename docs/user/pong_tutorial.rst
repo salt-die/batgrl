@@ -50,7 +50,6 @@ Colors and related functions live in their own module, `colors`.
     class Pong(App):
         async def on_start(self):
             game_field = Pane(size=(FIELD_HEIGHT, FIELD_WIDTH), bg_color=GREEN)
-
             self.add_gadget(game_field)
 
 

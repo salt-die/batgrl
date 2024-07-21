@@ -1,4 +1,5 @@
 """A video gadget that renders to braille unicode characters in grayscale."""
+
 import asyncio
 import atexit
 import time
@@ -176,11 +177,13 @@ class BrailleVideo(Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()

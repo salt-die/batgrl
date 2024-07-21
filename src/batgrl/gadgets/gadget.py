@@ -1,4 +1,5 @@
 """Base class for all gadgets."""
+
 import asyncio
 from collections.abc import Callable, Iterator, Sequence
 from dataclasses import asdict, dataclass
@@ -14,7 +15,7 @@ from numpy.typing import NDArray
 
 from ..easings import EASINGS, Easing
 from ..geometry import Point, Region, Size, clamp, lerp, round_down
-from ..io import KeyEvent, MouseEvent, PasteEvent
+from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
 from .text_tools import Cell, cell
 
 __all__ = [
@@ -468,11 +469,13 @@ class Gadget:
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -644,9 +647,7 @@ class Gadget:
     @property
     def center(self) -> Point:
         """Position of center of gadget."""
-        y, x = self.pos
-        h, w = self.size
-        return Point(y + h // 2, x + w // 2)
+        return self.pos + self.size.center
 
     @center.setter
     def center(self, center: Point):
@@ -659,8 +660,7 @@ class Gadget:
         """Absolute position on screen."""
         if self.parent is None:
             return self.pos
-        y, x = self.parent.absolute_pos
-        return Point(self.top + y, self.left + x)
+        return self.pos + self.parent.absolute_pos
 
     @property
     def size_hint(self) -> SizeHint:
@@ -996,9 +996,9 @@ class Gadget:
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Dispatch key press until handled.
+        Dispatch a key press event until handled.
 
-        A key press is handled if a handler returns ``True``.
+        A key press event is handled if a handler returns ``True``.
 
         Parameters
         ----------
@@ -1018,7 +1018,7 @@ class Gadget:
 
     def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Dispatch mouse event until handled.
+        Dispatch a mouse event until handled.
 
         A mouse event is handled if a handler returns ``True``.
 
@@ -1040,7 +1040,7 @@ class Gadget:
 
     def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Dispatch paste event until handled.
+        Dispatch a paste event until handled.
 
         A paste event is handled if a handler returns ``True``.
 
@@ -1060,10 +1060,33 @@ class Gadget:
             if gadget.is_enabled
         ) or self.on_paste(paste_event)
 
+    def dispatch_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
+        """
+        Dispatch a focus event until handled.
+
+        A focus event is handled if a handler returns ``True``.
+
+        Parameters
+        ----------
+        focus_event : FocusEvent
+            The focus event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
+        """
+        return any(
+            gadget.dispatch_terminal_focus(focus_event)
+            for gadget in reversed(self.children)
+            if gadget.is_enabled
+        ) or self.on_terminal_focus(focus_event)
+
     def on_key(self, key_event: KeyEvent) -> bool | None:
         """
-        Handle key press event. (Handled key presses should return ``True`` else
-        ``False`` or ``None``).
+        Handle a key press event.
+
+        Handled key presses should return ``True``.
 
         Parameters
         ----------
@@ -1078,8 +1101,9 @@ class Gadget:
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """
-        Handle mouse event. (Handled mouse events should return ``True`` else ``False``
-        or ``None``).
+        Handle a mouse event.
+
+        Handled mouse events should return ``True``.
 
         Parameters
         ----------
@@ -1094,8 +1118,9 @@ class Gadget:
 
     def on_paste(self, paste_event: PasteEvent) -> bool | None:
         """
-        Handle paste event. (Handled paste events should return ``True`` else ``False``
-        or ``None``).
+        Handle a paste event.
+
+        Handled paste events should return ``True``.
 
         Parameters
         ----------
@@ -1106,6 +1131,23 @@ class Gadget:
         -------
         bool | None
             Whether the paste event was handled.
+        """
+
+    def on_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
+        """
+        Handle a focus event.
+
+        Handled focus events should return ``True``.
+
+        Parameters
+        ----------
+        focus_event : FocusEvent
+            The focus event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the focus event was handled.
         """
 
     def _render(self, canvas: NDArray[Cell]):

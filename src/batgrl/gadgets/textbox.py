@@ -1,9 +1,11 @@
 """A textbox gadget for single-line editable text."""
+
 from collections.abc import Callable
+from dataclasses import astuple
 
 from numpy.typing import NDArray
 
-from ..io import Key, KeyEvent, Mods, MouseButton, MouseEvent, PasteEvent
+from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
 from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
@@ -60,7 +62,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool, default: False
         If true, gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
+    mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
         Size of gadget.
@@ -113,12 +115,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Mouse button used for grabbing.
     is_grabbed : bool
         True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
     size : Size
         Size of gadget.
     height : int
@@ -237,11 +233,13 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     unbind(uid)
         Unbind a callback from a gadget property.
     on_key(key_event)
-        Handle key press event.
+        Handle a key press event.
     on_mouse(mouse_event)
-        Handle mouse event.
+        Handle a mouse event.
     on_paste(paste_event)
-        Handle paste event.
+        Handle a paste event.
+    on_terminal_focus(focus_event)
+        Handle a focus event.
     tween(...)
         Sequentially update gadget properties over time.
     on_add()
@@ -264,7 +262,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         max_chars: int | None = None,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
+        mouse_button: MouseButton = "left",
         alpha: float = 1.0,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
@@ -760,28 +758,28 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             self._undo_buffer.append(self._add_text(self.cursor, key))
 
     __HANDLERS = {
-        KeyEvent(Key.Enter): _enter,
-        KeyEvent(Key.Backspace): _backspace,
-        KeyEvent(Key.Delete): _delete,
-        KeyEvent(Key.Left): _left,
-        KeyEvent(Key.Right): _right,
-        KeyEvent(Key.Left, Mods(ctrl=True)): _ctrl_left,
-        KeyEvent(Key.Right, Mods(ctrl=True)): _ctrl_right,
-        KeyEvent(Key.Home): _home,
-        KeyEvent(Key.End): _end,
-        KeyEvent(Key.Left, Mods(shift=True)): _shift_left,
-        KeyEvent(Key.Right, Mods(shift=True)): _shift_right,
-        KeyEvent(Key.Left, Mods(ctrl=True, shift=True)): _shift_ctrl_left,
-        KeyEvent(Key.Right, Mods(ctrl=True, shift=True)): _shift_ctrl_right,
-        KeyEvent(Key.Home, Mods(shift=True)): _shift_home,
-        KeyEvent(Key.End, Mods(shift=True)): _shift_end,
-        KeyEvent(Key.Escape): _escape,
-        KeyEvent("z", Mods(ctrl=True)): undo,
-        KeyEvent("z", Mods(ctrl=True, shift=True)): redo,
-        KeyEvent("y", Mods(ctrl=True)): redo,  # ctrl + shift + z won't work on linux
-        KeyEvent("r", Mods(ctrl=True)): redo,
-        KeyEvent("a", Mods(ctrl=True)): _ctrl_a,
-        KeyEvent("d", Mods(ctrl=True)): _ctrl_d,
+        ("enter", False, False, False): _enter,
+        ("backspace", False, False, False): _backspace,
+        ("delete", False, False, False): _delete,
+        ("left", False, False, False): _left,
+        ("right", False, False, False): _right,
+        ("left", False, True, False): _ctrl_left,
+        ("right", False, True, False): _ctrl_right,
+        ("home", False, False, False): _home,
+        ("end", False, False, False): _end,
+        ("left", False, False, True): _shift_left,
+        ("right", False, False, True): _shift_right,
+        ("left", False, True, True): _shift_ctrl_left,
+        ("right", False, True, True): _shift_ctrl_right,
+        ("home", False, False, True): _shift_home,
+        ("end", False, False, True): _shift_end,
+        ("escape", False, False, False): _escape,
+        ("z", False, True, False): undo,
+        ("z", False, True, True): redo,
+        ("y", False, True, False): redo,  # ctrl + shift + z won't work on linux
+        ("r", False, True, False): redo,
+        ("a", False, True, False): _ctrl_a,
+        ("d", False, True, False): _ctrl_d,
     }
 
     def on_key(self, key_event: KeyEvent) -> bool | None:
@@ -789,9 +787,14 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         if not self.is_focused:
             return super().on_key(key_event)
 
-        if key_event.mods == Mods() and len(key_event.key) == 1:
+        if (
+            not key_event.alt
+            and not key_event.ctrl
+            and not key_event.shift
+            and len(key_event.key) == 1
+        ):
             self._ascii(key_event.key)
-        elif handler := self.__HANDLERS.get(key_event):
+        elif handler := self.__HANDLERS.get(astuple(key_event)):
             handler(self)
         else:
             return super().on_key(key_event)
@@ -815,14 +818,12 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def grab(self, mouse_event):
         """Start selection on grab."""
-        if mouse_event.button is MouseButton.LEFT and self._box.collides_point(
-            mouse_event.position
-        ):
+        if mouse_event.button == "left" and self._box.collides_point(mouse_event.pos):
             super().grab(mouse_event)
 
-            _, x = self._box.to_local(mouse_event.position)
+            _, x = self._box.to_local(mouse_event.pos)
 
-            if not mouse_event.mods.shift:
+            if not mouse_event.shift:
                 self.unselect()
 
             self.cursor = min(x, self._line_length)
@@ -830,11 +831,11 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update selection on grab update."""
-        if self._box.collides_point(mouse_event.position):
-            _, x = self._box.to_local(mouse_event.position)
+        if self._box.collides_point(mouse_event.pos):
+            _, x = self._box.to_local(mouse_event.pos)
             self.cursor = min(x, self._line_length)
         else:
-            _, x = self.to_local(mouse_event.position)
+            _, x = self.to_local(mouse_event.pos)
 
             if x < 0:
                 self.move_cursor_left()

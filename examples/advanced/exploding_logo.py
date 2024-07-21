@@ -6,6 +6,7 @@ Controls:
 - 'r' to reset
 - 'click' to poke
 """
+
 import asyncio
 from pathlib import Path
 
@@ -15,7 +16,6 @@ from batgrl.colors import Color
 from batgrl.figfont import FIGFont
 from batgrl.gadgets.pane import Cell, Pane
 from batgrl.gadgets.text_field import TextParticleField, particle_data_from_canvas
-from batgrl.io import MouseButton
 
 
 def make_logo():
@@ -70,10 +70,8 @@ class PokeParticleField(TextParticleField):
         self.particle_positions[:] = real_positions.astype(int)
 
     def on_mouse(self, mouse_event):
-        if mouse_event.button is MouseButton.LEFT and self.collides_point(
-            mouse_event.position
-        ):
-            y, x = self.to_local(mouse_event.position)
+        if mouse_event.button == "left" and self.collides_point(mouse_event.pos):
+            y, x = self.to_local(mouse_event.pos)
             relative_distances = self.particle_positions - (y, x)
 
             distances_sq = (relative_distances**2).sum(axis=1)

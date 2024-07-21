@@ -1,7 +1,7 @@
 """Movable behavior for a gadget."""
 
 from ...geometry import clamp
-from ...io import MouseButton
+from ...terminal.events import MouseButton
 from .grabbable import Grabbable
 
 __all__ = ["Movable"]
@@ -25,7 +25,7 @@ class Movable(Grabbable):
         If false, grabbable behavior is disabled.
     ptf_on_grab : bool, default: False
         If true, gadget will be pulled to front when grabbed.
-    mouse_button : MouseButton, default: MouseButton.LEFT
+    mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
 
     Attributes
@@ -44,12 +44,6 @@ class Movable(Grabbable):
         Mouse button used for grabbing.
     is_grabbed : bool
         True if gadget is grabbed.
-    mouse_dyx : Point
-        Last change in mouse position.
-    mouse_dy : int
-        Last vertical change in mouse position.
-    mouse_dx : int
-        Last horizontal change in mouse position.
 
     Methods
     -------
@@ -69,7 +63,7 @@ class Movable(Grabbable):
         allow_horizontal_translation=True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
-        mouse_button: MouseButton = MouseButton.LEFT,
+        mouse_button: MouseButton = "left",
         **kwargs,
     ):
         super().__init__(
@@ -85,9 +79,9 @@ class Movable(Grabbable):
     def grab_update(self, mouse_event):
         """Translate movable on grab update."""
         if self.allow_vertical_translation:
-            self.top += self.mouse_dy
+            self.top += mouse_event.dy
         if self.allow_horizontal_translation:
-            self.left += self.mouse_dx
+            self.left += mouse_event.dx
 
         if self.disable_oob:
             self.top = clamp(self.top, 0, self.parent.height - self.height)

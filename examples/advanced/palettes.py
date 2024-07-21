@@ -1,4 +1,5 @@
 """Color palette creator."""
+
 import cv2
 import numpy as np
 from batgrl.app import App
@@ -58,9 +59,7 @@ class Selector(Grabbable, Text):
         self.grab_update(mouse_event)
 
     def grab_update(self, mouse_event):
-        self.indicator.x = clamp(
-            self.to_local(mouse_event.position).x, 0, self.width - 1
-        )
+        self.indicator.x = clamp(self.to_local(mouse_event.pos).x, 0, self.width - 1)
         if self.callback:
             self.callback()
 
@@ -110,9 +109,9 @@ class PaletteApp(App):
                 offset = (w - 6) // 2
                 if offset >= 0:
                     offset += x
-                    palette.canvas["fg_color"][
-                        H // 2, offset : offset + 6
-                    ] = text_color(rgb)
+                    palette.canvas["fg_color"][H // 2, offset : offset + 6] = (
+                        text_color(rgb)
+                    )
                     palette.add_str(to_hex(rgb).upper(), pos=(H // 2, offset))
 
         update_palette()
