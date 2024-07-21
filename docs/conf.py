@@ -1,8 +1,10 @@
 """Sphinx documentation builder configuration."""
+
 from datetime import datetime
 
 from batgrl import __version__
 
+project = "batgrl"
 author = "salt-die"
 today = f"{datetime.now():%B %d, %Y}"
 copyright = f"{datetime.now().year}, {author}"
