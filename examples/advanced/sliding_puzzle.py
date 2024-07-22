@@ -4,7 +4,7 @@ from pathlib import Path
 from batgrl.app import run_gadget_as_app
 from batgrl.colors import ABLACK, AWHITE
 from batgrl.gadgets.graphics import Graphics
-from batgrl.gadgets.texture_tools import read_texture, resize_texture
+from batgrl.texture_tools import read_texture, resize_texture
 
 ASSETS = Path(__file__).parent.parent / "assets"
 PATH_TO_LOGO = ASSETS / "python_discord_logo.png"

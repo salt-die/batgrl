@@ -1,4 +1,5 @@
 """Tools for graphics."""
+
 from pathlib import Path
 from typing import Literal
 
@@ -6,7 +7,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from ..geometry import Point, Region, Size
+from .geometry import Point, Region, Size
 
 __all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
 

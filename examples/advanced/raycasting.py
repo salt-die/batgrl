@@ -11,10 +11,10 @@ from batgrl.app import App
 from batgrl.colors import GREEN
 from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, RgbaTexture, Sprite
 from batgrl.gadgets.text_raycaster import TextRaycaster
-from batgrl.gadgets.text_tools import cell
-from batgrl.gadgets.texture_tools import read_texture
 from batgrl.gadgets.video import Video
 from batgrl.geometry import lerp
+from batgrl.text_tools import cell
+from batgrl.texture_tools import read_texture
 
 
 def load_assets():

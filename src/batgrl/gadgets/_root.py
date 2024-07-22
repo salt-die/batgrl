@@ -9,8 +9,8 @@ if TYPE_CHECKING:
     from ..app import App
 
 from ..colors import Color
+from ..text_tools import cell
 from .gadget import Gadget, Point, Region, Size
-from .text_tools import cell
 
 
 class _Root(Gadget):

@@ -4,8 +4,8 @@ from dataclasses import fields
 
 from batgrl.app import App
 from batgrl.gadgets.text import Text
-from batgrl.gadgets.text_tools import add_text
 from batgrl.terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
+from batgrl.text_tools import add_text
 
 
 class ShowIOEvents(Text):

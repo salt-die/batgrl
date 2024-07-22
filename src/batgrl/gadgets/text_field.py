@@ -10,6 +10,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..geometry import clamp
+from ..text_tools import cell_sans
+from ..texture_tools import _composite
 from .gadget import (
     Cell,
     Gadget,
@@ -21,8 +23,6 @@ from .gadget import (
     SizeHintDict,
     cell,
 )
-from .text_tools import cell_sans
-from .texture_tools import _composite
 
 __all__ = ["TextParticleField", "particle_data_from_canvas", "Point", "Size"]
 

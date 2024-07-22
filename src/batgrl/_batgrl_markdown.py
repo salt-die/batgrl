@@ -13,12 +13,13 @@ batgrl's markdown can make text italic, bold, strikethrough, underlined, or over
 This module is adapted from `https://github.com/miyuchina/mistletoe/blob/master/mistletoe/core_tokens.py`.
 `mistletoe` is licensed under the MIT license.
 """
+
 import sys
 from string import punctuation
 from typing import Literal
 from unicodedata import category
 
-from ..geometry import clamp
+from .geometry import clamp
 
 DELIMITERS = set("*_~^")
 WHITESPACE = set(

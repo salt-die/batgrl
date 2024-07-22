@@ -8,6 +8,7 @@ from numpy.typing import NDArray
 
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, lerp_colors
 from ..terminal.events import MouseEvent
+from ..text_tools import smooth_vertical_bar
 from ._cursor import Cursor
 from .gadget import (
     Gadget,
@@ -19,7 +20,6 @@ from .gadget import (
     SizeHintDict,
 )
 from .text import Text, add_text
-from .text_tools import smooth_vertical_bar
 
 __all__ = ["Sparkline", "Point", "Size"]
 

@@ -7,10 +7,10 @@ from operator import itemgetter
 import numpy as np
 from numpy.typing import NDArray
 
-from ..colors import BLACK, WHITE, Color
-from ..geometry import Size
 from ._batgrl_markdown import find_md_tokens
 from ._char_widths import CHAR_WIDTHS
+from .colors import BLACK, WHITE, Color
+from .geometry import Size
 
 __all__ = [
     "Cell",
@@ -19,11 +19,23 @@ __all__ = [
     "binary_to_braille",
     "cell",
     "char_width",
+    "coerce_cell",
     "is_word_char",
     "smooth_horizontal_bar",
     "smooth_vertical_bar",
     "str_width",
 ]
+
+VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
+HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
+_BRAILLE_ENUM = np.array([[1, 8], [2, 16], [4, 32], [64, 128]])
+_BOX_ENUM = np.array([[1, 4], [2, 8]])
+
+_vectorized_chr = np.vectorize(chr)
+"""Vectorized `chr`."""
+
+_vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟█".__getitem__)
+"""Vectorized box enum to box char."""
 
 
 @lru_cache(maxsize=1024)
@@ -159,12 +171,9 @@ def cell(
     )
 
 
-def _coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Cell]:
+def coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Cell]:
     """
     Try to coerce a string or ``Cell`` scalar into a half-width ``Cell`` scalar.
-
-    This is an internal function for background and default character setters in App,
-    Gadget, Text, and a few other gadgets.
 
     Parameters
     ----------
@@ -366,10 +375,6 @@ def add_text(
     _write_lines_to_canvas(lines, canvas, fg_color, bg_color)
 
 
-VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
-HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
-
-
 def _smooth_bar(
     blocks: str,
     max_length: int,
@@ -469,16 +474,6 @@ def smooth_horizontal_bar(
     return _smooth_bar(HORIZONTAL_BLOCKS, max_width, proportion, offset)
 
 
-_BRAILLE_ENUM = np.array([[1, 8], [2, 16], [4, 32], [64, 128]])
-_BOX_ENUM = np.array([[1, 4], [2, 8]])
-
-vectorized_chr = np.vectorize(chr)
-"""Vectorized `chr`."""
-
-vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟█".__getitem__)
-"""Vectorized box enum to box char."""
-
-
 def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
     r"""
     Convert a (h, w, 4, 2)-shaped boolean array into a (h, w) array of braille unicode
@@ -494,7 +489,7 @@ def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
     NDArray[np.dtype("<U1")]
         A numpy array of braille unicode characters.
     """
-    return vectorized_chr(
+    return _vectorized_chr(
         np.sum(array_4x2 * _BRAILLE_ENUM, axis=(2, 3), initial=0x2800)
     )
 
@@ -514,4 +509,4 @@ def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint]) -> NDArray[np.dtype("<
     NDArray[np.dtype("<U1")]
         A numpy array of box unicode characters.
     """
-    return vectorized_box_map(np.sum(array_2x2 * _BOX_ENUM, axis=(2, 3)))
+    return _vectorized_box_map(np.sum(array_2x2 * _BOX_ENUM, axis=(2, 3)))

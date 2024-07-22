@@ -9,7 +9,7 @@ from batgrl.colors import AWHITE
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.image import Image
 from batgrl.gadgets.text import Text
-from batgrl.gadgets.texture_tools import composite
+from batgrl.texture_tools import composite
 
 from .matrix import MatrixGadget
 from .modal_screen import ModalScreen

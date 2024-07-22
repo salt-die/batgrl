@@ -7,6 +7,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
+from ..texture_tools import Interpolation, _composite, resize_texture
 from .gadget import (
     Cell,
     Gadget,
@@ -19,7 +20,6 @@ from .gadget import (
     bindable,
     clamp,
 )
-from .texture_tools import Interpolation, _composite, resize_texture
 
 __all__ = ["Graphics", "Interpolation", "Point", "Size"]
 

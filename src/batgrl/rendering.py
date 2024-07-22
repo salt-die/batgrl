@@ -3,8 +3,8 @@
 import numpy as np
 
 from .gadgets._root import _Root
-from .gadgets.text_tools import char_width
 from .terminal import Vt100Terminal
+from .text_tools import char_width
 
 
 def render_root(root: _Root, terminal: Vt100Terminal) -> None:

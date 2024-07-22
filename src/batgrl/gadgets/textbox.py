@@ -6,6 +6,7 @@ from dataclasses import astuple
 from numpy.typing import NDArray
 
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
+from ..text_tools import is_word_char, str_width
 from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
@@ -22,7 +23,6 @@ from .gadget import (
     SizeHintDict,
 )
 from .text import Text
-from .text_tools import is_word_char, str_width
 
 __all__ = ["Textbox", "Point", "Size"]
 

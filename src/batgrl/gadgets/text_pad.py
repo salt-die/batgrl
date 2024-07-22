@@ -3,6 +3,7 @@
 from dataclasses import astuple
 
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
+from ..text_tools import is_word_char, str_width
 from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
@@ -18,7 +19,6 @@ from .gadget import (
 )
 from .scroll_view import ScrollView
 from .text import Text
-from .text_tools import is_word_char, str_width
 
 __all__ = ["TextPad", "Point", "Size"]
 

@@ -9,6 +9,17 @@ from pygments.lexers import guess_lexer
 from pygments.style import Style
 
 from ..colors import Color, Neptune
+from ..text_tools import (
+    _parse_batgrl_md,
+    _text_to_cells,
+    _write_lines_to_canvas,
+    add_text,
+    cell_sans,
+    char_width,
+    coerce_cell,
+    str_width,
+)
+from ..texture_tools import _composite
 from .gadget import (
     Cell,
     Gadget,
@@ -22,17 +33,6 @@ from .gadget import (
     cell,
     clamp,
 )
-from .text_tools import (
-    _coerce_cell,
-    _parse_batgrl_md,
-    _text_to_cells,
-    _write_lines_to_canvas,
-    add_text,
-    cell_sans,
-    char_width,
-    str_width,
-)
-from .texture_tools import _composite
 
 __all__ = [
     "Text",
@@ -272,7 +272,7 @@ class Text(Gadget):
 
     @default_cell.setter
     def default_cell(self, cell_: NDArray[Cell] | str):
-        self._default_cell = _coerce_cell(cell_, cell())
+        self._default_cell = coerce_cell(cell_, cell())
 
     @property
     def default_fg_color(self) -> Color:

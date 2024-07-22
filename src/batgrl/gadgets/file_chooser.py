@@ -4,6 +4,7 @@ import platform
 from collections.abc import Callable
 from pathlib import Path
 
+from ..text_tools import str_width
 from .gadget import (
     Gadget,
     Point,
@@ -14,7 +15,6 @@ from .gadget import (
     SizeHintDict,
 )
 from .scroll_view import ScrollView
-from .text_tools import str_width
 from .tree_view import TreeView, TreeViewNode
 
 __all__ = ["FileChooser", "Point", "Size"]

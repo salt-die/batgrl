@@ -10,6 +10,7 @@ import numpy as np
 
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
+from ..text_tools import binary_to_box, binary_to_braille, str_width
 from .behaviors.movable import Movable
 from .gadget import (
     Gadget,
@@ -24,7 +25,6 @@ from .gadget import (
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, add_text, cell
-from .text_tools import binary_to_box, binary_to_braille, str_width
 
 __all__ = ["LinePlot", "Point", "Size"]
 

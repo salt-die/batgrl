@@ -1,8 +1,8 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
 
+from ...text_tools import Cell
 from ..text_field import Point, TextParticleField
-from ..text_tools import Cell
 
 
 @dataclass

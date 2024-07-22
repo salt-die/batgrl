@@ -3,6 +3,7 @@
 from numbers import Real
 
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
+from ..text_tools import add_text, smooth_vertical_bar, str_width
 from .gadget import (
     Gadget,
     Point,
@@ -16,7 +17,6 @@ from .gadget import (
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, cell
-from .text_tools import add_text, smooth_vertical_bar, str_width
 
 __all__ = ["BarChart", "Point", "Size"]
 

@@ -18,6 +18,7 @@ See Also
 - http://www.figlet.org/fontdb.cgi
 - https://github.com/salt-die/fig-fonts
 """
+
 import re
 import zipfile
 from dataclasses import dataclass, field, fields
@@ -28,7 +29,7 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadgets.text_tools import char_width, str_width
+from .text_tools import char_width, str_width
 
 __all__ = ["FullLayout", "FIGFont"]
 

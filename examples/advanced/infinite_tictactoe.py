@@ -7,7 +7,7 @@ from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.text import Text
-from batgrl.gadgets.text_tools import add_text
+from batgrl.text_tools import add_text
 
 BLUES = [Color.from_hex(hexcode) for hexcode in ["2412e8", "170b93", "09053f"]]
 REDS = [Color.from_hex(hexcode) for hexcode in ["ea1212", "930b0b", "3d0404"]]

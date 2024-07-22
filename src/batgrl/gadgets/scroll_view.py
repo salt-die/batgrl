@@ -2,6 +2,7 @@
 
 from ..colors import Color
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
+from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .gadget import (
@@ -17,7 +18,6 @@ from .gadget import (
 )
 from .pane import Pane
 from .text import Text
-from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 
 __all__ = ["ScrollView", "Point", "Size"]
 

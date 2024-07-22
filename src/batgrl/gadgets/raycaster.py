@@ -7,6 +7,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import BLACK, TRANSPARENT, AColor, Color
+from ..texture_tools import _composite
 from .graphics import (
     Graphics,
     Interpolation,
@@ -18,7 +19,6 @@ from .graphics import (
     SizeHintDict,
     clamp,
 )
-from .texture_tools import _composite
 
 __all__ = ["Raycaster", "Sprite", "RaycasterCamera", "RgbaTexture", "Point", "Size"]
 

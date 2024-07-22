@@ -6,6 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
+from ..texture_tools import read_texture, resize_texture
 from .graphics import (
     Graphics,
     Interpolation,
@@ -16,7 +17,6 @@ from .graphics import (
     SizeHint,
     SizeHintDict,
 )
-from .texture_tools import read_texture, resize_texture
 
 __all__ = ["Image", "Interpolation", "Point", "Size"]
 

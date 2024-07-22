@@ -7,8 +7,8 @@ from batgrl.app import App
 from batgrl.colors import AWHITE
 from batgrl.gadgets.graphics import Graphics, Point, Size
 from batgrl.gadgets.scroll_view import ScrollView
-from batgrl.gadgets.texture_tools import composite, read_texture
 from batgrl.terminal.events import MouseEvent
+from batgrl.texture_tools import composite, read_texture
 
 ASSETS = Path(__file__).parent.parent / "assets"
 TILES_PATH = ASSETS / "isometric_demo.png"

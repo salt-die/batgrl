@@ -3,6 +3,7 @@
 import asyncio
 from itertools import chain, cycle
 
+from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.themable import Themable
 from .gadget import (
     Gadget,
@@ -16,7 +17,6 @@ from .gadget import (
     clamp,
 )
 from .text import Text
-from .text_tools import smooth_horizontal_bar, smooth_vertical_bar
 
 __all__ = ["ProgressBar", "Point", "Size"]
 

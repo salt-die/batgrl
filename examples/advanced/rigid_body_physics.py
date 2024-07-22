@@ -3,6 +3,7 @@ A rigid body physics simulation in the terminal.
 
 Requires `pymunk`
 """
+
 import asyncio
 from math import ceil, degrees
 from pathlib import Path
@@ -15,7 +16,7 @@ from batgrl.app import App
 from batgrl.colors import AWHITE, AColor
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.image import Image
-from batgrl.gadgets.texture_tools import composite, read_texture, resize_texture
+from batgrl.texture_tools import composite, read_texture, resize_texture
 from pymunk.vec2d import Vec2d
 
 BOX_SIZE = W, H = Vec2d(9, 9)

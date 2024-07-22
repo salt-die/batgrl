@@ -17,7 +17,7 @@ from batgrl.gadgets.graphic_field import (
     particle_data_from_texture,
 )
 from batgrl.gadgets.image import Image, Size
-from batgrl.gadgets.texture_tools import read_texture, resize_texture
+from batgrl.texture_tools import read_texture, resize_texture
 
 LOGO_SIZE = Size(36, 36)
 POWER = 2

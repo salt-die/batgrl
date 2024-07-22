@@ -10,6 +10,7 @@ import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured
 from numpy.typing import NDArray
 
+from ..texture_tools import _composite
 from .gadget import (
     Cell,
     Gadget,
@@ -22,7 +23,6 @@ from .gadget import (
     bindable,
     clamp,
 )
-from .texture_tools import _composite
 
 __all__ = ["GraphicParticleField", "particle_data_from_texture", "Point", "Size"]
 

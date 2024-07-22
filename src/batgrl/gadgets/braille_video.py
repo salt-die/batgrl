@@ -12,6 +12,7 @@ import numpy as np
 
 from ..colors import BLACK, WHITE, Color
 from ..geometry import lerp
+from ..text_tools import binary_to_braille
 from .gadget import (
     Gadget,
     Point,
@@ -22,7 +23,6 @@ from .gadget import (
     SizeHintDict,
 )
 from .text import Text
-from .text_tools import binary_to_braille
 
 __all__ = ["BrailleVideo", "Point", "Size"]
 

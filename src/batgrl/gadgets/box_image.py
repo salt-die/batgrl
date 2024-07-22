@@ -5,6 +5,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from ..text_tools import binary_to_box
 from .gadget import (
     Gadget,
     Point,
@@ -15,7 +16,6 @@ from .gadget import (
     SizeHintDict,
 )
 from .text import Text
-from .text_tools import binary_to_box
 
 __all__ = ["BoxImage", "Point", "Size"]
 

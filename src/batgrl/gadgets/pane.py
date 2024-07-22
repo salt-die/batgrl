@@ -3,6 +3,7 @@
 from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
+from ..texture_tools import _composite
 from .gadget import (
     Cell,
     Gadget,
@@ -15,7 +16,6 @@ from .gadget import (
     bindable,
     clamp,
 )
-from .texture_tools import _composite
 
 __all__ = ["Pane", "Point", "Size"]
 
