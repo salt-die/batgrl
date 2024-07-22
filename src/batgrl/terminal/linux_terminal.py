@@ -40,7 +40,7 @@ class LinuxTerminal(Vt100Terminal):
                 reads.append(read)
 
         data = b"".join(reads).decode(errors="surrogateescape")
-        self.feed(data)
+        self._feed(data)
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
@@ -64,7 +64,10 @@ class LinuxTerminal(Vt100Terminal):
         """
         Start generating events from stdin.
 
-        ``event_handler`` will be called with generated events.
+        Parameters
+        ----------
+        event_handler : Callable[[list[Event]], None]
+            Callable that handles input events.
         """
         self._event_buffer.clear()
         self._event_handler = event_handler

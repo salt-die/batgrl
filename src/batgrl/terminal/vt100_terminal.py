@@ -94,12 +94,12 @@ class Vt100Terminal(ABC):
         """Timeout handle for executing escape buffer."""
         self._expect_device_status_report: bool = False
         """Whether input parser should expect a device status report."""
+        self._last_drs_request_time: float = monotonic()
+        """When the last device status report was requested."""
         self._last_y: int = 0
         """Last mouse y-coordinate."""
         self._last_x: int = 0
         """Laste mouse x-coordinate."""
-        self._last_drs_request_time: float = monotonic()
-        """When the last device status report was requested."""
         self._event_handler: Callable[[list[Event]], None] | None = None
 
     @abstractmethod
@@ -119,7 +119,10 @@ class Vt100Terminal(ABC):
         """
         Start generating events from stdin.
 
-        ``event_handler`` will be called with generated events.
+        Parameters
+        ----------
+        event_handler : Callable[[list[Event]], None]
+            Callable that handles input events.
         """
 
     @abstractmethod
@@ -137,7 +140,7 @@ class Vt100Terminal(ABC):
         cols, rows = os.get_terminal_size()
         return Size(rows, cols)
 
-    def feed(self, data: str) -> None:
+    def _feed(self, data: str) -> None:
         """Generate events from terminal input data."""
         if self._reset_timer_handle is not None:
             self._reset_timer_handle.cancel()
@@ -379,7 +382,11 @@ class Vt100Terminal(ABC):
         """
         Move cursor to ``pos``.
 
-        If not given, ``pos`` defaults to last reported cursor position.
+        Parameters
+        ----------
+        pos : Point | None, default: None
+            Cursor's new position. If not given, cursor is moved to last reported cursor
+            position.
         """
         if pos is None:
             y, x = self.last_cursor_position_response
@@ -389,10 +396,14 @@ class Vt100Terminal(ABC):
 
     def erase_in_display(self, n: Literal[0, 1, 2, 3] = 0):
         """
-        Clear part of screen.
+        Clear part of the screen.
 
-        If n is ``0``, clear from cursor to end of screen. If n is ``1``, clear from
-        cursor to beginning of the screen. If n is ``2``, clear entire screen. If n is
-        ``3``, clear entire screen and delete all lines in scrollback buffer.
+        Parameters
+        ----------
+        n : int, default: 0
+            Determines which part of the screen to clear. If n is ``0``, clear from
+            cursor to end of the screen. If n is ``1``, clear from cursor to beginning
+            of the screen. If n is ``2``, clear entire screen. If n is ``3``, clear
+            entire screen and delete all lines in scrollback buffer.
         """
         self._out_buffer.append(f"\x1b[{n}J")
