@@ -8,8 +8,6 @@ from typing import Final
 
 from ..geometry import Size
 from .events import Event, ResizeEvent
-
-# from .vt100_terminal import Vt100Terminal
 from .vt100_terminal import Vt100Terminal
 
 STDIN = windll.kernel32.GetStdHandle(DWORD(-10))
