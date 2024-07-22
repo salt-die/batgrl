@@ -185,6 +185,7 @@ class Vt100Terminal(ABC):
         elif self._state is ParserState.ESCAPE:
             if char == "\x1b":
                 self._execute()
+                self._escape_buffer = StringIO()
                 self._escape_buffer.write("\x1b")
                 self._state = ParserState.ESCAPE
             elif 1 <= ord(char) < 26:
