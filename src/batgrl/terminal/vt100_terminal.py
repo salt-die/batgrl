@@ -75,12 +75,21 @@ class Vt100Terminal(ABC):
         """Whether the alternate screen buffer is enabled."""
         self.last_cursor_position_response: Point = Point(0, 0)
         """Last reported cursor position."""
-        self._state: ParserState = ParserState.GROUND
-        """State of VT100 input parser."""
+
         self._escape_buffer: StringIO | None = None
         """Escape sequence buffer."""
         self._paste_buffer: StringIO | None = None
         """Paste buffer."""
+        self._event_buffer: list[Event] = []
+        """Events generated during input parsing."""
+        self._out_buffer: list[str] = []
+        """
+        Output buffer.
+
+        Escapes for stdout are collected here before ``flush()`` is called.
+        """
+        self._state: ParserState = ParserState.GROUND
+        """State of VT100 input parser."""
         self._reset_timer_handle: asyncio.TimerHandle | None = None
         """Timeout handle for executing escape buffer."""
         self._expect_device_status_report: bool = False
@@ -89,21 +98,13 @@ class Vt100Terminal(ABC):
         """Last mouse y-coordinate."""
         self._last_x: int = 0
         """Laste mouse x-coordinate."""
-        self._events: list[Event] = []
-        """Events generated during input parsing."""
         self._last_drs_request_time: float = monotonic()
         """When the last device status report was requested."""
-        self._out_buffer: list[str] = []
-        """
-        Output buffer.
-
-        Escapes for stdout are collected here before ``flush()`` is called.
-        """
-        self._event_dispatcher: Callable[[list[Event]], None] | None = None
+        self._event_handler: Callable[[list[Event]], None] | None = None
 
     @abstractmethod
-    def events(self) -> list[Event]:
-        """Return events from VT100 input stream."""
+    def process_stdin(self) -> None:
+        """Read from stdin and feed data into input parser to generate events."""
 
     @abstractmethod
     def raw_mode(self) -> None:
@@ -114,12 +115,22 @@ class Vt100Terminal(ABC):
         """Restore console to its original mode."""
 
     @abstractmethod
-    def attach(self, dispatch_events: Callable[[list[Event]], None]) -> None:
-        """Dispatch events through ``dispatch_events`` whenever stdin has data."""
+    def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
+        """
+        Start generating events from stdin.
+
+        ``event_handler`` will be called with generated events.
+        """
 
     @abstractmethod
     def unattach(self) -> None:
-        """Stop dispatching input events."""
+        """Stop generating events from stdin."""
+
+    def events(self) -> list[Event]:
+        """Return a list of input events and reset the event buffer."""
+        events = self._event_buffer
+        self._event_buffer = []
+        return events
 
     def get_size(self) -> Size:
         """Get terminal size."""
@@ -157,7 +168,7 @@ class Vt100Terminal(ABC):
             if char == "~":
                 paste = self._paste_buffer.getvalue()
                 if paste.endswith(BRACKETED_PASTE_END):
-                    self._events.append(PasteEvent(paste[:-6]))
+                    self._event_buffer.append(PasteEvent(paste[:-6]))
                     self._paste_buffer = None
                     self._state = ParserState.GROUND
         elif self._state is ParserState.GROUND:
@@ -170,7 +181,7 @@ class Vt100Terminal(ABC):
                 self._escape_buffer.write(char)
                 self._execute()
             else:
-                self._events.append(KeyEvent(char))
+                self._event_buffer.append(KeyEvent(char))
         elif self._state is ParserState.ESCAPE:
             if char == "\x1b":
                 self._execute()
@@ -216,7 +227,7 @@ class Vt100Terminal(ABC):
                 self._expect_device_status_report = False
                 y, x = cpr_match.groups()
                 self.last_cursor_position_response = Point(int(y) - 1, int(x) - 1)
-                self._events.append(
+                self._event_buffer.append(
                     CursorPositionResponseEvent(self.last_cursor_position_response)
                 )
                 return
@@ -225,9 +236,9 @@ class Vt100Terminal(ABC):
             self._state = ParserState.PASTE
             self._paste_buffer = StringIO(newline=None)
         elif escape == FOCUS_IN:
-            self._events.append(FocusEvent("in"))
+            self._event_buffer.append(FocusEvent("in"))
         elif escape == FOCUS_OUT:
-            self._events.append(FocusEvent("out"))
+            self._event_buffer.append(FocusEvent("out"))
         elif sgr_match := MOUSE_SGR_RE.match(escape):
             info = int(sgr_match[1])
             y = int(sgr_match[3]) - 1
@@ -254,15 +265,15 @@ class Vt100Terminal(ABC):
             alt = bool(info & 8)
             ctrl = bool(info & 16)
 
-            self._events.append(
+            self._event_buffer.append(
                 MouseEvent(Point(y, x), button, event_type, alt, ctrl, shift, dy, dx)
             )
         elif escape in ANSI_ESCAPES:
-            self._events.append(KeyEvent(*ANSI_ESCAPES[escape]))
+            self._event_buffer.append(KeyEvent(*ANSI_ESCAPES[escape]))
         elif len(escape) == 2 and 32 <= ord(escape[1]) <= 126:
-            self._events.append(KeyEvent(escape[1], alt=True))
+            self._event_buffer.append(KeyEvent(escape[1], alt=True))
         else:
-            self._events.append(UnknownEscapeSequence(escape))
+            self._event_buffer.append(UnknownEscapeSequence(escape))
 
     def _reset_escape(self):
         """Execute escape buffer after a timeout period."""
@@ -278,15 +289,13 @@ class Vt100Terminal(ABC):
                 ending = paste[partial_escape_index:]
                 if BRACKETED_PASTE_END[: len(ending)] == ending:
                     paste = paste[:partial_escape_index]
-            self._events.append(PasteEvent(paste))
+            self._event_buffer.append(PasteEvent(paste))
             self._paste_buffer = None
         else:
             self._execute()
 
-        if self._event_dispatcher is not None:
-            events = self._events
-            self._events = []
-            self._event_dispatcher(events)
+        if self._event_handler is not None:
+            self._event_handler(self.events())
 
     def flush(self):
         """Write buffer to output stream and flush."""

@@ -301,8 +301,8 @@ class App(ABC):
             last_mouse_nclicks = mouse_event.nclicks
             last_mouse_time = current_time
 
-        def dispatch_events(events: list[Event]) -> None:
-            """Dispatch input events."""
+        def event_handler(events: list[Event]) -> None:
+            """Handle input events."""
             for event in events:
                 if isinstance(event, KeyEvent):
                     if (
@@ -357,7 +357,7 @@ class App(ABC):
                 render_root(root, terminal)
                 await asyncio.sleep(self.render_interval)
 
-        with app_mode(terminal, dispatch_events):
+        with app_mode(terminal, event_handler):
             terminal.request_cursor_position_report()
             if self.title:
                 terminal.set_title(self.title)

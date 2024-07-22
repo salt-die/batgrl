@@ -28,8 +28,8 @@ class LinuxTerminal(Vt100Terminal):
         Last reported cursor position.
     """
 
-    def events(self) -> list[Event]:
-        """Return events from VT100 input stream."""
+    def process_stdin(self) -> None:
+        """Read from stdin and feed data into input parser to generate events."""
         reads = []
         while select.select([STDIN], [], [], 0)[0]:
             try:
@@ -41,10 +41,6 @@ class LinuxTerminal(Vt100Terminal):
 
         data = b"".join(reads).decode(errors="surrogateescape")
         self.feed(data)
-
-        events = self._events
-        self._events = []
-        return events
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
@@ -64,26 +60,31 @@ class LinuxTerminal(Vt100Terminal):
         termios.tcsetattr(STDIN, termios.TCSANOW, self._original_mode)
         del self._original_mode
 
-    def attach(self, dispatch_events: Callable[[list[Event]], None]) -> None:
-        """Dispatch events through ``dispatch_events`` whenever stdin has data."""
-        self._event_dispatcher = dispatch_events
-        self._events.clear()
+    def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
+        """
+        Start generating events from stdin.
+
+        ``event_handler`` will be called with generated events.
+        """
+        self._event_buffer.clear()
+        self._event_handler = event_handler
 
         def process():
-            dispatch_events(self.events())
+            self.process_stdin()
+            event_handler(self.events())
 
         loop = asyncio.get_running_loop()
         loop.add_reader(STDIN, process)
 
         def on_resize(*_):
-            self._events.append(ResizeEvent(self.get_size()))
+            self._event_buffer.append(ResizeEvent(self.get_size()))
             loop.call_soon_threadsafe(process)
 
         signal.signal(signal.SIGWINCH, on_resize)
 
     def unattach(self) -> None:
-        """Stop dispatching input events."""
-        self._event_dispatcher = None
+        """Stop generating events from stdin."""
+        self._event_handler = None
         loop = asyncio.get_running_loop()
         loop.remove_reader(STDIN)
         signal.signal(signal.SIGWINCH, signal.SIG_DFL)

@@ -43,7 +43,7 @@ def get_platform_terminal() -> Vt100Terminal:
 @contextmanager
 def app_mode(
     terminal: Vt100Terminal,
-    dispatch_events: Callable[[list[Event]], None],
+    event_handler: Callable[[list[Event]], None],
 ) -> ContextManager[None]:
     """
     Put terminal into app mode and dispatch input events.
@@ -52,12 +52,12 @@ def app_mode(
     ----------
     terminal : Vt100Terminal
         Terminal to put in app mode.
-    dispatch_events : Callable[[list[Event]], None]
-        A callable that dispatches terminal input events.
+    event_handler : Callable[[list[Event]], None]
+        A callable that handles terminal input events.
     """
     try:
         terminal.raw_mode()
-        terminal.attach(dispatch_events)
+        terminal.attach(event_handler)
         terminal.enable_mouse_support()
         terminal.enable_bracketed_paste()
         terminal.enable_reporting_focus()

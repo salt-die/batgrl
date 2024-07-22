@@ -161,15 +161,8 @@ class WindowsTerminal(Vt100Terminal):
         Last reported cursor position.
     """
 
-    def _purge(self, reads: list[str]):
-        data = (
-            "".join(reads).encode("utf-16", "surrogatepass").decode("utf-16")
-        )  # Merge surrogate pairs.
-        reads.clear()
-        self.feed(data)
-
-    def events(self) -> list[Event]:
-        """Return events from VT100 input stream."""
+    def process_stdin(self) -> None:
+        """Read from stdin and feed data into input parser to generate events."""
         nevents = DWORD()
         windll.kernel32.GetNumberOfConsoleInputEvents(STDIN, byref(nevents))
         InputRecordArray = INPUT_RECORD * nevents.value
@@ -181,18 +174,23 @@ class WindowsTerminal(Vt100Terminal):
         for input_record in input_records:
             if input_record.EventType == KEY_EVENT:
                 key_event = input_record.Event.KeyEvent
-                if key_event.KeyDown:
-                    if key_event.ControlKeyState != 0 and key_event.VirtualKeyCode == 0:
-                        continue
-                    chars.append(key_event.uChar.UnicodeChar)
+                if not key_event.KeyDown:
+                    continue
+                if key_event.ControlKeyState and not key_event.VirtualKeyCode:
+                    continue
+                chars.append(key_event.uChar.UnicodeChar)
             elif input_record.EventType == WINDOW_BUFFER_SIZE_EVENT:
                 self._purge(chars)
                 size = input_record.Event.WindowBufferSizeEvent.Size
-                self._events.append(ResizeEvent(Size(size.Y, size.X)))
+                self._event_buffer.append(ResizeEvent(Size(size.Y, size.X)))
         self._purge(chars)
-        events = self._events
-        self._events = []
-        return events
+
+    def _purge(self, chars: list[str]):
+        data = (
+            "".join(chars).encode("utf-16", "surrogatepass").decode("utf-16")
+        )  # Merge surrogate pairs.
+        chars.clear()
+        self.feed(data)
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
@@ -212,10 +210,14 @@ class WindowsTerminal(Vt100Terminal):
         windll.kernel32.SetConsoleMode(STDOUT, self._original_output_mode)
         del self._original_input_mode, self._original_output_mode
 
-    def attach(self, dispatch_events: Callable[[list[Event]], None]) -> None:
-        """Dispatch events through ``dispatch_events`` whenever stdin has data."""
-        self._event_dispatcher = dispatch_events
-        self._events.clear()
+    def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
+        """
+        Start generating events from stdin.
+
+        ``event_handler`` will be called with generated events.
+        """
+        self._event_buffer.clear()
+        self._event_handler = event_handler
         loop = asyncio.get_running_loop()
         wait_for = windll.kernel32.WaitForMultipleObjects
         self._remove_event = HANDLE(
@@ -227,7 +229,8 @@ class WindowsTerminal(Vt100Terminal):
 
         def ready():
             try:
-                dispatch_events(self.events())
+                self.process_stdin()
+                event_handler(self.events())
             finally:
                 loop.run_in_executor(None, wait)
 
@@ -241,8 +244,8 @@ class WindowsTerminal(Vt100Terminal):
         loop.run_in_executor(None, wait)
 
     def unattach(self) -> None:
-        """Stop dispatching input events."""
-        self._event_dispatcher = None
+        """Stop generating events from stdin."""
+        self._event_handler = None
         windll.kernel32.SetEvent(self._remove_event)
 
 
