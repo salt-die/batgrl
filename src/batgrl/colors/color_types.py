@@ -1,4 +1,5 @@
 """Color data structures."""
+
 import re
 from typing import NamedTuple, TypedDict
 
@@ -101,7 +102,7 @@ class AColor(NamedTuple):
         The green component.
     blue : int
         The blue component.
-    alpha : int
+    alpha : int, default: 255
         The alpha component.
 
     Attributes

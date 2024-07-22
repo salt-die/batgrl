@@ -11,7 +11,7 @@ from pathlib import Path
 from random import choice
 
 from batgrl.app import App
-from batgrl.colors import ARED, AWHITE, AColor, gradient, rainbow_gradient
+from batgrl.colors import ARED, AWHITE, gradient, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.video import Video
 
@@ -21,7 +21,7 @@ HEIGHT, WIDTH = 20, 20
 SNAKE_START = HEIGHT // 2, WIDTH // 2
 SNAKE_START_2 = HEIGHT // 2 + 1, WIDTH // 2
 TICK_DURATION = 0.12
-RAINBOW_GRADIENT = rainbow_gradient(40, color_type=AColor)
+RAINBOW_GRADIENT = rainbow_gradient(40, alpha=255)
 APPLE_GRADIENT = cycle(gradient(ARED, AWHITE, 5) + gradient(AWHITE, ARED, 20))
 
 

@@ -1,98 +1,95 @@
 """Functions for blending colors and creating color gradients."""
+
 from math import sin, tau
 
 from ..geometry import lerp
-from .color_types import Color
+from .color_types import AColor, Color
 
 __all__ = ["darken_only", "lighten_only", "lerp_colors", "gradient", "rainbow_gradient"]
 
+type SomeColor = AColor | Color | tuple[int, ...]
 
-def darken_only(a: tuple, b: tuple) -> tuple:
+
+def darken_only(a: Color, b: Color) -> Color:
     """
     Return a color that is the minimum of each channel in `a` and `b`.
 
     Parameters
     ----------
-    a : tuple
+    a : Color
         A color.
-    b : tuple
+    b : Color
         A color.
 
     Returns
     -------
-    tuple
+    Color
         A color with smallest components of `a` and `b`.
     """
     color = (min(c1, c2) for c1, c2 in zip(a, b))
-    if hasattr(a, "_fields"):  # NamedTuple
-        return type(a)(*color)
-    return tuple(color)
+    return Color(*color)
 
 
-def lighten_only(a: tuple, b: tuple) -> tuple:
+def lighten_only(a: Color, b: Color) -> Color:
     """
     Return a color that is the maximum of each channel in `a` and `b`.
 
     Parameters
     ----------
-    a : tuple
+    a : Color
         A color.
-    b : tuple
+    b : Color
         A color.
 
     Returns
     -------
-    tuple
+    Color
         A color with largest components of `a` and `b`.
     """
     color = (max(c1, c2) for c1, c2 in zip(a, b))
-    if hasattr(a, "_fields"):  # NamedTuple
-        return type(a)(*color)
-    return tuple(color)
+    return Color(*color)
 
 
-def lerp_colors(a: tuple, b: tuple, p: float) -> tuple:
+def lerp_colors(a: SomeColor, b: SomeColor, p: float) -> SomeColor:
     """
     Linear interpolation from `a` to `b` with proportion `p`.
 
-    If `a` is a named tuple the return type will be the same type.
-
     Parameters
     ----------
-    a : tuple
+    a : SomeColor
         A color.
-    b : tuple
+    b : SomeColor
         A color.
     p : float
         Proportion from a to b.
 
     Returns
     -------
-    tuple
+    SomeColor
         The linear interpolation of `a` and `b`.
     """
     color = (round(lerp(c1, c2, p)) for c1, c2 in zip(a, b))
-    if hasattr(a, "_fields"):  # NamedTuple
+    if isinstance(a, (Color, AColor)):
         return type(a)(*color)
     return tuple(color)
 
 
-def gradient(start: tuple, end: tuple, ncolors: int) -> list[tuple]:
+def gradient(start: SomeColor, end: SomeColor, ncolors: int) -> list[SomeColor]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
 
     Parameters
     ----------
-    start : tuple
+    start : SomeColor
         Start color of gradient.
-    end : tuple
+    end : SomeColor
         End color of gradient.
     ncolors : int
         Number of colors in gradient.
 
     Returns
     -------
-    list[tuple]
+    list[SomeColor]
         A gradient of colors from `start` to `end`.
     """
     if ncolors < 2:
@@ -101,20 +98,21 @@ def gradient(start: tuple, end: tuple, ncolors: int) -> list[tuple]:
     return [lerp_colors(start, end, i / (ncolors - 1)) for i in range(ncolors)]
 
 
-def rainbow_gradient(n: int, *, color_type: type[tuple] = Color) -> list[tuple]:
+def rainbow_gradient(n: int, *, alpha: int | None = None) -> list[Color | AColor]:
     """
-    Return a rainbow gradient of `n` colors.
+    Return a rainbow gradient of ``n`` colors.
 
     Parameters
     ----------
     n : int
         Number of colors in gradient.
-    color_type : tuple, default: Color
-        Color type of gradient.
+    alpha : int | None, default: None
+        If ``alpha`` is not given, gradient colors will have no alpha channel.
+        Otherwise, the color's alpha channel is given by ``alpha``.
 
     Returns
     -------
-    list[tuple]
+    list[Color | AColor]
         A rainbow gradient of colors.
     """
     theta = tau / n
@@ -123,6 +121,7 @@ def rainbow_gradient(n: int, *, color_type: type[tuple] = Color) -> list[tuple]:
     def color(i):
         return (int(sin(i * theta + offset) * 127 + 128) for offset in offsets)
 
-    if hasattr(color_type, "_fields"):
-        return [color_type(*color(i)) for i in range(n)]
-    return [color_type(color(i)) for i in range(n)]
+    if alpha is None:
+        return [Color(*color(i)) for i in range(n)]
+
+    return [AColor(*color(i), alpha) for i in range(n)]

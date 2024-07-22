@@ -10,7 +10,7 @@ from itertools import cycle
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import ABLACK, DEFAULT_PRIMARY_BG, AColor, rainbow_gradient
+from batgrl.colors import ABLACK, DEFAULT_PRIMARY_BG, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics
 from batgrl.terminal.events import MouseEvent
 from scipy.ndimage import convolve, map_coordinates
@@ -36,7 +36,7 @@ POKE_RADIUS = 3.0
 DISSIPATION = 0.99
 PRESSURE = 0.1
 PRESSURE_ITERATIONS = 10
-RAINBOW_COLORS = cycle(rainbow_gradient(100, color_type=AColor))
+RAINBOW_COLORS = cycle(rainbow_gradient(100, alpha=255))
 EPSILON = np.finfo(float).eps
 
 
