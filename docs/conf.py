@@ -33,10 +33,10 @@ html_theme_options = {
 }
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 numpydoc_show_inherited_class_members = {
-    "batgrl.colors.Color": False,
-    "batgrl.colors.AColor": False,
-    "batgrl.colors.ColorPair": False,
-    "batgrl.colors.ColorTheme": False,
+    "batgrl.colors.color_types.Color": False,
+    "batgrl.colors.color_types.AColor": False,
+    "batgrl.colors.color_types.ColorPair": False,
+    "batgrl.colors.color_types.ColorTheme": False,
     "batgrl.gadgets.gadget.PosHintDict": False,
     "batgrl.gadgets.gadget.SizeHintDict": False,
     "batgrl.geometry.Point": False,
