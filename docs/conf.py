@@ -1,5 +1,6 @@
 """Sphinx documentation builder configuration."""
 
+import builtins
 from datetime import datetime
 
 from batgrl import __version__
@@ -38,3 +39,17 @@ html_theme_options = {
 }
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+
+def skip_builtin_methods(app, what, name, obj, skip, options):  # noqa: D103
+    if what == "method":
+        try:
+            obj.__objclass__
+        except:  # noqa: E722
+            pass
+        else:
+            return bool(getattr(builtins, obj.__objclass__.__name__, False))
+
+
+def setup(sphinx):  # noqa: D103
+    sphinx.connect("autoapi-skip-member", skip_builtin_methods)
