@@ -47,6 +47,8 @@ numpydoc_show_inherited_class_members = {
 
 def skip_builtin_methods(app, what, name, obj, skip, options):
     """Skip documentation of builtin methods."""
+    if what != "method":
+        return skip
     try:
         obj.__objclass__
     except AttributeError:
