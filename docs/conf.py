@@ -16,7 +16,7 @@ extensions = [
     "numpydoc",
 ]
 
-autosummary_generate = True
+autosummary_generate = False
 
 autodoc_default_options = {
     "members": True,
@@ -46,7 +46,6 @@ def skip_builtin_methods(app, what, name, obj, skip, options):  # noqa: D103
     except:  # noqa: E722
         pass
     else:
-        print(obj)
         return True
 
 
