@@ -16,13 +16,13 @@ extensions = [
     "numpydoc",
 ]
 
-autosummary_generate = False
+autosummary_generate = True
 
 autodoc_default_options = {
     "members": True,
     "show-inheritance": True,
     "undoc-members": True,
-    "inherited-members": True,
+    "inherited-members": False,
     "ignore-module-all": True,
 }
 
