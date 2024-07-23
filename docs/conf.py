@@ -52,4 +52,4 @@ def skip_builtin_methods(app, what, name, obj, skip, options):  # noqa: D103
 
 
 def setup(sphinx):  # noqa: D103
-    sphinx.connect("autoapi-skip-member", skip_builtin_methods)
+    sphinx.connect("autodoc-skip-member", skip_builtin_methods)
