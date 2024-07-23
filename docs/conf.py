@@ -32,14 +32,25 @@ html_theme_options = {
     "show_prev_next": False,
 }
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-numpydoc_show_inherited_class_members = {"batgrl.figfont.FullLayout": False}
+numpydoc_show_inherited_class_members = {
+    "batgrl.colors.Color": False,
+    "batgrl.colors.AColor": False,
+    "batgrl.colors.ColorPair": False,
+    "batgrl.colors.ColorTheme": False,
+    "batgrl.gadgets.gadget.PosHintDict": False,
+    "batgrl.gadgets.gadget.SizeHintDict": False,
+    "batgrl.geometry.Point": False,
+    "batgrl.geometry.Size": False,
+    "batgrl.figfont.FullLayout": False,
+}
 
 
-def skip_builtin_methods(app, what, name, obj, skip, options):  # noqa: D103
+def skip_builtin_methods(app, what, name, obj, skip, options):
+    """Skip documentation of builtin methods."""
     try:
         obj.__objclass__
-    except:  # noqa: E722
-        return skip
+    except AttributeError:
+        return "built-in method" in repr(obj) or skip
     else:
         return True
 

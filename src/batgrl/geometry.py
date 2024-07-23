@@ -125,13 +125,6 @@ class Point(NamedTuple):
         Y-coordinate of point.
     x : int
         X-coordinate of point.
-
-    Methods
-    -------
-    count(value)
-        Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807)
-        Return first index of value.
     """
 
     y: int
@@ -176,13 +169,6 @@ class Size(NamedTuple):
         Alias for width.
     center : Point
         Center of area.
-
-    Methods
-    -------
-    count(value)
-        Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807)
-        Return first index of value.
     """
 
     height: int

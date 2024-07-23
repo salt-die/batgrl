@@ -39,17 +39,6 @@ class Color(NamedTuple):
         The green component.
     blue : int
         The blue component.
-
-    Methods
-    -------
-    from_hex(hexcode)
-        Create a :class:`Color` from a hex code.
-    to_hex()
-        Return color's hexcode.
-    count(value)
-        Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807)
-        Return first index of value.
     """
 
     red: int
@@ -115,17 +104,6 @@ class AColor(NamedTuple):
         The blue component.
     alpha : int
         The alpha component.
-
-    Methods
-    -------
-    from_hex(hexcode)
-        Create an :class:`AColor` from a hex code.
-    to_hex()
-        Return color's hexcode.
-    count(value)
-        Return number of occurrences of value.
-    index(value, start=0, stop=9223372036854775807)
-        Return first index of value.
     """
 
     red: int
@@ -173,90 +151,14 @@ class AColor(NamedTuple):
 
 
 class ColorPair(TypedDict):
-    """
-    A foreground and background hexcode.
-
-    Methods
-    -------
-    clear()
-        Remove all items from the dictionary.
-    copy()
-        Return a shallow copy of the dictionary.
-    fromkeys(iterable, value=None)
-        Create a new dictionary with keys from iterable and values set to value.
-    get(key, default=None)
-        Return the value for key if key is in the dictionary, else default. If default
-        is not given, it defaults to None, so that this method never raises a KeyError.
-    items()
-        Return a new view of the dictionary’s items ((key, value) pairs). See the
-        documentation of view objects.
-    keys()
-        Return a new view of the dictionary’s keys. See the documentation of view
-        objects.
-    pop(...)
-        If key is in the dictionary, remove it and return its value, else return
-        default. If default is not given and key is not in the dictionary, a KeyError is
-        raised.
-    popitem()
-        Remove and return a (key, value) pair from the dictionary. Pairs are returned in
-        LIFO order. popitem() is useful to destructively iterate over a dictionary, as
-        often used in set algorithms. If the dictionary is empty, calling popitem()
-        raises a KeyError.
-    setdefault(key, default=None)
-        If key is in the dictionary, return its value. If not, insert key with a value
-        of default and return default. default defaults to None.
-    update(...)
-        Update the dictionary with the key/value pairs from other, overwriting existing
-        keys. Return None.
-    values()
-        Return a new view of the dictionary’s values. See the documentation of view
-        objects.
-    """
+    """A foreground and background hexcode."""
 
     fg: str
     bg: str
 
 
 class ColorTheme(TypedDict, total=False):
-    """
-    Colors for themable gadgets.
-
-    Methods
-    -------
-    clear()
-        Remove all items from the dictionary.
-    copy()
-        Return a shallow copy of the dictionary.
-    fromkeys(iterable, value=None)
-        Create a new dictionary with keys from iterable and values set to value.
-    get(key, default=None)
-        Return the value for key if key is in the dictionary, else default. If default
-        is not given, it defaults to None, so that this method never raises a KeyError.
-    items()
-        Return a new view of the dictionary’s items ((key, value) pairs). See the
-        documentation of view objects.
-    keys()
-        Return a new view of the dictionary’s keys. See the documentation of view
-        objects.
-    pop(...)
-        If key is in the dictionary, remove it and return its value, else return
-        default. If default is not given and key is not in the dictionary, a KeyError is
-        raised.
-    popitem()
-        Remove and return a (key, value) pair from the dictionary. Pairs are returned in
-        LIFO order. popitem() is useful to destructively iterate over a dictionary, as
-        often used in set algorithms. If the dictionary is empty, calling popitem()
-        raises a KeyError.
-    setdefault(key, default=None)
-        If key is in the dictionary, return its value. If not, insert key with a value
-        of default and return default. default defaults to None.
-    update(...)
-        Update the dictionary with the key/value pairs from other, overwriting existing
-        keys. Return None.
-    values()
-        Return a new view of the dictionary’s values. See the documentation of view
-        objects.
-    """
+    """Colors for themable gadgets."""
 
     primary: ColorPair
     text_pad_line_highlight: ColorPair
