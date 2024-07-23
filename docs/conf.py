@@ -9,7 +9,6 @@ author = "salt-die"
 today = f"{datetime.now():%B %d, %Y}"
 copyright = f"{datetime.now().year}, {author}"
 release = __version__
-
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -34,3 +33,16 @@ html_theme_options = {
 }
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 numpydoc_show_inherited_class_members = {"batgrl.figfont.FullLayout": False}
+
+
+def skip_builtin_methods(app, what, name, obj, skip, options):  # noqa: D103
+    try:
+        obj.__objclass__
+    except:  # noqa: E722
+        return skip
+    else:
+        return True
+
+
+def setup(sphinx):  # noqa: D103
+    sphinx.connect("autodoc-skip-member", skip_builtin_methods)
