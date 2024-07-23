@@ -41,31 +41,30 @@ class FullLayout(IntFlag):
     The layout modes are:
 
     * **FullWidth**: Each character occupies the full width or height of its arrangement
-    of sub-characters.
+      of sub-characters.
     * **Kerning**: Each character is moved together until they touch.
     * **Smushing**: Each character is moved one step closer after they touch, so that
-    they overlap. Additional smushing rules determine which sub-character is used for
-    each overlap.
+      they overlap. Additional smushing rules determine which sub-character is used for
+      each overlap.
 
     There are two types of smushing:
 
     * **Universal**: The sub-character from the earlier character is replaced by the
-    sub-character from the later character. (This behavior can be reversed with
-    `reverse_universal_smush`)
+      sub-character from the later character. (This behavior can be reversed with
+      `reverse_universal_smush`)
     * **Controlled**: Uses a set of smushing rules.
 
     The controlled smushing rules are:
 
     * **Equal**: Two sub-characters are smushed into a single sub-character if they are
-    equal (except for hardblanks).
+      equal (except for hardblanks).
     * **Underscore**: An underscore (`"_"`) will be replaced by any of: `"|"`, `"/"`,
-    `"\"`, `"["`, `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
+      `"\"`, `"["`, `"]"`, `"{"`, `"}"`, `"("`, `")"`, `"<"`, `">"`.
     * **Hierarchy**: A hierarchy of six classes is used: `"|"`, `"/\"`, `"[]"`, `"{}"`,
-    `"()"`, and `"<>"`. When two sub-characters are from different classes, the latter
-    class will be used.
+      `"()"`, and `"<>"`. When two sub-characters are from different classes, the
+      latter class will be used.
     * **Pair**: Replaces opposite brackets (`"[]"` or `"]["`), braces (`"{}"` or
-    `"}{"`),
-    and parentheses (`"()"` or `")("`) with a vertical bar (`"|"`).
+      `"}{"`), and parentheses (`"()"` or `")("`) with a vertical bar (`"|"`).
     * **BigX**: Replaces `"/\"` with `"|"`, `"\/"` with `"Y"`, and `"><"` into `"X"`.
     * **HardBlank**: Two hardblanks will be replaced with a single hardblank.
     """
