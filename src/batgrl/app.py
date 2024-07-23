@@ -7,7 +7,7 @@ from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from time import monotonic
-from typing import Literal
+from typing import Any, Literal
 
 from .colors import BLACK, DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
@@ -89,7 +89,7 @@ class App(ABC):
         Coroutine scheduled when app is run.
     run()
         Run the app.
-    exit()
+    exit(exit_value)
         Exit the app.
     add_gadget(gadget)
         Alias for :attr:`root.add_gadget`.
@@ -134,6 +134,8 @@ class App(ABC):
         """Whether to clear terminal when switching to inline mode."""
         self._terminal: Vt100Terminal | None = None
         """Platform-specific terminal (only set while app is running)."""
+        self._exit_value: Any = None
+        """Value set by ``exit(exit_value)`` and returned by ``run()``."""
 
     def __repr__(self):
         return (
@@ -148,6 +150,11 @@ class App(ABC):
             f"    render_mode={self.render_mode!r},\n"
             ")"
         )
+
+    @property
+    def is_running(self) -> bool:
+        """Whether app is running."""
+        return self.root is not None
 
     @property
     def inline(self) -> bool:
@@ -234,7 +241,7 @@ class App(ABC):
     async def on_start(self):
         """Coroutine scheduled when app is run."""
 
-    def run(self) -> None:
+    def run(self) -> Any:
         """Run the app."""
         try:
             with redirect_stderr(StringIO()) as defer_stderr:
@@ -242,14 +249,27 @@ class App(ABC):
         except asyncio.CancelledError:
             pass
         finally:
+            error_output = defer_stderr.getvalue()
             if self.redirect_stderr:
-                with open(self.redirect_stderr, "w") as errors:
-                    print(defer_stderr.getvalue(), file=errors, end="")
+                with open(self.redirect_stderr, "w") as error_file:
+                    print(error_output, file=error_file, end="")
             else:
-                print(defer_stderr.getvalue(), file=sys.stderr, end="")
+                print(error_output, file=sys.stderr, end="")
 
-    def exit(self) -> None:
-        """Exit the app."""
+        exit_value = self._exit_value
+        self._exit_value = None
+        return exit_value
+
+    def exit(self, exit_value: Any = None) -> None:
+        """
+        Exit the app.
+
+        Parameters
+        ----------
+        exit_value : Any, default: None
+            Value returned by ``run()``.
+        """
+        self._exit_value = exit_value
         if self.root is not None:
             self.root.destroy()
             self.root = None
