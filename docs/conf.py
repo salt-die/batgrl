@@ -33,4 +33,4 @@ html_theme_options = {
     "show_prev_next": False,
 }
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
-numpydoc_show_inherited_class_members = {"figfont.FullLayout": False}
+numpydoc_show_inherited_class_members = {"batgrl.figfont.FullLayout": False}
