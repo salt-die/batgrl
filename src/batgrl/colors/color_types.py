@@ -39,6 +39,13 @@ class Color(NamedTuple):
         The green component.
     blue : int
         The blue component.
+
+    Methods
+    -------
+    from_hex(hexcode)
+        Create a :class:`Color` from a hex code.
+    to_hex()
+        Return color's hexcode.
     """
 
     red: int
@@ -104,6 +111,13 @@ class AColor(NamedTuple):
         The blue component.
     alpha : int
         The alpha component.
+
+    Methods
+    -------
+    from_hex(hexcode)
+        Create an :class:`AColor` from a hex code.
+    to_hex()
+        Return color's hexcode.
     """
 
     red: int
