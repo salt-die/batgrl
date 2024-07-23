@@ -159,6 +159,55 @@ class WindowsTerminal(Vt100Terminal):
         Whether the alternate screen buffer is enabled.
     last_cursor_position_response : Point
         Last reported cursor position.
+
+    Methods
+    -------
+    process_stdin()
+        Read from stdin and feed data into input parser to generate events.
+    raw_mode()
+        Set terminal to raw mode.
+    restore_console(event_handler)
+        Restore console to its original mode.
+    attach()
+        Start generating events from stdin.
+    unattach()
+        Stop generating events from stdin.
+    events()
+        Return a list of input events and reset the event buffer.
+    get_size()
+        Get terminal size.
+    flush()
+        Write buffer to output stream and flush.
+    set_title(title)
+        Set terminal title.
+    enter_alternate_screen()
+        Enter alternate screen buffer.
+    exit_alternate_screen()
+        Exit alternate screen buffer.
+    enable_mouse_support()
+        Enable mouse support in terminal.
+    disable_mouse_support()
+        Disable mouse support in terminal.
+    reset_attributes()
+        Reset character attributes.
+    enable_bracketed_paste()
+        Enable bracketed paste in terminal.
+    disable_bracketed_paste()
+        Disable bracketed paste in terminal.
+    show_cursor()
+        Show cursor in terminal.
+    hide_cursor()
+        Hide cursor in terminal.
+    enable_reporting_focus()
+        Enable reporting terminal focus.
+    disable_reporting_focus()
+        Disable reporting terminal focus.
+    request_cursor_position_report()
+        Report current cursor position.
+    move_cursor(pos)
+        Move cursor to ``pos``.
+    erase_in_display(n)
+        Clear part of the screen.
     """
 
     def process_stdin(self) -> None:
