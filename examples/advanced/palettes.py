@@ -66,10 +66,10 @@ class Selector(Grabbable, Text):
 
 class PaletteApp(App):
     async def on_start(self):
-        hue_selector = Selector(size=(1, W), default_cell="▬")
+        hue_selector = Selector(size=(1, W), default_cell="━")
         hue_selector.canvas["fg_color"] = hues()
 
-        slope_selector = Selector(size=(1, W), pos=(1, 0), default_cell="▬")
+        slope_selector = Selector(size=(1, W), pos=(1, 0), default_cell="━")
 
         palette = Text(size=(H, W), pos=(2, 0))
 

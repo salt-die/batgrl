@@ -252,7 +252,7 @@ class Slider(Grabbable, Pane):
         self._max = max
 
         self._slider = Text(
-            default_cell="▬",
+            default_cell="━",
             size=(1, 1),
             pos_hint={"y_hint": 0.5, "anchor": "top"},
             size_hint={"width_hint": 1.0},
