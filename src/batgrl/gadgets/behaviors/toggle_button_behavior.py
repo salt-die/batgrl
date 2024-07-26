@@ -1,6 +1,7 @@
 """Toggle button behavior for a gadget."""
+
 from collections.abc import Hashable
-from typing import Literal
+from typing import Literal, Self
 from weakref import WeakValueDictionary
 
 from .button_behavior import ButtonBehavior, ButtonState
@@ -61,7 +62,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         Paint the disallowed state.
     """
 
-    _toggle_groups = WeakValueDictionary()
+    _toggle_groups: WeakValueDictionary[Hashable, Self] = WeakValueDictionary()
 
     def __init__(
         self,
@@ -93,9 +94,6 @@ class ToggleButtonBehavior(ButtonBehavior):
 
     @toggle_state.setter
     def toggle_state(self, toggle_state: ToggleState):
-        if toggle_state not in {"on", "off"}:
-            toggle_state = "off"
-
         if self._toggle_state == toggle_state:
             return
 

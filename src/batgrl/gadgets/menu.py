@@ -45,6 +45,7 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         submenu: Optional["Menu"] = None,
         **kwargs,
     ):
+        self.parent: Menu | None
         self.left_label = Text(size=(1, str_width(left_label)), alpha=0.0)
         self.right_label = Text(
             size=(1, str_width(right_label)),
@@ -102,10 +103,11 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         self._repaint()
 
         index = self.parent.children.index(self)
-        if self.parent._current_selection not in {-1, index}:
+        selected = self.parent._current_selection
+        if not (selected == -1 or selected == index):
             self.parent.close_submenus()
-            if self.parent._current_selection != -1:
-                last_hovered = self.parent.children[self.parent._current_selection]
+            if selected != -1:
+                last_hovered = self.parent.children[selected]
                 last_hovered.button_state = "normal"
 
         self.parent._current_selection = index

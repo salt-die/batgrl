@@ -52,7 +52,7 @@ class Connect4(Gadget):
         self._player = 0
 
         for child in self.children.copy():
-            if child not in {self._label, self._board}:
+            if child is not self._label and child is not self._board:
                 child.destroy()
 
         self.display_message(TURN_MESSAGE.format(self.current_player))
