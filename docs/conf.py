@@ -39,8 +39,8 @@ numpydoc_show_inherited_class_members = {
     "batgrl.colors.color_types.ColorTheme": False,
     "batgrl.gadgets.gadget.PosHintDict": False,
     "batgrl.gadgets.gadget.SizeHintDict": False,
-    "batgrl.geometry.Point": False,
-    "batgrl.geometry.Size": False,
+    "batgrl.geometry.basic.Point": False,
+    "batgrl.geometry.basic.Size": False,
     "batgrl.figfont.FullLayout": False,
 }
 
