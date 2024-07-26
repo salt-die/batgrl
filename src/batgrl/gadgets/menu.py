@@ -1,8 +1,10 @@
 """A menu and menu bar gadget."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable, Iterator
 from inspect import signature
-from typing import Optional, Union
+from typing import Self
 
 from batgrl.terminal.events import KeyEvent
 
@@ -23,8 +25,8 @@ from .text import Text, str_width
 
 __all__ = ["Menu", "MenuBar", "MenuDict", "Point", "Size"]
 
-ItemCallback = Callable[[], None] | Callable[[ToggleState], None]
-MenuDict = dict[tuple[str, str], Union[ItemCallback, "MenuDict"]]
+type ItemCallback = Callable[[], None] | Callable[[ToggleState], None]
+type MenuDict = dict[tuple[str, str], ItemCallback | MenuDict]
 NESTED_SUFFIX = " ▶"
 CHECK_OFF = "□"
 CHECK_ON = "▣"
@@ -42,7 +44,7 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         left_label: str = "",
         right_label: str = "",
         item_callback: ItemCallback = lambda: None,
-        submenu: Optional["Menu"] = None,
+        submenu: Menu | None = None,
         **kwargs,
     ):
         self.parent: Menu | None
@@ -564,7 +566,7 @@ class Menu(GridLayout):
         close_on_release: bool = True,
         close_on_click: bool = True,
         alpha: float = 1.0,
-    ) -> Iterator["Menu"]:
+    ) -> Iterator[Self]:
         """
         Create and yield menus from a dict of dicts. Callables should either have no
         arguments for a normal menu item, or one argument for a toggle menu item.
@@ -1008,7 +1010,7 @@ class MenuBar(GridLayout):
         close_on_release: bool = True,
         close_on_click: bool = True,
         alpha: float = 1.0,
-    ) -> Iterator[Union[Menu, "MenuBar"]]:
+    ) -> Iterator[MenuBar | Menu]:
         """
         Create and yield a menu bar and menus from an iterable of
         `tuple[str, MenuDict]`.
@@ -1029,7 +1031,7 @@ class MenuBar(GridLayout):
 
         Yields
         ------
-        Menu | "MenuBar"
+        MenuBar | Menu
             A menu or submenu of the menu bar or the menu bar.
         """
         menus = list(iter)

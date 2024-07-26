@@ -1,5 +1,6 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
+from typing import Self
 
 from ...text_tools import Cell
 from ..text_field import Point, TextParticleField
@@ -56,7 +57,7 @@ class Particle:
         self.field.particle_positions[self.index] = pos
 
     @classmethod
-    def iter_from_field(cls, field: TextParticleField) -> Iterator["Particle"]:
+    def iter_from_field(cls, field: TextParticleField) -> Iterator[Self]:
         """Yield all particles from a text particle field."""
         for i in range(len(field.particle_positions)):
             yield cls(field, i)

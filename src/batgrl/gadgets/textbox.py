@@ -1,5 +1,7 @@
 """A textbox gadget for single-line editable text."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import astuple
 
@@ -255,7 +257,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def __init__(
         self,
         *,
-        enter_callback: Callable[["Textbox"], None] | None = None,
+        enter_callback: Callable[[Textbox], None] | None = None,
         placeholder: str = "",
         hide_input: bool = False,
         hide_char: NDArray[Cell] | str = "*",

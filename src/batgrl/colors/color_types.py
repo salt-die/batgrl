@@ -1,7 +1,7 @@
 """Color data structures."""
 
 import re
-from typing import NamedTuple, TypedDict
+from typing import NamedTuple, Self, TypedDict
 
 __all__ = ["AColor", "Color", "ColorTheme"]
 
@@ -53,7 +53,7 @@ class Color(NamedTuple):
     blue: int
 
     @classmethod
-    def from_hex(cls, hexcode: str) -> "Color":
+    def from_hex(cls, hexcode: str) -> Self:
         """
         Create a :class:`Color` from a hex code.
 
@@ -126,7 +126,7 @@ class AColor(NamedTuple):
     alpha: int = 255
 
     @classmethod
-    def from_hex(cls, hexcode: str) -> "AColor":
+    def from_hex(cls, hexcode: str) -> Self:
         """
         Create an :class:`AColor` from a hex code.
 

@@ -48,6 +48,7 @@ bottom y-coordinate. And finally, Regions are a sorted list of non-intersecting 
 from bisect import bisect
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
+from typing import Self
 
 from .basic import Point, Size
 
@@ -98,7 +99,7 @@ class Rect:
     right: int
     """x-coordinate of right of rect."""
 
-    def offset(self, point: Point) -> "Rect":
+    def offset(self, point: Point) -> Self:
         """
         Return a new Rect moved up by `point.y` and moved left by `point.x`.
 
@@ -222,9 +223,7 @@ class Region:
             else:
                 i += 1
 
-    def _merge_regions(
-        self, other: "Region", op: Callable[[bool, bool], bool]
-    ) -> "Region":
+    def _merge_regions(self, other: Self, op: Callable[[bool, bool], bool]) -> Self:
         bands = []
         i = j = 0
         scanline = -float("inf")
@@ -362,19 +361,19 @@ class Region:
 
     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
 
-    def __and__(self, other: "Region") -> "Region":
+    def __and__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a & b)
 
-    def __or__(self, other: "Region") -> "Region":
+    def __or__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a | b)
 
-    def __add__(self, other: "Region") -> "Region":
+    def __add__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a | b)
 
-    def __sub__(self, other: "Region") -> "Region":
+    def __sub__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a & (not b))
 
-    def __xor__(self, other: "Region") -> "Region":
+    def __xor__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a ^ b)
 
     def __bool__(self):
@@ -407,7 +406,7 @@ class Region:
                 i += 2
 
     @classmethod
-    def from_rect(cls, pos: Point, size: Size) -> "Region":
+    def from_rect(cls, pos: Point, size: Size) -> Self:
         """
         Return a region from a rect position and size.
 

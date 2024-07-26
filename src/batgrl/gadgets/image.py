@@ -1,6 +1,7 @@
 """An image gadget."""
 
 from pathlib import Path
+from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
@@ -237,7 +238,7 @@ class Image(Graphics):
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
-    ) -> "Image":
+    ) -> Self:
         """
         Create an :class:`Image` from a uint8 RGBA numpy array.
 

@@ -1,5 +1,7 @@
 """A 2D line plot gadget."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from math import ceil
 from numbers import Real
@@ -40,7 +42,7 @@ VERTICAL_HALF = VERTICAL_SPACING // 2
 
 class _Legend(Movable, Text):
     def _build_legend(self):
-        plot: "LinePlot" = self.parent.parent
+        plot: LinePlot = self.parent.parent
         colors = (
             rainbow_gradient(len(self.labels))
             if plot.line_colors is None

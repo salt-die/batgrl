@@ -16,7 +16,7 @@ This module is adapted from `https://github.com/miyuchina/mistletoe/blob/master/
 
 import sys
 from string import punctuation
-from typing import Literal
+from typing import Literal, Self
 from unicodedata import category
 
 from .geometry import clamp
@@ -42,7 +42,7 @@ class Delimiter:
         self.open = is_opener(start, end, text)
         self.close = is_closer(start, end, text)
 
-    def match(self, other: "Delimiter") -> tuple[int, int, int, bool, bool]:
+    def match(self, other: Self) -> tuple[int, int, int, bool, bool]:
         nchars = min(self.number, other.number)
         n = clamp(nchars, None, 2)
         self.start += n
@@ -52,7 +52,7 @@ class Delimiter:
         other.number = other.end - other.start
         return n, self.end, other.start, self.number == 0, other.number == 0
 
-    def closed_by(self, other: "Delimiter") -> bool:
+    def closed_by(self, other: Self) -> bool:
         if self.delimiter != other.delimiter:
             return False
 

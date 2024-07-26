@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable, Sequence
 from pathlib import Path
+from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
@@ -356,7 +357,7 @@ class Parallax(Gadget):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-    ) -> "Parallax":
+    ) -> Self:
         """
         Create an :class:`Parallax` from an iterable of uint8 RGBA numpy array.
 
@@ -433,7 +434,7 @@ class Parallax(Gadget):
         pos_hint: PosHint | PosHintDict | None = None,
         is_visible: bool = True,
         is_enabled: bool = True,
-    ) -> "Parallax":
+    ) -> Self:
         """
         Create an :class:`Parallax` from an iterable of :class:`Image`.
 

@@ -25,6 +25,7 @@ from dataclasses import dataclass, field, fields
 from enum import IntFlag
 from itertools import islice
 from pathlib import Path
+from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
@@ -81,7 +82,7 @@ class FullLayout(IntFlag):
     # TODO: Add vertical smushing.
 
     @classmethod
-    def from_old_layout(cls, old_layout: int) -> "FullLayout":
+    def from_old_layout(cls, old_layout: int) -> Self:
         """Return a full layout from an old layout."""
         return {-1: cls.FullWidth, 0: cls.Kerning}.get(
             old_layout, cls(old_layout | 128)
@@ -149,7 +150,7 @@ class FIGFont:
     """Additional comments about this font."""
 
     @classmethod
-    def from_dict(cls, attrs: dict) -> "FIGFont":
+    def from_dict(cls, attrs: dict) -> Self:
         """Return a FIGFont from a dictionary."""
         return cls(
             **{
@@ -160,7 +161,7 @@ class FIGFont:
         )
 
     @classmethod
-    def from_path(cls, path: Path) -> "FIGFont":
+    def from_path(cls, path: Path) -> Self:
         """Load a FIGFont from a path."""
         HEADER_RE = (
             r"^[tf]lf2.(?P<hardblank>.) (?P<height>\d+) \d+ \d+ "

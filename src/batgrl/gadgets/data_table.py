@@ -1,5 +1,7 @@
 """A data table gadget."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
@@ -119,14 +121,14 @@ _ALIGN_FORMATTER = {
 class _CellBase(ButtonBehavior, Text):
     """Base for cells in a data table."""
 
-    def __init__(self, data_table: "DataTable", column_id: int, **kwargs):
+    def __init__(self, data_table: DataTable, column_id: int, **kwargs):
         super().__init__(**kwargs)
         self.data_table = data_table
         self.column_id = column_id
         """Column id to which this cell belongs."""
 
     @property
-    def table(self) -> "DataTable":
+    def table(self) -> DataTable:
         # Gadget hierarchy:
         # Cell -> Row -> Table -> Scrollview -> DataTable
         return self.parent.parent.parent.parent

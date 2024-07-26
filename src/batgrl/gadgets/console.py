@@ -1,5 +1,7 @@
 """An interactive python console gadget."""
 
+from __future__ import annotations
+
 import asyncio
 import builtins
 import sys
@@ -7,6 +9,7 @@ import time
 from code import InteractiveInterpreter
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
+from typing import Self
 
 from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
@@ -43,7 +46,7 @@ class _InteractiveConsole(InteractiveInterpreter):
         super().__init__()
         self.filename = "<batgrl console>"
         self.src_buffer = []
-        self.console_gadget: "Console" = console_gadget
+        self.console_gadget: Console = console_gadget
         self.input_buffer = None
         """Result of replaced stdin.read or stdin.readline."""
         self.output_buffer = StringIO()
@@ -135,7 +138,7 @@ class _ConsoleTextbox(Textbox):
     """A custom textbox that grows and shrinks with its input."""
 
     @property
-    def console(self) -> "Console":
+    def console(self) -> Self:
         return self.parent.parent.parent
 
     @property

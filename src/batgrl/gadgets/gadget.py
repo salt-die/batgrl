@@ -7,7 +7,7 @@ from functools import wraps
 from itertools import count
 from numbers import Real
 from time import monotonic
-from typing import Coroutine, Literal, Optional, TypedDict
+from typing import Coroutine, Literal, Self, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -630,7 +630,7 @@ class Gadget:
         self.apply_hints()
 
     @property
-    def root(self) -> Optional["Gadget"]:
+    def root(self) -> Self | None:
         """Return the root gadget if connected to gadget tree."""
         return self.parent and self.parent.root
 
@@ -747,7 +747,7 @@ class Gadget:
             if child.is_visible or child.is_enabled
         )
 
-    def collides_gadget(self, other: "Gadget") -> bool:
+    def collides_gadget(self, other: Self) -> bool:
         """
         Return true if other is within gadget's bounding box.
 
@@ -776,7 +776,7 @@ class Gadget:
             or other_left >= self_right
         )
 
-    def add_gadget(self, gadget: "Gadget"):
+    def add_gadget(self, gadget: Self):
         """
         Add a child gadget.
 
@@ -791,7 +791,7 @@ class Gadget:
         if self.root is not None:
             gadget.on_add()
 
-    def add_gadgets(self, *gadgets: "Gadget"):
+    def add_gadgets(self, *gadgets: Self):
         r"""
         Add multiple child gadgets.
 
@@ -807,7 +807,7 @@ class Gadget:
         for gadget in gadgets:
             self.add_gadget(gadget)
 
-    def remove_gadget(self, gadget: "Gadget"):
+    def remove_gadget(self, gadget: Self):
         """
         Remove a child gadget.
 
@@ -828,7 +828,7 @@ class Gadget:
             self.parent.children.remove(self)
             self.parent.children.append(self)
 
-    def walk_from_root(self) -> Iterator["Gadget"]:
+    def walk_from_root(self) -> Iterator[Self]:
         """
         Yield all descendents of the root gadget (preorder traversal).
 
@@ -839,7 +839,7 @@ class Gadget:
         """
         yield from self.root.walk()
 
-    def walk(self) -> Iterator["Gadget"]:
+    def walk(self) -> Iterator[Self]:
         """
         Yield all descendents of this gadget (preorder traversal).
 
@@ -852,7 +852,7 @@ class Gadget:
             yield child
             yield from child.walk()
 
-    def walk_reverse(self) -> Iterator["Gadget"]:
+    def walk_reverse(self) -> Iterator[Self]:
         """
         Yield all descendents of this gadget (reverse postorder traversal).
 
@@ -865,7 +865,7 @@ class Gadget:
             yield from child.walk_reverse()
             yield child
 
-    def ancestors(self) -> Iterator["Gadget"]:
+    def ancestors(self) -> Iterator[Self]:
         """
         Yield all ancestors of this gadget.
 

@@ -3,6 +3,7 @@
 import asyncio
 from collections.abc import Iterable, Sequence
 from pathlib import Path
+from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
@@ -375,7 +376,7 @@ class Animation(Gadget):
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
-    ) -> "Animation":
+    ) -> Self:
         """
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
 
@@ -462,7 +463,7 @@ class Animation(Gadget):
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
-    ) -> "Animation":
+    ) -> Self:
         """
         Create an :class:`Animation` from an iterable of :class:`Image`.
 

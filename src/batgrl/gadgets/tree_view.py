@@ -4,6 +4,7 @@ can be selected and toggled open or closed.
 """
 
 from collections.abc import Iterator
+from typing import Self
 
 from numpy.typing import NDArray
 
@@ -220,12 +221,12 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.is_leaf = is_leaf
-        self.is_open = False
-        self.is_selected = False
-        self.parent_node = None
-        self.child_nodes = []
-        self.level = -1
+        self.is_leaf: bool = is_leaf
+        self.is_open: bool = False
+        self.is_selected: bool = False
+        self.parent_node: Self | None = None
+        self.child_nodes: list[Self] = []
+        self.level: int = -1
         super().__init__(
             always_release=always_release,
             default_cell=default_cell,
@@ -270,13 +271,13 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self._repaint()
 
     @property
-    def root_node(self) -> "TreeViewNode":
+    def root_node(self) -> Self:
         """Root node of tree."""
         if self.parent_node is None:
             return self
         return self.parent_node.root_node
 
-    def iter_open_nodes(self) -> Iterator["TreeViewNode"]:
+    def iter_open_nodes(self) -> Iterator[Self]:
         """
         Yield all open descendent nodes.
 
@@ -291,7 +292,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
             if child.is_open:
                 yield from child.iter_open_nodes()
 
-    def add_node(self, node: "TreeViewNode"):
+    def add_node(self, node: Self):
         """
         Add a child node.
 
@@ -305,7 +306,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         node.level = self.level + 1
         node.parent_node = self
 
-    def remove_node(self, node: "TreeViewNode"):
+    def remove_node(self, node: Self):
         """
         Remove a child node.
 
@@ -507,5 +508,5 @@ class TreeView(Gadget):
 
         root_node.toggle()
 
-    def update_tree_layout(self):
+    def update_tree_layout(self) -> None:
         """Update tree layout after a child node is opened or closed."""

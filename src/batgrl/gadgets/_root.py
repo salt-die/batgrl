@@ -1,7 +1,9 @@
 """Root gadget."""
 
+from __future__ import annotations
+
 from threading import RLock
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Self
 
 import numpy as np
 
@@ -22,7 +24,7 @@ class _Root(Gadget):
 
     def __init__(
         self,
-        app: "App",
+        app: App,
         render_mode: Literal["regions", "painter"],
         bg_color: Color,
         size: Size,
@@ -68,11 +70,11 @@ class _Root(Gadget):
         return None
 
     @property
-    def root(self) -> "_Root":
+    def root(self) -> Self:
         return self
 
     @property
-    def app(self) -> "App":
+    def app(self) -> App:
         """The running app."""
         return self._app
 
