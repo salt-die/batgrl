@@ -1,202 +1,57 @@
-"""Data structures and functions for :mod:`batgrl` geometry."""
+"""
+Functions and classes for determining gadget regions.
 
-import asyncio
+A gadget's region is calculated as a first step in compositing to determine its visible
+area in the terminal.
+
+Let's say we have the following gadgets:
+
+.. code-block:: text
+
+    +--------+------+---------+
+    |        |  B   |         |
+    |        +------+         |
+    |                         |
+    |        A             +-------+
+    |                      |   C   |
+    +----------------------+-------+
+
+And we want to represent the visible region of ``A``:
+
+.. code-block:: text
+
+    +--------+      +---------+
+    |        |      |         |
+    |        +------+         |
+    |                         |
+    |                      +--+
+    |                      |
+    +----------------------+
+
+One method is to divide the area into a series of mutually exclusive horizontal bands:
+
+.. code-block:: text
+
+    +--------+      +---------+
+    | a      | b    | c       | d    - Top band with walls at a, b, c, d
+    |--------+------+---------+
+    | e                       | f    - Middle band with walls at e, f
+    +----------------------+--+
+    | g                    | h       - Bottom band with walls at g, h
+    +----------------------+
+
+Walls are the x-coordinates of the rects in a band. Two contiguous walls indicate a new
+rect. Bands are a sorted list of walls with each band having a top y-coordinate and
+bottom y-coordinate. And finally, Regions are a sorted list of non-intersecting Bands.
+"""
+
 from bisect import bisect
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
-from itertools import accumulate
-from math import comb
-from numbers import Real
-from time import monotonic
-from typing import Callable, Iterator, NamedTuple, Protocol, Self
 
-import numpy as np
-from numpy.typing import NDArray
+from .basic import Point, Size
 
-from .easings import EASINGS, Easing
-
-__all__ = [
-    "clamp",
-    "lerp",
-    "points_on_circle",
-    "round_down",
-    "Point",
-    "Size",
-    "Rect",
-    "Region",
-    "BezierCurve",
-]
-
-
-def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
-    """
-    If `value` is less than `min`, returns `min`; otherwise if `max` is less than
-    `value`, returns `max`; otherwise returns `value`. A one-sided clamp is possible by
-    setting `min` or `max` to `None`.
-
-    Parameters
-    ----------
-    value : Real
-        Value to clamp.
-    min : Real | None
-        Minimum of clamped value.
-    max : Real | None
-        Maximum of clamped value.
-
-    Returns
-    -------
-    Real
-        A value between `min` and `max`, inclusive.
-    """
-    if min is not None and value < min:
-        return min
-
-    if max is not None and value > max:
-        return max
-
-    return value
-
-
-def lerp(a: Real, b: Real, p: Real) -> Real:
-    """Linear interpolation of `a` to `b` with proportion `p`."""
-    return (1.0 - p) * a + p * b
-
-
-def points_on_circle(
-    n: int,
-    radius: float = 1.0,
-    center: tuple[float, float] = (0.0, 0.0),
-    offset: float = 0.0,
-) -> NDArray[np.float32]:
-    """
-    Return `n` points on a circle.
-
-    Parameters
-    ----------
-    n : int
-        Number of points on a circle.
-    radius : float, default: 1.0
-        Radius of circle.
-    center : tuple[float, float], default: (0.0, 0.0)
-        Center of circle.
-    offset : float, default: 0.0
-        Rotate output points by `offset` radians.
-
-    Returns
-    -------
-    NDArray[np.float32]
-        An `(n, 2)`-shaped NDArray of points on a circle.
-    """
-    angles = np.linspace(0, 2 * np.pi, endpoint=False, num=n) + offset
-    return radius * np.stack([np.sin(angles), np.cos(angles)]).T + center
-
-
-def round_down(n: float) -> int:
-    """
-    Like the built-in `round`, but always rounds down.
-
-    Used instead of `round` for smoother geometry.
-    """
-    i, r = divmod(n, 1)
-    if r <= 0.5:
-        return int(i)
-    return int(i) + 1
-
-
-class Point(NamedTuple):
-    """
-    A 2-d point.
-
-    Note that y-coordinate is before x-coordinate. This convention is used so that
-    the 2-d arrays that underly a gadget's data can be directly indexed with the point.
-
-    Parameters or attributes type-hinted `Point` can often take `tuple[int, int]` for
-    convenience.
-
-    Parameters
-    ----------
-    y : int
-        Y-coordinate of point.
-    x : int
-        X-coordinate of point.
-
-    Attributes
-    ----------
-    y : int
-        Y-coordinate of point.
-    x : int
-        X-coordinate of point.
-    """
-
-    y: int
-    """Y-coordinate of point."""
-    x: int
-    """X-coordinate of point."""
-
-    def __add__(self, other: Self) -> Self:
-        y, x = self
-        oy, ox = other
-        return Point(y + oy, x + ox)
-
-    def __sub__(self, other: Self) -> Self:
-        y, x = self
-        oy, ox = other
-        return Point(y - oy, x - ox)
-
-
-class Size(NamedTuple):
-    """
-    A rectangular area.
-
-    Parameters or attributes type-hinted `Size` can often take `tuple[int, int]` for
-    convenience.
-
-    Parameters
-    ----------
-    height : int
-        Height of area.
-    width : int
-        Width of area.
-
-    Attributes
-    ----------
-    height : int
-        Height of area.
-    width : int
-        Width of area.
-    rows : int
-        Alias for height.
-    columns : int
-        Alias for width.
-    center : Point
-        Center of area.
-    """
-
-    height: int
-    """Height of area."""
-    width: int
-    """Width of area."""
-
-    @property
-    def rows(self):
-        """Alias for height."""
-        return self.height
-
-    @property
-    def columns(self):
-        """Alias for width."""
-        return self.width
-
-    def __contains__(self, point: Point) -> bool:
-        """Whether a point is within the rectangle."""
-        y, x = point
-        h, w = self
-        return 0 <= y < h and 0 <= x < w
-
-    @property
-    def center(self):
-        """Center of area."""
-        h, w = self
-        return Point(h // 2, w // 2)
+__all__ = ["Rect", "Region"]
 
 
 @dataclass(slots=True)
@@ -578,167 +433,3 @@ class Region:
 
         j = bisect(band.walls, x)
         return j % 2 == 1
-
-
-@dataclass
-class BezierCurve:
-    """
-    A Bezier curve.
-
-    Parameters
-    ----------
-    control_points : NDArray[np.float32]
-        Array of control points of Bezier curve with shape `(N, 2)`.
-    arc_length_approximation : int, default: 50
-        Number of evaluations for arc length approximation.
-
-    Attributes
-    ----------
-    arc_length : float
-        Approximate length of Bezier curve.
-    arc_length_approximation : int
-        Number of evaluations for arc length approximation.
-    arc_lengths : NDArray[np.float32]
-        Approximate arc lengths along Bezier curve.
-    coef : NDArray[np.float32]
-        Binomial coefficients of Bezier curve.
-    control_points : NDArray[np.float32]
-        Array of control points of Bezier curve with shape `(N, 2)`.
-    degree : int
-        Degree of Bezier curve.
-
-    Methods
-    -------
-    evaluate(t)
-        Evaluate the Bezier curve at `t` (0 <= t <= 1).
-    arc_length_proportion(p)
-        Evaluate the Bezier curve at a proportion of its total arc length.
-    """
-
-    control_points: NDArray[np.float32]
-    """Array of control points of Bezier curve with shape `(N, 2)`."""
-    arc_length_approximation: int = 50
-    """Number of evaluations for arc length approximation."""
-
-    def __post_init__(self):
-        if self.degree == -1:
-            raise ValueError("There must be at least one control point.")
-
-        self.coef: NDArray[np.float32] = np.array(
-            [comb(self.degree, i) for i in range(self.degree + 1)], dtype=float
-        )
-        """Binomial coefficients of Bezier curve."""
-
-        evaluated = self.evaluate(np.linspace(0, 1, self.arc_length_approximation))
-        norms = np.linalg.norm(evaluated[1:] - evaluated[:-1], axis=-1)
-        self.arc_lengths: NDArray[np.float32] = np.append(0, norms.cumsum())
-        """Approximate arc lengths along Bezier curve."""
-
-    @property
-    def degree(self) -> int:
-        """Degree of Bezier curve."""
-        return len(self.control_points) - 1
-
-    @property
-    def arc_length(self) -> float:
-        """Approximate length of Bezier curve."""
-        return self.arc_lengths[-1]
-
-    def evaluate(self, t: float | NDArray[np.float32]) -> NDArray[np.float32]:
-        """Evaluate the Bezier curve at `t` (0 <= t <= 1)."""
-        t = np.asarray(t)
-        terms = np.logspace(0, self.degree, num=self.degree + 1, base=t).T
-        terms *= np.logspace(self.degree, 0, num=self.degree + 1, base=1 - t).T
-        terms *= self.coef
-        return terms @ self.control_points
-
-    def arc_length_proportion(self, p: float) -> NDArray[np.float32]:
-        """Evaluate the Bezier curve at a proportion of its total arc length."""
-        target_length = self.arc_length * p
-        n = self.arc_length_approximation
-        i = clamp(bisect(self.arc_lengths, target_length) - 1, 0, n - 1)
-
-        previous_length = self.arc_lengths[i]
-        if previous_length == target_length:
-            return self.evaluate(i / n)
-
-        target_dif = target_length - previous_length
-        if i < n - 1:
-            arc_dif = self.arc_lengths[i + 1] - previous_length
-        else:
-            arc_dif = previous_length - self.arc_lengths[i - 1]
-
-        t = (i + target_dif / arc_dif) / n
-        return self.evaluate(t)
-
-
-class HasPos(Protocol):
-    """An object with a position."""
-
-    pos: Point
-
-
-async def move_along_path(
-    has_pos: HasPos,
-    path: list[BezierCurve],
-    *,
-    speed: float = 1.0,
-    easing: Easing = "linear",
-    on_start: Callable[[], None] | None = None,
-    on_progress: Callable[[float], None] | None = None,
-    on_complete: Callable[[], None] | None = None,
-):
-    """
-    Move `has_pos` along a path of Bezier curves at some speed (in cells per second).
-
-    Parameters
-    ----------
-    has_pos : HasPos
-        Object to be moved along path.
-    path : list[BezierCurve]
-        A path made up of Bezier curves.
-    speed : float, default: 1.0
-        Speed of movement in approximately cells per second.
-    on_start : Callable[[], None] | None, default: None
-        Called when motion starts.
-    on_progress : Callable[[float], None] | None, default: None
-        Called as motion updates with current progress.
-    on_complete : Callable[[], None] | None, default: None
-        Called when motion completes.
-    """
-    cumulative_arc_lengths = [
-        *accumulate((curve.arc_length for curve in path), initial=0)
-    ]
-    total_arc_length = cumulative_arc_lengths[-1]
-    easing_function = EASINGS[easing]
-    has_pos.pos = path[0].evaluate(0.0)
-    last_time = monotonic()
-    distance_traveled = 0.0
-
-    if on_start is not None:
-        on_start()
-
-    while True:
-        await asyncio.sleep(0)
-
-        current_time = monotonic()
-        elapsed = current_time - last_time
-        last_time = current_time
-        distance_traveled += speed * elapsed
-        if distance_traveled >= total_arc_length:
-            has_pos.pos = path[-1].evaluate(1.0)
-            break
-
-        p = easing_function(distance_traveled / total_arc_length)
-        eased_distance = p * total_arc_length
-
-        i = clamp(bisect(cumulative_arc_lengths, eased_distance) - 1, 0, len(path) - 1)
-        distance_on_curve = eased_distance - cumulative_arc_lengths[i]
-        curve_p = distance_on_curve / path[i].arc_length
-        has_pos.pos = path[i].arc_length_proportion(curve_p)
-
-        if on_progress is not None:
-            on_progress(p)
-
-    if on_complete is not None:
-        on_complete()
