@@ -235,24 +235,20 @@ class Vt100Terminal(ABC):
             else:
                 self._event_buffer.append(KeyEvent(char))
         elif self._state is ParserState.ESCAPE:
-            if char == "\x1b":
-                self._execute()
-                self._escape_buffer = StringIO()
-                self._escape_buffer.write("\x1b")
-                self._state = ParserState.ESCAPE
-            elif 1 <= ord(char) < 26:
-                self._escape_buffer.write(char)
-                self._execute()
-            elif char == "[":
-                self._escape_buffer.write(char)
+            self._escape_buffer.write(char)
+            if char == "[":
                 self._state = ParserState.CSI
             elif char == "O":
-                self._escape_buffer.write(char)
                 self._state = ParserState.EXECUTE_NEXT
             else:
-                self._escape_buffer.write(char)
                 self._execute()
         elif self._state is ParserState.CSI:
+            if char == "\x1b":
+                # Cancels current escape.
+                self._escape_buffer = StringIO()
+                self._escape_buffer.write(char)
+                self._state = ParserState.ESCAPE
+                return
             self._escape_buffer.write(char)
             if char == "[":
                 self._state = ParserState.EXECUTE_NEXT
@@ -263,6 +259,12 @@ class Vt100Terminal(ABC):
             else:
                 self._state = ParserState.PARAMS
         elif self._state is ParserState.PARAMS:
+            if char == "\x1b":
+                # Cancels current escape.
+                self._escape_buffer = StringIO()
+                self._escape_buffer.write(char)
+                self._state = ParserState.ESCAPE
+                return
             self._escape_buffer.write(char)
             if PARAMS_RE.match(char) is None:
                 self._execute()
