@@ -1,6 +1,7 @@
 """A windows VT100 terminal."""
 
 import asyncio
+import re
 from collections.abc import Callable
 from ctypes import Structure, Union, byref, windll
 from ctypes.wintypes import BOOL, CHAR, DWORD, HANDLE, LONG, LPVOID, SHORT, WCHAR
@@ -10,6 +11,8 @@ from ..geometry import Size
 from .events import Event, ResizeEvent
 from .vt100_terminal import Vt100Terminal
 
+CTRL_SPACE_RE: Final[re.Pattern[str]] = re.compile(r"\x00+")
+CTRL_ALT_SPACE_RE: Final[re.Pattern[str]] = re.compile(r"\x00*\x1b\x00+")
 STDIN = windll.kernel32.GetStdHandle(DWORD(-10))
 STDOUT = windll.kernel32.GetStdHandle(DWORD(-11))
 KEY_EVENT: Final[int] = 1
@@ -212,15 +215,20 @@ class WindowsTerminal(Vt100Terminal):
 
     def _feed(self, data: str) -> None:
         # Some versions of Windows Terminal generate spurious null characters for a few
-        # input events (ctrl + "^" or before "shifted" characters in paste events, for
-        # instance). For most inputs, null characters can just be ignored.
-        if len(data) > 2 or data.startswith("\x00"):
-            data = data.replace("\x00", "")
-            if data == "":
-                # If data was all null characters, assume it should be a single null
-                # character.
-                data = "\x00"
-        super()._feed(data)
+        # input events. For instance, ctrl+" " generates 3 null characters instead of 1
+        # and paste events generate a null character before each "shifted" character.
+        # For most inputs, null characters can just be ignored.
+
+        # ! The first two conditions assume the sequences for these events appear fully
+        # ! and alone in stdin. Most of the time, key events occur slowly enough for
+        # ! this to be true. Failing on other cases is acceptable here to keep this
+        # ! logic simple.
+        if CTRL_SPACE_RE.fullmatch(data):
+            super()._feed("\x00")
+        elif CTRL_ALT_SPACE_RE.fullmatch(data):
+            super()._feed("\x1b\x00")
+        else:
+            super()._feed(data.replace("\x00", ""))
 
     def process_stdin(self) -> None:
         """Read from stdin and feed data into input parser to generate events."""
