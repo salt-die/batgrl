@@ -210,6 +210,18 @@ class WindowsTerminal(Vt100Terminal):
         Clear part of the screen.
     """
 
+    def _feed(self, data: str) -> None:
+        # Some versions of Windows Terminal generate spurious null characters for a few
+        # input events (ctrl + "^" or before "shifted" characters in paste events, for
+        # instance). For most inputs, null characters can just be ignored.
+        if len(data) > 2 or data.startswith("\x00"):
+            data = data.replace("\x00", "")
+            if data == "":
+                # If data was all null characters, assume it should be a single null
+                # character.
+                data = "\x00"
+        super()._feed(data)
+
     def process_stdin(self) -> None:
         """Read from stdin and feed data into input parser to generate events."""
         nevents = DWORD()
