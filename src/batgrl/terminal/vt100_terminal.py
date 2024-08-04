@@ -212,7 +212,12 @@ class Vt100Terminal(ABC):
 
     def _feed1(self, char: str) -> None:
         """Feed a single character from terminal input into the parser."""
-        if self._state is ParserState.EXECUTE_NEXT:
+        if self._state is not ParserState.PASTE and char == "\x1b":
+            # Start a new escape (possibly canceling previous escape).
+            self._escape_buffer = StringIO()
+            self._escape_buffer.write(char)
+            self._state = ParserState.ESCAPE
+        elif self._state is ParserState.EXECUTE_NEXT:
             self._escape_buffer.write(char)
             self._execute()
         elif self._state is ParserState.PASTE:
@@ -224,11 +229,7 @@ class Vt100Terminal(ABC):
                     self._paste_buffer = None
                     self._state = ParserState.GROUND
         elif self._state is ParserState.GROUND:
-            if char == "\x1b":
-                self._escape_buffer = StringIO()
-                self._escape_buffer.write(char)
-                self._state = ParserState.ESCAPE
-            elif ord(char) < 0x20 or char == "\x7f" or char == "\x9b":
+            if ord(char) < 0x20 or char == "\x7f" or char == "\x9b":
                 self._escape_buffer = StringIO()
                 self._escape_buffer.write(char)
                 self._execute()
@@ -243,12 +244,6 @@ class Vt100Terminal(ABC):
             else:
                 self._execute()
         elif self._state is ParserState.CSI:
-            if char == "\x1b":
-                # Cancels current escape.
-                self._escape_buffer = StringIO()
-                self._escape_buffer.write(char)
-                self._state = ParserState.ESCAPE
-                return
             self._escape_buffer.write(char)
             if char == "[":
                 self._state = ParserState.EXECUTE_NEXT
@@ -259,12 +254,6 @@ class Vt100Terminal(ABC):
             else:
                 self._state = ParserState.PARAMS
         elif self._state is ParserState.PARAMS:
-            if char == "\x1b":
-                # Cancels current escape.
-                self._escape_buffer = StringIO()
-                self._escape_buffer.write(char)
-                self._state = ParserState.ESCAPE
-                return
             self._escape_buffer.write(char)
             if PARAMS_RE.fullmatch(char) is None:
                 self._execute()
