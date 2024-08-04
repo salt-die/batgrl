@@ -254,7 +254,7 @@ class Vt100Terminal(ABC):
                 self._state = ParserState.EXECUTE_NEXT
             elif char == "<":
                 self._state = ParserState.PARAMS
-            elif PARAMS_RE.match(char) is None:
+            elif PARAMS_RE.fullmatch(char) is None:
                 self._execute()
             else:
                 self._state = ParserState.PARAMS
@@ -266,7 +266,7 @@ class Vt100Terminal(ABC):
                 self._state = ParserState.ESCAPE
                 return
             self._escape_buffer.write(char)
-            if PARAMS_RE.match(char) is None:
+            if PARAMS_RE.fullmatch(char) is None:
                 self._execute()
 
     def _execute(self) -> None:
@@ -278,7 +278,7 @@ class Vt100Terminal(ABC):
         if self._expect_device_status_report:
             if monotonic() - self._last_drs_request_time >= DRS_REQUEST_TIMEOUT:
                 self._expect_device_status_report = False
-            elif cpr_match := CPR_RE.match(escape):
+            elif cpr_match := CPR_RE.fullmatch(escape):
                 self._expect_device_status_report = False
                 y, x = cpr_match.groups()
                 self.last_cursor_position_response = Point(int(y) - 1, int(x) - 1)
@@ -294,7 +294,7 @@ class Vt100Terminal(ABC):
             self._event_buffer.append(FocusEvent("in"))
         elif escape == FOCUS_OUT:
             self._event_buffer.append(FocusEvent("out"))
-        elif sgr_match := MOUSE_SGR_RE.match(escape):
+        elif sgr_match := MOUSE_SGR_RE.fullmatch(escape):
             info = int(sgr_match[1])
             y = int(sgr_match[3]) - 1
             x = int(sgr_match[2]) - 1
