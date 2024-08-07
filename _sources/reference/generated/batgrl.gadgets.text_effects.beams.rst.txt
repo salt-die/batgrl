@@ -1,0 +1,15 @@
+batgrl.gadgets.text\_effects.beams
+==================================
+
+.. automodule:: batgrl.gadgets.text_effects.beams
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _create_beams
+      _create_on_progress
+      _fade_cover
+      beams_effect
+   

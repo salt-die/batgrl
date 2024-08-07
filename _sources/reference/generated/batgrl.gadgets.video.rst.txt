@@ -1,0 +1,12 @@
+batgrl.gadgets.video
+====================
+
+.. automodule:: batgrl.gadgets.video
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Video
+   

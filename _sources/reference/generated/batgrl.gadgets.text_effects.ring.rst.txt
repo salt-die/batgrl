@@ -1,0 +1,20 @@
+batgrl.gadgets.text\_effects.ring
+=================================
+
+.. automodule:: batgrl.gadgets.text_effects.ring
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _closest_point_on_circle
+      _disperse
+      _distance_to_circle
+      _move_to_rings
+      _random_nearby_point
+      _rotate_around_center
+      _settle
+      _spin_rings
+      ring_effect
+   

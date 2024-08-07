@@ -1,0 +1,15 @@
+﻿batgrl.colors
+=============
+
+.. automodule:: batgrl.colors
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   color_types
+   colors
+   gradients

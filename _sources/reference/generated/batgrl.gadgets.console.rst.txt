@@ -1,0 +1,22 @@
+batgrl.gadgets.console
+======================
+
+.. automodule:: batgrl.gadgets.console
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _enter_callback
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Console
+      _AlmostPane
+      _ConsoleTextbox
+      _InteractiveConsole
+      _Prompt
+   

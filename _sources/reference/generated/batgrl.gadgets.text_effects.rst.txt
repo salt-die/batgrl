@@ -1,0 +1,16 @@
+batgrl.gadgets.text\_effects
+============================
+
+.. automodule:: batgrl.gadgets.text_effects
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   beams
+   black_hole
+   ring
+   spotlights

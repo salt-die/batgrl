@@ -1,0 +1,18 @@
+batgrl.gadgets.graphic\_field
+=============================
+
+.. automodule:: batgrl.gadgets.graphic_field
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      particle_data_from_texture
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GraphicParticleField
+   

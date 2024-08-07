@@ -1,0 +1,13 @@
+batgrl.gadgets.text\_animation
+==============================
+
+.. automodule:: batgrl.gadgets.text_animation
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TextAnimation
+      _Frame
+   

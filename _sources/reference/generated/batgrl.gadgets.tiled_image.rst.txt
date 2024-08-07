@@ -1,0 +1,12 @@
+batgrl.gadgets.tiled\_image
+===========================
+
+.. automodule:: batgrl.gadgets.tiled_image
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TiledImage
+   

@@ -1,0 +1,14 @@
+batgrl.gadgets.stack\_layout
+============================
+
+.. automodule:: batgrl.gadgets.stack_layout
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      HStackLayout
+      VStackLayout
+      _StackLayoutBase
+   

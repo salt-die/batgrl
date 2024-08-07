@@ -1,0 +1,19 @@
+batgrl.gadgets.behaviors.themable
+=================================
+
+.. automodule:: batgrl.gadgets.behaviors.themable
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _build_color_theme
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Themable
+      _ColorPair
+   

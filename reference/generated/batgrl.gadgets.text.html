@@ -1,0 +1,1538 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>batgrl.gadgets.text &#8212; batgrl 0.36.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5864e6e0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/batgrl.gadgets.text';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="batgrl.gadgets.text_animation" href="batgrl.gadgets.text_animation.html" />
+    <link rel="prev" title="batgrl.gadgets.tabs" href="batgrl.gadgets.tabs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">batgrl 0.36.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="batgrl.app.html">batgrl.app</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.colors.html">batgrl.colors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.color_types.html">batgrl.colors.color_types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.colors.html">batgrl.colors.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.gradients.html">batgrl.colors.gradients</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.easings.html">batgrl.easings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.figfont.html">batgrl.figfont</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="batgrl.gadgets.html">batgrl.gadgets</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.animation.html">batgrl.gadgets.animation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.bar_chart.html">batgrl.gadgets.bar_chart</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.behaviors.html">batgrl.gadgets.behaviors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.button_behavior.html">batgrl.gadgets.behaviors.button_behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.focusable.html">batgrl.gadgets.behaviors.focusable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.grabbable.html">batgrl.gadgets.behaviors.grabbable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable.html">batgrl.gadgets.behaviors.movable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable_children.html">batgrl.gadgets.behaviors.movable_children</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.themable.html">batgrl.gadgets.behaviors.themable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.toggle_button_behavior.html">batgrl.gadgets.behaviors.toggle_button_behavior</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.box_image.html">batgrl.gadgets.box_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_image.html">batgrl.gadgets.braille_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_video.html">batgrl.gadgets.braille_video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.button.html">batgrl.gadgets.button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.color_picker.html">batgrl.gadgets.color_picker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.console.html">batgrl.gadgets.console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.data_table.html">batgrl.gadgets.data_table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.digital_display.html">batgrl.gadgets.digital_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.file_chooser.html">batgrl.gadgets.file_chooser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.flat_toggle.html">batgrl.gadgets.flat_toggle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.gadget.html">batgrl.gadgets.gadget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphic_field.html">batgrl.gadgets.graphic_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphics.html">batgrl.gadgets.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.grid_layout.html">batgrl.gadgets.grid_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.image.html">batgrl.gadgets.image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.line_plot.html">batgrl.gadgets.line_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.markdown.html">batgrl.gadgets.markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.menu.html">batgrl.gadgets.menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.pane.html">batgrl.gadgets.pane</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.parallax.html">batgrl.gadgets.parallax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.progress_bar.html">batgrl.gadgets.progress_bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.raycaster.html">batgrl.gadgets.raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.scroll_view.html">batgrl.gadgets.scroll_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.shadow_caster.html">batgrl.gadgets.shadow_caster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.slider.html">batgrl.gadgets.slider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.sparkline.html">batgrl.gadgets.sparkline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.split_layout.html">batgrl.gadgets.split_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.stack_layout.html">batgrl.gadgets.stack_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tabs.html">batgrl.gadgets.tabs</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">batgrl.gadgets.text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_animation.html">batgrl.gadgets.text_animation</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.text_effects.html">batgrl.gadgets.text_effects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.beams.html">batgrl.gadgets.text_effects.beams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.black_hole.html">batgrl.gadgets.text_effects.black_hole</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.ring.html">batgrl.gadgets.text_effects.ring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.spotlights.html">batgrl.gadgets.text_effects.spotlights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_field.html">batgrl.gadgets.text_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_pad.html">batgrl.gadgets.text_pad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_raycaster.html">batgrl.gadgets.text_raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.textbox.html">batgrl.gadgets.textbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tiled_image.html">batgrl.gadgets.tiled_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.toggle_button.html">batgrl.gadgets.toggle_button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tree_view.html">batgrl.gadgets.tree_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.video.html">batgrl.gadgets.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.window.html">batgrl.gadgets.window</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.geometry.html">batgrl.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.basic.html">batgrl.geometry.basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.motion.html">batgrl.geometry.motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.regions.html">batgrl.geometry.regions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.terminal.events.html">batgrl.terminal.events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.text_tools.html">batgrl.text_tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.texture_tools.html">batgrl.texture_tools</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">batgrl Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="batgrl.gadgets.html" class="nav-link">batgrl.gadgets</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">batgrl.gadgets.text</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-batgrl.gadgets.text">
+<span id="batgrl-gadgets-text"></span><h1>batgrl.gadgets.text<a class="headerlink" href="#module-batgrl.gadgets.text" title="Link to this heading">#</a></h1>
+<p>A text gadget.</p>
+<p class="rubric">Module Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.gadgets.text.Border" title="batgrl.gadgets.text.Border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Border</span></code></a></p></td>
+<td><p>Border styles for <code class="xref py py-meth docutils literal notranslate"><span class="pre">batgrl.text_gadget.Text.add_border()</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.gadgets.text.Text" title="batgrl.gadgets.text.Text"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Text</span></code></a>(*[, default_cell, alpha, size, pos, ...])</p></td>
+<td><p>A text gadget.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Border">
+<span class="sig-prename descclassname"><span class="pre">batgrl.gadgets.text.</span></span><span class="sig-name descname"><span class="pre">Border</span></span><a class="headerlink" href="#batgrl.gadgets.text.Border" title="Link to this definition">#</a></dt>
+<dd><p>Border styles for <code class="xref py py-meth docutils literal notranslate"><span class="pre">batgrl.text_gadget.Text.add_border()</span></code>.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code>[‘light’, ‘heavy’, ‘double’, ‘curved’, ‘ascii’, ‘outer’, ‘inner’, ‘thick’, ‘dashed’, ‘dashed_2’, ‘dashed_3’, ‘heavy_dashed’, ‘heavy_dashed_2’, ‘heavy_dashed_3’, ‘near’, ‘mcgugan_tall’, ‘mcgugan_wide’]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">batgrl.gadgets.text.</span></span><span class="sig-name descname"><span class="pre">Text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'char'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&lt;U1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bold'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'italic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'underline'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strikethrough'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'overline'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fg_color'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'u1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bg_color'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'u1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Size" title="batgrl.geometry.basic.Size"><span class="pre">Size</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.SizeHint" title="batgrl.gadgets.gadget.SizeHint"><span class="pre">SizeHint</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.SizeHintDict" title="batgrl.gadgets.gadget.SizeHintDict"><span class="pre">SizeHintDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.PosHint" title="batgrl.gadgets.gadget.PosHint"><span class="pre">PosHint</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.PosHintDict" title="batgrl.gadgets.gadget.PosHintDict"><span class="pre">PosHintDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_transparent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_visible</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.Gadget" title="batgrl.gadgets.gadget.Gadget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gadget</span></code></a></p>
+<p>A text gadget. Displays arbitrary text data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>default_cell</strong><span class="classifier">NDArray[Cell] | str, default: “ “</span></dt><dd><p>Default cell of text canvas.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default: 0.0</span></dt><dd><p>Transparency of gadget.</p>
+</dd>
+<dt><strong>size</strong><span class="classifier">Size, default: Size(10, 10)</span></dt><dd><p>Size of gadget.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">Point, default: Point(0, 0)</span></dt><dd><p>Position of upper-left corner in parent.</p>
+</dd>
+<dt><strong>size_hint</strong><span class="classifier">SizeHint | SizeHintDict | None, default: None</span></dt><dd><p>Size as a proportion of parent’s height and width.</p>
+</dd>
+<dt><strong>pos_hint</strong><span class="classifier">PosHint | PosHintDict | None , default: None</span></dt><dd><p>Position as a proportion of parent’s height and width.</p>
+</dd>
+<dt><strong>is_transparent</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether gadget is transparent.</p>
+</dd>
+<dt><strong>is_visible</strong><span class="classifier">bool, default: True</span></dt><dd><p>Whether gadget is visible. Gadget will still receive input events if not
+visible.</p>
+</dd>
+<dt><strong>is_enabled</strong><span class="classifier">bool, default: True</span></dt><dd><p>Whether gadget is enabled. A disabled gadget is not painted and doesn’t receive
+input events.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>canvas</strong><span class="classifier">NDArray[Cell]</span></dt><dd><p>The array of characters for the gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.default_cell" title="batgrl.gadgets.text.Text.default_cell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_cell</span></code></a><span class="classifier">NDArray[Cell]</span></dt><dd><p>Default character for text canvas.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.default_fg_color" title="batgrl.gadgets.text.Text.default_fg_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_fg_color</span></code></a><span class="classifier">Color</span></dt><dd><p>Foreground color of default character.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.default_bg_color" title="batgrl.gadgets.text.Text.default_bg_color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_bg_color</span></code></a><span class="classifier">Color</span></dt><dd><p>Background color of default character.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.alpha" title="batgrl.gadgets.text.Text.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a><span class="classifier">float</span></dt><dd><p>Transparency of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.size" title="batgrl.gadgets.text.Text.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></a><span class="classifier">Size</span></dt><dd><p>Size of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.height" title="batgrl.gadgets.text.Text.height"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code></a><span class="classifier">int</span></dt><dd><p>Height of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.rows" title="batgrl.gadgets.text.Text.rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></a><span class="classifier">int</span></dt><dd><p>Height of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.width" title="batgrl.gadgets.text.Text.width"><code class="xref py py-obj docutils literal notranslate"><span class="pre">width</span></code></a><span class="classifier">int</span></dt><dd><p>Width of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.columns" title="batgrl.gadgets.text.Text.columns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">columns</span></code></a><span class="classifier">int</span></dt><dd><p>Width of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.pos" title="batgrl.gadgets.text.Text.pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos</span></code></a><span class="classifier">Point</span></dt><dd><p>Position relative to parent.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.top" title="batgrl.gadgets.text.Text.top"><code class="xref py py-obj docutils literal notranslate"><span class="pre">top</span></code></a><span class="classifier">int</span></dt><dd><p>Y-coordinate of top of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.y" title="batgrl.gadgets.text.Text.y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></a><span class="classifier">int</span></dt><dd><p>Y-coordinate of top of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.left" title="batgrl.gadgets.text.Text.left"><code class="xref py py-obj docutils literal notranslate"><span class="pre">left</span></code></a><span class="classifier">int</span></dt><dd><p>X-coordinate of left side of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.x" title="batgrl.gadgets.text.Text.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a><span class="classifier">int</span></dt><dd><p>X-coordinate of left side of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.bottom" title="batgrl.gadgets.text.Text.bottom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bottom</span></code></a><span class="classifier">int</span></dt><dd><p>Y-coordinate of bottom of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.right" title="batgrl.gadgets.text.Text.right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right</span></code></a><span class="classifier">int</span></dt><dd><p>X-coordinate of right side of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.center" title="batgrl.gadgets.text.Text.center"><code class="xref py py-obj docutils literal notranslate"><span class="pre">center</span></code></a><span class="classifier">Point</span></dt><dd><p>Position of center of gadget.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.absolute_pos" title="batgrl.gadgets.text.Text.absolute_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute_pos</span></code></a><span class="classifier">Point</span></dt><dd><p>Absolute position on screen.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.size_hint" title="batgrl.gadgets.text.Text.size_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">size_hint</span></code></a><span class="classifier">SizeHint</span></dt><dd><p>Gadget’s size as a proportion of its parent’s size.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.pos_hint" title="batgrl.gadgets.text.Text.pos_hint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pos_hint</span></code></a><span class="classifier">PosHint</span></dt><dd><p>Gadget’s position as a proportion of its parent’s size.</p>
+</dd>
+<dt><strong>parent: Gadget | None</strong></dt><dd><p>Parent gadget.</p>
+</dd>
+<dt><strong>children</strong><span class="classifier">list[Gadget]</span></dt><dd><p>Children gadgets.</p>
+</dd>
+<dt><strong>is_transparent</strong><span class="classifier">bool</span></dt><dd><p>Whether gadget is transparent.</p>
+</dd>
+<dt><strong>is_visible</strong><span class="classifier">bool</span></dt><dd><p>Whether gadget is visible.</p>
+</dd>
+<dt><strong>is_enabled</strong><span class="classifier">bool</span></dt><dd><p>Whether gadget is enabled.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.root" title="batgrl.gadgets.text.Text.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a><span class="classifier">Gadget | None</span></dt><dd><p>Return the root gadget if connected to gadget tree.</p>
+</dd>
+<dt><a class="reference internal" href="#batgrl.gadgets.text.Text.app" title="batgrl.gadgets.text.Text.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a><span class="classifier">App</span></dt><dd><p>The running app.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><strong>add_border(style=”light”, …)</strong></p></td>
+<td><p>Add a border to the gadget.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>add_syntax_highlighting(lexer, style)</strong></p></td>
+<td><p>Add syntax highlighting to current text in canvas.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>add_str(str, pos, …)</strong></p></td>
+<td><p>Add a single line of text to the canvas.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>set_text(text, …)</strong></p></td>
+<td><p>Resize gadget to fit text, erase canvas, then fill canvas with text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>clear()</strong></p></td>
+<td><p>Fill canvas with default cell.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>shift(n=1)</strong></p></td>
+<td><p>Shift content in canvas up (or down in case of negative <cite>n</cite>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_size()</strong></p></td>
+<td><p>Update gadget after a resize.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>apply_hints()</strong></p></td>
+<td><p>Apply size and pos hints.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>to_local(point)</strong></p></td>
+<td><p>Convert point in absolute coordinates to local coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>collides_point(point)</strong></p></td>
+<td><p>Return true if point collides with visible portion of gadget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>collides_gadget(other)</strong></p></td>
+<td><p>Return true if other is within gadget’s bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>add_gadget(gadget)</strong></p></td>
+<td><p>Add a child gadget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>add_gadgets(*gadgets)</strong></p></td>
+<td><p>Add multiple child gadgets.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>remove_gadget(gadget)</strong></p></td>
+<td><p>Remove a child gadget.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>pull_to_front()</strong></p></td>
+<td><p>Move to end of gadget stack so gadget is drawn last.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>walk_from_root()</strong></p></td>
+<td><p>Yield all descendents of the root gadget (preorder traversal).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>walk()</strong></p></td>
+<td><p>Yield all descendents of this gadget (preorder traversal).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>walk_reverse()</strong></p></td>
+<td><p>Yield all descendents of this gadget (reverse postorder traversal).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ancestors()</strong></p></td>
+<td><p>Yield all ancestors of this gadget.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>bind(prop, callback)</strong></p></td>
+<td><p>Bind <cite>callback</cite> to a gadget property.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>unbind(uid)</strong></p></td>
+<td><p>Unbind a callback from a gadget property.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_key(key_event)</strong></p></td>
+<td><p>Handle a key press event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_mouse(mouse_event)</strong></p></td>
+<td><p>Handle a mouse event.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_paste(paste_event)</strong></p></td>
+<td><p>Handle a paste event.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_terminal_focus(focus_event)</strong></p></td>
+<td><p>Handle a focus event.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>tween(…)</strong></p></td>
+<td><p>Sequentially update gadget properties over time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>on_add()</strong></p></td>
+<td><p>Apply size hints and call children’s <cite>on_add</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>on_remove()</strong></p></td>
+<td><p>Call children’s <cite>on_remove</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>prolicide()</strong></p></td>
+<td><p>Recursively remove all children.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>destroy()</strong></p></td>
+<td><p>Remove this gadget and recursively remove all its children.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.absolute_pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">absolute_pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.absolute_pos" title="Link to this definition">#</a></dt>
+<dd><p>Absolute position on screen.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.add_border">
+<span class="sig-name descname"><span class="pre">add_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'light'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'heavy'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'double'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'curved'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ascii'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outer'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'inner'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'thick'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dashed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dashed_2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dashed_3'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'heavy_dashed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'heavy_dashed_2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'heavy_dashed_3'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'near'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mcgugan_tall'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mcgugan_wide'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'light'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.add_border" title="Link to this definition">#</a></dt>
+<dd><p>Add a text border.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>style</strong><span class="classifier">Border, default: “light”</span></dt><dd><p>Style of border. Default style uses light box-drawing characters.</p>
+</dd>
+<dt><strong>bold</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether the border is bold.</p>
+</dd>
+<dt><strong>fg_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Foreground color of border if not None.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Background color of border if not None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.add_gadget">
+<span class="sig-name descname"><span class="pre">add_gadget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gadget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.add_gadget" title="Link to this definition">#</a></dt>
+<dd><p>Add a child gadget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gadget</strong><span class="classifier">Gadget</span></dt><dd><p>A gadget to add as a child.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.add_gadgets">
+<span class="sig-name descname"><span class="pre">add_gadgets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">gadgets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.add_gadgets" title="Link to this definition">#</a></dt>
+<dd><p>Add multiple child gadgets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>*gadgets</strong><span class="classifier">Gadget</span></dt><dd><p>Gadgets to add as children. Can also accept a single iterable of gadgets.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.add_str">
+<span class="sig-name descname"><span class="pre">add_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markdown</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncate_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.add_str" title="Link to this definition">#</a></dt>
+<dd><p>Add a single line of text to the canvas at position <cite>pos</cite>.</p>
+<p>If <cite>markdown</cite> is true, text can be styled using batgrl markdown. The syntax is:
+- italic: <cite>*this is italic text*</cite>
+- bold: <cite>**this is bold text**</cite>
+- strikethrough: <cite>~~this is strikethrough text~~</cite>
+- underlined: <cite>__this is underlined text__</cite>
+- overlined: <cite>^^this is overlined text^^</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>str</strong><span class="classifier">str</span></dt><dd><p>A single line of text to add to canvas.</p>
+</dd>
+<dt><strong>pos</strong><span class="classifier">Point, default: Point(0, 0)</span></dt><dd><p>Position of first character of string. Negative coordinates position
+from the right or bottom of canvas (like negative indices).</p>
+</dd>
+<dt><strong>fg_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Foreground color of text.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Background color of text.</p>
+</dd>
+<dt><strong>markdown</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether to parse text for batgrl markdown.</p>
+</dd>
+<dt><strong>truncate_str</strong><span class="classifier">bool, default: False</span></dt><dd><p>If false, an <cite>IndexError</cite> is raised if the text would not fit on canvas.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_tools.add_text</span></code></dt><dd><p>Add multiple lines of text to a view of a canvas.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.add_syntax_highlighting">
+<span class="sig-name descname"><span class="pre">add_syntax_highlighting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lexer:</span> <span class="pre">~pygments.lexer.Lexer</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style:</span> <span class="pre">~pygments.style.Style</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'batgrl.colors.colors.Neptune'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.add_syntax_highlighting" title="Link to this definition">#</a></dt>
+<dd><p>Add syntax highlighting to current text in canvas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lexer</strong><span class="classifier">pygments.lexer.Lexer | None, default: None</span></dt><dd><p>Lexer for text. If not given, the lexer is guessed.</p>
+</dd>
+<dt><strong>style</strong><span class="classifier">pygments.style.Style, default: Neptune</span></dt><dd><p>A pygments style to use for syntax highlighting.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.alpha" title="Link to this definition">#</a></dt>
+<dd><p>Transparency of gadget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.ancestors">
+<span class="sig-name descname"><span class="pre">ancestors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.ancestors" title="Link to this definition">#</a></dt>
+<dd><p>Yield all ancestors of this gadget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>Gadget</dt><dd><p>An ancestor of this gadget.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.app">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.app" title="Link to this definition">#</a></dt>
+<dd><p>The running app.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.apply_hints">
+<span class="sig-name descname"><span class="pre">apply_hints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.apply_hints" title="Link to this definition">#</a></dt>
+<dd><p>Apply size and pos hints.</p>
+<p>This is called automatically when the gadget is added to the gadget tree and
+when the gadget’s parent’s size changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.bind">
+<span class="sig-name descname"><span class="pre">bind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.bind" title="Link to this definition">#</a></dt>
+<dd><p>Bind <cite>callback</cite> to a gadget property. When the property is updated, <cite>callback</cite>
+is called with no arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>prop</strong><span class="classifier">str</span></dt><dd><p>The name of the gadget property.</p>
+</dd>
+<dt><strong>callback</strong><span class="classifier">Callable[[], None]</span></dt><dd><p>Callback to bind to property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>int</dt><dd><p>A unique id used to unbind the callback.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.bottom">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.bottom" title="Link to this definition">#</a></dt>
+<dd><p>Y-coordinate of bottom of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.center" title="Link to this definition">#</a></dt>
+<dd><p>Position of center of gadget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.clear" title="Link to this definition">#</a></dt>
+<dd><p>Fill canvas with default cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.collides_gadget">
+<span class="sig-name descname"><span class="pre">collides_gadget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.collides_gadget" title="Link to this definition">#</a></dt>
+<dd><p>Return true if other is within gadget’s bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>other</strong><span class="classifier">Gadget</span></dt><dd><p>Another gadget.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Whether other collides with gadget.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.collides_point">
+<span class="sig-name descname"><span class="pre">collides_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.collides_point" title="Link to this definition">#</a></dt>
+<dd><p>Return true if point collides with visible portion of gadget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>point</strong><span class="classifier">Point</span></dt><dd><p>A point.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool</dt><dd><p>Whether point collides with gadget.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.columns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.columns" title="Link to this definition">#</a></dt>
+<dd><p>Width of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.default_bg_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_bg_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.default_bg_color" title="Link to this definition">#</a></dt>
+<dd><p>Background color of default character.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.default_cell">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_cell</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'char'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'&lt;U1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bold'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'italic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'underline'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strikethrough'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'overline'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'?'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fg_color'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'u1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'bg_color'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'u1'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.default_cell" title="Link to this definition">#</a></dt>
+<dd><p>Default character for text canvas.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.default_fg_color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_fg_color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.default_fg_color" title="Link to this definition">#</a></dt>
+<dd><p>Foreground color of default character.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.destroy">
+<span class="sig-name descname"><span class="pre">destroy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.destroy" title="Link to this definition">#</a></dt>
+<dd><p>Remove this gadget and recursively remove all its children.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.dispatch_key">
+<span class="sig-name descname"><span class="pre">dispatch_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.KeyEvent" title="batgrl.terminal.events.KeyEvent"><span class="pre">KeyEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.dispatch_key" title="Link to this definition">#</a></dt>
+<dd><p>Dispatch a key press event until handled.</p>
+<p>A key press event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>key_event</strong><span class="classifier">KeyEvent</span></dt><dd><p>The key event to dispatch.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the dispatch was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.dispatch_mouse">
+<span class="sig-name descname"><span class="pre">dispatch_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.MouseEvent" title="batgrl.terminal.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.dispatch_mouse" title="Link to this definition">#</a></dt>
+<dd><p>Dispatch a mouse event until handled.</p>
+<p>A mouse event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mouse_event</strong><span class="classifier">MouseEvent</span></dt><dd><p>The mouse event to dispatch.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the dispatch was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.dispatch_paste">
+<span class="sig-name descname"><span class="pre">dispatch_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.PasteEvent" title="batgrl.terminal.events.PasteEvent"><span class="pre">PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.dispatch_paste" title="Link to this definition">#</a></dt>
+<dd><p>Dispatch a paste event until handled.</p>
+<p>A paste event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>paste_event</strong><span class="classifier">PasteEvent</span></dt><dd><p>The paste event to dispatch.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the dispatch was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.dispatch_terminal_focus">
+<span class="sig-name descname"><span class="pre">dispatch_terminal_focus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">focus_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.FocusEvent" title="batgrl.terminal.events.FocusEvent"><span class="pre">FocusEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.dispatch_terminal_focus" title="Link to this definition">#</a></dt>
+<dd><p>Dispatch a focus event until handled.</p>
+<p>A focus event is handled if a handler returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>focus_event</strong><span class="classifier">FocusEvent</span></dt><dd><p>The focus event to dispatch.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the dispatch was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.height" title="Link to this definition">#</a></dt>
+<dd><p>Height of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.left">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.left" title="Link to this definition">#</a></dt>
+<dd><p>X-coordinate of left side of gadget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_add" title="Link to this definition">#</a></dt>
+<dd><p>Apply size hints and call children’s <cite>on_add</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_key">
+<span class="sig-name descname"><span class="pre">on_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.KeyEvent" title="batgrl.terminal.events.KeyEvent"><span class="pre">KeyEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_key" title="Link to this definition">#</a></dt>
+<dd><p>Handle a key press event.</p>
+<p>Handled key presses should return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>key_event</strong><span class="classifier">KeyEvent</span></dt><dd><p>The key event to handle.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the key event was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_mouse">
+<span class="sig-name descname"><span class="pre">on_mouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.MouseEvent" title="batgrl.terminal.events.MouseEvent"><span class="pre">MouseEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_mouse" title="Link to this definition">#</a></dt>
+<dd><p>Handle a mouse event.</p>
+<p>Handled mouse events should return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mouse_event</strong><span class="classifier">MouseEvent</span></dt><dd><p>The mouse event to handle.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the mouse event was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_paste">
+<span class="sig-name descname"><span class="pre">on_paste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paste_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.PasteEvent" title="batgrl.terminal.events.PasteEvent"><span class="pre">PasteEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_paste" title="Link to this definition">#</a></dt>
+<dd><p>Handle a paste event.</p>
+<p>Handled paste events should return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>paste_event</strong><span class="classifier">PasteEvent</span></dt><dd><p>The paste event to handle.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the paste event was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_remove">
+<span class="sig-name descname"><span class="pre">on_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_remove" title="Link to this definition">#</a></dt>
+<dd><p>Call children’s <cite>on_remove</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_size">
+<span class="sig-name descname"><span class="pre">on_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_size" title="Link to this definition">#</a></dt>
+<dd><p>Resize canvas preserving as much content as possible.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.on_terminal_focus">
+<span class="sig-name descname"><span class="pre">on_terminal_focus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">focus_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.terminal.events.html#batgrl.terminal.events.FocusEvent" title="batgrl.terminal.events.FocusEvent"><span class="pre">FocusEvent</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.on_terminal_focus" title="Link to this definition">#</a></dt>
+<dd><p>Handle a focus event.</p>
+<p>Handled focus events should return <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>focus_event</strong><span class="classifier">FocusEvent</span></dt><dd><p>The focus event to handle.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>bool | None</dt><dd><p>Whether the focus event was handled.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.pos" title="Link to this definition">#</a></dt>
+<dd><p>Position relative to parent.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.pos_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.PosHint" title="batgrl.gadgets.gadget.PosHint"><span class="pre">PosHint</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.pos_hint" title="Link to this definition">#</a></dt>
+<dd><p>Gadget’s position as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.prolicide">
+<span class="sig-name descname"><span class="pre">prolicide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.prolicide" title="Link to this definition">#</a></dt>
+<dd><p>Recursively remove all children.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.pull_to_front">
+<span class="sig-name descname"><span class="pre">pull_to_front</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.pull_to_front" title="Link to this definition">#</a></dt>
+<dd><p>Move gadget to end of gadget stack so that it is drawn last.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.remove_gadget">
+<span class="sig-name descname"><span class="pre">remove_gadget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gadget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.remove_gadget" title="Link to this definition">#</a></dt>
+<dd><p>Remove a child gadget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>gadget</strong><span class="classifier">Gadget</span></dt><dd><p>The gadget to remove from children.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.right">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.right" title="Link to this definition">#</a></dt>
+<dd><p>X-coordinate of right side of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Self</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.root" title="Link to this definition">#</a></dt>
+<dd><p>Return the root gadget if connected to gadget tree.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.rows">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rows</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.rows" title="Link to this definition">#</a></dt>
+<dd><p>Height of gadget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.set_text">
+<span class="sig-name descname"><span class="pre">set_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.Color" title="batgrl.colors.color_types.Color"><span class="pre">Color</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markdown</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.set_text" title="Link to this definition">#</a></dt>
+<dd><p>Resize gadget to fit text, erase canvas, then fill canvas with text.</p>
+<p>If <cite>markdown</cite> is true, text can be styled using batgrl markdown. The syntax is:
+- italic: <cite>*this is italic text*</cite>
+- bold: <cite>**this is bold text**</cite>
+- strikethrough: <cite>~~this is strikethrough text~~</cite>
+- underlined: <cite>__this is underlined text__</cite>
+- overlined: <cite>^^this is overlined text^^</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to add to canvas.</p>
+</dd>
+<dt><strong>fg_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Foreground color of text.</p>
+</dd>
+<dt><strong>bg_color</strong><span class="classifier">Color | None, default: None</span></dt><dd><p>Background color of text.</p>
+</dd>
+<dt><strong>markdown</strong><span class="classifier">bool, default: False</span></dt><dd><p>Whether to parse text for batgrl markdown.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_tools.add_text</span></code></dt><dd><p>Add multiple lines of text to a view of a canvas.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.text.Text.shift" title="Link to this definition">#</a></dt>
+<dd><p>Shift content in canvas up (or down in case of negative <cite>n</cite>).</p>
+<p>Rows at the bottom (or top) will be filled with the default cell.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Size" title="batgrl.geometry.basic.Size"><span class="pre">Size</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.size" title="Link to this definition">#</a></dt>
+<dd><p>Size of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.size_hint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size_hint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.SizeHint" title="batgrl.gadgets.gadget.SizeHint"><span class="pre">SizeHint</span></a></em><a class="headerlink" href="#batgrl.gadgets.text.Text.size_hint" title="Link to this definition">#</a></dt>
+<dd><p>Gadget’s size as a proportion of its parent’s size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.to_local">
+<span class="sig-name descname"><span class="pre">to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="batgrl.geometry.basic.html#batgrl.geometry.basic.Point" title="batgrl.geometry.basic.Point"><span class="pre">Point</span></a></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.to_local" title="Link to this definition">#</a></dt>
+<dd><p>Convert point in absolute coordinates to local coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>point</strong><span class="classifier">Point</span></dt><dd><p>Point in absolute (screen) coordinates.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Point</dt><dd><p>The point in local coordinates.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.top">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.top" title="Link to this definition">#</a></dt>
+<dd><p>Y-coordinate of top of gadget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.tween">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tween</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">easing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_quad'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_quad'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_quad'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_cubic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_cubic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_cubic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_quart'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_quart'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_quart'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_quint'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_quint'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_quint'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_sine'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_sine'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_sine'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_exp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_circ'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_circ'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_circ'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_elastic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_elastic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_elastic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_back'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_back'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_back'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_bounce'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'out_bounce'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'in_out_bounce'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_complete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">number</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Real</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.PosHint" title="batgrl.gadgets.gadget.PosHint"><span class="pre">PosHint</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.SizeHint" title="batgrl.gadgets.gadget.SizeHint"><span class="pre">SizeHint</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.PosHintDict" title="batgrl.gadgets.gadget.PosHintDict"><span class="pre">PosHintDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="batgrl.gadgets.gadget.html#batgrl.gadgets.gadget.SizeHintDict" title="batgrl.gadgets.gadget.SizeHintDict"><span class="pre">SizeHintDict</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Coroutine</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.tween" title="Link to this definition">#</a></dt>
+<dd><p>Coroutine that sequentially updates gadget properties over a duration (in
+seconds).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>duration</strong><span class="classifier">float, default: 1.0</span></dt><dd><p>The duration of the tween in seconds.</p>
+</dd>
+<dt><strong>easing</strong><span class="classifier">Easing, default: “linear”</span></dt><dd><p>The easing used for tweening.</p>
+</dd>
+<dt><strong>on_start</strong><span class="classifier">Callable[[], None] | None, default: None</span></dt><dd><p>Called when tween starts.</p>
+</dd>
+<dt><strong>on_progress</strong><span class="classifier">Callable[[float], None] | None, default: None</span></dt><dd><p>Called as tween updates with current progress.</p>
+</dd>
+<dt><strong>on_complete</strong><span class="classifier">Callable[[], None] | None, default: None</span></dt><dd><p>Called when tween completes.</p>
+</dd>
+<dt><strong>**properties</strong><span class="classifier">dict[</span></dt><dd><p>str,
+Real
+| NDArray[np.number]
+| Sequence[Real]
+| PosHint
+| SizeHint
+| PosHintDict
+| SizeHintDict,</p>
+</dd>
+<dt><strong>]</strong></dt><dd><p>Gadget properties’ target values. E.g., to smoothly tween a gadget’s
+position to (5, 10) over 2.5 seconds, specify the <cite>pos</cite> property as a
+keyword-argument:
+<code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">gadget.tween(pos=(5,</span> <span class="pre">10),</span> <span class="pre">duration=2.5,</span> <span class="pre">easing=&quot;out_bounce&quot;)</span></code></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Coroutine</dt><dd><p>A coroutine updates gadget properties over some time.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Running several tweens on the same properties concurrently will probably result
+in unexpected behavior.</p>
+</div>
+<p class="rubric">Notes</p>
+<p>Tweened values will be coerced to match the type of the initial value of their
+corresponding property.</p>
+<p>Non-numeric values will be set immediately.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.unbind">
+<span class="sig-name descname"><span class="pre">unbind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.unbind" title="Link to this definition">#</a></dt>
+<dd><p>Unbind a callback from a gadget property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>uid</strong><span class="classifier">int</span></dt><dd><p>Unique id returned by the <a class="reference internal" href="#batgrl.gadgets.text.Text.bind" title="batgrl.gadgets.text.Text.bind"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bind()</span></code></a> method.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.walk" title="Link to this definition">#</a></dt>
+<dd><p>Yield all descendents of this gadget (preorder traversal).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>Gadget</dt><dd><p>A descendent of this gadget.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.walk_from_root">
+<span class="sig-name descname"><span class="pre">walk_from_root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.walk_from_root" title="Link to this definition">#</a></dt>
+<dd><p>Yield all descendents of the root gadget (preorder traversal).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>Gadget</dt><dd><p>A descendent of the root gadget.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.walk_reverse">
+<span class="sig-name descname"><span class="pre">walk_reverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#batgrl.gadgets.text.Text.walk_reverse" title="Link to this definition">#</a></dt>
+<dd><p>Yield all descendents of this gadget (reverse postorder traversal).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>Gadget</dt><dd><p>A descendent of this gadget.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.width" title="Link to this definition">#</a></dt>
+<dd><p>Width of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.x" title="Link to this definition">#</a></dt>
+<dd><p>X-coordinate of left side of gadget.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.gadgets.text.Text.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.gadgets.text.Text.y" title="Link to this definition">#</a></dt>
+<dd><p>Y-coordinate of top of gadget.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Border"><code class="docutils literal notranslate"><span class="pre">Border</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text"><code class="docutils literal notranslate"><span class="pre">Text</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.absolute_pos"><code class="docutils literal notranslate"><span class="pre">Text.absolute_pos</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.add_border"><code class="docutils literal notranslate"><span class="pre">Text.add_border()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.add_gadget"><code class="docutils literal notranslate"><span class="pre">Text.add_gadget()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.add_gadgets"><code class="docutils literal notranslate"><span class="pre">Text.add_gadgets()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.add_str"><code class="docutils literal notranslate"><span class="pre">Text.add_str()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.add_syntax_highlighting"><code class="docutils literal notranslate"><span class="pre">Text.add_syntax_highlighting()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.alpha"><code class="docutils literal notranslate"><span class="pre">Text.alpha</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.ancestors"><code class="docutils literal notranslate"><span class="pre">Text.ancestors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.app"><code class="docutils literal notranslate"><span class="pre">Text.app</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.apply_hints"><code class="docutils literal notranslate"><span class="pre">Text.apply_hints()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.bind"><code class="docutils literal notranslate"><span class="pre">Text.bind()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.bottom"><code class="docutils literal notranslate"><span class="pre">Text.bottom</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.center"><code class="docutils literal notranslate"><span class="pre">Text.center</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.clear"><code class="docutils literal notranslate"><span class="pre">Text.clear()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.collides_gadget"><code class="docutils literal notranslate"><span class="pre">Text.collides_gadget()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.collides_point"><code class="docutils literal notranslate"><span class="pre">Text.collides_point()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.columns"><code class="docutils literal notranslate"><span class="pre">Text.columns</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.default_bg_color"><code class="docutils literal notranslate"><span class="pre">Text.default_bg_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.default_cell"><code class="docutils literal notranslate"><span class="pre">Text.default_cell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.default_fg_color"><code class="docutils literal notranslate"><span class="pre">Text.default_fg_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.destroy"><code class="docutils literal notranslate"><span class="pre">Text.destroy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.dispatch_key"><code class="docutils literal notranslate"><span class="pre">Text.dispatch_key()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.dispatch_mouse"><code class="docutils literal notranslate"><span class="pre">Text.dispatch_mouse()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.dispatch_paste"><code class="docutils literal notranslate"><span class="pre">Text.dispatch_paste()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.dispatch_terminal_focus"><code class="docutils literal notranslate"><span class="pre">Text.dispatch_terminal_focus()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.height"><code class="docutils literal notranslate"><span class="pre">Text.height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.left"><code class="docutils literal notranslate"><span class="pre">Text.left</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_add"><code class="docutils literal notranslate"><span class="pre">Text.on_add()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_key"><code class="docutils literal notranslate"><span class="pre">Text.on_key()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_mouse"><code class="docutils literal notranslate"><span class="pre">Text.on_mouse()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_paste"><code class="docutils literal notranslate"><span class="pre">Text.on_paste()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_remove"><code class="docutils literal notranslate"><span class="pre">Text.on_remove()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_size"><code class="docutils literal notranslate"><span class="pre">Text.on_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.on_terminal_focus"><code class="docutils literal notranslate"><span class="pre">Text.on_terminal_focus()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.pos"><code class="docutils literal notranslate"><span class="pre">Text.pos</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.pos_hint"><code class="docutils literal notranslate"><span class="pre">Text.pos_hint</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.prolicide"><code class="docutils literal notranslate"><span class="pre">Text.prolicide()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.pull_to_front"><code class="docutils literal notranslate"><span class="pre">Text.pull_to_front()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.remove_gadget"><code class="docutils literal notranslate"><span class="pre">Text.remove_gadget()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.right"><code class="docutils literal notranslate"><span class="pre">Text.right</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.root"><code class="docutils literal notranslate"><span class="pre">Text.root</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.rows"><code class="docutils literal notranslate"><span class="pre">Text.rows</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.set_text"><code class="docutils literal notranslate"><span class="pre">Text.set_text()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.shift"><code class="docutils literal notranslate"><span class="pre">Text.shift()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.size"><code class="docutils literal notranslate"><span class="pre">Text.size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.size_hint"><code class="docutils literal notranslate"><span class="pre">Text.size_hint</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.to_local"><code class="docutils literal notranslate"><span class="pre">Text.to_local()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.top"><code class="docutils literal notranslate"><span class="pre">Text.top</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.tween"><code class="docutils literal notranslate"><span class="pre">Text.tween()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.unbind"><code class="docutils literal notranslate"><span class="pre">Text.unbind()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.walk"><code class="docutils literal notranslate"><span class="pre">Text.walk()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.walk_from_root"><code class="docutils literal notranslate"><span class="pre">Text.walk_from_root()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.walk_reverse"><code class="docutils literal notranslate"><span class="pre">Text.walk_reverse()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.width"><code class="docutils literal notranslate"><span class="pre">Text.width</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.x"><code class="docutils literal notranslate"><span class="pre">Text.x</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.text.Text.y"><code class="docutils literal notranslate"><span class="pre">Text.y</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/generated/batgrl.gadgets.text.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, salt-die.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

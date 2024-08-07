@@ -1,0 +1,18 @@
+batgrl.gadgets.animation
+========================
+
+.. automodule:: batgrl.gadgets.animation
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _check_frame_durations
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Animation
+   

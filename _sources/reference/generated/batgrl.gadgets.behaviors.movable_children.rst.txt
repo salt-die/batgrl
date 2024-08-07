@@ -1,0 +1,12 @@
+batgrl.gadgets.behaviors.movable\_children
+==========================================
+
+.. automodule:: batgrl.gadgets.behaviors.movable_children
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MovableChildren
+   

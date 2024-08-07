@@ -1,0 +1,18 @@
+batgrl.gadgets.behaviors.button\_behavior
+=========================================
+
+.. automodule:: batgrl.gadgets.behaviors.button_behavior
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      ButtonState
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ButtonBehavior
+   

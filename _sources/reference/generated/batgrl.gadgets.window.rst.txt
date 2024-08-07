@@ -1,0 +1,13 @@
+batgrl.gadgets.window
+=====================
+
+.. automodule:: batgrl.gadgets.window
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Window
+      _TitleBar
+   

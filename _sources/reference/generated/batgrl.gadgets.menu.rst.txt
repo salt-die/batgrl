@@ -1,0 +1,21 @@
+batgrl.gadgets.menu
+===================
+
+.. automodule:: batgrl.gadgets.menu
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      nargs
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Menu
+      MenuBar
+      _MenuButton
+      _MenuItem
+   

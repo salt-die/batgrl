@@ -1,0 +1,32 @@
+batgrl.gadgets.markdown
+=======================
+
+.. automodule:: batgrl.gadgets.markdown
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _default_cell
+      _is_task_list_item
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BlankLine
+      EmojiCode
+      Markdown
+      Spaces
+      _BatgrlRenderer
+      _BlockCode
+      _BorderedContent
+      _HasTitle
+      _Link
+      _List
+      _MarkdownGif
+      _MarkdownImage
+      _Quote
+      _TextImage
+   

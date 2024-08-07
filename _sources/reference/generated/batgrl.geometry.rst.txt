@@ -1,0 +1,15 @@
+﻿batgrl.geometry
+===============
+
+.. automodule:: batgrl.geometry
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   basic
+   motion
+   regions

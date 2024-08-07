@@ -1,0 +1,19 @@
+batgrl.gadgets.grid\_layout
+===========================
+
+.. automodule:: batgrl.gadgets.grid_layout
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      Orientation
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GridLayout
+      _RepositionProperty
+   

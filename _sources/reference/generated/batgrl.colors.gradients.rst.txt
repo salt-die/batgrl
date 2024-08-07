@@ -1,0 +1,16 @@
+batgrl.colors.gradients
+=======================
+
+.. automodule:: batgrl.colors.gradients
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      darken_only
+      gradient
+      lerp_colors
+      lighten_only
+      rainbow_gradient
+   

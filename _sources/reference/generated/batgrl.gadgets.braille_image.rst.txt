@@ -1,0 +1,12 @@
+batgrl.gadgets.braille\_image
+=============================
+
+.. automodule:: batgrl.gadgets.braille_image
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BrailleImage
+   

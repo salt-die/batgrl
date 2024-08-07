@@ -1,0 +1,12 @@
+batgrl.gadgets.behaviors.grabbable
+==================================
+
+.. automodule:: batgrl.gadgets.behaviors.grabbable
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Grabbable
+   

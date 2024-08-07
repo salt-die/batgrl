@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>batgrl.gadgets.behaviors.themable &#8212; batgrl 0.36.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5864e6e0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/batgrl.gadgets.behaviors.themable';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="batgrl.gadgets.behaviors.toggle_button_behavior" href="batgrl.gadgets.behaviors.toggle_button_behavior.html" />
+    <link rel="prev" title="batgrl.gadgets.behaviors.movable_children" href="batgrl.gadgets.behaviors.movable_children.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">batgrl 0.36.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="batgrl.app.html">batgrl.app</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.colors.html">batgrl.colors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.color_types.html">batgrl.colors.color_types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.colors.html">batgrl.colors.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.gradients.html">batgrl.colors.gradients</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.easings.html">batgrl.easings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.figfont.html">batgrl.figfont</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="batgrl.gadgets.html">batgrl.gadgets</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.animation.html">batgrl.gadgets.animation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.bar_chart.html">batgrl.gadgets.bar_chart</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="batgrl.gadgets.behaviors.html">batgrl.gadgets.behaviors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.button_behavior.html">batgrl.gadgets.behaviors.button_behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.focusable.html">batgrl.gadgets.behaviors.focusable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.grabbable.html">batgrl.gadgets.behaviors.grabbable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable.html">batgrl.gadgets.behaviors.movable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable_children.html">batgrl.gadgets.behaviors.movable_children</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">batgrl.gadgets.behaviors.themable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.toggle_button_behavior.html">batgrl.gadgets.behaviors.toggle_button_behavior</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.box_image.html">batgrl.gadgets.box_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_image.html">batgrl.gadgets.braille_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_video.html">batgrl.gadgets.braille_video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.button.html">batgrl.gadgets.button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.color_picker.html">batgrl.gadgets.color_picker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.console.html">batgrl.gadgets.console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.data_table.html">batgrl.gadgets.data_table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.digital_display.html">batgrl.gadgets.digital_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.file_chooser.html">batgrl.gadgets.file_chooser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.flat_toggle.html">batgrl.gadgets.flat_toggle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.gadget.html">batgrl.gadgets.gadget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphic_field.html">batgrl.gadgets.graphic_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphics.html">batgrl.gadgets.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.grid_layout.html">batgrl.gadgets.grid_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.image.html">batgrl.gadgets.image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.line_plot.html">batgrl.gadgets.line_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.markdown.html">batgrl.gadgets.markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.menu.html">batgrl.gadgets.menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.pane.html">batgrl.gadgets.pane</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.parallax.html">batgrl.gadgets.parallax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.progress_bar.html">batgrl.gadgets.progress_bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.raycaster.html">batgrl.gadgets.raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.scroll_view.html">batgrl.gadgets.scroll_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.shadow_caster.html">batgrl.gadgets.shadow_caster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.slider.html">batgrl.gadgets.slider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.sparkline.html">batgrl.gadgets.sparkline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.split_layout.html">batgrl.gadgets.split_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.stack_layout.html">batgrl.gadgets.stack_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tabs.html">batgrl.gadgets.tabs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text.html">batgrl.gadgets.text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_animation.html">batgrl.gadgets.text_animation</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.text_effects.html">batgrl.gadgets.text_effects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.beams.html">batgrl.gadgets.text_effects.beams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.black_hole.html">batgrl.gadgets.text_effects.black_hole</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.ring.html">batgrl.gadgets.text_effects.ring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.spotlights.html">batgrl.gadgets.text_effects.spotlights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_field.html">batgrl.gadgets.text_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_pad.html">batgrl.gadgets.text_pad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_raycaster.html">batgrl.gadgets.text_raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.textbox.html">batgrl.gadgets.textbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tiled_image.html">batgrl.gadgets.tiled_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.toggle_button.html">batgrl.gadgets.toggle_button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tree_view.html">batgrl.gadgets.tree_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.video.html">batgrl.gadgets.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.window.html">batgrl.gadgets.window</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.geometry.html">batgrl.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.basic.html">batgrl.geometry.basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.motion.html">batgrl.geometry.motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.regions.html">batgrl.geometry.regions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.terminal.events.html">batgrl.terminal.events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.text_tools.html">batgrl.text_tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.texture_tools.html">batgrl.texture_tools</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">batgrl Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="batgrl.gadgets.behaviors.html" class="nav-link">batgrl.gadgets.behaviors</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">batgrl.gadge...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-batgrl.gadgets.behaviors.themable">
+<span id="batgrl-gadgets-behaviors-themable"></span><h1>batgrl.gadgets.behaviors.themable<a class="headerlink" href="#module-batgrl.gadgets.behaviors.themable" title="Link to this heading">#</a></h1>
+<p>Themable behavior for gadgets.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_build_color_theme</span></code>(color_theme)</p></td>
+<td><p>Convert a ColorTheme into a class with attribute names given by the color theme's keys.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.gadgets.behaviors.themable.Themable" title="batgrl.gadgets.behaviors.themable.Themable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Themable</span></code></a>()</p></td>
+<td><p>Themable behavior for a gadget.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_ColorPair</span></code>(fg, bg)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="batgrl.gadgets.behaviors.themable.Themable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">batgrl.gadgets.behaviors.themable.</span></span><span class="sig-name descname"><span class="pre">Themable</span></span><a class="headerlink" href="#batgrl.gadgets.behaviors.themable.Themable" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Themable behavior for a gadget.</p>
+<p>Themable gadgets share a color theme. They must implement <a class="reference internal" href="#batgrl.gadgets.behaviors.themable.Themable.update_theme" title="batgrl.gadgets.behaviors.themable.Themable.update_theme"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_theme()</span></code></a>
+which paints the gadget with current theme.</p>
+<p>Whenever the running app’s theme is changed, <cite>update_theme</cite> will be called
+for all <a class="reference internal" href="#batgrl.gadgets.behaviors.themable.Themable" title="batgrl.gadgets.behaviors.themable.Themable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Themable</span></code></a> gadgets.</p>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><strong>update_theme()</strong></p></td>
+<td><p>Paint the gadget with current theme.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.behaviors.themable.Themable.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.behaviors.themable.Themable.on_add" title="Link to this definition">#</a></dt>
+<dd><p>Update theme.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.behaviors.themable.Themable.set_theme">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_theme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_theme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.ColorTheme" title="batgrl.colors.color_types.ColorTheme"><span class="pre">ColorTheme</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.behaviors.themable.Themable.set_theme" title="Link to this definition">#</a></dt>
+<dd><p>Set color theme.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.gadgets.behaviors.themable.Themable.update_theme">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_theme</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.gadgets.behaviors.themable.Themable.update_theme" title="Link to this definition">#</a></dt>
+<dd><p>Paint the gadget with current theme.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.behaviors.themable.Themable"><code class="docutils literal notranslate"><span class="pre">Themable</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.behaviors.themable.Themable.on_add"><code class="docutils literal notranslate"><span class="pre">Themable.on_add()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.behaviors.themable.Themable.set_theme"><code class="docutils literal notranslate"><span class="pre">Themable.set_theme()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.gadgets.behaviors.themable.Themable.update_theme"><code class="docutils literal notranslate"><span class="pre">Themable.update_theme()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/generated/batgrl.gadgets.behaviors.themable.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, salt-die.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

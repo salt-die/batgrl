@@ -1,0 +1,12 @@
+batgrl.gadgets.braille\_video
+=============================
+
+.. automodule:: batgrl.gadgets.braille_video
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BrailleVideo
+   

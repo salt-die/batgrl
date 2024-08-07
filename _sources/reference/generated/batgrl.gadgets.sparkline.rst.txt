@@ -1,0 +1,19 @@
+batgrl.gadgets.sparkline
+========================
+
+.. automodule:: batgrl.gadgets.sparkline
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _get_float_text
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Sparkline
+      _Tooltip
+   

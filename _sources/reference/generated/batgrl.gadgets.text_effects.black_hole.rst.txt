@@ -1,0 +1,18 @@
+batgrl.gadgets.text\_effects.black\_hole
+========================================
+
+.. automodule:: batgrl.gadgets.text_effects.black_hole
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _collapsing
+      _consuming
+      _exploding
+      _forming
+      _point_char
+      _rotating
+      black_hole_effect
+   

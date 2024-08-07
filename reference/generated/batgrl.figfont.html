@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>batgrl.figfont &#8212; batgrl 0.36.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5864e6e0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/batgrl.figfont';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="batgrl.gadgets" href="batgrl.gadgets.html" />
+    <link rel="prev" title="batgrl.easings" href="batgrl.easings.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">batgrl 0.36.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="batgrl.app.html">batgrl.app</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.colors.html">batgrl.colors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.color_types.html">batgrl.colors.color_types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.colors.html">batgrl.colors.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.gradients.html">batgrl.colors.gradients</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.easings.html">batgrl.easings</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">batgrl.figfont</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.gadgets.html">batgrl.gadgets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.animation.html">batgrl.gadgets.animation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.bar_chart.html">batgrl.gadgets.bar_chart</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.behaviors.html">batgrl.gadgets.behaviors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.button_behavior.html">batgrl.gadgets.behaviors.button_behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.focusable.html">batgrl.gadgets.behaviors.focusable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.grabbable.html">batgrl.gadgets.behaviors.grabbable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable.html">batgrl.gadgets.behaviors.movable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable_children.html">batgrl.gadgets.behaviors.movable_children</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.themable.html">batgrl.gadgets.behaviors.themable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.toggle_button_behavior.html">batgrl.gadgets.behaviors.toggle_button_behavior</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.box_image.html">batgrl.gadgets.box_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_image.html">batgrl.gadgets.braille_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_video.html">batgrl.gadgets.braille_video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.button.html">batgrl.gadgets.button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.color_picker.html">batgrl.gadgets.color_picker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.console.html">batgrl.gadgets.console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.data_table.html">batgrl.gadgets.data_table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.digital_display.html">batgrl.gadgets.digital_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.file_chooser.html">batgrl.gadgets.file_chooser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.flat_toggle.html">batgrl.gadgets.flat_toggle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.gadget.html">batgrl.gadgets.gadget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphic_field.html">batgrl.gadgets.graphic_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphics.html">batgrl.gadgets.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.grid_layout.html">batgrl.gadgets.grid_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.image.html">batgrl.gadgets.image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.line_plot.html">batgrl.gadgets.line_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.markdown.html">batgrl.gadgets.markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.menu.html">batgrl.gadgets.menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.pane.html">batgrl.gadgets.pane</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.parallax.html">batgrl.gadgets.parallax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.progress_bar.html">batgrl.gadgets.progress_bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.raycaster.html">batgrl.gadgets.raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.scroll_view.html">batgrl.gadgets.scroll_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.shadow_caster.html">batgrl.gadgets.shadow_caster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.slider.html">batgrl.gadgets.slider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.sparkline.html">batgrl.gadgets.sparkline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.split_layout.html">batgrl.gadgets.split_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.stack_layout.html">batgrl.gadgets.stack_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tabs.html">batgrl.gadgets.tabs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text.html">batgrl.gadgets.text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_animation.html">batgrl.gadgets.text_animation</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.text_effects.html">batgrl.gadgets.text_effects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.beams.html">batgrl.gadgets.text_effects.beams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.black_hole.html">batgrl.gadgets.text_effects.black_hole</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.ring.html">batgrl.gadgets.text_effects.ring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.spotlights.html">batgrl.gadgets.text_effects.spotlights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_field.html">batgrl.gadgets.text_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_pad.html">batgrl.gadgets.text_pad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_raycaster.html">batgrl.gadgets.text_raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.textbox.html">batgrl.gadgets.textbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tiled_image.html">batgrl.gadgets.tiled_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.toggle_button.html">batgrl.gadgets.toggle_button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tree_view.html">batgrl.gadgets.tree_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.video.html">batgrl.gadgets.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.window.html">batgrl.gadgets.window</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.geometry.html">batgrl.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.basic.html">batgrl.geometry.basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.motion.html">batgrl.geometry.motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.regions.html">batgrl.geometry.regions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.terminal.events.html">batgrl.terminal.events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.text_tools.html">batgrl.text_tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.texture_tools.html">batgrl.texture_tools</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">batgrl Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">batgrl.figfont</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-batgrl.figfont">
+<span id="batgrl-figfont"></span><h1>batgrl.figfont<a class="headerlink" href="#module-batgrl.figfont" title="Link to this heading">#</a></h1>
+<p>Support for loading and rendering FIGfonts.</p>
+<p>A <cite>FIGFont</cite> (class) represents a FIGfont (file) which describe how to render ascii art
+from normal text. <cite>FIGFont.render_array</cite> will render the ascii art into a numpy array
+that can be copied into a <cite>Text</cite> canvas. <cite>FIGFont.render_str</cite> will render the ascii art
+into a multiline string.</p>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.figlet.org/">http://www.figlet.org/</a></p></li>
+<li><p><a class="reference external" href="http://www.jave.de/figlet/figfont.html">http://www.jave.de/figlet/figfont.html</a></p></li>
+<li><p><a class="github reference external" href="https://github.com/cmatsuoka/figlet">cmatsuoka/figlet</a></p></li>
+<li><p><a class="github reference external" href="https://github.com/pwaller/pyfiglet">pwaller/pyfiglet</a></p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.figlet.org/fontdb.cgi">http://www.figlet.org/fontdb.cgi</a></p></li>
+<li><p><a class="github reference external" href="https://github.com/salt-die/fig-fonts">salt-die/fig-fonts</a></p></li>
+</ul>
+</section>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.figfont.FIGFont" title="batgrl.figfont.FIGFont"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FIGFont</span></code></a>(hardblank, reverse_text, layout, ...)</p></td>
+<td><p>An object representation of a FIGfont.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.figfont.FullLayout" title="batgrl.figfont.FullLayout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FullLayout</span></code></a>(value[, names, module, qualname, ...])</p></td>
+<td><p>Character layout for a FIGFont.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">batgrl.figfont.</span></span><span class="sig-name descname"><span class="pre">FIGFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hardblank:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse_text:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layout:</span> <span class="pre">~batgrl.figfont.FullLayout</span> <span class="pre">=</span> <span class="pre">&lt;FullLayout.Universal:</span> <span class="pre">128&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse_universal_smush:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~numpy.ndarray[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~numpy.dtype[dtype('&lt;U1')]]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comments:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.figfont.FIGFont" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An object representation of a FIGfont.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>hardblank</strong><span class="classifier">str, default: “$”</span></dt><dd><p>This character is used to represent whitespace that shouldn’t be smushed.</p>
+</dd>
+<dt><strong>reverse_text</strong><span class="classifier">bool, default: False</span></dt><dd><p>If true, text will be rendered right-to-left.</p>
+</dd>
+<dt><strong>layout</strong><span class="classifier">FullLayout, default: FullLayout.Universal</span></dt><dd><p>Controls how characters are fitted in rendered text.</p>
+</dd>
+<dt><strong>reverse_universal_smush</strong><span class="classifier">bool, default: False</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of
+latest).</p>
+</dd>
+<dt><strong>font</strong><span class="classifier">dict[str, NDArray[np.dtype(“&lt;U1”)]], default: {}</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
+</dd>
+<dt><strong>comments</strong><span class="classifier">str, default: “”</span></dt><dd><p>Additional comments about this font.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>hardblank</strong><span class="classifier">str</span></dt><dd><p>This character is used to represent whitespace that shouldn’t be smushed.</p>
+</dd>
+<dt><strong>reverse_text</strong><span class="classifier">bool</span></dt><dd><p>If true, text will be rendered right-to-left.</p>
+</dd>
+<dt><strong>layout</strong><span class="classifier">FullLayout.Universal</span></dt><dd><p>Controls how characters are fitted in rendered text.</p>
+</dd>
+<dt><strong>reverse_universal_smush</strong><span class="classifier">bool</span></dt><dd><p>If set to true univeral smushing will display earliest sub-character (instead of
+latest).</p>
+</dd>
+<dt><strong>font</strong><span class="classifier">dict[str, NDArray[np.dtype(“&lt;U1”)]]</span></dt><dd><p>A dictionary of characters to their ascii art representations.</p>
+</dd>
+<dt><strong>comments</strong><span class="classifier">str</span></dt><dd><p>Additional comments about this font.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><strong>from_path(path)</strong></p></td>
+<td><p>Load a FIGFont from a path.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>render_array(text)</strong></p></td>
+<td><p>Render text as ascii art into a 2D “&lt;U1” numpy array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>render_str(text)</strong></p></td>
+<td><p>Render text as ascii art into a multiline string.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.comments">
+<span class="sig-name descname"><span class="pre">comments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#batgrl.figfont.FIGFont.comments" title="Link to this definition">#</a></dt>
+<dd><p>Additional comments about this font.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.font">
+<span class="sig-name descname"><span class="pre">font</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">(</span></span><span class="s"><span class="pre">'&lt;U1'</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#batgrl.figfont.FIGFont.font" title="Link to this definition">#</a></dt>
+<dd><p>A dictionary of characters to their ascii art representations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#batgrl.figfont.FIGFont.from_dict" title="Link to this definition">#</a></dt>
+<dd><p>Return a FIGFont from a dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.from_path">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#batgrl.figfont.FIGFont.from_path" title="Link to this definition">#</a></dt>
+<dd><p>Load a FIGFont from a path.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.hardblank">
+<span class="sig-name descname"><span class="pre">hardblank</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'$'</span></em><a class="headerlink" href="#batgrl.figfont.FIGFont.hardblank" title="Link to this definition">#</a></dt>
+<dd><p>This character is used to represent whitespace that shouldn’t be smushed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#batgrl.figfont.FIGFont.height" title="Link to this definition">#</a></dt>
+<dd><p>Height of characters in this font.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.render_array">
+<span class="sig-name descname"><span class="pre">render_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">(</span></span><span class="s"><span class="pre">'&lt;U1'</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#batgrl.figfont.FIGFont.render_array" title="Link to this definition">#</a></dt>
+<dd><p>Render text as ascii art into a 2D “&lt;U1” numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to render as ascii art into an array.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>NDArray[np.dtype(“&lt;U1”)]</dt><dd><p>The rendered array.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.render_str">
+<span class="sig-name descname"><span class="pre">render_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#batgrl.figfont.FIGFont.render_str" title="Link to this definition">#</a></dt>
+<dd><p>Render text as ascii art into a multiline string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>Text to render as ascii art into a multiline string.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>The rendered string.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.reverse_text">
+<span class="sig-name descname"><span class="pre">reverse_text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#batgrl.figfont.FIGFont.reverse_text" title="Link to this definition">#</a></dt>
+<dd><p>If true, text will be rendered right-to-left.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.figfont.FIGFont.reverse_universal_smush">
+<span class="sig-name descname"><span class="pre">reverse_universal_smush</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#batgrl.figfont.FIGFont.reverse_universal_smush" title="Link to this definition">#</a></dt>
+<dd><p>If set to true univeral smushing will display earliest sub-character.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="batgrl.figfont.FullLayout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">batgrl.figfont.</span></span><span class="sig-name descname"><span class="pre">FullLayout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#batgrl.figfont.FullLayout" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntFlag</span></code></p>
+<p>Character layout for a FIGFont.</p>
+<p>The layout modes are:</p>
+<ul class="simple">
+<li><p><strong>FullWidth</strong>: Each character occupies the full width or height of its arrangement
+of sub-characters.</p></li>
+<li><p><strong>Kerning</strong>: Each character is moved together until they touch.</p></li>
+<li><p><strong>Smushing</strong>: Each character is moved one step closer after they touch, so that
+they overlap. Additional smushing rules determine which sub-character is used for
+each overlap.</p></li>
+</ul>
+<p>There are two types of smushing:</p>
+<ul class="simple">
+<li><p><strong>Universal</strong>: The sub-character from the earlier character is replaced by the
+sub-character from the later character. (This behavior can be reversed with
+<cite>reverse_universal_smush</cite>)</p></li>
+<li><p><strong>Controlled</strong>: Uses a set of smushing rules.</p></li>
+</ul>
+<p>The controlled smushing rules are:</p>
+<ul class="simple">
+<li><p><strong>Equal</strong>: Two sub-characters are smushed into a single sub-character if they are
+equal (except for hardblanks).</p></li>
+<li><p><strong>Underscore</strong>: An underscore (<cite>“_”</cite>) will be replaced by any of: <cite>“|”</cite>, <cite>“/”</cite>,
+<cite>“&quot;</cite>, <cite>“[”</cite>, <cite>“]”</cite>, <cite>“{”</cite>, <cite>“}”</cite>, <cite>“(”</cite>, <cite>“)”</cite>, <cite>“&lt;”</cite>, <cite>“&gt;”</cite>.</p></li>
+<li><p><strong>Hierarchy</strong>: A hierarchy of six classes is used: <cite>“|”</cite>, <cite>“/&quot;</cite>, <cite>“[]”</cite>, <cite>“{}”</cite>,
+<cite>“()”</cite>, and <cite>“&lt;&gt;”</cite>. When two sub-characters are from different classes, the
+latter class will be used.</p></li>
+<li><p><strong>Pair</strong>: Replaces opposite brackets (<cite>“[]”</cite> or <cite>“][”</cite>), braces (<cite>“{}”</cite> or
+<cite>“}{”</cite>), and parentheses (<cite>“()”</cite> or <cite>“)(”</cite>) with a vertical bar (<cite>“|”</cite>).</p></li>
+<li><p><strong>BigX</strong>: Replaces <cite>“/&quot;</cite> with <cite>“|”</cite>, <cite>“/”</cite> with <cite>“Y”</cite>, and <cite>“&gt;&lt;”</cite> into <cite>“X”</cite>.</p></li>
+<li><p><strong>HardBlank</strong>: Two hardblanks will be replaced with a single hardblank.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="batgrl.figfont.FullLayout.from_old_layout">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_old_layout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_layout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#batgrl.figfont.FullLayout.from_old_layout" title="Link to this definition">#</a></dt>
+<dd><p>Return a full layout from an old layout.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont"><code class="docutils literal notranslate"><span class="pre">FIGFont</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.comments"><code class="docutils literal notranslate"><span class="pre">FIGFont.comments</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.font"><code class="docutils literal notranslate"><span class="pre">FIGFont.font</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.from_dict"><code class="docutils literal notranslate"><span class="pre">FIGFont.from_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.from_path"><code class="docutils literal notranslate"><span class="pre">FIGFont.from_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.hardblank"><code class="docutils literal notranslate"><span class="pre">FIGFont.hardblank</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.height"><code class="docutils literal notranslate"><span class="pre">FIGFont.height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.render_array"><code class="docutils literal notranslate"><span class="pre">FIGFont.render_array()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.render_str"><code class="docutils literal notranslate"><span class="pre">FIGFont.render_str()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.reverse_text"><code class="docutils literal notranslate"><span class="pre">FIGFont.reverse_text</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FIGFont.reverse_universal_smush"><code class="docutils literal notranslate"><span class="pre">FIGFont.reverse_universal_smush</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FullLayout"><code class="docutils literal notranslate"><span class="pre">FullLayout</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.figfont.FullLayout.from_old_layout"><code class="docutils literal notranslate"><span class="pre">FullLayout.from_old_layout()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/generated/batgrl.figfont.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, salt-die.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+batgrl.gadgets.parallax
+=======================
+
+.. automodule:: batgrl.gadgets.parallax
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _check_layer_speeds
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Parallax
+   

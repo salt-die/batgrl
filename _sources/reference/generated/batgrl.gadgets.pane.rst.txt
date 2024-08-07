@@ -1,0 +1,12 @@
+batgrl.gadgets.pane
+===================
+
+.. automodule:: batgrl.gadgets.pane
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Pane
+   

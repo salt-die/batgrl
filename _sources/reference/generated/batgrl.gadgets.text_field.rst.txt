@@ -1,0 +1,18 @@
+batgrl.gadgets.text\_field
+==========================
+
+.. automodule:: batgrl.gadgets.text_field
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      particle_data_from_canvas
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TextParticleField
+   

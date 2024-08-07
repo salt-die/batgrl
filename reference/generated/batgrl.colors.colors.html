@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>batgrl.colors.colors &#8212; batgrl 0.36.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5864e6e0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/batgrl.colors.colors';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="batgrl.colors.gradients" href="batgrl.colors.gradients.html" />
+    <link rel="prev" title="batgrl.colors.color_types" href="batgrl.colors.color_types.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">batgrl 0.36.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/salt-die/batgrl" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="batgrl.app.html">batgrl.app</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="batgrl.colors.html">batgrl.colors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.color_types.html">batgrl.colors.color_types</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">batgrl.colors.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.colors.gradients.html">batgrl.colors.gradients</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.easings.html">batgrl.easings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.figfont.html">batgrl.figfont</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.gadgets.html">batgrl.gadgets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.animation.html">batgrl.gadgets.animation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.bar_chart.html">batgrl.gadgets.bar_chart</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.behaviors.html">batgrl.gadgets.behaviors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.button_behavior.html">batgrl.gadgets.behaviors.button_behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.focusable.html">batgrl.gadgets.behaviors.focusable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.grabbable.html">batgrl.gadgets.behaviors.grabbable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable.html">batgrl.gadgets.behaviors.movable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.movable_children.html">batgrl.gadgets.behaviors.movable_children</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.themable.html">batgrl.gadgets.behaviors.themable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.behaviors.toggle_button_behavior.html">batgrl.gadgets.behaviors.toggle_button_behavior</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.box_image.html">batgrl.gadgets.box_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_image.html">batgrl.gadgets.braille_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.braille_video.html">batgrl.gadgets.braille_video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.button.html">batgrl.gadgets.button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.color_picker.html">batgrl.gadgets.color_picker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.console.html">batgrl.gadgets.console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.data_table.html">batgrl.gadgets.data_table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.digital_display.html">batgrl.gadgets.digital_display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.file_chooser.html">batgrl.gadgets.file_chooser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.flat_toggle.html">batgrl.gadgets.flat_toggle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.gadget.html">batgrl.gadgets.gadget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphic_field.html">batgrl.gadgets.graphic_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.graphics.html">batgrl.gadgets.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.grid_layout.html">batgrl.gadgets.grid_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.image.html">batgrl.gadgets.image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.line_plot.html">batgrl.gadgets.line_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.markdown.html">batgrl.gadgets.markdown</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.menu.html">batgrl.gadgets.menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.pane.html">batgrl.gadgets.pane</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.parallax.html">batgrl.gadgets.parallax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.progress_bar.html">batgrl.gadgets.progress_bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.raycaster.html">batgrl.gadgets.raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.scroll_view.html">batgrl.gadgets.scroll_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.shadow_caster.html">batgrl.gadgets.shadow_caster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.slider.html">batgrl.gadgets.slider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.sparkline.html">batgrl.gadgets.sparkline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.split_layout.html">batgrl.gadgets.split_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.stack_layout.html">batgrl.gadgets.stack_layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tabs.html">batgrl.gadgets.tabs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text.html">batgrl.gadgets.text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_animation.html">batgrl.gadgets.text_animation</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="batgrl.gadgets.text_effects.html">batgrl.gadgets.text_effects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.beams.html">batgrl.gadgets.text_effects.beams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.black_hole.html">batgrl.gadgets.text_effects.black_hole</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.ring.html">batgrl.gadgets.text_effects.ring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="batgrl.gadgets.text_effects.spotlights.html">batgrl.gadgets.text_effects.spotlights</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_field.html">batgrl.gadgets.text_field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_pad.html">batgrl.gadgets.text_pad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.text_raycaster.html">batgrl.gadgets.text_raycaster</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.textbox.html">batgrl.gadgets.textbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tiled_image.html">batgrl.gadgets.tiled_image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.toggle_button.html">batgrl.gadgets.toggle_button</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.tree_view.html">batgrl.gadgets.tree_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.video.html">batgrl.gadgets.video</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.gadgets.window.html">batgrl.gadgets.window</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="batgrl.geometry.html">batgrl.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.basic.html">batgrl.geometry.basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.motion.html">batgrl.geometry.motion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batgrl.geometry.regions.html">batgrl.geometry.regions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.terminal.events.html">batgrl.terminal.events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.text_tools.html">batgrl.text_tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batgrl.texture_tools.html">batgrl.texture_tools</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">batgrl Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="batgrl.colors.html" class="nav-link">batgrl.colors</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">batgrl.colors.colors</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-batgrl.colors.colors">
+<span id="batgrl-colors-colors"></span><h1>batgrl.colors.colors<a class="headerlink" href="#module-batgrl.colors.colors" title="Link to this heading">#</a></h1>
+<p>Commonly used colors.</p>
+<p class="rubric">Module Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.WHITE" title="batgrl.colors.colors.WHITE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WHITE</span></code></a></p></td>
+<td><p>White.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.BLACK" title="batgrl.colors.colors.BLACK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BLACK</span></code></a></p></td>
+<td><p>Black.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.RED" title="batgrl.colors.colors.RED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RED</span></code></a></p></td>
+<td><p>Red.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.GREEN" title="batgrl.colors.colors.GREEN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GREEN</span></code></a></p></td>
+<td><p>Green.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.BLUE" title="batgrl.colors.colors.BLUE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BLUE</span></code></a></p></td>
+<td><p>Blue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.YELLOW" title="batgrl.colors.colors.YELLOW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YELLOW</span></code></a></p></td>
+<td><p>Yellow.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.CYAN" title="batgrl.colors.colors.CYAN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CYAN</span></code></a></p></td>
+<td><p>Cyan.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.MAGENTA" title="batgrl.colors.colors.MAGENTA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAGENTA</span></code></a></p></td>
+<td><p>Magenta.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.AWHITE" title="batgrl.colors.colors.AWHITE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AWHITE</span></code></a></p></td>
+<td><p>Opaque white.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.ABLACK" title="batgrl.colors.colors.ABLACK"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ABLACK</span></code></a></p></td>
+<td><p>Opaque black.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.ARED" title="batgrl.colors.colors.ARED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ARED</span></code></a></p></td>
+<td><p>Opaque red.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.AGREEN" title="batgrl.colors.colors.AGREEN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AGREEN</span></code></a></p></td>
+<td><p>Opaque green.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.ABLUE" title="batgrl.colors.colors.ABLUE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ABLUE</span></code></a></p></td>
+<td><p>Opaque blue.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.AYELLOW" title="batgrl.colors.colors.AYELLOW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AYELLOW</span></code></a></p></td>
+<td><p>Opaque yellow.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.ACYAN" title="batgrl.colors.colors.ACYAN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACYAN</span></code></a></p></td>
+<td><p>Opaque cyan.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.AMAGENTA" title="batgrl.colors.colors.AMAGENTA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AMAGENTA</span></code></a></p></td>
+<td><p>Opaque magenta.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.TRANSPARENT" title="batgrl.colors.colors.TRANSPARENT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANSPARENT</span></code></a></p></td>
+<td><p>Transparent black.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.DEFAULT_COLOR_THEME" title="batgrl.colors.colors.DEFAULT_COLOR_THEME"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_COLOR_THEME</span></code></a></p></td>
+<td><p>Default color theme.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.DEFAULT_PRIMARY_FG" title="batgrl.colors.colors.DEFAULT_PRIMARY_FG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_PRIMARY_FG</span></code></a></p></td>
+<td><p>Default primary foreground color.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#batgrl.colors.colors.DEFAULT_PRIMARY_BG" title="batgrl.colors.colors.DEFAULT_PRIMARY_BG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_PRIMARY_BG</span></code></a></p></td>
+<td><p>Default primary background color.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#batgrl.colors.colors.Neptune" title="batgrl.colors.colors.Neptune"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Neptune</span></code></a>()</p></td>
+<td><p>Default syntax highlight color theme.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.ABLACK">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">ABLACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.ABLACK" title="Link to this definition">#</a></dt>
+<dd><p>Opaque black.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.ABLUE">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">ABLUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">255,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.ABLUE" title="Link to this definition">#</a></dt>
+<dd><p>Opaque blue.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.ACYAN">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">ACYAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">255,</span> <span class="pre">255,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.ACYAN" title="Link to this definition">#</a></dt>
+<dd><p>Opaque cyan.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.AGREEN">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">AGREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">255,</span> <span class="pre">0,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.AGREEN" title="Link to this definition">#</a></dt>
+<dd><p>Opaque green.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.AMAGENTA">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">AMAGENTA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">0,</span> <span class="pre">255,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.AMAGENTA" title="Link to this definition">#</a></dt>
+<dd><p>Opaque magenta.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.ARED">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">ARED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.ARED" title="Link to this definition">#</a></dt>
+<dd><p>Opaque red.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.AWHITE">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">AWHITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">255,</span> <span class="pre">255,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.AWHITE" title="Link to this definition">#</a></dt>
+<dd><p>Opaque white.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.AYELLOW">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">AYELLOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">255,</span> <span class="pre">0,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.AYELLOW" title="Link to this definition">#</a></dt>
+<dd><p>Opaque yellow.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.BLACK">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">BLACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></em><a class="headerlink" href="#batgrl.colors.colors.BLACK" title="Link to this definition">#</a></dt>
+<dd><p>Black.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.BLUE">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">BLUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.BLUE" title="Link to this definition">#</a></dt>
+<dd><p>Blue.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.CYAN">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">CYAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">255,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.CYAN" title="Link to this definition">#</a></dt>
+<dd><p>Cyan.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.DEFAULT_COLOR_THEME">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_COLOR_THEME</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="batgrl.colors.color_types.html#batgrl.colors.color_types.ColorTheme" title="batgrl.colors.color_types.ColorTheme"><span class="pre">ColorTheme</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'button_disallowed':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'272b40'},</span> <span class="pre">'button_hover':</span> <span class="pre">{'bg':</span> <span class="pre">'3248c0',</span> <span class="pre">'fg':</span> <span class="pre">'fff0f6'},</span> <span class="pre">'button_normal':</span> <span class="pre">{'bg':</span> <span class="pre">'2a3ca0',</span> <span class="pre">'fg':</span> <span class="pre">'dde4ed'},</span> <span class="pre">'button_press':</span> <span class="pre">{'bg':</span> <span class="pre">'c4a219',</span> <span class="pre">'fg':</span> <span class="pre">'fff0f6'},</span> <span class="pre">'data_table_hover':</span> <span class="pre">{'bg':</span> <span class="pre">'111834',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'data_table_selected':</span> <span class="pre">{'bg':</span> <span class="pre">'111f5e',</span> <span class="pre">'fg':</span> <span class="pre">'ecf3ff'},</span> <span class="pre">'data_table_selected_hover':</span> <span class="pre">{'bg':</span> <span class="pre">'1b244b',</span> <span class="pre">'fg':</span> <span class="pre">'ecf3ff'},</span> <span class="pre">'data_table_sort_indicator':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'ecf3ff'},</span> <span class="pre">'data_table_stripe':</span> <span class="pre">{'bg':</span> <span class="pre">'0b1238',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'data_table_stripe_hover':</span> <span class="pre">{'bg':</span> <span class="pre">'0f184a',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'markdown_block_code_background':</span> <span class="pre">'080b1a',</span> <span class="pre">'markdown_header_background':</span> <span class="pre">'030612',</span> <span class="pre">'markdown_image':</span> <span class="pre">{'bg':</span> <span class="pre">'0c1540',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'markdown_inline_code':</span> <span class="pre">{'bg':</span> <span class="pre">'080b1a',</span> <span class="pre">'fg':</span> <span class="pre">'806ae5'},</span> <span class="pre">'markdown_link':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'376cff'},</span> <span class="pre">'markdown_link_hover':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'4668ff'},</span> <span class="pre">'markdown_quote':</span> <span class="pre">{'bg':</span> <span class="pre">'0c1b4b',</span> <span class="pre">'fg':</span> <span class="pre">'2054e2'},</span> <span class="pre">'markdown_quote_block_code_background':</span> <span class="pre">'11265d',</span> <span class="pre">'markdown_title':</span> <span class="pre">{'bg':</span> <span class="pre">'292a2d',</span> <span class="pre">'fg':</span> <span class="pre">'cfd1d4'},</span> <span class="pre">'menu_item_disallowed':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'272b40'},</span> <span class="pre">'menu_item_hover':</span> <span class="pre">{'bg':</span> <span class="pre">'111834',</span> <span class="pre">'fg':</span> <span class="pre">'f2babc'},</span> <span class="pre">'menu_item_selected':</span> <span class="pre">{'bg':</span> <span class="pre">'1b244b',</span> <span class="pre">'fg':</span> <span class="pre">'ecf3ff'},</span> <span class="pre">'primary':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'progress_bar':</span> <span class="pre">{'bg':</span> <span class="pre">'2a3ca0',</span> <span class="pre">'fg':</span> <span class="pre">'ffe0df'},</span> <span class="pre">'scroll_view_indicator_hover':</span> <span class="pre">'111e4f',</span> <span class="pre">'scroll_view_indicator_normal':</span> <span class="pre">'0e1843',</span> <span class="pre">'scroll_view_indicator_press':</span> <span class="pre">'172868',</span> <span class="pre">'scroll_view_scrollbar':</span> <span class="pre">'070c25',</span> <span class="pre">'text_pad_line_highlight':</span> <span class="pre">{'bg':</span> <span class="pre">'0c0e30',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'text_pad_selection_highlight':</span> <span class="pre">{'bg':</span> <span class="pre">'0f1847',</span> <span class="pre">'fg':</span> <span class="pre">'f6a7a9'},</span> <span class="pre">'textbox_placeholder':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'2a3a92'},</span> <span class="pre">'textbox_primary':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'fff0f6'},</span> <span class="pre">'textbox_selection_highlight':</span> <span class="pre">{'bg':</span> <span class="pre">'0f1847',</span> <span class="pre">'fg':</span> <span class="pre">'fff0f6'},</span> <span class="pre">'titlebar_inactive':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'7d6b71'},</span> <span class="pre">'titlebar_normal':</span> <span class="pre">{'bg':</span> <span class="pre">'070c25',</span> <span class="pre">'fg':</span> <span class="pre">'ffe0df'},</span> <span class="pre">'window_border_inactive':</span> <span class="pre">'282c3e',</span> <span class="pre">'window_border_normal':</span> <span class="pre">'122162'}</span></em><a class="headerlink" href="#batgrl.colors.colors.DEFAULT_COLOR_THEME" title="Link to this definition">#</a></dt>
+<dd><p>Default color theme.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.DEFAULT_PRIMARY_BG">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_PRIMARY_BG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(7,</span> <span class="pre">12,</span> <span class="pre">37)</span></em><a class="headerlink" href="#batgrl.colors.colors.DEFAULT_PRIMARY_BG" title="Link to this definition">#</a></dt>
+<dd><p>Default primary background color.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.DEFAULT_PRIMARY_FG">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_PRIMARY_FG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(246,</span> <span class="pre">167,</span> <span class="pre">169)</span></em><a class="headerlink" href="#batgrl.colors.colors.DEFAULT_PRIMARY_FG" title="Link to this definition">#</a></dt>
+<dd><p>Default primary foreground color.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.GREEN">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">GREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">255,</span> <span class="pre">0)</span></em><a class="headerlink" href="#batgrl.colors.colors.GREEN" title="Link to this definition">#</a></dt>
+<dd><p>Green.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.MAGENTA">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">MAGENTA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">0,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.MAGENTA" title="Link to this definition">#</a></dt>
+<dd><p>Magenta.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">Neptune</span></span><a class="headerlink" href="#batgrl.colors.colors.Neptune" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Style</span></code></p>
+<p>Default syntax highlight color theme.</p>
+<p>This style is adapted from
+<a class="github reference external" href="https://github.com/yl92/paddy-color-theme/blob/master/themes/upright/Paddy-neptune-upright-color-theme.json">yl92/paddy-color-theme</a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.aliases" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.background_color">
+<span class="sig-name descname"><span class="pre">background_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#070c25'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.background_color" title="Link to this definition">#</a></dt>
+<dd><p>overall background color (<code class="docutils literal notranslate"><span class="pre">None</span></code> means transparent)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.highlight_color">
+<span class="sig-name descname"><span class="pre">highlight_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#5f32db'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.highlight_color" title="Link to this definition">#</a></dt>
+<dd><p>highlight background color</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.line_number_background_color">
+<span class="sig-name descname"><span class="pre">line_number_background_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#070c25'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.line_number_background_color" title="Link to this definition">#</a></dt>
+<dd><p>line number background color</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.line_number_color">
+<span class="sig-name descname"><span class="pre">line_number_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#527bff'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.line_number_color" title="Link to this definition">#</a></dt>
+<dd><p>line number font color</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.line_number_special_background_color">
+<span class="sig-name descname"><span class="pre">line_number_special_background_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#5f32db'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.line_number_special_background_color" title="Link to this definition">#</a></dt>
+<dd><p>special line number background color</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.line_number_special_color">
+<span class="sig-name descname"><span class="pre">line_number_special_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#2f3adf'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.line_number_special_color" title="Link to this definition">#</a></dt>
+<dd><p>special line number font color</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'neptune'</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.styles">
+<span class="sig-name descname"><span class="pre">styles</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{():</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Comment',):</span> <span class="pre">'#554492',</span> <span class="pre">('Comment',</span> <span class="pre">'Hashbang'):</span> <span class="pre">'',</span> <span class="pre">('Comment',</span> <span class="pre">'Multiline'):</span> <span class="pre">'',</span> <span class="pre">('Comment',</span> <span class="pre">'Preproc'):</span> <span class="pre">'',</span> <span class="pre">('Comment',</span> <span class="pre">'PreprocFile'):</span> <span class="pre">'',</span> <span class="pre">('Comment',</span> <span class="pre">'Single'):</span> <span class="pre">'',</span> <span class="pre">('Comment',</span> <span class="pre">'Special'):</span> <span class="pre">'#978d7a',</span> <span class="pre">('Error',):</span> <span class="pre">'bold</span> <span class="pre">#d32e11',</span> <span class="pre">('Escape',):</span> <span class="pre">'',</span> <span class="pre">('Generic',):</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Generic',</span> <span class="pre">'Deleted'):</span> <span class="pre">'bold</span> <span class="pre">bg:#cf5076</span> <span class="pre">#309388',</span> <span class="pre">('Generic',</span> <span class="pre">'Emph'):</span> <span class="pre">'italic',</span> <span class="pre">('Generic',</span> <span class="pre">'EmphStrong'):</span> <span class="pre">'bold</span> <span class="pre">italic',</span> <span class="pre">('Generic',</span> <span class="pre">'Error'):</span> <span class="pre">'bold</span> <span class="pre">#d32e11',</span> <span class="pre">('Generic',</span> <span class="pre">'Heading'):</span> <span class="pre">'#da5656',</span> <span class="pre">('Generic',</span> <span class="pre">'Inserted'):</span> <span class="pre">'bg:#4d67ff</span> <span class="pre">#da7763',</span> <span class="pre">('Generic',</span> <span class="pre">'Output'):</span> <span class="pre">'#69a097',</span> <span class="pre">('Generic',</span> <span class="pre">'Prompt'):</span> <span class="pre">'',</span> <span class="pre">('Generic',</span> <span class="pre">'Strong'):</span> <span class="pre">'bold',</span> <span class="pre">('Generic',</span> <span class="pre">'Subheading'):</span> <span class="pre">'#da5656',</span> <span class="pre">('Generic',</span> <span class="pre">'Traceback'):</span> <span class="pre">'bold</span> <span class="pre">#de9138',</span> <span class="pre">('Generic',</span> <span class="pre">'Underline'):</span> <span class="pre">'underline',</span> <span class="pre">('Keyword',):</span> <span class="pre">'#5bb177',</span> <span class="pre">('Keyword',</span> <span class="pre">'Constant'):</span> <span class="pre">'bold</span> <span class="pre">#91a5bd',</span> <span class="pre">('Keyword',</span> <span class="pre">'Declaration'):</span> <span class="pre">'',</span> <span class="pre">('Keyword',</span> <span class="pre">'Namespace'):</span> <span class="pre">'',</span> <span class="pre">('Keyword',</span> <span class="pre">'Pseudo'):</span> <span class="pre">'#e28f37',</span> <span class="pre">('Keyword',</span> <span class="pre">'Reserved'):</span> <span class="pre">'',</span> <span class="pre">('Keyword',</span> <span class="pre">'Type'):</span> <span class="pre">'',</span> <span class="pre">('Literal',):</span> <span class="pre">'#da7763',</span> <span class="pre">('Literal',</span> <span class="pre">'Date'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'Number'):</span> <span class="pre">'#e47559',</span> <span class="pre">('Literal',</span> <span class="pre">'Number',</span> <span class="pre">'Bin'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'Number',</span> <span class="pre">'Float'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'Number',</span> <span class="pre">'Hex'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'Number',</span> <span class="pre">'Integer'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'Number',</span> <span class="pre">'Integer',</span> <span class="pre">'Long'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'Number',</span> <span class="pre">'Oct'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String'):</span> <span class="pre">'#da7763',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Affix'):</span> <span class="pre">'#c75974',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Backtick'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Char'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Delimiter'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Doc'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Double'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Escape'):</span> <span class="pre">'#62A594',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Heredoc'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Interpol'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Other'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Regex'):</span> <span class="pre">'#d46fbe',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Single'):</span> <span class="pre">'',</span> <span class="pre">('Literal',</span> <span class="pre">'String',</span> <span class="pre">'Symbol'):</span> <span class="pre">'',</span> <span class="pre">('Name',):</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Name',</span> <span class="pre">'Attribute'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Builtin'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Builtin',</span> <span class="pre">'Pseudo'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Class'):</span> <span class="pre">'bold</span> <span class="pre">#de9138',</span> <span class="pre">('Name',</span> <span class="pre">'Constant'):</span> <span class="pre">'#17c78c',</span> <span class="pre">('Name',</span> <span class="pre">'Decorator'):</span> <span class="pre">'#d85757',</span> <span class="pre">('Name',</span> <span class="pre">'Entity'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Exception'):</span> <span class="pre">'bold</span> <span class="pre">#de9138',</span> <span class="pre">('Name',</span> <span class="pre">'Function'):</span> <span class="pre">'#d85757',</span> <span class="pre">('Name',</span> <span class="pre">'Function',</span> <span class="pre">'Magic'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Label'):</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Name',</span> <span class="pre">'Namespace'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Other'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Property'):</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Name',</span> <span class="pre">'Tag'):</span> <span class="pre">'bold</span> <span class="pre">#309388',</span> <span class="pre">('Name',</span> <span class="pre">'Variable'):</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Name',</span> <span class="pre">'Variable',</span> <span class="pre">'Class'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Variable',</span> <span class="pre">'Global'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Variable',</span> <span class="pre">'Instance'):</span> <span class="pre">'',</span> <span class="pre">('Name',</span> <span class="pre">'Variable',</span> <span class="pre">'Magic'):</span> <span class="pre">'',</span> <span class="pre">('Operator',):</span> <span class="pre">'#5bb177',</span> <span class="pre">('Operator',</span> <span class="pre">'Word'):</span> <span class="pre">'',</span> <span class="pre">('Other',):</span> <span class="pre">'',</span> <span class="pre">('Punctuation',):</span> <span class="pre">'',</span> <span class="pre">('Punctuation',</span> <span class="pre">'Marker'):</span> <span class="pre">'',</span> <span class="pre">('Text',):</span> <span class="pre">'#f6a7a9',</span> <span class="pre">('Text',</span> <span class="pre">'Whitespace'):</span> <span class="pre">''}</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.styles" title="Link to this definition">#</a></dt>
+<dd><p>Style definitions for individual token types.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="batgrl.colors.colors.Neptune.web_style_gallery_exclude">
+<span class="sig-name descname"><span class="pre">web_style_gallery_exclude</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#batgrl.colors.colors.Neptune.web_style_gallery_exclude" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.RED">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">RED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">0,</span> <span class="pre">0)</span></em><a class="headerlink" href="#batgrl.colors.colors.RED" title="Link to this definition">#</a></dt>
+<dd><p>Red.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.TRANSPARENT">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">TRANSPARENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">0)</span></em><a class="headerlink" href="#batgrl.colors.colors.TRANSPARENT" title="Link to this definition">#</a></dt>
+<dd><p>Transparent black.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.WHITE">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">WHITE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">255,</span> <span class="pre">255)</span></em><a class="headerlink" href="#batgrl.colors.colors.WHITE" title="Link to this definition">#</a></dt>
+<dd><p>White.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="batgrl.colors.colors.YELLOW">
+<span class="sig-prename descclassname"><span class="pre">batgrl.colors.colors.</span></span><span class="sig-name descname"><span class="pre">YELLOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(255,</span> <span class="pre">255,</span> <span class="pre">0)</span></em><a class="headerlink" href="#batgrl.colors.colors.YELLOW" title="Link to this definition">#</a></dt>
+<dd><p>Yellow.</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.ABLACK"><code class="docutils literal notranslate"><span class="pre">ABLACK</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.ABLUE"><code class="docutils literal notranslate"><span class="pre">ABLUE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.ACYAN"><code class="docutils literal notranslate"><span class="pre">ACYAN</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.AGREEN"><code class="docutils literal notranslate"><span class="pre">AGREEN</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.AMAGENTA"><code class="docutils literal notranslate"><span class="pre">AMAGENTA</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.ARED"><code class="docutils literal notranslate"><span class="pre">ARED</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.AWHITE"><code class="docutils literal notranslate"><span class="pre">AWHITE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.AYELLOW"><code class="docutils literal notranslate"><span class="pre">AYELLOW</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.BLACK"><code class="docutils literal notranslate"><span class="pre">BLACK</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.BLUE"><code class="docutils literal notranslate"><span class="pre">BLUE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.CYAN"><code class="docutils literal notranslate"><span class="pre">CYAN</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.DEFAULT_COLOR_THEME"><code class="docutils literal notranslate"><span class="pre">DEFAULT_COLOR_THEME</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.DEFAULT_PRIMARY_BG"><code class="docutils literal notranslate"><span class="pre">DEFAULT_PRIMARY_BG</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.DEFAULT_PRIMARY_FG"><code class="docutils literal notranslate"><span class="pre">DEFAULT_PRIMARY_FG</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.GREEN"><code class="docutils literal notranslate"><span class="pre">GREEN</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.MAGENTA"><code class="docutils literal notranslate"><span class="pre">MAGENTA</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune"><code class="docutils literal notranslate"><span class="pre">Neptune</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.aliases"><code class="docutils literal notranslate"><span class="pre">Neptune.aliases</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.background_color"><code class="docutils literal notranslate"><span class="pre">Neptune.background_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.highlight_color"><code class="docutils literal notranslate"><span class="pre">Neptune.highlight_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.line_number_background_color"><code class="docutils literal notranslate"><span class="pre">Neptune.line_number_background_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.line_number_color"><code class="docutils literal notranslate"><span class="pre">Neptune.line_number_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.line_number_special_background_color"><code class="docutils literal notranslate"><span class="pre">Neptune.line_number_special_background_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.line_number_special_color"><code class="docutils literal notranslate"><span class="pre">Neptune.line_number_special_color</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.name"><code class="docutils literal notranslate"><span class="pre">Neptune.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.styles"><code class="docutils literal notranslate"><span class="pre">Neptune.styles</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.Neptune.web_style_gallery_exclude"><code class="docutils literal notranslate"><span class="pre">Neptune.web_style_gallery_exclude</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.RED"><code class="docutils literal notranslate"><span class="pre">RED</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.TRANSPARENT"><code class="docutils literal notranslate"><span class="pre">TRANSPARENT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.WHITE"><code class="docutils literal notranslate"><span class="pre">WHITE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#batgrl.colors.colors.YELLOW"><code class="docutils literal notranslate"><span class="pre">YELLOW</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/reference/generated/batgrl.colors.colors.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, salt-die.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

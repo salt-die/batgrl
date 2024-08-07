@@ -1,0 +1,22 @@
+batgrl.gadgets.text\_effects.spotlights
+=======================================
+
+.. automodule:: batgrl.gadgets.text_effects.spotlights
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _draw_spotlights
+      _grow_spotlights
+      _move_spotlights
+      _random_point
+      spotlights_effect
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      _SpotLight
+   

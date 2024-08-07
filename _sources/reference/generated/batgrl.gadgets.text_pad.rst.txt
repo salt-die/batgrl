@@ -1,0 +1,12 @@
+batgrl.gadgets.text\_pad
+========================
+
+.. automodule:: batgrl.gadgets.text_pad
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      TextPad
+   

@@ -1,0 +1,20 @@
+batgrl.gadgets.file\_chooser
+============================
+
+.. automodule:: batgrl.gadgets.file_chooser
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _is_hidden
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FileChooser
+      _FileView
+      _FileViewNode
+   

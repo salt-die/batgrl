@@ -1,0 +1,15 @@
+batgrl.gadgets.scroll\_view
+===========================
+
+.. automodule:: batgrl.gadgets.scroll_view
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ScrollView
+      _HorizontalScrollbar
+      _ScrollbarBase
+      _VerticalScrollbar
+   

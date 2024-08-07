@@ -1,0 +1,18 @@
+batgrl.gadgets.behaviors.toggle\_button\_behavior
+=================================================
+
+.. automodule:: batgrl.gadgets.behaviors.toggle_button_behavior
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      ToggleState
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ToggleButtonBehavior
+   

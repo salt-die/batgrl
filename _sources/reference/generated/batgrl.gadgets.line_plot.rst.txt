@@ -1,0 +1,14 @@
+batgrl.gadgets.line\_plot
+=========================
+
+.. automodule:: batgrl.gadgets.line_plot
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      LinePlot
+      _Legend
+      _LinePlotProperty
+   

@@ -1,0 +1,13 @@
+batgrl.gadgets.behaviors.focusable
+==================================
+
+.. automodule:: batgrl.gadgets.behaviors.focusable
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      AnyFocusedProperty
+      Focusable
+   

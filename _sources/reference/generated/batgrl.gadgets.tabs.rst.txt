@@ -1,0 +1,13 @@
+batgrl.gadgets.tabs
+===================
+
+.. automodule:: batgrl.gadgets.tabs
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Tabs
+      _Tab
+   

@@ -1,0 +1,12 @@
+batgrl.gadgets.progress\_bar
+============================
+
+.. automodule:: batgrl.gadgets.progress_bar
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ProgressBar
+   

@@ -1,0 +1,32 @@
+﻿batgrl.text\_tools
+==================
+
+.. automodule:: batgrl.text_tools
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      Cell
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _parse_batgrl_md
+      _smooth_bar
+      _text_to_cells
+      _write_lines_to_canvas
+      add_text
+      binary_to_box
+      binary_to_braille
+      cell_sans
+      char_width
+      coerce_cell
+      is_word_char
+      new_cell
+      smooth_horizontal_bar
+      smooth_vertical_bar
+      str_width
+   

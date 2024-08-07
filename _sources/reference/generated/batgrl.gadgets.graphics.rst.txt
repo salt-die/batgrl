@@ -1,0 +1,12 @@
+batgrl.gadgets.graphics
+=======================
+
+.. automodule:: batgrl.gadgets.graphics
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Graphics
+   

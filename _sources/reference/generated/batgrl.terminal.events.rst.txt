@@ -1,0 +1,19 @@
+﻿batgrl.terminal.events
+======================
+
+.. automodule:: batgrl.terminal.events
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CursorPositionResponseEvent
+      Event
+      FocusEvent
+      KeyEvent
+      MouseEvent
+      PasteEvent
+      ResizeEvent
+      UnknownEscapeSequence
+   

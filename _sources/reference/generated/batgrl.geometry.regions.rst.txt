@@ -1,0 +1,20 @@
+batgrl.geometry.regions
+=======================
+
+.. automodule:: batgrl.geometry.regions
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      _merge
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Rect
+      Region
+      _Band
+   

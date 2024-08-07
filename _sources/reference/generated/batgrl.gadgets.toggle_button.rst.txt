@@ -1,0 +1,12 @@
+batgrl.gadgets.toggle\_button
+=============================
+
+.. automodule:: batgrl.gadgets.toggle_button
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ToggleButton
+   

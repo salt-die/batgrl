@@ -1,0 +1,14 @@
+batgrl.gadgets.flat\_toggle
+===========================
+
+.. automodule:: batgrl.gadgets.flat_toggle
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FlatToggle
+      _AnimatedToggle
+      _ToggleButtonProperty
+   

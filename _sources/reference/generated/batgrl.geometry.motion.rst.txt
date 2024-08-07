@@ -1,0 +1,19 @@
+batgrl.geometry.motion
+======================
+
+.. automodule:: batgrl.geometry.motion
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      move_along_path
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BezierCurve
+      HasPos
+   

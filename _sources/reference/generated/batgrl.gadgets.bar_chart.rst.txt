@@ -1,0 +1,13 @@
+batgrl.gadgets.bar\_chart
+=========================
+
+.. automodule:: batgrl.gadgets.bar_chart
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      BarChart
+      _BarChartProperty
+   

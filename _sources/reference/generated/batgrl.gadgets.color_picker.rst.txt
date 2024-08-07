@@ -1,0 +1,14 @@
+batgrl.gadgets.color\_picker
+============================
+
+.. automodule:: batgrl.gadgets.color_picker
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ColorPicker
+      _HueSelector
+      _ShadeSelector
+   

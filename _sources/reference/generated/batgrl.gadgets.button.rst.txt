@@ -1,0 +1,12 @@
+batgrl.gadgets.button
+=====================
+
+.. automodule:: batgrl.gadgets.button
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Button
+   
