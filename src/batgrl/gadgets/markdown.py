@@ -614,31 +614,31 @@ class _BatgrlRenderer(BaseRenderer):
             row_height = 1
             column_widths.extend([MIN_COLUMN_WIDTH] * (len(row) - len(column_widths)))
             alignments.extend([None] * (len(row) - len(alignments)))
-            for i, cell_ in enumerate(row):
-                if cell_.width > column_widths[i]:
-                    column_widths[i] = cell_.width
-                if cell_.height > row_height:
-                    row_height = cell_.height
+            for i, cell in enumerate(row):
+                if cell.width > column_widths[i]:
+                    column_widths[i] = cell.width
+                if cell.height > row_height:
+                    row_height = cell.height
             row_heights.append(row_height)
 
         for row, row_height in zip(rendered_rows, row_heights):
-            for cell_, column_width, alignment in zip(row, column_widths, alignments):
-                if cell_.height < row_height:
-                    cell_.height = row_height
+            for cell, column_width, alignment in zip(row, column_widths, alignments):
+                if cell.height < row_height:
+                    cell.height = row_height
 
-                if column_width == cell_.width:
+                if column_width == cell.width:
                     continue
 
-                diff = column_width - cell_.width
-                cell_.width += diff
+                diff = column_width - cell.width
+                cell.width += diff
                 if alignment == 0:  # centered
                     offset_left = diff // 2
                     offset_right = diff - offset_left
-                    cell_.canvas[:, offset_left:-offset_right] = cell_.canvas[:, :-diff]
-                    cell_.canvas[:, :offset_left] = cell_.default_cell
+                    cell.canvas[:, offset_left:-offset_right] = cell.canvas[:, :-diff]
+                    cell.canvas[:, :offset_left] = cell.default_cell
                 elif alignment == 1:  # right-aligned
-                    cell_.canvas[:, diff:] = cell_.canvas[:, :-diff]
-                    cell_.canvas[:, :diff] = cell_.default_cell
+                    cell.canvas[:, diff:] = cell.canvas[:, :-diff]
+                    cell.canvas[:, :diff] = cell.default_cell
 
         OUTER_PAD = 1
         INNER_PAD = 2
@@ -654,12 +654,12 @@ class _BatgrlRenderer(BaseRenderer):
         y = 0
         for i, row in enumerate(rendered_rows):
             x = OUTER_PAD
-            for cell_ in row:
-                h, w = cell_.size
-                table.canvas[y : y + h, x : x + w] = cell_.canvas
-                children = cell_.children.copy()
+            for cell in row:
+                h, w = cell.size
+                table.canvas[y : y + h, x : x + w] = cell.canvas
+                children = cell.children.copy()
                 for child in children:
-                    cell_.remove_gadget(child)
+                    cell.remove_gadget(child)
                     cy, cx = child.pos
                     child.pos = cy + y, cx + x
                     table.add_gadgets(child)

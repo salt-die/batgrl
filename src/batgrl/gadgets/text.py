@@ -271,8 +271,8 @@ class Text(Gadget):
         return self._default_cell
 
     @default_cell.setter
-    def default_cell(self, cell_: NDArray[Cell] | str):
-        self._default_cell = coerce_cell(cell_, new_cell())
+    def default_cell(self, cell: NDArray[Cell] | str):
+        self._default_cell = coerce_cell(cell, new_cell())
 
     @property
     def default_fg_color(self) -> Color:
