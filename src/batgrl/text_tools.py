@@ -223,36 +223,36 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     """
     NO_CHAR = new_cell(char="")
     matches, escapes = find_md_tokens(text)
-    chars = [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
+    cells = [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
     for before, start, end, after, style in matches:
-        chars[start - before : start] = [NO_CHAR] * before
-        chars[end : end + after] = [NO_CHAR] * after
+        cells[start - before : start] = [NO_CHAR] * before
+        cells[end : end + after] = [NO_CHAR] * after
         for i in range(start, end):
-            chars[i][style] = True
+            cells[i][style] = True
 
     for i in escapes:
-        chars[i] = NO_CHAR
+        cells[i] = NO_CHAR
 
     lines = []
     line = []
     line_width = max_width = 0
 
-    for char in chars:
-        ch = char["char"].item()
-        if ch == "":
+    for cell in cells:
+        char = cell["char"].item()
+        if char == "":
             continue
 
-        if ch == "\n":
+        if char == "\n":
             lines.append(line)
             line = []
             if line_width > max_width:
                 max_width = line_width
             line_width = 0
         else:
-            width = char_width(ch)
+            width = char_width(char)
             line_width += width
             if width > 0:
-                line.append(char)
+                line.append(cell)
 
     lines.append(line)
     if line_width > max_width:
