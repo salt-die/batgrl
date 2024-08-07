@@ -5,7 +5,7 @@ from batgrl.colors import (
     DEFAULT_PRIMARY_FG,
     Color,
 )
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.text_pad import TextPad
 from batgrl.gadgets.textbox import Textbox
 
@@ -65,12 +65,10 @@ class BorderOnFocus:
         self.parent.add_border("near", bold=False, fg_color=INACTIVE_COLOR)
 
 
-class BorderedOnFocusTextbox(BorderOnFocus, Textbox):
-    ...
+class BorderedOnFocusTextbox(BorderOnFocus, Textbox): ...
 
 
-class BorderedOnFocusTextPad(BorderOnFocus, TextPad):
-    ...
+class BorderedOnFocusTextPad(BorderOnFocus, TextPad): ...
 
 
 class TextPadApp(App):
@@ -82,7 +80,7 @@ class TextPadApp(App):
             placeholder="Search...",
             max_chars=50,
         )
-        default_cell = cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=SECONDARY_BG)
+        default_cell = new_cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=SECONDARY_BG)
         textbox_border = Text(pos=(2, 2), size=(3, 35), default_cell=default_cell)
         textbox_border.add_gadget(textbox)
         textbox_border.add_str("🔍", pos=(1, 1))
@@ -96,7 +94,7 @@ class TextPadApp(App):
         labels = Text(
             size=(22, 39),
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
-            default_cell=cell(fg_color=SECONDARY_FG, bg_color=SECONDARY_BG),
+            default_cell=new_cell(fg_color=SECONDARY_FG, bg_color=SECONDARY_BG),
         )
         labels.add_str("__Textbox__", pos=(1, 16), markdown=True)
         labels.add_str("__Text Pad__", pos=(5, 16), markdown=True)

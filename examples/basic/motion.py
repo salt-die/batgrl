@@ -1,4 +1,5 @@
 """An example showcasing movement along a path made up of Bezier curves."""
+
 import asyncio
 from itertools import cycle
 from pathlib import Path
@@ -16,7 +17,7 @@ from batgrl.colors import (
 )
 from batgrl.gadgets.graphics import Graphics
 from batgrl.gadgets.image import Image
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 from batgrl.geometry import BezierCurve, Easing, move_along_path
 
 LOGO = Path(__file__).parent / ".." / "assets" / "python_discord_logo.png"
@@ -33,7 +34,9 @@ class PathApp(App):
         bg = Graphics(size=BG_SIZE, default_color=(*DEFAULT_PRIMARY_BG, 255))
         image = Image(path=LOGO, size=(15, 30), alpha=0.85)
         label = Text(
-            default_cell=cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG),
+            default_cell=new_cell(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            ),
             is_transparent=True,
         )
 

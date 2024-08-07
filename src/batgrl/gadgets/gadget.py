@@ -16,7 +16,7 @@ from numpy.typing import NDArray
 from ..easings import EASINGS, Easing
 from ..geometry import Point, Region, Size, clamp, lerp, round_down
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
-from ..text_tools import Cell, cell
+from ..text_tools import Cell, new_cell
 
 __all__ = [
     "Anchor",
@@ -31,7 +31,7 @@ __all__ = [
     "SizeHintDict",
     "Gadget",
     "bindable",
-    "cell",
+    "new_cell",
     "clamp",
     "lerp",
 ]

@@ -26,7 +26,7 @@ from .gadget import (
 )
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, add_text, cell
+from .text import Text, add_text, new_cell
 
 __all__ = ["LinePlot", "Point", "Size"]
 
@@ -304,7 +304,7 @@ class LinePlot(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        default_cell = cell(fg_color=plot_fg_color, bg_color=plot_bg_color)
+        default_cell = new_cell(fg_color=plot_fg_color, bg_color=plot_bg_color)
         self._traces = Text(default_cell=default_cell)
         self._scrollview = ScrollView(
             show_vertical_bar=False,

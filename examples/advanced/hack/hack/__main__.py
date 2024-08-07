@@ -3,7 +3,7 @@ from pathlib import Path
 from batgrl.app import App
 from batgrl.gadgets.image import Image
 from batgrl.gadgets.pane import Pane
-from batgrl.gadgets.text import Text, add_text, cell
+from batgrl.gadgets.text import Text, add_text, new_cell
 
 from .colors import BRIGHT_GREEN, DARK_GREEN
 from .effects import BOLDCRT
@@ -24,7 +24,7 @@ ENTER PASSWORD NOW
 
 class HackApp(App):
     async def on_start(self):
-        default_cell = cell(fg_color=BRIGHT_GREEN, bg_color=DARK_GREEN)
+        default_cell = new_cell(fg_color=BRIGHT_GREEN, bg_color=DARK_GREEN)
 
         header = Text(size=(5, 39), default_cell=default_cell)
         add_text(header.canvas, HEADER)

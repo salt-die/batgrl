@@ -16,7 +16,7 @@ from .gadget import (
 )
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, cell
+from .text import Text, new_cell
 
 __all__ = ["BarChart", "Point", "Size"]
 
@@ -337,7 +337,7 @@ class BarChart(Gadget):
         )
         bar_width = (bars_width - BAR_SPACING * (nbars + 1)) // nbars
         self._bars.size = h, bars_width
-        self._bars.canvas[:] = cell(
+        self._bars.canvas[:] = new_cell(
             fg_color=self.chart_fg_color, bg_color=self.chart_bg_color
         )
 

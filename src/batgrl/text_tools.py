@@ -17,7 +17,7 @@ __all__ = [
     "add_text",
     "binary_to_box",
     "binary_to_braille",
-    "cell",
+    "new_cell",
     "char_width",
     "coerce_cell",
     "is_word_char",
@@ -126,7 +126,7 @@ def cell_sans(*names: str) -> list[str]:
     return [name for name in Cell.names if name not in names]
 
 
-def cell(
+def new_cell(
     char: str = " ",
     bold: bool = False,
     italic: bool = False,
@@ -188,7 +188,7 @@ def coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Ce
         The coerced Cell or None if character can't be coerced.
     """
     if isinstance(char, str) and len(char) > 0 and char_width(char[0]) == 1:
-        return cell(char=char[0])
+        return new_cell(char=char[0])
     if (
         isinstance(char, np.ndarray)
         and char.dtype == Cell
@@ -221,9 +221,9 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     tuple[Size, list[list[Cell]]]
         Minimum canvas size to fit text and a list of lines of styled characters.
     """
-    NO_CHAR = cell(char="")
+    NO_CHAR = new_cell(char="")
     matches, escapes = find_md_tokens(text)
-    chars = [cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
+    chars = [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
     for before, start, end, after, style in matches:
         chars[start - before : start] = [NO_CHAR] * before
         chars[end : end + after] = [NO_CHAR] * after
@@ -277,18 +277,17 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
         Minimum canvas size to fit text and a list of lists of Cells.
     """
     lines = [
-        [cell(char=char)[cell_sans("fg_color", "bg_color")] for char in line]
+        [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in line]
         for line in text.split("\n")
     ]
-    line_width = 0
     max_width = 0
     for line in lines:
+        line_width = 0
         for char in line:
             width = char_width(char["char"].item())
             line_width += width
         if line_width > max_width:
             max_width = line_width
-        line_width = 0
     return Size(len(lines), max_width), lines
 
 

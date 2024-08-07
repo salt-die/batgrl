@@ -4,7 +4,7 @@ from pathlib import Path
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.image import Image
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 from batgrl.geometry import Easing
 
 ASSETS = Path(__file__).parent.parent / "assets"
@@ -33,7 +33,9 @@ class EasingsApp(App):
         label = Text(
             size=(1, 30),
             pos_hint={"x_hint": 0.5, "anchor": "top"},
-            default_cell=cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG),
+            default_cell=new_cell(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            ),
         )
 
         self.add_gadgets(logo, label)

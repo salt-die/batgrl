@@ -4,9 +4,10 @@ An example to showcase binding.
 After binding a callback to gadget property, the callback will be called anytime the
 property is updated.
 """
+
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.window import Window
 
 
@@ -14,7 +15,9 @@ class BindingApp(App):
     async def on_start(self):
         window = Window(title="Move/Resize Me")
         label = Text(
-            default_cell=cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG),
+            default_cell=new_cell(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            ),
         )
 
         def update_label():

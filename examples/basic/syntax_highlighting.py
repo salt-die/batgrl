@@ -1,11 +1,12 @@
 """Syntax highlighting example."""
+
 from pathlib import Path
 
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Neptune
 from batgrl.gadgets.menu import MenuBar
 from batgrl.gadgets.scroll_view import ScrollView
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 from pygments.styles import get_style_by_name
 
 DARK_STYLES = [
@@ -99,7 +100,7 @@ class SyntaxApp(App):
         light_menu = {(style, ""): callback_for(style) for style in LIGHT_STYLES}
 
         sep = Text(
-            default_cell=cell(
+            default_cell=new_cell(
                 char="━", fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
             ),
             pos=(1, 0),

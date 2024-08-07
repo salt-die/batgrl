@@ -13,7 +13,7 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
-    cell,
+    new_cell,
 )
 from .pane import Pane
 from .text import Text
@@ -259,16 +259,16 @@ class Tabs(Themable, Gadget):
             size=(1, 1),
             pos=(1, 0),
             is_enabled=False,
-            default_cell=cell(char="━", **tab_style),
+            default_cell=new_cell(char="━", **tab_style),
         )
         tab_underline_left = Text(
             size=(1, 1),
-            default_cell=cell(char="╺", **tab_style),
+            default_cell=new_cell(char="╺", **tab_style),
         )
         tab_underline_right = Text(
             size=(1, 1),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
-            default_cell=cell(char="╸", **tab_style),
+            default_cell=new_cell(char="╸", **tab_style),
         )
         self._tab_underline.add_gadgets(tab_underline_left, tab_underline_right)
 

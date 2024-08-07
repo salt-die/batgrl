@@ -1,7 +1,7 @@
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.bar_chart import BarChart
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 
 
 class BarChartApp(App):
@@ -30,7 +30,9 @@ class BarChartApp(App):
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
         )
         label = Text(
-            default_cell=cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG),
+            default_cell=new_cell(
+                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            ),
             pos_hint={"x_hint": 0.5},
         )
         label.set_text("Top Programming Languages 2023")

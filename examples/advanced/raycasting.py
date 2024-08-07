@@ -13,7 +13,7 @@ from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, RgbaTexture, Sp
 from batgrl.gadgets.text_raycaster import TextRaycaster
 from batgrl.gadgets.video import Video
 from batgrl.geometry import lerp
-from batgrl.text_tools import cell
+from batgrl.text_tools import new_cell
 from batgrl.texture_tools import read_texture
 
 
@@ -98,7 +98,7 @@ class RaycasterApp(App):
             wall_textures=[WALL],
             sprites=[Sprite(pos=points[i], texture_idx=0) for i in range(4)],
             sprite_textures=[TREE],
-            default_cell=cell(fg_color=GREEN),
+            default_cell=new_cell(fg_color=GREEN),
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
             pos_hint={"x_hint": 0.5, "anchor": "left"},
         )

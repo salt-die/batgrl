@@ -34,7 +34,7 @@ from .gadget import (
 )
 from .graphics import Graphics
 from .pane import Pane
-from .text import Text, cell
+from .text import Text, new_cell
 
 __all__ = ["ColorPicker", "Point", "Size"]
 
@@ -110,7 +110,7 @@ class _HueSelector(Grabbable, Graphics):
 
         self._hue_hint = 0.0
         self._hue_indicator = Text(
-            size=(1, 1), default_cell=cell(fg_color=WHITE, bg_color=RED)
+            size=(1, 1), default_cell=new_cell(fg_color=WHITE, bg_color=RED)
         )
         self._hue_indicator.add_str("▼")
 

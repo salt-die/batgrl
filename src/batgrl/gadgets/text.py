@@ -30,8 +30,8 @@ from .gadget import (
     SizeHint,
     SizeHintDict,
     bindable,
-    cell,
     clamp,
+    new_cell,
 )
 
 __all__ = [
@@ -272,7 +272,7 @@ class Text(Gadget):
 
     @default_cell.setter
     def default_cell(self, cell_: NDArray[Cell] | str):
-        self._default_cell = coerce_cell(cell_, cell())
+        self._default_cell = coerce_cell(cell_, new_cell())
 
     @property
     def default_fg_color(self) -> Color:
@@ -349,7 +349,7 @@ class Text(Gadget):
         view = cell_sans("fg_color", "bg_color")
         cells = self.canvas[view]
         for s, border in zip(slices, _BORDERS[style]):
-            cells[s] = cell(char=border, bold=bold)[view]
+            cells[s] = new_cell(char=border, bold=bold)[view]
 
         if fg_color is not None:
             self.canvas["fg_color"][[0, -1]] = fg_color

@@ -3,7 +3,7 @@ from functools import partial
 import numpy as np
 from batgrl.colors import ABLACK
 from batgrl.gadgets.graphics import Graphics, Size
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
 from .particles import Air
@@ -35,7 +35,7 @@ class Sandbox(Graphics):
             size=(1, 9),
             pos=(1, 0),
             pos_hint={"x_hint": 0.5},
-            default_cell=cell(fg_color=Air.COLOR, bg_color=MENU_BACKGROUND_COLOR),
+            default_cell=new_cell(fg_color=Air.COLOR, bg_color=MENU_BACKGROUND_COLOR),
         )
         self.add_gadgets(self.display, ButtonContainer())
 

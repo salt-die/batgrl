@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ..app import App
 
 from ..colors import Color
-from ..text_tools import cell
+from ..text_tools import new_cell
 from .gadget import Gadget, Point, Region, Size
 
 
@@ -35,7 +35,7 @@ class _Root(Gadget):
 
         self._app = app
         self.render_mode = render_mode
-        self._cell = cell(bg_color=bg_color)
+        self._cell = new_cell(bg_color=bg_color)
         self.size = size
 
     def on_size(self):

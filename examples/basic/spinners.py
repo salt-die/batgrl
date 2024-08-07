@@ -5,7 +5,7 @@ from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.scroll_view import ScrollView
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.text_animation import TextAnimation
 from batgrl.spinners import SPINNERS
 
@@ -30,7 +30,7 @@ class SpinnersApp(App):
         for name, frames in SPINNERS.items():
             label = Text(
                 pos_hint={"y_hint": 0.5, "anchor": "left"},
-                default_cell=cell(
+                default_cell=new_cell(
                     fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
                 ),
             )

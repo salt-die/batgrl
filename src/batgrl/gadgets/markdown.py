@@ -26,7 +26,7 @@ from .grid_layout import GridLayout
 from .image import Image
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Border, Cell, Text, cell
+from .text import Border, Cell, Text, new_cell
 from .video import Video
 
 __all__ = ["Markdown", "Point", "Size"]
@@ -63,7 +63,7 @@ def _is_task_list_item(list_item: block_token.ListItem) -> re.Match | None:
 
 def _default_cell():
     primary = Themable.color_theme.primary
-    return cell(fg_color=primary.fg, bg_color=primary.bg)
+    return new_cell(fg_color=primary.fg, bg_color=primary.bg)
 
 
 class BlankLine(block_token.BlockToken):
@@ -277,7 +277,7 @@ class _Quote(Pane):
         super().__init__()
         quote_colors = Themable.color_theme.markdown_quote
         margin = Text(
-            default_cell=cell(
+            default_cell=new_cell(
                 char="▎", fg_color=quote_colors.fg, bg_color=quote_colors.bg
             ),
             size=(content.height, 1),
@@ -505,7 +505,7 @@ class _BatgrlRenderer(BaseRenderer):
             text.canvas["bg_color"] = header_bg
             primary = Themable.color_theme.primary
             header = _BorderedContent(
-                default_cell=cell(fg_color=primary.fg, bg_color=header_bg),
+                default_cell=new_cell(fg_color=primary.fg, bg_color=header_bg),
                 border="mcgugan_wide",
                 padding=int(token.level < 3),
                 content=text,
@@ -857,7 +857,7 @@ class Markdown(Themable, Gadget):
         )
         title_color_pair = Themable.color_theme.markdown_title
         self._link_hint = _BorderedContent(
-            default_cell=cell(
+            default_cell=new_cell(
                 fg_color=title_color_pair.fg, bg_color=title_color_pair.bg
             ),
             border="outer",
@@ -893,7 +893,7 @@ class Markdown(Themable, Gadget):
     def update_theme(self):
         """Paint the gadget with current theme."""
         title = Themable.color_theme.markdown_title
-        title_cell = cell(fg_color=title.fg, bg_color=title.bg)
+        title_cell = new_cell(fg_color=title.fg, bg_color=title.bg)
         self._link_hint.default_cell = title_cell
         self._link_hint.content.default_cell = title_cell
         self._link_hint.canvas[:] = title_cell

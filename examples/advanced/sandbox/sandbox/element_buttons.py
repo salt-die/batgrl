@@ -1,7 +1,7 @@
 from batgrl.colors import BLACK, WHITE, Color, lerp_colors
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.pane import Pane
-from batgrl.gadgets.text import Text, cell
+from batgrl.gadgets.text import Text, new_cell
 
 from .particles import Element
 
@@ -17,7 +17,7 @@ class ElementButton(ButtonBehavior, Text):
         super().__init__(
             size=(2, 4),
             pos=pos,
-            default_cell=cell(fg_color=BLACK, bg_color=element.COLOR),
+            default_cell=new_cell(fg_color=BLACK, bg_color=element.COLOR),
             always_release=True,
         )
 

@@ -21,7 +21,7 @@ from .gadget import (
     Size,
     SizeHint,
     SizeHintDict,
-    cell,
+    new_cell,
 )
 
 __all__ = ["TextParticleField", "particle_data_from_canvas", "Point", "Size"]
@@ -206,7 +206,7 @@ class TextParticleField(Gadget):
             self.particle_positions = np.asarray(particle_positions, dtype=int)
 
         if particle_cells is None:
-            self.particle_cells = np.full(len(self.particle_positions), cell())
+            self.particle_cells = np.full(len(self.particle_positions), new_cell())
         else:
             self.particle_cells = np.asarray(particle_cells, dtype=Cell)
 
