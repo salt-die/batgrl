@@ -286,7 +286,15 @@ class Video(Graphics):
 
         self._start_time = self._time_delta()
 
-        while self._resource.grab():
+        while True:
+            if not self._resource.grab():
+                if self.loop:
+                    self.seek(0)
+                else:
+                    self._current_frame = None
+                    self.clear()
+                    return
+
             if self.is_device:
                 seconds_ahead = 0
             elif (seconds_ahead := self._start_time - self._time_delta()) < 0:
@@ -300,10 +308,6 @@ class Video(Graphics):
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
             self._display_current_frame()
-
-        if self.loop:
-            self.seek(0)
-            self.play()
 
     def on_size(self):
         """Resize current frame on resize."""

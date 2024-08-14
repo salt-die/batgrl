@@ -336,7 +336,15 @@ class BrailleVideo(Gadget):
 
         self._start_time = self._time_delta()
 
-        while self._resource.grab():
+        while True:
+            if not self._resource.grab():
+                if self.loop:
+                    self.seek(0)
+                else:
+                    self._current_frame = None
+                    self._video.clear()
+                    return
+
             if self.is_device:
                 seconds_ahead = 0
             elif (seconds_ahead := self._start_time - self._time_delta()) < 0:
@@ -353,13 +361,6 @@ class BrailleVideo(Gadget):
                 self._current_frame = 255 - self._current_frame
 
             self._paint_frame()
-
-        if self.loop:
-            self.seek(0)
-            self.play()
-        else:
-            self._current_frame = None
-            self._video.clear()
 
     def on_size(self):
         """Resize canvas and colors arrays."""
