@@ -7,10 +7,8 @@ from .gadget import (
     Gadget,
     Point,
     PosHint,
-    PosHintDict,
     Size,
     SizeHint,
-    SizeHintDict,
 )
 
 __all__ = ["GridLayout", "Orientation", "Point", "Size"]
@@ -76,9 +74,9 @@ class GridLayout(Gadget):
         Size of gadget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint | SizeHintDict | None, default: None
+    size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint | PosHintDict | None , default: None
+    pos_hint : PosHint | None, default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
         Whether gadget is transparent.
@@ -247,8 +245,8 @@ class GridLayout(Gadget):
         vertical_spacing: int = 0,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
-        size_hint: SizeHint | SizeHintDict | None = None,
-        pos_hint: PosHint | PosHintDict | None = None,
+        size_hint: SizeHint | None = None,
+        pos_hint: PosHint | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,

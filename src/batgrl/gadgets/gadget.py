@@ -1,13 +1,15 @@
 """Base class for all gadgets."""
 
+from __future__ import annotations
+
 import asyncio
 from collections.abc import Callable, Iterator, Sequence
-from dataclasses import asdict, dataclass
 from functools import wraps
 from itertools import count
 from numbers import Real
 from time import monotonic
-from typing import Coroutine, Literal, Self, TypedDict
+from types import MappingProxyType
+from typing import Coroutine, Final, Literal, Self, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -24,11 +26,9 @@ __all__ = [
     "Easing",
     "Point",
     "PosHint",
-    "PosHintDict",
     "Region",
     "Size",
     "SizeHint",
-    "SizeHintDict",
     "Gadget",
     "bindable",
     "new_cell",
@@ -36,8 +36,37 @@ __all__ = [
     "lerp",
 ]
 
-_UID = count(1)
-
+_UID: Final[count[int]] = count(1)
+_ANCHOR_TO_POS: Final[dict[Anchor, tuple[float, float]]] = {
+    "top-left": (0.0, 0.0),
+    "top": (0.0, 0.5),
+    "top-right": (0.0, 1.0),
+    "left": (0.5, 0.0),
+    "center": (0.5, 0.5),
+    "right": (0.5, 1.0),
+    "bottom-left": (1.0, 0.0),
+    "bottom": (1.0, 0.5),
+    "bottom-right": (1.0, 1.0),
+}
+_DEFAULT_POS_HINT: Final[PosHint] = {
+    "anchor": "center",
+    "y_hint": None,
+    "x_hint": None,
+    "x_offset": 0,
+    "y_offset": 0,
+}
+"""The default pos hint."""
+_DEFAULT_SIZE_HINT: Final[SizeHint] = {
+    "height_hint": None,
+    "width_hint": None,
+    "height_offset": 0,
+    "width_offset": 0,
+    "max_height": None,
+    "min_height": None,
+    "max_width": None,
+    "min_width": None,
+}
+"""The default size hint."""
 
 Anchor = Literal[
     "top-left",
@@ -53,49 +82,17 @@ Anchor = Literal[
 """Point of gadget attached to a pos hint."""
 
 
-_ANCHOR_TO_POS: dict[Anchor, tuple[float, float]] = {
-    "top-left": (0.0, 0.0),
-    "top": (0.0, 0.5),
-    "top-right": (0.0, 1.0),
-    "left": (0.5, 0.0),
-    "center": (0.5, 0.5),
-    "right": (0.5, 1.0),
-    "bottom-left": (1.0, 0.0),
-    "bottom": (1.0, 0.5),
-    "bottom-right": (1.0, 1.0),
-}
-
-
-class _Hint:
-    """
-    Base for size and pos hints. Calls gadget's `apply_hints` when an attribute is
-    changed.
-    """
-
-    __slots__ = ("_gadget",)
-
-    def __setattr__(self, attr, value):
-        super().__setattr__(attr, value)
-        if (
-            attr != "_gadget"
-            and attr in self.__dataclass_fields__
-            and getattr(self, "_gadget", None) is not None
-        ):
-            self._gadget.apply_hints()
-
-
-@dataclass(slots=True)
-class PosHint(_Hint):
+class PosHint(TypedDict, total=False):
     """
     A position hint.
 
     A pos hint allows a gadget to automatically position itself when added to the
-    gadget tree or when its parent resizes. `y_hint` controls vertical position and
-    `x_hint` horizontal. `anchor` determines which point of the gadget is attached to
-    the pos hint. For instance, in the diagram below, if the `y_hint` and `x_hint` are
-    both `0.5` the pos hint will be at point `c` on the parent (50% of the parent's
-    height and width). Additionally, if the anchor is `"top"`, the anchor will be at
-    point `a` on the gadget::
+    gadget tree or when its parent resizes. ``y_hint`` controls vertical position and
+    ``x_hint`` horizontal. ``anchor`` determines which point of the gadget is attached
+    to the pos hint. For instance, in the diagram below, if the ``y_hint`` and
+    ``x_hint`` are both ``0.5`` the pos hint will be at point ``c`` on the parent
+    (50% of the parent's height and width). Additionally, if the anchor is ``"top"``,
+    the anchor will be at point ``a`` on the gadget::
 
              parent
         +---------------+
@@ -105,7 +102,7 @@ class PosHint(_Hint):
         +---------------+
 
 
-    Subsequently, `a` will be aligned with `c`, so that the gadget is positioned as
+    Subsequently, ``a`` will be aligned with ``c``, so that the gadget is positioned as
     below::
 
              parent
@@ -115,30 +112,13 @@ class PosHint(_Hint):
         |   |gadget |   |
         +---+-------+---+
 
-    The additional parameters `y_offset` and `x_offset` allow one to translate the
+    The additional parameters ``y_offset`` and ``x_offset`` allow one to translate the
     gadget by some integer offsets after the pos hint has been applied.
-
-    Parameters
-    ----------
-    anchor : Anchor | tuple[float, float], default: "center"
-        Determines which point is attached to the pos hint.
-    y_hint : float | None, default: None
-        Vertical position as a proportion of parent's height.
-    x_hint : float | None, default: None
-        Horizontal position as a proportion of parent's width.
-    y_offset : int, default: 0
-        Vertical offset after pos hint is applied.
-    x_offset : int, default: 0
-        Horizontal offset after pos hint is applied.
 
     Attributes
     ----------
     anchor : Anchor | tuple[float, float]
         Determines which point is attached to the pos hint.
-    y_anchor : float
-        Y-coordinate of anchor.
-    x_anchor : float
-        X-coordinate of anchor.
     y_hint : float | None
         Vertical position as a proportion of parent's height.
     x_hint : float | None
@@ -149,79 +129,29 @@ class PosHint(_Hint):
         Horizontal offset after pos hint is applied.
     """
 
-    anchor: Anchor | tuple[float, float] = "center"
+    anchor: Anchor | tuple[float, float]
     """Determines which point is attached to the pos hint."""
-    y_hint: float | None = None
+    y_hint: float | None
     """Vertical position as a proportion of parent's height."""
-    x_hint: float | None = None
+    x_hint: float | None
     """Horizontal position as a proportion of parent's width."""
-    y_offset: int = 0
-    """Vertical offset after y-hint is applied."""
-    x_offset: int = 0
-    """Horizontal offset after x-hint is applied."""
-
-    @property
-    def y_anchor(self) -> float:
-        """The y-coordinate of the anchor."""
-        if isinstance(self.anchor, str):
-            return _ANCHOR_TO_POS[self.anchor][0]
-        return self.anchor[0]
-
-    @y_anchor.setter
-    def y_anchor(self, y_anchor: float):
-        if isinstance(self.anchor, str):
-            x_anchor = _ANCHOR_TO_POS[self.anchor][1]
-        else:
-            x_anchor = self.anchor[1]
-        self.anchor = y_anchor, x_anchor
-
-    @property
-    def x_anchor(self) -> float:
-        """The x-coordinate of the anchor."""
-        if isinstance(self.anchor, str):
-            return _ANCHOR_TO_POS[self.anchor][1]
-        return self.anchor[1]
-
-    @x_anchor.setter
-    def x_anchor(self, x_anchor: float):
-        if isinstance(self.anchor, str):
-            y_anchor = _ANCHOR_TO_POS[self.anchor][0]
-        else:
-            y_anchor = self.anchor[0]
-        self.anchor = x_anchor, y_anchor
+    y_offset: int
+    """Vertical offset after pos hint is applied."""
+    x_offset: int
+    """Horizontal offset after pos hint is applied."""
 
 
-@dataclass(slots=True)
-class SizeHint(_Hint):
+class SizeHint(TypedDict, total=False):
     """
     A size hint.
 
     A size hint allows a gadget to automatically size itself when added to the gadget
-    tree or when its parent resizes. `height_hint` is the proportion of the parent's
-    height the gadget's height will be and `width_hint` the proportion of the parent's
-    width. Additional parameters `height_offset` and `width_offset` allow adjusting the
-    size by some integer amount after the size hint has been applied. If given,
-    `min_height`, `max_height`, `min_width`, max_width` will prevent the gadget from
-    sizing too small or too large.
-
-    Parameters
-    ----------
-    height_hint : float | None, default: None
-        Height as a proportion of parent's height.
-    width_hint : float | None, default: None
-        Width as a proportion of parent's width.
-    height_offset : int , default: 0
-        Height offset after height-hint is applied.
-    width_offset : int, default: 0
-        Width offset after width-hint is applied.
-    min_height : int | None, default: None
-        Minimum allowed height.
-    max_height : int | None, default: None
-        Maximum allowed height.
-    min_width : int | None, default: None
-        Minimum allowed width.
-    max_width : int | None, default: None
-        Maximum allowed width.
+    tree or when its parent resizes. ``height_hint`` is the proportion of the parent's
+    height the gadget's height will be and ``width_hint`` the proportion of the parent's
+    width. Additional parameters ``height_offset`` and ``width_offset`` allow adjusting
+    the size by some integer amount after the size hint has been applied. If given,
+    ``min_height``, ``max_height``, ``min_width``, and ``max_width`` will prevent the
+    gadget from sizing too small or too large.
 
     Attributes
     ----------
@@ -229,47 +159,56 @@ class SizeHint(_Hint):
         Height as a proportion of parent's height.
     width_hint : float | None
         Width as a proportion of parent's width.
-    min_height : int | None
-        Minimum allowed height.
+    height_offset : int
+        Height offset after height-hint is applied.
+    width_offset : int
+        Width offset after width-hint is applied.
     max_height : int | None
         Maximum allowed height.
-    min_width : int | None
-        Minimum allowed width.
+    min_height : int | None
+        Minimum allowed height.
     max_width : int | None
         Maximum allowed width.
+    min_width : int | None
+        Minimum allowed width.
     """
 
-    height_hint: float | None = None
-    width_hint: float | None = None
-    height_offset: int = 0
-    width_offset: int = 0
-    max_height: int | None = None
-    min_height: int | None = None
-    max_width: int | None = None
-    min_width: int | None = None
-
-
-class PosHintDict(TypedDict, total=False):
-    """PosHint parameters as a dict."""
-
-    anchor: Anchor | tuple[float, float]
-    y_hint: float | None
-    x_hint: float | None
-    y_offset: int
-    x_offset: int
-
-
-class SizeHintDict(TypedDict, total=False):
-    """SizeHint parameters as a dict."""
-
     height_hint: float | None
+    """Height as a proportion of parent's height."""
     width_hint: float | None
+    """Width as a proportion of parent's width."""
     height_offset: int
+    """Height offset after height-hint is applied."""
     width_offset: int
+    """Width offset after width-hint is applied."""
     max_height: int | None
+    """Maximum allowed height."""
     min_height: int | None
+    """Minimum allowed height."""
     max_width: int | None
+    """Maximum allowed width."""
     min_width: int | None
+    """Minimum allowed width."""
+
+
+def _normalize_pos_hint(pos_hint: PosHint) -> PosHint:
+    normal_hint = _DEFAULT_POS_HINT | pos_hint
+    if normal_hint["y_hint"] is not None:
+        normal_hint["y_hint"] = float(normal_hint["y_hint"])
+    if normal_hint["x_hint"] is not None:
+        normal_hint["x_hint"] = float(normal_hint["x_hint"])
+    if isinstance(normal_hint["anchor"], str):
+        normal_hint["anchor"] = _ANCHOR_TO_POS[normal_hint["anchor"]]
+    return normal_hint
+
+
+def _normalize_size_hint(size_hint: SizeHint) -> SizeHint:
+    normal_hint = _DEFAULT_SIZE_HINT | size_hint
+    if normal_hint["height_hint"] is not None:
+        normal_hint["height_hint"] = float(normal_hint["height_hint"])
+    if normal_hint["width_hint"] is not None:
+        normal_hint["width_hint"] = float(normal_hint["width_hint"])
+    return normal_hint
 
 
 def bindable(setter):
@@ -298,16 +237,16 @@ class Gadget:
         Size of gadget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint | SizeHintDict | None, default: None
+    size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint | PosHintDict | None , default: None
+    pos_hint : PosHint | None, default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: False
         Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
-    is_enabled : bool, default: True
+    is_enabled : bool, defa True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
 
@@ -420,8 +359,8 @@ class Gadget:
         *,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
-        size_hint: SizeHint | SizeHintDict | None = None,
-        pos_hint: PosHint | PosHintDict | None = None,
+        size_hint: SizeHint | None = None,
+        pos_hint: PosHint | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
@@ -432,27 +371,11 @@ class Gadget:
         h, w = size
         self._size = Size(clamp(h, 0, None), clamp(w, 0, None))
         self._pos = Point(*pos)
-
-        if size_hint is None:
-            self._size_hint = SizeHint()
-        elif isinstance(size_hint, dict):
-            self._size_hint = SizeHint(**size_hint)
-        else:
-            self._size_hint = size_hint
-        self._size_hint._gadget = self
-
-        if pos_hint is None:
-            self._pos_hint = PosHint()
-        elif isinstance(pos_hint, dict):
-            self._pos_hint = PosHint(**pos_hint)
-        else:
-            self._pos_hint = pos_hint
-        self._pos_hint._gadget = self
-
+        self._size_hint: SizeHint = _normalize_size_hint(size_hint or {})
+        self._pos_hint: PosHint = _normalize_pos_hint(pos_hint or {})
         self.is_transparent = is_transparent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
-
         self._region: Region = Region()
         """The visible portion of the gadget on the screen."""
 
@@ -467,25 +390,20 @@ class Gadget:
     @size.setter
     @bindable
     def size(self, size: Size):
-        if size == self._size:
-            self._apply_pos_hints()
-            return
-
         h, w = size
         size = Size(clamp(int(h), 0, None), clamp(int(w), 0, None))
+        if size != self._size:
+            if self.root:
+                with self.root._render_lock:
+                    self._size = size
+            else:
+                self._size = size
 
-        if self.root:
-            self.root._render_lock.acquire()
+            self.on_size()
 
-        self._size = size
         self._apply_pos_hints()
-        self.on_size()
-
         for child in self.children:
             child.apply_hints()
-
-        if self.root:
-            self.root._render_lock.release()
 
     @property
     def height(self) -> int:
@@ -520,11 +438,11 @@ class Gadget:
         y, x = pos
         pos = Point(int(y), int(x))
 
-        if self.root is None:
-            self._pos = pos
-        else:
+        if self.root:
             with self.root._render_lock:
                 self._pos = pos
+        else:
+            self._pos = pos
 
     @property
     def top(self) -> int:
@@ -589,44 +507,21 @@ class Gadget:
     @property
     def size_hint(self) -> SizeHint:
         """Gadget's size as a proportion of its parent's size."""
-        return self._size_hint
+        return MappingProxyType(self._size_hint)
 
     @size_hint.setter
     def size_hint(self, size_hint: SizeHint):
-        """
-        Set gadget's size as a proportion of its parent's size.
-
-        Negative size hints are set to 0.0.
-        """
-        if isinstance(size_hint, dict):
-            size_hint = SizeHint(**size_hint)
-        if size_hint.height_hint is not None:
-            size_hint.height_hint = float(size_hint.height_hint)
-        if size_hint.width_hint is not None:
-            size_hint.width_hint = float(size_hint.width_hint)
-
-        size_hint._gadget = self
-        self._size_hint._gadget = None
-        self._size_hint = size_hint
-
+        self._size_hint = _normalize_size_hint(size_hint)
         self.apply_hints()
 
     @property
     def pos_hint(self) -> PosHint:
         """Gadget's position as a proportion of its parent's size."""
-        return self._pos_hint
+        return MappingProxyType(self._pos_hint)
 
     @pos_hint.setter
     def pos_hint(self, pos_hint: PosHint):
-        if isinstance(pos_hint, dict):
-            pos_hint = PosHint(**pos_hint)
-        if pos_hint.y_hint is not None:
-            pos_hint.y_hint = float(pos_hint.y_hint)
-        if pos_hint.x_hint is not None:
-            pos_hint.x_hint = float(pos_hint.x_hint)
-        pos_hint._gadget = self
-        self._pos_hint._gadget = None
-        self._pos_hint = pos_hint
+        self._pos_hint = _normalize_pos_hint(pos_hint)
         self.apply_hints()
 
     @property
@@ -652,24 +547,24 @@ class Gadget:
         if self.parent is None:
             return
 
-        if self._size_hint.height_hint is None:
+        if self._size_hint["height_hint"] is None:
             height = self.height
         else:
             height = clamp(
-                round_down(self.parent.height * self._size_hint.height_hint)
-                + self._size_hint.height_offset,
-                self._size_hint.min_height,
-                self._size_hint.max_height,
+                round_down(self.parent.height * self._size_hint["height_hint"])
+                + self._size_hint["height_offset"],
+                self._size_hint["min_height"],
+                self._size_hint["max_height"],
             )
 
-        if self._size_hint.width_hint is None:
+        if self._size_hint["width_hint"] is None:
             width = self.width
         else:
             width = clamp(
-                round_down(self.parent.width * self._size_hint.width_hint)
-                + self._size_hint.width_offset,
-                self._size_hint.min_width,
-                self._size_hint.max_width,
+                round_down(self.parent.width * self._size_hint["width_hint"])
+                + self._size_hint["width_offset"],
+                self._size_hint["min_width"],
+                self._size_hint["max_width"],
             )
 
         self.size = height, width  # `size` setter will call `_apply_pos_hints()`.
@@ -679,28 +574,28 @@ class Gadget:
             return
 
         height, width = self.size
-        if isinstance(self._pos_hint.anchor, str):
-            y_anchor, x_anchor = _ANCHOR_TO_POS[self._pos_hint.anchor]
+        if isinstance(self._pos_hint["anchor"], str):
+            y_anchor, x_anchor = _ANCHOR_TO_POS[self._pos_hint["anchor"]]
         else:
-            y_anchor, x_anchor = self._pos_hint.anchor
+            y_anchor, x_anchor = self._pos_hint["anchor"]
 
         top, left = self.pos
-        if self._pos_hint.y_hint is None:
+        if self._pos_hint["y_hint"] is None:
             top = self.top
         else:
             top = (
-                round_down(self.parent.height * self._pos_hint.y_hint)
+                round_down(self.parent.height * self._pos_hint["y_hint"])
                 - round_down(height * y_anchor)
-                + self._pos_hint.y_offset
+                + self._pos_hint["y_offset"]
             )
 
-        if self._pos_hint.x_hint is None:
+        if self._pos_hint["x_hint"] is None:
             left = self.left
         else:
             left = (
-                round_down(self.parent.width * self._pos_hint.x_hint)
+                round_down(self.parent.width * self._pos_hint["x_hint"])
                 - round_down(width * x_anchor)
-                + self._pos_hint.x_offset
+                + self._pos_hint["x_offset"]
             )
         self.pos = top, left
 
@@ -1078,10 +973,10 @@ class Gadget:
         """Render visible region of gadget."""
 
     @staticmethod
-    def _tween_lerp(start, end, p):
-        """Tween non-real values."""
+    def _tween_lerp(start, end, p) -> Real | Sequence[Real] | PosHint | SizeHint | None:
+        """Lerp for none, sequences, and hints."""
         if start is None or end is None:
-            return end
+            return None
 
         if isinstance(start, Real) and isinstance(end, Real):
             value = lerp(start, end, p)
@@ -1095,12 +990,7 @@ class Gadget:
                 for start_value, end_value in zip(start, end)
             ]
 
-        if isinstance(start, dict):
-            if isinstance(start.get("anchor"), str):
-                start["anchor"] = _ANCHOR_TO_POS[start["anchor"]]
-            if isinstance(end.get("anchor"), str):
-                end["anchor"] = _ANCHOR_TO_POS[end["anchor"]]
-
+        if isinstance(start, MappingProxyType):
             return {
                 key: Gadget._tween_lerp(start_value, end.get(key), p)
                 for key, start_value in start.items()
@@ -1115,14 +1005,7 @@ class Gadget:
         on_progress: Callable[[float], None] | None = None,
         on_complete: Callable[[], None] | None = None,
         **properties: dict[
-            str,
-            Real
-            | NDArray[np.number]
-            | Sequence[Real]
-            | PosHint
-            | SizeHint
-            | PosHintDict
-            | SizeHintDict,
+            str, Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
         ],
     ) -> Coroutine:
         """
@@ -1142,14 +1025,7 @@ class Gadget:
         on_complete : Callable[[], None] | None, default: None
             Called when tween completes.
         **properties : dict[
-            str,
-            Real
-            | NDArray[np.number]
-            | Sequence[Real]
-            | PosHint
-            | SizeHint
-            | PosHintDict
-            | SizeHintDict,
+            str, Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
         ]
             Gadget properties' target values. E.g., to smoothly tween a gadget's
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
@@ -1174,24 +1050,13 @@ class Gadget:
         in unexpected behavior.
         """
         end_time = monotonic() + duration
-        start_values = tuple(
-            asdict(getattr(self, attr))
-            if isinstance(getattr(self, attr), (PosHint, SizeHint))
-            else getattr(self, attr)
-            for attr in properties
-        )
         easing_function = EASINGS[easing]
+        start_values = tuple(getattr(self, attr) for attr in properties)
 
         if pos_hint := properties.get("pos_hint"):
-            if isinstance(pos_hint, dict):
-                pos_hint = PosHint(**properties["pos_hint"])
-            properties["pos_hint"] = asdict(pos_hint)
-
+            properties["pos_hint"] = _normalize_pos_hint(pos_hint)
         if size_hint := properties.get("size_hint"):
-            if isinstance(size_hint, dict):
-                size_hint = SizeHint(**properties["size_hint"])
-            properties["size_hint"] = asdict(size_hint)
-
+            properties["size_hint"] = _normalize_size_hint(size_hint)
         if on_start is not None:
             on_start()
 

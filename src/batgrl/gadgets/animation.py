@@ -13,11 +13,9 @@ from .gadget import (
     Gadget,
     Point,
     PosHint,
-    PosHintDict,
     Region,
     Size,
     SizeHint,
-    SizeHintDict,
     bindable,
     clamp,
 )
@@ -66,9 +64,9 @@ class Animation(Gadget):
         Size of gadget.
     pos : Point, default: Point(0, 0)
         Position of upper-left corner in parent.
-    size_hint : SizeHint | SizeHintDict | None, default: None
+    size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint | PosHintDict | None , default: None
+    pos_hint : PosHint | None, default: None
         Position as a proportion of parent's height and width.
     is_transparent : bool, default: True
         Whether gadget is transparent.
@@ -213,8 +211,8 @@ class Animation(Gadget):
         interpolation: Interpolation = "linear",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
-        size_hint: SizeHint | SizeHintDict | None = None,
-        pos_hint: PosHint | PosHintDict | None = None,
+        size_hint: SizeHint | None = None,
+        pos_hint: PosHint | None = None,
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
@@ -371,8 +369,8 @@ class Animation(Gadget):
         interpolation: Interpolation = "linear",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
-        size_hint: SizeHint | SizeHintDict | None = None,
-        pos_hint: PosHint | PosHintDict | None = None,
+        size_hint: SizeHint | None = None,
+        pos_hint: PosHint | None = None,
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
@@ -399,9 +397,9 @@ class Animation(Gadget):
             Size of gadget.
         pos : Point, default: Point(0, 0)
             Position of upper-left corner in parent.
-        size_hint : SizeHint | SizeHintDict | None, default: None
+        size_hint : SizeHint | None, default: None
             Size as a proportion of parent's height and width.
-        pos_hint : PosHint | PosHintDict | None , default: None
+        pos_hint : PosHint | None, default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
             Whether gadget is transparent.
@@ -458,8 +456,8 @@ class Animation(Gadget):
         interpolation: Interpolation = "linear",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
-        size_hint: SizeHint | SizeHintDict | None = None,
-        pos_hint: PosHint | PosHintDict | None = None,
+        size_hint: SizeHint | None = None,
+        pos_hint: PosHint | None = None,
         is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
@@ -486,9 +484,9 @@ class Animation(Gadget):
             Size of gadget.
         pos : Point, default: Point(0, 0)
             Position of upper-left corner in parent.
-        size_hint : SizeHint | SizeHintDict | None, default: None
+        size_hint : SizeHint | None, default: None
             Size as a proportion of parent's height and width.
-        pos_hint : PosHint | PosHintDict | None , default: None
+        pos_hint : PosHint | None, default: None
             Position as a proportion of parent's height and width.
         is_transparent : bool, default: True
             Whether gadget is transparent.

@@ -17,14 +17,14 @@ __all__ = [
 ]
 
 # fmt: off
-type SpecialKey = Literal[
+SpecialKey = Literal[
     "backspace", "delete", "down", "end", "enter", "escape", "f1", "f2", "f3", "f4",
     "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15", "f16",
     "f17", "f18", "f19", "f20", "f21", "f22", "f23", "f24", "home", "insert", "left",
     "page_down", "page_up", "right", "scroll_down", "scroll_up", "tab", "up",
 ]
 """A special keyboard key."""
-type CharKey = Literal[
+CharKey = Literal[
     " ", "!", '"', "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0",
     "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A",
     "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
@@ -34,11 +34,11 @@ type CharKey = Literal[
 ]
 """A printable character keyboard key."""
 # fmt: on
-type Key = SpecialKey | CharKey
+Key = SpecialKey | CharKey
 """A keyboard key."""
-type MouseButton = Literal["left", "middle", "no_button", "right"]
+MouseButton = Literal["left", "middle", "no_button", "right"]
 """A mouse button."""
-type MouseEventType = Literal[
+MouseEventType = Literal[
     "mouse_down", "mouse_move", "mouse_up", "scroll_down", "scroll_up"
 ]
 """A mouse event type."""
