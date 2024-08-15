@@ -7,8 +7,6 @@ from .color_types import AColor, Color
 
 __all__ = ["darken_only", "lighten_only", "lerp_colors", "gradient", "rainbow_gradient"]
 
-type SomeColor = AColor | Color | tuple[int, ...]
-
 
 def darken_only(a: Color, b: Color) -> Color:
     """
@@ -50,22 +48,22 @@ def lighten_only(a: Color, b: Color) -> Color:
     return Color(*color)
 
 
-def lerp_colors(a: SomeColor, b: SomeColor, p: float) -> SomeColor:
+def lerp_colors[T: (Color, AColor, tuple[int, ...])](a: T, b: T, p: float) -> T:
     """
     Linear interpolation from `a` to `b` with proportion `p`.
 
     Parameters
     ----------
-    a : SomeColor
+    a : (Color, AColor, tuple[int, ...])
         A color.
-    b : SomeColor
+    b : (Color, AColor, tuple[int, ...])
         A color.
     p : float
         Proportion from a to b.
 
     Returns
     -------
-    SomeColor
+    (Color, AColor, tuple[int, ...])
         The linear interpolation of `a` and `b`.
     """
     color = (round(lerp(c1, c2, p)) for c1, c2 in zip(a, b))
@@ -74,22 +72,24 @@ def lerp_colors(a: SomeColor, b: SomeColor, p: float) -> SomeColor:
     return tuple(color)
 
 
-def gradient(start: SomeColor, end: SomeColor, ncolors: int) -> list[SomeColor]:
+def gradient[T: (Color, AColor, tuple[int, ...])](
+    start: T, end: T, ncolors: int
+) -> list[T]:
     """
     Return a gradient from `start` to `end` with `ncolors` (> 1) colors.
 
     Parameters
     ----------
-    start : SomeColor
+    start : (Color, AColor, tuple[int, ...])
         Start color of gradient.
-    end : SomeColor
+    end : (Color, AColor, tuple[int, ...])
         End color of gradient.
     ncolors : int
         Number of colors in gradient.
 
     Returns
     -------
-    list[SomeColor]
+    list[(Color, AColor, tuple[int, ...])]
         A gradient of colors from `start` to `end`.
     """
     if ncolors < 2:
