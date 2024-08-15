@@ -414,7 +414,7 @@ class App(ABC):
             return self.root.children
 
 
-def run_gadget_as_app(gadget: Gadget) -> None:
+def run_gadget_as_app(gadget: Gadget, **kwargs) -> None:
     """
     Run a gadget as a full-screen app.
 
@@ -428,4 +428,4 @@ def run_gadget_as_app(gadget: Gadget) -> None:
         async def on_start(self):
             self.add_gadget(gadget)
 
-    _DefaultApp(title=type(gadget).__name__).run()
+    _DefaultApp(title=type(gadget).__name__, **kwargs).run()
