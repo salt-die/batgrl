@@ -246,7 +246,7 @@ class Gadget:
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
         visible.
-    is_enabled : bool, defa True
+    is_enabled : bool, default: True
         Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
         input events.
 
