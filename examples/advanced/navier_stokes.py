@@ -113,4 +113,7 @@ class Fluid(Graphics):
 
 
 if __name__ == "__main__":
-    run_gadget_as_app(Fluid(size_hint={"height_hint": 1.0, "width_hint": 1.0}))
+    run_gadget_as_app(
+        Fluid(size_hint={"height_hint": 1.0, "width_hint": 1.0}),
+        title="Fluid Simulation",
+    )

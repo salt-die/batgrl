@@ -166,4 +166,4 @@ class Connect4(Gadget):
 
 
 if __name__ == "__main__":
-    run_gadget_as_app(Connect4())
+    run_gadget_as_app(Connect4(), title="Connect4")

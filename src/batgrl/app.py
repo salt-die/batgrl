@@ -414,18 +414,64 @@ class App(ABC):
             return self.root.children
 
 
-def run_gadget_as_app(gadget: Gadget) -> None:
+def run_gadget_as_app(
+    gadget: Gadget,
+    *,
+    bg_color: Color = BLACK,
+    title: str | None = None,
+    inline: bool = False,
+    inline_height: int = 10,
+    color_theme: ColorTheme = DEFAULT_COLOR_THEME,
+    double_click_timeout: float = 0.5,
+    render_interval: float = 0.0,
+    redirect_stderr: Path | None = None,
+    render_mode: Literal["regions", "painter"] = "regions",
+) -> None:
     """
-    Run a gadget as a full-screen app.
+    Run a gadget as an app.
+
+    This convenience function provided for cases when the app would only have a single
+    gadget.
 
     Parameters
     ----------
     gadget : Gadget
-        A gadget to run as a full screen app.
+        A gadget to run as an app.
+    bg_color : Color, default: BLACK
+        Background color of app.
+    title : str | None, default: None
+        The terminal's title.
+    inline : bool, default: False
+        Whether to render app inline or in the alternate screen.
+    inline_height :int, default: 10
+        Height of app if rendered inline.
+    color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
+        Color theme for :class:`batgrl.gadgets.behaviors.themable.Themable` gadgets.
+    double_click_timeout : float, default: 0.5
+        Max duration of a double-click.
+    render_interval : float, default: 0.0
+        Duration in seconds between consecutive frame renders.
+    redirect_stderr : Path | None, default: None
+        If provided, stderr is written to this path.
+    render_mode : Literal["regions", "painter"], default: "regions"
+        Determines how the gadget tree is rendered. ``"painter"`` fully paints every
+        gadget back-to-front. ``"regions"`` only paints the visible portion of each
+        gadget. ``"painter"`` may be more efficient for a large number of
+        non-overlapping gadgets.
     """
 
     class _DefaultApp(App):
         async def on_start(self):
             self.add_gadget(gadget)
 
-    _DefaultApp(title=type(gadget).__name__).run()
+    _DefaultApp(
+        bg_color=bg_color,
+        title=title,
+        inline=inline,
+        inline_height=inline_height,
+        color_theme=color_theme,
+        double_click_timeout=double_click_timeout,
+        render_interval=render_interval,
+        redirect_stderr=redirect_stderr,
+        render_mode=render_mode,
+    ).run()

@@ -70,4 +70,4 @@ class SlidingPuzzle(Graphics):
 
 
 if __name__ == "__main__":
-    run_gadget_as_app(SlidingPuzzle(PATH_TO_LOGO, size=SIZE))
+    run_gadget_as_app(SlidingPuzzle(PATH_TO_LOGO, size=SIZE), title="Sliding Puzzle")
