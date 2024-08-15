@@ -43,7 +43,7 @@ class Movable(Grabbable):
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
-        True if gadget is grabbed.
+        Whether gadget is grabbed.
 
     Methods
     -------

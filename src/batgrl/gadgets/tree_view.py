@@ -30,7 +30,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
     Parameters
     ----------
     is_leaf : bool, default: True
-        True if node is a leaf node.
+        Whether node is a leaf node.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
     default_cell : NDArray[Cell] | str, default: " "

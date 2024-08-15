@@ -267,7 +267,7 @@ class ScrollView(Themable, Grabbable, Gadget):
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
-        True if gadget is grabbed.
+        Whether gadget is grabbed.
     alpha : float
         Transparency of gadget.
     size : Size

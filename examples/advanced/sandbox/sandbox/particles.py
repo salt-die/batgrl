@@ -176,7 +176,7 @@ class MovingElement(Element):
     """Base for moving elements."""
 
     def _move(self, dy, dx):
-        """Try to move vertically by dy and horizontally by dx.  True if successful."""
+        """Try to move particle by dy, dx and return true if successful."""
         world = self.world
         h, w = world.shape
         y, x = self.pos

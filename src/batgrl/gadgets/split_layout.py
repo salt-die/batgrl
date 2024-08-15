@@ -92,7 +92,7 @@ class HSplitLayout(Gadget):
     handle_color : AColor
         Color of the resize handle.
     split_resizable : bool
-        True if split is resizable with a grabbable handle.
+        Whether split is resizable with a grabbable handle.
     anchor_top_pane : bool
         If true, :attr:`split_row` is calculated from the top.
     split_row : int
@@ -283,7 +283,7 @@ class HSplitLayout(Gadget):
 
     @property
     def split_resizable(self) -> bool:
-        """True if split is resizable with a grabbable handle."""
+        """Whether split is resizable with a grabbable handle."""
         return self.handle.is_grabbable
 
     @split_resizable.setter
@@ -349,7 +349,7 @@ class VSplitLayout(Gadget):
     handle_color : AColor
         Color of the resize handle.
     split_resizable : bool
-        True if split is resizable with a grabbable handle.
+        Whether split is resizable with a grabbable handle.
     anchor_left_pane : bool
         If true, :attr:`split_col` is calculated from the left.
     split_col : int
@@ -541,7 +541,7 @@ class VSplitLayout(Gadget):
 
     @property
     def split_resizable(self) -> bool:
-        """True if split is resizable with a grabbable handle."""
+        """Whether split is resizable with a grabbable handle."""
         return self.handle.is_grabbable
 
     @split_resizable.setter

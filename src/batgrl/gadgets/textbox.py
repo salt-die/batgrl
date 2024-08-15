@@ -114,7 +114,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
-        True if gadget is grabbed.
+        Whether gadget is grabbed.
     size : Size
         Size of gadget.
     height : int

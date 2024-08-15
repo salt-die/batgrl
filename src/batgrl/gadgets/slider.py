@@ -85,7 +85,7 @@ class Slider(Grabbable, Pane):
     fill_color: Color
         Color of filled portion of slider.
     slider_enabled : bool
-        True if slider value can be changed.
+        Whether slider value can be changed.
     proportion : float
         Current proportion of slider.
     is_grabbable : bool
@@ -99,7 +99,7 @@ class Slider(Grabbable, Pane):
     alpha : float
         Transparency of gadget.
     is_grabbed : bool
-        True if gadget is grabbed.
+        Whether gadget is grabbed.
     size : Size
         Size of gadget.
     height : int

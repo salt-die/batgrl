@@ -34,7 +34,7 @@ class Grabbable:
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
-        True if gadget is grabbed.
+        Whether gadget is grabbed.
 
     Methods
     -------
@@ -84,7 +84,7 @@ class Grabbable:
 
     @property
     def is_grabbed(self) -> bool:
-        """True if gadget is grabbed."""
+        """Whether gadget is grabbed."""
         return self._is_grabbed
 
     def grab(self, mouse_event: MouseEvent):
