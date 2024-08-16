@@ -426,7 +426,7 @@ def run_gadget_as_app(
     render_interval: float = 0.0,
     redirect_stderr: Path | None = None,
     render_mode: Literal["regions", "painter"] = "regions",
-) -> None:
+) -> Any:
     """
     Run a gadget as an app.
 
@@ -464,7 +464,7 @@ def run_gadget_as_app(
         async def on_start(self):
             self.add_gadget(gadget)
 
-    _DefaultApp(
+    return _DefaultApp(
         bg_color=bg_color,
         title=title,
         inline=inline,
