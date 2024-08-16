@@ -25,15 +25,12 @@ def get_platform_terminal() -> Vt100Terminal:
         raise RuntimeError("Terminal is non-interactive.")
 
     if platform.system() == "Windows":
-        from .windows_terminal import is_vt100_enabled
+        from .windows_terminal import WindowsTerminal, is_vt100_enabled
 
         if not is_vt100_enabled():
-            raise RuntimeError("Terminal does not support VT100.")
-
-        from .windows_terminal import WindowsTerminal
+            raise RuntimeError("Terminal doesn't support VT100 sequences.")
 
         return WindowsTerminal()
-
     else:
         from .linux_terminal import LinuxTerminal
 
@@ -42,8 +39,7 @@ def get_platform_terminal() -> Vt100Terminal:
 
 @contextmanager
 def app_mode(
-    terminal: Vt100Terminal,
-    event_handler: Callable[[list[Event]], None],
+    terminal: Vt100Terminal, event_handler: Callable[[list[Event]], None]
 ) -> ContextManager[None]:
     """
     Put terminal into app mode and dispatch input events.
