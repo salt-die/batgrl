@@ -417,7 +417,7 @@ class Region:
         """
         y, x = pos
         h, w = size
-        return cls([_Band(y, y + h, (x, x + w))])
+        return cls([_Band(y, y + h, [x, x + w])])
 
     def __contains__(self, point: Point) -> bool:
         """Whether point is in region."""
