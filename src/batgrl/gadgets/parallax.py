@@ -231,8 +231,8 @@ class Parallax(Gadget):
         self.speeds = _check_layer_speeds(self.layers, speeds)
         self.alpha = alpha
         self.interpolation = interpolation
-
         self._vertical_offset = self._horizontal_offset = 0.0
+        self.on_size()
 
     @property
     def _region(self) -> Region:
