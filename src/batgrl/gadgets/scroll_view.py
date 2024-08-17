@@ -212,9 +212,9 @@ class ScrollView(Themable, Grabbable, Gadget):
     arrow_keys_enabled : bool, default: True
         Allow scrolling with arrow keys.
     is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
     alpha : float, default: 1.0
@@ -261,9 +261,9 @@ class ScrollView(Themable, Grabbable, Gadget):
     port_width : int
         Width of view.
     is_grabbable : bool
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool

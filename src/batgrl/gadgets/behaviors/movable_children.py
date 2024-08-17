@@ -22,11 +22,11 @@ class MovableChildren(Grabbable):
     disable_child_oob : bool, default: False
         Disallow child gadgets from being translated out-of-bounds if true.
     disable_child_ptf : bool, default: False
-        If true, child gadgets won't be pulled-to-front when clicked.
+        Whether child gadgets are pulled-to-front when clicked.
     is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
 
@@ -35,11 +35,11 @@ class MovableChildren(Grabbable):
     disable_child_oob : bool
         Disallow child gadgets from being translated out-of-bounds if true.
     disable_child_ptf : bool
-        If true, child gadgets won't be pulled-to-front when clicked.
+        Whether child gadgets are pulled-to-front when clicked.
     is_grabbable : bool
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool

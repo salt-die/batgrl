@@ -187,7 +187,7 @@ class ShadowCaster(Graphics):
     smoothing : float, default: 1.0 / 3.0
         Smoothness of shadow edges. This value will be clamped between `0` and `1`.
     not_visible_blocks : bool, default: True
-        If true, all not-visible cells will be treated as opaque.
+        Whether all not-visible cells will be treated as opaque.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -232,7 +232,7 @@ class ShadowCaster(Graphics):
     smoothing : float
         Smoothness of shadow edges.
     not_visible_blocks : bool
-        If true, all not-visible cells will be treated as opaque.
+        Whether all not-visible cells will be treated as opaque.
     texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor

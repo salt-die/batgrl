@@ -41,7 +41,7 @@ class BrailleVideo(Gadget):
     bg_color : Color, default: BLACK
         Background color of video.
     loop : bool, default: True
-        If true, restart video after last frame.
+        Whether to restart video after last frame.
     gray_threshold : int, default: 127
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool, default: False
@@ -76,17 +76,17 @@ class BrailleVideo(Gadget):
     bg_color : Color
         Background color of video.
     loop : bool
-        If true, video will restart after last frame.
+        Whether to restart video after last frame.
     gray_threshold : int
         Pixel values over this threshold in the source video will be rendered.
     enable_shading : bool
         Whether foreground colors are shaded.
     invert_colors : bool
-        If true, colors in the source are inverted before video is rendered.
+        Whether colors in the source are inverted before video is rendered.
     alpha : float
         Transparency of gadget.
     is_device : bool
-        If true, video is from a video capturing device.
+        Whether video is from a video capturing device.
     size : Size
         Size of gadget.
     height : int

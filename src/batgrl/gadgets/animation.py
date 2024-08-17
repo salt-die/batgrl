@@ -53,9 +53,9 @@ class Animation(Gadget):
         Time each frame is displayed. If a sequence is provided, it's length should be
         equal to number of frames.
     loop : bool, default: True
-        If true, restart animation after last frame.
+        Whether to restart animation after last frame.
     reverse : bool, default: False
-        If true, play animation in reverse.
+        Whether to play animation in reverse.
     alpha : float, default: 1.0
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
@@ -84,9 +84,9 @@ class Animation(Gadget):
     frame_durations : list[int | float]
         Time each frame is displayed.
     loop : bool
-        If true, animation is restarted after last frame.
+        Whether to animation is restarted after last frame.
     reverse : bool
-        If true, animation is played in reverse.
+        Whether to animation is played in reverse.
     alpha : float
         Transparency of gadget.
     interpolation : Interpolation
@@ -386,9 +386,9 @@ class Animation(Gadget):
             Time each frame is displayed. If a sequence is provided, it's length should
             be equal to number of frames.
         loop : bool, default: True
-            If true, restart animation after last frame.
+            Whether to restart animation after last frame.
         reverse : bool, default: False
-            If true, play animation in reverse.
+            Whether to play animation in reverse.
         alpha : float, default: 1.0
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
@@ -473,9 +473,9 @@ class Animation(Gadget):
             Time each frame is displayed. If a sequence is provided, it's length should
             be equal to number of frames.
         loop : bool, default: True
-            If true, restart animation after last frame.
+            Whether to restart animation after last frame.
         reverse : bool, default: False
-            If true, play animation in reverse.
+            Whether to play animation in reverse.
         alpha : float, default: 1.0
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"

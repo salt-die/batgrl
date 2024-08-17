@@ -39,9 +39,9 @@ class TextAnimation(Gadget):
     animation_bg_color : Color, default: BLACK
         Background color of animation.
     loop : bool, default: True
-        If true, restart animation after last frame.
+        Whether to restart animation after last frame.
     reverse : bool, default: False
-        If true, play animation in reverse.
+        Whether to play animation in reverse.
     alpha : float, default: 1.0
         Transparency of gadget.
     size : Size, default: Size(10, 10)
@@ -72,9 +72,9 @@ class TextAnimation(Gadget):
     animation_bg_color : Color
         Background color of animation.
     loop : bool
-        If true, animation is restarted after last frame.
+        Whether to restart animation after last frame.
     reverse : bool
-        If true, animation is played in reverse.
+        Whether to play animation in reverse.
     alpha : float
         Transparency of gadget.
     size : Size

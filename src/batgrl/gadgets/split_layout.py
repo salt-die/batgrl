@@ -59,11 +59,9 @@ class HSplitLayout(Gadget):
     min_split_height : int, default: 1
         Minimum height of either pane.
     anchor_top_pane : bool, default: True
-        If true, :attr:`split_row` will be calculated from the top,
-        else from the bottom.
+        If true, :attr:`split_row` is be calculated from the top, else from the bottom.
     split_resizable : bool, default: True
-        If true, the split will be resizable with a grabbable
-        handle.
+        Whether split is resizable with a grabbable handle.
     handle_color : AColor, default: AGRAY
         Color of the resize handle.
     size : Size, default: Size(10, 10)
@@ -94,10 +92,10 @@ class HSplitLayout(Gadget):
     split_resizable : bool
         Whether split is resizable with a grabbable handle.
     anchor_top_pane : bool
-        If true, :attr:`split_row` is calculated from the top.
+        If true, :attr:`split_row` is calculated from the top, else from the bottom.
     split_row : int
-        Height of top pane if :attr:`anchor_top_pane` is true, else
-        height of right pane.
+        Height of top pane if :attr:`anchor_top_pane` is true, else height of bottom
+        pane.
     min_split_height : int
         Minimum height of either pane.
     size : Size
@@ -316,11 +314,9 @@ class VSplitLayout(Gadget):
     min_split_width : int, default: 1
         Minimum width of either pane.
     anchor_left_pane : bool, default: True
-        If true, :attr:`split_col` will be calculated from the left,
-        else from the right.
+        If true, :attr:`split_col` is be calculated from the left, else from the right.
     split_resizable : bool, default: True
-        If true, the split will be resizable with a grabbable
-        handle.
+        Whether split is resizable with a grabbable handle.
     handle_color : AColor, default: AGRAY
         Color of the resize handle.
     size : Size, default: Size(10, 10)
@@ -351,10 +347,10 @@ class VSplitLayout(Gadget):
     split_resizable : bool
         Whether split is resizable with a grabbable handle.
     anchor_left_pane : bool
-        If true, :attr:`split_col` is calculated from the left.
+        If true, :attr:`split_col` is calculated from the left, else from the right.
     split_col : int
-        Width of left pane if :attr:`anchor_left_pane` is true, else
-        width of right pane.
+        Width of left pane if :attr:`anchor_left_pane` is true, else width of right
+        pane.
     min_split_width : int
         Minimum width of either pane.
     size : Size

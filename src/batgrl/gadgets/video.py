@@ -35,7 +35,7 @@ class Video(Graphics):
         A path to video, URL to video stream, or video capturing device (by index).
         Trying to open a video capturing device on WSL will issue a warning.
     loop : bool, default: True
-        If true, restart video after last frame.
+        Whether to restart video after last frame.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -64,9 +64,9 @@ class Video(Graphics):
     source : Path | str | int
         A path, URL, or capturing device (by index) of the video.
     loop : bool
-        If true, video will restart after last frame.
+        Whether to restart video after last frame.
     is_device : bool
-        If true, video is from a video capturing device.
+        Whether video is from a video capturing device.
     texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor

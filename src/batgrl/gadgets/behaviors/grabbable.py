@@ -19,18 +19,18 @@ class Grabbable:
     Parameters
     ----------
     is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
 
     Attributes
     ----------
     is_grabbable : bool
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool

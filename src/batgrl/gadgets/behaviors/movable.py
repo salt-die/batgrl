@@ -16,30 +16,30 @@ class Movable(Grabbable):
     Parameters
     ----------
     disable_oob : bool, default: False
-        If true, gadget won't be translated outside of its parent's bounding box.
+        Whether the gadget must be contained in its parent's bounding box.
     allow_vertical_translation : bool, default: True
         Allow vertical translation.
     allow_horizontal_translation : bool, default: True
         Allow horizontal translation.
     is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
 
     Attributes
     ----------
     disable_oob : bool
-        If true, gadget won't be translated outside of its parent's bounding box.
+        Whether the gadget must be contained in its parent's bounding box.
     allow_vertical_translation : bool
         Allow vertical translation.
     allow_horizontal_translation : bool
         Allow horizontal translation.
     is_grabbable : bool
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool

@@ -179,9 +179,9 @@ class Menu(GridLayout):
     Parameters
     ----------
     close_on_release : bool, default: True
-        If true, close the menu when an item is selected.
+        Whether to close the menu when an item is selected.
     close_on_click : bool, default: True
-        If true, close the menu when a click doesn't collide with it.
+        Whether to close the menu when a click doesn't collide with it.
     alpha : float, default: 1.0
         Transparency of gadget.
     grid_rows : int, default: 1
@@ -222,9 +222,9 @@ class Menu(GridLayout):
     Attributes
     ----------
     close_on_release : bool
-        If true, close the menu when an item is selected.
+        Whether to close the menu when an item is selected.
     close_on_click : bool
-        If true, close the menu when a click doesn't collide with it.
+        Whether to close the menu when a click doesn't collide with it.
     alpha : float
         Transparency of gadget.
     minimum_grid_size : Size
@@ -576,9 +576,9 @@ class Menu(GridLayout):
         pos : Point, default: Point(0, 0)
             Position of menu.
         close_on_release : bool, default: True
-            If true, close the menu when an item is selected.
+            Whether to close the menu when an item is selected.
         close_on_click : bool, default: True
-            If true, close the menu when a click doesn't collide with it.
+            Whether to close the menu when a click doesn't collide with it.
         alpha : float, default: 1.0
             Transparency of gadget.
 
@@ -700,9 +700,9 @@ class MenuBar(GridLayout):
     Parameters
     ----------
     close_on_release : bool, default: True
-        If true, close the menu when an item is selected.
+        Whether to close the menu when an item is selected.
     close_on_click : bool, default: True
-        If true, close the menu when a click doesn't collide with it.
+        Whether to close the menu when a click doesn't collide with it.
     alpha : float, default: 1.0
         Transparency of gadget.
     grid_rows : int, default: 1
@@ -747,9 +747,9 @@ class MenuBar(GridLayout):
     Attributes
     ----------
     close_on_release : bool
-        If true, close the menu when an item is selected.
+        Whether to close the menu when an item is selected.
     close_on_click : bool
-        If true, close the menu when a click doesn't collide with it.
+        Whether to close the menu when a click doesn't collide with it.
     alpha : float
         Transparency of gadget.
     grid_rows : int
@@ -929,7 +929,7 @@ class MenuBar(GridLayout):
 
     @property
     def close_on_release(self) -> bool:
-        """If true, close the menu when an item is selected."""
+        """Whether to close the menu when an item is selected."""
         return self._close_on_release
 
     @close_on_release.setter
@@ -941,7 +941,7 @@ class MenuBar(GridLayout):
 
     @property
     def close_on_click(self) -> bool:
-        """If true, close the menu when a click doesn't collide with it."""
+        """Whether to close the menu when a click doesn't collide with it."""
         return self._close_on_click
 
     @close_on_click.setter
@@ -1021,9 +1021,9 @@ class MenuBar(GridLayout):
         pos : Point, default: Point(0, 0)
             Position of menu.
         close_on_release : bool, default: True
-            If true, close the menu when an item is selected.
+            Whether to close the menu when an item is selected.
         close_on_click : bool, default: True
-            If true, close the menu when a click doesn't collide with it.
+            Whether to close the menu when a click doesn't collide with it.
         alpha : float, default: 1.0
             Transparency of gadget.
 

@@ -51,7 +51,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     placeholder : str, default: ""
         Placeholder text for textbox.
     hide_input : bool, default: False
-        If true, input is hidden with :attr:`hide_char`.
+        Whether input is hidden with :attr:`hide_char`.
     hide_char : str, default: "*"
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None, default: None
@@ -59,9 +59,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     alpha : float, default: 1.0
         Transparency of gadget.
     is_grabbable : bool, default: True
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
     size : Size, default: Size(10, 10)
@@ -88,7 +88,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     placeholder : str
         Placeholder text for textbox.
     hide_input : bool
-        If true, input is hidden with :attr:`hide_char`.
+        Whether input is hidden with :attr:`hide_char`.
     hide_char : str
         Character to hide input when :attr:`hide_input` is true.
     max_chars : int | None
@@ -108,9 +108,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     any_focused : bool
         Whether any gadget has focus.
     is_grabbable : bool
-        If false, grabbable behavior is disabled.
+        Whether grabbable behavior is enabled.
     ptf_on_grab : bool
-        If true, gadget will be pulled to front when grabbed.
+        Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton
         Mouse button used for grabbing.
     is_grabbed : bool
@@ -304,7 +304,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self.placeholder = placeholder
         """Placeholder text for textbox."""
         self.hide_input = hide_input
-        """If true, input is hidden with :attr:`hide_char`."""
+        """Whether input is hidden with :attr:`hide_char`."""
         self.hide_char = hide_char
         """Character to hide input if :attr:`hide_input` is true."""
         self.max_chars = max_chars
