@@ -17,28 +17,51 @@ from .tree_view import TreeView, TreeViewNode
 
 __all__ = ["FileChooser", "Point", "Size"]
 
-FILE_PREFIX = "  📄 "
-FOLDER_PREFIX = "▶ 📁 "
-NESTED_PREFIX = "  "
-OPEN_FOLDER_PREFIX = "▼ 📂 "
+_FILE_PREFIX = "  📄 "
+_FOLDER_PREFIX = "▶ 📁 "
+_NESTED_PREFIX = "  "
+_OPEN_FOLDER_PREFIX = "▼ 📂 "
 
 if platform.system() == "Windows":
     from ctypes import windll
 
-    # https://docs.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
-    FILE_ATTRIBUTE_HIDDEN = 0x2
-    FILE_ATTRIBUTE_SYSTEM = 0x4
-
-    IS_HIDDEN = FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM
-
-    def _is_hidden(path: Path):
+    def _is_hidden(path: Path) -> bool:
         attrs = windll.kernel32.GetFileAttributesW(str(path.absolute()))
-        return attrs != -1 and bool(attrs & IS_HIDDEN)
+        # https://docs.microsoft.com/en-us/windows/win32/fileio/file-attribute-constants
+        is_hidden = 0x2 | 0x4
+        return attrs != -1 and bool(attrs & is_hidden)
 
 else:
 
-    def _is_hidden(path: Path):
+    def _is_hidden(path: Path) -> bool:
         return path.stem.startswith(".")
+
+
+class _ParentDirectory(TreeViewNode):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.label = ".."
+        self.set_text(self.label)
+
+    def on_mouse(self, mouse_event):
+        if (
+            mouse_event.nclicks == 2
+            and self.parent.selected_node is self
+            and self.collides_point(mouse_event.pos)
+        ):
+            for ancestor in self.ancestors():
+                if isinstance(ancestor, FileChooser):
+                    break
+            else:
+                return False
+
+            root_dir = ancestor.root_dir
+            root_dir_parent = root_dir.parent
+            if root_dir != root_dir_parent:
+                ancestor.root_dir = root_dir_parent
+            return True
+
+        return super().on_mouse(mouse_event)
 
 
 class _FileViewNode(TreeViewNode):
@@ -49,26 +72,30 @@ class _FileViewNode(TreeViewNode):
     @property
     def label(self) -> str:
         if self.path.is_file():
-            prefix = FILE_PREFIX
+            prefix = _FILE_PREFIX
         elif self.is_open:
-            prefix = OPEN_FOLDER_PREFIX
+            prefix = _OPEN_FOLDER_PREFIX
         else:
-            prefix = FOLDER_PREFIX
-        return f"{NESTED_PREFIX * self.level}{prefix}{self.path.name}"
+            prefix = _FOLDER_PREFIX
+        return f"{_NESTED_PREFIX * self.level}{prefix}{self.path.name}"
 
     def _toggle_update(self):
         if not self.child_nodes:
-            paths = sorted(
-                self.path.iterdir(), key=lambda path: (path.is_file(), path.name)
-            )
+            try:
+                paths = sorted(
+                    self.path.iterdir(), key=lambda path: (path.is_file(), path.name)
+                )
 
-            for path in paths:
-                self.add_node(_FileViewNode(path=path))
+                for path in paths:
+                    self.add_node(_FileViewNode(path=path))
+            except PermissionError:
+                return
 
     def on_mouse(self, mouse_event):
         if (
             mouse_event.nclicks == 2
             and self.is_leaf
+            and self.parent.select_callback is not None
             and self.parent.selected_node is self
             and self.collides_point(mouse_event.pos)
         ):
@@ -84,12 +111,16 @@ class _FileView(TreeView):
         root_node: _FileViewNode,
         directories_only: bool = False,
         show_hidden: bool = True,
-        select_callback: Callable[[Path], None] = lambda path: None,
+        show_parent_dir: bool = False,
+        select_callback: Callable[[Path], None] | None = None,
+        filter: Callable[[Path], bool] | None = None,
         **kwargs,
     ):
         self.directories_only = directories_only
         self.show_hidden = show_hidden
+        self.show_parent_dir = show_parent_dir
         self.select_callback = select_callback
+        self.filter = filter
         super().__init__(root_node=root_node, **kwargs)
 
     def on_add(self):
@@ -108,11 +139,25 @@ class _FileView(TreeView):
             it = (node for node in it if node.path.is_dir())
         if not self.show_hidden:
             it = (node for node in it if not _is_hidden(node.path))
+        if self.filter is not None:
+            it = (node for node in it if self.filter(node.path))
 
         sv: ScrollView = self.parent
         sv.size = sv.parent.size
         max_width = sv.port_width
-        for y, node in enumerate(it):
+
+        if self.show_parent_dir:
+            parent_dir = _ParentDirectory()
+            parent_dir.parent_node = self.root_node
+            parent_dir.alpha = alpha
+            parent_dir.is_transparent = is_transparent
+            max_width = max(max_width, str_width(parent_dir.label))
+            self.add_gadget(parent_dir)
+            start = 1
+        else:
+            start = 0
+
+        for y, node in enumerate(it, start=start):
             node.alpha = alpha
             node.is_transparent = is_transparent
             node.y = y
@@ -120,6 +165,7 @@ class _FileView(TreeView):
             self.add_gadget(node)
         self.size = y + 1, max_width
 
+        node: TreeViewNode
         for node in self.children:
             node.size = 1, max_width
             node.add_str(node.label)
@@ -167,8 +213,9 @@ class _FileView(TreeView):
                 self.selected_node.toggle()
             elif self.selected_node.child_nodes:
                 self.selected_node.child_nodes[0].select()
-        elif key_event.key == "enter" and self.selected_node is not None:
-            self.select_callback(self.selected_node.path)
+        elif key_event.key == "enter":
+            if self.selected_node is not None and self.select_callback is not None:
+                self.select_callback(self.selected_node.path)
         else:
             return super().on_key(key_event)
 
@@ -187,11 +234,17 @@ class FileChooser(Gadget):
     root_dir : Path | None, default: None
         The root directory of the file chooser or the cwd if not given.
     directories_only : bool, default: False
-        If true, show only directories in the file view.
+        Whether to show only directories in the file view.
     show_hidden : bool, default: True
-        If true, show hidden files.
-    select_callback : Callable[[Path], None], default: lambda path: None
-        Called with selected path on double-click or if `enter` is pressed.
+        Whether to show hidden files.
+    show_parent_dir : bool, default: False
+        Whether parent directory is shown as "..". Double-clicking or pressing enter
+        while selected will change the root directory of the file chooser to the parent
+        directory.
+    select_callback : Callable[[Path], None] | None, default: None
+        Called with selected path on double-click or if enter is pressed.
+    filter : Callable[[Path], bool] | None, default: None
+        Determines whether a path is displayed.
     alpha : float, default: 1.0
         Transparency of gadget.
     size : Size, default: Size(10, 10)
@@ -216,9 +269,11 @@ class FileChooser(Gadget):
     root_dir : Path
         The root directory of the file chooser.
     directories_only : bool
-        If true, show only directories in the file view.
+        Whether to show only directories in the file view.
     show_hidden : bool
-        If true, show hidden files.
+        Whether to show hidden files.
+    show_parent_dir : bool, default: False
+        Whether parent directory is shown as "..".
     select_callback : Callable[[Path], None]
         Called with selected path on double-click or if `enter` is pressed.
     alpha : float
@@ -328,7 +383,9 @@ class FileChooser(Gadget):
         root_dir: Path | None = None,
         directories_only: bool = False,
         show_hidden: bool = True,
-        select_callback: Callable[[Path], None] = lambda path: None,
+        show_parent_dir: bool = False,
+        select_callback: Callable[[Path], None] | None = None,
+        filter: Callable[[Path], bool] | None = None,
         alpha: float = 1.0,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
@@ -344,7 +401,9 @@ class FileChooser(Gadget):
             root_node=self._root_node,
             directories_only=directories_only,
             show_hidden=show_hidden,
+            show_parent_dir=show_parent_dir,
             select_callback=select_callback,
+            filter=filter,
         )
         self._scroll_view = ScrollView(
             arrow_keys_enabled=False, is_transparent=False, alpha=0
@@ -392,7 +451,7 @@ class FileChooser(Gadget):
 
     @property
     def directories_only(self):
-        """If true, show only directories in the file view."""
+        """Whether to show only directories in the file view."""
         return self._file_view.directories_only
 
     @directories_only.setter
@@ -402,12 +461,22 @@ class FileChooser(Gadget):
 
     @property
     def show_hidden(self):
-        """If true, show hidden files."""
+        """Whether to show hidden files."""
         return self._file_view.show_hidden
 
     @show_hidden.setter
     def show_hidden(self, show_hidden):
         self._file_view.show_hidden = show_hidden
+        self._file_view.update_tree_layout()
+
+    @property
+    def show_parent_dir(self):
+        """Whether parent directory is shown as ".."."""
+        return self._file_view.show_parent_dir
+
+    @show_parent_dir.setter
+    def show_parent_dir(self, show_parent_dir):
+        self._file_view.show_parent_dir = show_parent_dir
         self._file_view.update_tree_layout()
 
     @property
