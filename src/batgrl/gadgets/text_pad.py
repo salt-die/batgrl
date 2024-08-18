@@ -435,7 +435,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         ll = self._line_lengths
 
         pad = self._pad
-        canvas = pad.canvas
 
         if start > end:
             start, end = end, start
@@ -451,7 +450,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         contents = "\n".join(
             "".join(
-                canvas["char"][y, sx if y == sy else None : ex if y == ey else ll[y]]
+                pad.canvas["char"][
+                    y, sx if y == sy else None : ex if y == ey else ll[y]
+                ]
             )
             for y in range(sy, ey + 1)
         )
@@ -461,12 +462,15 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         len_end = ll[ey] - ex
         len_start = ll[sy] = sx + len_end
+        if len_start + 1 > pad.width:
+            pad.width = len_start + 1
 
-        canvas[sy, sx:len_start] = canvas[ey, ex : ex + len_end]
-        canvas[sy, len_start:] = pad.default_cell
+        pad.canvas[sy, sx:len_start] = pad.canvas[ey, ex : ex + len_end]
+        pad.canvas[sy, len_start:] = pad.default_cell
 
-        remaining = canvas[ey + 1 :]
-        canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
+        remaining = pad.canvas[ey + 1 :]
+        pad.canvas[sy + 1 : sy + 1 + len(remaining)] = remaining
+        pad.canvas[sy + 1 + len(remaining) :] = pad.default_cell
 
         del ll[sy + 1 : ey + 1]
         height = max(len(ll), self._scroll_view.port_height)
