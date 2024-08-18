@@ -448,10 +448,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def cursor(self, cursor: int):
         """After setting cursor position, move textbox so that cursor is visible."""
         self._cursor.x = cursor
-        if self._line_length == 0 and self._placeholder:
-            self._placeholder_gadget.is_enabled = True
-        else:
-            self._placeholder_gadget.is_enabled = False
+        self._placeholder_gadget.is_enabled = self._line_length == 0 and bool(
+            self._placeholder
+        )
 
         max_x = self.width - 1
         rel_x = cursor + self._box.x
