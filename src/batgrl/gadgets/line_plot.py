@@ -304,7 +304,7 @@ class LinePlot(Gadget):
     ):
         default_cell = new_cell(fg_color=plot_fg_color, bg_color=plot_bg_color)
         self._traces = Text(default_cell=default_cell)
-        self._scrollview = ScrollView(
+        self._scroll_view = ScrollView(
             show_vertical_bar=False,
             show_horizontal_bar=False,
             scrollwheel_enabled=False,
@@ -358,11 +358,11 @@ class LinePlot(Gadget):
         self._traces.bind("pos", set_y_top)
         self._tick_corner.canvas["char"][0, -1] = "└"
 
-        self._scrollview.view = self._traces
+        self._scroll_view.view = self._traces
         self._x_ticks_container.add_gadget(self._x_ticks)
         self._y_ticks_container.add_gadget(self._y_ticks)
         self._container.add_gadgets(
-            self._scrollview,
+            self._scroll_view,
             self._x_ticks_container,
             self._y_ticks_container,
             self._tick_corner,
@@ -381,7 +381,7 @@ class LinePlot(Gadget):
     @is_transparent.setter
     def is_transparent(self, is_transparent: bool):
         self._traces.is_transparent = is_transparent
-        self._scrollview.is_transparent = is_transparent
+        self._scroll_view.is_transparent = is_transparent
         self._x_ticks.is_transparent = is_transparent
         self._y_ticks.is_transparent = is_transparent
         self._tick_corner.is_transparent = is_transparent
@@ -482,30 +482,30 @@ class LinePlot(Gadget):
         has_y_label = self._y_label_gadget.is_enabled = self.y_label is not None
 
         sv_left = has_y_label + TICK_WIDTH
-        self._scrollview.pos = 0, sv_left
-        self._scrollview.size = h - 2 - has_x_label, w - sv_left
+        self._scroll_view.pos = 0, sv_left
+        self._scroll_view.size = h - 2 - has_x_label, w - sv_left
         self._y_ticks_container.left = has_y_label
-        self._y_ticks_container.size = self._scrollview.height, TICK_WIDTH
-        self._x_ticks_container.top = self._scrollview.bottom
+        self._y_ticks_container.size = self._scroll_view.height, TICK_WIDTH
+        self._x_ticks_container.top = self._scroll_view.bottom
         self._x_ticks_container.left = self._y_ticks_container.right
-        self._x_ticks_container.size = 2, self._scrollview.width
+        self._x_ticks_container.size = 2, self._scroll_view.width
 
         self._x_label_gadget.pos = (
             h - 1,
-            self._scrollview.width // 2 - self._x_label_gadget.width // 2 + TICK_WIDTH,
+            self._scroll_view.width // 2 - self._x_label_gadget.width // 2 + TICK_WIDTH,
         )
 
         self._y_label_gadget.top = (
-            self._scrollview.height // 2 - self._y_label_gadget.height // 2
+            self._scroll_view.height // 2 - self._y_label_gadget.height // 2
         )
 
-        self._legend.top = self._scrollview.height - self._legend.height
+        self._legend.top = self._scroll_view.height - self._legend.height
         self._legend.left = w - self._legend.width - ceil(TICK_WIDTH / 2)
 
         zoom = PLOT_ZOOM[self._traces_zoom_index]
         self._traces.size = (
-            round(self._scrollview.height * zoom),
-            round(self._scrollview.width * zoom),
+            round(self._scroll_view.height * zoom),
+            round(self._scroll_view.width * zoom),
         )
 
         offset_h = self._traces.height

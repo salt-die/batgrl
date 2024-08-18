@@ -249,13 +249,13 @@ class BarChart(Gadget):
         is_enabled: bool = True,
     ):
         self._bars = Text()
-        self._scrollview = ScrollView(
+        self._scroll_view = ScrollView(
             show_horizontal_bar=False,
             show_vertical_bar=False,
             allow_vertical_scroll=False,
             alpha=0,
         )
-        self._scrollview.view = self._bars
+        self._scroll_view.view = self._bars
         self._y_ticks = Text()
         self._y_label_gadget = Text()
         self._container = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
@@ -269,7 +269,7 @@ class BarChart(Gadget):
             is_enabled=is_enabled,
         )
         self._container.add_gadgets(
-            self._scrollview, self._y_ticks, self._y_label_gadget
+            self._scroll_view, self._y_ticks, self._y_label_gadget
         )
         self.add_gadget(self._container)
 
@@ -294,7 +294,7 @@ class BarChart(Gadget):
         self._container.is_transparent = is_transparent
         self._y_ticks.is_transparent = is_transparent
         self._y_label_gadget.is_transparent = is_transparent
-        self._scrollview.is_transparent = is_transparent
+        self._scroll_view.is_transparent = is_transparent
         self._bars.is_transparent = is_transparent
 
     def on_add(self):
@@ -324,8 +324,8 @@ class BarChart(Gadget):
 
         sv_left = has_y_label + TICK_WIDTH
         sv_width = w - sv_left
-        self._scrollview.pos = 0, sv_left
-        self._scrollview.size = h, sv_width
+        self._scroll_view.pos = 0, sv_left
+        self._scroll_view.size = h, sv_width
 
         nbars = len(self.data)
         min_bar_width = max(map(str_width, self.data))
