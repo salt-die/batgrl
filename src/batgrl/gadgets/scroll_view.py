@@ -195,7 +195,7 @@ class ScrollView(Themable, Grabbable, Gadget):
     A scrollable view gadget.
 
     The view can be set with the :attr:`view` property, e.g.,
-    ``my_scrollview.view = some_gadget``.
+    ``my_scroll_view.view = some_gadget``.
 
     Parameters
     ----------
@@ -207,6 +207,8 @@ class ScrollView(Themable, Grabbable, Gadget):
         Whether the vertical scrollbar is shown.
     show_horizontal_bar : bool, default: True
         Whether the horizontal scrollbar is shown.
+    dynamic_bars : bool, default: False
+        Whether bars are shown/hidden depending on the view size.
     scrollwheel_enabled : bool, default: True
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool, default: True
@@ -248,6 +250,8 @@ class ScrollView(Themable, Grabbable, Gadget):
         Whether the vertical scrollbar is shown.
     show_horizontal_bar : bool
         Whether the horizontal scrollbar is shown.
+    dynamic_bars : bool, default: False
+        Whether bars are shown/hidden depending on the view size.
     scrollwheel_enabled : bool
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool
@@ -257,9 +261,9 @@ class ScrollView(Themable, Grabbable, Gadget):
     horizontal_proportion : float
         Horizontal scroll position as a proportion of total width.
     port_height : int
-        Height of view.
+        Height of view port.
     port_width : int
-        Width of view.
+        Width of view port.
     is_grabbable : bool
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool
@@ -394,6 +398,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         allow_horizontal_scroll: bool = True,
         show_vertical_bar: bool = True,
         show_horizontal_bar: bool = True,
+        dynamic_bars: bool = False,
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
         is_grabbable: bool = True,
@@ -408,13 +413,20 @@ class ScrollView(Themable, Grabbable, Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._background = Pane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, alpha=alpha
+        )
+        self._vertical_bar = _VerticalScrollbar()
+        self._horizontal_bar = _HorizontalScrollbar()
         self._corner = Pane(
             size=(1, 2),
             pos_hint={"y_hint": 1.0, "x_hint": 1.0, "anchor": "bottom-right"},
             is_enabled=show_horizontal_bar or show_vertical_bar,
             is_transparent=False,
         )
-        self._background = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._vertical_proportion = 0.0
+        self._horizontal_proportion = 0.0
+        self._view = None
 
         super().__init__(
             is_grabbable=is_grabbable,
@@ -437,20 +449,15 @@ class ScrollView(Themable, Grabbable, Gadget):
         self.arrow_keys_enabled = arrow_keys_enabled
         """Allow scrolling with arrow keys."""
 
-        self._vertical_proportion = 0
-        self._horizontal_proportion = 0
-
-        self._vertical_bar = _VerticalScrollbar()
-        self._horizontal_bar = _HorizontalScrollbar()
-        self._view = None
-
         self.add_gadgets(
             self._background, self._corner, self._vertical_bar, self._horizontal_bar
         )
 
-        self.show_horizontal_bar = show_horizontal_bar
-        self.show_vertical_bar = show_vertical_bar
-        self.alpha = alpha
+        if not dynamic_bars:
+            self._vertical_bar.is_enabled = show_vertical_bar
+            self._horizontal_bar.is_enabled = show_horizontal_bar
+            self._corner.is_enabled = show_horizontal_bar or show_vertical_bar
+        self.dynamic_bars = dynamic_bars
 
     def update_theme(self):
         """Paint the gadget with current theme."""
@@ -501,6 +508,16 @@ class ScrollView(Themable, Grabbable, Gadget):
         self.on_size()
 
     @property
+    def dynamic_bars(self) -> bool:
+        """Whether bars are shown/hidden depending on the view size."""
+        return self._dynamic_bars
+
+    @dynamic_bars.setter
+    def dynamic_bars(self, dynamic_bars: bool):
+        self._dynamic_bars = dynamic_bars
+        self.on_size()
+
+    @property
     def vertical_proportion(self) -> float:
         """Vertical scroll position as a proportion of total height."""
         return self._vertical_proportion
@@ -509,10 +526,10 @@ class ScrollView(Themable, Grabbable, Gadget):
     @bindable
     def vertical_proportion(self, vertical_proportion: float):
         if self.allow_vertical_scroll:
-            if self._view is None or self.total_vertical_distance <= 0:
-                self._vertical_proportion = 0
+            if self._view is None:
+                self._vertical_proportion = 0.0
             else:
-                self._vertical_proportion = clamp(vertical_proportion, 0, 1)
+                self._vertical_proportion = clamp(float(vertical_proportion), 0.0, 1.0)
             self._update_port_and_scrollbar()
 
     @property
@@ -524,20 +541,22 @@ class ScrollView(Themable, Grabbable, Gadget):
     @bindable
     def horizontal_proportion(self, horizontal_proportion: float):
         if self.allow_horizontal_scroll:
-            if self._view is None or self.total_horizontal_distance <= 0:
-                self._horizontal_proportion = 0
+            if self._view is None:
+                self._horizontal_proportion = 0.0
             else:
-                self._horizontal_proportion = clamp(horizontal_proportion, 0, 1)
+                self._horizontal_proportion = clamp(
+                    float(horizontal_proportion), 0.0, 1.0
+                )
             self._update_port_and_scrollbar()
 
     @property
     def port_height(self) -> int:
-        """Height of view."""
+        """Height of view port."""
         return max(0, self.height - self.show_horizontal_bar)
 
     @property
     def port_width(self) -> int:
-        """Width of view."""
+        """Width of view port."""
         return max(0, self.width - self.show_vertical_bar * 2)
 
     @property
@@ -590,7 +609,6 @@ class ScrollView(Themable, Grabbable, Gadget):
             self.remove_gadget(self._view)
 
         self._view = view
-
         if view is not None:
             self.add_gadget(view)
             self.children.insert(1, self.children.pop())  # Move view below scrollbars.
@@ -599,23 +617,46 @@ class ScrollView(Themable, Grabbable, Gadget):
                 y, x = self._view.pos
                 h = self.total_vertical_distance
                 w = self.total_horizontal_distance
-                self.vertical_proportion = 0 if h == 0 else -y / h
-                self.horizontal_proportion = 0 if w == 0 else -x / w
+                self._vertical_proportion = 0.0 if h == 0 else clamp(-y / h, 0.0, 1.0)
+                self._horizontal_proportion = 0.0 if w == 0 else clamp(-x / w, 0.0, 1.0)
+                self.on_size()
 
-            self._view_uid = view.bind("size", update_proportion)
-            self._update_port_and_scrollbar()
+            view.pos = Point(0, 0)
+            update_proportion()
+            self._view_bind_uid = view.bind("size", update_proportion)
 
     def remove_gadget(self, gadget: Gadget):
         """Unbind from the view on its removal."""
         if gadget is self._view:
-            self._view.unbind(self._view_uid)
+            self._view.unbind(self._view_bind_uid)
+            del self._view_bind_uid
             self._view = None
-            del self._view_uid
 
         super().remove_gadget(gadget)
 
     def on_size(self):
         """Resize and reposition scrollbars on resize."""
+        if self.dynamic_bars:
+            if self.view is None:
+                self._vertical_bar.is_enabled = False
+                self._horizontal_bar.is_enabled = False
+                self._corner.is_enabled = False
+            else:
+                vh, vw = self.view.size
+                h, w = self.size
+                if h < vh:
+                    self._vertical_bar.is_enabled = True
+                    self._horizontal_bar.is_enabled = w < vw + 2
+                    self._corner.is_enabled = True
+                elif w < vw:
+                    self._horizontal_bar.is_enabled = True
+                    self._vertical_bar.is_enabled = h < vh + 1
+                    self._corner.is_enabled = True
+                else:
+                    self._vertical_bar.is_enabled = False
+                    self._horizontal_bar.is_enabled = False
+                    self._corner.is_enabled = False
+
         self._vertical_bar.height = self.height - self.show_horizontal_bar
         self._vertical_bar.left = self.width - 2
         self._horizontal_bar.width = self.width - 2 * self.show_vertical_bar

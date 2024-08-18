@@ -398,8 +398,10 @@ class AnsViewer(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._scrollview = ScrollView(size_hint={"height_hint": 1.0, "width_hint": 1.0})
-        self.add_gadget(self._scrollview)
+        self._scroll_view = ScrollView(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, dynamic_bars=True
+        )
+        self.add_gadget(self._scroll_view)
 
         self._ans_reader = _AnsReader(path, ans_width, guess_width)
         self._read_ans()
@@ -429,22 +431,5 @@ class AnsViewer(Gadget):
             return
         ans = Text(size=canvas.shape)
         ans.canvas = canvas
-        self._scrollview.view = ans
+        self._scroll_view.view = ans
         self.on_size()
-
-    def on_size(self):
-        """Determine whether scrollbars should be visible on size."""
-        super().on_size()
-        if self._scrollview.view is None:
-            return
-        ah, aw = self._scrollview.view.size
-        h, w = self.size
-        if h < ah:
-            self._scrollview.show_vertical_bar = True
-            self._scrollview.show_horizontal_bar = w < aw + 2
-        elif w < aw:
-            self._scrollview.show_horizontal_bar = True
-            self._scrollview.show_vertical_bar = h < ah + 1
-        else:
-            self._scrollview.show_vertical_bar = False
-            self._scrollview.show_horizontal_bar = False

@@ -505,7 +505,7 @@ class DataTable(Themable, Gadget):
         """Grid layout of column label and row grid layouts."""
 
         self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, dynamic_bars=True
         )
         # Replace scroll view background with a pane that doesn't paint under _table.
         self._scroll_view.remove_gadget(self._scroll_view._background)
@@ -548,16 +548,6 @@ class DataTable(Themable, Gadget):
         self._table.add_gadget(self._column_labels)
         self._scroll_view.view = self._table
         self.add_gadget(self._scroll_view)
-
-        def update_bars():
-            self._scroll_view.show_horizontal_bar = (
-                self._table.width > self._scroll_view.port_width
-            )
-            self._scroll_view.show_vertical_bar = (
-                self._table.height > self._scroll_view.port_height
-            )
-
-        self._table.bind("size", update_bars)
 
         if data is not None:
             for label, column_data in data.items():

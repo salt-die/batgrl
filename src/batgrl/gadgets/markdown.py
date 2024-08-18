@@ -31,15 +31,15 @@ from .video import Video
 
 __all__ = ["Markdown", "Point", "Size"]
 
-TASK_LIST_ITEM_RE = re.compile(r" {,3}\[([xX ])\]\s+(.*)", re.DOTALL)
-BULLETS = "●○◼◻▶▷◆◇"
-MIN_MARKDOWN_WIDTH = 24
-MIN_RENDER_WIDTH = 12
+_TASK_LIST_ITEM_RE = re.compile(r" {,3}\[([xX ])\]\s+(.*)", re.DOTALL)
+_BULLETS = "●○◼◻▶▷◆◇"
+_MIN_MARKDOWN_WIDTH = 24
+_MIN_RENDER_WIDTH = 12
 # How to scale images? Because of the lower resolution of a terminal vs a normal
 # markdown viewer, small images can be drawn fairly large on the terminal. To prevent
-# this, `_MarkdownImage` and `_MarkdownGif` approximate `PIXELS_PER_CHAR` pixels per
+# this, `_MarkdownImage` and `_MarkdownGif` approximate `_PIXELS_PER_CHAR` pixels per
 # half-width character.
-PIXELS_PER_CHAR = 8
+_PIXELS_PER_CHAR = 8
 
 # TODO: Html blocks and spans
 # TODO: Wrap Tables
@@ -54,7 +54,7 @@ def _is_task_list_item(list_item: block_token.ListItem) -> re.Match | None:
     current_token = list_item
     while True:
         if isinstance(current_token, span_token.RawText):
-            return TASK_LIST_ITEM_RE.match(current_token.content)
+            return _TASK_LIST_ITEM_RE.match(current_token.content)
         if current_token.children:
             current_token = current_token.children[0]
         else:
@@ -100,6 +100,7 @@ class _BorderedContent(Text):
         border: Border,
         padding: int = 0,
         content: Gadget | None = None,
+        bind: bool = False,
     ):
         super().__init__(default_cell=default_cell)
 
@@ -118,8 +119,9 @@ class _BorderedContent(Text):
             self.size = h + 2 * (padding + 1), w + 2 * (padding + 1)
             self.add_border(border)
 
-        self.content.bind("size", update)
         update()
+        if bind:
+            self.content.bind("size", update)
 
 
 class _HasTitle:
@@ -217,7 +219,7 @@ class _MarkdownImage(_HasTitle, Image):
     def __init__(self, title: str, path: Path, width: int):
         super().__init__(title=title, path=path)
         oh, ow, _ = self._otexture.shape
-        width = min(ow / PIXELS_PER_CHAR, width)
+        width = min(ow / _PIXELS_PER_CHAR, width)
         self.size = int(oh * width / ow) // 2, width
 
 
@@ -226,7 +228,7 @@ class _MarkdownGif(_HasTitle, Video):
         super().__init__(title=title, source=path)
         oh = self._resource.get(cv2.CAP_PROP_FRAME_HEIGHT)
         ow = self._resource.get(cv2.CAP_PROP_FRAME_WIDTH)
-        width = min(ow / PIXELS_PER_CHAR, width)
+        width = min(ow / _PIXELS_PER_CHAR, width)
         self.size = int(oh * width / ow) // 2, width
 
     def on_add(self):
@@ -319,7 +321,7 @@ class _BatgrlRenderer(BaseRenderer):
     def __init__(self, width, syntax_highlighting_style):
         super().__init__(BlankLine, Spaces, EmojiCode)
         block_token.remove_token(block_token.Footnote)
-        self.width = max(width, MIN_MARKDOWN_WIDTH)
+        self.width = max(width, _MIN_MARKDOWN_WIDTH)
         self.syntax_highlighting_style = syntax_highlighting_style
         self.render_map["SetextHeading"] = self.render_setext_heading
         self.render_map["CodeFence"] = self.render_block_code
@@ -327,7 +329,7 @@ class _BatgrlRenderer(BaseRenderer):
     @property
     def render_width(self):
         return max(
-            self.width - 3 * self.list_depth - 2 * self.quote_depth, MIN_RENDER_WIDTH
+            self.width - 3 * self.list_depth - 2 * self.quote_depth, _MIN_RENDER_WIDTH
         )
 
     def render(self, token: span_token.SpanToken | block_token.BlockToken) -> Gadget:
@@ -560,7 +562,7 @@ class _BatgrlRenderer(BaseRenderer):
 
     def render_list(self, token: block_token.List) -> _List:
         prefix = (
-            BULLETS[self.list_depth % len(BULLETS)]
+            _BULLETS[self.list_depth % len(_BULLETS)]
             if token.start is None
             else token.start
         )
@@ -851,9 +853,9 @@ class Markdown(Themable, Gadget):
             size_hint={
                 "height_hint": 1.0,
                 "width_hint": 1.0,
-                "min_width": MIN_MARKDOWN_WIDTH,
+                "min_width": _MIN_MARKDOWN_WIDTH,
             },
-            show_horizontal_bar=False,
+            dynamic_bars=True,
         )
         title_color_pair = Themable.color_theme.markdown_title
         self._link_hint = _BorderedContent(
@@ -861,6 +863,7 @@ class Markdown(Themable, Gadget):
                 fg_color=title_color_pair.fg, bg_color=title_color_pair.bg
             ),
             border="outer",
+            bind=True,
         )
         self._link_hint.is_enabled = False
         self.add_gadgets(self._scroll_view, self._link_hint)
@@ -888,7 +891,6 @@ class Markdown(Themable, Gadget):
             rendered = renderer.render(Document(self.markdown))
 
         self._scroll_view.view = rendered
-        self._scroll_view.show_horizontal_bar = rendered.width > self.width
 
     def update_theme(self):
         """Paint the gadget with current theme."""

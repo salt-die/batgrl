@@ -406,7 +406,7 @@ class FileChooser(Gadget):
             filter=filter,
         )
         self._scroll_view = ScrollView(
-            arrow_keys_enabled=False, is_transparent=False, alpha=0
+            dynamic_bars=True, arrow_keys_enabled=False, is_transparent=False, alpha=0
         )
         super().__init__(
             size=size,

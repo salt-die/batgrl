@@ -441,7 +441,9 @@ class Console(Themable, Focusable, Gadget):
         self._container = Gadget(size=(1, 1), is_transparent=True)
 
         self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}, arrow_keys_enabled=False
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            dynamic_bars=True,
+            arrow_keys_enabled=False,
         )
         # Replace scroll view background with a pane that doesn't paint under _input.
         self._scroll_view.remove_gadget(self._scroll_view._background)
@@ -476,22 +478,13 @@ class Console(Themable, Focusable, Gadget):
         def fix_input_pos():
             self._input.left = self._prompt.right
 
-        def update_bars():
-            show_vertical_bar = self._container.height > self._scroll_view.port_height
-            show_horizontal_bar = self._container.width > self._scroll_view.port_width
-            update_cursor = (
-                show_vertical_bar != self._scroll_view.show_vertical_bar
-                or show_horizontal_bar != self._scroll_view.show_horizontal_bar
-            )
-            self._scroll_view.show_vertical_bar = show_vertical_bar
-            self._scroll_view.show_horizontal_bar = show_horizontal_bar
-            if update_cursor:
-                self._input.cursor = self._input.cursor
+        def update_cursor():
+            self._input.cursor = self._input.cursor
 
         self._prompt.bind("size", fix_input_pos)
         self._prompt.bind("pos", fix_input_pos)
-        self._container.bind("size", update_bars)
-        self._scroll_view.bind("size", update_bars)
+        self._scroll_view.bind("show_horizontal_bar", update_cursor)
+        self._scroll_view.bind("show_vertical_bar", update_cursor)
 
         self._prompt.set_text(PROMPT_1)
         self._container.add_gadgets(self._output, self._prompt, self._input)
