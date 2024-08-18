@@ -402,10 +402,10 @@ class Gadget:
         else:
             self._size = size
 
-        self.on_size()
         self._apply_pos_hints()
         for child in self.children:
             child.apply_hints()
+        self.on_size()
 
     @property
     def height(self) -> int:
