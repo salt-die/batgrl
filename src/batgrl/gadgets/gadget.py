@@ -390,17 +390,19 @@ class Gadget:
     @size.setter
     @bindable
     def size(self, size: Size):
+        if size == self._size:
+            self._apply_pos_hints()
+            return
+
         h, w = size
         size = Size(clamp(int(h), 0, None), clamp(int(w), 0, None))
-        if size != self._size:
-            if self.root:
-                with self.root._render_lock:
-                    self._size = size
-            else:
+        if self.root:
+            with self.root._render_lock:
                 self._size = size
+        else:
+            self._size = size
 
-            self.on_size()
-
+        self.on_size()
         self._apply_pos_hints()
         for child in self.children:
             child.apply_hints()
