@@ -103,8 +103,7 @@ class FIGFont:
     layout : FullLayout, default: FullLayout.Universal
         Controls how characters are fitted in rendered text.
     reverse_universal_smush : bool, default: False
-        If set to true univeral smushing will display earliest sub-character (instead of
-        latest).
+        Whether universal smushing will display earliest sub-character.
     font : dict[str, NDArray[np.dtype("<U1")]], default: {}
         A dictionary of characters to their ascii art representations.
     comments : str, default: ""
@@ -119,8 +118,7 @@ class FIGFont:
     layout : FullLayout.Universal
         Controls how characters are fitted in rendered text.
     reverse_universal_smush : bool
-        If set to true univeral smushing will display earliest sub-character (instead of
-        latest).
+        Whether universal smushing will display earliest sub-character.
     font : dict[str, NDArray[np.dtype("<U1")]]
         A dictionary of characters to their ascii art representations.
     comments : str
@@ -143,7 +141,7 @@ class FIGFont:
     layout: FullLayout = FullLayout.Universal
     """Controls how characters are fitted in rendered text."""
     reverse_universal_smush: bool = False
-    """If set to true univeral smushing will display earliest sub-character."""
+    """Whether universal smushing will display earliest sub-character."""
     font: dict[str, NDArray[np.dtype("<U1")]] = field(repr=False, default_factory=dict)
     """A dictionary of characters to their ascii art representations."""
     comments: str = field(repr=False, default="")
