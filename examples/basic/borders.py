@@ -15,7 +15,7 @@ class BordersApp(App):
             gadget.add_str(f"{f'*{border}*':^17}", pos=(1, 1), markdown=True)
             grid_layout.add_gadget(gadget)
 
-        grid_layout.size = grid_layout.minimum_grid_size
+        grid_layout.size = grid_layout.min_grid_size
         self.add_gadget(grid_layout)
 
 

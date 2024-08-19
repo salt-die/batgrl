@@ -89,7 +89,7 @@ class GridLayout(Gadget):
 
     Attributes
     ----------
-    minimum_grid_size : Size
+    min_grid_size : Size
         Minimum grid size needed to show all children.
     grid_rows : int
         Number of rows.
@@ -217,9 +217,9 @@ class GridLayout(Gadget):
     Re-ordering children (such as through :meth:`pull_to_front`) and calling
     :meth:`_reposition_children` will change the positions of the children in the grid.
 
-    The read-only attribute :attr:`minimum_grid_size` is the minimum size the grid must
+    The read-only attribute :attr:`min_grid_size` is the minimum size the grid must
     be to show all children. This can be used to set the size of the grid layout, e.g.,
-    ``my_grid.size = my_grid.minimum_grid_size``.
+    ``my_grid.size = my_grid.min_grid_size``.
     """
 
     grid_rows: int = _RepositionProperty()
@@ -260,7 +260,7 @@ class GridLayout(Gadget):
         self._padding_bottom = padding_bottom
         self._horizontal_spacing = horizontal_spacing
         self._vertical_spacing = vertical_spacing
-        self._minimum_grid_size = Size(0, 0)
+        self._min_grid_size = Size(0, 0)
 
         super().__init__(
             size=size,
@@ -353,7 +353,7 @@ class GridLayout(Gadget):
         )
 
     @property
-    def minimum_grid_size(self) -> Size:
+    def min_grid_size(self) -> Size:
         """Return the minimum grid size to show all children."""
         nrows, ncols = self.grid_rows, self.grid_columns
         if nrows == 0 or ncols == 0:

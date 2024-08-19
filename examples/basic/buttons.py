@@ -1,4 +1,5 @@
 """Button showcase."""
+
 from batgrl.app import App
 from batgrl.gadgets.button import Button
 from batgrl.gadgets.flat_toggle import FlatToggle
@@ -57,7 +58,7 @@ class ButtonApp(App):
             )
             for i in range(10, 15)
         )
-        grid_layout.size = grid_layout.minimum_grid_size
+        grid_layout.size = grid_layout.min_grid_size
 
         flat_grid = GridLayout(
             grid_rows=2,
@@ -73,7 +74,7 @@ class ButtonApp(App):
             FlatToggle(group=1, callback=toggle_button_callback(i))
             for i in range(20, 25)
         )
-        flat_grid.size = flat_grid.minimum_grid_size
+        flat_grid.size = flat_grid.min_grid_size
         self.add_gadgets(display, grid_layout, flat_grid)
 
 

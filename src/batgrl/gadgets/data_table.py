@@ -744,8 +744,8 @@ class DataTable(Themable, Gadget):
         for row, row_height in zip(self._table.children, row_heights):
             for cell, column_width in zip(row.children, column_widths):
                 cell.size = row_height, column_width
-            row.size = row.minimum_grid_size
-        self._table.size = self._table.minimum_grid_size
+            row.size = row.min_grid_size
+        self._table.size = self._table.min_grid_size
 
         # Remove hovered rows/columns:
         self._hover_column_id = self._hover_row_id = -1

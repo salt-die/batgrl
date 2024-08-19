@@ -82,7 +82,7 @@ class Board(GridLayout):
     def __init__(self):
         super().__init__(grid_rows=6, grid_columns=7, pos=(2, 0), is_transparent=True)
         self.add_gadgets(BoardPiece() for _ in range(42))
-        self.size = self.minimum_grid_size
+        self.size = self.min_grid_size
         self._last_col = -1
 
     def on_mouse(self, mouse_event):

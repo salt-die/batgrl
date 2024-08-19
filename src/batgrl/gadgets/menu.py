@@ -227,7 +227,7 @@ class Menu(GridLayout):
         Whether to close the menu when a click doesn't collide with it.
     alpha : float
         Transparency of gadget.
-    minimum_grid_size : Size
+    min_grid_size : Size
         Minimum grid size needed to show all children.
     grid_rows : int
         Number of rows.

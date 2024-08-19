@@ -189,7 +189,7 @@ class ShadowCasterApp(App):
             button_f,
             button_g,
         )
-        grid_layout.size = grid_layout.minimum_grid_size
+        grid_layout.size = grid_layout.min_grid_size
 
         container = Gadget(pos_hint={"y_hint": 0.5, "x_hint": 0.5}, size=(17, 58))
         container.add_gadgets(caster, grid_layout)

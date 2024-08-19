@@ -53,7 +53,7 @@ class SpinnersApp(App):
 
             grid.add_gadget(container)
 
-        grid.size = grid.minimum_grid_size
+        grid.size = grid.min_grid_size
         sv.view = grid
         self.add_gadget(sv)
 

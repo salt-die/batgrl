@@ -271,7 +271,7 @@ class _List(GridLayout):
                 bullet.set_text(getattr(item, "check", prefix))
                 self.add_gadgets(bullet, item)
 
-        self.size = self.minimum_grid_size
+        self.size = self.min_grid_size
 
 
 class _Quote(Pane):
@@ -293,7 +293,7 @@ class _Quote(Pane):
         self.grid = GridLayout(grid_rows=1, grid_columns=2, is_transparent=True)
         self.grid.add_gadgets(margin, content)
         self.add_gadget(self.grid)
-        self.size = self.grid.size = self.grid.minimum_grid_size
+        self.size = self.grid.size = self.grid.min_grid_size
         self.color_content()
 
     def color_content(self):
@@ -537,7 +537,7 @@ class _BatgrlRenderer(BaseRenderer):
         else:
             grid = GridLayout(grid_rows=len(items), is_transparent=True)
             grid.add_gadgets(items)
-            grid.size = grid.minimum_grid_size
+            grid.size = grid.min_grid_size
             quote = _Quote(grid, self.quote_depth)
 
         quote.width = max(quote.width, self.render_width)
@@ -600,7 +600,7 @@ class _BatgrlRenderer(BaseRenderer):
             grid_columns=1, grid_rows=len(blocks), is_transparent=True
         )
         list_item.add_gadgets(blocks)
-        list_item.size = list_item.minimum_grid_size
+        list_item.size = list_item.min_grid_size
         return list_item
 
     def render_table(self, token: block_token.Table) -> Text:
@@ -692,7 +692,7 @@ class _BatgrlRenderer(BaseRenderer):
         blocks = [block for block in rendered if not hasattr(block, "skip_blank_line")]
         grid = GridLayout(grid_rows=len(blocks), is_transparent=True)
         grid.add_gadgets(blocks)
-        grid.size = grid.minimum_grid_size
+        grid.size = grid.min_grid_size
         grid.footnotes = token.footnotes
         return grid
 
