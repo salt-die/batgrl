@@ -20,10 +20,10 @@ from .text import Text
 
 __all__ = ["ToggleButton", "ToggleState", "ButtonState", "Point", "Size"]
 
-CHECK_OFF = "□ "
-CHECK_ON = "▣ "
+CHECK_OFF = "☐ "
+CHECK_ON = "☑ "
 TOGGLE_OFF = "○ "
-TOGGLE_ON = "◉ "
+TOGGLE_ON = "● "
 
 
 class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
