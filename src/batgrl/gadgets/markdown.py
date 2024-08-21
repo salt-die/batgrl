@@ -475,7 +475,7 @@ class _BatgrlRenderer(BaseRenderer):
                     path=path, title=token.title, width=self.render_width
                 )
             return _MarkdownImage(path=path, title=token.title, width=self.render_width)
-        token.children.insert(0, span_token.RawText("🖼️ "))
+        token.children.insert(0, span_token.RawText("🖼️  "))
         content = self.render_inner(token)
         content.canvas[["fg_color", "bg_color"]] = Themable.color_theme.markdown_image
         return _TextImage(title=token.title, content=content)
