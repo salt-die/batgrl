@@ -123,7 +123,19 @@ Cell = np.dtype(
 
 @lru_cache
 def cell_sans(*names: str) -> list[str]:
-    """Fields of a Cell array not in names."""
+    r"""
+    Return all fields of ``Cell`` not in names.
+
+    Parameters
+    ----------
+    \*names : str
+        Excluded fields of ``Cell``.
+
+    Returns
+    -------
+    list[str]
+        All fields of ``Cell`` not in names.
+    """
     return [name for name in Cell.names if name not in names]
 
 
