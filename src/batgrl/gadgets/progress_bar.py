@@ -231,13 +231,12 @@ class ProgressBar(Themable, Gadget):
         x = int(x)
         smooth_bar = smooth_horizontal_bar(bar_width, 1, offset)
 
+        self._bar.clear()
         canvas = self._bar.canvas
-        canvas["char"] = " "
         canvas["char"][:, x : x + len(smooth_bar)] = smooth_bar
         canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
-        if offset != 0:
-            canvas["fg_color"][:, x] = self.color_theme.progress_bar.bg
-            canvas["bg_color"][:, x] = self.color_theme.progress_bar.fg
+        if offset:
+            canvas["reverse"][:, x] = True
 
     def _paint_small_vertical_bar(self, progress):
         bar_height = max(1, (self.height - 1) // 2)
@@ -245,13 +244,12 @@ class ProgressBar(Themable, Gadget):
         y = int(y)
         smooth_bar = smooth_vertical_bar(bar_height, 1, offset)
 
+        self._bar.clear()
         canvas = self._bar.canvas
-        canvas["char"] = " "
         canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
         canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
-        if offset != 0:
-            canvas["fg_color"][::-1][y] = self.color_theme.progress_bar.bg
-            canvas["bg_color"][::-1][y] = self.color_theme.progress_bar.fg
+        if offset:
+            canvas["reverse"][::-1][y] = True
 
     async def _loading_animation(self):
         if (
@@ -297,8 +295,8 @@ class ProgressBar(Themable, Gadget):
         self.default_bg_color = self.color_theme.progress_bar.bg
 
     def _paint_progress_bar(self):
+        self._bar.clear()
         canvas = self._bar.canvas
-        canvas["char"] = " "
         canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
         if self.is_horizontal:
             smooth_bar = smooth_horizontal_bar(self.width, self.progress)

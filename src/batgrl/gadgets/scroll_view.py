@@ -1,19 +1,10 @@
 """A scrollable view gadget."""
 
-from ..colors import Color
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
 from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 from .pane import Pane
 from .text import Text
 
@@ -43,7 +34,7 @@ class _ScrollbarBase(Grabbable, Text):
         """The length the indicator can travel."""
         return self.length - self.indicator_length
 
-    def paint_indicator(self) -> tuple[Color, int, float]:
+    def _paint_indicator(self) -> None:
         sv: ScrollView = self.parent
 
         if self.is_grabbed:
@@ -54,9 +45,9 @@ class _ScrollbarBase(Grabbable, Text):
             indicator_color = sv.color_theme.scroll_view_indicator_normal
 
         self.canvas["char"] = " "
-
         self.canvas["fg_color"] = indicator_color
         self.canvas["bg_color"] = sv.color_theme.scroll_view_scrollbar
+        self.canvas["reverse"] = False
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
@@ -66,11 +57,12 @@ class _ScrollbarBase(Grabbable, Text):
             offset -= 1
             start += 1
 
-        return indicator_color, start, offset
+        self._start = start
+        self._offset = offset
 
     def ungrab(self, mouse_event):
         super().ungrab(mouse_event)
-        self.paint_indicator()
+        self._paint_indicator()
 
 
 class _VerticalScrollbar(_ScrollbarBase):
@@ -83,40 +75,35 @@ class _VerticalScrollbar(_ScrollbarBase):
             2, round(self.indicator_proportion * self.length), self.length
         )
 
-    def paint_indicator(self):
-        indicator_color, start, offset = super().paint_indicator()
-
-        sv: ScrollView = self.parent
+    def _paint_indicator(self) -> None:
+        super()._paint_indicator()
+        start, offset = self._start, self._offset
         smooth_bar = smooth_vertical_bar(
             self.indicator_length, 1, offset, reversed=True
         )
         stop = start + len(smooth_bar)
         self.canvas["char"][start:stop].T[:] = smooth_bar
-
-        y_offset = offset != 0
-        self.canvas["fg_color"][start + y_offset : stop] = (
-            sv.color_theme.scroll_view_scrollbar
-        )
-        self.canvas["bg_color"][start + y_offset : stop] = indicator_color
+        self.canvas["reverse"][start + bool(offset) : stop] = True
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
 
         y, x = self.to_local(mouse_event.pos)
-        start = round(self.indicator_progress * self.fill_length)
-        self.is_hovered = 0 <= x < 2 and start <= y < start + self.indicator_length
+        self.is_hovered = 0 <= x < 2 and (
+            self._start <= y < self._start + self.indicator_length + bool(self._offset)
+        )
 
         if super().on_mouse(mouse_event):
             return True
 
         if old_hovered != self.is_hovered:
-            self.paint_indicator()
+            self._paint_indicator()
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
 
         if self.is_hovered:
-            self.paint_indicator()
+            self._paint_indicator()
         else:
             self.is_hovered = True
 
@@ -144,33 +131,31 @@ class _HorizontalScrollbar(_ScrollbarBase):
             4, round(self.indicator_proportion * self.length), self.length
         )
 
-    def paint_indicator(self):
-        indicator_color, start, offset = super().paint_indicator()
-
-        sv: ScrollView = self.parent
+    def _paint_indicator(self) -> None:
+        super()._paint_indicator()
+        start, offset = self._start, self._offset
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
-        if offset != 0:
-            self.canvas["fg_color"][:, start] = sv.color_theme.scroll_view_scrollbar
-            self.canvas["bg_color"][:, start] = indicator_color
+        self.canvas["reverse"][:, start] = bool(offset)
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
 
         y, x = self.to_local(mouse_event.pos)
-        start = round(self.indicator_progress * self.fill_length)
-        self.is_hovered = y == 0 and start <= x < start + self.indicator_length
+        self.is_hovered = y == 0 and (
+            self._start <= x < self._start + self.indicator_length + bool(self._offset)
+        )
 
         if super().on_mouse(mouse_event):
             return True
 
         if old_hovered != self.is_hovered:
-            self.paint_indicator()
+            self._paint_indicator()
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
         if self.is_hovered:
-            self.paint_indicator()
+            self._paint_indicator()
         else:
             self.is_hovered = True
 
@@ -574,10 +559,10 @@ class ScrollView(Themable, Grabbable, Gadget):
         if self._view is None:
             self._vertical_bar.indicator_proportion = 1.0
             self._vertical_bar.indicator_progress = 0
-            self._vertical_bar.paint_indicator()
+            self._vertical_bar._paint_indicator()
             self._horizontal_bar.indicator_proportion = 1.0
             self._horizontal_bar.indicator_progress = 0
-            self._horizontal_bar.paint_indicator()
+            self._horizontal_bar._paint_indicator()
         else:
             self._view.top = -round(
                 self.vertical_proportion * self.total_vertical_distance
@@ -590,13 +575,13 @@ class ScrollView(Themable, Grabbable, Gadget):
                 self.port_height / self._view.height, 0, 1
             )
             self._vertical_bar.indicator_progress = self.vertical_proportion
-            self._vertical_bar.paint_indicator()
+            self._vertical_bar._paint_indicator()
 
             self._horizontal_bar.indicator_proportion = clamp(
                 self.port_width / self._view.width, 0, 1
             )
             self._horizontal_bar.indicator_progress = self.horizontal_proportion
-            self._horizontal_bar.paint_indicator()
+            self._horizontal_bar._paint_indicator()
 
     @property
     def view(self) -> Gadget | None:

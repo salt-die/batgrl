@@ -56,6 +56,7 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
             underline,
             strikethrough,
             overline,
+            reverse,
             (fr, fg, fb),  # foreground color
             (br, bg, bb),  # background color
         ) = cell.item()
@@ -76,6 +77,7 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
                     underline,
                     strikethrough,
                     overline,
+                    reverse,
                     (fr, fg, fb),
                     (br, bg, bb),
                 ) = canvas[y, x].item()
@@ -110,6 +112,7 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
             f"{'4;' if underline else ''}"
             f"{'9;' if strikethrough else ''}"
             f"{'53;' if overline else ''}"
+            f"{'7;' if reverse else ''}"
             f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair.
             f"{char}"
         )

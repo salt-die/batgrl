@@ -113,6 +113,7 @@ Cell = np.dtype(
         ("underline", "?"),
         ("strikethrough", "?"),
         ("overline", "?"),
+        ("reverse", "?"),
         ("fg_color", "u1", (3,)),
         ("bg_color", "u1", (3,)),
     ]
@@ -133,6 +134,7 @@ def new_cell(
     underline: bool = False,
     strikethrough: bool = False,
     overline: bool = False,
+    reverse: bool = False,
     fg_color: Color = WHITE,
     bg_color: Color = BLACK,
 ) -> NDArray[Cell]:
@@ -166,7 +168,17 @@ def new_cell(
         A ``Cell`` scalar.
     """
     return np.array(
-        (char, bold, italic, underline, strikethrough, overline, fg_color, bg_color),
+        (
+            char,
+            bold,
+            italic,
+            underline,
+            strikethrough,
+            overline,
+            reverse,
+            fg_color,
+            bg_color,
+        ),
         dtype=Cell,
     )
 
@@ -388,7 +400,6 @@ def _smooth_bar(
         )
 
     block_indices = len(blocks) - 1
-
     fill, partial = divmod(proportion * max_length, 1)
     fill = int(fill)
 
@@ -451,7 +462,6 @@ def smooth_horizontal_bar(
 ) -> tuple[str, ...]:
     """
     Create a horizontal bar that's some proportion of max_width at an offset.
-    The first character of the bar should have it's colors reversed.
 
     Offset bars will return a minimum of 2 characters and the first character of the bar
     should have it's colors reversed.

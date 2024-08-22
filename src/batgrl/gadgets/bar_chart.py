@@ -37,7 +37,7 @@ class _BarChartProperty:
 
     def __set__(self, instance, value):
         setattr(instance, self.name, value)
-        instance.build_chart()
+        instance._build_chart()
 
 
 class BarChart(Gadget):
@@ -154,8 +154,6 @@ class BarChart(Gadget):
 
     Methods
     -------
-    build_chart()
-        Build bar chart and set canvas and color arrays.
     on_size()
         Update gadget after a resize.
     apply_hints()
@@ -300,9 +298,9 @@ class BarChart(Gadget):
     def on_add(self):
         """Build chart on add."""
         super().on_add()
-        self.build_chart()
+        self._build_chart()
 
-    def build_chart(self):
+    def _build_chart(self):
         """Build bar chart and set canvas and color arrays."""
         if not self.root:
             return
@@ -365,10 +363,7 @@ class BarChart(Gadget):
                 chars[row, :-1] = "─"
                 fg_colors[row] = self.grid_line_color
 
-        bar_colors = (
-            rainbow_gradient(nbars) if self.bar_colors is None else self.bar_colors
-        )
-
+        bar_colors = self.bar_colors or rainbow_gradient(nbars)
         y_delta = max_y - min_y
 
         for i, (label, value) in enumerate(self.data.items()):
@@ -377,14 +372,11 @@ class BarChart(Gadget):
             self._bars.add_str(label.center(bar_width), pos=(h - 1, x1))
             smooth_bar = smooth_vertical_bar(h - 3, (value - min_y) / y_delta, 0.5)
             chars.T[x1:x2, 2 : 2 + len(smooth_bar)] = smooth_bar
-            # Replace row of smooth bar with upper half-blocks so that alpha compositing
-            # works as expected. The colors of the first character of smooth bars is
-            # reversed, but this can cause issues when compositing the background color.
-            chars.T[x1:x2, 2] = "▀"
             fg_colors[2 : 2 + len(smooth_bar), x1:x2] = bar_colors[i]
+            self._bars.canvas["reverse"][::-1].T[x1:x2, 2] = True
         chars[1, :-1] = "─"
         chars[1, -1] = "┐"
 
     def on_size(self):
         """Rebuild bar chart."""
-        self.build_chart()
+        self._build_chart()
