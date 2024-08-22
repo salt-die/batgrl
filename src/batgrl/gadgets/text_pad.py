@@ -516,8 +516,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             ll.insert(last_y, width_last + str_width("".join(line_remaining["char"])))
 
             height = max(len(ll), self._scroll_view.port_height)
-            max_width = max(ll)
-            width = pad.width if max_width < pad.width else max_width + 1
+            width = max(max(ll) + 1, self._scroll_view.port_width)
             pad.size = height, width
 
             pad.canvas[y + newlines + 1 :] = pad.canvas[y + 1 : -newlines]
