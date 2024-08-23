@@ -165,49 +165,178 @@ class AColor(NamedTuple):
 
 
 class ColorPair(TypedDict):
-    """A foreground and background hexcode."""
+    """
+    A foreground and background hexcode.
+
+    Attributes
+    ----------
+    fg : str
+        The foreground hex code.
+    bg : str
+        The background hex code.
+    """
 
     fg: str
+    """The foreground hex code."""
     bg: str
+    """The background hex code."""
 
 
 class ColorTheme(TypedDict, total=False):
-    """Colors for themable gadgets."""
+    """
+    Colors for themable gadgets.
+
+    Missing colors will use the default color theme.
+
+    Attributes
+    ----------
+    primary : ColorPair
+        The primary color pair.
+    text_pad_line_highlight : ColorPair
+        Text pad line highlight color pair.
+    text_pad_selection_highlight : ColorPair
+        Text pad selection color pair.
+    textbox_primary : ColorPair
+        Text pad primary color pair.
+    textbox_selection_highlight : ColorPair
+        Textbox selection color pair.
+    textbox_placeholder : ColorPair
+        Textbox placeholder color pair.
+    button_normal : ColorPair
+        Button normal color pair.
+    button_hover : ColorPair
+        Button hover color pair.
+    button_press : ColorPair
+        Button press color pair.
+    button_disallowed : ColorPair
+        Button disallowed color pair.
+    menu_item_hover : ColorPair
+        Menu item hover color pair.
+    menu_item_selected : ColorPair
+        Menu item selected color pair.
+    menu_item_disallowed : ColorPair
+        Menu item disallowed color pair.
+    titlebar_normal : ColorPair
+        Titlebar normal color pair.
+    titlebar_inactive : ColorPair
+        Titlebar inactive color pair.
+    data_table_sort_indicator : ColorPair
+        Data table sort indicator color pair.
+    data_table_hover : ColorPair
+        Data table hover color pair.
+    data_table_stripe : ColorPair
+        Data table stripe color pair.
+    data_table_stripe_hover : ColorPair
+        Data table stripe hover color pair.
+    data_table_selected : ColorPair
+        Data table selected color pair.
+    data_table_selected_hover : ColorPair
+        Data table selected hover color pair.
+    progress_bar : ColorPair
+        Progress bar color pair.
+    markdown_link : ColorPair
+        Markdown link color pair.
+    markdown_link_hover : ColorPair
+        Markdown link hover color pair.
+    markdown_inline_code : ColorPair
+        Markdown inline code color pair.
+    markdown_quote : ColorPair
+        Markdown quote color pair.
+    markdown_title : ColorPair
+        Markdown title color pair.
+    markdown_image : ColorPair
+        Markdown image color pair.
+    markdown_block_code_background : str
+        Markdown block code background color hexcode.
+    markdown_quote_block_code_background : str
+        Markdown quote block code background color hexcode.
+    markdown_header_background : str
+        Markdown header background color hexcode.
+    scroll_view_scrollbar : str
+        Scroll view scrollbar color hexcode.
+    scroll_view_indicator_normal : str
+        Scroll view indicator normal color hexcode.
+    scroll_view_indicator_hover : str
+        Scroll view indicator hover color hexcode.
+    scroll_view_indicator_press : str
+        Scroll view indicator press color hexcode.
+    window_border_normal : str
+        Window border normal color hexcode.
+    window_border_inactive : str
+        Window border inactive color hexcode.
+    """
 
     primary: ColorPair
+    """The primary color pair."""
     text_pad_line_highlight: ColorPair
+    """Text pad line highlight color pair."""
     text_pad_selection_highlight: ColorPair
+    """Text pad selection color pair."""
     textbox_primary: ColorPair
+    """Text pad primary color pair."""
     textbox_selection_highlight: ColorPair
+    """Textbox selection color pair."""
     textbox_placeholder: ColorPair
+    """Textbox placeholder color pair."""
     button_normal: ColorPair
+    """Button normal color pair."""
     button_hover: ColorPair
+    """Button hover color pair."""
     button_press: ColorPair
+    """Button press color pair."""
     button_disallowed: ColorPair
+    """Button disallowed color pair."""
     menu_item_hover: ColorPair
+    """Menu item hover color pair."""
     menu_item_selected: ColorPair
+    """Menu item selected color pair."""
     menu_item_disallowed: ColorPair
+    """Menu item disallowed color pair."""
     titlebar_normal: ColorPair
+    """Titlebar normal color pair."""
     titlebar_inactive: ColorPair
+    """Titlebar inactive color pair."""
     data_table_sort_indicator: ColorPair
+    """Data table sort indicator color pair."""
     data_table_hover: ColorPair
+    """Data table hover color pair."""
     data_table_stripe: ColorPair
+    """Data table stripe color pair."""
     data_table_stripe_hover: ColorPair
+    """Data table stripe hover color pair."""
     data_table_selected: ColorPair
+    """Data table selected color pair."""
     data_table_selected_hover: ColorPair
+    """Data table selected hover color pair."""
     progress_bar: ColorPair
+    """Progress bar color pair."""
     markdown_link: ColorPair
+    """Markdown link color pair."""
     markdown_link_hover: ColorPair
+    """Markdown link hover color pair."""
     markdown_inline_code: ColorPair
+    """Markdown inline code color pair."""
     markdown_quote: ColorPair
+    """Markdown quote color pair."""
     markdown_title: ColorPair
+    """Markdown title color pair."""
     markdown_image: ColorPair
+    """Markdown image color pair."""
     markdown_block_code_background: str
+    """Markdown block code background color hexcode."""
     markdown_quote_block_code_background: str
+    """Markdown quote block code background color hexcode."""
     markdown_header_background: str
+    """Markdown header background color hexcode."""
     scroll_view_scrollbar: str
+    """Scroll view scrollbar color hexcode."""
     scroll_view_indicator_normal: str
+    """Scroll view indicator normal color hexcode."""
     scroll_view_indicator_hover: str
+    """Scroll view indicator hover color hexcode."""
     scroll_view_indicator_press: str
+    """Scroll view indicator press color hexcode."""
     window_border_normal: str
+    """Window border normal color hexcode."""
     window_border_inactive: str
+    """Window border inactive color hexcode."""
