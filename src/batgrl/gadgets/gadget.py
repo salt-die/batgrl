@@ -265,17 +265,17 @@ class Gadget:
     pos : Point
         Position of upper-left corner.
     top : int
-        Y-coordinate of top of gadget.
+        y-coordinate of top of gadget.
     y : int
-        Y-coordinate of top of gadget.
+        y-coordinate of top of gadget.
     left : int
-        X-coordinate of left side of gadget.
+        x-coordinate of left side of gadget.
     x : int
-        X-coordinate of left side of gadget.
+        x-coordinate of left side of gadget.
     bottom : int
-        Y-coordinate of bottom of gadget.
+        y-coordinate of bottom of gadget.
     right : int
-        X-coordinate of right side of gadget.
+        x-coordinate of right side of gadget.
     center : Point
         Position of center of gadget.
     absolute_pos : Point
@@ -448,7 +448,7 @@ class Gadget:
 
     @property
     def top(self) -> int:
-        """Y-coordinate of top of gadget."""
+        """y-coordinate of top of gadget."""
         return self._pos[0]
 
     @top.setter
@@ -456,11 +456,11 @@ class Gadget:
         self.pos = top, self.left
 
     y = top
-    """Y-coordinate of top of gadget."""
+    """y-coordinate of top of gadget."""
 
     @property
     def left(self) -> int:
-        """X-coordinate of left side of gadget."""
+        """x-coordinate of left side of gadget."""
         return self._pos[1]
 
     @left.setter
@@ -468,11 +468,11 @@ class Gadget:
         self.pos = self.top, left
 
     x = left
-    """X-coordinate of left side of gadget."""
+    """x-coordinate of left side of gadget."""
 
     @property
     def bottom(self) -> int:
-        """Y-coordinate of bottom of gadget."""
+        """y-coordinate of bottom of gadget."""
         return self.top + self.height
 
     @bottom.setter
@@ -481,7 +481,7 @@ class Gadget:
 
     @property
     def right(self) -> int:
-        """X-coordinate of right side of gadget."""
+        """x-coordinate of right side of gadget."""
         return self.left + self.width
 
     @right.setter

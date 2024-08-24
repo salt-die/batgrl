@@ -11,9 +11,9 @@ __all__ = ["clamp", "lerp", "points_on_circle", "round_down", "Point", "Size"]
 
 def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
     """
-    If `value` is less than `min`, returns `min`; otherwise if `max` is less than
-    `value`, returns `max`; otherwise returns `value`. A one-sided clamp is possible by
-    setting `min` or `max` to `None`.
+    If ``value`` is less than ``min``, returns ``min``; else if ``max`` is less than
+    ``value``, returns ``max``; else returns ``value``. A one-sided clamp is possible
+    by setting ``min`` or ``max`` to ``None``.
 
     Parameters
     ----------
@@ -88,8 +88,8 @@ class Point(NamedTuple):
     """
     A 2-d point.
 
-    Note that y-coordinate is before x-coordinate. This convention is used so that
-    the 2-d arrays that underly a gadget's data can be directly indexed with the point.
+    Note that y-coordinate is before x-coordinate. This convention is used so that the
+    2-d arrays that underly a gadget's data can be directly indexed with the point.
 
     Parameters or attributes type-hinted `Point` can often take `tuple[int, int]` for
     convenience.
@@ -97,22 +97,22 @@ class Point(NamedTuple):
     Parameters
     ----------
     y : int
-        Y-coordinate of point.
+        y-coordinate of point.
     x : int
-        X-coordinate of point.
+        x-coordinate of point.
 
     Attributes
     ----------
     y : int
-        Y-coordinate of point.
+        y-coordinate of point.
     x : int
-        X-coordinate of point.
+        x-coordinate of point.
     """
 
     y: int
-    """Y-coordinate of point."""
+    """y-coordinate of point."""
     x: int
-    """X-coordinate of point."""
+    """x-coordinate of point."""
 
     def __add__(self, other: Self) -> Self:
         y, x = self

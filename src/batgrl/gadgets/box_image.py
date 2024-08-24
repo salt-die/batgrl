@@ -64,17 +64,17 @@ class BoxImage(Gadget):
     pos : Point
         Position of upper-left corner.
     top : int
-        Y-coordinate of top of gadget.
+        y-coordinate of top of gadget.
     y : int
-        Y-coordinate of top of gadget.
+        y-coordinate of top of gadget.
     left : int
-        X-coordinate of left side of gadget.
+        x-coordinate of left side of gadget.
     x : int
-        X-coordinate of left side of gadget.
+        x-coordinate of left side of gadget.
     bottom : int
-        Y-coordinate of bottom of gadget.
+        y-coordinate of bottom of gadget.
     right : int
-        X-coordinate of right side of gadget.
+        x-coordinate of right side of gadget.
     center : Point
         Position of center of gadget.
     absolute_pos : Point
