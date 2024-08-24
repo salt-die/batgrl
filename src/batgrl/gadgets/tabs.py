@@ -5,14 +5,7 @@ import asyncio
 from ..colors import lerp_colors
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    new_cell,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint, new_cell
 from .pane import Pane
 from .text import Text
 

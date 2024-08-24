@@ -5,13 +5,7 @@ from collections.abc import Iterable, Sequence
 
 from ..colors import BLACK, WHITE, Color
 from .animation import _check_frame_durations
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .pane import Pane
 from .text import Text
 

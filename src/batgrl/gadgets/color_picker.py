@@ -23,13 +23,7 @@ from ..colors import (
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .graphics import Graphics
 from .pane import Pane
 from .text import Text, new_cell

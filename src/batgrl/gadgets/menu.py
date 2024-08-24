@@ -12,13 +12,7 @@ from ..geometry import clamp
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .grid_layout import GridLayout
-from .pane import (
-    Pane,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .pane import Pane, Point, PosHint, Size, SizeHint
 from .text import Text, str_width
 
 __all__ = ["Menu", "MenuBar", "MenuDict", "Point", "Size"]

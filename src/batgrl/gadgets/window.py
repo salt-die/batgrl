@@ -6,14 +6,7 @@ from ..terminal.events import MouseEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    clamp,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
 from .pane import Pane
 from .text import Text, str_width
 

@@ -6,13 +6,7 @@ import cv2
 import numpy as np
 
 from ..text_tools import binary_to_braille
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text
 
 __all__ = ["BrailleImage", "Point", "Size"]

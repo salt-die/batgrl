@@ -8,13 +8,7 @@ from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .scroll_view import ScrollView
 from .text import Text
 

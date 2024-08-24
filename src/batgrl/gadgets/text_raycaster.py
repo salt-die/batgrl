@@ -4,15 +4,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .raycaster import RaycasterCamera, Sprite
-from .text import (
-    Cell,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    Text,
-    clamp,
-)
+from .text import Cell, Point, PosHint, Size, SizeHint, Text, clamp
 
 __all__ = ["TextRaycaster", "RaycasterCamera", "Sprite", "Point", "Size"]
 

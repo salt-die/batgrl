@@ -3,13 +3,7 @@
 import numpy as np
 
 from ..colors import BLACK, Color
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text
 
 __all__ = ["DigitalDisplay", "Point", "Size"]

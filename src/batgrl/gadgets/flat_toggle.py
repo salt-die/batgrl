@@ -9,13 +9,7 @@ from .behaviors.toggle_button_behavior import (
     ToggleButtonBehavior,
     ToggleState,
 )
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text
 
 __all__ = ["FlatToggle", "ToggleState", "ButtonState", "Point", "Size"]

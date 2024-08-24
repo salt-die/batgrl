@@ -10,13 +10,7 @@ from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, lerp_colors
 from ..terminal.events import MouseEvent
 from ..text_tools import smooth_vertical_bar
 from ._cursor import Cursor
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text, add_text
 
 __all__ = ["Sparkline", "Point", "Size"]

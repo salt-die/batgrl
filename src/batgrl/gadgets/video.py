@@ -11,14 +11,7 @@ import cv2
 import numpy as np
 
 from ..colors import ABLACK, AColor
-from .graphics import (
-    Graphics,
-    Interpolation,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
 
 __all__ = ["Video", "Interpolation", "Point", "Size"]
 

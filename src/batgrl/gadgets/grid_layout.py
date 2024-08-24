@@ -3,25 +3,12 @@
 from itertools import accumulate, product
 from typing import Literal
 
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 
 __all__ = ["GridLayout", "Orientation", "Point", "Size"]
 
 Orientation = Literal[
-    "lr-tb",
-    "lr-bt",
-    "rl-tb",
-    "rl-bt",
-    "tb-lr",
-    "tb-rl",
-    "bt-lr",
-    "bt-rl",
+    "lr-tb", "lr-bt", "rl-tb", "rl-bt", "tb-lr", "tb-rl", "bt-lr", "bt-rl"
 ]
 """
 Orientation of the grid.

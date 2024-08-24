@@ -10,14 +10,7 @@ from numpy.typing import NDArray
 
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .gadget import (
-    Cell,
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint
 from .text import Text
 
 __all__ = ["TreeView", "TreeViewNode", "ButtonState", "Point", "Size"]

@@ -14,13 +14,7 @@ from typing import Self
 from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, str_width

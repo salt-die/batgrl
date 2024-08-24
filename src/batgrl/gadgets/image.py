@@ -8,14 +8,7 @@ from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
 from ..texture_tools import read_texture, resize_texture
-from .graphics import (
-    Graphics,
-    Interpolation,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
 
 __all__ = ["Image", "Interpolation", "Point", "Size"]
 

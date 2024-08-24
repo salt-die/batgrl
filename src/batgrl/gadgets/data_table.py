@@ -11,13 +11,7 @@ from typing import Literal, Protocol, TypeVar
 from ..terminal.events import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .grid_layout import GridLayout
 from .pane import Pane
 from .scroll_view import ScrollView

@@ -5,14 +5,7 @@ from math import ceil
 import numpy as np
 
 from ..colors import TRANSPARENT, AColor
-from .graphics import (
-    Graphics,
-    Interpolation,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-)
+from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
 
 __all__ = ["TiledImage", "Interpolation", "Point", "Size"]
 

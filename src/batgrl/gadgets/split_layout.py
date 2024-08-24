@@ -2,14 +2,7 @@
 
 from ..colors import AColor
 from .behaviors.grabbable import Grabbable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    clamp,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
 from .graphics import Graphics
 
 __all__ = ["HSplitLayout", "VSplitLayout", "Point", "Size"]

@@ -5,15 +5,7 @@ from collections.abc import Callable
 from ..colors import BLACK, WHITE, Color
 from ..terminal.events import MouseButton, MouseEvent
 from .behaviors.grabbable import Grabbable
-from .pane import (
-    Pane,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .pane import Pane, Point, PosHint, Size, SizeHint, bindable, clamp
 from .text import Text
 
 __all__ = ["Slider", "Point", "Size"]

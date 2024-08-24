@@ -14,14 +14,7 @@ from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_grad
 from ..terminal.events import MouseEvent
 from ..text_tools import binary_to_box, binary_to_braille, str_width
 from .behaviors.movable import Movable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    lerp,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, add_text, new_cell

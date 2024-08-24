@@ -5,15 +5,7 @@ from itertools import chain, cycle
 
 from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.themable import Themable
-from .gadget import (
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .gadget import Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 from .text import Text
 
 __all__ = ["ProgressBar", "Point", "Size"]
