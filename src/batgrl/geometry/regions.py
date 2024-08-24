@@ -62,7 +62,9 @@ def rect_slice(pos: Point, size: Size) -> tuple[slice, slice]:
     Parameters
     ----------
     pos : Point
+        Position of rect.
     size : Size
+        Size of rect.
 
     Returns
     -------
