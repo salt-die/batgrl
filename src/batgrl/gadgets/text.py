@@ -9,6 +9,7 @@ from pygments.lexers import guess_lexer
 from pygments.style import Style
 
 from ..colors import Color, Neptune
+from ..geometry import rect_slice
 from ..text_tools import (
     _parse_batgrl_md,
     _text_to_cells,
@@ -515,9 +516,9 @@ class Text(Gadget):
         text_bg = self.canvas["bg_color"]
         abs_pos = self.absolute_pos
         alpha = self.alpha
-        for rect in self._region.rects():
-            dst = rect.to_slices()
-            src = rect.to_slices(abs_pos)
+        for pos, size in self._region.rects():
+            dst = rect_slice(pos, size)
+            src = rect_slice(pos - abs_pos, size)
             if self.is_transparent:
                 visible = np.isin(text_chars[src], (" ", "⠀"), invert=True)
                 invisible = ~visible

@@ -3,17 +3,9 @@
 from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
+from ..geometry import rect_slice
 from ..texture_tools import _composite
-from .gadget import (
-    Cell,
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
 __all__ = ["Pane", "Point", "Size"]
 
@@ -192,8 +184,8 @@ class Pane(Gadget):
         styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
         foreground = canvas["fg_color"]
         background = canvas["bg_color"]
-        for rect in self._region.rects():
-            dst = rect.to_slices()
+        for pos, size in self._region.rects():
+            dst = rect_slice(pos, size)
             fg_rect = foreground[dst]
             bg_rect = background[dst]
             if self.is_transparent:

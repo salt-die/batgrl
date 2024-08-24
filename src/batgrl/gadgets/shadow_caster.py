@@ -12,16 +12,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import AWHITE, BLACK, TRANSPARENT, WHITE, AColor, Color
-from ..geometry import Region
-from .graphics import (
-    Graphics,
-    Interpolation,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    clamp,
-)
+from ..geometry import Region, rect_slice
+from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint, clamp
 
 __all__ = [
     "ShadowCaster",
@@ -92,8 +84,10 @@ class ShadowCasterCamera:
         dest = Region.from_rect(self.pos, self.size)
 
         if intersection := source & dest:
-            rect = next(intersection.rects())
-            submap[rect.to_slices(self.pos)] = map[rect.to_slices()]
+            pos, size = next(intersection.rects())
+            src = rect_slice(pos, size)
+            dst = rect_slice(pos - self.pos, size)
+            submap[dst] = map[src]
 
         return submap
 
@@ -292,7 +286,7 @@ class ShadowCaster(Graphics):
     -------
     cast_shadows()
         Update texture by shadow casting all light sources.
-    to_map_coords(point: Point):
+    to_map_coords(point)
         Convert a point in the gadget's local coordinates to a point in the map's
         coordinates.
     to_png(path)

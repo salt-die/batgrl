@@ -9,18 +9,10 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from ..geometry import clamp
+from ..geometry import clamp, rect_slice
 from ..text_tools import cell_sans
 from ..texture_tools import _composite
-from .gadget import (
-    Cell,
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    new_cell,
-)
+from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, new_cell
 
 __all__ = ["TextParticleField", "particle_data_from_canvas", "Point", "Size"]
 
@@ -237,11 +229,9 @@ class TextParticleField(Gadget):
         ppos = self.particle_positions
         pchars = self.particle_cells[cell_sans("bg_color")]
         pbg_color = self.particle_cells["bg_color"]
-        for rect in self._region.rects():
-            height = rect.bottom - rect.top
-            width = rect.right - rect.left
-            pos = ppos - (rect.top - offy, rect.left - offx)
-            inbounds = (((0, 0) <= pos) & (pos < (height, width))).all(axis=1)
+        for (y, x), (h, w) in self._region.rects():
+            pos = ppos - (y - offy, x - offx)
+            inbounds = (((0, 0) <= pos) & (pos < (h, w))).all(axis=1)
 
             if self.is_transparent:
                 not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
@@ -251,7 +241,7 @@ class TextParticleField(Gadget):
             painted = pbg_color[where_inbounds]
 
             ys, xs = pos[where_inbounds].T
-            dst = rect.to_slices()
+            dst = rect_slice((y, x), (h, w))
             if self.is_transparent:
                 background = bg_color[dst][ys, xs]
                 _composite(background, painted, 255, self.alpha)

@@ -10,17 +10,9 @@ import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured
 from numpy.typing import NDArray
 
+from ..geometry import rect_slice
 from ..texture_tools import _composite
-from .gadget import (
-    Cell,
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
 __all__ = ["GraphicParticleField", "particle_data_from_texture", "Point", "Size"]
 
@@ -240,16 +232,14 @@ class GraphicParticleField(Gadget):
         offy, offx = self.absolute_pos
         ppos = self.particle_positions
         pcolors = self.particle_colors
-        for rect in self._region.rects():
-            height = rect.bottom - rect.top
-            width = rect.right - rect.left
-            pos = ppos - (rect.top - offy, rect.left - offx)
+        for (y, x), (h, w) in self._region.rects():
+            pos = ppos - (y - offy, x - offx)
             where_inbounds = np.nonzero(
-                (((0, 0) <= pos) & (pos < (2 * height, width))).all(axis=1)
+                (((0, 0) <= pos) & (pos < (2 * h, w))).all(axis=1)
             )
             ys, xs = pos[where_inbounds].T
 
-            dst = rect.to_slices()
+            dst = rect_slice((y, x), (h, w))
             color_rect = colors[dst]
 
             if self.is_transparent:
@@ -257,10 +247,8 @@ class GraphicParticleField(Gadget):
                 color_rect[..., :3][mask] = color_rect[..., 3:][mask]
 
             texture = (
-                color_rect.reshape(height, width, 2, 3)
-                .swapaxes(1, 2)
-                .reshape(2 * height, width, 3)
-            )  # Note this isn't a view.
+                color_rect.reshape(h, w, 2, 3).swapaxes(1, 2).reshape(2 * h, w, 3)
+            )  # Not a view.
             painted = pcolors[where_inbounds]
 
             if self.is_transparent:
@@ -270,11 +258,7 @@ class GraphicParticleField(Gadget):
             else:
                 texture[ys, xs] = painted[..., :3]
 
-            color_rect[:] = (
-                texture.reshape(height, 2, width, 3)
-                .swapaxes(1, 2)
-                .reshape(height, width, 6)
-            )
+            color_rect[:] = texture.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
             chars[dst] = "▀"
             styles[dst] = False
 

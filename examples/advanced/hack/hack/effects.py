@@ -1,5 +1,6 @@
 import numpy as np
 from batgrl.gadgets.gadget import Gadget
+from batgrl.geometry import rect_slice
 
 
 class Darken(Gadget):
@@ -7,8 +8,8 @@ class Darken(Gadget):
 
     def _render(self, canvas):
         super()._render(canvas)
-        for rect in self._region.rects():
-            s = rect.to_slices()
+        for pos, size in self._region.rects():
+            s = rect_slice(pos, size)
             canvas["fg_color"][s] >>= 1
             canvas["bg_color"][s] >>= 1
 

@@ -7,17 +7,9 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
+from ..geometry import rect_slice
 from ..texture_tools import Interpolation, _composite, resize_texture
-from .gadget import (
-    Cell,
-    Gadget,
-    Point,
-    PosHint,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
 __all__ = ["Graphics", "Interpolation", "Point", "Size"]
 
@@ -235,13 +227,14 @@ class Graphics(Gadget):
         background = canvas["bg_color"]
         abs_pos = self.absolute_pos
         alpha = self.alpha
-        for rect in self._region.rects():
-            dst = rect.to_slices()
-            src_y, src_x = rect.to_slices(abs_pos)
+        for pos, (h, w) in self._region.rects():
+            dst = rect_slice(pos, (h, w))
+            src_top, src_left = pos - abs_pos
+            src_bottom, src_right = src_top + h, src_left + w
             fg_rect = foreground[dst]
             bg_rect = background[dst]
-            even_rows = texture[2 * src_y.start : 2 * src_y.stop : 2, src_x]
-            odd_rows = texture[2 * src_y.start + 1 : 2 * src_y.stop : 2, src_x]
+            even_rows = texture[2 * src_top : 2 * src_bottom : 2, src_left:src_right]
+            odd_rows = texture[2 * src_top + 1 : 2 * src_bottom : 2, src_left:src_right]
 
             if self.is_transparent:
                 mask = chars[dst] != "▀"

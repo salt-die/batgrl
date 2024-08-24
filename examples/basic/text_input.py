@@ -74,8 +74,8 @@ class BorderedOnFocusTextPad(BorderOnFocus, TextPad): ...
 class TextPadApp(App):
     async def on_start(self):
         textbox = BorderedOnFocusTextbox(
-            pos=(1, 3),
-            size=(1, 31),
+            pos=(1, 4),
+            size=(1, 30),
             enter_callback=lambda box: setattr(box, "text", ""),
             placeholder="Search...",
             max_chars=50,
@@ -83,7 +83,7 @@ class TextPadApp(App):
         default_cell = new_cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=SECONDARY_BG)
         textbox_border = Text(pos=(2, 2), size=(3, 35), default_cell=default_cell)
         textbox_border.add_gadget(textbox)
-        textbox_border.add_str("🔍", pos=(1, 1))
+        textbox_border.add_str("🔍 ", bg_color=DEFAULT_PRIMARY_BG, pos=(1, 1))
         textbox_border.canvas["bg_color"][1, 1] = DEFAULT_PRIMARY_BG
 
         text_pad = BorderedOnFocusTextPad(pos=(1, 1), size=(13, 33))

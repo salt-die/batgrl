@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from .geometry import Point, Region, Size
+from .geometry import Point, Region, Size, rect_slice
 
 __all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
 
@@ -131,9 +131,9 @@ def composite(
     source_reg = Region.from_rect(pos, (sh, sw))
 
     if intersection := source_reg & dest_reg:
-        rect = next(intersection.rects())
-        dest_tex = dest[rect.to_slices()]
-        source_tex = source[rect.to_slices(pos)]
+        rpos, size = next(intersection.rects())
+        dest_tex = dest[rect_slice(rpos, size)]
+        source_tex = source[rect_slice(rpos - pos, size)]
         source_alpha = source_tex[..., 3]
 
         if mask_mode:

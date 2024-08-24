@@ -52,84 +52,26 @@ from typing import Self
 
 from .basic import Point, Size
 
-__all__ = ["Rect", "Region"]
+__all__ = ["Region", "rect_slice"]
 
 
-@dataclass(slots=True)
-class Rect:
+def rect_slice(pos: Point, size: Size) -> tuple[slice, slice]:
     """
-    Rectangular Coordinates.
+    Return slices for indexing a rect in a numpy array.
 
     Parameters
     ----------
-    top : int
-        y-coordinate of top of rect.
-    bottom : int
-        y-coordinate of bottom of rect.
-    left : int
-        x-coordinate of left of rect.
-    right : int
-        x-coordinate of right of rect.
+    pos : Point
+    size : Size
 
-    Attributes
-    ----------
-    top : int
-        y-coordinate of top of rect.
-    bottom : int
-        y-coordinate of bottom of rect.
-    left : int
-        x-coordinate of left of rect.
-    right : int
-        x-coordinate of right of rect.
-
-    Methods
+    Returns
     -------
-    offset(point)
-        Return a new Rect moved up by `point.y` and moved left by `point.x`.
-    to_slices(offset=(0, 0))
-        Return slices for indexing the rect in a numpy array.
+    tuple[slice, slice]
+        Slices that index a rect in a numpy array.
     """
-
-    top: int
-    """y-coordinate of top of rect."""
-    bottom: int
-    """y-coordinate of bottom of rect."""
-    left: int
-    """x-coordinate of left of rect."""
-    right: int
-    """x-coordinate of right of rect."""
-
-    def offset(self, point: Point) -> Self:
-        """
-        Return a new Rect moved up by `point.y` and moved left by `point.x`.
-
-        Returns
-        -------
-        Rect
-            A new rect offset by point.
-        """
-        y, x = point
-        return Rect(self.top - y, self.bottom - y, self.left - x, self.right - x)
-
-    def to_slices(self, offset: Point = Point(0, 0)) -> tuple[slice, slice]:
-        """
-        Return slices for indexing the rect in a numpy array.
-
-        Parameters
-        ----------
-        offset : Point, default: Point(0, 0)
-            Move the slices up and left by offset.
-
-        Returns
-        -------
-        tuple[slice, slice]
-            Slices that index the rect in a numpy array.
-        """
-        y, x = offset
-        return (
-            slice(self.top - y, self.bottom - y),
-            slice(self.left - x, self.right - x),
-        )
+    y, x = pos
+    h, w = size
+    return slice(y, y + h), slice(x, x + w)
 
 
 @dataclass(slots=True)
@@ -137,21 +79,21 @@ class _Band:
     """A row of mutually exclusive rects."""
 
     y1: int
-    """y-coordinate of top of band."""
+    """The y-coordinate of the top of the band."""
     y2: int
-    """y-coordinate of bottom of band."""
+    """The y-coordinate of the bottom of the band."""
     walls: list[int]
     """
-    Each contiguous pair of ints in `walls` represent the left and right side of a
-    rect in the band.
+    Each contiguous pair of ints in `walls` represent the left and right side of a rect
+    in the band.
     """
 
     def __gt__(self, y: int):
         """
-        Whether band's y1-coordinate is greater than `y`.
+        Whether band's y1-coordinate is greater than ``y``.
 
-        Implemented so that a list of sorted bands can be bisected by
-        a y-coordinate.
+        This is implemented so that a list of sorted bands can be bisected by a
+        y-coordinate.
         """
         return y < self.y1
 
@@ -197,21 +139,18 @@ class Region:
     bands : list[_Band]
         Bands that make up the region.
 
-    bbox : Rect | None
-        Bounding box of region.
-
     Methods
     -------
     rects()
-        Yield rects that make up the region.
-    from_rect(post, size)
+        Yield position and size of rects that make up the region.
+    from_rect(pos, size)
         Return a new region from a rect position and size.
     """
 
     bands: list[_Band] = field(default_factory=list)
 
     def _coalesce(self):
-        """Join contiguous bands with the same walls to reduce rects."""
+        """Remove empty bands and join contiguous bands with the same walls."""
         bands = self.bands = [band for band in self.bands if len(band.walls) > 0]
 
         i = 0
@@ -379,30 +318,22 @@ class Region:
     def __bool__(self):
         return len(self.bands) > 0
 
-    @property
-    def bbox(self) -> Rect | None:
-        """Bounding box of region."""
-        if not self:
-            return None
-
-        left = min(band.walls[0] for band in self.bands)
-        right = max(band.walls[-1] for band in self.bands)
-
-        return Rect(self.bands[0].y1, self.bands[-1].y2, left, right)
-
-    def rects(self) -> Iterator[Rect]:
+    def rects(self) -> Iterator[tuple[Point, Size]]:
         """
-        Yield rects that make up the region.
+        Yield position and size of rects that make up the region.
 
         Yields
         ------
-        Rect
-            A rect in the region.
+        tuple[Point, Size]
+            A position and size of a rect in the region.
         """
         for band in self.bands:
             i = 0
-            while i < len(band.walls):
-                yield Rect(band.y1, band.y2, band.walls[i], band.walls[i + 1])
+            walls = band.walls
+            y = band.y1
+            h = band.y2 - y
+            while i < len(walls):
+                yield Point(y, walls[i]), Size(h, walls[i + 1] - walls[i])
                 i += 2
 
     @classmethod
@@ -420,7 +351,7 @@ class Region:
         return cls([_Band(y, y + h, [x, x + w])])
 
     def __contains__(self, point: Point) -> bool:
-        """Whether point is in region."""
+        """Return whether point is in region."""
         y, x = point
         i = bisect(self.bands, y)
         if i == 0:

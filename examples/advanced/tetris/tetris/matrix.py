@@ -2,6 +2,7 @@ import asyncio
 
 import numpy as np
 from batgrl.gadgets.graphics import Graphics
+from batgrl.geometry import rect_slice
 
 
 class MatrixGadget(Graphics):
@@ -38,9 +39,9 @@ class MatrixGadget(Graphics):
         super()._render(canvas)
         glow = self._glow
         abs_pos = self.absolute_pos
-        for rect in self._region.rects():
-            dst_y, dst_x = rect.to_slices()
-            src_y, src_x = rect.to_slices(abs_pos)
+        for pos, size in self._region.rects():
+            dst_y, dst_x = rect_slice(pos, size)
+            src_y, src_x = rect_slice(pos - abs_pos, size)
 
             visible = (
                 self.texture[
