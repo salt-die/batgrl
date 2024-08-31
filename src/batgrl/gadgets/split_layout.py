@@ -1,29 +1,27 @@
 """Draggable horizontal and vertical split layouts."""
 
-from ..colors import AColor
+from ..colors import Color
 from .behaviors.grabbable import Grabbable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
-from .graphics import Graphics
+from .pane import Pane
 
 __all__ = ["HSplitLayout", "VSplitLayout", "Point", "Size"]
 
-AGRAY = AColor(127, 127, 127, 127)
+GRAY = Color(127, 127, 127)
 
 
-class _Handle(Grabbable, Graphics):
+class _Handle(Grabbable, Pane):
     def __init__(self, size_hint):
         super().__init__(size=(2, 2), size_hint=size_hint, alpha=0)
 
     def on_mouse(self, mouse_event):
-        self.alpha = float(self.is_grabbed or self.collides_point(mouse_event.pos))
+        self.alpha = (
+            float(self.is_grabbed or self.collides_point(mouse_event.pos)) * 0.5
+        )
         return super().on_mouse(mouse_event)
 
 
 class _HSplitHandle(_Handle):
-    def on_size(self):
-        super().on_size()
-        self.texture[[0, -1]] = 0
-
     def grab_update(self, mouse_event):
         if self.parent.anchor_top_pane:
             self.parent.split_row += mouse_event.dy
@@ -197,7 +195,7 @@ class HSplitLayout(Gadget):
         min_split_height: int = 1,
         anchor_top_pane: bool = True,
         split_resizable: bool = True,
-        handle_color: AColor = AGRAY,
+        handle_color: Color = GRAY,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -237,14 +235,13 @@ class HSplitLayout(Gadget):
         self.split_row = split_row
 
     @property
-    def handle_color(self) -> AColor:
+    def handle_color(self) -> Color:
         """Color of the resize handle."""
-        return self.handle.default_color
+        return self.handle.bg_color
 
     @handle_color.setter
-    def handle_color(self, handle_color: AColor):
-        self.handle.default_color = handle_color
-        self.handle.texture[:-1] = handle_color
+    def handle_color(self, handle_color: Color):
+        self.handle.bg_color = handle_color
 
     @property
     def min_split_height(self) -> int:
@@ -451,7 +448,7 @@ class VSplitLayout(Gadget):
         min_split_width: int = 1,
         anchor_left_pane: bool = True,
         split_resizable: bool = True,
-        handle_color: AColor = AGRAY,
+        handle_color: Color = GRAY,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -491,14 +488,13 @@ class VSplitLayout(Gadget):
         self.split_col = split_col
 
     @property
-    def handle_color(self) -> AColor:
+    def handle_color(self) -> Color:
         """Color of the resize handle."""
-        return self.handle.default_color
+        return self.handle.bg_color
 
     @handle_color.setter
-    def handle_color(self, handle_color: AColor):
-        self.handle.default_color = handle_color
-        self.handle.clear()
+    def handle_color(self, handle_color: Color):
+        self.handle.bg_color = handle_color
 
     @property
     def min_split_width(self) -> int:
