@@ -69,21 +69,13 @@ class ColumnStyle:
     default.
     """
     alignment: Literal["center", "left", "right"] = "left"
-    """
-    Alignment of the column.
-    """
+    """Alignment of the column."""
     padding: int = 1
-    """
-    Left and right padding of column.
-    """
+    """Left and right padding of column."""
     min_width: int = 0
-    """
-    Minimum width of column.
-    """
+    """Minimum width of column."""
     allow_sorting: bool = True
-    """
-    Whether sorting is allowed for column.
-    """
+    """Whether sorting is allowed for column."""
 
     def __post_init__(self):
         if self.render is None:
@@ -102,11 +94,7 @@ _SORT_INDICATOR_SPACING = 1
 """Spaces between column label text and sort indicator."""
 _SORT_INDICATOR_WIDTH = str_width(_SortState.NOT_SORTED.value)
 """Character width of sort indicator. (Indicator values should be same width.)"""
-_ALIGN_FORMATTER = {
-    "center": "^",
-    "left": "<",
-    "right": ">",
-}
+_ALIGN_FORMATTER = {"center": "^", "left": "<", "right": ">"}
 """Convert an alignment to f-string format specification."""
 
 
