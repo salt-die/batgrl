@@ -77,6 +77,8 @@ class _VerticalScrollbar(_ScrollbarBase):
 
     def _paint_indicator(self) -> None:
         super()._paint_indicator()
+        if self.indicator_length == 0:
+            return
         start, offset = self._start, self._offset
         smooth_bar = smooth_vertical_bar(
             self.indicator_length, 1, offset, reversed=True
@@ -133,6 +135,8 @@ class _HorizontalScrollbar(_ScrollbarBase):
 
     def _paint_indicator(self) -> None:
         super()._paint_indicator()
+        if self.indicator_length == 0:
+            return
         start, offset = self._start, self._offset
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar

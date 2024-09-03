@@ -322,7 +322,7 @@ class Text(Gadget):
         bg_color: Color | None = None,
     ):
         """
-        Add a text border.
+        Add a text border (gadget height and width must be at least 2).
 
         Parameters
         ----------
@@ -335,6 +335,9 @@ class Text(Gadget):
         bg_color : Color | None, default: None
             Background color of border if not None.
         """
+        if self.height < 2 or self.width < 2:
+            return
+
         slices = [
             np.s_[0, 0],
             np.s_[0, -1],
