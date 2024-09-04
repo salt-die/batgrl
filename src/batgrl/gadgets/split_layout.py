@@ -1,6 +1,10 @@
 """Draggable horizontal and vertical split layouts."""
 
-from ..colors import Color
+from time import monotonic
+from typing import Literal
+
+from ..colors import WHITE, Color, lerp_colors
+from ..easings import in_quart, out_quart
 from .behaviors.grabbable import Grabbable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
 from .pane import Pane
@@ -15,46 +19,56 @@ class _Handle(Grabbable, Pane):
         super().__init__(size=(2, 2), size_hint=size_hint, alpha=0)
 
     def on_mouse(self, mouse_event):
-        self.alpha = (
-            float(self.is_grabbed or self.collides_point(mouse_event.pos)) * 0.5
-        )
+        self.alpha = (self.is_grabbed or self.collides_point(mouse_event.pos)) * 0.5
         return super().on_mouse(mouse_event)
+
+    @property
+    def bg_color(self) -> Color:
+        p = monotonic() % 1.0
+        if p < 0.5:
+            return lerp_colors(GRAY, WHITE, in_quart(2.0 * p))
+        return lerp_colors(WHITE, GRAY, out_quart(2.0 * p - 1.0))
+
+    @bg_color.setter
+    def bg_color(self, _):
+        pass
 
 
 class _HSplitHandle(_Handle):
     def grab_update(self, mouse_event):
-        if self.parent.anchor_top_pane:
-            self.parent.split_row += mouse_event.dy
-        else:
-            self.parent.split_row -= mouse_event.dy
+        self.parent: HSplitLayout
+        self.parent.split_row += mouse_event.dy
 
 
 class _VSplitHandle(_Handle):
     def grab_update(self, mouse_event):
-        if self.parent.anchor_left_pane:
-            self.parent.split_col += mouse_event.dx
-        else:
-            self.parent.split_col -= mouse_event.dx
+        self.parent: VSplitLayout
+        self.parent.split_col += mouse_event.dx
 
 
 class HSplitLayout(Gadget):
     r"""
-    A horizontal split layout. Add gadgets to the :attr:`top_pane` or
-    :attr:`bottom_pane`, e.g., ``my_hsplit.top_pane.add_gadget(my_gadget)``.
+    A horizontal split layout.
+
+    Add gadgets to the :attr:``top_pane`` or :attr:``bottom_pane``, e.g.,
+    ``my_hsplit.top_pane.add_gadget(my_gadget)``.
+
+    If :attr:``top_min_height`` and :attr:``bottom_min_height`` can't both be satisfied,
+    :attr:``split_anchor`` will determine which pane's height requirement is preferred.
 
     Parameters
     ----------
     split_row : int, default: 1
-        Height of top pane if :attr:`anchor_top_pane` is true, else
-        height of right pane.
-    min_split_height : int, default: 1
-        Minimum height of either pane.
-    anchor_top_pane : bool, default: True
-        If true, :attr:`split_row` is be calculated from the top, else from the bottom.
+        Height of top pane. Height of bottom pane is ``self.width - split_row``.
+    split_anchor : Literal["top", "bottom"], default: "top
+        If gadget is resized, ``split_anchor`` determines which pane's height isn't
+        changed.
     split_resizable : bool, default: True
         Whether split is resizable with a grabbable handle.
-    handle_color : AColor, default: AGRAY
-        Color of the resize handle.
+    top_min_height : int, default: 1
+        Minimum height of top pane.
+    bottom_min_height : int, default: 1
+        Minimum height of bottom pane.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -75,20 +89,20 @@ class HSplitLayout(Gadget):
     Attributes
     ----------
     top_pane : Gadget
-        Container gadget for top side of split.
+        Container gadget for top side of split layout.
     bottom_pane : Gadget
-        Container gadget for bottom side of split.
-    handle_color : AColor
-        Color of the resize handle.
+        Container gadget for bottom side of split layout.
+    split_row : int
+        Height of top pane. Height of bottom pane is ``self.width - split_row``.
+    split_anchor : Literal["top", "bottom"]
+        If gadget is resized, ``split_anchor`` determines which pane's height isn't
+        changed.
     split_resizable : bool
         Whether split is resizable with a grabbable handle.
-    anchor_top_pane : bool
-        If true, :attr:`split_row` is calculated from the top, else from the bottom.
-    split_row : int
-        Height of top pane if :attr:`anchor_top_pane` is true, else height of bottom
-        pane.
-    min_split_height : int
-        Minimum height of either pane.
+    top_min_height : int
+        Minimum height of top pane.
+    bottom_min_height : int
+        Minimum height of bottom pane.
     size : Size
         Size of gadget.
     height : int
@@ -192,10 +206,10 @@ class HSplitLayout(Gadget):
         self,
         *,
         split_row: int = 1,
-        min_split_height: int = 1,
-        anchor_top_pane: bool = True,
+        split_anchor: Literal["top", "bottom"] = "top",
         split_resizable: bool = True,
-        handle_color: Color = GRAY,
+        top_min_height: int = 1,
+        bottom_min_height: int = 1,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -215,59 +229,85 @@ class HSplitLayout(Gadget):
         )
 
         self.top_pane = Gadget(size_hint={"width_hint": 1.0})
+        """Container gadget for top side of split layout."""
         self.bottom_pane = Gadget(size_hint={"width_hint": 1.0})
-
+        """Container gadget for bottom side of split layout."""
         self.handle = _HSplitHandle({"width_hint": 1.0})
-        self.handle_color = handle_color
+        """Grabbable handle gadget used to resize split layout."""
 
         def adjust():
             self.bottom_pane.top = self.top_pane.bottom
             self.handle.top = self.top_pane.bottom - 1
 
         self.top_pane.bind("size", adjust)
-
         self.add_gadgets(self.top_pane, self.bottom_pane, self.handle)
 
+        self.split_anchor = split_anchor
+        """
+        If gadget is resized, ``split_anchor`` determines which pane's height isn't
+        changed.
+        """
         self.split_resizable = split_resizable
-        self.anchor_top_pane = anchor_top_pane
-
-        self._min_split_height = min_split_height
+        """Whether split is resizable with a grabbable handle."""
+        self._top_min_height = top_min_height
+        """Minimum height of top pane."""
+        self._bottom_min_height = bottom_min_height
+        """Minimum height of bottom pane."""
         self.split_row = split_row
+        """Height of top pane."""
 
     @property
-    def handle_color(self) -> Color:
-        """Color of the resize handle."""
-        return self.handle.bg_color
+    def top_min_height(self) -> int:
+        """Minimum height of top pane."""
+        return self._top_min_height
 
-    @handle_color.setter
-    def handle_color(self, handle_color: Color):
-        self.handle.bg_color = handle_color
+    @top_min_height.setter
+    def top_min_height(self, top_min_height: int):
+        self._top_min_height = clamp(top_min_height, 0, None)
+        self.split_row = self.split_row
 
     @property
-    def min_split_height(self) -> int:
-        """Minimum height of either pane."""
-        return self._min_split_height
+    def bottom_min_height(self) -> int:
+        """Minimum height of bottom pane."""
+        return self._bottom_min_height
 
-    @min_split_height.setter
-    def min_split_height(self, min_split_height: int):
-        self._min_split_height = clamp(min_split_height, 1, None)
+    @bottom_min_height.setter
+    def bottom_min_height(self, bottom_min_height: int):
+        self._bottom_min_height = clamp(bottom_min_height, 0, None)
         self.split_row = self.split_row
 
     @property
     def split_row(self) -> int:
-        """
-        Height of top pane if :attr:`anchor_top_pane` is true, else height of
-        right pane.
-        """
-        return self._split_col
+        """Height of top pane."""
+        return self.top_pane.height
 
     @split_row.setter
     def split_row(self, split_row: int):
-        min_height = self.min_split_height
-        self._split_col = clamp(
-            split_row, min_height, max(self.height - min_height, min_height)
-        )
-        self.on_size()
+        if (
+            self.top_min_height <= split_row
+            and self.bottom_min_height <= self.height - split_row
+        ):
+            self.top_pane.height = split_row
+            self.bottom_pane.height = self.height - split_row
+        elif split_row < self.top_min_height:
+            if (
+                self.split_anchor == "top"
+                or self.bottom_min_height <= self.height - self.top_min_height
+            ):
+                self.top_pane.height = self.top_min_height
+                self.bottom_pane.height = self.height - self.top_min_height
+            else:
+                self.bottom_pane.height = self.bottom_min_height
+                self.top_pane.height = self.height - self.bottom_min_height
+        elif (
+            self.split_anchor == "bottom"
+            or self.top_min_height <= self.height - self.bottom_min_height
+        ):
+            self.bottom_pane.height = self.bottom_min_height
+            self.top_pane.height = self.height - self.bottom_min_height
+        else:
+            self.top_pane.height = self.top_min_height
+            self.bottom_pane.height = self.height - self.top_min_height
 
     @property
     def split_resizable(self) -> bool:
@@ -280,35 +320,35 @@ class HSplitLayout(Gadget):
 
     def on_size(self):
         """Resize panes on resize."""
-        if self.anchor_top_pane:
-            anchored = self.top_pane
-            not_anchored = self.bottom_pane
+        if self.split_anchor == "top":
+            self.split_row = self.split_row
         else:
-            anchored = self.bottom_pane
-            not_anchored = self.top_pane
-
-        anchored.height = self.split_row
-        not_anchored.height = self.height - self.split_row
+            self.split_row = self.height - self.bottom_pane.height
 
 
 class VSplitLayout(Gadget):
     r"""
-    A vertical split layout. Add gadgets to the :attr:`left_pane` or :attr:`right_pane`,
-    e.g., ``my_vsplit.left_pane.add_gadget(my_gadget)``.
+    A vertical split layout.
+
+    Add gadgets to the :attr:``left_pane`` or :attr:``right_pane``, e.g.,
+    ``my_vsplit.left_pane.add_gadget(my_gadget)``.
+
+    If :attr:``left_min_width`` and :attr:``right_min_width`` can't both be satisfied,
+    :attr:``split_anchor`` will determine which pane's width requirement is preferred.
 
     Parameters
     ----------
     split_col : int, default: 1
-        Width of left pane if :attr:`anchor_left_pane` is true, else
-        width of right pane.
-    min_split_width : int, default: 1
-        Minimum width of either pane.
-    anchor_left_pane : bool, default: True
-        If true, :attr:`split_col` is be calculated from the left, else from the right.
+        Width of left pane. Height of right pane is ``self.width - split_col``.
+    split_anchor : Literal["left", "right"], default: "left"
+        If gadget is resized, ``split_anchor`` determines which pane's width isn't
+        changed.
     split_resizable : bool, default: True
         Whether split is resizable with a grabbable handle.
-    handle_color : AColor, default: AGRAY
-        Color of the resize handle.
+    left_min_width : int, default: 1
+        Minimum width of left pane.
+    right_min_width : int, default: 1
+        Minimum width of right pane.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -329,20 +369,20 @@ class VSplitLayout(Gadget):
     Attributes
     ----------
     left_pane : Gadget
-        Container gadget for left side of split.
+        Container gadget for left side of split layout.
     right_pane : Gadget
-        Container gadget for right side of split.
-    handle_color : AColor
-        Color of the resize handle.
+        Container gadget for right side of split layout.
+    split_col : int
+        Width of left pane. Height of right pane is ``self.width - split_col``.
+    split_anchor : Literal["left", "right"]
+        If gadget is resized, ``split_anchor`` determines which pane's width isn't
+        changed.
     split_resizable : bool
         Whether split is resizable with a grabbable handle.
-    anchor_left_pane : bool
-        If true, :attr:`split_col` is calculated from the left, else from the right.
-    split_col : int
-        Width of left pane if :attr:`anchor_left_pane` is true, else width of right
-        pane.
-    min_split_width : int
-        Minimum width of either pane.
+    left_min_width : int
+        Minimum width of left pane.
+    right_min_width : int
+        Minimum width of right pane.
     size : Size
         Size of gadget.
     height : int
@@ -445,10 +485,10 @@ class VSplitLayout(Gadget):
     def __init__(
         self,
         split_col: int = 1,
-        min_split_width: int = 1,
-        anchor_left_pane: bool = True,
+        split_anchor: Literal["left", "right"] = "left",
         split_resizable: bool = True,
-        handle_color: Color = GRAY,
+        left_min_width: int = 1,
+        right_min_width: int = 1,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -468,61 +508,85 @@ class VSplitLayout(Gadget):
         )
 
         self.left_pane = Gadget(size_hint={"height_hint": 1.0})
+        """Container gadget for left side of split layout."""
         self.right_pane = Gadget(size_hint={"height_hint": 1.0})
-
+        """Container gadget for right side of split layout."""
         self.handle = _VSplitHandle({"height_hint": 1.0})
-        self.handle_color = handle_color
+        """Grabbable handle gadget used to resize split layout."""
 
         def adjust():
             self.right_pane.left = self.left_pane.right
             self.handle.left = self.left_pane.right - 1
 
         self.left_pane.bind("size", adjust)
-
         self.add_gadgets(self.left_pane, self.right_pane, self.handle)
 
+        self.split_anchor = split_anchor
+        """
+        If gadget is resized, ``split_anchor`` determines which pane's width isn't
+        changed.
+        """
         self.split_resizable = split_resizable
-        self.anchor_left_pane = anchor_left_pane
-
-        self._min_split_width = min_split_width
+        """ Whether split is resizable with a grabbable handle."""
+        self._left_min_width = left_min_width
+        """Minimum width of left pane."""
+        self._right_min_width = right_min_width
+        """Minimum width of right pane."""
         self.split_col = split_col
+        """Width of left pane."""
 
     @property
-    def handle_color(self) -> Color:
-        """Color of the resize handle."""
-        return self.handle.bg_color
+    def left_min_width(self) -> int:
+        """Minimum width of left pane."""
+        return self._left_min_width
 
-    @handle_color.setter
-    def handle_color(self, handle_color: Color):
-        self.handle.bg_color = handle_color
+    @left_min_width.setter
+    def left_min_width(self, left_min_width: int):
+        self._left_min_width = clamp(left_min_width, 0, None)
+        self.split_col = self.split_col
 
     @property
-    def min_split_width(self) -> int:
-        """Minimum width of either pane."""
-        return self._min_split_width
+    def right_min_width(self) -> int:
+        """Minimum width of right pane."""
+        return self._right_min_width
 
-    @min_split_width.setter
-    def min_split_width(self, min_split_width: int):
-        self._min_split_width = clamp(min_split_width, 1, None)
+    @right_min_width.setter
+    def right_min_width(self, right_min_width: int):
+        self._right_min_width = clamp(right_min_width, 0, None)
         self.split_col = self.split_col
 
     @property
     def split_col(self) -> int:
-        """
-        Width of left pane if :attr:`anchor_left_pane` is true, else width of
-        right pane.
-        """
-        return self._split_row
+        """Width of left pane."""
+        return self.left_pane.width
 
     @split_col.setter
     def split_col(self, split_col: int):
-        min_width = self.min_split_width
-        self._split_row = clamp(
-            split_col,
-            min_width,
-            max(self.width - min_width, min_width),
-        )
-        self.on_size()
+        if (
+            self.left_min_width <= split_col
+            and self.right_min_width <= self.width - split_col
+        ):
+            self.left_pane.width = split_col
+            self.right_pane.width = self.width - split_col
+        elif split_col < self.left_min_width:
+            if (
+                self.split_anchor == "left"
+                or self.right_min_width <= self.width - self.left_min_width
+            ):
+                self.left_pane.width = self.left_min_width
+                self.right_pane.width = self.width - self.left_min_width
+            else:
+                self.right_pane.width = self.right_min_width
+                self.left_pane.width = self.width - self.right_min_width
+        elif (
+            self.split_anchor == "right"
+            or self.left_min_width <= self.width - self.right_min_width
+        ):
+            self.right_pane.width = self.right_min_width
+            self.left_pane.width = self.width - self.right_min_width
+        else:
+            self.left_pane.width = self.left_min_width
+            self.right_pane.width = self.width - self.left_min_width
 
     @property
     def split_resizable(self) -> bool:
@@ -535,12 +599,7 @@ class VSplitLayout(Gadget):
 
     def on_size(self):
         """Resize panes on resize."""
-        if self.anchor_left_pane:
-            anchored = self.left_pane
-            not_anchored = self.right_pane
+        if self.split_anchor == "left":
+            self.split_col = self.split_col
         else:
-            anchored = self.right_pane
-            not_anchored = self.left_pane
-
-        anchored.width = self.split_col
-        not_anchored.width = self.width - self.split_col
+            self.split_col = self.width - self.right_pane.width

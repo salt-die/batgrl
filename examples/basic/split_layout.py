@@ -26,16 +26,19 @@ class SplitLayoutApp(App):
 
         split_layout = HSplitLayout(
             split_row=10,
-            min_split_height=3,
+            top_min_height=5,
+            bottom_min_height=5,
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
         top_split_layout = VSplitLayout(
-            split_col=10, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+            right_min_width=10,
+            left_min_width=10,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
         bottom_split_layout = VSplitLayout(
-            split_col=10,
+            right_min_width=10,
+            left_min_width=10,
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            anchor_left_pane=False,
         )
 
         split_layout.top_pane.add_gadget(top_split_layout)
