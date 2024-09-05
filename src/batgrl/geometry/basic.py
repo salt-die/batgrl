@@ -117,12 +117,27 @@ class Point(NamedTuple):
     def __add__(self, other: Self) -> Self:
         y, x = self
         oy, ox = other
-        return Point(y + oy, x + ox)
+
+        return type(self)(y + oy, x + ox)
+
+    def __radd__(self, other: Self) -> Self:
+        oy, ox = other
+        y, x = self
+        return type(self)(oy + y, ox + x)
 
     def __sub__(self, other: Self) -> Self:
         y, x = self
         oy, ox = other
-        return Point(y - oy, x - ox)
+        return type(self)(y - oy, x - ox)
+
+    def __rsub__(self, other: Self) -> Self:
+        oy, ox = other
+        y, x = self
+        return type(self)(oy - y, ox - x)
+
+    def __neg__(self) -> Self:
+        y, x = self
+        return type(self)(-y, -x)
 
 
 class Size(NamedTuple):
@@ -159,12 +174,12 @@ class Size(NamedTuple):
     """Width of area."""
 
     @property
-    def rows(self):
+    def rows(self) -> int:
         """Alias for height."""
         return self.height
 
     @property
-    def columns(self):
+    def columns(self) -> int:
         """Alias for width."""
         return self.width
 
@@ -175,7 +190,7 @@ class Size(NamedTuple):
         return 0 <= y < h and 0 <= x < w
 
     @property
-    def center(self):
+    def center(self) -> Point:
         """Center of area."""
         h, w = self
         return Point(h // 2, w // 2)
