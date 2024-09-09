@@ -380,7 +380,12 @@ class Gadget:
         """The visible portion of the gadget on the screen."""
 
     def __repr__(self):
-        return f"{type(self).__name__}(size={self.size}, pos={self.pos})"
+        return (
+            f"{type(self).__name__}(size={self.size}, pos={self.pos}, "
+            f"size_hint={self._size_hint}, pos_hint={self._pos_hint}, "
+            f"is_transparent={self.is_transparent}, is_visible={self.is_visible}, "
+            f"is_enabled={self.is_enabled})"
+        )
 
     @property
     def size(self) -> Size:
@@ -417,6 +422,7 @@ class Gadget:
         self.size = height, self.width
 
     rows = height
+    """Alias for :attr:`height`."""
 
     @property
     def width(self) -> int:
@@ -428,6 +434,7 @@ class Gadget:
         self.size = self.height, width
 
     columns = width
+    """Alias for :attr:`width`."""
 
     @property
     def pos(self) -> Point:
@@ -549,21 +556,19 @@ class Gadget:
         if self.parent is None:
             return
 
-        if self._size_hint["height_hint"] is None:
-            height = self.height
-        else:
+        parent_height, parent_width = self.parent.size
+        height, width = self.size
+        if self._size_hint["height_hint"] is not None:
             height = clamp(
-                round_down(self.parent.height * self._size_hint["height_hint"])
+                round_down(parent_height * self._size_hint["height_hint"])
                 + self._size_hint["height_offset"],
                 self._size_hint["min_height"],
                 self._size_hint["max_height"],
             )
 
-        if self._size_hint["width_hint"] is None:
-            width = self.width
-        else:
+        if self._size_hint["width_hint"] is not None:
             width = clamp(
-                round_down(self.parent.width * self._size_hint["width_hint"])
+                round_down(parent_width * self._size_hint["width_hint"])
                 + self._size_hint["width_offset"],
                 self._size_hint["min_width"],
                 self._size_hint["max_width"],
@@ -575,31 +580,25 @@ class Gadget:
         if self.parent is None:
             return
 
+        parent_height, parent_width = self.parent.size
         height, width = self.size
-        if isinstance(self._pos_hint["anchor"], str):
-            y_anchor, x_anchor = _ANCHOR_TO_POS[self._pos_hint["anchor"]]
-        else:
-            y_anchor, x_anchor = self._pos_hint["anchor"]
+        y, x = self.pos
+        y_anchor, x_anchor = self._pos_hint["anchor"]
 
-        top, left = self.pos
-        if self._pos_hint["y_hint"] is None:
-            top = self.top
-        else:
-            top = (
-                round_down(self.parent.height * self._pos_hint["y_hint"])
+        if self._pos_hint["y_hint"] is not None:
+            y = (
+                round_down(parent_height * self._pos_hint["y_hint"])
                 - round_down(height * y_anchor)
                 + self._pos_hint["y_offset"]
             )
 
-        if self._pos_hint["x_hint"] is None:
-            left = self.left
-        else:
-            left = (
-                round_down(self.parent.width * self._pos_hint["x_hint"])
+        if self._pos_hint["x_hint"] is not None:
+            x = (
+                round_down(parent_width * self._pos_hint["x_hint"])
                 - round_down(width * x_anchor)
                 + self._pos_hint["x_offset"]
             )
-        self.pos = top, left
+        self.pos = y, x
 
     def to_local(self, point: Point) -> Point:
         """
