@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import BLACK, WHITE, Color
+from batgrl.colors import BLACK, DEFAULT_PRIMARY_BG, WHITE, Color
 from batgrl.gadgets.behaviors.grabbable import Grabbable
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.text import Text
@@ -47,8 +47,8 @@ def text_color(rgb) -> Color:
 
 
 class Selector(Grabbable, Text):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, pos=(0, 0)):
+        super().__init__(size=(1, W), pos=pos, default_cell="━", is_transparent=True)
         self.indicator = Text(size=(1, 1))
         self.indicator.canvas["bg_color"] = WHITE
         self.add_gadget(self.indicator)
@@ -66,11 +66,10 @@ class Selector(Grabbable, Text):
 
 class PaletteApp(App):
     async def on_start(self):
-        hue_selector = Selector(size=(1, W), default_cell="━")
+        hue_selector = Selector()
         hue_selector.canvas["fg_color"] = hues()
 
-        slope_selector = Selector(size=(1, W), pos=(1, 0), default_cell="━")
-
+        slope_selector = Selector(pos=(1, 0))
         palette = Text(size=(H, W), pos=(2, 0))
 
         def update_palette():
@@ -112,7 +111,7 @@ class PaletteApp(App):
                     palette.canvas["fg_color"][H // 2, offset : offset + 6] = (
                         text_color(rgb)
                     )
-                    palette.add_str(to_hex(rgb).upper(), pos=(H // 2, offset))
+                    palette.add_str(to_hex(rgb), pos=(H // 2, offset))
 
         update_palette()
 
@@ -124,4 +123,9 @@ class PaletteApp(App):
 
 
 if __name__ == "__main__":
-    PaletteApp(title="Color Palette Creator").run()
+    PaletteApp(
+        bg_color=DEFAULT_PRIMARY_BG,
+        title="Color Palette Creator",
+        inline=True,
+        inline_height=H + 2,
+    ).run()
