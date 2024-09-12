@@ -1,4 +1,5 @@
 """Easing functions."""
+
 from collections.abc import Callable
 from math import cos, pi, sin
 from typing import Literal

@@ -1,4 +1,5 @@
 """A spotlight effect."""
+
 import asyncio
 from dataclasses import dataclass
 from random import randrange

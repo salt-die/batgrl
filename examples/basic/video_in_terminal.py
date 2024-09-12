@@ -4,6 +4,7 @@ An example of how to play videos with batgrl.
 `Video.source` can be a `pathlib.Path` to a video, an URL as a string, or an int
 for a capturing device.
 """
+
 from pathlib import Path
 
 from batgrl.app import App

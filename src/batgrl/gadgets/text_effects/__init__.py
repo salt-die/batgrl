@@ -11,6 +11,7 @@ Warnings
 --------
 Modifying the text size while effect is running will break the effect.
 """
+
 from .beams import beams_effect
 from .black_hole import black_hole_effect
 from .ring import ring_effect

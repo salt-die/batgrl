@@ -3,6 +3,7 @@ Markdown emoji codes.
 
 Source: https://github.com/markdown-templates/markdown-emojis
 """
+
 EMOJIS = {
     "100": "💯",
     "1234": "🔢",
