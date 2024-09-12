@@ -4,6 +4,7 @@ from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
 from ..geometry import rect_slice
+from ..text_tools import cell_sans
 from ..texture_tools import _composite
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
@@ -181,7 +182,7 @@ class Pane(Gadget):
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
         chars = canvas["char"]
-        styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
+        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
         foreground = canvas["fg_color"]
         background = canvas["bg_color"]
         for pos, size in self._region.rects():

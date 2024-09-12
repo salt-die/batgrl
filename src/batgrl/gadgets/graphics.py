@@ -8,6 +8,7 @@ from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
 from ..geometry import rect_slice
+from ..text_tools import cell_sans
 from ..texture_tools import Interpolation, _composite, resize_texture
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
@@ -222,7 +223,7 @@ class Graphics(Gadget):
         """Render visible region of gadget."""
         texture = self.texture
         chars = canvas["char"]
-        styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
+        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
         foreground = canvas["fg_color"]
         background = canvas["bg_color"]
         abs_pos = self.absolute_pos

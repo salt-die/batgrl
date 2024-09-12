@@ -11,6 +11,7 @@ from numpy.lib.recfunctions import structured_to_unstructured
 from numpy.typing import NDArray
 
 from ..geometry import rect_slice
+from ..text_tools import cell_sans
 from ..texture_tools import _composite
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
@@ -227,7 +228,7 @@ class GraphicParticleField(Gadget):
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
         chars = canvas["char"]
-        styles = canvas[["bold", "italic", "underline", "strikethrough", "overline"]]
+        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
         colors = structured_to_unstructured(canvas[["fg_color", "bg_color"]], np.uint8)
         offy, offx = self.absolute_pos
         ppos = self.particle_positions
