@@ -1,4 +1,5 @@
 """A black hole effect."""
+
 import asyncio
 from random import choice
 

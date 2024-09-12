@@ -1,4 +1,5 @@
 """A beam effect."""
+
 import asyncio
 from collections.abc import Callable
 from random import random, shuffle
@@ -65,9 +66,9 @@ def _create_on_progress(
             nonlocal last_bottom
             if beam.bottom != last_bottom:
                 pass_count[last_bottom + 1 : beam.bottom + 1, beam.x] += 1
-                cover.canvas[last_bottom + 1 : beam.bottom + 1, beam.x][
-                    "fg_color"
-                ] = WHITE
+                cover.canvas[last_bottom + 1 : beam.bottom + 1, beam.x]["fg_color"] = (
+                    WHITE
+                )
                 last_bottom = beam.bottom
 
     elif kind == "left":
@@ -88,9 +89,9 @@ def _create_on_progress(
             nonlocal last_right
             if beam.right != last_right:
                 pass_count[beam.y, last_right + 1 : beam.right + 1] += 1
-                cover.canvas[beam.y, last_right + 1 : beam.right + 1][
-                    "fg_color"
-                ] = WHITE
+                cover.canvas[beam.y, last_right + 1 : beam.right + 1]["fg_color"] = (
+                    WHITE
+                )
                 last_right = beam.right
 
     else:

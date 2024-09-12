@@ -1,4 +1,5 @@
 """Slime simulation."""
+
 import asyncio
 
 import cv2

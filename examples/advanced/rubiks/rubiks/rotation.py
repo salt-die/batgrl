@@ -6,6 +6,7 @@ Warnings
 All functions re-use the same buffer array. To create new arrays from rotation
 functions, use `copy`.
 """
+
 import numpy as np
 
 _ROTATION_BUFFER = np.zeros((3, 3), dtype=float)
