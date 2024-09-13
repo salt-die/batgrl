@@ -1,4 +1,13 @@
-"""Functions that render the gadget tree's root canvas into the terminal."""
+r"""
+A sparse module, home to the singular and lonely function ``render_root``.
+
+``render_root`` is responsible for generating ansi from the diffs of the root's double
+buffer. Ansi is generated in a bit of a naive way, where the cursor is moved to
+specific coordinate then all sgr parameters of the cell is output, for each cell in the
+diff. This generates a lot of ansi for large diffs. In the future, this function might
+decide to try and output as little ansi as possible, if there is a noticable performance
+gain to do so.
+"""
 
 import numpy as np
 
