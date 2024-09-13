@@ -187,8 +187,8 @@ class Graphics(Gadget):
         )
 
         self.default_color = default_color
-        self.interpolation = interpolation
         self.alpha = alpha
+        self.interpolation = interpolation
 
         h, w = self.size
         self.texture = np.full((2 * h, w, 4), default_color, dtype=np.uint8)
@@ -203,11 +203,6 @@ class Graphics(Gadget):
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
-    def on_size(self):
-        """Resize texture array."""
-        h, w = self.size
-        self.texture = resize_texture(self.texture, (2 * h, w), self.interpolation)
-
     @property
     def interpolation(self) -> Interpolation:
         """Interpolation used when gadget is resized."""
@@ -218,6 +213,11 @@ class Graphics(Gadget):
         if interpolation not in Interpolation.__args__:
             raise TypeError(f"{interpolation} is not a valid interpolation type.")
         self._interpolation = interpolation
+
+    def on_size(self):
+        """Resize texture array."""
+        h, w = self.size
+        self.texture = resize_texture(self.texture, (2 * h, w), self.interpolation)
 
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""

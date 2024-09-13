@@ -6,10 +6,11 @@ import cv2
 import numpy as np
 
 from ..text_tools import binary_to_braille
+from ..texture_tools import Interpolation, resize_texture
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text
 
-__all__ = ["BrailleImage", "Point", "Size"]
+__all__ = ["BrailleImage", "Interpolation", "Point", "Size"]
 
 
 class BrailleImage(Gadget):
@@ -22,6 +23,8 @@ class BrailleImage(Gadget):
         Path to image.
     alpha : float, default: 1.0
         Transparency of gadget.
+    interpolation : Interpolation, default: "linear"
+        Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -45,6 +48,8 @@ class BrailleImage(Gadget):
         Path to image.
     alpha : float
         Transparency of gadget.
+    interpolation : Interpolation
+        Interpolation used when gadget is resized.
     size : Size
         Size of gadget.
     height : int
@@ -149,6 +154,7 @@ class BrailleImage(Gadget):
         *,
         path: Path,
         alpha: float = 1.0,
+        interpolation: Interpolation = "linear",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -168,17 +174,9 @@ class BrailleImage(Gadget):
             is_enabled=is_enabled,
         )
         self.add_gadget(self._image)
-        self.path = path
         self.alpha = alpha
-
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._image.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._image.is_transparent = is_transparent
+        self.interpolation = interpolation
+        self.path = path
 
     @property
     def alpha(self) -> float:
@@ -188,6 +186,17 @@ class BrailleImage(Gadget):
     @alpha.setter
     def alpha(self, alpha: float):
         self._image.alpha = alpha
+
+    @property
+    def interpolation(self) -> Interpolation:
+        """Interpolation used when gadget is resized."""
+        return self._interpolation
+
+    @interpolation.setter
+    def interpolation(self, interpolation: Interpolation):
+        if interpolation not in Interpolation.__args__:
+            raise TypeError(f"{interpolation} is not a valid interpolation type.")
+        self._interpolation = interpolation
 
     @property
     def path(self) -> Path | None:
@@ -204,6 +213,15 @@ class BrailleImage(Gadget):
             self._otexture = cv2.imread(str(path.absolute()), cv2.IMREAD_COLOR)
         self._load_texture()
 
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._image.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._image.is_transparent = is_transparent
+
     def on_size(self):
         """Resize canvas and colors arrays."""
         self._image.size = self.size
@@ -215,7 +233,7 @@ class BrailleImage(Gadget):
             return
 
         canvas = self._image.canvas
-        img_bgr = cv2.resize(self._otexture, (2 * w, 4 * h))
+        img_bgr = resize_texture(self._otexture, (4 * h, 2 * w), self.interpolation)
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
         img_hls = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HLS)
 
