@@ -13,7 +13,6 @@ batgrl Reference
 
    app
    colors
-   easings
    figfont
    gadgets
    geometry
