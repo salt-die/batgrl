@@ -12,8 +12,8 @@ from typing import Protocol
 import numpy as np
 from numpy.typing import NDArray
 
-from ..easings import EASINGS, Easing
 from .basic import Point, clamp
+from .easings import EASINGS, Easing
 
 __all__ = ["BezierCurve", "Easing", "move_along_path"]
 

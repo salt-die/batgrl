@@ -4,7 +4,7 @@ from time import monotonic
 from typing import Literal
 
 from ..colors import WHITE, Color, lerp_colors
-from ..easings import in_quart, out_quart
+from ..geometry.easings import in_quart, out_quart
 from .behaviors.grabbable import Grabbable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
 from .pane import Pane

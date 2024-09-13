@@ -1,10 +1,12 @@
 """Data structures and functions for :mod:`batgrl` geometry."""
 
 from .basic import Point, Size, clamp, lerp, points_on_circle, round_down
-from .motion import BezierCurve, Easing, move_along_path
+from .easings import EASINGS, Easing
+from .motion import BezierCurve, move_along_path
 from .regions import Region, rect_slice
 
 __all__ = [
+    "EASINGS",
     "BezierCurve",
     "Easing",
     "Point",

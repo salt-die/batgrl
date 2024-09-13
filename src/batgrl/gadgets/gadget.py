@@ -15,8 +15,7 @@ from weakref import WeakKeyDictionary
 import numpy as np
 from numpy.typing import NDArray
 
-from ..easings import EASINGS, Easing
-from ..geometry import Point, Region, Size, clamp, lerp, round_down
+from ..geometry import EASINGS, Easing, Point, Region, Size, clamp, lerp, round_down
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import Cell, new_cell
 
