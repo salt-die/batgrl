@@ -251,7 +251,7 @@ class AnsViewer(Gadget):
         Path to ans file.
     ans_width : int
         Column width of ansi art.
-    ans_guess : bool
+    guess_width : bool
         Whether to guess column width if ``ans_width`` results in an error.
     size : Size, default: Size(10, 10)
         Size of gadget.
@@ -274,7 +274,7 @@ class AnsViewer(Gadget):
     ----------
     ans_width : int
         Column width of ansi art.
-    ans_guess : bool
+    guess_width : bool
         Whether to guess column width if ``ans_width`` results in an error.
     size : Size
         Size of gadget.
@@ -417,13 +417,13 @@ class AnsViewer(Gadget):
         self._read_ans()
 
     @property
-    def guess_ans(self) -> bool:
+    def guess_width(self) -> bool:
         """Whether to guess column width if ``ans_width`` results in an error."""
         return self._ans_reader.guess_width
 
-    @guess_ans.setter
-    def guess_ans(self, guess_ans: bool):
-        self._ans_reader.guess_width = guess_ans
+    @guess_width.setter
+    def guess_width(self, guess_width: bool):
+        self._ans_reader.guess_width = guess_width
 
     def _read_ans(self):
         canvas = self._ans_reader.read()
