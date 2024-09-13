@@ -13,6 +13,7 @@ import numpy as np
 from ..colors import BLACK, WHITE, Color
 from ..geometry import lerp
 from ..text_tools import binary_to_braille
+from ..texture_tools import Interpolation, resize_texture
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text
 
@@ -44,6 +45,8 @@ class BrailleVideo(Gadget):
         Invert the colors in the source before rendering.
     alpha : float, default: 1.0
         Transparency of gadget.
+    interpolation : Interpolation, default: "linear"
+        Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -79,6 +82,8 @@ class BrailleVideo(Gadget):
         Whether colors in the source are inverted before video is rendered.
     alpha : float
         Transparency of gadget.
+    interpolation : Interpolation
+        Interpolation used when gadget is resized.
     is_device : bool
         Whether video is from a video capturing device.
     size : Size
@@ -199,6 +204,7 @@ class BrailleVideo(Gadget):
         enable_shading: bool = False,
         invert_colors: bool = False,
         alpha: float = 1.0,
+        interpolation: Interpolation = "linear",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -229,34 +235,7 @@ class BrailleVideo(Gadget):
         self.enable_shading = enable_shading
         self.invert_colors = invert_colors
         self.alpha = alpha
-
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._video.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._video.is_transparent = is_transparent
-
-    @property
-    def alpha(self) -> float:
-        """Transparency of gadget."""
-        return self._video.alpha
-
-    @alpha.setter
-    def alpha(self, alpha: float):
-        self._video.alpha = alpha
-
-    @property
-    def bg_color(self) -> Color:
-        """Background color of video."""
-        return self._video.default_bg_color
-
-    @bg_color.setter
-    def bg_color(self, bg_color: Color):
-        self._video.default_bg_color = bg_color
-        self._video.canvas["bg_color"] = bg_color
+        self.interpolation = interpolation
 
     @property
     def source(self) -> Path | str | int:
@@ -271,6 +250,56 @@ class BrailleVideo(Gadget):
             raise FileNotFoundError(str(source))
         self._source = source
         self._load_resource()
+
+    @property
+    def fg_color(self) -> Color:
+        """Foreground color of video."""
+        return self._video.default_fg_color
+
+    @fg_color.setter
+    def fg_color(self, fg_color: Color):
+        self._video.default_fg_color = fg_color
+        self._paint_frame()
+
+    @property
+    def bg_color(self) -> Color:
+        """Background color of video."""
+        return self._video.default_bg_color
+
+    @bg_color.setter
+    def bg_color(self, bg_color: Color):
+        self._video.default_bg_color = bg_color
+        self._video.canvas["bg_color"] = bg_color
+        self._paint_frame()
+
+    @property
+    def alpha(self) -> float:
+        """Transparency of gadget."""
+        return self._video.alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._video.alpha = alpha
+
+    @property
+    def interpolation(self) -> Interpolation:
+        """Interpolation used when gadget is resized."""
+        return self._interpolation
+
+    @interpolation.setter
+    def interpolation(self, interpolation: Interpolation):
+        if interpolation not in Interpolation.__args__:
+            raise TypeError(f"{interpolation} is not a valid interpolation type.")
+        self._interpolation = interpolation
+
+    @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._video.is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        self._video.is_transparent = is_transparent
 
     @property
     def is_device(self):
@@ -307,17 +336,27 @@ class BrailleVideo(Gadget):
         if self._current_frame is None or h == 0 or w == 0:
             return
 
-        canvas = self._video.canvas
-        upscaled = cv2.resize(self._current_frame, (2 * w, 4 * h)) > self.gray_threshold
+        upscaled = (
+            resize_texture(self._current_frame, (4 * h, 2 * w), self.interpolation)
+            > self.gray_threshold
+        )
         sectioned = np.swapaxes(upscaled.reshape(h, 4, w, 2), 1, 2)
-        canvas["char"] = binary_to_braille(sectioned)
+        self._video.canvas["char"] = binary_to_braille(sectioned)
+        self._color_frame()
+
+    def _color_frame(self):
+        h, w = self.size
+        if self._current_frame is None or h == 0 or w == 0:
+            return
 
         if self.enable_shading:
-            normals = cv2.resize(self._current_frame, (w, h)) / 255
+            normals = (
+                resize_texture(self._current_frame, self.size, self.interpolation) / 255
+            )
             shades = lerp(self.bg_color, self.fg_color, normals[..., None])
-            canvas["fg_color"] = shades.astype(np.uint8)
+            self._video.canvas["fg_color"] = shades.astype(np.uint8)
         else:
-            canvas["fg_color"] = self.fg_color
+            self._video.canvas["fg_color"] = self.fg_color
 
     def _time_delta(self) -> float:
         return time.monotonic() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
@@ -342,10 +381,7 @@ class BrailleVideo(Gadget):
             elif (seconds_ahead := self._start_time - self._time_delta()) < 0:
                 continue
 
-            try:
-                await asyncio.sleep(seconds_ahead)
-            except asyncio.CancelledError:
-                return
+            await asyncio.sleep(seconds_ahead)
 
             _, frame = self._resource.retrieve()
             self._current_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

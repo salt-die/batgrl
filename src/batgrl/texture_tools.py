@@ -14,7 +14,7 @@ __all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
 Interpolation = Literal["nearest", "linear", "cubic", "area", "lanczos"]
 """Interpolation methods for resizing graphic gadgets."""
 
-Interpolation._to_cv_enum = {
+_INTERPOLATION_TO_CV_ENUM = {
     "linear": cv2.INTER_LINEAR,
     "cubic": cv2.INTER_CUBIC,
     "area": cv2.INTER_AREA,
@@ -73,14 +73,12 @@ def resize_texture(
     NDArray[np.uint8]
         A new uint8 RGBA array.
     """
-    old_h, old_w, _ = texture.shape
+    old_h, old_w = texture.shape[:2]
     h, w = size
     if old_h == 0 or old_w == 0 or h == 0 or w == 0:
         return np.zeros((h, w, 4), np.uint8)
     return cv2.resize(
-        texture,
-        (w, h),
-        interpolation=Interpolation._to_cv_enum[interpolation],
+        texture, (w, h), interpolation=_INTERPOLATION_TO_CV_ENUM[interpolation]
     )
 
 

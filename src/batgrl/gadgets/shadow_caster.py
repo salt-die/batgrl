@@ -7,12 +7,12 @@ from itertools import product
 from math import dist
 from typing import Literal
 
-import cv2
 import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import AWHITE, BLACK, TRANSPARENT, WHITE, AColor, Color
 from ..geometry import Region, rect_slice
+from ..texture_tools import resize_texture
 from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint, clamp
 
 __all__ = [
@@ -403,11 +403,7 @@ class ShadowCaster(Graphics):
         v_scale = h / ch
         h_scale = w / cw
 
-        map = cv2.resize(
-            self.camera.get_submap(self.map),
-            (w, h),
-            interpolation=cv2.INTER_NEAREST,
-        )
+        map = resize_texture(self.camera.get_submap(self.map), (h, w), "nearest")
 
         # Combined light colors for all light_sources:
         total_light = np.full((h, w, 3), self.ambient_light, dtype=float)

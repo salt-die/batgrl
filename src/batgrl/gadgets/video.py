@@ -11,6 +11,7 @@ import cv2
 import numpy as np
 
 from ..colors import ABLACK, AColor
+from ..texture_tools import resize_texture
 from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
 
 __all__ = ["Video", "Interpolation", "Point", "Size"]
@@ -265,10 +266,8 @@ class Video(Graphics):
         if self._current_frame is None or h == 0 or w == 0:
             return
 
-        self.texture = cv2.resize(
-            self._current_frame,
-            (w, 2 * h),
-            interpolation=Interpolation._to_cv_enum[self.interpolation],
+        self.texture = resize_texture(
+            self._current_frame, (2 * h, w), self.interpolation
         )
 
     async def _play_video(self):
