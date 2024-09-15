@@ -33,9 +33,9 @@ class LinuxTerminal(Vt100Terminal):
         Read from stdin and feed data into input parser to generate events.
     raw_mode()
         Set terminal to raw mode.
-    restore_console(event_handler)
+    restore_console()
         Restore console to its original mode.
-    attach()
+    attach(event_handler)
         Start generating events from stdin.
     unattach()
         Stop generating events from stdin.
