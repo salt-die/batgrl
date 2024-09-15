@@ -7,7 +7,7 @@ from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from time import monotonic
-from typing import Any, Literal
+from typing import Any, Final, Literal
 
 from .colors import BLACK, DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
@@ -28,6 +28,8 @@ from .terminal.events import (
 )
 
 __all__ = ["App", "run_gadget_as_app"]
+
+_CTRL_C: Final[KeyEvent] = KeyEvent("c", ctrl=True)
 
 
 class App(ABC):
@@ -325,12 +327,7 @@ class App(ABC):
             """Handle input events."""
             for event in events:
                 if isinstance(event, KeyEvent):
-                    if (
-                        event.key == "c"
-                        and event.ctrl
-                        and not event.alt
-                        and not event.shift
-                    ):
+                    if _CTRL_C == event:
                         self.exit()
                         return
                     if (
