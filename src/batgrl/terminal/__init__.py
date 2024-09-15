@@ -14,7 +14,12 @@ __all__ = ["Vt100Terminal", "get_platform_terminal", "app_mode"]
 
 def get_platform_terminal() -> Vt100Terminal:
     """
-    Return a platform specific terminal.
+    Return a platform-specific terminal.
+
+    Returns
+    -------
+    Vt100Terminal
+        A platform-specific VT100 terminal.
 
     Raises
     ------
