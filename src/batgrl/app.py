@@ -30,8 +30,11 @@ from .terminal.events import (
 __all__ = ["App", "run_gadget_as_app"]
 
 _CTRL_C: Final[KeyEvent] = KeyEvent("c", ctrl=True)
+"""Keybind for exiting the app."""
 _TAB: Final[KeyEvent] = KeyEvent("tab")
+"""Keybind for focusing next focusable."""
 _SHIFT_TAB: Final[KeyEvent] = KeyEvent("tab", shift=True)
+"""Keybind for focusing previous focusable."""
 
 
 class App(ABC):
