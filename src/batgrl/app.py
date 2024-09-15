@@ -30,6 +30,8 @@ from .terminal.events import (
 __all__ = ["App", "run_gadget_as_app"]
 
 _CTRL_C: Final[KeyEvent] = KeyEvent("c", ctrl=True)
+_TAB: Final[KeyEvent] = KeyEvent("tab")
+_SHIFT_TAB: Final[KeyEvent] = KeyEvent("tab", shift=True)
 
 
 class App(ABC):
@@ -327,19 +329,14 @@ class App(ABC):
             """Handle input events."""
             for event in events:
                 if isinstance(event, KeyEvent):
-                    if _CTRL_C == event:
+                    if event == _CTRL_C:
                         self.exit()
                         return
-                    if (
-                        not root.dispatch_key(event)
-                        and event.key == "tab"
-                        and not event.alt
-                        and not event.ctrl
-                    ):
-                        if event.shift:
-                            Focusable.focus_previous()
-                        else:
+                    if not root.dispatch_key(event):
+                        if event == _TAB:
                             Focusable.focus_next()
+                        elif event == _SHIFT_TAB:
+                            Focusable.focus_previous()
                 elif isinstance(event, MouseEvent):
                     determine_nclicks(event)
                     if self.inline:
