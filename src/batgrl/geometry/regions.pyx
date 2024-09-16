@@ -51,6 +51,7 @@ from dataclasses import dataclass, field
 from typing import Self
 
 from .basic import Point, Size
+import cython
 
 __all__ = ["Region", "rect_slice"]
 
@@ -76,7 +77,8 @@ def rect_slice(pos: Point, size: Size) -> tuple[slice, slice]:
     return slice(y, y + h), slice(x, x + w)
 
 
-@dataclass(slots=True)
+@dataclass
+@cython.cclass
 class _Band:
     """A row of mutually exclusive rects."""
 
@@ -90,7 +92,7 @@ class _Band:
     in the band.
     """
 
-    def __gt__(self, y: int):
+    def __gt__(self, y: int) -> bool:
         """
         Whether band's y1-coordinate is greater than ``y``.
 
@@ -126,7 +128,8 @@ def _merge(op: Callable[[bool, bool], bool], a: list[int], b: list[int]) -> list
     return walls
 
 
-@dataclass(slots=True, unsafe_hash=True)
+@dataclass
+@cython.cclass
 class Region:
     """
     Collection of mutually exclusive bands of rects.
@@ -151,7 +154,7 @@ class Region:
 
     bands: list[_Band] = field(default_factory=list)
 
-    def _coalesce(self):
+    def _coalesce(self) -> None:
         """Remove empty bands and join contiguous bands with the same walls."""
         bands = self.bands = [band for band in self.bands if len(band.walls) > 0]
 
@@ -317,7 +320,7 @@ class Region:
     def __xor__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a ^ b)
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return len(self.bands) > 0
 
     def rects(self) -> Iterator[tuple[Point, Size]]:
