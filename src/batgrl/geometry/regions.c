@@ -1525,7 +1525,7 @@ struct __pyx_obj_6batgrl_8geometry_7regions_Region {
 };
 
 
-/* "batgrl/geometry/regions.pyx":326
+/* "batgrl/geometry/regions.pyx":328
  *         return len(self.bands) > 0
  * 
  *     def rects(self) -> Iterator[tuple[Point, Size]]:             # <<<<<<<<<<<<<<
@@ -8196,8 +8196,8 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_2_merge_regions(str
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":308
- *     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
+/* "batgrl/geometry/regions.pyx":310
+ *     # Same for walls.
  * 
  *     def __and__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
  *         return self._merge_regions(other, lambda a, b: a & b)
@@ -8219,7 +8219,7 @@ static PyObject *__pyx_pw_6batgrl_8geometry_7regions_6Region_5__and__(PyObject *
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":309
+/* "batgrl/geometry/regions.pyx":311
  * 
  *     def __and__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a & b)             # <<<<<<<<<<<<<<
@@ -8283,7 +8283,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 309, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 311, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -8291,14 +8291,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 309, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 311, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("lambda", 1, 2, 2, 1); __PYX_ERR(1, 309, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("lambda", 1, 2, 2, 1); __PYX_ERR(1, 311, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda") < 0)) __PYX_ERR(1, 309, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda") < 0)) __PYX_ERR(1, 311, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -8311,7 +8311,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("lambda", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 309, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("lambda", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 311, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8347,7 +8347,7 @@ static PyObject *__pyx_lambda_funcdef_lambda(CYTHON_UNUSED PyObject *__pyx_self,
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lambda", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyNumber_And(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 309, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_And(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 311, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8364,8 +8364,8 @@ static PyObject *__pyx_lambda_funcdef_lambda(CYTHON_UNUSED PyObject *__pyx_self,
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":308
- *     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
+/* "batgrl/geometry/regions.pyx":310
+ *     # Same for walls.
  * 
  *     def __and__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
  *         return self._merge_regions(other, lambda a, b: a & b)
@@ -8385,7 +8385,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_4__and__(struct __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__and__", 1);
 
-  /* "batgrl/geometry/regions.pyx":309
+  /* "batgrl/geometry/regions.pyx":311
  * 
  *     def __and__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a & b)             # <<<<<<<<<<<<<<
@@ -8393,9 +8393,9 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_4__and__(struct __p
  *     def __or__(self, other: Self) -> Self:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 309, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 311, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__and___lambda, 0, __pyx_n_s_and___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 309, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__and___lambda, 0, __pyx_n_s_and___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 311, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -8416,7 +8416,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_4__and__(struct __p
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 309, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 311, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -8424,8 +8424,8 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_4__and__(struct __p
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":308
- *     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
+  /* "batgrl/geometry/regions.pyx":310
+ *     # Same for walls.
  * 
  *     def __and__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
  *         return self._merge_regions(other, lambda a, b: a & b)
@@ -8446,7 +8446,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_4__and__(struct __p
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":311
+/* "batgrl/geometry/regions.pyx":313
  *         return self._merge_regions(other, lambda a, b: a & b)
  * 
  *     def __or__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8469,7 +8469,7 @@ static PyObject *__pyx_pw_6batgrl_8geometry_7regions_6Region_7__or__(PyObject *_
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":312
+/* "batgrl/geometry/regions.pyx":314
  * 
  *     def __or__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a | b)             # <<<<<<<<<<<<<<
@@ -8533,7 +8533,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 312, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 314, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -8541,14 +8541,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 312, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 314, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("lambda1", 1, 2, 2, 1); __PYX_ERR(1, 312, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("lambda1", 1, 2, 2, 1); __PYX_ERR(1, 314, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda1") < 0)) __PYX_ERR(1, 312, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda1") < 0)) __PYX_ERR(1, 314, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -8561,7 +8561,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("lambda1", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 312, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("lambda1", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 314, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8597,7 +8597,7 @@ static PyObject *__pyx_lambda_funcdef_lambda1(CYTHON_UNUSED PyObject *__pyx_self
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lambda1", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyNumber_Or(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 312, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Or(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 314, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8614,7 +8614,7 @@ static PyObject *__pyx_lambda_funcdef_lambda1(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":311
+/* "batgrl/geometry/regions.pyx":313
  *         return self._merge_regions(other, lambda a, b: a & b)
  * 
  *     def __or__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8635,7 +8635,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_6__or__(struct __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__or__", 1);
 
-  /* "batgrl/geometry/regions.pyx":312
+  /* "batgrl/geometry/regions.pyx":314
  * 
  *     def __or__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a | b)             # <<<<<<<<<<<<<<
@@ -8643,9 +8643,9 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_6__or__(struct __py
  *     def __add__(self, other: Self) -> Self:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 312, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 314, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_6__or___lambda1, 0, __pyx_n_s_or___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 312, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_6__or___lambda1, 0, __pyx_n_s_or___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 314, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -8666,7 +8666,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_6__or__(struct __py
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 312, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 314, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -8674,7 +8674,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_6__or__(struct __py
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":311
+  /* "batgrl/geometry/regions.pyx":313
  *         return self._merge_regions(other, lambda a, b: a & b)
  * 
  *     def __or__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8696,7 +8696,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_6__or__(struct __py
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":314
+/* "batgrl/geometry/regions.pyx":316
  *         return self._merge_regions(other, lambda a, b: a | b)
  * 
  *     def __add__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8719,7 +8719,7 @@ static PyObject *__pyx_pw_6batgrl_8geometry_7regions_6Region_9__add__(PyObject *
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":315
+/* "batgrl/geometry/regions.pyx":317
  * 
  *     def __add__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a | b)             # <<<<<<<<<<<<<<
@@ -8783,7 +8783,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 315, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 317, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -8791,14 +8791,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 315, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 317, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("lambda2", 1, 2, 2, 1); __PYX_ERR(1, 315, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("lambda2", 1, 2, 2, 1); __PYX_ERR(1, 317, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda2") < 0)) __PYX_ERR(1, 315, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda2") < 0)) __PYX_ERR(1, 317, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -8811,7 +8811,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("lambda2", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 315, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("lambda2", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 317, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8847,7 +8847,7 @@ static PyObject *__pyx_lambda_funcdef_lambda2(CYTHON_UNUSED PyObject *__pyx_self
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lambda2", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyNumber_Or(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 315, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Or(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 317, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8864,7 +8864,7 @@ static PyObject *__pyx_lambda_funcdef_lambda2(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":314
+/* "batgrl/geometry/regions.pyx":316
  *         return self._merge_regions(other, lambda a, b: a | b)
  * 
  *     def __add__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8885,7 +8885,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_8__add__(struct __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__add__", 1);
 
-  /* "batgrl/geometry/regions.pyx":315
+  /* "batgrl/geometry/regions.pyx":317
  * 
  *     def __add__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a | b)             # <<<<<<<<<<<<<<
@@ -8893,9 +8893,9 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_8__add__(struct __p
  *     def __sub__(self, other: Self) -> Self:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 315, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 317, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__add___lambda2, 0, __pyx_n_s_add___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 315, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__add___lambda2, 0, __pyx_n_s_add___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 317, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -8916,7 +8916,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_8__add__(struct __p
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 315, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 317, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -8924,7 +8924,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_8__add__(struct __p
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":314
+  /* "batgrl/geometry/regions.pyx":316
  *         return self._merge_regions(other, lambda a, b: a | b)
  * 
  *     def __add__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8946,7 +8946,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_8__add__(struct __p
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":317
+/* "batgrl/geometry/regions.pyx":319
  *         return self._merge_regions(other, lambda a, b: a | b)
  * 
  *     def __sub__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -8969,7 +8969,7 @@ static PyObject *__pyx_pw_6batgrl_8geometry_7regions_6Region_11__sub__(PyObject 
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":318
+/* "batgrl/geometry/regions.pyx":320
  * 
  *     def __sub__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a & (not b))             # <<<<<<<<<<<<<<
@@ -9033,7 +9033,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 318, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 320, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -9041,14 +9041,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 318, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 320, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("lambda3", 1, 2, 2, 1); __PYX_ERR(1, 318, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("lambda3", 1, 2, 2, 1); __PYX_ERR(1, 320, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda3") < 0)) __PYX_ERR(1, 318, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda3") < 0)) __PYX_ERR(1, 320, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -9061,7 +9061,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("lambda3", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 318, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("lambda3", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 320, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -9099,10 +9099,10 @@ static PyObject *__pyx_lambda_funcdef_lambda3(CYTHON_UNUSED PyObject *__pyx_self
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lambda3", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_b); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(1, 318, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong((!__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 318, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_b); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(1, 320, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong((!__pyx_t_1)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 320, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyNumber_And(__pyx_v_a, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 318, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_And(__pyx_v_a, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 320, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_3;
@@ -9121,7 +9121,7 @@ static PyObject *__pyx_lambda_funcdef_lambda3(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":317
+/* "batgrl/geometry/regions.pyx":319
  *         return self._merge_regions(other, lambda a, b: a | b)
  * 
  *     def __sub__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -9142,7 +9142,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_10__sub__(struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__sub__", 1);
 
-  /* "batgrl/geometry/regions.pyx":318
+  /* "batgrl/geometry/regions.pyx":320
  * 
  *     def __sub__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a & (not b))             # <<<<<<<<<<<<<<
@@ -9150,9 +9150,9 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_10__sub__(struct __
  *     def __xor__(self, other: Self) -> Self:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 318, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 320, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__sub___lambda3, 0, __pyx_n_s_sub___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 318, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__sub___lambda3, 0, __pyx_n_s_sub___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 320, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -9173,7 +9173,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_10__sub__(struct __
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 318, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 320, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -9181,7 +9181,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_10__sub__(struct __
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":317
+  /* "batgrl/geometry/regions.pyx":319
  *         return self._merge_regions(other, lambda a, b: a | b)
  * 
  *     def __sub__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -9203,7 +9203,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_10__sub__(struct __
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":320
+/* "batgrl/geometry/regions.pyx":322
  *         return self._merge_regions(other, lambda a, b: a & (not b))
  * 
  *     def __xor__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -9226,7 +9226,7 @@ static PyObject *__pyx_pw_6batgrl_8geometry_7regions_6Region_13__xor__(PyObject 
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":321
+/* "batgrl/geometry/regions.pyx":323
  * 
  *     def __xor__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a ^ b)             # <<<<<<<<<<<<<<
@@ -9290,7 +9290,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 321, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 323, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -9298,14 +9298,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 321, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 323, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("lambda4", 1, 2, 2, 1); __PYX_ERR(1, 321, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("lambda4", 1, 2, 2, 1); __PYX_ERR(1, 323, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda4") < 0)) __PYX_ERR(1, 321, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "lambda4") < 0)) __PYX_ERR(1, 323, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -9318,7 +9318,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("lambda4", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 321, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("lambda4", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 323, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -9354,7 +9354,7 @@ static PyObject *__pyx_lambda_funcdef_lambda4(CYTHON_UNUSED PyObject *__pyx_self
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lambda4", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyNumber_Xor(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 321, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Xor(__pyx_v_a, __pyx_v_b); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 323, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9371,7 +9371,7 @@ static PyObject *__pyx_lambda_funcdef_lambda4(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":320
+/* "batgrl/geometry/regions.pyx":322
  *         return self._merge_regions(other, lambda a, b: a & (not b))
  * 
  *     def __xor__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -9392,7 +9392,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_12__xor__(struct __
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__xor__", 1);
 
-  /* "batgrl/geometry/regions.pyx":321
+  /* "batgrl/geometry/regions.pyx":323
  * 
  *     def __xor__(self, other: Self) -> Self:
  *         return self._merge_regions(other, lambda a, b: a ^ b)             # <<<<<<<<<<<<<<
@@ -9400,9 +9400,9 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_12__xor__(struct __
  *     def __bool__(self) -> bool:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 321, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_merge_regions); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 323, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__xor___lambda4, 0, __pyx_n_s_xor___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 321, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_7__xor___lambda4, 0, __pyx_n_s_xor___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 323, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -9423,7 +9423,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_12__xor__(struct __
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 321, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 323, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -9431,7 +9431,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_12__xor__(struct __
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":320
+  /* "batgrl/geometry/regions.pyx":322
  *         return self._merge_regions(other, lambda a, b: a & (not b))
  * 
  *     def __xor__(self, other: Self) -> Self:             # <<<<<<<<<<<<<<
@@ -9453,7 +9453,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_12__xor__(struct __
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":323
+/* "batgrl/geometry/regions.pyx":325
  *         return self._merge_regions(other, lambda a, b: a ^ b)
  * 
  *     def __bool__(self) -> bool:             # <<<<<<<<<<<<<<
@@ -9486,7 +9486,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_14__bool__(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__bool__", 1);
 
-  /* "batgrl/geometry/regions.pyx":324
+  /* "batgrl/geometry/regions.pyx":326
  * 
  *     def __bool__(self) -> bool:
  *         return len(self.bands) > 0             # <<<<<<<<<<<<<<
@@ -9497,14 +9497,14 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_14__bool__(struct __pyx_o
   __Pyx_INCREF(__pyx_t_1);
   if (unlikely(__pyx_t_1 == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-    __PYX_ERR(1, 324, __pyx_L1_error)
+    __PYX_ERR(1, 326, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyList_GET_SIZE(__pyx_t_1); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(1, 324, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyList_GET_SIZE(__pyx_t_1); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(1, 326, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = (__pyx_t_2 > 0);
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":323
+  /* "batgrl/geometry/regions.pyx":325
  *         return self._merge_regions(other, lambda a, b: a ^ b)
  * 
  *     def __bool__(self) -> bool:             # <<<<<<<<<<<<<<
@@ -9523,7 +9523,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_14__bool__(struct __pyx_o
 }
 static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "batgrl/geometry/regions.pyx":326
+/* "batgrl/geometry/regions.pyx":328
  *         return len(self.bands) > 0
  * 
  *     def rects(self) -> Iterator[tuple[Point, Size]]:             # <<<<<<<<<<<<<<
@@ -9585,7 +9585,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_16rects(struct __py
   if (unlikely(!__pyx_cur_scope)) {
     __pyx_cur_scope = ((struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct__rects *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(1, 326, __pyx_L1_error)
+    __PYX_ERR(1, 328, __pyx_L1_error)
   } else {
     __Pyx_GOTREF((PyObject *)__pyx_cur_scope);
   }
@@ -9593,7 +9593,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_16rects(struct __py
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_6batgrl_8geometry_7regions_6Region_18generator, __pyx_codeobj__3, (PyObject *) __pyx_cur_scope, __pyx_n_s_rects, __pyx_n_s_Region_rects, __pyx_n_s_batgrl_geometry_regions); if (unlikely(!gen)) __PYX_ERR(1, 326, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_6batgrl_8geometry_7regions_6Region_18generator, __pyx_codeobj__3, (PyObject *) __pyx_cur_scope, __pyx_n_s_rects, __pyx_n_s_Region_rects, __pyx_n_s_batgrl_geometry_regions); if (unlikely(!gen)) __PYX_ERR(1, 328, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -9637,9 +9637,9 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) __PYX_ERR(1, 326, __pyx_L1_error)
+  if (unlikely(!__pyx_sent_value)) __PYX_ERR(1, 328, __pyx_L1_error)
 
-  /* "batgrl/geometry/regions.pyx":335
+  /* "batgrl/geometry/regions.pyx":337
  *             A position and size of a rect in the region.
  *         """
  *         for band in self.bands:             # <<<<<<<<<<<<<<
@@ -9648,7 +9648,7 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
  */
   if (unlikely(__pyx_cur_scope->__pyx_v_self->bands == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(1, 335, __pyx_L1_error)
+    __PYX_ERR(1, 337, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_cur_scope->__pyx_v_self->bands; __Pyx_INCREF(__pyx_t_1);
   __pyx_t_2 = 0;
@@ -9656,14 +9656,14 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
     {
       Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
       #if !CYTHON_ASSUME_SAFE_MACROS
-      if (unlikely((__pyx_temp < 0))) __PYX_ERR(1, 335, __pyx_L1_error)
+      if (unlikely((__pyx_temp < 0))) __PYX_ERR(1, 337, __pyx_L1_error)
       #endif
       if (__pyx_t_2 >= __pyx_temp) break;
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely((0 < 0))) __PYX_ERR(1, 335, __pyx_L1_error)
+    __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely((0 < 0))) __PYX_ERR(1, 337, __pyx_L1_error)
     #else
-    __pyx_t_3 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 335, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 337, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     #endif
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_band);
@@ -9671,7 +9671,7 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "batgrl/geometry/regions.pyx":336
+    /* "batgrl/geometry/regions.pyx":338
  *         """
  *         for band in self.bands:
  *             i = 0             # <<<<<<<<<<<<<<
@@ -9683,44 +9683,44 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_i, __pyx_int_0);
     __Pyx_GIVEREF(__pyx_int_0);
 
-    /* "batgrl/geometry/regions.pyx":337
+    /* "batgrl/geometry/regions.pyx":339
  *         for band in self.bands:
  *             i = 0
  *             walls = band.walls             # <<<<<<<<<<<<<<
  *             y = band.y1
  *             h = band.y2 - y
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_band, __pyx_n_s_walls); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 337, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_band, __pyx_n_s_walls); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 339, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_walls);
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_walls, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "batgrl/geometry/regions.pyx":338
+    /* "batgrl/geometry/regions.pyx":340
  *             i = 0
  *             walls = band.walls
  *             y = band.y1             # <<<<<<<<<<<<<<
  *             h = band.y2 - y
  *             while i < len(walls):
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_band, __pyx_n_s_y1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 338, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_band, __pyx_n_s_y1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 340, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_y);
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_y, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "batgrl/geometry/regions.pyx":339
+    /* "batgrl/geometry/regions.pyx":341
  *             walls = band.walls
  *             y = band.y1
  *             h = band.y2 - y             # <<<<<<<<<<<<<<
  *             while i < len(walls):
  *                 yield Point(y, walls[i]), Size(h, walls[i + 1] - walls[i])
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_band, __pyx_n_s_y2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 339, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_band, __pyx_n_s_y2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyNumber_Subtract(__pyx_t_3, __pyx_cur_scope->__pyx_v_y); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 339, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Subtract(__pyx_t_3, __pyx_cur_scope->__pyx_v_y); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_h);
@@ -9728,7 +9728,7 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
     __Pyx_GIVEREF(__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "batgrl/geometry/regions.pyx":340
+    /* "batgrl/geometry/regions.pyx":342
  *             y = band.y1
  *             h = band.y2 - y
  *             while i < len(walls):             # <<<<<<<<<<<<<<
@@ -9736,25 +9736,25 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
  *                 i += 2
  */
     while (1) {
-      __pyx_t_5 = PyObject_Length(__pyx_cur_scope->__pyx_v_walls); if (unlikely(__pyx_t_5 == ((Py_ssize_t)-1))) __PYX_ERR(1, 340, __pyx_L1_error)
-      __pyx_t_4 = PyInt_FromSsize_t(__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 340, __pyx_L1_error)
+      __pyx_t_5 = PyObject_Length(__pyx_cur_scope->__pyx_v_walls); if (unlikely(__pyx_t_5 == ((Py_ssize_t)-1))) __PYX_ERR(1, 342, __pyx_L1_error)
+      __pyx_t_4 = PyInt_FromSsize_t(__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 342, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_3 = PyObject_RichCompare(__pyx_cur_scope->__pyx_v_i, __pyx_t_4, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 340, __pyx_L1_error)
+      __pyx_t_3 = PyObject_RichCompare(__pyx_cur_scope->__pyx_v_i, __pyx_t_4, Py_LT); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 342, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 340, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 342, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       if (!__pyx_t_6) break;
 
-      /* "batgrl/geometry/regions.pyx":341
+      /* "batgrl/geometry/regions.pyx":343
  *             h = band.y2 - y
  *             while i < len(walls):
  *                 yield Point(y, walls[i]), Size(h, walls[i + 1] - walls[i])             # <<<<<<<<<<<<<<
  *                 i += 2
  * 
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_Point); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_Point); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_walls, __pyx_cur_scope->__pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_walls, __pyx_cur_scope->__pyx_v_i); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_t_8 = NULL;
       __pyx_t_9 = 0;
@@ -9775,20 +9775,20 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
         __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_9, 2+__pyx_t_9);
         __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-        if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 341, __pyx_L1_error)
+        if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 343, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       }
-      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_Size); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_Size); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = __Pyx_PyInt_AddObjC(__pyx_cur_scope->__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyInt_AddObjC(__pyx_cur_scope->__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_10 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_walls, __pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_walls, __pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      __pyx_t_8 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_walls, __pyx_cur_scope->__pyx_v_i); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_GetItem(__pyx_cur_scope->__pyx_v_walls, __pyx_cur_scope->__pyx_v_i); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_11 = PyNumber_Subtract(__pyx_t_10, __pyx_t_8); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __pyx_t_11 = PyNumber_Subtract(__pyx_t_10, __pyx_t_8); if (unlikely(!__pyx_t_11)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_11);
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -9811,16 +9811,16 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
         __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_7, __pyx_callargs+1-__pyx_t_9, 2+__pyx_t_9);
         __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
         __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
-        if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 341, __pyx_L1_error)
+        if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 343, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       }
-      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 341, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GIVEREF(__pyx_t_3);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_3)) __PYX_ERR(1, 341, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_3)) __PYX_ERR(1, 343, __pyx_L1_error);
       __Pyx_GIVEREF(__pyx_t_4);
-      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_4)) __PYX_ERR(1, 341, __pyx_L1_error);
+      if (__Pyx_PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_4)) __PYX_ERR(1, 343, __pyx_L1_error);
       __pyx_t_3 = 0;
       __pyx_t_4 = 0;
       __pyx_r = __pyx_t_7;
@@ -9839,16 +9839,16 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
       __pyx_cur_scope->__pyx_t_0 = 0;
       __Pyx_XGOTREF(__pyx_t_1);
       __pyx_t_2 = __pyx_cur_scope->__pyx_t_1;
-      if (unlikely(!__pyx_sent_value)) __PYX_ERR(1, 341, __pyx_L1_error)
+      if (unlikely(!__pyx_sent_value)) __PYX_ERR(1, 343, __pyx_L1_error)
 
-      /* "batgrl/geometry/regions.pyx":342
+      /* "batgrl/geometry/regions.pyx":344
  *             while i < len(walls):
  *                 yield Point(y, walls[i]), Size(h, walls[i + 1] - walls[i])
  *                 i += 2             # <<<<<<<<<<<<<<
  * 
  *     @classmethod
  */
-      __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_cur_scope->__pyx_v_i, __pyx_int_2, 2, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 342, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyInt_AddObjC(__pyx_cur_scope->__pyx_v_i, __pyx_int_2, 2, 1, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 344, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GOTREF(__pyx_cur_scope->__pyx_v_i);
       __Pyx_DECREF_SET(__pyx_cur_scope->__pyx_v_i, __pyx_t_7);
@@ -9856,7 +9856,7 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
       __pyx_t_7 = 0;
     }
 
-    /* "batgrl/geometry/regions.pyx":335
+    /* "batgrl/geometry/regions.pyx":337
  *             A position and size of a rect in the region.
  *         """
  *         for band in self.bands:             # <<<<<<<<<<<<<<
@@ -9867,7 +9867,7 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   CYTHON_MAYBE_UNUSED_VAR(__pyx_cur_scope);
 
-  /* "batgrl/geometry/regions.pyx":326
+  /* "batgrl/geometry/regions.pyx":328
  *         return len(self.bands) > 0
  * 
  *     def rects(self) -> Iterator[tuple[Point, Size]]:             # <<<<<<<<<<<<<<
@@ -9899,7 +9899,7 @@ static PyObject *__pyx_gb_6batgrl_8geometry_7regions_6Region_18generator(__pyx_C
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":344
+/* "batgrl/geometry/regions.pyx":346
  *                 i += 2
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -9964,7 +9964,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 344, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 346, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -9972,14 +9972,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 344, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 346, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("from_rect", 1, 2, 2, 1); __PYX_ERR(1, 344, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("from_rect", 1, 2, 2, 1); __PYX_ERR(1, 346, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "from_rect") < 0)) __PYX_ERR(1, 344, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "from_rect") < 0)) __PYX_ERR(1, 346, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -9992,7 +9992,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("from_rect", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 344, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("from_rect", 1, 2, 2, __pyx_nargs); __PYX_ERR(1, 346, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -10035,7 +10035,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("from_rect", 1);
 
-  /* "batgrl/geometry/regions.pyx":354
+  /* "batgrl/geometry/regions.pyx":356
  *             A new region.
  *         """
  *         y, x = pos             # <<<<<<<<<<<<<<
@@ -10048,7 +10048,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
     if (unlikely(size != 2)) {
       if (size > 2) __Pyx_RaiseTooManyValuesError(2);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(1, 354, __pyx_L1_error)
+      __PYX_ERR(1, 356, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     if (likely(PyTuple_CheckExact(sequence))) {
@@ -10061,21 +10061,21 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_t_2);
     #else
-    __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 354, __pyx_L1_error)
+    __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 356, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 354, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 356, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
   } else {
     Py_ssize_t index = -1;
-    __pyx_t_3 = PyObject_GetIter(__pyx_v_pos); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 354, __pyx_L1_error)
+    __pyx_t_3 = PyObject_GetIter(__pyx_v_pos); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 356, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_3);
     index = 0; __pyx_t_1 = __pyx_t_4(__pyx_t_3); if (unlikely(!__pyx_t_1)) goto __pyx_L3_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_1);
     index = 1; __pyx_t_2 = __pyx_t_4(__pyx_t_3); if (unlikely(!__pyx_t_2)) goto __pyx_L3_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_2);
-    if (__Pyx_IternextUnpackEndCheck(__pyx_t_4(__pyx_t_3), 2) < 0) __PYX_ERR(1, 354, __pyx_L1_error)
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_4(__pyx_t_3), 2) < 0) __PYX_ERR(1, 356, __pyx_L1_error)
     __pyx_t_4 = NULL;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     goto __pyx_L4_unpacking_done;
@@ -10083,7 +10083,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
     if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-    __PYX_ERR(1, 354, __pyx_L1_error)
+    __PYX_ERR(1, 356, __pyx_L1_error)
     __pyx_L4_unpacking_done:;
   }
   __pyx_v_y = __pyx_t_1;
@@ -10091,7 +10091,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
   __pyx_v_x = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "batgrl/geometry/regions.pyx":355
+  /* "batgrl/geometry/regions.pyx":357
  *         """
  *         y, x = pos
  *         h, w = size             # <<<<<<<<<<<<<<
@@ -10104,7 +10104,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
     if (unlikely(size != 2)) {
       if (size > 2) __Pyx_RaiseTooManyValuesError(2);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(1, 355, __pyx_L1_error)
+      __PYX_ERR(1, 357, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     if (likely(PyTuple_CheckExact(sequence))) {
@@ -10117,21 +10117,21 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
     __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_t_1);
     #else
-    __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 355, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 357, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 355, __pyx_L1_error)
+    __pyx_t_1 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 357, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     #endif
   } else {
     Py_ssize_t index = -1;
-    __pyx_t_3 = PyObject_GetIter(__pyx_v_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 355, __pyx_L1_error)
+    __pyx_t_3 = PyObject_GetIter(__pyx_v_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 357, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_3);
     index = 0; __pyx_t_2 = __pyx_t_4(__pyx_t_3); if (unlikely(!__pyx_t_2)) goto __pyx_L5_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_2);
     index = 1; __pyx_t_1 = __pyx_t_4(__pyx_t_3); if (unlikely(!__pyx_t_1)) goto __pyx_L5_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_1);
-    if (__Pyx_IternextUnpackEndCheck(__pyx_t_4(__pyx_t_3), 2) < 0) __PYX_ERR(1, 355, __pyx_L1_error)
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_4(__pyx_t_3), 2) < 0) __PYX_ERR(1, 357, __pyx_L1_error)
     __pyx_t_4 = NULL;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     goto __pyx_L6_unpacking_done;
@@ -10139,7 +10139,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
     if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-    __PYX_ERR(1, 355, __pyx_L1_error)
+    __PYX_ERR(1, 357, __pyx_L1_error)
     __pyx_L6_unpacking_done:;
   }
   __pyx_v_h = __pyx_t_2;
@@ -10147,7 +10147,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
   __pyx_v_w = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "batgrl/geometry/regions.pyx":356
+  /* "batgrl/geometry/regions.pyx":358
  *         y, x = pos
  *         h, w = size
  *         return cls([_Band(y, y + h, [x, x + w])])             # <<<<<<<<<<<<<<
@@ -10155,45 +10155,45 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
  *     def __contains__(self, point: Point) -> bool:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyNumber_Add(__pyx_v_y, __pyx_v_h); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Add(__pyx_v_y, __pyx_v_h); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyNumber_Add(__pyx_v_x, __pyx_v_w); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Add(__pyx_v_x, __pyx_v_w); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyList_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_INCREF(__pyx_v_x);
   __Pyx_GIVEREF(__pyx_v_x);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_3, 0, __pyx_v_x)) __PYX_ERR(1, 356, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_3, 0, __pyx_v_x)) __PYX_ERR(1, 358, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_2);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_3, 1, __pyx_t_2)) __PYX_ERR(1, 356, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_3, 1, __pyx_t_2)) __PYX_ERR(1, 358, __pyx_L1_error);
   __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_y);
   __Pyx_GIVEREF(__pyx_v_y);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_y)) __PYX_ERR(1, 356, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_v_y)) __PYX_ERR(1, 358, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_1);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_1)) __PYX_ERR(1, 356, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_1)) __PYX_ERR(1, 358, __pyx_L1_error);
   __Pyx_GIVEREF(__pyx_t_3);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_3)) __PYX_ERR(1, 356, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_3)) __PYX_ERR(1, 358, __pyx_L1_error);
   __pyx_t_1 = 0;
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions__Band), __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions__Band), __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_t_3)) __PYX_ERR(1, 356, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_t_3)) __PYX_ERR(1, 358, __pyx_L1_error);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_v_cls), __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 356, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_v_cls), __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 358, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":344
+  /* "batgrl/geometry/regions.pyx":346
  *                 i += 2
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -10218,7 +10218,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_19from_rect(PyTypeO
   return __pyx_r;
 }
 
-/* "batgrl/geometry/regions.pyx":358
+/* "batgrl/geometry/regions.pyx":360
  *         return cls([_Band(y, y + h, [x, x + w])])
  * 
  *     def __contains__(self, point: Point) -> bool:             # <<<<<<<<<<<<<<
@@ -10266,7 +10266,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__contains__", 1);
 
-  /* "batgrl/geometry/regions.pyx":360
+  /* "batgrl/geometry/regions.pyx":362
  *     def __contains__(self, point: Point) -> bool:
  *         """Return whether point is in region."""
  *         y, x = point             # <<<<<<<<<<<<<<
@@ -10279,7 +10279,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     if (unlikely(size != 2)) {
       if (size > 2) __Pyx_RaiseTooManyValuesError(2);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(1, 360, __pyx_L1_error)
+      __PYX_ERR(1, 362, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     if (likely(PyTuple_CheckExact(sequence))) {
@@ -10292,21 +10292,21 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     __Pyx_INCREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_t_2);
     #else
-    __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 360, __pyx_L1_error)
+    __pyx_t_1 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 362, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 360, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 362, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
   } else {
     Py_ssize_t index = -1;
-    __pyx_t_3 = PyObject_GetIter(__pyx_v_point); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 360, __pyx_L1_error)
+    __pyx_t_3 = PyObject_GetIter(__pyx_v_point); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 362, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_3);
     index = 0; __pyx_t_1 = __pyx_t_4(__pyx_t_3); if (unlikely(!__pyx_t_1)) goto __pyx_L3_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_1);
     index = 1; __pyx_t_2 = __pyx_t_4(__pyx_t_3); if (unlikely(!__pyx_t_2)) goto __pyx_L3_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_2);
-    if (__Pyx_IternextUnpackEndCheck(__pyx_t_4(__pyx_t_3), 2) < 0) __PYX_ERR(1, 360, __pyx_L1_error)
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_4(__pyx_t_3), 2) < 0) __PYX_ERR(1, 362, __pyx_L1_error)
     __pyx_t_4 = NULL;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     goto __pyx_L4_unpacking_done;
@@ -10314,7 +10314,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_t_4 = NULL;
     if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-    __PYX_ERR(1, 360, __pyx_L1_error)
+    __PYX_ERR(1, 362, __pyx_L1_error)
     __pyx_L4_unpacking_done:;
   }
   __pyx_v_y = __pyx_t_1;
@@ -10322,14 +10322,14 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
   __pyx_v_x = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "batgrl/geometry/regions.pyx":361
+  /* "batgrl/geometry/regions.pyx":363
  *         """Return whether point is in region."""
  *         y, x = point
  *         i = bisect(self.bands, y)             # <<<<<<<<<<<<<<
  *         if i == 0:
  *             return False
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_bisect); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 361, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_bisect); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 363, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_3 = NULL;
   __pyx_t_5 = 0;
@@ -10349,24 +10349,24 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     PyObject *__pyx_callargs[3] = {__pyx_t_3, __pyx_v_self->bands, __pyx_v_y};
     __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 361, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 363, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_v_i = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "batgrl/geometry/regions.pyx":362
+  /* "batgrl/geometry/regions.pyx":364
  *         y, x = point
  *         i = bisect(self.bands, y)
  *         if i == 0:             # <<<<<<<<<<<<<<
  *             return False
  * 
  */
-  __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_v_i, __pyx_int_0, 0, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 362, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_v_i, __pyx_int_0, 0, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 364, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "batgrl/geometry/regions.pyx":363
+    /* "batgrl/geometry/regions.pyx":365
  *         i = bisect(self.bands, y)
  *         if i == 0:
  *             return False             # <<<<<<<<<<<<<<
@@ -10376,7 +10376,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "batgrl/geometry/regions.pyx":362
+    /* "batgrl/geometry/regions.pyx":364
  *         y, x = point
  *         i = bisect(self.bands, y)
  *         if i == 0:             # <<<<<<<<<<<<<<
@@ -10385,7 +10385,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
  */
   }
 
-  /* "batgrl/geometry/regions.pyx":365
+  /* "batgrl/geometry/regions.pyx":367
  *             return False
  * 
  *         band = self.bands[i - 1]             # <<<<<<<<<<<<<<
@@ -10394,32 +10394,32 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
  */
   if (unlikely(__pyx_v_self->bands == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(1, 365, __pyx_L1_error)
+    __PYX_ERR(1, 367, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 365, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_SubtractObjC(__pyx_v_i, __pyx_int_1, 1, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 367, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_self->bands, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 365, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_self->bands, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 367, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_band = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "batgrl/geometry/regions.pyx":366
+  /* "batgrl/geometry/regions.pyx":368
  * 
  *         band = self.bands[i - 1]
  *         if band.y2 <= y:             # <<<<<<<<<<<<<<
  *             return False
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_band, __pyx_n_s_y2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 366, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_band, __pyx_n_s_y2); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 368, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_v_y, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 366, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_v_y, Py_LE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 368, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 366, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 368, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_6) {
 
-    /* "batgrl/geometry/regions.pyx":367
+    /* "batgrl/geometry/regions.pyx":369
  *         band = self.bands[i - 1]
  *         if band.y2 <= y:
  *             return False             # <<<<<<<<<<<<<<
@@ -10429,7 +10429,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "batgrl/geometry/regions.pyx":366
+    /* "batgrl/geometry/regions.pyx":368
  * 
  *         band = self.bands[i - 1]
  *         if band.y2 <= y:             # <<<<<<<<<<<<<<
@@ -10438,15 +10438,15 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
  */
   }
 
-  /* "batgrl/geometry/regions.pyx":369
+  /* "batgrl/geometry/regions.pyx":371
  *             return False
  * 
  *         j = bisect(band.walls, x)             # <<<<<<<<<<<<<<
  *         return j % 2 == 1
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_bisect); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 369, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_bisect); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 371, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_band, __pyx_n_s_walls); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 369, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_band, __pyx_n_s_walls); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 371, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_7 = NULL;
   __pyx_t_5 = 0;
@@ -10467,29 +10467,29 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_21__contains__(struct __p
     __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 369, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 371, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_v_j = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "batgrl/geometry/regions.pyx":370
+  /* "batgrl/geometry/regions.pyx":372
  * 
  *         j = bisect(band.walls, x)
  *         return j % 2 == 1             # <<<<<<<<<<<<<<
  */
-  __pyx_t_2 = __Pyx_PyInt_RemainderObjC(__pyx_v_j, __pyx_int_2, 2, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 370, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_RemainderObjC(__pyx_v_j, __pyx_int_2, 2, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 372, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 370, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_EqObjC(__pyx_t_2, __pyx_int_1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 372, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 370, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 372, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_8;
   goto __pyx_L0;
 
-  /* "batgrl/geometry/regions.pyx":358
+  /* "batgrl/geometry/regions.pyx":360
  *         return cls([_Band(y, y + h, [x, x + w])])
  * 
  *     def __contains__(self, point: Point) -> bool:             # <<<<<<<<<<<<<<
@@ -13736,29 +13736,29 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__19);
   __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 10, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_regions_pyx, __pyx_n_s_merge_regions, 170, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(1, 170, __pyx_L1_error)
 
-  /* "batgrl/geometry/regions.pyx":326
+  /* "batgrl/geometry/regions.pyx":328
  *         return len(self.bands) > 0
  * 
  *     def rects(self) -> Iterator[tuple[Point, Size]]:             # <<<<<<<<<<<<<<
  *         """
  *         Yield position and size of rects that make up the region.
  */
-  __pyx_tuple__21 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_band, __pyx_n_s_i, __pyx_n_s_walls, __pyx_n_s_y, __pyx_n_s_h); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 326, __pyx_L1_error)
+  __pyx_tuple__21 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_band, __pyx_n_s_i, __pyx_n_s_walls, __pyx_n_s_y, __pyx_n_s_h); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 328, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_regions_pyx, __pyx_n_s_rects, 326, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(1, 326, __pyx_L1_error)
+  __pyx_codeobj__3 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_regions_pyx, __pyx_n_s_rects, 328, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__3)) __PYX_ERR(1, 328, __pyx_L1_error)
 
-  /* "batgrl/geometry/regions.pyx":344
+  /* "batgrl/geometry/regions.pyx":346
  *                 i += 2
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
  *     def from_rect(cls, pos: Point, size: Size) -> Self:
  *         """
  */
-  __pyx_tuple__22 = PyTuple_Pack(7, __pyx_n_s_cls, __pyx_n_s_pos, __pyx_n_s_size, __pyx_n_s_y, __pyx_n_s_x, __pyx_n_s_h, __pyx_n_s_w); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 344, __pyx_L1_error)
+  __pyx_tuple__22 = PyTuple_Pack(7, __pyx_n_s_cls, __pyx_n_s_pos, __pyx_n_s_size, __pyx_n_s_y, __pyx_n_s_x, __pyx_n_s_h, __pyx_n_s_w); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__22);
   __Pyx_GIVEREF(__pyx_tuple__22);
-  __pyx_codeobj__23 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_regions_pyx, __pyx_n_s_from_rect, 344, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__23)) __PYX_ERR(1, 344, __pyx_L1_error)
+  __pyx_codeobj__23 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 7, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_regions_pyx, __pyx_n_s_from_rect, 346, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__23)) __PYX_ERR(1, 346, __pyx_L1_error)
 
   /* "(tree fragment)":3
  * def __init__(self, bands: list[_Band] = DATACLASS_PLACEHOLDER_0):
@@ -13932,15 +13932,15 @@ static int __Pyx_modinit_type_init_code(void) {
   if (__Pyx_setup_reduce((PyObject *) __pyx_ptype_6batgrl_8geometry_7regions_Region) < 0) __PYX_ERR(1, 133, __pyx_L1_error)
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects_spec, NULL); if (unlikely(!__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects)) __PYX_ERR(1, 326, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects_spec, __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects) < 0) __PYX_ERR(1, 326, __pyx_L1_error)
+  __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects_spec, NULL); if (unlikely(!__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects)) __PYX_ERR(1, 328, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects_spec, __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects) < 0) __PYX_ERR(1, 328, __pyx_L1_error)
   #else
   __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects = &__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects) < 0) __PYX_ERR(1, 326, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects) < 0) __PYX_ERR(1, 328, __pyx_L1_error)
   #endif
   #if PY_MAJOR_VERSION < 3
   __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects->tp_print = 0;
@@ -14809,49 +14809,49 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_6batgrl_8geometry_7regions_Region);
 
-  /* "batgrl/geometry/regions.pyx":326
+  /* "batgrl/geometry/regions.pyx":328
  *         return len(self.bands) > 0
  * 
  *     def rects(self) -> Iterator[tuple[Point, Size]]:             # <<<<<<<<<<<<<<
  *         """
  *         Yield position and size of rects that make up the region.
  */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 326, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 328, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_return, __pyx_kp_s_Iterator_tuple_Point_Size) < 0) __PYX_ERR(1, 326, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_17rects, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Region_rects, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 326, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_return, __pyx_kp_s_Iterator_tuple_Point_Size) < 0) __PYX_ERR(1, 328, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_17rects, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Region_rects, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, ((PyObject *)__pyx_codeobj__3)); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 328, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_4, __pyx_t_3);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_rects, __pyx_t_4) < 0) __PYX_ERR(1, 326, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_rects, __pyx_t_4) < 0) __PYX_ERR(1, 328, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   PyType_Modified(__pyx_ptype_6batgrl_8geometry_7regions_Region);
 
-  /* "batgrl/geometry/regions.pyx":344
+  /* "batgrl/geometry/regions.pyx":346
  *                 i += 2
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
  *     def from_rect(cls, pos: Point, size: Size) -> Self:
  *         """
  */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 344, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_pos, __pyx_n_s_Point) < 0) __PYX_ERR(1, 344, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_size, __pyx_n_s_Size) < 0) __PYX_ERR(1, 344, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_return, __pyx_n_s_Self) < 0) __PYX_ERR(1, 344, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_20from_rect, __Pyx_CYFUNCTION_CLASSMETHOD | __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Region_from_rect, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, ((PyObject *)__pyx_codeobj__23)); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 344, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_pos, __pyx_n_s_Point) < 0) __PYX_ERR(1, 346, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_size, __pyx_n_s_Size) < 0) __PYX_ERR(1, 346, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_return, __pyx_n_s_Self) < 0) __PYX_ERR(1, 346, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_20from_rect, __Pyx_CYFUNCTION_CLASSMETHOD | __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_Region_from_rect, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, ((PyObject *)__pyx_codeobj__23)); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_3, __pyx_t_4);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_from_rect, __pyx_t_3) < 0) __PYX_ERR(1, 344, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_from_rect, __pyx_t_3) < 0) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_6batgrl_8geometry_7regions_Region);
-  __Pyx_GetNameInClass(__pyx_t_3, (PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_from_rect); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 344, __pyx_L1_error)
+  __Pyx_GetNameInClass(__pyx_t_3, (PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_from_rect); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_Method_ClassMethod(__pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 344, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_Method_ClassMethod(__pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_from_rect, __pyx_t_4) < 0) __PYX_ERR(1, 344, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_6batgrl_8geometry_7regions_Region, __pyx_n_s_from_rect, __pyx_t_4) < 0) __PYX_ERR(1, 346, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   PyType_Modified(__pyx_ptype_6batgrl_8geometry_7regions_Region);
 

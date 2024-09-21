@@ -39,11 +39,10 @@ class _Root(Gadget):
         self.size = size
 
     def on_size(self):
-        """Erase last render and re-make buffers."""
-        h, w = self._size
-        self.canvas = np.full((h, w), self._cell)
-        self._last_canvas = self.canvas.copy()
+        """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
+        self._last_canvas = np.full(self._size, self._cell)
+        self.canvas = self._last_canvas.copy()
 
     @property
     def _pos(self) -> Point:
@@ -94,34 +93,38 @@ class _Root(Gadget):
 
     def _render(self):
         """Render gadget tree into `canvas`."""
-        # TODO: Optimize...
-        # - Recalculating all regions every frame isn't necessary if gadget geometry
-        #   hasn't changed.
-        # - If there *is* a change to geometry, regions that are later in z-order can be
-        #   reused.
-        # - Checking for changes in geometry can be done once every few frames if
-        #   geometry has been static for some time.
-
         with self._render_lock:
-            self._region = Region.from_rect(self.pos, self.size)
+            if not self._region_valid:
+                self._clipping_region = Region.from_rect(self.pos, self.size)
+                self._region = self._clipping_region
 
             for child in self.walk():
-                child._region = (
-                    child.parent._region
-                    & Region.from_rect(child.absolute_pos, child.size)
-                    if child.is_enabled and child.is_visible
-                    else Region()
-                )
+                if not child._region_valid:
+                    child._clipping_region = (
+                        child.parent._clipping_region
+                        & Region.from_rect(child.absolute_pos, child.size)
+                        if child.is_enabled and child.is_visible
+                        else Region()
+                    )
 
-            if self.render_mode == "regions":
-                for child in self.walk_reverse():
-                    if child.is_enabled:
-                        child._region &= self._region
-                        if child.is_visible and not child.is_transparent:
-                            self._region -= child._region
+            skip_valid_regions = True
+            for child in self.walk_reverse():
+                if skip_valid_regions and child._region_valid:
+                    continue
+
+                if child._region_valid and child._root_region_before == self._region:
+                    skip_valid_regions = True
+                    continue
+
+                child._root_region_before = self._region
+                child._region = self._region & child._clipping_region
+                if not child.is_transparent:
+                    self._region -= child._region
+
+                child._region_valid = True
+                skip_valid_regions = False
 
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
-
             self.canvas[:] = self._cell
 
             for child in self.walk():

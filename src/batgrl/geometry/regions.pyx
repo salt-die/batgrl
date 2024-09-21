@@ -304,6 +304,8 @@ class Region:
         return region
 
     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
+    # For `and`, `sub`, and `xor`, bisect y-coordinate of bands...
+    # Same for walls.
 
     def __and__(self, other: Self) -> Self:
         return self._merge_regions(other, lambda a, b: a & b)

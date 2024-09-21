@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterator, MutableSequence, Sequence
 from functools import wraps
 from itertools import count
 from numbers import Real
 from time import monotonic
 from types import MappingProxyType
-from typing import Coroutine, Final, Literal, Self, TypedDict
+from typing import Final, Literal, Self, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -79,6 +79,42 @@ Anchor = Literal[
     "bottom-right",
 ]
 """Point of gadget attached to a pos hint."""
+
+
+class _GadgetList(MutableSequence):
+    """
+    A sequence of gadget's.
+
+    Gadget regions are invalidated if their index in the sequence changes.
+    """
+
+    def __init__(self) -> None:
+        self._gadgets: list[Gadget] = []
+
+    def __len__(self) -> int:
+        return len(self._gadgets)
+
+    def __getitem__(self, index: int) -> Gadget:
+        return self._gadgets[index]
+
+    def __setitem__(self, index: int, gadget: Gadget) -> None:
+        self._gadgets[index] = gadget
+        gadget._invalidate_region()
+
+    def _invalidate_regions_after_index(self, index: int) -> None:
+        for i in range(index, len(self)):
+            self[i]._invalidate_region()
+
+    def __delitem__(self, index: int) -> None:
+        del self._gadgets[index]
+        self._invalidate_regions_after_index(index)
+
+    def insert(self, index: int, gadget: Gadget) -> None:
+        self._gadgets.insert(index, gadget)
+        self._invalidate_regions_after_index(index)
+
+    def __iter__(self) -> Iterator[Gadget]:
+        return iter(self._gadgets)
 
 
 class PosHint(TypedDict, total=False):
@@ -365,7 +401,9 @@ class Gadget:
         is_enabled: bool = True,
     ):
         self.parent: Gadget | None = None
-        self.children: list[Gadget] = []
+        """The gadget's parent."""
+        self.children: _GadgetList = _GadgetList()
+        """The gadget's children."""
 
         h, w = size
         self._size = Size(clamp(h, 0, None), clamp(w, 0, None))
@@ -375,6 +413,13 @@ class Gadget:
         self.is_transparent = is_transparent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
+
+        self._region_valid: bool = False
+        """Whether current region is valid."""
+        self._clipping_region: Region = Region()
+        """Initial region clipped by ancestor regions."""
+        self._root_region_before: Region = Region()
+        """The root's region before gadget's region is removed from it."""
         self._region: Region = Region()
         """The visible portion of the gadget on the screen."""
 
@@ -403,6 +448,7 @@ class Gadget:
         if self.root:
             with self.root._render_lock:
                 self._size = size
+                self._invalidate_region()
         else:
             self._size = size
 
@@ -449,6 +495,7 @@ class Gadget:
         if self.root:
             with self.root._render_lock:
                 self._pos = pos
+                self._invalidate_region()
         else:
             self._pos = pos
 
@@ -533,6 +580,45 @@ class Gadget:
         self.apply_hints()
 
     @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._is_transparent
+
+    @is_transparent.setter
+    def is_transparent(self, is_transparent: bool):
+        if is_transparent != self._is_transparent:
+            self._is_transparent = is_transparent
+            self._invalidate_region()
+
+    @property
+    def is_visible(self) -> bool:
+        """
+        Whether gadget is visible. Gadget will still receive input events if not
+        visible.
+        """
+        return self._is_visible
+
+    @is_visible.setter
+    def is_visible(self, is_visible: bool):
+        if is_visible != self._is_visible:
+            self._is_visible = is_visible
+            self._invalidate_region()
+
+    @property
+    def is_enabled(self) -> bool:
+        """
+        Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
+        input events.
+        """
+        return self._is_enabled
+
+    @is_enabled.setter
+    def is_enabled(self, is_enabled: bool):
+        if is_enabled != self._is_enabled:
+            self._is_enabled = is_enabled
+            self._invalidate_region()
+
+    @property
     def root(self) -> Self | None:
         """Return the root gadget if connected to gadget tree."""
         return self.parent and self.parent.root
@@ -542,10 +628,16 @@ class Gadget:
         """The running app."""
         return self.root.app
 
-    def on_size(self):
+    def _invalidate_region(self) -> None:
+        """Invalidate region and all children's regions."""
+        self._region_valid = False
+        for child in self.children:
+            child._invalidate_region()
+
+    def on_size(self) -> None:
         """Update gadget after a resize."""
 
-    def apply_hints(self):
+    def apply_hints(self) -> None:
         """
         Apply size and pos hints.
 
@@ -575,7 +667,7 @@ class Gadget:
 
         self.size = height, width  # `size` setter will call `_apply_pos_hints()`.
 
-    def _apply_pos_hints(self):
+    def _apply_pos_hints(self) -> None:
         if self.parent is None:
             return
 
@@ -671,7 +763,7 @@ class Gadget:
             or other_left >= self_right
         )
 
-    def add_gadget(self, gadget: Self):
+    def add_gadget(self, gadget: Self) -> None:
         """
         Add a child gadget.
 
@@ -686,7 +778,7 @@ class Gadget:
         if self.root is not None:
             gadget.on_add()
 
-    def add_gadgets(self, *gadgets: Self):
+    def add_gadgets(self, *gadgets: Self) -> None:
         r"""
         Add multiple child gadgets.
 
@@ -702,7 +794,7 @@ class Gadget:
         for gadget in gadgets:
             self.add_gadget(gadget)
 
-    def remove_gadget(self, gadget: Self):
+    def remove_gadget(self, gadget: Self) -> None:
         """
         Remove a child gadget.
 
@@ -717,7 +809,7 @@ class Gadget:
         self.children.remove(gadget)
         gadget.parent = None
 
-    def pull_to_front(self):
+    def pull_to_front(self) -> None:
         """Move gadget to end of gadget stack so that it is drawn last."""
         if self.parent is not None:
             self.parent.children.remove(self)
@@ -969,7 +1061,7 @@ class Gadget:
             Whether the focus event was handled.
         """
 
-    def _render(self, canvas: NDArray[Cell]):
+    def _render(self, canvas: NDArray[Cell]) -> None:
         """Render visible region of gadget."""
 
     @staticmethod
@@ -1007,7 +1099,7 @@ class Gadget:
         **properties: dict[
             str, Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
         ],
-    ) -> Coroutine:
+    ) -> None:
         """
         Coroutine that sequentially updates gadget properties over a duration (in
         seconds).
@@ -1031,11 +1123,6 @@ class Gadget:
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
             keyword-argument:
             ``await gadget.tween(pos=(5, 10), duration=2.5, easing="out_bounce")``
-
-        Returns
-        -------
-        Coroutine
-            A coroutine updates gadget properties over some time.
 
         Notes
         -----
@@ -1077,23 +1164,23 @@ class Gadget:
         if on_complete is not None:
             on_complete()
 
-    def on_add(self):
+    def on_add(self) -> None:
         """Apply size hints and call children's `on_add`."""
         self.apply_hints()
         for child in self.children:
             child.on_add()
 
-    def on_remove(self):
+    def on_remove(self) -> None:
         """Call children's `on_remove`."""
         for child in self.children:
             child.on_remove()
 
-    def prolicide(self):
+    def prolicide(self) -> None:
         """Recursively remove all children."""
         for child in self.children.copy():
             child.destroy()
 
-    def destroy(self):
+    def destroy(self) -> None:
         """Remove this gadget and recursively remove all its children."""
         self.prolicide()
         if self.parent:
