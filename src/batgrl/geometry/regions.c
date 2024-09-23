@@ -1496,7 +1496,6 @@ static const char *__pyx_f[] = {
 struct __pyx_obj_6batgrl_8geometry_7regions__Band;
 struct __pyx_obj_6batgrl_8geometry_7regions_Region;
 struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct__rects;
-struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__;
 
 /* "batgrl/geometry/regions.pyx":73
  * 
@@ -1552,19 +1551,6 @@ struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct__rects {
   PyObject *__pyx_v_y;
   PyObject *__pyx_t_0;
   Py_ssize_t __pyx_t_1;
-};
-
-
-/* "batgrl/geometry/regions.pyx":324
- *         return cls([_Band(y, y + h, [x, x + w])])
- * 
- *     def __contains__(self, point: Point) -> bool:             # <<<<<<<<<<<<<<
- *         """Return whether point is in region."""
- *         y, x = point
- */
-struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ {
-  PyObject_HEAD
-  PyObject *__pyx_v_y;
 };
 
 /* #### Code section: utility_code_proto ### */
@@ -2065,9 +2051,6 @@ static CYTHON_INLINE int __Pyx_IterFinish(void);
 
 /* UnpackItemEndCheck.proto */
 static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
-
-/* RaiseClosureNameError.proto */
-static CYTHON_INLINE void __Pyx_RaiseClosureNameError(const char *varname);
 
 /* IncludeStructmemberH.proto */
 #include <structmember.h>
@@ -2659,7 +2642,7 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_8__xor__(struct __p
 static int __pyx_pf_6batgrl_8geometry_7regions_6Region_10__bool__(struct __pyx_obj_6batgrl_8geometry_7regions_Region *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_12rects(struct __pyx_obj_6batgrl_8geometry_7regions_Region *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_15from_rect(PyTypeObject *__pyx_v_cls, PyObject *__pyx_v_pos, PyObject *__pyx_v_size); /* proto */
-static PyObject *__pyx_lambda_funcdef_lambda(PyObject *__pyx_self, PyObject *__pyx_v_band); /* proto */
+static PyObject *__pyx_lambda_funcdef_lambda(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_band); /* proto */
 static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __pyx_obj_6batgrl_8geometry_7regions_Region *__pyx_v_self, PyObject *__pyx_v_point); /* proto */
 static int __pyx_pf_6batgrl_8geometry_7regions_6Region_19__init__(struct __pyx_obj_6batgrl_8geometry_7regions_Region *__pyx_v_self, PyObject *__pyx_v_bands); /* proto */
 static PyObject *__pyx_pf_6batgrl_8geometry_7regions_6Region_21__repr__(struct __pyx_obj_6batgrl_8geometry_7regions_Region *__pyx_v_self); /* proto */
@@ -2674,7 +2657,6 @@ static PyObject *__pyx_pf_6batgrl_8geometry_7regions_2__pyx_unpickle_Region(CYTH
 static PyObject *__pyx_tp_new_6batgrl_8geometry_7regions__Band(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_6batgrl_8geometry_7regions_Region(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_6batgrl_8geometry_7regions___pyx_scope_struct__rects(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 typedef struct {
@@ -2708,12 +2690,10 @@ typedef struct {
   PyObject *__pyx_type_6batgrl_8geometry_7regions__Band;
   PyObject *__pyx_type_6batgrl_8geometry_7regions_Region;
   PyObject *__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects;
-  PyObject *__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__;
   #endif
   PyTypeObject *__pyx_ptype_6batgrl_8geometry_7regions__Band;
   PyTypeObject *__pyx_ptype_6batgrl_8geometry_7regions_Region;
   PyTypeObject *__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects;
-  PyTypeObject *__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__;
   PyObject *__pyx_kp_s_;
   PyObject *__pyx_n_s_Band;
   PyObject *__pyx_n_s_Band___reduce_cython;
@@ -2914,8 +2894,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_type_6batgrl_8geometry_7regions_Region);
   Py_CLEAR(clear_module_state->__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects);
   Py_CLEAR(clear_module_state->__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects);
-  Py_CLEAR(clear_module_state->__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__);
-  Py_CLEAR(clear_module_state->__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__);
   Py_CLEAR(clear_module_state->__pyx_kp_s_);
   Py_CLEAR(clear_module_state->__pyx_n_s_Band);
   Py_CLEAR(clear_module_state->__pyx_n_s_Band___reduce_cython);
@@ -3094,8 +3072,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_type_6batgrl_8geometry_7regions_Region);
   Py_VISIT(traverse_module_state->__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects);
   Py_VISIT(traverse_module_state->__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects);
-  Py_VISIT(traverse_module_state->__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__);
-  Py_VISIT(traverse_module_state->__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__);
   Py_VISIT(traverse_module_state->__pyx_kp_s_);
   Py_VISIT(traverse_module_state->__pyx_n_s_Band);
   Py_VISIT(traverse_module_state->__pyx_n_s_Band___reduce_cython);
@@ -3282,12 +3258,10 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_type_6batgrl_8geometry_7regions__Band __pyx_mstate_global->__pyx_type_6batgrl_8geometry_7regions__Band
 #define __pyx_type_6batgrl_8geometry_7regions_Region __pyx_mstate_global->__pyx_type_6batgrl_8geometry_7regions_Region
 #define __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects __pyx_mstate_global->__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__rects
-#define __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ __pyx_mstate_global->__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__
 #endif
 #define __pyx_ptype_6batgrl_8geometry_7regions__Band __pyx_mstate_global->__pyx_ptype_6batgrl_8geometry_7regions__Band
 #define __pyx_ptype_6batgrl_8geometry_7regions_Region __pyx_mstate_global->__pyx_ptype_6batgrl_8geometry_7regions_Region
 #define __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects __pyx_mstate_global->__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects
-#define __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ __pyx_mstate_global->__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__
 #define __pyx_kp_s_ __pyx_mstate_global->__pyx_kp_s_
 #define __pyx_n_s_Band __pyx_mstate_global->__pyx_n_s_Band
 #define __pyx_n_s_Band___reduce_cython __pyx_mstate_global->__pyx_n_s_Band___reduce_cython
@@ -8058,7 +8032,7 @@ static int __pyx_pw_6batgrl_8geometry_7regions_6Region_18__contains__(PyObject *
 /* "batgrl/geometry/regions.pyx":327
  *         """Return whether point is in region."""
  *         y, x = point
- *         i = bisect(self.bands, y, key=lambda band: y < band.y1)             # <<<<<<<<<<<<<<
+ *         i = bisect(self.bands, y, key=lambda band: band.y1)             # <<<<<<<<<<<<<<
  *         if i == 0:
  *             return False
  */
@@ -8159,33 +8133,24 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_lambda_funcdef_lambda(PyObject *__pyx_self, PyObject *__pyx_v_band) {
-  struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *__pyx_cur_scope;
-  struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *__pyx_outer_scope;
+static PyObject *__pyx_lambda_funcdef_lambda(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_band) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lambda", 1);
-  __pyx_outer_scope = (struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *) __Pyx_CyFunction_GetClosure(__pyx_self);
-  __pyx_cur_scope = __pyx_outer_scope;
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_cur_scope->__pyx_v_y)) { __Pyx_RaiseClosureNameError("y"); __PYX_ERR(1, 327, __pyx_L1_error) }
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_band, __pyx_n_s_y1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 327, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_cur_scope->__pyx_v_y, __pyx_t_1, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 327, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_r = __pyx_t_2;
-  __pyx_t_2 = 0;
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
   goto __pyx_L0;
 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_AddTraceback("batgrl.geometry.regions.Region.__contains__.lambda", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -8203,7 +8168,7 @@ static PyObject *__pyx_lambda_funcdef_lambda(PyObject *__pyx_self, PyObject *__p
  */
 
 static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __pyx_obj_6batgrl_8geometry_7regions_Region *__pyx_v_self, PyObject *__pyx_v_point) {
-  struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *__pyx_cur_scope;
+  PyObject *__pyx_v_y = NULL;
   PyObject *__pyx_v_x = NULL;
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_band = NULL;
@@ -8221,21 +8186,13 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__contains__", 0);
-  __pyx_cur_scope = (struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *)__pyx_tp_new_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__(__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__, __pyx_empty_tuple, NULL);
-  if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *)Py_None);
-    __Pyx_INCREF(Py_None);
-    __PYX_ERR(1, 324, __pyx_L1_error)
-  } else {
-    __Pyx_GOTREF((PyObject *)__pyx_cur_scope);
-  }
+  __Pyx_RefNannySetupContext("__contains__", 1);
 
   /* "batgrl/geometry/regions.pyx":326
  *     def __contains__(self, point: Point) -> bool:
  *         """Return whether point is in region."""
  *         y, x = point             # <<<<<<<<<<<<<<
- *         i = bisect(self.bands, y, key=lambda band: y < band.y1)
+ *         i = bisect(self.bands, y, key=lambda band: band.y1)
  *         if i == 0:
  */
   if ((likely(PyTuple_CheckExact(__pyx_v_point))) || (PyList_CheckExact(__pyx_v_point))) {
@@ -8282,8 +8239,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
     __PYX_ERR(1, 326, __pyx_L1_error)
     __pyx_L4_unpacking_done:;
   }
-  __Pyx_GIVEREF(__pyx_t_1);
-  __pyx_cur_scope->__pyx_v_y = __pyx_t_1;
+  __pyx_v_y = __pyx_t_1;
   __pyx_t_1 = 0;
   __pyx_v_x = __pyx_t_2;
   __pyx_t_2 = 0;
@@ -8291,7 +8247,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
   /* "batgrl/geometry/regions.pyx":327
  *         """Return whether point is in region."""
  *         y, x = point
- *         i = bisect(self.bands, y, key=lambda band: y < band.y1)             # <<<<<<<<<<<<<<
+ *         i = bisect(self.bands, y, key=lambda band: band.y1)             # <<<<<<<<<<<<<<
  *         if i == 0:
  *             return False
  */
@@ -8302,12 +8258,12 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
   __Pyx_INCREF(__pyx_v_self->bands);
   __Pyx_GIVEREF(__pyx_v_self->bands);
   if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_self->bands)) __PYX_ERR(1, 327, __pyx_L1_error);
-  __Pyx_INCREF(__pyx_cur_scope->__pyx_v_y);
-  __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_y);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_cur_scope->__pyx_v_y)) __PYX_ERR(1, 327, __pyx_L1_error);
+  __Pyx_INCREF(__pyx_v_y);
+  __Pyx_GIVEREF(__pyx_v_y);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v_y)) __PYX_ERR(1, 327, __pyx_L1_error);
   __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 327, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_12__contains___lambda, 0, __pyx_n_s_contains___locals_lambda, ((PyObject*)__pyx_cur_scope), __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 327, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_6batgrl_8geometry_7regions_6Region_12__contains___lambda, 0, __pyx_n_s_contains___locals_lambda, NULL, __pyx_n_s_batgrl_geometry_regions, __pyx_d, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 327, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_key, __pyx_t_5) < 0) __PYX_ERR(1, 327, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -8321,7 +8277,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
 
   /* "batgrl/geometry/regions.pyx":328
  *         y, x = point
- *         i = bisect(self.bands, y, key=lambda band: y < band.y1)
+ *         i = bisect(self.bands, y, key=lambda band: band.y1)
  *         if i == 0:             # <<<<<<<<<<<<<<
  *             return False
  * 
@@ -8330,7 +8286,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
   if (__pyx_t_6) {
 
     /* "batgrl/geometry/regions.pyx":329
- *         i = bisect(self.bands, y, key=lambda band: y < band.y1)
+ *         i = bisect(self.bands, y, key=lambda band: band.y1)
  *         if i == 0:
  *             return False             # <<<<<<<<<<<<<<
  * 
@@ -8341,7 +8297,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
 
     /* "batgrl/geometry/regions.pyx":328
  *         y, x = point
- *         i = bisect(self.bands, y, key=lambda band: y < band.y1)
+ *         i = bisect(self.bands, y, key=lambda band: band.y1)
  *         if i == 0:             # <<<<<<<<<<<<<<
  *             return False
  * 
@@ -8376,7 +8332,7 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
  */
   __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_band, __pyx_n_s_y2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 332, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = PyObject_RichCompare(__pyx_t_3, __pyx_cur_scope->__pyx_v_y, Py_LE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 332, __pyx_L1_error)
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_3, __pyx_v_y, Py_LE); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 332, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(1, 332, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -8469,11 +8425,11 @@ static int __pyx_pf_6batgrl_8geometry_7regions_6Region_17__contains__(struct __p
   __Pyx_AddTraceback("batgrl.geometry.regions.Region.__contains__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_y);
   __Pyx_XDECREF(__pyx_v_x);
   __Pyx_XDECREF(__pyx_v_i);
   __Pyx_XDECREF(__pyx_v_band);
   __Pyx_XDECREF(__pyx_v_j);
-  __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -11402,180 +11358,6 @@ static PyTypeObject __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct__re
 };
 #endif
 
-#if CYTHON_USE_FREELISTS
-static struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *__pyx_freelist_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__[8];
-static int __pyx_freecount_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ = 0;
-#endif
-
-static PyObject *__pyx_tp_new_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
-  PyObject *o;
-  #if CYTHON_COMPILING_IN_LIMITED_API
-  allocfunc alloc_func = (allocfunc)PyType_GetSlot(t, Py_tp_alloc);
-  o = alloc_func(t, 0);
-  #else
-  #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_freecount_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ > 0) & (int)(t->tp_basicsize == sizeof(struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__)))) {
-    o = (PyObject*)__pyx_freelist_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__[--__pyx_freecount_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__];
-    memset(o, 0, sizeof(struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__));
-    (void) PyObject_INIT(o, t);
-    PyObject_GC_Track(o);
-  } else
-  #endif
-  {
-    o = (*t->tp_alloc)(t, 0);
-    if (unlikely(!o)) return 0;
-  }
-  #endif
-  return o;
-}
-
-static void __pyx_tp_dealloc_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__(PyObject *o) {
-  struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *p = (struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *)o;
-  #if CYTHON_USE_TP_FINALIZE
-  if (unlikely((PY_VERSION_HEX >= 0x03080000 || __Pyx_PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE)) && __Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__) {
-      if (PyObject_CallFinalizerFromDealloc(o)) return;
-    }
-  }
-  #endif
-  PyObject_GC_UnTrack(o);
-  Py_CLEAR(p->__pyx_v_y);
-  #if CYTHON_USE_FREELISTS
-  if (((int)(__pyx_freecount_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ < 8) & (int)(Py_TYPE(o)->tp_basicsize == sizeof(struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__)))) {
-    __pyx_freelist_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__[__pyx_freecount_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__++] = ((struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *)o);
-  } else
-  #endif
-  {
-    #if CYTHON_USE_TYPE_SLOTS || CYTHON_COMPILING_IN_PYPY
-    (*Py_TYPE(o)->tp_free)(o);
-    #else
-    {
-      freefunc tp_free = (freefunc)PyType_GetSlot(Py_TYPE(o), Py_tp_free);
-      if (tp_free) tp_free(o);
-    }
-    #endif
-  }
-}
-
-static int __pyx_tp_traverse_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__(PyObject *o, visitproc v, void *a) {
-  int e;
-  struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *p = (struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *)o;
-  if (p->__pyx_v_y) {
-    e = (*v)(p->__pyx_v_y, a); if (e) return e;
-  }
-  return 0;
-}
-
-static int __pyx_tp_clear_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__(PyObject *o) {
-  PyObject* tmp;
-  struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *p = (struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ *)o;
-  tmp = ((PyObject*)p->__pyx_v_y);
-  p->__pyx_v_y = Py_None; Py_INCREF(Py_None);
-  Py_XDECREF(tmp);
-  return 0;
-}
-#if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains___slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__},
-  {Py_tp_clear, (void *)__pyx_tp_clear_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__},
-  {Py_tp_new, (void *)__pyx_tp_new_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__},
-  {0, 0},
-};
-static PyType_Spec __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains___spec = {
-  "batgrl.geometry.regions.__pyx_scope_struct_1___contains__",
-  sizeof(struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__),
-  0,
-  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_HAVE_FINALIZE,
-  __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains___slots,
-};
-#else
-
-static PyTypeObject __pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ = {
-  PyVarObject_HEAD_INIT(0, 0)
-  "batgrl.geometry.regions.""__pyx_scope_struct_1___contains__", /*tp_name*/
-  sizeof(struct __pyx_obj_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__), /*tp_basicsize*/
-  0, /*tp_itemsize*/
-  __pyx_tp_dealloc_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__, /*tp_dealloc*/
-  #if PY_VERSION_HEX < 0x030800b4
-  0, /*tp_print*/
-  #endif
-  #if PY_VERSION_HEX >= 0x030800b4
-  0, /*tp_vectorcall_offset*/
-  #endif
-  0, /*tp_getattr*/
-  0, /*tp_setattr*/
-  #if PY_MAJOR_VERSION < 3
-  0, /*tp_compare*/
-  #endif
-  #if PY_MAJOR_VERSION >= 3
-  0, /*tp_as_async*/
-  #endif
-  0, /*tp_repr*/
-  0, /*tp_as_number*/
-  0, /*tp_as_sequence*/
-  0, /*tp_as_mapping*/
-  0, /*tp_hash*/
-  0, /*tp_call*/
-  0, /*tp_str*/
-  0, /*tp_getattro*/
-  0, /*tp_setattro*/
-  0, /*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_HAVE_FINALIZE, /*tp_flags*/
-  0, /*tp_doc*/
-  __pyx_tp_traverse_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__, /*tp_traverse*/
-  __pyx_tp_clear_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__, /*tp_clear*/
-  0, /*tp_richcompare*/
-  0, /*tp_weaklistoffset*/
-  0, /*tp_iter*/
-  0, /*tp_iternext*/
-  0, /*tp_methods*/
-  0, /*tp_members*/
-  0, /*tp_getset*/
-  0, /*tp_base*/
-  0, /*tp_dict*/
-  0, /*tp_descr_get*/
-  0, /*tp_descr_set*/
-  #if !CYTHON_USE_TYPE_SPECS
-  0, /*tp_dictoffset*/
-  #endif
-  0, /*tp_init*/
-  0, /*tp_alloc*/
-  __pyx_tp_new_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__, /*tp_new*/
-  0, /*tp_free*/
-  0, /*tp_is_gc*/
-  0, /*tp_bases*/
-  0, /*tp_mro*/
-  0, /*tp_cache*/
-  0, /*tp_subclasses*/
-  0, /*tp_weaklist*/
-  0, /*tp_del*/
-  0, /*tp_version_tag*/
-  #if PY_VERSION_HEX >= 0x030400a1
-  #if CYTHON_USE_TP_FINALIZE
-  0, /*tp_finalize*/
-  #else
-  NULL, /*tp_finalize*/
-  #endif
-  #endif
-  #if PY_VERSION_HEX >= 0x030800b1 && (!CYTHON_COMPILING_IN_PYPY || PYPY_VERSION_NUM >= 0x07030800)
-  0, /*tp_vectorcall*/
-  #endif
-  #if __PYX_NEED_TP_PRINT_SLOT == 1
-  0, /*tp_print*/
-  #endif
-  #if PY_VERSION_HEX >= 0x030C0000
-  0, /*tp_watched*/
-  #endif
-  #if PY_VERSION_HEX >= 0x030d00A4
-  0, /*tp_versions_used*/
-  #endif
-  #if CYTHON_COMPILING_IN_PYPY && PY_VERSION_HEX >= 0x03090000 && PY_VERSION_HEX < 0x030a0000
-  0, /*tp_pypy_flags*/
-  #endif
-};
-#endif
-
 static PyMethodDef __pyx_methods[] = {
   {0, 0, 0, 0}
 };
@@ -11984,25 +11766,6 @@ static int __Pyx_modinit_type_init_code(void) {
   #if !CYTHON_COMPILING_IN_LIMITED_API
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects->tp_dictoffset && __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects->tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct__rects->tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
-  }
-  #endif
-  #if CYTHON_USE_TYPE_SPECS
-  __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains___spec, NULL); if (unlikely(!__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__)) __PYX_ERR(1, 324, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains___spec, __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__) < 0) __PYX_ERR(1, 324, __pyx_L1_error)
-  #else
-  __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__ = &__pyx_type_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__;
-  #endif
-  #if !CYTHON_COMPILING_IN_LIMITED_API
-  #endif
-  #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__) < 0) __PYX_ERR(1, 324, __pyx_L1_error)
-  #endif
-  #if PY_MAJOR_VERSION < 3
-  __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__->tp_print = 0;
-  #endif
-  #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__->tp_dictoffset && __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_ptype_6batgrl_8geometry_7regions___pyx_scope_struct_1___contains__->tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
   }
   #endif
   __Pyx_RefNannyFinishContext();
@@ -15037,11 +14800,6 @@ static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
         return -1;
     }
     return __Pyx_IterFinish();
-}
-
-/* RaiseClosureNameError */
-static CYTHON_INLINE void __Pyx_RaiseClosureNameError(const char *varname) {
-    PyErr_Format(PyExc_NameError, "free variable '%s' referenced before assignment in enclosing scope", varname);
 }
 
 /* FixUpExtensionType */

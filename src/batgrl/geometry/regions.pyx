@@ -324,7 +324,7 @@ class Region:
     def __contains__(self, point: Point) -> bool:
         """Return whether point is in region."""
         y, x = point
-        i = bisect(self.bands, y, key=lambda band: y < band.y1)
+        i = bisect(self.bands, y, key=lambda band: band.y1)
         if i == 0:
             return False
 
