@@ -46,90 +46,188 @@ bottom y-coordinate. And finally, Regions are a sorted list of non-intersecting 
 """
 
 from bisect import bisect
-from collections.abc import Callable, Iterator
-from dataclasses import dataclass, field
+from collections.abc import Iterator
 from typing import Self
 
 from .basic import Point, Size
 import cython
 
-__all__ = ["Region", "rect_slice"]
+__all__ = ["Region"]
 
 
-def rect_slice(pos: Point, size: Size) -> tuple[slice, slice]:
-    """
-    Return slices for indexing a rect in a numpy array.
-
-    Parameters
-    ----------
-    pos : Point
-        Position of rect.
-    size : Size
-        Size of rect.
-
-    Returns
-    -------
-    tuple[slice, slice]
-        Slices that index a rect in a numpy array.
-    """
-    y, x = pos
-    h, w = size
-    return slice(y, y + h), slice(x, x + w)
-
-
-@dataclass
-@cython.cclass
+@cython.dataclasses.dataclass
 class _Band:
     """A row of mutually exclusive rects."""
 
-    y1: int
+    y1: cython.int
     """The y-coordinate of the top of the band."""
-    y2: int
+    y2: cython.int
     """The y-coordinate of the bottom of the band."""
-    walls: list[int]
+    walls: list[cython.int]
     """
     Each contiguous pair of ints in `walls` represent the left and right side of a rect
     in the band.
     """
 
-    def __gt__(self, y: int) -> bool:
-        """
-        Whether band's y1-coordinate is greater than ``y``.
 
-        This is implemented so that a list of sorted bands can be bisected by a
-        y-coordinate.
-        """
-        return y < self.y1
+ctypedef bint (*bool_op)(bint, bint)
 
 
-def _merge(op: Callable[[bool, bool], bool], a: list[int], b: list[int]) -> list[int]:
+cdef bint _bint_or(bint a, bint b):
+    return a | b
+
+
+cdef bint _bint_and(bint a, bint b):
+    return a & b
+
+
+cdef bint _bint_xor(bint a, bint b):
+    return a ^ b
+
+
+cdef bint _bint_sub(bint a, bint b):
+    return a & (1 - b)
+
+
+cdef list[cython.int] _merge(list[cython.int] a, list[cython.int] b, bool_op op):
     """Merge the walls of two bands given a set operation."""
-    i = j = 0
-    inside_a = inside_b = inside_region = False
-    walls = []
+    cdef cython.int i = 0
+    cdef cython.int j = 0
+    cdef cython.int threshold
+    cdef bint inside_a = 0
+    cdef bint inside_b = 0
+    cdef bint inside_region = 0
+    cdef list[cython.int] walls = []
 
     while i < len(a) or j < len(b):
-        current_a = a[i] if i < len(a) else float("inf")
-        current_b = b[j] if j < len(b) else float("inf")
-        threshold = min(current_a, current_b)
-
-        if current_a == threshold:
-            inside_a = not inside_a
+        if i >= len(a):
+            threshold = b[j]
+            inside_b ^= 1
+            j += 1
+        elif j >= len(b):
+            threshold = a[i]
+            inside_a ^= 1
             i += 1
-
-        if current_b == threshold:
-            inside_b = not inside_b
+        elif a[i] < b[j]:
+            threshold = a[i]
+            inside_a ^= 1
+            i += 1
+        elif b[j] < a[i]:
+            threshold = b[j]
+            inside_b ^= 1
+            j += 1
+        else:
+            threshold = a[i]
+            inside_a ^= 1
+            inside_b ^= 1
+            i += 1
             j += 1
 
         if op(inside_a, inside_b) != inside_region:
-            inside_region = not inside_region
+            inside_region ^= 1
             walls.append(threshold)
 
     return walls
 
 
-@dataclass
-@cython.cclass
+cdef _coalesce(bands: list[_Band]):
+    """Remove empty bands and join contiguous bands with the same walls."""
+    cdef cython.int i = 0
+    cdef _Band a
+    cdef _Band b
+
+    while i < len(bands) - 1:
+        a = bands[i]
+        b = bands[i + 1]
+
+        if len(a.walls) == 0:
+            del bands[i]
+        elif len(b.walls) == 0:
+            del bands[i + 1]
+        elif b.y1 <= a.y2 and a.walls == b.walls:
+            a.y2 = b.y2
+            del bands[i + 1]
+        else:
+            i += 1
+
+
+cdef list[_Band] _merge_regions(list[_Band] a, list[_Band] b, bool_op op):
+    cdef list[_Band] bands = []
+    cdef cython.int i = 0
+    cdef cython.int j = 0
+
+    cdef cython.int scanline = 0
+    if len(a) > 0:
+        if len(b) > 0:
+            scanline = min(a[0].y1, b[0].y1)
+        else:
+            scanline = a[0].y1
+    elif len(b) > 0:
+        scanline = b[0].y1
+
+    cdef _Band r
+    cdef _Band s
+
+    while i < len(a) and j < len(b):
+        r = a[i]
+        s = b[j]
+
+        if r.y1 <= s.y1:
+            if scanline < r.y1:
+                scanline = r.y1
+            if r.y2 <= s.y1:
+                bands.append(_Band(scanline, r.y2, _merge(r.walls, [], op)))
+                i += 1
+            else:
+                if scanline < s.y1:
+                    bands.append(_Band(scanline, s.y1, _merge(r.walls, [], op)))
+                if r.y2 <= s.y2:
+                    bands.append(_Band(s.y1, r.y2, _merge(r.walls, s.walls, op)))
+                    i += 1
+                    if r.y2 == s.y2:
+                        j += 1
+                else:
+                    bands.append(_Band(s.y1, s.y2, _merge(r.walls, s.walls, op)))
+                    j += 1
+        else:
+            if scanline < s.y1:
+                scanline = s.y1
+            if s.y2 <= r.y1:
+                bands.append(_Band(scanline, s.y2, _merge([], s.walls, op)))
+                j += 1
+            else:
+                if scanline < r.y1:
+                    bands.append(_Band(scanline, r.y1, _merge([], s.walls, op)))
+                if s.y2 <= r.y2:
+                    bands.append(_Band(r.y1, s.y2, _merge(r.walls, s.walls, op)))
+                    j += 1
+                    if s.y2 == r.y2:
+                        i += 1
+                else:
+                    bands.append(_Band(r.y1, r.y2, _merge(r.walls, s.walls, op)))
+                    i += 1
+        
+        scanline = bands[-1].y2
+
+    while i < len(a):
+        r = a[i]
+        if scanline < r.y1:
+            scanline = r.y1
+        bands.append(_Band(scanline, r.y2, _merge(r.walls, [], op)))
+        i += 1
+
+    while j < len(b):
+        s = b[j]
+        if scanline < s.y1:
+            scanline = s.y1
+        bands.append(_Band(scanline, s.y2, _merge([], s.walls, op)))
+        j += 1
+
+    _coalesce(bands)
+    return bands
+
+
+@cython.dataclasses.dataclass
 class Region:
     """
     Collection of mutually exclusive bands of rects.
@@ -151,176 +249,42 @@ class Region:
     from_rect(pos, size)
         Return a new region from a rect position and size.
     """
-
-    bands: list[_Band] = field(default_factory=list)
-
-    def _coalesce(self) -> None:
-        """Remove empty bands and join contiguous bands with the same walls."""
-        bands = self.bands = [band for band in self.bands if len(band.walls) > 0]
-
-        i = 0
-        while i < len(bands) - 1:
-            a, b = bands[i], bands[i + 1]
-            if b.y1 <= a.y2 and a.walls == b.walls:
-                a.y2 = b.y2
-                del bands[i + 1]
-            else:
-                i += 1
-
-    def _merge_regions(self, other: Self, op: Callable[[bool, bool], bool]) -> Self:
-        bands = []
-        i = j = 0
-        scanline = -float("inf")
-
-        while i < len(self.bands) and j < len(other.bands):
-            r, s = self.bands[i], other.bands[j]
-            if r.y1 <= s.y1:
-                if scanline < r.y1:
-                    scanline = r.y1
-                if r.y2 < s.y1:
-                    ## ---------------
-                    ## - - - - - - - - scanline
-                    ##        r
-                    ## ---------------
-                    ##        ~~~~~~~~~~~~~~~
-                    ##               s
-                    ##        ~~~~~~~~~~~~~~~
-                    bands.append(_Band(scanline, r.y2, _merge(op, r.walls, [])))
-                    scanline = r.y2
-                    i += 1
-                elif r.y2 < s.y2:
-                    if scanline < s.y1:
-                        ## ---------------
-                        ## - - - - - - - - scanline
-                        ##        r
-                        ##        ~~~~~~~~~~~~~~~
-                        ## ---------------
-                        ##               s
-                        ##        ~~~~~~~~~~~~~~~
-                        bands.append(_Band(scanline, s.y1, _merge(op, r.walls, [])))
-                    if s.y1 < r.y2:
-                        ## ---------------
-                        ##        r
-                        ##        ~-~-~-~-~-~-~-~ scanline
-                        ## ---------------
-                        ##               s
-                        ##        ~~~~~~~~~~~~~~~
-                        bands.append(_Band(s.y1, r.y2, _merge(op, r.walls, s.walls)))
-                    scanline = r.y2
-                    i += 1
-                else:  # r.y2 >= s.y2
-                    if scanline < s.y1:
-                        ## ---------------
-                        ## - - - - - - - - scanline
-                        ##        r
-                        ##        ~~~~~~~~~~~~~~~
-                        ##               s
-                        ##        ~~~~~~~~~~~~~~~
-                        ## ---------------
-                        bands.append(_Band(scanline, s.y1, _merge(op, r.walls, [])))
-                    ## ---------------
-                    ##        r
-                    ##        ~-~-~-~-~-~-~-~ scanline
-                    ##               s
-                    ##        ~~~~~~~~~~~~~~~
-                    ## ---------------
-                    bands.append(_Band(s.y1, s.y2, _merge(op, r.walls, s.walls)))
-                    scanline = s.y2
-                    if s.y2 == r.y2:
-                        i += 1
-                    j += 1
-            else:  # s.y1 < r.y1
-                if scanline < s.y1:
-                    scanline = s.y1
-                if s.y2 < r.y1:
-                    ## ~~~~~~~~~~~~~~~
-                    ## - - - - - - - - scanline
-                    ##        s
-                    ## ~~~~~~~~~~~~~~~
-                    ##        _______________
-                    ##               r
-                    ##        _______________
-                    bands.append(_Band(scanline, s.y2, _merge(op, [], s.walls)))
-                    scanline = s.y2
-                    j += 1
-                elif s.y2 < r.y2:
-                    if scanline < r.y1:
-                        ## ~~~~~~~~~~~~~~~
-                        ## - - - - - - - - scanline
-                        ##        s
-                        ##        ---------------
-                        ## ~~~~~~~~~~~~~~~
-                        ##               r
-                        ##        ---------------
-                        bands.append(_Band(scanline, r.y1, _merge(op, [], s.walls)))
-                    if r.y1 < s.y2:
-                        ## ~~~~~~~~~~~~~~~
-                        ##        s
-                        ##        --------------- scanline
-                        ## ~~~~~~~~~~~~~~~
-                        ##               r
-                        ##        ---------------
-                        bands.append(_Band(r.y1, s.y2, _merge(op, r.walls, s.walls)))
-                    scanline = s.y2
-                    j += 1
-                else:  # s.y2 >= r.y2
-                    if scanline < r.y1:
-                        ## ~~~~~~~~~~~~~~~
-                        ## - - - - - - - - scanline
-                        ##        s
-                        ##        ---------------
-                        ##               r
-                        ##        ---------------
-                        ## ~~~~~~~~~~~~~~~
-                        bands.append(_Band(scanline, r.y1, _merge(op, [], s.walls)))
-                    ## ~~~~~~~~~~~~~~~
-                    ##        s
-                    ##        --------------- scanline
-                    ##               r
-                    ##        ---------------
-                    ## ~~~~~~~~~~~~~~~
-                    bands.append(_Band(r.y1, r.y2, _merge(op, r.walls, s.walls)))
-                    scanline = r.y2
-                    if r.y2 == s.y2:
-                        j += 1
-                    i += 1
-
-        while i < len(self.bands):
-            r = self.bands[i]
-            if scanline < r.y1:
-                scanline = r.y1
-            bands.append(_Band(scanline, r.y2, _merge(op, r.walls, [])))
-            i += 1
-
-        while j < len(other.bands):
-            s = other.bands[j]
-            if scanline < s.y1:
-                scanline = s.y1
-            bands.append(_Band(scanline, s.y2, _merge(op, [], s.walls)))
-            j += 1
-
-        region = Region(bands=bands)
-        region._coalesce()
-        return region
+    bands: list[_Band] = cython.dataclasses.field(default_factory=list)
 
     # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
     # For `and`, `sub`, and `xor`, bisect y-coordinate of bands...
     # Same for walls.
 
+    # def _fast_intersect(self, other: Region) -> tuple[int, int, int, int] | None:
+    #     """Find overlapping bands with another region by bisecting first and last band coordinates."""
+    #     a = self.bands
+    #     b = other.bands
+    #     if len(a) == 0 or len(b) == 0:
+    #         return None
+
+    #     if b[-1].y2 <= a[0].y1 or a[-1].y2 <= b[0].y1:
+    #         return None
+
+    #     a_start = bisect(a, b[0].y1)
+    #     a_stop = bisect(a, b[-1].y2, lo=a_start)
+    #     b_start = bisect(b, a[0].y1)
+    #     b_stop = bisect(b, a[-1].y2, lo=b_start)
+    #     return a_start, a_stop, b_start, b_stop
+
     def __and__(self, other: Self) -> Self:
-        return self._merge_regions(other, lambda a, b: a & b)
+        return Region(_merge_regions(self.bands, other.bands, _bint_and))
 
     def __or__(self, other: Self) -> Self:
-        return self._merge_regions(other, lambda a, b: a | b)
+        return Region(_merge_regions(self.bands, other.bands, _bint_or))
 
     def __add__(self, other: Self) -> Self:
-        return self._merge_regions(other, lambda a, b: a | b)
+        return Region(_merge_regions(self.bands, other.bands, _bint_or))
 
     def __sub__(self, other: Self) -> Self:
-        return self._merge_regions(other, lambda a, b: a & (not b))
+        return Region(_merge_regions(self.bands, other.bands, _bint_sub))
 
     def __xor__(self, other: Self) -> Self:
-        return self._merge_regions(other, lambda a, b: a ^ b)
+        return Region(_merge_regions(self.bands, other.bands, _bint_xor))
 
     def __bool__(self) -> bool:
         return len(self.bands) > 0
@@ -360,7 +324,7 @@ class Region:
     def __contains__(self, point: Point) -> bool:
         """Return whether point is in region."""
         y, x = point
-        i = bisect(self.bands, y)
+        i = bisect(self.bands, y, key=lambda band: y < band.y1)
         if i == 0:
             return False
 
