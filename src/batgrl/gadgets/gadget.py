@@ -445,12 +445,12 @@ class Gadget:
 
         h, w = size
         size = Size(clamp(int(h), 0, None), clamp(int(w), 0, None))
-        if self.root:
+        if self.root is None:
+            self._size = size
+        else:
             with self.root._render_lock:
                 self._size = size
                 self._invalidate_region()
-        else:
-            self._size = size
 
         self._apply_pos_hints()
         for child in self.children:
@@ -492,12 +492,12 @@ class Gadget:
         y, x = pos
         pos = Point(int(y), int(x))
 
-        if self.root:
+        if self.root is None:
+            self._pos = pos
+        else:
             with self.root._render_lock:
                 self._pos = pos
                 self._invalidate_region()
-        else:
-            self._pos = pos
 
     @property
     def top(self) -> int:
@@ -588,7 +588,8 @@ class Gadget:
     def is_transparent(self, is_transparent: bool):
         if is_transparent != self._is_transparent:
             self._is_transparent = is_transparent
-            self._invalidate_region()
+            if self.root is not None:
+                self._invalidate_region()
 
     @property
     def is_visible(self) -> bool:
@@ -602,7 +603,8 @@ class Gadget:
     def is_visible(self, is_visible: bool):
         if is_visible != self._is_visible:
             self._is_visible = is_visible
-            self._invalidate_region()
+            if self.root is not None:
+                self._invalidate_region()
 
     @property
     def is_enabled(self) -> bool:
@@ -616,7 +618,8 @@ class Gadget:
     def is_enabled(self, is_enabled: bool):
         if is_enabled != self._is_enabled:
             self._is_enabled = is_enabled
-            self._invalidate_region()
+            if self.root is not None:
+                self._invalidate_region()
 
     @property
     def root(self) -> Self | None:
