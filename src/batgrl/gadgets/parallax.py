@@ -142,8 +142,6 @@ class Parallax(Gadget):
         Create a :class:`Parallax` from an iterable of uint8 RGBA numpy array.
     from_images(images, ...)
         Create a :class:`Parallax` from an iterable of :class:`Image`.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -152,26 +150,38 @@ class Parallax(Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -180,16 +190,6 @@ class Parallax(Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -214,7 +214,7 @@ class Parallax(Gadget):
             self.layers = []
         else:
             paths = sorted(path.iterdir(), key=lambda file: file.name)
-            self.layers = [Image(path=path) for path in paths]
+            self.layers = [Image(path=path, is_transparent=True) for path in paths]
             for layer in self.layers:
                 layer.parent = self
 
@@ -250,17 +250,6 @@ class Parallax(Gadget):
         for layer in self.layers:
             layer.size = self._size
         self._otextures = [layer.texture for layer in self.layers]
-
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, transparent: bool):
-        self._is_transparent = transparent
-        for layer in self.layers:
-            layer.is_transparent = True
 
     @property
     def alpha(self) -> float:

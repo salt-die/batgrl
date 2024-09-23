@@ -20,8 +20,8 @@ A gadget has the following methods that modify the gadget tree:
 When a gadget is added to the gadget tree (there must be a path from the gadget to the root), the
 `on_add()` method is called. Similarly, when a gadget is removed from the gadget tree, `on_remove()` is called.
 
-You can visit all gadgets in the gadget tree with the `walk_from_root()` method. Or visit all descendents of a
-gadget with `walk()` (preorder traversal) or `walk_reverse()` (reverse postorder traversal).
+You can iterate over all descendents of a gadget with `walk()` (preorder traversal) or `walk_reverse()` (reverse 
+postorder traversal) or iterate over all ancestors of a gadget with `ancestors()`.
 
 Rendering
 ---------

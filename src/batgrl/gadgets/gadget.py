@@ -344,8 +344,6 @@ class Gadget:
 
     Methods
     -------
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -354,26 +352,38 @@ class Gadget:
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -382,16 +392,6 @@ class Gadget:
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     __bindings: dict[int, str] = {}
@@ -593,11 +593,13 @@ class Gadget:
         return self._is_transparent
 
     @is_transparent.setter
+    @bindable
     def is_transparent(self, is_transparent: bool):
         if is_transparent != self._is_transparent:
             self._is_transparent = is_transparent
             if self.root is not None:
                 self._invalidate_region()
+            self.on_transparency()
 
     @property
     def is_visible(self) -> bool:
@@ -608,6 +610,7 @@ class Gadget:
         return self._is_visible
 
     @is_visible.setter
+    @bindable
     def is_visible(self, is_visible: bool):
         if is_visible != self._is_visible:
             self._is_visible = is_visible
@@ -623,6 +626,7 @@ class Gadget:
         return self._is_enabled
 
     @is_enabled.setter
+    @bindable
     def is_enabled(self, is_enabled: bool):
         if is_enabled != self._is_enabled:
             self._is_enabled = is_enabled
@@ -639,14 +643,102 @@ class Gadget:
         """The running app."""
         return self.root.app
 
+    def _render(self, canvas: NDArray[Cell]) -> None:
+        """Render visible region of gadget."""
+
+    def dispatch_key(self, key_event: KeyEvent) -> bool | None:
+        """
+        Dispatch a key press event until handled.
+
+        A key press event is handled if a handler returns ``True``.
+
+        Parameters
+        ----------
+        key_event : KeyEvent
+            The key event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
+        """
+        return any(
+            gadget.dispatch_key(key_event)
+            for gadget in reversed(self.children)
+            if gadget.is_enabled
+        ) or self.on_key(key_event)
+
+    def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
+        """
+        Dispatch a mouse event until handled.
+
+        A mouse event is handled if a handler returns ``True``.
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
+        """
+        return any(
+            gadget.dispatch_mouse(mouse_event)
+            for gadget in reversed(self.children)
+            if gadget.is_enabled
+        ) or self.on_mouse(mouse_event)
+
+    def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
+        """
+        Dispatch a paste event until handled.
+
+        A paste event is handled if a handler returns ``True``.
+
+        Parameters
+        ----------
+        paste_event : PasteEvent
+            The paste event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
+        """
+        return any(
+            gadget.dispatch_paste(paste_event)
+            for gadget in reversed(self.children)
+            if gadget.is_enabled
+        ) or self.on_paste(paste_event)
+
+    def dispatch_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
+        """
+        Dispatch a focus event until handled.
+
+        A focus event is handled if a handler returns ``True``.
+
+        Parameters
+        ----------
+        focus_event : FocusEvent
+            The focus event to dispatch.
+
+        Returns
+        -------
+        bool | None
+            Whether the dispatch was handled.
+        """
+        return any(
+            gadget.dispatch_terminal_focus(focus_event)
+            for gadget in reversed(self.children)
+            if gadget.is_enabled
+        ) or self.on_terminal_focus(focus_event)
+
     def _invalidate_region(self) -> None:
         """Invalidate region and all children's regions."""
         self._region_valid = False
         for child in self.children:
             child._invalidate_region()
-
-    def on_size(self) -> None:
-        """Update gadget after a resize."""
 
     def apply_hints(self) -> None:
         """
@@ -774,6 +866,51 @@ class Gadget:
             or other_left >= self_right
         )
 
+    def pull_to_front(self) -> None:
+        """Move gadget to end of gadget stack so that it is drawn last."""
+        if self.parent is not None:
+            self.parent.children.remove(self)
+            self.parent.children.append(self)
+
+    def walk(self) -> Iterator[Self]:
+        """
+        Yield all descendents of this gadget (preorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of this gadget.
+        """
+        for child in self.children:
+            yield child
+            yield from child.walk()
+
+    def walk_reverse(self) -> Iterator[Self]:
+        """
+        Yield all descendents of this gadget (reverse postorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of this gadget.
+        """
+        for child in reversed(self.children):
+            yield from child.walk_reverse()
+            yield child
+
+    def ancestors(self) -> Iterator[Self]:
+        """
+        Yield all ancestors of this gadget.
+
+        Yields
+        ------
+        Gadget
+            An ancestor of this gadget.
+        """
+        if self.parent:
+            yield self.parent
+            yield from self.parent.ancestors()
+
     def add_gadget(self, gadget: Self) -> None:
         """
         Add a child gadget.
@@ -820,61 +957,16 @@ class Gadget:
         self.children.remove(gadget)
         gadget.parent = None
 
-    def pull_to_front(self) -> None:
-        """Move gadget to end of gadget stack so that it is drawn last."""
-        if self.parent is not None:
-            self.parent.children.remove(self)
-            self.parent.children.append(self)
+    def prolicide(self) -> None:
+        """Recursively remove all children."""
+        for child in self.children.copy():
+            child.destroy()
 
-    def walk_from_root(self) -> Iterator[Self]:
-        """
-        Yield all descendents of the root gadget (preorder traversal).
-
-        Yields
-        ------
-        Gadget
-            A descendent of the root gadget.
-        """
-        yield from self.root.walk()
-
-    def walk(self) -> Iterator[Self]:
-        """
-        Yield all descendents of this gadget (preorder traversal).
-
-        Yields
-        ------
-        Gadget
-            A descendent of this gadget.
-        """
-        for child in self.children:
-            yield child
-            yield from child.walk()
-
-    def walk_reverse(self) -> Iterator[Self]:
-        """
-        Yield all descendents of this gadget (reverse postorder traversal).
-
-        Yields
-        ------
-        Gadget
-            A descendent of this gadget.
-        """
-        for child in reversed(self.children):
-            yield from child.walk_reverse()
-            yield child
-
-    def ancestors(self) -> Iterator[Self]:
-        """
-        Yield all ancestors of this gadget.
-
-        Yields
-        ------
-        Gadget
-            An ancestor of this gadget.
-        """
+    def destroy(self) -> None:
+        """Remove this gadget and recursively remove all its children."""
+        self.prolicide()
         if self.parent:
-            yield self.parent
-            yield from self.parent.ancestors()
+            self.parent.remove_gadget(self)
 
     def bind(self, prop: str, callback: Callable[[], None]) -> int:
         """
@@ -915,165 +1007,6 @@ class Gadget:
         setter = getattr(type(self), prop).fset
         if self in setter.instances:
             setter.instances[self].pop(uid, None)
-
-    def dispatch_key(self, key_event: KeyEvent) -> bool | None:
-        """
-        Dispatch a key press event until handled.
-
-        A key press event is handled if a handler returns ``True``.
-
-        Parameters
-        ----------
-        key_event : KeyEvent
-            The key event to dispatch.
-
-        Returns
-        -------
-        bool | None
-            Whether the dispatch was handled.
-        """
-        return any(
-            gadget.dispatch_key(key_event)
-            for gadget in reversed(self.children)
-            if gadget.is_enabled
-        ) or self.on_key(key_event)
-
-    def dispatch_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Dispatch a mouse event until handled.
-
-        A mouse event is handled if a handler returns ``True``.
-
-        Parameters
-        ----------
-        mouse_event : MouseEvent
-            The mouse event to dispatch.
-
-        Returns
-        -------
-        bool | None
-            Whether the dispatch was handled.
-        """
-        return any(
-            gadget.dispatch_mouse(mouse_event)
-            for gadget in reversed(self.children)
-            if gadget.is_enabled
-        ) or self.on_mouse(mouse_event)
-
-    def dispatch_paste(self, paste_event: PasteEvent) -> bool | None:
-        """
-        Dispatch a paste event until handled.
-
-        A paste event is handled if a handler returns ``True``.
-
-        Parameters
-        ----------
-        paste_event : PasteEvent
-            The paste event to dispatch.
-
-        Returns
-        -------
-        bool | None
-            Whether the dispatch was handled.
-        """
-        return any(
-            gadget.dispatch_paste(paste_event)
-            for gadget in reversed(self.children)
-            if gadget.is_enabled
-        ) or self.on_paste(paste_event)
-
-    def dispatch_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
-        """
-        Dispatch a focus event until handled.
-
-        A focus event is handled if a handler returns ``True``.
-
-        Parameters
-        ----------
-        focus_event : FocusEvent
-            The focus event to dispatch.
-
-        Returns
-        -------
-        bool | None
-            Whether the dispatch was handled.
-        """
-        return any(
-            gadget.dispatch_terminal_focus(focus_event)
-            for gadget in reversed(self.children)
-            if gadget.is_enabled
-        ) or self.on_terminal_focus(focus_event)
-
-    def on_key(self, key_event: KeyEvent) -> bool | None:
-        """
-        Handle a key press event.
-
-        Handled key presses should return ``True``.
-
-        Parameters
-        ----------
-        key_event : KeyEvent
-            The key event to handle.
-
-        Returns
-        -------
-        bool | None
-            Whether the key event was handled.
-        """
-
-    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
-        """
-        Handle a mouse event.
-
-        Handled mouse events should return ``True``.
-
-        Parameters
-        ----------
-        mouse_event : MouseEvent
-            The mouse event to handle.
-
-        Returns
-        -------
-        bool | None
-            Whether the mouse event was handled.
-        """
-
-    def on_paste(self, paste_event: PasteEvent) -> bool | None:
-        """
-        Handle a paste event.
-
-        Handled paste events should return ``True``.
-
-        Parameters
-        ----------
-        paste_event : PasteEvent
-            The paste event to handle.
-
-        Returns
-        -------
-        bool | None
-            Whether the paste event was handled.
-        """
-
-    def on_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
-        """
-        Handle a focus event.
-
-        Handled focus events should return ``True``.
-
-        Parameters
-        ----------
-        focus_event : FocusEvent
-            The focus event to handle.
-
-        Returns
-        -------
-        bool | None
-            Whether the focus event was handled.
-        """
-
-    def _render(self, canvas: NDArray[Cell]) -> None:
-        """Render visible region of gadget."""
 
     @staticmethod
     def _tween_lerp(start, end, p) -> Real | Sequence[Real] | PosHint | SizeHint | None:
@@ -1175,24 +1108,87 @@ class Gadget:
         if on_complete is not None:
             on_complete()
 
+    def on_size(self) -> None:
+        """Update gadget after a resize."""
+
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+
     def on_add(self) -> None:
-        """Apply size hints and call children's `on_add`."""
+        """Update gadget after being added to the gadget-tree."""
         self.apply_hints()
         for child in self.children:
             child.on_add()
 
     def on_remove(self) -> None:
-        """Call children's `on_remove`."""
+        """Update gadget after being removed from the gadget-tree."""
         for child in self.children:
             child.on_remove()
 
-    def prolicide(self) -> None:
-        """Recursively remove all children."""
-        for child in self.children.copy():
-            child.destroy()
+    def on_key(self, key_event: KeyEvent) -> bool | None:
+        """
+        Handle a key press event.
 
-    def destroy(self) -> None:
-        """Remove this gadget and recursively remove all its children."""
-        self.prolicide()
-        if self.parent:
-            self.parent.remove_gadget(self)
+        Handled key presses should return ``True``.
+
+        Parameters
+        ----------
+        key_event : KeyEvent
+            The key event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the key event was handled.
+        """
+
+    def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
+        """
+        Handle a mouse event.
+
+        Handled mouse events should return ``True``.
+
+        Parameters
+        ----------
+        mouse_event : MouseEvent
+            The mouse event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the mouse event was handled.
+        """
+
+    def on_paste(self, paste_event: PasteEvent) -> bool | None:
+        """
+        Handle a paste event.
+
+        Handled paste events should return ``True``.
+
+        Parameters
+        ----------
+        paste_event : PasteEvent
+            The paste event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the paste event was handled.
+        """
+
+    def on_terminal_focus(self, focus_event: FocusEvent) -> bool | None:
+        """
+        Handle a focus event.
+
+        Handled focus events should return ``True``.
+
+        Parameters
+        ----------
+        focus_event : FocusEvent
+            The focus event to handle.
+
+        Returns
+        -------
+        bool | None
+            Whether the focus event was handled.
+        """

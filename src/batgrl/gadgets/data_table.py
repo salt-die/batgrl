@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
 from itertools import count, islice
@@ -106,28 +106,6 @@ class _CellBase(ButtonBehavior, Text):
         self.data_table = data_table
         self.column_id = column_id
         """Column id to which this cell belongs."""
-
-    @property
-    def table(self) -> DataTable:
-        # Gadget hierarchy:
-        # Cell -> Row -> Table -> Scrollview -> DataTable
-        return self.parent.parent.parent.parent
-
-    @property
-    def is_transparent(self) -> bool:
-        return self.table.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        pass
-
-    @property
-    def alpha(self) -> float:
-        return self.table.alpha
-
-    @alpha.setter
-    def alpha(self, alpha: float):
-        pass
 
     @property
     def style(self) -> ColumnStyle:
@@ -408,8 +386,6 @@ class DataTable(Themable, Gadget):
         Returns the column id of the column at index.
     update_theme()
         Paint the gadget with current theme.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -418,26 +394,38 @@ class DataTable(Themable, Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -446,16 +434,6 @@ class DataTable(Themable, Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     _IDS = count()
@@ -487,7 +465,9 @@ class DataTable(Themable, Gadget):
         """Grid layout of column label and row grid layouts."""
 
         self._scroll_view = ScrollView(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}, dynamic_bars=True
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            dynamic_bars=True,
+            is_transparent=is_transparent,
         )
         # Replace scroll view background with a pane that doesn't paint under _table.
         self._scroll_view.remove_gadget(self._scroll_view._background)
@@ -543,15 +523,16 @@ class DataTable(Themable, Gadget):
     @alpha.setter
     def alpha(self, alpha: float):
         self._scroll_view.alpha = alpha
+        for child in self.walk():
+            if isinstance(child, _CellBase):
+                child.alpha = self._scroll_view.alpha
 
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._scroll_view.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._scroll_view.is_transparent = is_transparent
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._scroll_view.is_transparent = self.is_transparent
+        for child in self.walk():
+            if isinstance(child, _CellBase):
+                child.is_transparent = self.is_transparent
 
     @property
     def select_items(self) -> Literal["cell", "row", "column"]:
@@ -733,7 +714,8 @@ class DataTable(Themable, Gadget):
         self._hover_column_id = self._hover_row_id = -1
         self._repaint_cells()
 
-    def _iter_rows(self):
+    def _iter_rows(self) -> Iterator[GridLayout]:
+        """Iterate over rows of table. The first row of column labels are skipped."""
         return islice(self._table.children, 1, None)
 
     def add_column(
@@ -781,6 +763,8 @@ class DataTable(Themable, Gadget):
             column_id=column_id,
             label=label,
             allow_sorting=self.allow_sorting and style.allow_sorting,
+            alpha=self.alpha,
+            is_transparent=self.is_transparent,
         )
         self._column_labels.grid_columns += 1
         self._column_labels.add_gadget(column_label)
@@ -797,7 +781,12 @@ class DataTable(Themable, Gadget):
                 )
                 row.add_gadget(
                     _DataCell(
-                        data_table=self, column_id=column_id, data=item, row_id=row_id
+                        data_table=self,
+                        column_id=column_id,
+                        data=item,
+                        row_id=row_id,
+                        alpha=self.alpha,
+                        is_transparent=self.is_transparent,
                     )
                 )
                 self._rows[row_id] = row
@@ -808,7 +797,12 @@ class DataTable(Themable, Gadget):
                 row.grid_columns += 1
                 row.add_gadget(
                     _DataCell(
-                        data_table=self, column_id=column_id, data=item, row_id=row_id
+                        data_table=self,
+                        column_id=column_id,
+                        data=item,
+                        row_id=row_id,
+                        alpha=self.alpha,
+                        is_transparent=self.is_transparent,
                     )
                 )
 
@@ -845,7 +839,14 @@ class DataTable(Themable, Gadget):
             is_transparent=True,
         )
         row_layout.add_gadgets(
-            _DataCell(data_table=self, column_id=column_id, data=item, row_id=row_id)
+            _DataCell(
+                data_table=self,
+                column_id=column_id,
+                data=item,
+                row_id=row_id,
+                alpha=self.alpha,
+                is_transparent=self.is_transparent,
+            )
             for column_id, item in zip(self._column_ids, data)
         )
         self._rows[row_id] = row_layout

@@ -360,8 +360,6 @@ class Console(Themable, Focusable, Gadget):
         Update gadget when it gains focus.
     on_blur()
         Update gadget when it loses focus.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -370,26 +368,38 @@ class Console(Themable, Focusable, Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -398,16 +408,6 @@ class Console(Themable, Focusable, Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     # TODO: Add a max output lines option.
@@ -431,13 +431,16 @@ class Console(Themable, Focusable, Gadget):
             pos=(-1, 0), size=(1, 1), alpha=0, is_visible=False, is_transparent=True
         )
         self._prompt = _Prompt(alpha=0, is_transparent=True)
-        self._input = _ConsoleTextbox(size=(1, 1), enter_callback=_enter_callback)
+        self._input = _ConsoleTextbox(
+            size=(1, 1), enter_callback=_enter_callback, is_transparent=is_transparent
+        )
         self._container = Gadget(size=(1, 1), is_transparent=True)
 
         self._scroll_view = ScrollView(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             dynamic_bars=True,
             arrow_keys_enabled=False,
+            is_transparent=is_transparent,
         )
         # Replace scroll view background with a pane that doesn't paint under _input.
         self._scroll_view.remove_gadget(self._scroll_view._background)
@@ -535,15 +538,10 @@ class Console(Themable, Focusable, Gadget):
         self._scroll_view.alpha = alpha
         self._input.alpha = alpha
 
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._scroll_view.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._scroll_view.is_transparent = is_transparent
-        self._input.is_transparent = is_transparent
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._scroll_view.is_transparent = self.is_transparent
+        self._input.is_transparent = self.is_transparent
 
     @property
     def exec_in_thread(self) -> bool:

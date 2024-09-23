@@ -1,4 +1,6 @@
+import asyncio
 from math import ceil
+from time import perf_counter
 
 from batgrl.app import App
 from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
@@ -10,6 +12,37 @@ from batgrl.gadgets.text_animation import TextAnimation
 from batgrl.spinners import SPINNERS
 
 COLUMNS = 2
+
+
+class FPSTracker(Text):
+    """A gadget that displays frames per second."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._rolling_average: float = 0
+        self._nmeasures: int = 0
+
+    def on_add(self):
+        super().on_add()
+        self._fps_task = asyncio.create_task(self._fps_tracker())
+
+    def on_remove(self):
+        self._fps_task.cancel()
+        super().on_remove()
+
+    async def _fps_tracker(self):
+        last_time = perf_counter()
+        while True:
+            current_time = perf_counter()
+            elapsed_time = current_time - last_time
+            last_time = current_time
+
+            if elapsed_time != 0:
+                self._rolling_average += elapsed_time
+                self._nmeasures += 1
+                self.set_text(f"{self._nmeasures / self._rolling_average:0.3f} fps")
+
+            await asyncio.sleep(0)
 
 
 class SpinnersApp(App):
@@ -26,6 +59,7 @@ class SpinnersApp(App):
             orientation="tb-lr",
             is_transparent=True,
         )
+        fps = FPSTracker()
 
         for name, frames in SPINNERS.items():
             label = Text(
@@ -55,8 +89,9 @@ class SpinnersApp(App):
 
         grid.size = grid.min_grid_size
         sv.view = grid
-        self.add_gadget(sv)
+        self.add_gadgets(sv, fps)
+        await asyncio.sleep(5)
 
 
 if __name__ == "__main__":
-    SpinnersApp(title="Spinners", render_mode="painter").run()
+    SpinnersApp(title="Spinners").run()

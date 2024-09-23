@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 from ..colors import Color
 from ..text_tools import new_cell
-from .gadget import Gadget, Point, Region, Size
+from .gadget import Gadget, Point, Region, Size, _GadgetList
 
 
 class _Root(Gadget):
@@ -31,7 +31,8 @@ class _Root(Gadget):
     ):
         self._render_lock = RLock()
         self._size = -1, -1
-        self.children = []
+        self._region_valid = False
+        self.children = _GadgetList()
 
         self._app = app
         self.render_mode = render_mode

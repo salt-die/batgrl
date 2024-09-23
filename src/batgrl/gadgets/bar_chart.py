@@ -147,8 +147,6 @@ class BarChart(Gadget):
 
     Methods
     -------
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -157,26 +155,38 @@ class BarChart(Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -185,16 +195,6 @@ class BarChart(Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     data: dict[str, Real] = _BarChartProperty()
@@ -239,17 +239,21 @@ class BarChart(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._bars = Text()
+        self._bars = Text(is_transparent=is_transparent)
         self._scroll_view = ScrollView(
             show_horizontal_bar=False,
             show_vertical_bar=False,
             allow_vertical_scroll=False,
             alpha=0,
+            is_transparent=is_transparent,
         )
         self._scroll_view.view = self._bars
-        self._y_ticks = Text()
-        self._y_label_gadget = Text()
-        self._container = Pane(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+        self._y_ticks = Text(is_transparent=is_transparent)
+        self._y_label_gadget = Text(is_transparent=is_transparent)
+        self._container = Pane(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            is_transparent=is_transparent,
+        )
         super().__init__(
             size=size,
             pos=pos,
@@ -275,18 +279,13 @@ class BarChart(Gadget):
         self.show_grid_lines = show_grid_lines
         self.grid_line_color = grid_line_color
 
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._container.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._container.is_transparent = is_transparent
-        self._y_ticks.is_transparent = is_transparent
-        self._y_label_gadget.is_transparent = is_transparent
-        self._scroll_view.is_transparent = is_transparent
-        self._bars.is_transparent = is_transparent
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._container.is_transparent = self.is_transparent
+        self._y_ticks.is_transparent = self.is_transparent
+        self._y_label_gadget.is_transparent = self.is_transparent
+        self._scroll_view.is_transparent = self.is_transparent
+        self._bars.is_transparent = self.is_transparent
 
     def on_add(self):
         """Build chart on add."""

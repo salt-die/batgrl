@@ -215,8 +215,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Ungrab the gadget.
     grab_update(mouse_event)
         Update gadget with incoming mouse events while grabbed.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -225,26 +223,38 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -253,16 +263,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -285,10 +285,10 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._placeholder_gadget = Text(alpha=0.0)
+        self._placeholder_gadget = Text(alpha=0.0, is_transparent=is_transparent)
         self._placeholder_gadget.set_text(placeholder)
         self._cursor = _Cursor()
-        self._box = _Box(size=size)
+        self._box = _Box(size=size, is_transparent=is_transparent)
         super().__init__(
             is_grabbable=is_grabbable,
             ptf_on_grab=ptf_on_grab,
@@ -333,15 +333,10 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def alpha(self, alpha: float):
         self._box.alpha = alpha
 
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._box.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._box.is_transparent = is_transparent
-        self._placeholder_gadget.is_transparent = is_transparent
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._box.is_transparent = self.is_transparent
+        self._placeholder_gadget.is_transparent = self.is_transparent
 
     @property
     def hide_char(self) -> str:

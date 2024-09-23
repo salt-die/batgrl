@@ -8,17 +8,7 @@ from typing import Self
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget import (
-    Cell,
-    Gadget,
-    Point,
-    PosHint,
-    Region,
-    Size,
-    SizeHint,
-    bindable,
-    clamp,
-)
+from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 from .image import Image, Interpolation
 
 __all__ = ["Animation", "Interpolation", "Point", "Size"]
@@ -150,8 +140,6 @@ class Animation(Gadget):
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
     from_images(images, ...)
         Create an :class:`Animation` from an iterable of :class:`Image`.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -160,26 +148,38 @@ class Animation(Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget-tree.
+    on_remove()
+        Update gadget after being removed from the gadget-tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -188,16 +188,6 @@ class Animation(Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -217,8 +207,19 @@ class Animation(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.frames: list[Image] = []
+        self.frames: list[Image]
         """Frames of the animation."""
+
+        if path is not None:
+            paths = sorted(path.iterdir(), key=lambda file: file.name)
+            self.frames = [
+                Image(path=path, size=size, is_transparent=is_transparent)
+                for path in paths
+            ]
+            for frame in self.frames:
+                frame.parent = self
+        else:
+            self.frames = []
 
         super().__init__(
             size=size,
@@ -230,12 +231,6 @@ class Animation(Gadget):
             is_enabled=is_enabled,
         )
 
-        if path is not None:
-            paths = sorted(path.iterdir(), key=lambda file: file.name)
-            self.frames = [Image(path=path, size=self.size) for path in paths]
-            for frame in self.frames:
-                frame.parent = self
-
         self.frame_durations = _check_frame_durations(self.frames, frame_durations)
         self.alpha = alpha
         self.interpolation = interpolation
@@ -244,37 +239,20 @@ class Animation(Gadget):
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
 
-    @property
-    def _region(self) -> Region:
-        """The visible portion of the gadget on the screen."""
-        return self._region_value
-
-    @_region.setter
-    def _region(self, region: Region):
-        self._region_value = region
-        for frame in self.frames:
-            frame._region = region
-
     def on_remove(self):
         """Pause animation."""
         self.pause()
         super().on_remove()
 
-    def on_size(self):
+    def on_size(self) -> None:
         """Update size of all frames on resize."""
         for frame in self.frames:
             frame.size = self._size
 
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, transparent: bool):
-        self._is_transparent = transparent
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
         for frame in self.frames:
-            frame.is_transparent = True
+            frame.is_transparent = self.is_transparent
 
     @property
     def alpha(self) -> float:
@@ -353,6 +331,7 @@ class Animation(Gadget):
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
         if self.frames:
+            self.frames[self._i]._region = self._region
             self.frames[self._i]._render(canvas)
         else:
             super()._render(canvas)
