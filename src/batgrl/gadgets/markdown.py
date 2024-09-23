@@ -664,7 +664,7 @@ class _BatgrlRenderer(BaseRenderer):
                     cell.remove_gadget(child)
                     cy, cx = child.pos
                     child.pos = cy + y, cx + x
-                    table.add_gadgets(child)
+                    table.add_gadget(child)
                 x += w + INNER_PAD
             y += h
             if i == 0:
