@@ -31,7 +31,7 @@ def _check_frame_durations(
     Raise `ValueError` if `frames` and `frame_durations` are incompatible,
     else return a sequence of frame durations.
     """
-    if isinstance(frame_durations, float):
+    if not isinstance(frame_durations, Sequence):
         return [frame_durations] * len(frames)
 
     if len(frame_durations) != len(frames):
