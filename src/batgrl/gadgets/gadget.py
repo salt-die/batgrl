@@ -116,6 +116,14 @@ class _GadgetList(MutableSequence):
     def __iter__(self) -> Iterator[Gadget]:
         return iter(self._gadgets)
 
+    def copy(self) -> list[Gadget]:
+        """
+        Return a copy of the internal list of gadgets.
+
+        Note this doesn't return a ``_GadgetList``.
+        """
+        return self._gadgets.copy()
+
 
 class PosHint(TypedDict, total=False):
     """
@@ -410,9 +418,9 @@ class Gadget:
         self._pos = Point(*pos)
         self._size_hint: SizeHint = _normalize_size_hint(size_hint or {})
         self._pos_hint: PosHint = _normalize_pos_hint(pos_hint or {})
-        self.is_transparent = is_transparent
-        self.is_visible = is_visible
-        self.is_enabled = is_enabled
+        self._is_transparent = is_transparent
+        self._is_visible = is_visible
+        self._is_enabled = is_enabled
 
         self._region_valid: bool = False
         """Whether current region is valid."""
