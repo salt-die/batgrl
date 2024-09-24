@@ -265,7 +265,7 @@ class Region:
         return Region(_merge_regions(self.bands, other.bands, _bint_or))
 
     def __sub__(self, other: Self) -> Self:
-        """Return the subtraction of self and other."""
+        """Return the difference of self and other."""
         return Region(_merge_regions(self.bands, other.bands, _bint_sub))
 
     def __xor__(self, other: Self) -> Self:

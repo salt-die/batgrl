@@ -100,7 +100,7 @@ class Region:
         """Return the union of self and other."""
 
     def __sub__(self, other: Self) -> Self:
-        """Return the subtraction of self and other."""
+        """Return the difference of self and other."""
 
     def __xor__(self, other: Self) -> Self:
         """Return the symmetric difference of self and other."""
