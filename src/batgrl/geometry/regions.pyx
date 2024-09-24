@@ -251,26 +251,6 @@ class Region:
     """
     bands: list[_Band] = cython.dataclasses.field(default_factory=list)
 
-    # TODO: in-place merge and iand, ior, iadd, isub, ixor methods
-    # For `and`, `sub`, and `xor`, bisect y-coordinate of bands...
-    # Same for walls.
-
-    # def _fast_intersect(self, other: Region) -> tuple[int, int, int, int] | None:
-    #     """Find overlapping bands with another region by bisecting first and last band coordinates."""
-    #     a = self.bands
-    #     b = other.bands
-    #     if len(a) == 0 or len(b) == 0:
-    #         return None
-
-    #     if b[-1].y2 <= a[0].y1 or a[-1].y2 <= b[0].y1:
-    #         return None
-
-    #     a_start = bisect(a, b[0].y1)
-    #     a_stop = bisect(a, b[-1].y2, lo=a_start)
-    #     b_start = bisect(b, a[0].y1)
-    #     b_stop = bisect(b, a[-1].y2, lo=b_start)
-    #     return a_start, a_stop, b_start, b_stop
-
     def __and__(self, other: Self) -> Self:
         return Region(_merge_regions(self.bands, other.bands, _bint_and))
 
