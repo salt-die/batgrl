@@ -90,12 +90,27 @@ class Region:
     bands: list[_Band]
     """Bands that make up the region."""
 
-    def __and__(self, other: Self) -> Self: ...
-    def __or__(self, other: Self) -> Self: ...
-    def __add__(self, other: Self) -> Self: ...
-    def __sub__(self, other: Self) -> Self: ...
-    def __xor__(self, other: Self) -> Self: ...
-    def __bool__(self) -> bool: ...
+    def __and__(self, other: Self) -> Self:
+        """Return the intersection of self and other."""
+
+    def __or__(self, other: Self) -> Self:
+        """Return the union of self and other."""
+
+    def __add__(self, other: Self) -> Self:
+        """Return the union of self and other."""
+
+    def __sub__(self, other: Self) -> Self:
+        """Return the subtraction of self and other."""
+
+    def __xor__(self, other: Self) -> Self:
+        """Return the symmetric difference of self and other."""
+
+    def __bool__(self) -> bool:
+        """Whether region is non-empty."""
+
+    def __contains__(self, point: Point) -> bool:
+        """Return whether point is in region."""
+
     def rects(self) -> Iterator[tuple[Point, Size]]:
         """
         Yield position and size of rects that make up the region.
@@ -116,6 +131,3 @@ class Region:
         Region
             A new region.
         """
-
-    def __contains__(self, point: Point) -> bool:
-        """Return whether point is in region."""

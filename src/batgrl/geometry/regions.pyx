@@ -253,22 +253,42 @@ class Region:
     bands: list[_Band] = cython.dataclasses.field(default_factory=list)
 
     def __and__(self, other: Self) -> Self:
+        """Return the intersection of self and other."""
         return Region(_merge_regions(self.bands, other.bands, _bint_and))
 
     def __or__(self, other: Self) -> Self:
+        """Return the union of self and other."""
         return Region(_merge_regions(self.bands, other.bands, _bint_or))
 
     def __add__(self, other: Self) -> Self:
+        """Return the union of self and other."""
         return Region(_merge_regions(self.bands, other.bands, _bint_or))
 
     def __sub__(self, other: Self) -> Self:
+        """Return the subtraction of self and other."""
         return Region(_merge_regions(self.bands, other.bands, _bint_sub))
 
     def __xor__(self, other: Self) -> Self:
+        """Return the symmetric difference of self and other."""
         return Region(_merge_regions(self.bands, other.bands, _bint_xor))
 
     def __bool__(self) -> bool:
+        """Whether region is non-empty."""
         return len(self.bands) > 0
+
+    def __contains__(self, point: Point) -> bool:
+        """Return whether point is in region."""
+        y, x = point
+        i = bisect(self.bands, y, key=lambda band: band.y1)
+        if i == 0:
+            return False
+
+        band = self.bands[i - 1]
+        if band.y2 <= y:
+            return False
+
+        j = bisect(band.walls, x)
+        return j % 2 == 1
 
     def rects(self) -> Iterator[tuple[Point, Size]]:
         """
@@ -301,17 +321,3 @@ class Region:
         y, x = pos
         h, w = size
         return cls([_Band(y, y + h, [x, x + w])])
-
-    def __contains__(self, point: Point) -> bool:
-        """Return whether point is in region."""
-        y, x = point
-        i = bisect(self.bands, y, key=lambda band: band.y1)
-        if i == 0:
-            return False
-
-        band = self.bands[i - 1]
-        if band.y2 <= y:
-            return False
-
-        j = bisect(band.walls, x)
-        return j % 2 == 1
