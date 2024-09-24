@@ -49,8 +49,9 @@ from bisect import bisect
 from collections.abc import Iterator
 from typing import Self
 
-from .basic import Point, Size
 import cython
+
+from .basic import Point, Size
 
 __all__ = ["Region"]
 
