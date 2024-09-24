@@ -1,46 +1,64 @@
 name: Publish Python 🐍 distributions 📦 to PyPI
 
 on:
+  pull_request:
   release:
     types: [published]
 
 jobs:
-  build:
-    name: Build distribution 📦
-    runs-on: ubuntu-latest
-    permissions:
-      attestations: write
-      id-token: write
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Build and inspect Python 🐍 package 📦
-        uses: hynek/build-and-inspect-python-package@73aea398b9c8de9ea9e4464c6b13cb8b1f3d6294 # v2.9.0
+      - name: Build wheels
+        uses: pypa/cibuildwheel@bd033a44476646b606efccdd5eed92d5ea1d77ad # v2.20.0
+
+      - uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
-          attest-build-provenance-github: true
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./wheelhouse/*.whl
 
-  publish-to-pypi:
-    name: Publish Python 🐍 distribution 📦 to PyPI
-    needs: build
-    if: ${{ github.event.action == 'published' }}
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Build sdist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/project/batgrl/${{ github.ref_name }}
     permissions:
+      attestations: write
       id-token: write
-
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
-    - name: Download dists
-      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-      with:
-        name: Packages
-        path: dist/
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
 
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@0ab0b79471669eb3a4d647e625009c62f9f3b241 # v1.10.1
-      with:
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b # v1.10.2
+        with:
+          attestations: true
           verbose: true
           print-hash: true
