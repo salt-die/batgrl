@@ -3,4 +3,5 @@
 *.pyd
 *.egg-info
 .vscode/
+build/
 dist/
