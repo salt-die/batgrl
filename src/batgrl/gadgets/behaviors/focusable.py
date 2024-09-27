@@ -60,7 +60,11 @@ class Focusable:
             gadget = focusables[0]()
             if gadget is None:
                 focusables.popleft()
-            elif not gadget.is_visible or not gadget.is_enabled:
+            elif (
+                not gadget.is_visible
+                or not gadget.is_enabled
+                or gadget in cls.__focused
+            ):
                 focusables.rotate(step)
             else:
                 gadget.focus()
