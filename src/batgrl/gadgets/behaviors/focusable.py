@@ -53,9 +53,6 @@ class Focusable:
     def _focus(cls, step: int):
         focusables = cls.__focusables
 
-        if cls.any_focused:
-            focusables.rotate(step)
-
         for _ in range(len(focusables)):
             gadget = focusables[0]()
             if gadget is None:
