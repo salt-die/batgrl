@@ -60,14 +60,14 @@ class FullLayout(IntFlag):
     * **Equal**: Two sub-characters are smushed into a single sub-character if they are
       equal (except for hardblanks).
     * **Underscore**: An underscore (``"_"``) will be replaced by any of: ``"|"``,
-      ``"/"``, ``"\\"``, ``"["``, ``"]"``, ``"{"``, ``"}"``, ``"("``, ``")"``, ``"<"``,
+      ``"/"``, ``"\"``, ``"["``, ``"]"``, ``"{"``, ``"}"``, ``"("``, ``")"``, ``"<"``,
       ``">"``.
-    * **Hierarchy**: A hierarchy of six classes is used: ``"|"``, ``"/\\"``, ``"[]"``,
+    * **Hierarchy**: A hierarchy of six classes is used: ``"|"``, ``"/\"``, ``"[]"``,
       ``"{}"``, ``"()"``, and ``"<>"``. When two sub-characters are from different
       classes, the latter class will be used.
     * **Pair**: Replaces opposite brackets (``"[]"`` or ``"]["``), braces (``"{}"`` or
       ``"}{"``), and parentheses (``"()"`` or ``")("``) with a vertical bar (``"|"``).
-    * **BigX**: Replaces ``"/\\"`` with ``"|"``, ``"\\/"`` with ``"Y"``, and ``"><"``
+    * **BigX**: Replaces ``"/\"`` with ``"|"``, ``"\/"`` with ``"Y"``, and ``"><"``
       into ``"X"``.
     * **HardBlank**: Two hardblanks will be replaced with a single hardblank.
     """
