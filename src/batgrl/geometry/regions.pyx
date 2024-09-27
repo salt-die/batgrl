@@ -207,7 +207,7 @@ cdef list[_Band] _merge_regions(list[_Band] a, list[_Band] b, bool_op op):
                 else:
                     bands.append(_Band(r.y1, r.y2, _merge(r.walls, s.walls, op)))
                     i += 1
-        
+
         scanline = bands[-1].y2
 
     while i < len(a):
