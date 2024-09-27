@@ -269,8 +269,6 @@ class DigitalDisplay(Gadget):
         Fill canvas with default cell.
     shift(n=1)
         Shift content in canvas up (or down in case of negative `n`).
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -279,26 +277,38 @@ class DigitalDisplay(Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget tree.
+    on_remove()
+        Update gadget after being removed from the gadget tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -307,16 +317,6 @@ class DigitalDisplay(Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     a = _Segment(np.s_[0, 1:6])
@@ -350,7 +350,9 @@ class DigitalDisplay(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._display = Text(pos_hint={"y_hint": 0.5, "x_hint": 0.5})
+        self._display = Text(
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5}, is_transparent=is_transparent
+        )
         self._display.set_text(
             " ━━━━━\n"
             "┃\\ ┃ /┃\n"
@@ -385,14 +387,9 @@ class DigitalDisplay(Gadget):
     def alpha(self, alpha: float):
         self._display.alpha = alpha
 
-    @property
-    def is_transparent(self) -> bool:
-        """Whether gadget is transparent."""
-        return self._display.is_transparent
-
-    @is_transparent.setter
-    def is_transparent(self, is_transparent: bool):
-        self._display.is_transparent = is_transparent
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+        self._display.is_transparent = self.is_transparent
 
     @property
     def off_color(self) -> Color:

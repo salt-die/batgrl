@@ -1,12 +1,12 @@
 r"""
-A sparse module, home to the singular and lonely function ``render_root``.
+Terminal rendering.
 
 ``render_root`` is responsible for generating ansi from the diffs of the root's double
-buffer. Ansi is generated in a bit of a naive way, where the cursor is moved to
-specific coordinate then all sgr parameters of the cell is output, for each cell in the
-diff. This generates a lot of ansi for large diffs. In the future, this function might
-decide to try and output as little ansi as possible, if there is a noticable performance
-gain to do so.
+buffer. Ansi is generated in a bit of a naive way, where the cursor is moved to specific
+coordinate then all sgr parameters of the cell is output, for each cell in the diff.
+This generates a lot of ansi for large diffs. In the future, this function might decide
+to try and output as little ansi as possible, if there is a noticable performance gain
+to do so.
 """
 
 import numpy as np
@@ -27,36 +27,29 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
     terminal : Vt100Terminal
         A VT100 terminal.
     """
-    if terminal._expect_device_status_report:
+    if terminal.expect_dsr():
         return
 
-    canvas = root.canvas
-    h, w = root.size
+    w = root.width
+    inline_column = root.pos.x
     write = terminal._out_buffer.append
     inline = not terminal.in_alternate_screen
     last_y = 0
 
-    # Save cursor
-    write("\x1b7")
-    if inline:
-        terminal.move_cursor()
+    resized = root._resized  # ! Must grab before calling root._render
+    root._render()
+    canvas = root.canvas  # ! Must grab after calling root._render
 
-    if root._resized:
-        root._resized = False
-        ys, xs = np.indices((h, w)).reshape(2, h * w)
-        if inline:
-            terminal.erase_in_display()
-            # Feed lines to ensure enough render height.
-            write("\x0a" * root.height)
-            # Move cursor back up.
-            write(f"\x1b[{root.height}F")
-            # If terminal scrolled when lines were fed, cursor origin would've changed,
-            # so request a cpr.
-            terminal.request_cursor_position_report()
+    if resized:
+        ys, xs = np.indices(root.size).reshape(2, -1)
     else:
         diffs = root._last_canvas != canvas
         ys, xs = diffs.nonzero()
 
+    # Save cursor
+    write("\x1b7")
+    if inline:
+        terminal.move_cursor(root._pos)
     for y, x, cell in zip(ys, xs, canvas[ys, xs]):
         (
             char,
@@ -108,7 +101,7 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
                 # Move down `y - last_y` rows.
                 write(f"\x1b[{y - last_y}B")
             # Move to column `x + 1`.
-            write(f"\x1b[{x + 1}G")
+            write(f"\x1b[{inline_column + x + 1}G")
         else:
             # Move cursor to position `(y + 1, x + 1)`.
             write(f"\x1b[{y + 1};{x + 1}H")

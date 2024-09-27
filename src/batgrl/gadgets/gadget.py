@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterator, MutableSequence, Sequence
 from functools import wraps
 from itertools import count
 from numbers import Real
-from time import monotonic
+from time import perf_counter
 from types import MappingProxyType
-from typing import Coroutine, Final, Literal, Self, TypedDict
+from typing import Final, Literal, Self, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -79,6 +79,50 @@ Anchor = Literal[
     "bottom-right",
 ]
 """Point of gadget attached to a pos hint."""
+
+
+class _GadgetList(MutableSequence):
+    """
+    A sequence of gadget's.
+
+    Gadget regions are invalidated if their index in the sequence changes.
+    """
+
+    def __init__(self) -> None:
+        self._gadgets: list[Gadget] = []
+
+    def __len__(self) -> int:
+        return len(self._gadgets)
+
+    def __getitem__(self, index: int) -> Gadget:
+        return self._gadgets[index]
+
+    def __setitem__(self, index: int, gadget: Gadget) -> None:
+        self._gadgets[index] = gadget
+        gadget._invalidate_region()
+
+    def _invalidate_regions_after_index(self, index: int) -> None:
+        for i in range(index, len(self)):
+            self[i]._invalidate_region()
+
+    def __delitem__(self, index: int) -> None:
+        del self._gadgets[index]
+        self._invalidate_regions_after_index(index)
+
+    def insert(self, index: int, gadget: Gadget) -> None:
+        self._gadgets.insert(index, gadget)
+        self._invalidate_regions_after_index(index)
+
+    def __iter__(self) -> Iterator[Gadget]:
+        return iter(self._gadgets)
+
+    def copy(self) -> list[Gadget]:
+        """
+        Return a copy of the internal list of gadgets.
+
+        Note this doesn't return a ``_GadgetList``.
+        """
+        return self._gadgets.copy()
 
 
 class PosHint(TypedDict, total=False):
@@ -300,8 +344,6 @@ class Gadget:
 
     Methods
     -------
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -310,26 +352,38 @@ class Gadget:
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget tree.
+    on_remove()
+        Update gadget after being removed from the gadget tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -338,16 +392,6 @@ class Gadget:
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     __bindings: dict[int, str] = {}
@@ -365,16 +409,31 @@ class Gadget:
         is_enabled: bool = True,
     ):
         self.parent: Gadget | None = None
-        self.children: list[Gadget] = []
+        """The gadget's parent."""
+        self.children: _GadgetList = _GadgetList()
+        """The gadget's children."""
 
         h, w = size
         self._size = Size(clamp(h, 0, None), clamp(w, 0, None))
+        """Size of gadget."""
         self._pos = Point(*pos)
+        """Position relative to parent."""
         self._size_hint: SizeHint = _normalize_size_hint(size_hint or {})
+        """Gadget's size as a proportion of its parent's size."""
         self._pos_hint: PosHint = _normalize_pos_hint(pos_hint or {})
-        self.is_transparent = is_transparent
-        self.is_visible = is_visible
-        self.is_enabled = is_enabled
+        """Gadget's position as a proportion of its parent's size."""
+        self._is_transparent = is_transparent
+        """Whether gadget is transparent."""
+        self._is_visible = is_visible
+        """Whether gadget is visible."""
+        self._is_enabled = is_enabled
+        """Whether gadget is enabled."""
+        self._region_valid: bool = False
+        """Whether current region is valid."""
+        self._clipping_region: Region = Region()
+        """Initial region clipped by ancestor regions."""
+        self._root_region_before: Region = Region()
+        """The root's region before gadget's region is removed from it."""
         self._region: Region = Region()
         """The visible portion of the gadget on the screen."""
 
@@ -400,11 +459,12 @@ class Gadget:
 
         h, w = size
         size = Size(clamp(int(h), 0, None), clamp(int(w), 0, None))
-        if self.root:
+        if self.root is None:
+            self._size = size
+        else:
             with self.root._render_lock:
                 self._size = size
-        else:
-            self._size = size
+                self._invalidate_region()
 
         self._apply_pos_hints()
         for child in self.children:
@@ -446,11 +506,12 @@ class Gadget:
         y, x = pos
         pos = Point(int(y), int(x))
 
-        if self.root:
+        if self.root is None:
+            self._pos = pos
+        else:
             with self.root._render_lock:
                 self._pos = pos
-        else:
-            self._pos = pos
+                self._invalidate_region()
 
     @property
     def top(self) -> int:
@@ -506,10 +567,10 @@ class Gadget:
         self.pos = Point(cy - h // 2, cx - w // 2)
 
     @property
-    def absolute_pos(self) -> Point:
+    def absolute_pos(self) -> Point | None:
         """Absolute position on screen."""
         if self.parent is None:
-            return self.pos
+            return None
         return self.pos + self.parent.absolute_pos
 
     @property
@@ -533,6 +594,52 @@ class Gadget:
         self.apply_hints()
 
     @property
+    def is_transparent(self) -> bool:
+        """Whether gadget is transparent."""
+        return self._is_transparent
+
+    @is_transparent.setter
+    @bindable
+    def is_transparent(self, is_transparent: bool):
+        if is_transparent != self._is_transparent:
+            self._is_transparent = is_transparent
+            if self.root is not None:
+                self._invalidate_region()
+            self.on_transparency()
+
+    @property
+    def is_visible(self) -> bool:
+        """
+        Whether gadget is visible. Gadget will still receive input events if not
+        visible.
+        """
+        return self._is_visible
+
+    @is_visible.setter
+    @bindable
+    def is_visible(self, is_visible: bool):
+        if is_visible != self._is_visible:
+            self._is_visible = is_visible
+            if self.root is not None:
+                self._invalidate_region()
+
+    @property
+    def is_enabled(self) -> bool:
+        """
+        Whether gadget is enabled. A disabled gadget is not painted and doesn't receive
+        input events.
+        """
+        return self._is_enabled
+
+    @is_enabled.setter
+    @bindable
+    def is_enabled(self, is_enabled: bool):
+        if is_enabled != self._is_enabled:
+            self._is_enabled = is_enabled
+            if self.root is not None:
+                self._invalidate_region()
+
+    @property
     def root(self) -> Self | None:
         """Return the root gadget if connected to gadget tree."""
         return self.parent and self.parent.root
@@ -542,276 +649,8 @@ class Gadget:
         """The running app."""
         return self.root.app
 
-    def on_size(self):
-        """Update gadget after a resize."""
-
-    def apply_hints(self):
-        """
-        Apply size and pos hints.
-
-        This is called automatically when the gadget is added to the gadget tree and
-        when the gadget's parent's size changes.
-        """
-        if self.parent is None:
-            return
-
-        parent_height, parent_width = self.parent.size
-        height, width = self.size
-        if self._size_hint["height_hint"] is not None:
-            height = clamp(
-                round_down(parent_height * self._size_hint["height_hint"])
-                + self._size_hint["height_offset"],
-                self._size_hint["min_height"],
-                self._size_hint["max_height"],
-            )
-
-        if self._size_hint["width_hint"] is not None:
-            width = clamp(
-                round_down(parent_width * self._size_hint["width_hint"])
-                + self._size_hint["width_offset"],
-                self._size_hint["min_width"],
-                self._size_hint["max_width"],
-            )
-
-        self.size = height, width  # `size` setter will call `_apply_pos_hints()`.
-
-    def _apply_pos_hints(self):
-        if self.parent is None:
-            return
-
-        parent_height, parent_width = self.parent.size
-        height, width = self.size
-        y, x = self.pos
-        y_anchor, x_anchor = self._pos_hint["anchor"]
-
-        if self._pos_hint["y_hint"] is not None:
-            y = (
-                round_down(parent_height * self._pos_hint["y_hint"])
-                - round_down(height * y_anchor)
-                + self._pos_hint["y_offset"]
-            )
-
-        if self._pos_hint["x_hint"] is not None:
-            x = (
-                round_down(parent_width * self._pos_hint["x_hint"])
-                - round_down(width * x_anchor)
-                + self._pos_hint["x_offset"]
-            )
-        self.pos = y, x
-
-    def to_local(self, point: Point) -> Point:
-        """
-        Convert point in absolute coordinates to local coordinates.
-
-        Parameters
-        ----------
-        point : Point
-            Point in absolute (screen) coordinates.
-
-        Returns
-        -------
-        Point
-            The point in local coordinates.
-        """
-        if self.parent is None:
-            return point
-
-        y, x = self.parent.to_local(point)
-        return Point(y - self.top, x - self.left)
-
-    def collides_point(self, point: Point) -> bool:
-        """
-        Return true if point collides with visible portion of gadget.
-
-        Parameters
-        ----------
-        point : Point
-            A point.
-
-        Returns
-        -------
-        bool
-            Whether point collides with gadget.
-        """
-        if not self.is_visible or not self.is_enabled:
-            return False
-
-        return point in self._region or any(
-            point in child._region
-            for child in self.walk()
-            if child.is_visible or child.is_enabled
-        )
-
-    def collides_gadget(self, other: Self) -> bool:
-        """
-        Return true if other is within gadget's bounding box.
-
-        Parameters
-        ----------
-        other : Gadget
-            Another gadget.
-
-        Returns
-        -------
-        bool
-            Whether other collides with gadget.
-        """
-        self_top, self_left = self.absolute_pos
-        self_bottom = self_top + self.height
-        self_right = self.left + self.width
-
-        other_top, other_left = other.absolute_pos
-        other_bottom = other_top + other.height
-        other_right = other_left + other.width
-
-        return not (
-            self_top >= other_bottom
-            or other_top >= self_bottom
-            or self_left >= other_right
-            or other_left >= self_right
-        )
-
-    def add_gadget(self, gadget: Self):
-        """
-        Add a child gadget.
-
-        Parameters
-        ----------
-        gadget : Gadget
-            A gadget to add as a child.
-        """
-        self.children.append(gadget)
-        gadget.parent = self
-
-        if self.root is not None:
-            gadget.on_add()
-
-    def add_gadgets(self, *gadgets: Self):
-        r"""
-        Add multiple child gadgets.
-
-        Parameters
-        ----------
-        \*gadgets : Gadget
-            Gadgets to add as children. Can also accept a single iterable of gadgets.
-        """
-        if len(gadgets) == 1 and not isinstance(gadgets[0], Gadget):
-            # Assume item is an iterable of gadgets.
-            gadgets = gadgets[0]
-
-        for gadget in gadgets:
-            self.add_gadget(gadget)
-
-    def remove_gadget(self, gadget: Self):
-        """
-        Remove a child gadget.
-
-        Parameters
-        ----------
-        gadget : Gadget
-            The gadget to remove from children.
-        """
-        if self.root is not None:
-            gadget.on_remove()
-
-        self.children.remove(gadget)
-        gadget.parent = None
-
-    def pull_to_front(self):
-        """Move gadget to end of gadget stack so that it is drawn last."""
-        if self.parent is not None:
-            self.parent.children.remove(self)
-            self.parent.children.append(self)
-
-    def walk_from_root(self) -> Iterator[Self]:
-        """
-        Yield all descendents of the root gadget (preorder traversal).
-
-        Yields
-        ------
-        Gadget
-            A descendent of the root gadget.
-        """
-        yield from self.root.walk()
-
-    def walk(self) -> Iterator[Self]:
-        """
-        Yield all descendents of this gadget (preorder traversal).
-
-        Yields
-        ------
-        Gadget
-            A descendent of this gadget.
-        """
-        for child in self.children:
-            yield child
-            yield from child.walk()
-
-    def walk_reverse(self) -> Iterator[Self]:
-        """
-        Yield all descendents of this gadget (reverse postorder traversal).
-
-        Yields
-        ------
-        Gadget
-            A descendent of this gadget.
-        """
-        for child in reversed(self.children):
-            yield from child.walk_reverse()
-            yield child
-
-    def ancestors(self) -> Iterator[Self]:
-        """
-        Yield all ancestors of this gadget.
-
-        Yields
-        ------
-        Gadget
-            An ancestor of this gadget.
-        """
-        if self.parent:
-            yield self.parent
-            yield from self.parent.ancestors()
-
-    def bind(self, prop: str, callback: Callable[[], None]) -> int:
-        """
-        Bind `callback` to a gadget property. When the property is updated, `callback`
-        is called with no arguments.
-
-        Parameters
-        ----------
-        prop : str
-            The name of the gadget property.
-        callback : Callable[[], None]
-            Callback to bind to property.
-
-        Returns
-        -------
-        int
-            A unique id used to unbind the callback.
-        """
-        uid = next(_UID)
-        setter = getattr(type(self), prop).fset
-        bindings = setter.instances.setdefault(self, {})
-        bindings[uid] = callback
-        self.__bindings[uid] = prop
-        return uid
-
-    def unbind(self, uid: int) -> None:
-        """
-        Unbind a callback from a gadget property.
-
-        Parameters
-        ----------
-        uid : int
-            Unique id returned by the :meth:`bind` method.
-        """
-        prop = self.__bindings.pop(uid, None)
-        if prop is None:
-            return
-        setter = getattr(type(self), prop).fset
-        if self in setter.instances:
-            setter.instances[self].pop(uid, None)
+    def _render(self, canvas: NDArray[Cell]) -> None:
+        """Render visible region of gadget."""
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
         """
@@ -901,6 +740,395 @@ class Gadget:
             if gadget.is_enabled
         ) or self.on_terminal_focus(focus_event)
 
+    def _invalidate_region(self, notify_root: bool = True) -> None:
+        """Invalidate region and all children's regions."""
+        self._region_valid = False
+        if notify_root and self.root is not None:
+            self.root._all_regions_valid = False
+        for child in self.children:
+            child._invalidate_region(False)
+
+    def apply_hints(self) -> None:
+        """
+        Apply size and pos hints.
+
+        This is called automatically when the gadget is added to the gadget tree and
+        when the gadget's parent's size changes.
+        """
+        if self.parent is None:
+            return
+
+        parent_height, parent_width = self.parent.size
+        height, width = self.size
+        if self._size_hint["height_hint"] is not None:
+            height = clamp(
+                round_down(parent_height * self._size_hint["height_hint"])
+                + self._size_hint["height_offset"],
+                self._size_hint["min_height"],
+                self._size_hint["max_height"],
+            )
+
+        if self._size_hint["width_hint"] is not None:
+            width = clamp(
+                round_down(parent_width * self._size_hint["width_hint"])
+                + self._size_hint["width_offset"],
+                self._size_hint["min_width"],
+                self._size_hint["max_width"],
+            )
+
+        self.size = height, width  # `size` setter will call `_apply_pos_hints()`.
+
+    def _apply_pos_hints(self) -> None:
+        if self.parent is None:
+            return
+
+        parent_height, parent_width = self.parent.size
+        height, width = self.size
+        y, x = self.pos
+        y_anchor, x_anchor = self._pos_hint["anchor"]
+
+        if self._pos_hint["y_hint"] is not None:
+            y = (
+                round_down(parent_height * self._pos_hint["y_hint"])
+                - round_down(height * y_anchor)
+                + self._pos_hint["y_offset"]
+            )
+
+        if self._pos_hint["x_hint"] is not None:
+            x = (
+                round_down(parent_width * self._pos_hint["x_hint"])
+                - round_down(width * x_anchor)
+                + self._pos_hint["x_offset"]
+            )
+        self.pos = y, x
+
+    def to_local(self, point: Point) -> Point:
+        """
+        Convert point in absolute coordinates to local coordinates.
+
+        Parameters
+        ----------
+        point : Point
+            Point in absolute (screen) coordinates.
+
+        Returns
+        -------
+        Point
+            The point in local coordinates.
+        """
+        if self.parent is None:
+            return point
+
+        y, x = self.parent.to_local(point)
+        return Point(y - self.top, x - self.left)
+
+    def collides_point(self, point: Point) -> bool:
+        """
+        Return true if point collides with visible portion of gadget.
+
+        Parameters
+        ----------
+        point : Point
+            A point.
+
+        Returns
+        -------
+        bool
+            Whether point collides with gadget.
+        """
+        if self.root is None or not self.is_visible or not self.is_enabled:
+            return False
+
+        return point in self._region or any(
+            point in child._region
+            for child in self.walk()
+            if child.is_visible or child.is_enabled
+        )
+
+    def collides_gadget(self, other: Self) -> bool:
+        """
+        Return true if other is within gadget's bounding box.
+
+        Parameters
+        ----------
+        other : Gadget
+            Another gadget.
+
+        Returns
+        -------
+        bool
+            Whether other collides with gadget.
+        """
+        self_top, self_left = self.absolute_pos
+        self_bottom = self_top + self.height
+        self_right = self.left + self.width
+
+        other_top, other_left = other.absolute_pos
+        other_bottom = other_top + other.height
+        other_right = other_left + other.width
+
+        return not (
+            self_top >= other_bottom
+            or other_top >= self_bottom
+            or self_left >= other_right
+            or other_left >= self_right
+        )
+
+    def pull_to_front(self) -> None:
+        """Move gadget to end of gadget stack so that it is drawn last."""
+        if self.parent is not None:
+            self.parent.children.remove(self)
+            self.parent.children.append(self)
+
+    def walk(self) -> Iterator[Self]:
+        """
+        Yield all descendents of this gadget (preorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of this gadget.
+        """
+        for child in self.children:
+            yield child
+            yield from child.walk()
+
+    def walk_reverse(self) -> Iterator[Self]:
+        """
+        Yield all descendents of this gadget (reverse postorder traversal).
+
+        Yields
+        ------
+        Gadget
+            A descendent of this gadget.
+        """
+        for child in reversed(self.children):
+            yield from child.walk_reverse()
+            yield child
+
+    def ancestors(self) -> Iterator[Self]:
+        """
+        Yield all ancestors of this gadget.
+
+        Yields
+        ------
+        Gadget
+            An ancestor of this gadget.
+        """
+        if self.parent:
+            yield self.parent
+            yield from self.parent.ancestors()
+
+    def add_gadget(self, gadget: Self) -> None:
+        """
+        Add a child gadget.
+
+        Parameters
+        ----------
+        gadget : Gadget
+            A gadget to add as a child.
+        """
+        self.children.append(gadget)
+        gadget.parent = self
+
+        if self.root is not None:
+            gadget.on_add()
+
+    def add_gadgets(self, *gadgets: Self) -> None:
+        r"""
+        Add multiple child gadgets.
+
+        Parameters
+        ----------
+        \*gadgets : Gadget
+            Gadgets to add as children. Can also accept a single iterable of gadgets.
+        """
+        if len(gadgets) == 1 and not isinstance(gadgets[0], Gadget):
+            # Assume item is an iterable of gadgets.
+            gadgets = gadgets[0]
+
+        for gadget in gadgets:
+            self.add_gadget(gadget)
+
+    def remove_gadget(self, gadget: Self) -> None:
+        """
+        Remove a child gadget.
+
+        Parameters
+        ----------
+        gadget : Gadget
+            The gadget to remove from children.
+        """
+        if self.root is not None:
+            gadget.on_remove()
+
+        self.children.remove(gadget)
+        gadget.parent = None
+
+    def prolicide(self) -> None:
+        """Recursively remove all children."""
+        for child in self.children.copy():
+            child.destroy()
+
+    def destroy(self) -> None:
+        """Remove this gadget and recursively remove all its children."""
+        self.prolicide()
+        if self.parent:
+            self.parent.remove_gadget(self)
+
+    def bind(self, prop: str, callback: Callable[[], None]) -> int:
+        """
+        Bind `callback` to a gadget property. When the property is updated, `callback`
+        is called with no arguments.
+
+        Parameters
+        ----------
+        prop : str
+            The name of the gadget property.
+        callback : Callable[[], None]
+            Callback to bind to property.
+
+        Returns
+        -------
+        int
+            A unique id used to unbind the callback.
+        """
+        uid = next(_UID)
+        setter = getattr(type(self), prop).fset
+        bindings = setter.instances.setdefault(self, {})
+        bindings[uid] = callback
+        self.__bindings[uid] = prop
+        return uid
+
+    def unbind(self, uid: int) -> None:
+        """
+        Unbind a callback from a gadget property.
+
+        Parameters
+        ----------
+        uid : int
+            Unique id returned by the :meth:`bind` method.
+        """
+        prop = self.__bindings.pop(uid, None)
+        if prop is None:
+            return
+        setter = getattr(type(self), prop).fset
+        if self in setter.instances:
+            setter.instances[self].pop(uid, None)
+
+    @staticmethod
+    def _tween_lerp(start, end, p) -> Real | Sequence[Real] | PosHint | SizeHint | None:
+        """Lerp for none, sequences, and hints."""
+        if start is None or end is None:
+            return None
+
+        if isinstance(start, Real) and isinstance(end, Real):
+            value = lerp(start, end, p)
+            if isinstance(start, int):
+                return round_down(value)
+            return value
+
+        if isinstance(start, Sequence):
+            return [
+                Gadget._tween_lerp(start_value, end_value, p)
+                for start_value, end_value in zip(start, end)
+            ]
+
+        if isinstance(start, MappingProxyType):
+            return {
+                key: Gadget._tween_lerp(start_value, end.get(key), p)
+                for key, start_value in start.items()
+            }
+
+    async def tween(
+        self,
+        *,
+        duration: float = 1.0,
+        easing: Easing = "linear",
+        on_start: Callable[[], None] | None = None,
+        on_progress: Callable[[float], None] | None = None,
+        on_complete: Callable[[], None] | None = None,
+        **properties: Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint,
+    ) -> None:
+        """
+        Coroutine that sequentially updates gadget properties over a duration (in
+        seconds).
+
+        Parameters
+        ----------
+        duration : float, default: 1.0
+            The duration of the tween in seconds.
+        easing : Easing, default: "linear"
+            The easing used for tweening.
+        on_start : Callable[[], None] | None, default: None
+            Called when tween starts.
+        on_progress : Callable[[float], None] | None, default: None
+            Called as tween updates with current progress.
+        on_complete : Callable[[], None] | None, default: None
+            Called when tween completes.
+        **properties : Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
+            Gadget properties' target values. E.g., to smoothly tween a gadget's
+            position to (5, 10) over 2.5 seconds, specify the `pos` property as a
+            keyword-argument:
+            ``await gadget.tween(pos=(5, 10), duration=2.5, easing="out_bounce")``
+
+        Notes
+        -----
+        Tweened values will be coerced to match the type of the initial value of their
+        corresponding property.
+
+        Non-numeric values will be set immediately.
+
+        Warnings
+        --------
+        Running several tweens on the same properties concurrently will probably result
+        in unexpected behavior.
+        """
+        end_time = perf_counter() + duration
+        easing_function = EASINGS[easing]
+        start_values = tuple(getattr(self, attr) for attr in properties)
+
+        if pos_hint := properties.get("pos_hint"):
+            properties["pos_hint"] = _normalize_pos_hint(pos_hint)
+        if size_hint := properties.get("size_hint"):
+            properties["size_hint"] = _normalize_size_hint(size_hint)
+        if on_start is not None:
+            on_start()
+
+        while (current_time := perf_counter()) < end_time:
+            p = easing_function(1 - (end_time - current_time) / duration)
+
+            for start_value, (prop, target) in zip(start_values, properties.items()):
+                setattr(self, prop, Gadget._tween_lerp(start_value, target, p))
+
+            if on_progress is not None:
+                on_progress(p)
+
+            await asyncio.sleep(0)
+
+        for prop, target in properties.items():
+            setattr(self, prop, target)
+
+        if on_complete is not None:
+            on_complete()
+
+    def on_size(self) -> None:
+        """Update gadget after a resize."""
+
+    def on_transparency(self) -> None:
+        """Update gadget after transparency is enabled/disabled."""
+
+    def on_add(self) -> None:
+        """Update gadget after being added to the gadget tree."""
+        self.apply_hints()
+        for child in self.children:
+            child.on_add()
+
+    def on_remove(self) -> None:
+        """Update gadget after being removed from the gadget tree."""
+        for child in self.children:
+            child.on_remove()
+
     def on_key(self, key_event: KeyEvent) -> bool | None:
         """
         Handle a key press event.
@@ -968,133 +1196,3 @@ class Gadget:
         bool | None
             Whether the focus event was handled.
         """
-
-    def _render(self, canvas: NDArray[Cell]):
-        """Render visible region of gadget."""
-
-    @staticmethod
-    def _tween_lerp(start, end, p) -> Real | Sequence[Real] | PosHint | SizeHint | None:
-        """Lerp for none, sequences, and hints."""
-        if start is None or end is None:
-            return None
-
-        if isinstance(start, Real) and isinstance(end, Real):
-            value = lerp(start, end, p)
-            if isinstance(start, int):
-                return round_down(value)
-            return value
-
-        if isinstance(start, Sequence):
-            return [
-                Gadget._tween_lerp(start_value, end_value, p)
-                for start_value, end_value in zip(start, end)
-            ]
-
-        if isinstance(start, MappingProxyType):
-            return {
-                key: Gadget._tween_lerp(start_value, end.get(key), p)
-                for key, start_value in start.items()
-            }
-
-    async def tween(
-        self,
-        *,
-        duration: float = 1.0,
-        easing: Easing = "linear",
-        on_start: Callable[[], None] | None = None,
-        on_progress: Callable[[float], None] | None = None,
-        on_complete: Callable[[], None] | None = None,
-        **properties: dict[
-            str, Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
-        ],
-    ) -> Coroutine:
-        """
-        Coroutine that sequentially updates gadget properties over a duration (in
-        seconds).
-
-        Parameters
-        ----------
-        duration : float, default: 1.0
-            The duration of the tween in seconds.
-        easing : Easing, default: "linear"
-            The easing used for tweening.
-        on_start : Callable[[], None] | None, default: None
-            Called when tween starts.
-        on_progress : Callable[[float], None] | None, default: None
-            Called as tween updates with current progress.
-        on_complete : Callable[[], None] | None, default: None
-            Called when tween completes.
-        **properties : dict[
-            str, Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
-        ]
-            Gadget properties' target values. E.g., to smoothly tween a gadget's
-            position to (5, 10) over 2.5 seconds, specify the `pos` property as a
-            keyword-argument:
-            ``await gadget.tween(pos=(5, 10), duration=2.5, easing="out_bounce")``
-
-        Returns
-        -------
-        Coroutine
-            A coroutine updates gadget properties over some time.
-
-        Notes
-        -----
-        Tweened values will be coerced to match the type of the initial value of their
-        corresponding property.
-
-        Non-numeric values will be set immediately.
-
-        Warnings
-        --------
-        Running several tweens on the same properties concurrently will probably result
-        in unexpected behavior.
-        """
-        end_time = monotonic() + duration
-        easing_function = EASINGS[easing]
-        start_values = tuple(getattr(self, attr) for attr in properties)
-
-        if pos_hint := properties.get("pos_hint"):
-            properties["pos_hint"] = _normalize_pos_hint(pos_hint)
-        if size_hint := properties.get("size_hint"):
-            properties["size_hint"] = _normalize_size_hint(size_hint)
-        if on_start is not None:
-            on_start()
-
-        while (current_time := monotonic()) < end_time:
-            p = easing_function(1 - (end_time - current_time) / duration)
-
-            for start_value, (prop, target) in zip(start_values, properties.items()):
-                setattr(self, prop, Gadget._tween_lerp(start_value, target, p))
-
-            if on_progress is not None:
-                on_progress(p)
-
-            await asyncio.sleep(0)
-
-        for prop, target in properties.items():
-            setattr(self, prop, target)
-
-        if on_complete is not None:
-            on_complete()
-
-    def on_add(self):
-        """Apply size hints and call children's `on_add`."""
-        self.apply_hints()
-        for child in self.children:
-            child.on_add()
-
-    def on_remove(self):
-        """Call children's `on_remove`."""
-        for child in self.children:
-            child.on_remove()
-
-    def prolicide(self):
-        """Recursively remove all children."""
-        for child in self.children.copy():
-            child.destroy()
-
-    def destroy(self):
-        """Remove this gadget and recursively remove all its children."""
-        self.prolicide()
-        if self.parent:
-            self.parent.remove_gadget(self)

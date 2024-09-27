@@ -43,7 +43,7 @@ class Focusable:
     """
 
     __focusables: deque[ReferenceType] = deque()
-    """Focusables that are part of the gadget-tree."""
+    """Focusables that are part of the gadget tree."""
     __focused: WeakSet = WeakSet()
     """Focused focusables."""
     any_focused: bool = AnyFocusedProperty()

@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from itertools import accumulate
 from math import comb
-from time import monotonic
+from time import perf_counter
 from typing import Protocol
 
 import numpy as np
@@ -150,7 +150,7 @@ async def move_along_path(
     total_arc_length = cumulative_arc_lengths[-1]
     easing_function = EASINGS[easing]
     has_pos.pos = path[0].evaluate(0.0)
-    last_time = monotonic()
+    last_time = perf_counter()
     distance_traveled = 0.0
 
     if on_start is not None:
@@ -159,7 +159,7 @@ async def move_along_path(
     while True:
         await asyncio.sleep(0)
 
-        current_time = monotonic()
+        current_time = perf_counter()
         elapsed = current_time - last_time
         last_time = current_time
         distance_traveled += speed * elapsed

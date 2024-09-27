@@ -3,7 +3,7 @@
 import asyncio
 from math import cos, dist, sin, tau
 from random import choice, random
-from time import monotonic
+from time import perf_counter
 
 import numpy as np
 
@@ -157,11 +157,11 @@ async def _move_to_rings(
 async def _spin_rings(
     radius_to_particles: dict[int, list[Particle]], center: Point, reverse: bool = False
 ):
-    start = monotonic()
+    start = perf_counter()
     theta = tau / 100
 
     while True:
-        elapsed = monotonic() - start
+        elapsed = perf_counter() - start
         if elapsed > 3:
             return
 

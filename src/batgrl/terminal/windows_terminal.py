@@ -160,8 +160,6 @@ class WindowsTerminal(Vt100Terminal):
     ----------
     in_alternate_screen : bool
         Whether the alternate screen buffer is enabled.
-    last_cursor_position_response : Point
-        Last reported cursor position.
 
     Methods
     -------
@@ -207,6 +205,12 @@ class WindowsTerminal(Vt100Terminal):
         Disable reporting terminal focus.
     request_cursor_position_report()
         Report current cursor position.
+    request_foreground_color()
+        Report terminal foreground color.
+    request_background_color()
+        Report terminal background color.
+    expect_dsr()
+        Return whether a device status report is expected.
     move_cursor(pos)
         Move cursor to ``pos``.
     erase_in_display(n)

@@ -115,8 +115,6 @@ class TextParticleField(Gadget):
     -------
     particles_from_cells(cells)
         Return positions and cells of non-whitespace characters of a Cell array.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -125,26 +123,38 @@ class TextParticleField(Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget tree.
+    on_remove()
+        Update gadget after being removed from the gadget tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -153,16 +163,6 @@ class TextParticleField(Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(
@@ -225,13 +225,14 @@ class TextParticleField(Gadget):
         """Render visible region of gadget."""
         chars = canvas[cell_sans("bg_color")]
         bg_color = canvas["bg_color"]
-        offy, offx = self.absolute_pos
+        root_pos = self.root._pos
+        abs_pos = self.absolute_pos
         ppos = self.particle_positions
         pchars = self.particle_cells[cell_sans("bg_color")]
         pbg_color = self.particle_cells["bg_color"]
-        for (y, x), (h, w) in self._region.rects():
-            pos = ppos - (y - offy, x - offx)
-            inbounds = (((0, 0) <= pos) & (pos < (h, w))).all(axis=1)
+        for pos, size in self._region.rects():
+            abs_ppos = ppos - (pos - abs_pos)
+            inbounds = (((0, 0) <= abs_ppos) & (abs_ppos < size)).all(axis=1)
 
             if self.is_transparent:
                 not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
@@ -240,8 +241,8 @@ class TextParticleField(Gadget):
                 where_inbounds = np.nonzero(inbounds)
             painted = pbg_color[where_inbounds]
 
-            ys, xs = pos[where_inbounds].T
-            dst = rect_slice((y, x), (h, w))
+            ys, xs = abs_ppos[where_inbounds].T
+            dst = rect_slice(pos - root_pos, size)
             if self.is_transparent:
                 background = bg_color[dst][ys, xs]
                 _composite(background, painted, 255, self.alpha)

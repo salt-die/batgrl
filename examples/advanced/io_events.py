@@ -1,5 +1,5 @@
 import asyncio
-from time import monotonic
+from time import perf_counter
 
 import numpy as np
 from batgrl.app import App
@@ -175,7 +175,7 @@ def rainbow(texture):
     xs -= 0.5 * w
 
     colors = 0.5 + 0.5 * np.cos(
-        np.arctan2(xs, ys)[..., None] + 3.0 * monotonic() + (0, 23, 21)
+        np.arctan2(xs, ys)[..., None] + 3.0 * perf_counter() + (0, 23, 21)
     )
     texture[:] = (colors * 255).astype(int)
 

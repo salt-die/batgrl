@@ -59,4 +59,4 @@ class SpinnersApp(App):
 
 
 if __name__ == "__main__":
-    SpinnersApp(title="Spinners", render_mode="painter").run()
+    SpinnersApp(title="Spinners").run()

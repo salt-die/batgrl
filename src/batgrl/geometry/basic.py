@@ -1,12 +1,22 @@
 """Basic geometry functions and types."""
 
+from __future__ import annotations
+
 from numbers import Real
 from typing import NamedTuple, Self
 
 import numpy as np
 from numpy.typing import NDArray
 
-__all__ = ["clamp", "lerp", "points_on_circle", "round_down", "Point", "Size"]
+__all__ = [
+    "clamp",
+    "lerp",
+    "points_on_circle",
+    "round_down",
+    "rect_slice",
+    "Point",
+    "Size",
+]
 
 
 def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
@@ -70,6 +80,27 @@ def points_on_circle(
     """
     angles = np.linspace(0, 2 * np.pi, endpoint=False, num=n) + offset
     return radius * np.stack([np.sin(angles), np.cos(angles)]).T + center
+
+
+def rect_slice(pos: Point, size: Size) -> tuple[slice, slice]:
+    """
+    Return slices for indexing a rect in a numpy array.
+
+    Parameters
+    ----------
+    pos : Point
+        Position of rect.
+    size : Size
+        Size of rect.
+
+    Returns
+    -------
+    tuple[slice, slice]
+        Slices that index a rect in a numpy array.
+    """
+    y, x = pos
+    h, w = size
+    return slice(y, y + h), slice(x, x + w)
 
 
 def round_down(n: float) -> int:

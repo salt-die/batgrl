@@ -5,15 +5,18 @@ import os
 import re
 import sys
 from abc import ABC, abstractmethod
+from collections import deque
 from collections.abc import Callable
 from enum import Enum, auto
 from io import StringIO
-from time import monotonic
+from time import perf_counter
 from typing import Final, Literal
 
+from ..colors import Color
 from ..geometry import Point, Size
 from .ansi_escapes import ANSI_ESCAPES
 from .events import (
+    ColorReportEvent,
     CursorPositionResponseEvent,
     Event,
     FocusEvent,
@@ -26,6 +29,9 @@ from .events import (
 )
 
 CPR_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[(\d+);(\d+)R")
+COLOR_RE: Final[re.Pattern[str]] = re.compile(
+    r"\x1b\]1([10]);rgb:([0-9a-f]{4})/([0-9a-f]{4})/([0-9a-f]{4})\x1b\\"
+)
 MOUSE_SGR_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
 PARAMS_RE: Final[re.Pattern[str]] = re.compile(r"[0-9;]")
 BRACKETED_PASTE_START: Final[str] = "\x1b[200~"
@@ -50,6 +56,8 @@ class ParserState(Enum):
     """Start of an escape sequence."""
     CSI = auto()
     """Start of a control sequence."""
+    OSC = auto()
+    """Start of an operating system command sequence."""
     PARAMS = auto()
     """Collecting parameters of a control sequence."""
     PASTE = auto()
@@ -66,8 +74,6 @@ class Vt100Terminal(ABC):
     ----------
     in_alternate_screen : bool
         Whether the alternate screen buffer is enabled.
-    last_cursor_position_response : Point
-        Last reported cursor position.
 
     Methods
     -------
@@ -113,6 +119,12 @@ class Vt100Terminal(ABC):
         Disable reporting terminal focus.
     request_cursor_position_report()
         Report current cursor position.
+    request_foreground_color()
+        Report terminal foreground color.
+    request_background_color()
+        Report terminal background color.
+    expect_dsr()
+        Return whether a device status report is expected.
     move_cursor(pos)
         Move cursor to ``pos``.
     erase_in_display(n)
@@ -122,9 +134,6 @@ class Vt100Terminal(ABC):
     def __init__(self):
         self.in_alternate_screen: bool = False
         """Whether the alternate screen buffer is enabled."""
-        self.last_cursor_position_response: Point = Point(0, 0)
-        """Last reported cursor position."""
-
         self._escape_buffer: StringIO | None = None
         """Escape sequence buffer."""
         self._paste_buffer: StringIO | None = None
@@ -141,15 +150,14 @@ class Vt100Terminal(ABC):
         """State of VT100 input parser."""
         self._reset_timer_handle: asyncio.TimerHandle | None = None
         """Timeout handle for executing escape buffer."""
-        self._expect_device_status_report: bool = False
-        """Whether input parser should expect a device status report."""
-        self._last_drs_request_time: float = monotonic()
-        """When the last device status report was requested."""
+        self._drs_request_times: deque[float] = deque()
+        """Device status report request times."""
         self._last_y: int = 0
         """Last mouse y-coordinate."""
         self._last_x: int = 0
         """Laste mouse x-coordinate."""
         self._event_handler: Callable[[list[Event]], None] | None = None
+        """Event handler set with ``attach()`` or unset with ``unattach()``."""
 
     @abstractmethod
     def process_stdin(self) -> None:
@@ -212,7 +220,11 @@ class Vt100Terminal(ABC):
 
     def _feed1(self, char: str) -> None:
         """Feed a single character from terminal input into the parser."""
-        if self._state is not ParserState.PASTE and char == "\x1b":
+        if self._state is ParserState.OSC:
+            self._escape_buffer.write(char)
+            if char == "\\" and self._escape_buffer.getvalue().endswith("\x1b\\"):
+                self._execute()
+        elif self._state is not ParserState.PASTE and char == "\x1b":
             # Start a new escape (possibly canceling previous escape).
             self._escape_buffer = StringIO()
             self._escape_buffer.write(char)
@@ -241,6 +253,8 @@ class Vt100Terminal(ABC):
                 self._state = ParserState.CSI
             elif char == "O":
                 self._state = ParserState.EXECUTE_NEXT
+            elif char == "]":
+                self._state = ParserState.OSC
             else:
                 self._execute()
         elif self._state is ParserState.CSI:
@@ -264,15 +278,28 @@ class Vt100Terminal(ABC):
         escape = self._escape_buffer.getvalue()
         self._escape_buffer = None
 
-        if self._expect_device_status_report:
-            if monotonic() - self._last_drs_request_time >= DRS_REQUEST_TIMEOUT:
-                self._expect_device_status_report = False
-            elif cpr_match := CPR_RE.fullmatch(escape):
-                self._expect_device_status_report = False
+        while len(self._drs_request_times) > 0 and (
+            perf_counter() - self._drs_request_times[0] >= DRS_REQUEST_TIMEOUT
+        ):
+            self._drs_request_times.popleft()
+
+        if len(self._drs_request_times) > 0:
+            if cpr_match := CPR_RE.fullmatch(escape):
+                self._drs_request_times.popleft()
                 y, x = cpr_match.groups()
-                self.last_cursor_position_response = Point(int(y) - 1, int(x) - 1)
                 self._event_buffer.append(
-                    CursorPositionResponseEvent(self.last_cursor_position_response)
+                    CursorPositionResponseEvent(Point(int(y) - 1, int(x) - 1))
+                )
+                return
+
+            if color_match := COLOR_RE.fullmatch(escape):
+                self._drs_request_times.popleft()
+                kind, r, g, b = color_match.groups()
+                self._event_buffer.append(
+                    ColorReportEvent(
+                        kind="fg" if kind == "0" else "bg",
+                        color=Color.from_hex(f"{r[:2]}{g[:2]}{b[:2]}"),
+                    )
                 )
                 return
 
@@ -348,8 +375,8 @@ class Vt100Terminal(ABC):
 
         data = "".join(self._out_buffer).encode(errors="replace")
         self._out_buffer.clear()
-        sys.stdout.buffer.write(data)
-        sys.stdout.flush()
+        sys.__stdout__.buffer.write(data)
+        sys.__stdout__.flush()
 
     def set_title(self, title: str):
         """Set terminal title."""
@@ -413,25 +440,36 @@ class Vt100Terminal(ABC):
 
     def request_cursor_position_report(self):
         """Report current cursor position."""
-        self._expect_device_status_report = True
-        self._last_drs_request_time = monotonic()
+        self._drs_request_times.append(perf_counter())
         self._out_buffer.append("\x1b[6n")
         self.flush()
 
-    def move_cursor(self, pos: Point | None = None):
+    def request_foreground_color(self):
+        """Report terminal foreground color."""
+        self._drs_request_times.append(perf_counter())
+        self._out_buffer.append("\x1b]10;?\x1b\\")
+        self.flush()
+
+    def request_background_color(self):
+        """Report terminal background color."""
+        self._drs_request_times.append(perf_counter())
+        self._out_buffer.append("\x1b]11;?\x1b\\")
+        self.flush()
+
+    def expect_dsr(self) -> bool:
+        """Return whether a device status report is expected."""
+        return len(self._drs_request_times) > 0
+
+    def move_cursor(self, pos: Point):
         """
         Move cursor to ``pos``.
 
         Parameters
         ----------
         pos : Point | None, default: None
-            Cursor's new position. If not given, cursor is moved to last reported cursor
-            position.
+            Cursor's new position.
         """
-        if pos is None:
-            y, x = self.last_cursor_position_response
-        else:
-            y, x = pos
+        y, x = pos
         self._out_buffer.append(f"\x1b[{y + 1};{x + 1}H")
 
     def erase_in_display(self, n: Literal[0, 1, 2, 3] = 0):

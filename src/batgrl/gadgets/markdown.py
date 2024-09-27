@@ -185,7 +185,7 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
                 mask = colors == np.array(Themable.color_theme.primary, colors.dtype)
                 colors[mask] = Themable.color_theme.markdown_link
                 self.texts.append((child, underline, mask))
-            # ! This condition can add to the gadget-tree while walking it, careful.
+            # ! This condition can add to the gadget tree while walking it, careful.
             elif isinstance(child, (_MarkdownImage, _MarkdownGif)):
                 if not hasattr(child, "outline"):
                     child.outline = Graphics(size=child.size, is_enabled=False)
@@ -664,7 +664,7 @@ class _BatgrlRenderer(BaseRenderer):
                     cell.remove_gadget(child)
                     cy, cx = child.pos
                     child.pos = cy + y, cx + x
-                    table.add_gadgets(child)
+                    table.add_gadget(child)
                 x += w + INNER_PAD
             y += h
             if i == 0:
@@ -777,8 +777,6 @@ class Markdown(Themable, Gadget):
     -------
     update_theme()
         Paint the gadget with current theme.
-    on_size()
-        Update gadget after a resize.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -787,26 +785,38 @@ class Markdown(Themable, Gadget):
         Return true if point collides with visible portion of gadget.
     collides_gadget(other)
         Return true if other is within gadget's bounding box.
-    add_gadget(gadget)
-        Add a child gadget.
-    add_gadgets(\*gadgets)
-        Add multiple child gadgets.
-    remove_gadget(gadget)
-        Remove a child gadget.
     pull_to_front()
         Move to end of gadget stack so gadget is drawn last.
-    walk_from_root()
-        Yield all descendents of the root gadget (preorder traversal).
     walk()
         Yield all descendents of this gadget (preorder traversal).
     walk_reverse()
         Yield all descendents of this gadget (reverse postorder traversal).
     ancestors()
         Yield all ancestors of this gadget.
+    add_gadget(gadget)
+        Add a child gadget.
+    add_gadgets(\*gadgets)
+        Add multiple child gadgets.
+    remove_gadget(gadget)
+        Remove a child gadget.
+    prolicide()
+        Recursively remove all children.
+    destroy()
+        Remove this gadget and recursively remove all its children.
     bind(prop, callback)
         Bind `callback` to a gadget property.
     unbind(uid)
         Unbind a callback from a gadget property.
+    tween(...)
+        Sequentially update gadget properties over time.
+    on_size()
+        Update gadget after a resize.
+    on_transparency()
+        Update gadget after transparency is enabled/disabled.
+    on_add()
+        Update gadget after being added to the gadget tree.
+    on_remove()
+        Update gadget after being removed from the gadget tree.
     on_key(key_event)
         Handle a key press event.
     on_mouse(mouse_event)
@@ -815,16 +825,6 @@ class Markdown(Themable, Gadget):
         Handle a paste event.
     on_terminal_focus(focus_event)
         Handle a focus event.
-    tween(...)
-        Sequentially update gadget properties over time.
-    on_add()
-        Apply size hints and call children's `on_add`.
-    on_remove()
-        Call children's `on_remove`.
-    prolicide()
-        Recursively remove all children.
-    destroy()
-        Remove this gadget and recursively remove all its children.
     """
 
     def __init__(

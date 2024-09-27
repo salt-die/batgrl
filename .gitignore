@@ -1,4 +1,6 @@
+*.c
 *.pyc
+*.pyd
 *.egg-info
-dist/
 .vscode/
+dist/

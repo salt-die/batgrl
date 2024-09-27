@@ -69,7 +69,6 @@ def app_mode(
         if terminal.in_alternate_screen:
             terminal.exit_alternate_screen()
         else:
-            terminal.move_cursor()
             terminal.erase_in_display()
         terminal.reset_attributes()
         terminal.show_cursor()

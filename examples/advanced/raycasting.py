@@ -3,7 +3,7 @@
 import asyncio
 from itertools import cycle, pairwise
 from pathlib import Path
-from time import monotonic
+from time import perf_counter
 
 import cv2
 import numpy as np
@@ -106,7 +106,7 @@ class RaycasterApp(App):
 
         turn_duration = 0.75
         move_duration = 1.5
-        last_time = monotonic()
+        last_time = perf_counter()
         elapsed = 0
 
         for i, j in pairwise(cycle(range(4))):
@@ -115,7 +115,7 @@ class RaycasterApp(App):
                 v -= 2 * np.pi
 
             while elapsed < turn_duration:
-                current_time = monotonic()
+                current_time = perf_counter()
                 elapsed += current_time - last_time
                 last_time = current_time
                 camera.theta = lerp(u, v, elapsed / turn_duration)
@@ -127,7 +127,7 @@ class RaycasterApp(App):
             elapsed -= turn_duration
 
             while elapsed < move_duration:
-                current_time = monotonic()
+                current_time = perf_counter()
                 elapsed += current_time - last_time
                 last_time = current_time
 

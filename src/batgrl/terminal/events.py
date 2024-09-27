@@ -3,17 +3,19 @@
 from dataclasses import dataclass
 from typing import Literal
 
+from ..colors import Color
 from ..geometry import Point, Size
 
 __all__ = [
-    "Key",
-    "Event",
-    "ResizeEvent",
+    "ColorReportEvent",
     "CursorPositionResponseEvent",
+    "Event",
+    "FocusEvent",
+    "Key",
     "KeyEvent",
     "MouseEvent",
     "PasteEvent",
-    "FocusEvent",
+    "ResizeEvent",
 ]
 
 # fmt: off
@@ -106,6 +108,32 @@ class CursorPositionResponseEvent(Event):
 
     pos: Point
     """The reported cursor position."""
+
+
+@dataclass
+class ColorReportEvent(Event):
+    """
+    A background or foreground color report event.
+
+    Parameters
+    ----------
+    kind : Literal["fg", "bg"]
+        Whether report is for a foreground ("fg") or background ("bg") color.
+    color : Color
+        The reported color.
+
+    Attributes
+    ----------
+    kind : Literal["fg", "bg"]
+        Whether report is for a foreground ("fg") or background ("bg") color.
+    color : Color
+        The reported color.
+    """
+
+    kind: Literal["fg", "bg"]
+    """Whether report is for a foreground ("fg") or background ("bg") color."""
+    color: Color
+    """The reported color."""
 
 
 @dataclass

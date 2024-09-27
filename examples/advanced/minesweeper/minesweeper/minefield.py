@@ -214,9 +214,10 @@ class Minefield(Grid):
         self.parent.game_over(win=win)
 
     def _render(self, canvas):
+        root_pos = self.root._pos
         abs_pos = self.absolute_pos
         for pos, size in self._region.rects():
-            dst = rect_slice(pos, size)
+            dst = rect_slice(pos - root_pos, size)
             src = rect_slice(pos - abs_pos, size)
             visible = self.hidden[src] != 0
             canvas[dst][visible] = self.canvas[src][visible]

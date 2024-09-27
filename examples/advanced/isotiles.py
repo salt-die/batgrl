@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path
-from time import monotonic
+from time import perf_counter
 
 import batgrl.colors as colors
 from batgrl.app import App
@@ -73,7 +73,7 @@ class WorldGadget(Graphics):
 
     def paint_world(self):
         self.clear()
-        water_tx = int(monotonic() * 12) % len(WATER_TILES)
+        water_tx = int(perf_counter() * 12) % len(WATER_TILES)
 
         for y, row in enumerate(self.tile_map):
             for x, i in enumerate(row):

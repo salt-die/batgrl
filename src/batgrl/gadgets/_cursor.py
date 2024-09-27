@@ -19,9 +19,10 @@ class Cursor(Gadget):
 
     def _render(self, canvas: NDArray[Cell]):
         """Render visible region of gadget."""
+        root_pos = self.root._pos
         abs_pos = self.parent.absolute_pos
         for pos, size in self._region.rects():
-            dst = rect_slice(pos, size)
+            dst = rect_slice(pos - root_pos, size)
             src = rect_slice(pos - abs_pos, size)
             canvas[dst]["fg_color"] = self.fg_color
             canvas[dst]["bg_color"] = self.bg_color

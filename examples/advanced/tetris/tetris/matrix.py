@@ -38,9 +38,10 @@ class MatrixGadget(Graphics):
     def _render(self, canvas):
         super()._render(canvas)
         glow = self._glow
+        root_pos = self.root._pos
         abs_pos = self.absolute_pos
         for pos, size in self._region.rects():
-            dst_y, dst_x = rect_slice(pos, size)
+            dst_y, dst_x = rect_slice(pos - root_pos, size)
             src_y, src_x = rect_slice(pos - abs_pos, size)
 
             visible = (

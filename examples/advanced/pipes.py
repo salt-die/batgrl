@@ -1,6 +1,6 @@
 import asyncio
 from random import choice, random, randrange
-from time import monotonic
+from time import perf_counter
 
 from batgrl.app import run_gadget_as_app
 from batgrl.gadgets.text import Text
@@ -81,14 +81,14 @@ class Pipes(Text):
             await asyncio.gather(*(self.pipe() for _ in range(self.npipes)))
 
     async def pipe(self):
-        end = monotonic() + 10
+        end = perf_counter() + 10
         sleep = 0.02 + random() * 0.05
         color = randrange(255), randrange(255), randrange(255)
         y, x = randrange(self.height), randrange(self.width)
         last_dir = randrange(4)
         pipe_chars = choice([HEAVY, CURVY])
 
-        while monotonic() < end:
+        while perf_counter() < end:
             self.canvas[y, x]["char"] = pipe_chars[last_dir]
             self.canvas["fg_color"][y, x] = color
             await asyncio.sleep(sleep)
