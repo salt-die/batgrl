@@ -18,6 +18,7 @@ from .ansi_escapes import ANSI_ESCAPES
 from .events import (
     ColorReportEvent,
     CursorPositionResponseEvent,
+    DeviceAttributesReportEvent,
     Event,
     FocusEvent,
     KeyEvent,
@@ -32,6 +33,8 @@ CPR_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[(\d+);(\d+)R")
 COLOR_RE: Final[re.Pattern[str]] = re.compile(
     r"\x1b\]1([10]);rgb:([0-9a-f]{4})/([0-9a-f]{4})/([0-9a-f]{4})\x1b\\"
 )
+# \x1b[?61;4;6;7;14;21;22;23;24;28;32;42c
+DEVICE_ATTRIBUTES_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[\?[0-9;]+c")
 MOUSE_SGR_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
 PARAMS_RE: Final[re.Pattern[str]] = re.compile(r"[0-9;]")
 BRACKETED_PASTE_START: Final[str] = "\x1b[200~"
@@ -123,6 +126,8 @@ class Vt100Terminal(ABC):
         Report terminal foreground color.
     request_background_color()
         Report terminal background color.
+    request_device_attributes()
+        Report device attributes.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)
@@ -261,7 +266,7 @@ class Vt100Terminal(ABC):
             self._escape_buffer.write(char)
             if char == "[":
                 self._state = ParserState.EXECUTE_NEXT
-            elif char == "<":
+            elif char == "<" or char == "?":
                 self._state = ParserState.PARAMS
             elif PARAMS_RE.fullmatch(char) is None:
                 self._execute()
@@ -300,6 +305,14 @@ class Vt100Terminal(ABC):
                         kind="fg" if kind == "0" else "bg",
                         color=Color.from_hex(f"{r[:2]}{g[:2]}{b[:2]}"),
                     )
+                )
+                return
+
+            if device_attributes_match := DEVICE_ATTRIBUTES_RE.fullmatch(escape):
+                self._drs_request_times.popleft()
+                device_attributes = device_attributes_match.group()[3:-1].split(";")
+                self._event_buffer.append(
+                    DeviceAttributesReportEvent(frozenset(map(int, device_attributes)))
                 )
                 return
 
@@ -346,7 +359,7 @@ class Vt100Terminal(ABC):
         else:
             self._event_buffer.append(UnknownEscapeSequence(escape))
 
-    def _reset_escape(self):
+    def _reset_escape(self) -> None:
         """Execute escape buffer after a timeout period."""
         if self._state is ParserState.PASTE:
             paste = self._paste_buffer.getvalue()
@@ -368,7 +381,7 @@ class Vt100Terminal(ABC):
         if self._event_handler is not None:
             self._event_handler(self.events())
 
-    def flush(self):
+    def flush(self) -> None:
         """Write buffer to output stream and flush."""
         if len(self._out_buffer) == 0:
             return
@@ -378,21 +391,21 @@ class Vt100Terminal(ABC):
         sys.__stdout__.buffer.write(data)
         sys.__stdout__.flush()
 
-    def set_title(self, title: str):
+    def set_title(self, title: str) -> None:
         """Set terminal title."""
         self._out_buffer.append(f"\x1b]2;{title}\x07")
 
-    def enter_alternate_screen(self):
+    def enter_alternate_screen(self) -> None:
         """Enter alternate screen buffer."""
         self._out_buffer.append("\x1b[?1049h\x1b[H")
         self.in_alternate_screen = True
 
-    def exit_alternate_screen(self):
+    def exit_alternate_screen(self) -> None:
         """Exit alternate screen buffer."""
         self._out_buffer.append("\x1b[?1049l")
         self.in_alternate_screen = False
 
-    def enable_mouse_support(self):
+    def enable_mouse_support(self) -> None:
         """Enable mouse support in terminal."""
         self._out_buffer.append(
             "\x1b[?1000h"  # SET_VT200_MOUSE
@@ -401,7 +414,7 @@ class Vt100Terminal(ABC):
             "\x1b[?1015h"  # SET_URXVT_EXT_MODE_MOUSE
         )
 
-    def disable_mouse_support(self):
+    def disable_mouse_support(self) -> None:
         """Disable mouse support in terminal."""
         self._out_buffer.append(
             "\x1b[?1000l"  # SET_VT200_MOUSE
@@ -410,57 +423,63 @@ class Vt100Terminal(ABC):
             "\x1b[?1006l"  # SET_URXVT_EXT_MODE_MOUSE
         )
 
-    def reset_attributes(self):
+    def reset_attributes(self) -> None:
         """Reset character attributes."""
         self._out_buffer.append("\x1b[0m")
 
-    def enable_bracketed_paste(self):
+    def enable_bracketed_paste(self) -> None:
         """Enable bracketed paste in terminal."""
         self._out_buffer.append("\x1b[?2004h")
 
-    def disable_bracketed_paste(self):
+    def disable_bracketed_paste(self) -> None:
         """Disable bracketed paste in terminal."""
         self._out_buffer.append("\x1b[?2004l")
 
-    def show_cursor(self):
+    def show_cursor(self) -> None:
         """Show cursor in terminal."""
         self._out_buffer.append("\x1b[?25h")
 
-    def hide_cursor(self):
+    def hide_cursor(self) -> None:
         """Hide cursor in terminal."""
         self._out_buffer.append("\x1b[?25l")
 
-    def enable_reporting_focus(self):
+    def enable_reporting_focus(self) -> None:
         """Enable reporting terminal focus."""
         self._out_buffer.append("\x1b[?1004h")
 
-    def disable_reporting_focus(self):
+    def disable_reporting_focus(self) -> None:
         """Disable reporting terminal focus."""
         self._out_buffer.append("\x1b[?1004l")
 
-    def request_cursor_position_report(self):
+    def request_cursor_position_report(self) -> None:
         """Report current cursor position."""
         self._drs_request_times.append(perf_counter())
         self._out_buffer.append("\x1b[6n")
         self.flush()
 
-    def request_foreground_color(self):
+    def request_foreground_color(self) -> None:
         """Report terminal foreground color."""
         self._drs_request_times.append(perf_counter())
         self._out_buffer.append("\x1b]10;?\x1b\\")
         self.flush()
 
-    def request_background_color(self):
+    def request_background_color(self) -> None:
         """Report terminal background color."""
         self._drs_request_times.append(perf_counter())
         self._out_buffer.append("\x1b]11;?\x1b\\")
+        self.flush()
+
+    def request_device_attributes(self) -> None:
+        """Report device attributes."""
+        self._drs_request_times.append(perf_counter())
+        self._out_buffer.append("\x1b[c")
         self.flush()
 
     def expect_dsr(self) -> bool:
         """Return whether a device status report is expected."""
         return len(self._drs_request_times) > 0
 
-    def move_cursor(self, pos: Point):
+    def move_cursor(self, pos: Point) -> None:
         """
         Move cursor to ``pos``.
 
@@ -472,7 +491,7 @@ class Vt100Terminal(ABC):
         y, x = pos
         self._out_buffer.append(f"\x1b[{y + 1};{x + 1}H")
 
-    def erase_in_display(self, n: Literal[0, 1, 2, 3] = 0):
+    def erase_in_display(self, n: Literal[0, 1, 2, 3] = 0) -> None:
         """
         Clear part of the screen.
 

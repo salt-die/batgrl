@@ -9,6 +9,7 @@ from ..geometry import Point, Size
 __all__ = [
     "ColorReportEvent",
     "CursorPositionResponseEvent",
+    "DeviceAttributesReportEvent",
     "Event",
     "FocusEvent",
     "Key",
@@ -134,6 +135,29 @@ class ColorReportEvent(Event):
     """Whether report is for a foreground ("fg") or background ("bg") color."""
     color: Color
     """The reported color."""
+
+
+@dataclass
+class DeviceAttributesReportEvent(Event):
+    """
+    A primary device attributes report event.
+
+    A description of the primary device attributes can be found at https://vt100.net/docs/vt510-rm/chapter4.html.
+    (Search text for "Primary Device Attributes").
+
+    Parameters
+    ----------
+    device_attributes : frozenset[int]
+        Reported terminal attributes.
+
+    Attributes
+    ----------
+    device_attributes : frozenset[int]
+        Reported terminal attributes.
+    """
+
+    device_attributes: frozenset[int]
+    """Reported terminal attributes."""
 
 
 @dataclass

@@ -209,6 +209,8 @@ class WindowsTerminal(Vt100Terminal):
         Report terminal foreground color.
     request_background_color()
         Report terminal background color.
+    request_device_attributes()
+        Report device attributes.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)

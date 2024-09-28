@@ -20,6 +20,7 @@ from .terminal import Vt100Terminal, app_mode, get_platform_terminal
 from .terminal.events import (
     ColorReportEvent,
     CursorPositionResponseEvent,
+    DeviceAttributesReportEvent,
     Event,
     FocusEvent,
     KeyEvent,
@@ -140,6 +141,8 @@ class App(ABC):
         """Platform-specific terminal (only set while app is running)."""
         self._exit_value: Any = None
         """Value set by ``exit(exit_value)`` and returned by ``run()``."""
+        self._sixel_support: bool = False
+        """Whether terminal has sixel support."""
 
     def __repr__(self):
         return (
@@ -388,6 +391,8 @@ class App(ABC):
                         self.fg_color = event.color
                     else:
                         self.bg_color = event.color
+                elif isinstance(event, DeviceAttributesReportEvent):
+                    self._sixel_support = 4 in event.device_attributes
 
         async def auto_render():
             """Render screen every :attr:`render_interval` seconds."""
@@ -396,6 +401,8 @@ class App(ABC):
                 await asyncio.sleep(self.render_interval)
 
         with app_mode(terminal, event_handler):
+            terminal.request_device_attributes()
+
             if self.title is not None:
                 terminal.set_title(self.title)
 
