@@ -7,6 +7,7 @@ from ..colors import Color
 from ..geometry import Point, Size
 
 __all__ = [
+    "CharKey",
     "ColorReportEvent",
     "CursorPositionReportEvent",
     "DeviceAttributesReportEvent",
@@ -14,9 +15,13 @@ __all__ = [
     "FocusEvent",
     "Key",
     "KeyEvent",
+    "MouseButton",
     "MouseEvent",
+    "MouseEventType",
     "PasteEvent",
+    "PixelGeometryReportEvent",
     "ResizeEvent",
+    "SpecialKey",
 ]
 
 # fmt: off
