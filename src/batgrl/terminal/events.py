@@ -8,7 +8,7 @@ from ..geometry import Point, Size
 
 __all__ = [
     "ColorReportEvent",
-    "CursorPositionResponseEvent",
+    "CursorPositionReportEvent",
     "DeviceAttributesReportEvent",
     "Event",
     "FocusEvent",
@@ -92,9 +92,9 @@ class ResizeEvent(Event):
 
 
 @dataclass
-class CursorPositionResponseEvent(Event):
+class CursorPositionReportEvent(Event):
     """
-    A cursor position response event.
+    A cursor position report event.
 
     Parameters
     ----------
@@ -158,6 +158,32 @@ class DeviceAttributesReportEvent(Event):
 
     device_attributes: frozenset[int]
     """Reported terminal attributes."""
+
+
+@dataclass
+class PixelGeometryReportEvent(Event):
+    """
+    A pixel geometry report.
+
+    Parameters
+    ----------
+    kind : Literal["cell", "terminal"]
+        Whether report is pixels per cell or pixels in terminal.
+    geometry : Size
+        Size of the terminal cells or terminal (depending on ``kind``) in pixels.
+
+    Attributes
+    ----------
+    kind : Literal["cell", "terminal"]
+        Whether report is pixels per cell or pixels in terminal.
+    geometry : Size
+        Size of the terminal cells or terminal (depending on ``kind``) in pixels.
+    """
+
+    kind: Literal["cell", "terminal"]
+    """Whether report is pixels per cell or pixels in terminal."""
+    geometry: Size
+    """Size of the terminal cells or terminal (depending on ``kind``) in pixels."""
 
 
 @dataclass

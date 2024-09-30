@@ -75,6 +75,10 @@ class LinuxTerminal(Vt100Terminal):
         Report terminal background color.
     request_device_attributes()
         Report device attributes.
+    request_cell_geometry()
+        Report pixel geometry per cell.
+    request_terminal_geometry()
+        Report pixel geometry of terminal.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)
