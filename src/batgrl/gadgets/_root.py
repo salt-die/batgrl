@@ -11,8 +11,10 @@ from numpy.typing import NDArray
 if TYPE_CHECKING:
     from ..app import App
 
+from ..colors import BLACK, Color
 from ..text_tools import Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
+from .sixel_graphics import SixelGraphics
 
 
 class _Root(Gadget):
@@ -31,14 +33,20 @@ class _Root(Gadget):
         """The running app."""
         self._cell = new_cell()
         """Default cell of root canvas."""
+        self._bg_color = BLACK
+        """Background color of the app."""
         self._all_regions_valid = False
         """Whether all regions in gadget tree are valid."""
         self._region_valid = False
 
         self._resized: bool
         """Whether terminal has resized since last render."""
+        self._last_sixel: NDArray[np.uint8]
+        """Previous sixel rendering."""
         self._last_canvas: NDArray[Cell]
         """Previous rendering of gadget tree."""
+        self.sixel_canvas: NDArray[np.uint8]
+        """Current sixel rendering."""
         self.canvas: NDArray[Cell]
         """Current rendering of gadget tree."""
 
@@ -48,13 +56,26 @@ class _Root(Gadget):
         self.on_size()
 
     def __repr__(self):
-        return f"_Root(size={self.size}, pos={self.pos})"
+        return f"_Root(size={self._size}, pos={self._pos})"
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
         self._last_canvas = np.full(self._size, self._cell)
         self.canvas = self._last_canvas.copy()
+
+        h, w = SixelGraphics._scale_by_pixel_geometry(self._size)
+        self._last_sixel = np.full((h, w, 3), self._bg_color)
+        self.sixel_canvas = self._last_sixel.copy()
+
+    @property
+    def bg_color(self) -> Color:
+        """Background color of the app."""
+        return self._bg_color
+
+    @bg_color.setter
+    def bg_color(self, bg_color: Color):
+        self._bg_color = self._cell["bg_color"] = bg_color
 
     @property
     def absolute_pos(self) -> Point:
@@ -117,6 +138,9 @@ class _Root(Gadget):
             child._region_valid = True
             skip_valid_regions = False
 
+        self._all_regions_valid = True
+        self._resized = False
+
     def _render(self):
         """Render gadget tree into :attr:``canvas``."""
         with self._render_lock:
@@ -124,11 +148,32 @@ class _Root(Gadget):
                 self._set_regions()
 
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
-            self.canvas[:] = self._cell
+            canvas = self.canvas
+            canvas[:] = self._cell
+            self.sixel_canvas, self._last_sixel = self._last_sixel, self.sixel_canvas
+            sixel_canvas = self.sixel_canvas
+            sixel_canvas[:] = self.bg_color
 
+            # Region calculations should eventually be moved to `_set_regions`:
+            sixel_region = Region()
+            cell_region = Region()
             for child in self.walk():
-                if child._is_enabled and child._is_visible:
-                    child._render(self.canvas)
+                if not child._is_enabled or not child._is_visible:
+                    continue
 
-            self._all_regions_valid = True
-            self._resized = False
+                if isinstance(child, SixelGraphics):
+                    sixel_region += child._region
+                    cell_region -= child._region
+                    # Move bg color over:
+                    # for rect in (cell_region & child._region).rects():
+                    child._render(sixel_canvas)
+                else:
+                    cell_region += child._region
+                    # A non-sixel gadget may not necessarily destroy a sixel region.
+                    # Transparent whitespace on Text gadgets or transparent Panes can
+                    # intersect sixel regions without destroying bitmap...supporting
+                    # this will be a PITA though...
+                    sixel_region -= child._region
+                    # Move bg color over:
+                    # for rect in (sixel_region & child._region).rects():
+                    child._render(canvas)

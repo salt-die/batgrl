@@ -14,12 +14,13 @@ from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
 from .gadgets.gadget import Gadget
+from .gadgets.sixel_graphics import SixelGraphics
 from .geometry import Point, Size
 from .rendering import render_root
 from .terminal import Vt100Terminal, app_mode, get_platform_terminal
 from .terminal.events import (
     ColorReportEvent,
-    CursorPositionResponseEvent,
+    CursorPositionReportEvent,
     DeviceAttributesReportEvent,
     Event,
     FocusEvent,
@@ -27,6 +28,7 @@ from .terminal.events import (
     MouseButton,
     MouseEvent,
     PasteEvent,
+    PixelGeometryReportEvent,
     ResizeEvent,
 )
 
@@ -143,6 +145,8 @@ class App(ABC):
         """Value set by ``exit(exit_value)`` and returned by ``run()``."""
         self._sixel_support: bool = False
         """Whether terminal has sixel support."""
+        self._sixel_geometry: Size = Size(20, 10)
+        """Pixel geometry per cell."""
 
     def __repr__(self):
         return (
@@ -269,7 +273,7 @@ class App(ABC):
         if bg_color is None:
             self._terminal.request_background_color()
         else:
-            self.root._cell["bg_color"] = bg_color
+            self.root.bg_color = bg_color
 
     @abstractmethod
     async def on_start(self):
@@ -321,6 +325,7 @@ class App(ABC):
         """Build environment, create root, and schedule app-specific tasks."""
         terminal = self._terminal = get_platform_terminal()
         last_size: Size = terminal.get_size()
+        request_handle: asyncio.TimerHandle | None = None
         self.root = root = _Root(app=self, size=last_size)
 
         last_mouse_button: MouseButton = "no_button"
@@ -349,6 +354,8 @@ class App(ABC):
 
         def event_handler(events: list[Event]) -> None:
             """Handle input events."""
+            nonlocal last_size, request_handle
+
             for event in events:
                 if isinstance(event, KeyEvent):
                     if event == _CTRL_C:
@@ -367,7 +374,6 @@ class App(ABC):
                 elif isinstance(event, FocusEvent):
                     root.dispatch_terminal_focus(event)
                 elif isinstance(event, ResizeEvent):
-                    nonlocal last_size
                     if event.size == last_size:
                         # Sometimes spurious resize events can appear such as when a
                         # terminal first enables VT100 processing or when
@@ -379,7 +385,7 @@ class App(ABC):
                         self._scroll_inline()
                     else:
                         root.size = event.size
-                elif isinstance(event, CursorPositionResponseEvent):
+                elif isinstance(event, CursorPositionReportEvent):
                     if self.inline:
                         height, width = last_size
                         root.size = Size(
@@ -392,7 +398,25 @@ class App(ABC):
                     else:
                         self.bg_color = event.color
                 elif isinstance(event, DeviceAttributesReportEvent):
-                    self._sixel_support = 4 in event.device_attributes
+                    SixelGraphics._sixel_supported = 4 in event.device_attributes
+                    if SixelGraphics._sixel_supported:
+                        terminal.request_pixel_geometry()
+                        if request_handle is not None:
+                            request_handle.cancel()
+                        request_handle = asyncio.get_running_loop().call_later(
+                            0.1, terminal.request_terminal_geometry
+                        )
+                elif isinstance(event, PixelGeometryReportEvent):
+                    if event.kind == "cell":
+                        SixelGraphics._pixel_geometry = event.geometry
+                        if request_handle is not None:
+                            request_handle.cancel()
+                            request_handle = None
+                    else:
+                        SixelGraphics._pixel_geometry = Size(
+                            event.geometry.height // last_size.height,
+                            event.geometry.width // last_size.width,
+                        )
 
         async def auto_render():
             """Render screen every :attr:`render_interval` seconds."""
@@ -414,7 +438,7 @@ class App(ABC):
             if self.bg_color is None:
                 terminal.request_background_color()
             else:
-                self.root._cell["bg_color"] = self.bg_color
+                self.root.bg_color = self.bg_color
 
             if self.inline:
                 self._scroll_inline()
