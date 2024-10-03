@@ -17,7 +17,7 @@ PALETTE_256: Final[NDArray[np.uint8]] = np.array(
 
 
 def kmeans_quantization(
-    rgb: NDArray[np.uint8], n: int = 256
+    rgb: NDArray[np.uint8],
 ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
     """
     Quantize a texture array into ``n`` colors.
@@ -26,8 +26,6 @@ def kmeans_quantization(
     ----------
     rgb : NDArray[np.uint8]
         The texture to quantize.
-    n : int, default: 256
-        The number of colors in quantization.
 
     Returns
     -------
@@ -36,9 +34,10 @@ def kmeans_quantization(
         original texture.
     """
     h, w, depth = rgb.shape
+    flat = rgb.reshape(-1, depth)
     _, labels, centers = cv2.kmeans(
-        rgb.reshape(-1, depth).astype(np.float32),
-        n,
+        flat.astype(np.float32),
+        min(256, np.unique(flat, axis=0).shape[0]),
         None,
         (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0),
         10,
