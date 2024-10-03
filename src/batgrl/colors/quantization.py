@@ -1,8 +1,19 @@
 """Functions for quantizing RGB textures."""
 
+from typing import Final
+
 import cv2
 import numpy as np
 from numpy.typing import NDArray
+
+PALETTE_256: Final[NDArray[np.uint8]] = np.array(
+    np.meshgrid(
+        np.linspace(0, 255, 8, True, dtype=np.uint8),
+        np.linspace(0, 255, 8, True, dtype=np.uint8),
+        np.linspace(0, 255, 4, True, dtype=np.uint8),
+    )
+).T.reshape(-1, 3)
+"""Palette used for ``uint8_quantization``."""
 
 
 def kmeans_quantization(
@@ -20,7 +31,7 @@ def kmeans_quantization(
 
     Returns
     -------
-    tuple[NDArray[np.int32], NDArray[np.uint8]]
+    tuple[NDArray[np.uint8], NDArray[np.int32]]
         The quantized palette and an array of indices into palette of each pixel in
         original texture.
     """
@@ -34,3 +45,26 @@ def kmeans_quantization(
         cv2.KMEANS_PP_CENTERS,
     )
     return centers.astype(np.uint8), labels.reshape(h, w)
+
+
+def uint8_quantization(
+    rgb: NDArray[np.uint8],
+) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
+    """
+    Quantize a texture array into a 256-color palette with most significant bits.
+
+    Parameters
+    ----------
+    rgb : NDArray[np.uint8]
+        The texture to quantize.
+
+    Returns
+    -------
+    tuple[NDArray[np.uint8], NDArray[np.uint8]]
+        The quantized palette and an array of indices into palette of each pixel in
+        original texture.
+    """
+    bits = rgb & 0b11100000
+    bits[..., 1] >>= 3
+    bits[..., 2] >>= 6
+    return PALETTE_256, bits.sum(axis=-1, dtype=np.uint8)
