@@ -20,7 +20,7 @@ def kmeans_quantization(
     texture: NDArray[np.uint8],
 ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
     """
-    Quantize a texture array into ``n`` colors.
+    Quantize a texture array using kmeans clustering.
 
     Parameters
     ----------
@@ -50,7 +50,7 @@ def uint8_quantization(
     texture: NDArray[np.uint8],
 ) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
     """
-    Quantize a texture array into a 256-color palette with most significant bits.
+    Quantize a texture array using most significant bits.
 
     Parameters
     ----------
