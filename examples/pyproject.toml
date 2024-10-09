@@ -1,6 +1,6 @@
 [tool.ruff]
 extend = "../pyproject.toml"
-extend-ignore = [
+lint.extend-ignore = [
     "D100",  # Missing doc string in public module.
     "D101",  # Missing doc string in public class.
     "D102",  # Missing doc string in public method.
