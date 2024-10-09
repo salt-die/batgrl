@@ -31,7 +31,7 @@ from .gradients import (
     lighten_only,
     rainbow_gradient,
 )
-from .quantization import kmeans_quantization, uint8_quantization
+from .quantization import median_variance_quantization
 
 __all__ = [
     "ABLACK",
@@ -63,9 +63,8 @@ __all__ = [
     "Neptune",
     "darken_only",
     "gradient",
-    "kmeans_quantization",
     "lerp_colors",
     "lighten_only",
+    "median_variance_quantization",
     "rainbow_gradient",
-    "uint8_quantization",
 ]

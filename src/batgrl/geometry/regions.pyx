@@ -60,11 +60,11 @@ __all__ = ["Region"]
 class _Band:
     """A row of mutually exclusive rects."""
 
-    y1: cython.int
+    y1: int
     """The y-coordinate of the top of the band."""
-    y2: cython.int
+    y2: int
     """The y-coordinate of the bottom of the band."""
-    walls: list[cython.int]
+    walls: list[int]
     """
     Each contiguous pair of ints in `walls` represent the left and right side of a rect
     in the band.
@@ -90,15 +90,12 @@ cdef bint _bint_sub(bint a, bint b):
     return a & (1 - b)
 
 
-cdef list[cython.int] _merge(list[cython.int] a, list[cython.int] b, bool_op op):
+cdef list[int] _merge(list[int] a, list[int] b, bool_op op):
     """Merge the walls of two bands given a set operation."""
-    cdef cython.int i = 0
-    cdef cython.int j = 0
-    cdef cython.int threshold
-    cdef bint inside_a = 0
-    cdef bint inside_b = 0
-    cdef bint inside_region = 0
-    cdef list[cython.int] walls = []
+    cdef:
+        int i = 0, j = 0, threshold
+        bint inside_a = 0, inside_b = 0, inside_region = 0
+        list[int] walls = []
 
     while i < len(a) or j < len(b):
         if i >= len(a):
@@ -133,9 +130,9 @@ cdef list[cython.int] _merge(list[cython.int] a, list[cython.int] b, bool_op op)
 
 cdef _coalesce(bands: list[_Band]):
     """Remove empty bands and join contiguous bands with the same walls."""
-    cdef cython.int i = 0
-    cdef _Band a
-    cdef _Band b
+    cdef:
+        _Band a, b
+        int i = 0
 
     while i < len(bands) - 1:
         a = bands[i]
@@ -153,11 +150,11 @@ cdef _coalesce(bands: list[_Band]):
 
 
 cdef list[_Band] _merge_regions(list[_Band] a, list[_Band] b, bool_op op):
-    cdef list[_Band] bands = []
-    cdef cython.int i = 0
-    cdef cython.int j = 0
+    cdef:
+        _Band r, s
+        list[_Band] bands = []
+        int i = 0, j = 0, scanline = 0
 
-    cdef cython.int scanline = 0
     if len(a) > 0:
         if len(b) > 0:
             scanline = min(a[0].y1, b[0].y1)
@@ -165,9 +162,6 @@ cdef list[_Band] _merge_regions(list[_Band] a, list[_Band] b, bool_op op):
             scanline = a[0].y1
     elif len(b) > 0:
         scanline = b[0].y1
-
-    cdef _Band r
-    cdef _Band s
 
     while i < len(a) and j < len(b):
         r = a[i]
