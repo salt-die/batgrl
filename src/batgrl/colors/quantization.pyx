@@ -85,7 +85,7 @@ cdef void moments(
     int[:, :, ::1] mb,
     double[:, :, ::1] m2,
 ):
-    """compute cumulative moments."""
+    """Compute cumulative moments."""
     cdef:
         int line, line_r, line_g, line_b
         unsigned char r, g, b
@@ -435,7 +435,7 @@ def median_variance_quantization(
     hist3d(texture, wt, mr, mg, mb, m2, quant)
     moments(wt, mr, mg, mb, m2)
 
-    cubes[0].r0 = cubes[0].g0 = cubes[0].b0
+    cubes[0].r0 = cubes[0].g0 = cubes[0].b0 = 0
     cubes[0].r1 = cubes[0].g1 = cubes[0].b1 = 32
 
     i = 0
