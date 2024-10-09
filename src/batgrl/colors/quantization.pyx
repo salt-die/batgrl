@@ -20,10 +20,6 @@ from numpy.typing import NDArray
 
 __all__ = ["median_variance_quantization"]
 
-ctypedef fused int_or_float:
-    int
-    double
-
 cdef:
     unsigned char RED = 2
     unsigned char GREEN = 1
