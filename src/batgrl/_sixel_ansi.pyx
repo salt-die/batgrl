@@ -1,22 +1,22 @@
 from typing import Literal
 
-cpdef str to_sixel_ansi(
+cpdef str sixel_ansi(
     unsigned char[:, ::1] palette,
     unsigned char[:, ::1] pixels,
     output_mode: Literal[0, 1]=0,
 ):
     """
-    Generate sixel ansi from a rect of an rgb texture.
+    Generate sixel ansi from a palette and an array of indices into the palette.
 
     `output_mode` determines the background color of the bitmap. `0` sets the background
     to the terminal's background color (or the 0th color in the sixel palette). `1`
     means background pixels remain at their current color.
     """
-    cdef Py_ssize_t band, y, x, num_bands, h, w, ord_, start_y, end_y, i
-    cdef unsigned char color
-    cdef set[unsigned char] todo = set()
-    cdef set[unsigned char] used = set()
-    cdef list[str] ansi = [f"\x1bP;{output_mode};q"]
+    cdef:
+        Py_ssize_t band, y, x, num_bands, h, w, start_y, end_y
+        unsigned char color, ord_, i
+        set[unsigned char] todo = set(), used = set()
+        list[str] ansi = [f"\x1bP;{output_mode};q"]
 
     for y in range(palette.shape[0]):
         ansi.append(f"#{y};2;{palette[y][0]};{palette[y][1]};{palette[y][2]}")

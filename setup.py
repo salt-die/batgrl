@@ -9,7 +9,7 @@ setup(
         [
             "src/batgrl/geometry/regions.pyx",
             "src/batgrl/colors/quantization.pyx",
-            "src/batgrl/_rgb_to_sixel.pyx",
+            "src/batgrl/_sixel_ansi.pyx",
         ]
     ),
     include_dirs=[np.get_include()],
