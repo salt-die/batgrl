@@ -470,7 +470,7 @@ def median_variance_quantization(
         weight = <double>volume_int(&cubes[i], wt)
         if weight > 0:
             # Invert and scale weight so we can use multiplies and so that palette
-            # values will be between 1-100 for sixel.
+            # values will be between 0-100 for sixel.
             # Magic number is 100 / 255...
             weight = 0.39215686274509803 / weight
             palette[i, 0] = <unsigned char>(volume_int(&cubes[i], mr) * weight)
