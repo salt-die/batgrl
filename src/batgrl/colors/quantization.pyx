@@ -467,8 +467,9 @@ def median_variance_quantization(
 
     for i in range(j):
         mark(&cubes[i], i, tag)
-        weight = <double>volume_int(&cubes[i], wt) * 255 / 100
+        weight = <double>volume_int(&cubes[i], wt)
         if weight > 0:
+            weight *= 2.55  # Scale palette values to be between 1-100 for sixel.
             palette[i, 0] = <unsigned char>(volume_int(&cubes[i], mr) / weight)
             palette[i, 1] = <unsigned char>(volume_int(&cubes[i], mg) / weight)
             palette[i, 2] = <unsigned char>(volume_int(&cubes[i], mb) / weight)
