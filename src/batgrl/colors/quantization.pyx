@@ -413,10 +413,10 @@ def median_variance_quantization(
     """
     cdef:
         Py_ssize_t h, w, y, x
-        unsigned char i, j, k
+        int i, j, k
         double temp, weight
-        Box[255] cubes
-        double[255] vv
+        Box[256] cubes
+        double[256] vv
 
     h = texture.shape[0]
     w = texture.shape[1]
@@ -439,7 +439,7 @@ def median_variance_quantization(
 
     i = 0
     j = 1
-    while j < 255:
+    while j < 256:
         if cut(&cubes[i], &cubes[j], wt, mr, mg, mb):
             if cubes[i].volume > 1:
                 vv[i] = variance(&cubes[i], wt, mr, mg, mb, m2)
