@@ -414,7 +414,6 @@ def median_variance_quantization(
     cdef:
         Py_ssize_t h, w, y, x
         unsigned char i, j, k
-        int K = 256
         double temp, weight
         Box[256] cubes
         double[256] vv
@@ -440,7 +439,7 @@ def median_variance_quantization(
 
     i = 0
     j = 1
-    while j < K:
+    while j < 256:
         if cut(&cubes[i], &cubes[j], wt, mr, mg, mb):
             if cubes[i].volume > 1:
                 vv[i] = variance(&cubes[i], wt, mr, mg, mb, m2)
@@ -462,12 +461,11 @@ def median_variance_quantization(
                 i = k
 
         if temp <= 0.0:
-            K = j  # Not enough boxes.
             break
 
-    cdef cnp.ndarray[unsigned char, ndim=2] palette = np.ndarray((K, 3), dtype=np.uint8)
+    cdef cnp.ndarray[unsigned char, ndim=2] palette = np.ndarray((j, 3), dtype=np.uint8)
 
-    for i in range(K):
+    for i in range(j):
         mark(&cubes[i], i, tag)
         weight = <double>volume_int(&cubes[i], wt) * 255 / 100
         if weight > 0:
