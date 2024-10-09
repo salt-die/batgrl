@@ -250,7 +250,7 @@ cdef double variance(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double maximize(
+cdef double minimize(
     Box *cube,
     unsigned char direction,
     unsigned char first,
@@ -265,6 +265,7 @@ cdef double maximize(
     int[:, :, ::1] mg,
     int[:, :, ::1] mb,
 ):
+    """Minimize the sum of variances of two subboxes."""
     cdef:
         int half_w, half_r, half_g, half_b
         int base_w, base_r, base_g, base_b
@@ -321,50 +322,20 @@ cdef int cut(
     whole_g = volume_int(a, mg)
     whole_b = volume_int(a, mb)
 
-    max_r = maximize(
-        a,
-        RED,
-        a.r0 + 1,
-        a.r1,
-        &cut_r,
-        whole_w,
-        whole_r,
-        whole_g,
-        whole_b,
-        wt,
-        mr,
-        mg,
-        mb,
+    max_r = minimize(
+        a, RED, a.r0 + 1, a.r1, &cut_r,
+        whole_w, whole_r, whole_g, whole_b,
+        wt, mr, mg, mb,
     )
-    max_g = maximize(
-        a,
-        GREEN,
-        a.g0 + 1,
-        a.g1,
-        &cut_g,
-        whole_w,
-        whole_r,
-        whole_g,
-        whole_b,
-        wt,
-        mr,
-        mg,
-        mb,
+    max_g = minimize(
+        a, GREEN, a.g0 + 1, a.g1, &cut_g,
+        whole_w, whole_r, whole_g, whole_b,
+        wt, mr, mg, mb,
     )
-    max_b = maximize(
-        a,
-        BLUE,
-        a.b0 + 1,
-        a.b1,
-        &cut_b,
-        whole_w,
-        whole_r,
-        whole_g,
-        whole_b,
-        wt,
-        mr,
-        mg,
-        mb,
+    max_b = minimize(
+        a, BLUE, a.b0 + 1, a.b1, &cut_b,
+        whole_w, whole_r, whole_g, whole_b,
+        wt, mr, mg, mb,
     )
 
     if max_r >= max_g and max_r >= max_b:
