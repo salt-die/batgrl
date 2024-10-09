@@ -38,6 +38,9 @@ cdef:
         unsigned char b1
         int volume
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void hist3d(
     unsigned char[:, :, ::1] image,
     int[:, :, ::1] wt,
@@ -76,6 +79,9 @@ cdef void hist3d(
             quant[i, j, 1] = ing
             quant[i, j, 2] = inb
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void moments(
     int[:, :, ::1] wt,
     int[:, :, ::1] mr,
@@ -125,6 +131,9 @@ cdef void moments(
                 mb[r, g, b] = mb[r - 1, g, b] + area_blue[b]
                 m2[r, g, b] = m2[r - 1, g, b] + area_2[b]
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef int volume_int(Box *cube, int[:, :, ::1] moment):
     """Compute sum over a box of any given statistic."""
     return (
@@ -138,6 +147,9 @@ cdef int volume_int(Box *cube, int[:, :, ::1] moment):
         - moment[cube.r0, cube.g0, cube.b0]
     )
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef double volume_float(Box *cube, double[:, :, ::1] moment):
     """Compute sum over a box of any given statistic."""
     return (
@@ -151,6 +163,9 @@ cdef double volume_float(Box *cube, double[:, :, ::1] moment):
         - moment[cube.r0, cube.g0, cube.b0]
     )
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef int bottom(Box *cube, unsigned char direction, int[:, :, ::1] moment):
     """
     Compute part of volume(cube, mmt) that doesn't depend on r1, g1, or b1
@@ -179,6 +194,9 @@ cdef int bottom(Box *cube, unsigned char direction, int[:, :, ::1] moment):
         )
     return 0
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef int top(
     Box *cube,
     unsigned char direction,
@@ -212,6 +230,9 @@ cdef int top(
         )
     return 0
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef double variance(
     Box *cube,
     int[:, :, ::1] wt,
@@ -231,6 +252,8 @@ cdef double variance(
     )
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef double maximize(
     Box *cube,
     unsigned char direction,
@@ -281,6 +304,9 @@ cdef double maximize(
 
     return max
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef int cut(
     Box *a,
     Box *b,
@@ -375,6 +401,9 @@ cdef int cut(
     b.volume = (b.r1 - b.r0) * (b.g1 - b.g0) * (b.b1 - b.b0)
     return 1
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
     cdef Py_ssize_t r, g, b
     for r in range(cube.r0 + 1, cube.r1 + 1):
@@ -383,8 +412,8 @@ cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
                 tag[r, g, b] = label
 
 
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def median_variance_quantization(
     cnp.ndarray[unsigned char, ndim=3] image,
 ) -> tuple[NDArray[np.uint8], NDArray[np.uint8]]:
