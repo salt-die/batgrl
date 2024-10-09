@@ -21,9 +21,7 @@ from numpy.typing import NDArray
 __all__ = ["median_variance_quantization"]
 
 cdef:
-    unsigned char RED = 2
-    unsigned char GREEN = 1
-    unsigned char BLUE = 0
+    unsigned char RED = 2, GREEN = 1, BLUE = 0
 
     struct Box:
         unsigned char r0
