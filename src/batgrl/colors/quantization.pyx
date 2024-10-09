@@ -270,14 +270,14 @@ cdef double minimize(
         int half_w, half_r, half_g, half_b
         int base_w, base_r, base_g, base_b
         unsigned char i
-        double temp, max
+        double temp, max_
 
     base_w = bottom(cube, direction, wt)
     base_r = bottom(cube, direction, mr)
     base_g = bottom(cube, direction, mg)
     base_b = bottom(cube, direction, mb)
 
-    max = 0.0
+    max_ = 0.0
     cut[0] = -1
     for i in range(first, last):
         half_w = base_w + top(cube, direction, wt, i)
@@ -295,11 +295,11 @@ cdef double minimize(
         half_b = whole_b - half_b
         temp += <double>(half_r**2 + half_g**2 + half_b**2) / <double>half_w
 
-        if temp > max:
-            max = temp
+        if temp > max_:
+            max_ = temp
             cut[0] = i
 
-    return max
+    return max_
 
 
 @cython.boundscheck(False)
