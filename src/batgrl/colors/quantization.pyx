@@ -3,8 +3,8 @@ Cython implementation of Wu's Color Quantizer.
 
 Notes
 -----
-Greedy orthogonal bipartition of RGB space for variance minimization aided
-by inclusion-exclusion tricks. For speed no nearest neighbor search is done.
+Greedy orthogonal bipartition of RGB space for variance minimization aided by
+inclusion-exclusion tricks. For speed, no nearest neighbor search is done.
 
 References
 ----------
@@ -42,7 +42,7 @@ cdef:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void hist3d(
-    unsigned char[:, :, ::1] image,
+    unsigned char[:, :, ::1] texture,
     int[:, :, ::1] wt,
     int[:, :, ::1] mr,
     int[:, :, ::1] mg,
@@ -52,18 +52,18 @@ cdef void hist3d(
 ):
     """Build 3-D color histogram of counts."""
     cdef:
-        Py_ssize_t h, w, i, j
+        Py_ssize_t h, w, y, x
         unsigned char r, g, b, inr, ing, inb
         cnp.ndarray[double, ndim=1] sqr = np.arange(256, dtype=float)**2
 
-    h = image.shape[0]
-    w = image.shape[1]
+    h = texture.shape[0]
+    w = texture.shape[1]
 
-    for i in range(h):
-        for j in range(w):
-            r = image[i, j][0]
-            g = image[i, j][1]
-            b = image[i, j][2]
+    for y in range(h):
+        for x in range(w):
+            r = texture[y, x][0]
+            g = texture[y, x][1]
+            b = texture[y, x][2]
 
             inr = (r >> 3) + 1
             ing = (g >> 3) + 1
@@ -75,9 +75,9 @@ cdef void hist3d(
             mb[inr, ing, inb] += b
             m2[inr, ing, inb] += sqr[r] + sqr[g] + sqr[b]
 
-            quant[i, j, 0] = inr
-            quant[i, j, 1] = ing
-            quant[i, j, 2] = inb
+            quant[y, x, 0] = inr
+            quant[y, x, 1] = ing
+            quant[y, x, 2] = inb
 
 
 @cython.boundscheck(False)
@@ -92,7 +92,7 @@ cdef void moments(
     """compute cumulative moments."""
     cdef:
         int line, line_r, line_g, line_b
-        Py_ssize_t r, g, b
+        unsigned char r, g, b
         double line_2
         cnp.ndarray[int, ndim=1] area = np.empty(33, dtype=np.intc)
         cnp.ndarray[int, ndim=1] area_red = np.empty(33, dtype=np.intc)
@@ -415,8 +415,35 @@ cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def median_variance_quantization(
-    cnp.ndarray[unsigned char, ndim=3] image,
+    cnp.ndarray[unsigned char, ndim=3] texture,
 ) -> tuple[NDArray[np.uint8], NDArray[np.uint8]]:
+    """
+    Cython implementation of Wu's Color Quantizer.
+
+    Parameters
+    ----------
+    texture : NDArray[np.uint8]
+        A RGB or RGBA texture to quantize.
+
+    Returns
+    -------
+    tuple[NDArray[np.uint8], NDArray[np.uint8]]
+        The quantized palette and an array of indices into the palette of each pixel in
+        the original texture. Palette color channels range from 0 to 100 to conform to
+        the sixel format.
+
+    Notes
+    -----
+    Greedy orthogonal bipartition of RGB space for variance minimization aided by
+    inclusion-exclusion tricks. For speed, no nearest neighbor search is done.
+
+    References
+    ----------
+    Xiaolin Wu, "Efficient Statistical Computations for Optimal Color Quantization",
+    Graphics Gems II, (ed. James Arvo), Academic Press: Boston, 1991.
+
+    `Wu's Implementation <https://gist.github.com/bert/1192520>`_
+    """
     cdef:
         Py_ssize_t h, w, y, x
         unsigned char i, j, k
@@ -425,8 +452,8 @@ def median_variance_quantization(
         Box[256] cubes
         double[256] vv
 
-    h = image.shape[0]
-    w = image.shape[1]
+    h = texture.shape[0]
+    w = texture.shape[1]
 
     cdef:
         cnp.ndarray[unsigned char, ndim=3] quant = np.zeros((h, w, 3), dtype=np.uint8)
@@ -438,7 +465,7 @@ def median_variance_quantization(
         cnp.ndarray[double, ndim=3] m2 = np.zeros((33, 33, 33), dtype=float)
         cnp.ndarray[unsigned char, ndim=3] tag = np.zeros((33, 33, 33), dtype=np.uint8)
 
-    hist3d(image, wt, mr, mg, mb, m2, quant)
+    hist3d(texture, wt, mr, mg, mb, m2, quant)
     moments(wt, mr, mg, mb, m2)
 
     cubes[0].r0 = cubes[0].g0 = cubes[0].b0
