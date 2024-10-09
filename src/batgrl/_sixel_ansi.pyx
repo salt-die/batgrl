@@ -1,5 +1,10 @@
 from typing import Literal
 
+import cython
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef str sixel_ansi(
     unsigned char[:, ::1] palette,
     unsigned char[:, ::1] pixels,
@@ -13,8 +18,8 @@ cpdef str sixel_ansi(
     means background pixels remain at their current color.
     """
     cdef:
-        Py_ssize_t band, y, x, num_bands, h, w, start_y, end_y
-        unsigned char color, ord_, i
+        Py_ssize_t h, w, y, x, start_y, end_y, num_bands, band
+        unsigned char color, ord_
         set[unsigned char] todo = set(), used = set()
         list[str] ansi = [f"\x1bP;{output_mode};q"]
 
@@ -28,12 +33,11 @@ cpdef str sixel_ansi(
         num_bands += 1
 
     for band in range(num_bands):
-        todo.clear()
-        used.clear()
         start_y = 6 * band
         end_y = min(start_y + 6, h)
-        x = 0
-        todo.add(pixels[start_y][x])
+        todo.clear()
+        used.clear()
+        todo.add(pixels[start_y][0])
 
         while True:
             color = todo.pop()
@@ -41,15 +45,12 @@ cpdef str sixel_ansi(
             ansi.append(f"#{color}")
 
             for x in range(w):
-                i = 1
                 ord_ = 63
-
                 for y in range(start_y, end_y):
                     if pixels[y][x] == color:
-                        ord_ += i
+                        ord_ += 1 << (y - start_y)
                     elif pixels[y][x] not in used:
                         todo.add(pixels[y][x])
-                    i <<= 1
 
                 ansi.append(chr(ord_))
 
