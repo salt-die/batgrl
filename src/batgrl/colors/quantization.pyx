@@ -293,7 +293,7 @@ cdef double minimize(
         half_r = whole_r - half_r
         half_g = whole_g - half_g
         half_b = whole_b - half_b
-        temp += <double>(half_r**2 + half_g**2 + half_b**2) / <double> half_w
+        temp += <double>(half_r**2 + half_g**2 + half_b**2) / <double>half_w
 
         if temp > max:
             max = temp
