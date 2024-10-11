@@ -34,6 +34,7 @@ References
 ----------
 .. [1] `sixel.c <https://github.com/dankamongmen/notcurses/blob/master/src/lib/sixel.c>`_.
 """
+
 from typing import Literal
 
 from libc.string cimport memset
