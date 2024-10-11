@@ -13,8 +13,8 @@ inclusive.
 The remaining data for an image is split into 6-pixel high bands. A six-pixel tall
 column in that band is called a sixel. For each band, for every color in the band output
 "#i" with ``i`` being a color in the palette followed by color data finally ending with
-"$" to return to the start of the band (to output a new color). After all colors in the
-band are done, output "-".
+"$" to return to the start of the band (to output a new color) or "-" to move to the
+next band.
 
 For the color data, for each pixel in a sixel with values, ``n``, from 0-5 from top-to-
 bottom, if that pixel matches the current color add ``2**n``. The result is a value from
