@@ -16,7 +16,7 @@ cdef:
 
     struct SixelMap:
         Py_ssize_t nbands, ncolors
-        char*** color_bands
+        char*** bands
 
     struct ActiveColor:
         int color
@@ -29,16 +29,16 @@ cdef inline Py_ssize_t sixel_band_count(Py_ssize_t h):
     return sixel_count(h, 1)
 
 cdef SixelMap* new_sixel_map(unsigned char[:, ::1] pixels):
-    cdef SixelMap* result = <SixelMap*>malloc(sizeof(SixelMap))
-    if result is NULL:
+    cdef SixelMap* sixel_map = <SixelMap*>malloc(sizeof(SixelMap))
+    if sixel_map is NULL:
         return NULL
-    result.ncolors = 0
-    result.nbands = sixel_band_count(pixels.shape[0])
-    result.color_bands = <char***>malloc(sizeof(char**) * result.nbands)
-    if result.color_bands is NULL:
-        free(result)
+    sixel_map.ncolors = 0
+    sixel_map.nbands = sixel_band_count(pixels.shape[0])
+    sixel_map.bands = <char***>malloc(sizeof(char**) * sixel_map.nbands)
+    if sixel_map.bands is NULL:
+        free(sixel_map)
         return NULL
-    return result
+    return sixel_map
 
 cdef void color_band_free(char** color_band, Py_ssize_t ncolors):
     cdef Py_ssize_t i
@@ -50,9 +50,9 @@ cdef void color_band_free(char** color_band, Py_ssize_t ncolors):
 cdef void sixel_map_free(SixelMap *sixel_map):
     cdef Py_ssize_t i
     for i in range(sixel_map.nbands):
-        if sixel_map.color_bands[i] is not NULL:
-            color_band_free(sixel_map.color_bands[i], sixel_map.ncolors)
-    free(sixel_map.color_bands)
+        if sixel_map.bands[i] is not NULL:
+            color_band_free(sixel_map.bands[i], sixel_map.ncolors)
+    free(sixel_map.bands)
     free(sixel_map)
 
 cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char rep):
@@ -66,17 +66,17 @@ cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char
         length[0] += 1
     color[length[0]] = 0
 
-cdef inline char* sixel_band_extend(
-    char* color, BandExtender *extender, Py_ssize_t w, Py_ssize_t x
+cdef inline char* color_band_extend(
+    char* color_band, BandExtender *extender, Py_ssize_t w, Py_ssize_t x
 ):
-    if color is NULL:
-        color = <char*>malloc(w + 1)
-    if color is NULL:
+    if color_band is NULL:
+        color_band = <char*>malloc(w + 1)
+    if color_band is NULL:
         return NULL
-    write_rle(color, &extender.length, extender.rle, extender.rep + 63)
+    write_rle(color_band, &extender.length, extender.rle, extender.rep + 63)
     cdef Py_ssize_t clear_len = x - (extender.rle + extender.wrote)
-    write_rle(color, &extender.length, clear_len, 63)
-    return color
+    write_rle(color_band, &extender.length, clear_len, 63)
+    return color_band
 
 cdef inline int build_sixel_band(
     int n,
@@ -89,16 +89,18 @@ cdef inline int build_sixel_band(
         size_t band_size = sizeof(char*) * ncolors
         size_t extenders_size = sizeof(BandExtender) * ncolors
         BandExtender *extenders = <BandExtender*>malloc(extenders_size)
+        char** color_bands
 
     if extenders is NULL:
         return -1
 
-    sixel_map.color_bands[n] = <char**>malloc(band_size)
-    if sixel_map.color_bands[n] is NULL:
+    sixel_map.bands[n] = <char**>malloc(band_size)
+    color_bands = sixel_map.bands[n]
+    if color_bands is NULL:
         free(extenders)
         return -1
 
-    memset(sixel_map.color_bands[n], 0, band_size)
+    memset(color_bands, 0, band_size)
     memset(extenders, 0, extenders_size)
 
     cdef:
@@ -131,10 +133,10 @@ cdef inline int build_sixel_band(
             ):
                 extender.rle += 1
             else:
-                sixel_map.color_bands[n][color] = sixel_band_extend(
-                    sixel_map.color_bands[n][color], extender, w, x
+                color_bands[color] = color_band_extend(
+                    color_bands[color], extender, w, x
                 )
-                if sixel_map.color_bands[n][color] is NULL:
+                if color_bands[color] is NULL:
                     free(extenders)
                     return -1
                 extender.rle = 1
@@ -144,12 +146,10 @@ cdef inline int build_sixel_band(
     for color in range(ncolors):
         extender = &extenders[color]
         if extender.rle == 0:
-            sixel_map.color_bands[n][color] = NULL
+            color_bands[color] = NULL
         else:
-            sixel_map.color_bands[n][color] = sixel_band_extend(
-                sixel_map.color_bands[n][color], extender, w, x
-            )
-            if sixel_map.color_bands[n][color] is NULL:
+            color_bands[color] = color_band_extend(color_bands[color], extender, w, x)
+            if color_bands[color] is NULL:
                 free(extenders)
                 return -1
 
@@ -173,6 +173,7 @@ cpdef str sixel_ansi(
         Py_ssize_t ncolors = palette.shape[0], n
         int color, close_previous
         SixelMap* sixel_map = new_sixel_map(pixels)
+        char** color_bands
 
     if sixel_map is NULL:
         raise MemoryError
@@ -184,27 +185,26 @@ cpdef str sixel_ansi(
             sixel_map_free(sixel_map)
             raise MemoryError
 
-    cdef list[str] lines = [f"\x1bP;{output_mode};q"]
+    cdef list[str] ansi = [f"\x1bP;{output_mode};q"]
     for color in range(ncolors):
-        lines.append(
+        ansi.append(
             f"#{color};2;{palette[color][0]};{palette[color][1]};{palette[color][2]}"
         )
 
     for n in range(sixel_map.nbands):
         close_previous = 0
-        color_band = sixel_map.color_bands[n]
-        assert color_band is not NULL
+        color_bands = sixel_map.bands[n]
         for color in range(ncolors):
-            if color_band[color] is NULL:
+            if color_bands[color] is NULL:
                 continue
             if close_previous == 1:
-                lines.append("$")
+                ansi.append("$")
             else:
                 close_previous = 1
-            lines.append(f"#{color}")
-            lines.append(color_band[color].decode())
-        lines.append("-")
+            ansi.append(f"#{color}")
+            ansi.append(color_bands[color].decode())
+        ansi.append("-")
 
     sixel_map_free(sixel_map)  # TODO: Return as a python object.
-    lines.append("\x1b\\")
-    return "".join(lines)
+    ansi.append("\x1b\\")
+    return "".join(ansi)
