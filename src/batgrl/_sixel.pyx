@@ -32,6 +32,7 @@ cdef SixelMap* new_sixel_map(unsigned char[:, ::1] pixels):
     cdef SixelMap* result = <SixelMap*>malloc(sizeof(SixelMap))
     if result is NULL:
         return NULL
+    result.ncolors = 0
     result.nbands = sixel_band_count(pixels.shape[0])
     result.color_bands = <char***>malloc(sizeof(char**) * result.nbands)
     if result.color_bands is NULL:
@@ -39,15 +40,20 @@ cdef SixelMap* new_sixel_map(unsigned char[:, ::1] pixels):
         return NULL
     return result
 
+cdef void color_band_free(char** color_band, Py_ssize_t ncolors):
+    cdef Py_ssize_t i
+    for i in range(ncolors):
+        if color_band[i] is not NULL:
+            free(color_band[i])
+    free(color_band)
+
 cdef void sixel_map_free(SixelMap *sixel_map):
     cdef Py_ssize_t i
-    if sixel_map is not NULL:
-        if sixel_map.color_bands is not NULL:
-            for i in range(sixel_map.nbands):
-                if sixel_map.color_bands[i] is not NULL:
-                    free(sixel_map.color_bands[i])
-            free(sixel_map.color_bands)
-        free(sixel_map)
+    for i in range(sixel_map.nbands):
+        if sixel_map.color_bands[i] is not NULL:
+            color_band_free(sixel_map.color_bands[i], sixel_map.ncolors)
+    free(sixel_map.color_bands)
+    free(sixel_map)
 
 cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char rep):
     if rle > 2:
@@ -170,6 +176,7 @@ cpdef str sixel_ansi(
 
     if sixel_map is NULL:
         raise MemoryError
+    sixel_map.ncolors = ncolors
 
     for n in range(sixel_map.nbands):
         # TODO: Can be parallelized.
