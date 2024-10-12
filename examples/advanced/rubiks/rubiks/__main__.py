@@ -19,4 +19,4 @@ class RubiksApp(App):
 
 
 if __name__ == "__main__":
-    RubiksApp(title="Rubiks 3D").run()
+    RubiksApp(title="Rubiks 3-D").run()

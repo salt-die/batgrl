@@ -1,4 +1,4 @@
-"""A 2D line plot gadget."""
+"""A 2-D line plot gadget."""
 
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ class _LinePlotProperty:
 
 class LinePlot(Gadget):
     r"""
-    A 2D line plot gadget.
+    A 2-D line plot gadget.
 
     Parameters
     ----------
