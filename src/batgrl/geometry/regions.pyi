@@ -1,6 +1,8 @@
 """
 Functions and classes for determining gadget regions.
 
+Notes
+-----
 A gadget's region is calculated as a first step in compositing to determine its visible
 area in the terminal.
 
