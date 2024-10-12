@@ -28,7 +28,7 @@ the pixel data. First, the pixels are split into 6-pixel tall bands. For each ba
 each sixel, each color encountered in that sixel is stored as an "active color".
 Afterwards, for each active color, a new color band is created or a previously created
 color band for that color is extended so that all color bands of a band are built up
-simlutaneously.
+simultaneously.
 
 References
 ----------
