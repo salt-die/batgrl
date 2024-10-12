@@ -35,8 +35,6 @@ References
 .. [1] `sixel.c <https://github.com/dankamongmen/notcurses/blob/master/src/lib/sixel.c>`_.
 """
 
-from typing import Literal
-
 from libc.string cimport memset
 from libc.stdio cimport sprintf
 from libc.stdlib cimport malloc, free
@@ -189,18 +187,22 @@ cdef inline int build_sixel_band(
     free(extenders)
     return 0
 
-cpdef str sixel_ansi(
-    unsigned char[:, ::1] palette,
-    unsigned char[:, ::1] pixels,
-    output_mode: Literal[0, 1]=0,
-):
+cpdef str sixel_ansi(unsigned char[:, ::1] palette, unsigned char[:, ::1] pixels):
     """
     Generate sixel ansi from a palette and an array of indices into the palette.
 
-    `output_mode` determines how unspecified pixels are handled (i.e., the background
-    color of the bitmap). `0` sets the background to the terminal's background color (or
-    the 0th color in the sixel palette). `1` leaves unspecified pixels untouched (i.e.,
-    "transparent" mode).
+    Parameters
+    ----------
+    palette : NDArray[np.uint8]
+        An array of RGB colors scaled to 0-100 which is indexed by pixels. Palettes
+        should not be more than 256 colors.
+    pixels : NDArray[np.uint8]
+        An index into the palette for each pixel in an image.
+
+    Returns
+    -------
+    str
+        The sixel ansi to generate an image give by palette and pixels.
     """
     cdef:
         Py_ssize_t ncolors = palette.shape[0], n
@@ -218,7 +220,8 @@ cpdef str sixel_ansi(
             sixel_map_free(sixel_map)
             raise MemoryError
 
-    cdef list[str] ansi = [f"\x1bP;{output_mode};q"]
+    # Using transparent (the 1 in "\x1bP;1;q") mode, but all pixels are specified.
+    cdef list[str] ansi = ["\x1bP;1;q"]
     for color in range(ncolors):
         ansi.append(
             f"#{color};2;{palette[color][0]};{palette[color][1]};{palette[color][2]}"

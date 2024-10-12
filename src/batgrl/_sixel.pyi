@@ -35,21 +35,23 @@ References
 .. [1] `sixel.c <https://github.com/dankamongmen/notcurses/blob/master/src/lib/sixel.c>`_.
 """
 
-from typing import Literal
-
 import numpy as np
 from numpy.typing import NDArray
 
-def sixel_ansi(
-    palette: NDArray[np.uint8],
-    pixels: NDArray[np.uint8],
-    output_mode: Literal[0, 1] = 0,
-) -> str:
+def sixel_ansi(palette: NDArray[np.uint8], pixels: NDArray[np.uint8]) -> str:
     """
     Generate sixel ansi from a palette and an array of indices into the palette.
 
-    `output_mode` determines how unspecified pixels are handled (i.e., the background
-    color of the bitmap). `0` sets the background to the terminal's background color (or
-    the 0th color in the sixel palette). `1` leaves unspecified pixels untouched (i.e.,
-    "transparent" mode).
+    Parameters
+    ----------
+    palette : NDArray[np.uint8]
+        An array of RGB colors scaled to 0-100 which is indexed by pixels. Palettes
+        should not be more than 256 colors.
+    pixels : NDArray[np.uint8]
+        An index into the palette for each pixel in an image.
+
+    Returns
+    -------
+    str
+        The sixel ansi to generate an image give by palette and pixels.
     """
