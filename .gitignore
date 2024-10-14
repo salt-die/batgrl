@@ -1,7 +1,8 @@
 *.c
+*.egg-info
 *.pyc
 *.pyd
-*.egg-info
+*.so
 .vscode/
 build/
 dist/
