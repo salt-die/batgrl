@@ -17,7 +17,7 @@ from .gadgets.gadget import Gadget
 from .gadgets.sixel_graphics import SixelGraphics
 from .geometry import Point, Size
 from .rendering import render_root
-from .terminal import Vt100Terminal, app_mode, get_platform_terminal
+from .terminal import Vt100Terminal, app_mode, get_platform_terminal, get_sixel_info
 from .terminal.events import (
     ColorReportEvent,
     CursorPositionReportEvent,
@@ -403,10 +403,12 @@ class App(ABC):
                 render_root(root, terminal)
                 await asyncio.sleep(self.render_interval)
 
-        async with app_mode(terminal, event_handler) as (
-            SixelGraphics._sixel_support,
-            SixelGraphics._pixel_geometry,
-        ):
+        with app_mode(terminal, event_handler):
+            (
+                SixelGraphics._sixel_support,
+                SixelGraphics._pixel_geometry,
+            ) = await get_sixel_info(terminal)
+
             if self.title is not None:
                 terminal.set_title(self.title)
 

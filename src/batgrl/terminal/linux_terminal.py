@@ -133,7 +133,8 @@ class LinuxTerminal(Vt100Terminal):
 
         def process():
             self.process_stdin()
-            event_handler(self.events())
+            if self._event_handler is not None:
+                self._event_handler(self.events())
 
         loop = asyncio.get_running_loop()
         loop.add_reader(STDIN, process)

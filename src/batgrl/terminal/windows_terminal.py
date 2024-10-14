@@ -312,7 +312,8 @@ class WindowsTerminal(Vt100Terminal):
         def ready():
             try:
                 self.process_stdin()
-                event_handler(self.events())
+                if self._event_handler is not None:
+                    self._event_handler(self.events())
             finally:
                 loop.run_in_executor(None, wait)
 
