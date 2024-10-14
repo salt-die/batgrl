@@ -300,14 +300,14 @@ class WindowsTerminal(Vt100Terminal):
         """
         self._event_buffer.clear()
         self._event_handler = event_handler
-        loop = asyncio.get_running_loop()
-        wait_for = windll.kernel32.WaitForMultipleObjects
-        self._remove_event = HANDLE(
+        self._remove_event = remove_event = HANDLE(
             windll.kernel32.CreateEventA(
                 SECURITY_ATTRIBUTES(), BOOL(True), BOOL(False), None
             )
         )
-        EVENTS = (HANDLE * 2)(self._remove_event, STDIN)
+        loop = asyncio.get_running_loop()
+        wait_for = windll.kernel32.WaitForMultipleObjects
+        EVENTS = (HANDLE * 2)(remove_event, STDIN)
 
         def ready():
             try:
@@ -318,8 +318,7 @@ class WindowsTerminal(Vt100Terminal):
 
         def wait():
             if wait_for(2, EVENTS, BOOL(False), DWORD(-1)) == 0:
-                windll.kernel32.CloseHandle(self._remove_event)
-                del self._remove_event
+                windll.kernel32.CloseHandle(remove_event)
             else:
                 loop.call_soon_threadsafe(ready)
 
