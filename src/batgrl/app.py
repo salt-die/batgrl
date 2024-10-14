@@ -21,14 +21,12 @@ from .terminal import Vt100Terminal, app_mode, get_platform_terminal
 from .terminal.events import (
     ColorReportEvent,
     CursorPositionReportEvent,
-    DeviceAttributesReportEvent,
     Event,
     FocusEvent,
     KeyEvent,
     MouseButton,
     MouseEvent,
     PasteEvent,
-    PixelGeometryReportEvent,
     ResizeEvent,
 )
 
@@ -49,9 +47,11 @@ class App(ABC):
     Parameters
     ----------
     fg_color : Color | None, default: None
-        Foreground color of app. If not given, try to use terminal foreground.
+        Foreground color of the root gadget. If not given, the app will try to use the
+        terminal foreground.
     bg_color : Color | None, default: None
-        Background color of app. If not given, try to use terminal background.
+        Background color of the root gadget. If not given, the app will try to use the
+        terminal background.
     title : str | None, default: None
         The terminal's title.
     inline : bool, default: False
@@ -70,9 +70,9 @@ class App(ABC):
     Attributes
     ----------
     fg_color : Color | None
-        Foreground color of app.
+        Foreground color of the root gadget.
     bg_color : Color
-        Background color of app.
+        Background color of the root gadget.
     title : str | None
         The terminal's title.
     inline : bool
@@ -122,9 +122,9 @@ class App(ABC):
         self.root: _Root | None = None
         """Root of gadget tree (only set while app is running)."""
         self.fg_color = fg_color
-        """Foreground color of app."""
+        """Foreground color of the root gadget."""
         self.bg_color = bg_color
-        """Background color of app."""
+        """Background color of the root gadget."""
         self.title = title
         """The terminal's title."""
         self._inline = inline
@@ -233,7 +233,7 @@ class App(ABC):
     @property
     def fg_color(self) -> Color | None:
         """
-        Foreground color of app.
+        Foreground color of the root gadget.
 
         If set to ``None``, the terminal foreground color will be queried. If the
         terminal reports the foreground color, then :attr:``fg_color`` will be updated
@@ -256,7 +256,7 @@ class App(ABC):
     @property
     def bg_color(self) -> Color | None:
         """
-        Background color of app.
+        Background color of the root gadget.
 
         If set to ``None``, the terminal background color will be queried. If the
         terminal reports the background color, then :attr:``bg_color`` will be updated
@@ -325,7 +325,6 @@ class App(ABC):
         """Build environment, create root, and schedule app-specific tasks."""
         terminal = self._terminal = get_platform_terminal()
         last_size: Size = terminal.get_size()
-        request_handle: asyncio.TimerHandle | None = None
         self.root = root = _Root(app=self, size=last_size)
 
         last_mouse_button: MouseButton = "no_button"
@@ -354,7 +353,7 @@ class App(ABC):
 
         def event_handler(events: list[Event]) -> None:
             """Handle input events."""
-            nonlocal last_size, request_handle
+            nonlocal last_size
 
             for event in events:
                 if isinstance(event, KeyEvent):
@@ -397,26 +396,6 @@ class App(ABC):
                         self.fg_color = event.color
                     else:
                         self.bg_color = event.color
-                elif isinstance(event, DeviceAttributesReportEvent):
-                    SixelGraphics._sixel_supported = 4 in event.device_attributes
-                    if SixelGraphics._sixel_supported:
-                        terminal.request_pixel_geometry()
-                        if request_handle is not None:
-                            request_handle.cancel()
-                        request_handle = asyncio.get_running_loop().call_later(
-                            0.1, terminal.request_terminal_geometry
-                        )
-                elif isinstance(event, PixelGeometryReportEvent):
-                    if event.kind == "cell":
-                        SixelGraphics._pixel_geometry = event.geometry
-                        if request_handle is not None:
-                            request_handle.cancel()
-                            request_handle = None
-                    else:
-                        SixelGraphics._pixel_geometry = Size(
-                            event.geometry.height // last_size.height,
-                            event.geometry.width // last_size.width,
-                        )
 
         async def auto_render():
             """Render screen every :attr:`render_interval` seconds."""
@@ -424,9 +403,10 @@ class App(ABC):
                 render_root(root, terminal)
                 await asyncio.sleep(self.render_interval)
 
-        with app_mode(terminal, event_handler):
-            terminal.request_device_attributes()
-
+        async with app_mode(terminal, event_handler) as (
+            SixelGraphics._sixel_support,
+            SixelGraphics._pixel_geometry,
+        ):
             if self.title is not None:
                 terminal.set_title(self.title)
 
@@ -500,9 +480,9 @@ def run_gadget_as_app(
     gadget : Gadget
         A gadget to run as an app.
     fg_color : Color | None, default: None
-        Foreground color of app.
+        Foreground color of the root gadget.
     bg_color : Color | None, default: None
-        Background color of app.
+        Background color of the root gadget.
     title : str | None, default: None
         The terminal's title.
     inline : bool, default: False

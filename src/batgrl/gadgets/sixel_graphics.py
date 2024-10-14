@@ -22,10 +22,10 @@ class SixelGraphics(Gadget):
     upper half block characters.
     """
 
-    _sixel_supported: bool = False
+    _sixel_support: bool = False
     """Whether sixel is supported."""
-    _pixel_geometry: Size = Size(20, 10)
-    """Pixel geometry as reported by terminal. (Default: Size(20, 10))"""
+    _pixel_geometry: Size | None = None
+    """Pixel geometry as reported by terminal."""
 
     def __init__(
         self,
@@ -65,7 +65,7 @@ class SixelGraphics(Gadget):
         return type(point_or_size)(a * ph, b * pw)
 
     def _rebuild_bitmap(self):
-        if self._sixel_supported:
+        if self._sixel_support:
             if self._graphics is not None:
                 self._graphics.destroy()
                 self._graphics = None
@@ -107,6 +107,9 @@ class SixelGraphics(Gadget):
 
     def _render(self, canvas: NDArray[np.uint8]):
         """Render visible region of gadget."""
+        if not self._sixel_support:
+            return
+
         root_pos = self._scale_by_pixel_geometry(self.root._pos)
         abs_pos = self._scale_by_pixel_geometry(self.absolute_pos)
         alpha = self.alpha

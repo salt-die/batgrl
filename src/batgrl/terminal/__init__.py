@@ -1,15 +1,20 @@
 """Platform specific VT100 terminals."""
 
+import asyncio
 import platform
 import sys
 from collections.abc import Callable
-from contextlib import contextmanager
-from typing import ContextManager
+from contextlib import asynccontextmanager
+from typing import AsyncIterator, Final
 
-from .events import Event
-from .vt100_terminal import Vt100Terminal
+from ..geometry import Size
+from .events import DeviceAttributesReportEvent, Event, PixelGeometryReportEvent
+from .vt100_terminal import DRS_REQUEST_TIMEOUT, Vt100Terminal
 
 __all__ = ["Vt100Terminal", "get_platform_terminal", "app_mode"]
+
+_SIXEL_SUPPORT: Final = 4
+"""Terminal attribute for sixel support."""
 
 
 def get_platform_terminal() -> Vt100Terminal:
@@ -42,10 +47,56 @@ def get_platform_terminal() -> Vt100Terminal:
         return LinuxTerminal()
 
 
-@contextmanager
-def app_mode(
+async def _determine_sixel_support(terminal: Vt100Terminal) -> tuple[bool, Size | None]:
+    """Determine terminal sixel support."""
+    sixel_support: bool = False
+    pixel_geometry: Size | None = None
+    report_timeout: asyncio.TimerHandle
+    terminal_info_reported: asyncio.Event = asyncio.Event()
+    loop: asyncio.AbstractEventLoop = asyncio.get_running_loop()
+
+    def report_handler(events: list[Event]) -> None:
+        """Handle terminal reports."""
+        nonlocal sixel_support, pixel_geometry, report_timeout
+
+        for event in events:
+            if isinstance(event, DeviceAttributesReportEvent):
+                sixel_support = _SIXEL_SUPPORT in event.device_attributes
+                if sixel_support:
+                    terminal.request_pixel_geometry()
+                    terminal.request_terminal_geometry()
+                    report_timeout.cancel()
+                    report_timeout = loop.call_later(
+                        DRS_REQUEST_TIMEOUT, terminal_info_reported.set
+                    )
+                else:
+                    terminal_info_reported.set()
+            elif isinstance(event, PixelGeometryReportEvent):
+                if event.kind == "cell":
+                    pixel_geometry = event.geometry
+                elif pixel_geometry is None:
+                    th, tw = terminal.get_size()
+                    ph, pw = event.geometry
+                    pixel_geometry = Size(ph // th, tw // pw)
+                report_timeout.cancel()
+                terminal_info_reported.set()
+
+    try:
+        terminal.attach(report_handler)
+        terminal.request_device_attributes()
+        report_timeout = loop.call_later(
+            DRS_REQUEST_TIMEOUT, terminal_info_reported.set
+        )
+        await terminal_info_reported.wait()
+        return sixel_support, pixel_geometry
+    finally:
+        terminal.unattach()
+
+
+@asynccontextmanager
+async def app_mode(
     terminal: Vt100Terminal, event_handler: Callable[[list[Event]], None]
-) -> ContextManager[None]:
+) -> AsyncIterator[tuple[bool, Size | None]]:
     """
     Put terminal into app mode and dispatch input events.
 
@@ -58,13 +109,14 @@ def app_mode(
     """
     try:
         terminal.raw_mode()
+        sixel_report = await _determine_sixel_support(terminal)
         terminal.attach(event_handler)
         terminal.enable_mouse_support()
         terminal.enable_bracketed_paste()
         terminal.enable_reporting_focus()
         terminal.hide_cursor()
         terminal.flush()
-        yield
+        yield sixel_report
     finally:
         if terminal.in_alternate_screen:
             terminal.exit_alternate_screen()
