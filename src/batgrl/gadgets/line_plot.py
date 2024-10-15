@@ -1,4 +1,4 @@
-"""A 2D line plot gadget."""
+"""A 2-D line plot gadget."""
 
 from __future__ import annotations
 
@@ -75,7 +75,9 @@ class _LinePlotProperty:
 
 class LinePlot(Gadget):
     r"""
-    A 2D line plot gadget.
+    A 2-D line plot gadget.
+
+    Zoom in or out with mouse wheel or "page_up"/"page_down".
 
     Parameters
     ----------
@@ -592,21 +594,37 @@ class LinePlot(Gadget):
         """Rebuild plot on resize."""
         self._build_plot()
 
+    def _zoom_in(self):
+        if self._traces_zoom_index < len(PLOT_ZOOM) - 1:
+            self._traces_zoom_index += 1
+
+    def _zoom_out(self):
+        if self._traces_zoom_index > 0:
+            self._traces_zoom_index -= 1
+
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Zoom-in or -out on mouse wheel."""
         if not self.collides_point(mouse_event.pos):
             return
 
         if mouse_event.event_type == "scroll_up":
-            if self._traces_zoom_index >= len(PLOT_ZOOM) - 1:
-                return True
-            self._traces_zoom_index += 1
+            self._zoom_in()
         elif mouse_event.event_type == "scroll_down":
-            if self._traces_zoom_index <= 0:
-                return True
-            self._traces_zoom_index -= 1
+            self._zoom_out()
         else:
             return super().on_mouse(mouse_event)
+
+        self._build_plot()
+        return True
+
+    def on_key(self, key_event):
+        """Zoom-in or -out with "page_up" or "page_down"."""
+        if key_event.key == "page_up":
+            self._zoom_in()
+        elif key_event.key == "page_down":
+            self._zoom_out()
+        else:
+            return super().on_key(key_event)
 
         self._build_plot()
         return True
