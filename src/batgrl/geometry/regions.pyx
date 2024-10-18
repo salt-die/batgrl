@@ -27,7 +27,7 @@ cdef bint csub(bint a, bint b):
 
 cdef struct Band:
     int y1, y2
-    Py_ssize_t size, nwalls
+    Py_ssize_t size, len
     int* walls
 
 
@@ -36,27 +36,27 @@ memset(&EMPTY, 0, sizeof(Band))
 
 
 cdef struct CRegion:
-    Py_ssize_t size, nbands
+    Py_ssize_t size, len
     Band* bands
 
 
 cdef inline int add_wall(Band *band, int wall):
     cdef int* new_walls
-    if band.nwalls == band.size:
+    if band.len == band.size:
         new_walls = <int*>realloc(band.walls, sizeof(Band) * (band.size << 1))
         if new_walls is NULL:
             return -1
         band.size <<= 1
         band.walls = new_walls
 
-    band.walls[band.nwalls] = wall
-    band.nwalls += 1
+    band.walls[band.len] = wall
+    band.len += 1
     return 0
 
 
 cdef inline int add_band(CRegion *region):
     cdef Py_ssize_t i
-    if region.nbands == region.size:
+    if region.len == region.size:
         new_bands = <Band*>realloc(region.bands, sizeof(Band) * (region.size << 1))
         if new_bands is NULL:
             return -1
@@ -65,15 +65,15 @@ cdef inline int add_band(CRegion *region):
         region.size <<= 1
         region.bands = new_bands
 
-    cdef Band *new_band = &region.bands[region.nbands]
+    cdef Band *new_band = &region.bands[region.len]
     if new_band.walls is NULL:
         new_band.walls = <int*>malloc(sizeof(int) * 8)
         if new_band.walls is NULL:
             return -1
         new_band.size = 8
-    new_band.nwalls = 0
+    new_band.len = 0
 
-    region.nbands += 1
+    region.len += 1
     return 0
 
 
@@ -84,17 +84,17 @@ cdef inline int merge_bands(
         return -1
 
     cdef:
-        Band *new_band = &region.bands[region.nbands - 1]
+        Band *new_band = &region.bands[region.len - 1]
         Py_ssize_t i = 0, j = 0
         bint inside_r = 0, inside_s = 0, inside_region = 0
         int threshold
 
-    while i < r.nwalls or j < s.nwalls:
-        if i >= r.nwalls:
+    while i < r.len or j < s.len:
+        if i >= r.len:
             threshold = s.walls[j]
             inside_s ^= 1
             j += 1
-        elif j >= s.nwalls:
+        elif j >= s.len:
             threshold = r.walls[i]
             inside_r ^= 1
             i += 1
@@ -118,27 +118,27 @@ cdef inline int merge_bands(
             if add_wall(new_band, threshold) == -1:
                 return -1
 
-    if new_band.nwalls == 0:
-        region.nbands -= 1
+    if new_band.len == 0:
+        region.len -= 1
         return 0
 
     new_band.y1 = y1
     new_band.y2 = y2
 
-    if region.nbands < 2:
+    if region.len < 2:
         return 0
 
-    cdef Band *previous = &region.bands[region.nbands - 2]
-    if previous.y2 < new_band.y1 or previous.nwalls != new_band.nwalls:
+    cdef Band *previous = &region.bands[region.len - 2]
+    if previous.y2 < new_band.y1 or previous.len != new_band.len:
         return 0
 
-    for i in range(previous.nwalls):
+    for i in range(previous.len):
         if previous.walls[i] != new_band.walls[i]:
             return 0
 
     # All walls equal, extend previous band and delete new band.
     previous.y2 = new_band.y2
-    region.nbands -= 1
+    region.len -= 1
     return 0
 
 
@@ -148,18 +148,18 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
         Band *s
         int i = 0, j = 0, scanline = 0
 
-    if a.nbands > 0:
-        if b.nbands > 0:
+    if a.len > 0:
+        if b.len > 0:
             if a.bands[0].y1 < b.bands[0].y1:
                 scanline = a.bands[0].y1
             else:
                 scanline = b.bands[0].y1
         else:
             scanline = a.bands[0].y1
-    elif b.nbands > 0:
+    elif b.len > 0:
         scanline = b.bands[0].y1
 
-    while i < a.nbands and j < b.nbands:
+    while i < a.len and j < b.len:
         r = &a.bands[i]
         s = &b.bands[j]
 
@@ -206,9 +206,9 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
                         return -1
                     i += 1
 
-        scanline = result.bands[result.nbands - 1].y2
+        scanline = result.bands[result.len - 1].y2
 
-    while i < a.nbands:
+    while i < a.len:
         r = &a.bands[i]
         if scanline < r.y1:
             scanline = r.y1
@@ -216,7 +216,7 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
             return -1
         i += 1
 
-    while j < b.nbands:
+    while j < b.len:
         s = &b.bands[j]
         if scanline < s.y1:
             scanline = s.y1
@@ -228,7 +228,7 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
 
 
 cdef Py_ssize_t bisect_bands(CRegion *region, int y):
-    cdef Py_ssize_t lo = 0, hi = region.nbands, mid
+    cdef Py_ssize_t lo = 0, hi = region.len, mid
     while lo < hi:
         mid = (lo + hi) // 2
         if y < region.bands[mid].y1:
@@ -239,7 +239,7 @@ cdef Py_ssize_t bisect_bands(CRegion *region, int y):
 
 
 cdef Py_ssize_t bisect_walls(Band *band, int x):
-    cdef Py_ssize_t lo = 0, hi = band.nwalls, mid
+    cdef Py_ssize_t lo = 0, hi = band.len, mid
     while lo < hi:
         mid = (lo + hi) // 2
         if x < band.walls[mid]:
@@ -260,14 +260,14 @@ cdef class Region:
         for i in range(8):
             self.cregion.bands[i].walls = NULL
         self.cregion.size = 8
-        self.cregion.nbands = 0
+        self.cregion.len = 0
 
     def __dealloc__(self):
         if self.cregion.bands is NULL:
             return
 
         cdef Py_ssize_t i
-        for i in range(self.cregion.nbands):
+        for i in range(self.cregion.len):
             if self.cregion.bands[i].walls is not NULL:
                 free(self.cregion.bands[i].walls)
                 self.cregion.bands[i].walls = NULL
@@ -291,16 +291,16 @@ cdef class Region:
         band.y2 = y + h
         band.walls[0] = x
         band.walls[1] = x + w
-        band.nwalls = 2
+        band.len = 2
 
         return out
 
     def __str__(self) -> str:
         cdef Band *band
         band_reprs = []
-        for i in range(self.cregion.nbands):
+        for i in range(self.cregion.len):
             band = &self.cregion.bands[i]
-            walls = [band.walls[i] for i in range(band.nwalls)]
+            walls = [band.walls[i] for i in range(band.len)]
             band_reprs.append(f"Band(y1={band.y1}, y2={band.y2}, walls={walls})")
         return f"Region(bands=[{', '.join(band_reprs)}])"
 
@@ -335,7 +335,7 @@ cdef class Region:
         return out
 
     def __bool__(self) -> bool:
-        return self.cregion.nbands > 0
+        return self.cregion.len > 0
 
     def __contains__(self, point: Point) -> bool:
         cdef:
@@ -358,10 +358,10 @@ cdef class Region:
             Py_ssize_t i, j
             Band *band
 
-        for i in range(self.cregion.nbands):
+        for i in range(self.cregion.len):
             band = &self.cregion.bands[i]
             j = 0
-            while j < band.nwalls:
+            while j < band.len:
                 yield (
                     Point(band.y1, band.walls[j]),
                     Size(band.y2 - band.y1, band.walls[j + 1] - band.walls[j]),
