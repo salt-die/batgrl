@@ -109,7 +109,7 @@ cdef inline char* color_band_extend(
     return color_band
 
 cdef inline int build_sixel_band(
-    int n,
+    Py_ssize_t n,
     SixelMap* sixel_map,
     Py_ssize_t ncolors,
     unsigned char[:, ::1] pixels,
