@@ -255,7 +255,7 @@ cdef class Region:
     def __cinit__(self):
         self.cregion.bands = <Band*>malloc(sizeof(Band) * 8)
         if self.cregion.bands is NULL:
-            raise MemoryError()
+            raise MemoryError
         cdef int i
         for i in range(8):
             self.cregion.bands[i].walls = NULL
@@ -278,7 +278,7 @@ cdef class Region:
     def from_rect(cls, pos: Point, size: Size) -> Region:
         out = Region()
         if add_band(&out.cregion) == -1:
-            raise MemoryError()
+            raise MemoryError
 
         cdef:
             int y, x, h, w
@@ -307,31 +307,31 @@ cdef class Region:
     def __and__(self, other: Region) -> Region:
         out = Region()
         if merge_regions(&self.cregion, &other.cregion, &out.cregion, cand) == -1:
-            raise MemoryError()
+            raise MemoryError
         return out
 
     def __or__(self, other: Region) -> Region:
         out = Region()
         if merge_regions(&self.cregion, &other.cregion, &out.cregion, cor) == -1:
-            raise MemoryError()
+            raise MemoryError
         return out
 
     def __add__(self, other: Region) -> Region:
         out = Region()
         if merge_regions(&self.cregion, &other.cregion, &out.cregion, cor) == -1:
-            raise MemoryError()
+            raise MemoryError
         return out
 
     def __sub__(self, other: Region) -> Region:
         out = Region()
         if merge_regions(&self.cregion, &other.cregion, &out.cregion, csub) == -1:
-            raise MemoryError()
+            raise MemoryError
         return out
 
     def __xor__(self, other: Region) -> Region:
         out = Region()
         if merge_regions(&self.cregion, &other.cregion, &out.cregion, cxor) == -1:
-            raise MemoryError()
+            raise MemoryError
         return out
 
     def __bool__(self) -> bool:
