@@ -4,6 +4,11 @@ from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport memset
 
 from .basic import Point, Size
+from .regions cimport Band, CRegion, Region
+
+
+cdef Band EMPTY
+memset(&EMPTY, 0, sizeof(Band))
 
 
 ctypedef bint (*bool_op)(bint, bint)
@@ -23,21 +28,6 @@ cdef bint cxor(bint a, bint b):
 
 cdef bint csub(bint a, bint b):
     return a & (1 - b)
-
-
-cdef struct Band:
-    int y1, y2
-    Py_ssize_t size, len
-    int* walls
-
-
-cdef Band EMPTY
-memset(&EMPTY, 0, sizeof(Band))
-
-
-cdef struct CRegion:
-    Py_ssize_t size, len
-    Band* bands
 
 
 cdef inline int add_wall(Band *band, int wall):
@@ -250,8 +240,6 @@ cdef Py_ssize_t bisect_walls(Band *band, int x):
 
 
 cdef class Region:
-    cdef CRegion cregion
-
     def __cinit__(self):
         self.cregion.bands = <Band*>malloc(sizeof(Band) * 8)
         if self.cregion.bands is NULL:
