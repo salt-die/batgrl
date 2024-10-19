@@ -113,6 +113,8 @@ cdef inline int build_sixel_band(
     SixelMap* sixel_map,
     Py_ssize_t ncolors,
     unsigned char[:, ::1] pixels,
+    unsigned char[:, ::1] mask,
+    int *P2,
 ):
     cdef:
         Py_ssize_t h = pixels.shape[0], w = pixels.shape[1]
@@ -142,6 +144,10 @@ cdef inline int build_sixel_band(
     for x in range(w):
         nactive_colors = 0
         for y in range(ystart, yend):
+            if mask[y, x] == 0:
+                P2[0] = 1
+                continue
+
             pixel_color = pixels[y, x]
 
             for i in range(nactive_colors):
@@ -186,9 +192,14 @@ cdef inline int build_sixel_band(
     free(extenders)
     return 0
 
-cpdef str sixel_ansi(unsigned char[:, ::1] palette, unsigned char[:, ::1] pixels):
+cpdef str sixel_ansi(
+    unsigned char[:, ::1] palette,
+    unsigned char[:, ::1] pixels,
+    unsigned char[:, ::1] mask
+):
     """
-    Generate sixel ansi from a palette and an array of indices into the palette.
+    Generate sixel ansi from a palette and an array of indices into the palette and a
+    mask indicating transparenct pixels.
 
     Parameters
     ----------
@@ -204,10 +215,11 @@ cpdef str sixel_ansi(unsigned char[:, ::1] palette, unsigned char[:, ::1] pixels
         The sixel ansi to generate an image give by palette and pixels.
     """
     cdef:
-        Py_ssize_t ncolors = palette.shape[0], n
-        int color, close_previous
+        Py_ssize_t ncolors = palette.shape[0], n, h, w
+        int color, close_previous, P2 = 0
         SixelMap* sixel_map = new_sixel_map(pixels)
         char** color_bands
+        unsigned char[::1] rgb
 
     if sixel_map is NULL:
         raise MemoryError
@@ -215,16 +227,16 @@ cpdef str sixel_ansi(unsigned char[:, ::1] palette, unsigned char[:, ::1] pixels
 
     for n in range(sixel_map.nbands):
         # TODO: Can be parallelized.
-        if build_sixel_band(n, sixel_map, ncolors, pixels) < 0:
+        if build_sixel_band(n, sixel_map, ncolors, pixels, mask, &P2) < 0:
             sixel_map_free(sixel_map)
             raise MemoryError
 
-    # Using transparent (the 1 in "\x1bP;1;q") mode, but all pixels are specified.
-    cdef list[str] ansi = ["\x1bP;1;q"]
+    h = pixels.shape[0]
+    w = pixels.shape[1]
+    cdef list[str] ansi = [f'\x1bP;{P2};;q";;{h};{w}']
     for color in range(ncolors):
-        ansi.append(
-            f"#{color};2;{palette[color][0]};{palette[color][1]};{palette[color][2]}"
-        )
+        rgb = palette[color]
+        ansi.append(f"#{color};2;{rgb[0]};{rgb[1]};{rgb[2]}")
 
     for n in range(sixel_map.nbands):
         close_previous = 0
