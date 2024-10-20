@@ -67,7 +67,7 @@ cdef inline int add_band(CRegion *region):
     return 0
 
 
-cdef inline int merge_bands(
+cdef int merge_bands(
     int y1, int y2, Band *r, Band *s, CRegion *region, bool_op op
 ):
     if add_band(region) == -1:
@@ -217,7 +217,7 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
     return 0
 
 
-cdef Py_ssize_t bisect_bands(CRegion *region, int y):
+cdef inline Py_ssize_t bisect_bands(CRegion *region, int y):
     cdef Py_ssize_t lo = 0, hi = region.len, mid
     while lo < hi:
         mid = (lo + hi) // 2
@@ -228,7 +228,7 @@ cdef Py_ssize_t bisect_bands(CRegion *region, int y):
     return lo
 
 
-cdef Py_ssize_t bisect_walls(Band *band, int x):
+cdef inline Py_ssize_t bisect_walls(Band *band, int x):
     cdef Py_ssize_t lo = 0, hi = band.len, mid
     while lo < hi:
         mid = (lo + hi) // 2
