@@ -195,11 +195,11 @@ cdef inline int build_sixel_band(
 cpdef str sixel_ansi(
     unsigned char[:, ::1] palette,
     unsigned char[:, ::1] pixels,
-    unsigned char[:, ::1] mask
+    unsigned char[:, ::1] mask,
 ):
     """
     Generate sixel ansi from a palette and an array of indices into the palette and a
-    mask indicating transparenct pixels.
+    mask indicating transparent pixels.
 
     Parameters
     ----------
@@ -226,7 +226,6 @@ cpdef str sixel_ansi(
     sixel_map.ncolors = ncolors
 
     for n in range(sixel_map.nbands):
-        # TODO: Can be parallelized.
         if build_sixel_band(n, sixel_map, ncolors, pixels, mask, &P2) < 0:
             sixel_map_free(sixel_map)
             raise MemoryError
@@ -252,6 +251,6 @@ cpdef str sixel_ansi(
             ansi.append(color_bands[color].decode())
         ansi.append("-")
 
-    sixel_map_free(sixel_map)  # TODO: Return as a python object.
+    sixel_map_free(sixel_map)
     ansi.append("\x1b\\")
     return "".join(ansi)
