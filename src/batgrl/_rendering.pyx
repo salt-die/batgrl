@@ -5,6 +5,8 @@ Notes:
 is pixel geometry of terminal and last axis is RGBM, where M is a
 mask that indicates non-transparent pixels.
 """
+import numpy as np
+cimport numpy as cnp
 
 from .geometry import Point
 from .geometry.regions cimport Band, CRegion, Region
@@ -41,12 +43,16 @@ cdef inline void composite(
 
 
 cdef inline void composite_graphics(
-    unsigned char[:, :, ::1] dst, unsigned char[::1] src, float alpha
+    unsigned char[:, :, ::1] dst,
+    Py_ssize_t h,
+    Py_ssize_t w,
+    unsigned char[::1] src,
+    float alpha,
 ):
     cdef Py_ssize_t y, x
 
-    for y in range(dst.shape[0]):
-        for x in range(dst.shape[1]):
+    for y in range(h):
+        for x in range(w):
             if dst[y, x, 3]:
                 composite(dst[y, x], src, alpha)
 
@@ -54,12 +60,13 @@ cdef inline void composite_graphics(
 cdef inline float average_graphics(
     unsigned char[::1] bg,
     unsigned char [:, :, ::1] graphics,
+    Py_ssize_t h,
+    Py_ssize_t w,
 ):
     cdef:
-        Py_ssize_t h, w, y, x, n = 0
+        Py_ssize_t y, x, n = 0
         unsigned int r = 0, g = 0, b = 0
 
-    h = graphics.shape[0], w = graphics.shape[1]
     for y in range(h):
         for x in range(w):
             if graphics[y, x, 3]:
@@ -72,6 +79,16 @@ cdef inline float average_graphics(
     bg[1] = <unsigned char>(g // n)
     bg[2] = <unsigned char>(b // n)
     return <float>n / <float>(h * w)
+
+
+cdef void pane_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    Point root_pos,
+    Region region,
+):
+    ...
 
 
 cdef void opaque_text_render(
@@ -121,14 +138,17 @@ cdef void trans_text_render(
         Band *band = &cregion.bands[0]
         Cell *dst
         Cell *src
-        int root_y, root_x, abs_y, abs_x
-        int src_y
-        int i, j, y, y1, y2, x, x1, x2
+        int root_y, root_x, abs_y, abs_x, src_y
+        Py_ssize_t h, w, i, j
+        int y, y1, y2, x, x1, x2
         float wgt, nwgt
+        cnp.ndarray[unsigned char, ndim=1] rgb = np.empty(3, np.uint8)
         unsigned char cell_kind
 
     root_y, root_x = root_pos
     abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
+    h = graphics.shape[2]
+    w = graphics.shape[3]
 
     for i in range(cregion.len):
         band = &cregion.bands[i]
@@ -151,7 +171,9 @@ cdef void trans_text_render(
                             composite(dst.fg_color, src.bg_color, alpha)
                             composite(dst.bg_color, src.bg_color, alpha)
                         if cell_kind != GLYPH:
-                            composite_graphics(graphics[y, x], src.bg_color, alpha)
+                            composite_graphics(
+                                graphics[y, x], h, w, src.bg_color, alpha
+                            )
                     else:
                         dst.char_ = src.char_
                         dst.bold = src.bold
@@ -163,21 +185,18 @@ cdef void trans_text_render(
                         dst.fg_color = src.fg_color
                         kind[y, x] = GLYPH
                         if cell_kind == GRAPHICS:
-                            average_graphics(dst.bg_color, graphics[y, x])
+                            average_graphics(dst.bg_color, graphics[y, x], h, w)
                         elif cell_kind == MIXED:
-                            wgt = average_graphics(dst.bg_color, graphics[y, x])
+                            wgt = average_graphics(rgb, graphics[y, x], h, w)
                             nwgt = 1 - wgt
                             dst.bg_color[0] = <unsigned char>(
-                                <float>dst.bg_color[0] * wgt
-                                + <float>src.bg_color[0] * nwgt
+                                <float>rgb[0] * wgt + <float>dst.bg_color[0] * nwgt
                             )
                             dst.bg_color[1] = <unsigned char>(
-                                <float>dst.bg_color[1] * wgt
-                                + <float>src.bg_color[1] * nwgt
+                                <float>rgb[1] * wgt + <float>dst.bg_color[1] * nwgt
                             )
                             dst.bg_color[2] = <unsigned char>(
-                                <float>dst.bg_color[2] * wgt
-                                + <float>src.bg_color[2] * nwgt
+                                <float>rgb[2] * wgt + <float>dst.bg_color[2] * nwgt
                             )
                         composite(dst.bg_color, src.bg_color, alpha)
 
