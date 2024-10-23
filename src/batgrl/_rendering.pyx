@@ -8,7 +8,6 @@ mask that indicates non-transparent pixels.
 import numpy as np
 cimport numpy as cnp
 
-from .geometry import Point
 from .geometry.regions cimport Band, CRegion, Region
 
 cdef unsigned char GLYPH = 0, GRAPHICS = 1, MIXED = 2
@@ -27,18 +26,18 @@ cdef packed struct Cell:
 
 
 cdef inline void composite(
-    unsigned char[::1] dst, unsigned char[::1] src, float alpha
+    unsigned char[::1] dst, unsigned char[::1] src, double alpha
 ):
-    cdef float a, b
+    cdef double a, b
 
-    a = <float>src[0]
-    b = <float>dst[0]
+    a = <double>src[0]
+    b = <double>dst[0]
     dst[0] = <unsigned char>((a - b) * alpha + b)
-    a = <float>src[1]
-    b = <float>dst[1]
+    a = <double>src[1]
+    b = <double>dst[1]
     dst[1] = <unsigned char>((a - b) * alpha + b)
-    a = <float>src[2]
-    b = <float>dst[2]
+    a = <double>src[2]
+    b = <double>dst[2]
     dst[2] = <unsigned char>((a - b) * alpha + b)
 
 
@@ -47,7 +46,7 @@ cdef inline void composite_graphics(
     Py_ssize_t h,
     Py_ssize_t w,
     unsigned char[::1] src,
-    float alpha,
+    double alpha,
 ):
     cdef Py_ssize_t y, x
 
@@ -57,7 +56,7 @@ cdef inline void composite_graphics(
                 composite(dst[y, x], src, alpha)
 
 
-cdef inline float average_graphics(
+cdef inline double average_graphics(
     unsigned char[::1] bg,
     unsigned char [:, :, ::1] graphics,
     Py_ssize_t h,
@@ -78,35 +77,131 @@ cdef inline float average_graphics(
     bg[0] = <unsigned char>(r // n)
     bg[1] = <unsigned char>(g // n)
     bg[2] = <unsigned char>(b // n)
-    return <float>n / <float>(h * w)
+    return <double>n / <double>(h * w)
 
 
-cdef void pane_render(
+cdef void opaque_pane_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     unsigned char[:, ::1] kind,
-    Point root_pos,
+    int root_y,
+    int root_x,
     Region region,
+    unsigned char[3] bg_color,
 ):
-    ...
+    cdef:
+        CRegion *cregion = &region.cregion
+        Band *band = &cregion.bands[0]
+        int i, j, y, y1, y2, x, x1, x2
+        Cell cell
+
+    cell.char_ = u" "
+    cell.bold = False
+    cell.italic = False
+    cell.underline = False
+    cell.strikethrough = False
+    cell.overline = False
+    cell.reverse = False
+    cell.bg_color[:] = bg_color
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        y1 = band.y1 - root_y
+        y2 = band.y2 - root_y
+        j = 0
+        while j < band.len:
+            x1 = band.walls[j] - root_x
+            x2 = band.walls[j + 1] - root_x
+            for y in range(y1, y2):
+                for x in range(x1, x2):
+                    root_canvas[y, x] = cell
+                    kind[y, x] = GLYPH
+
+
+cdef void trans_pane_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    int root_y,
+    int root_x,
+    Region region,
+    unsigned char[::1] bg_color,
+    double alpha,
+):
+    cdef:
+        CRegion *cregion = &region.cregion
+        Band *band = &cregion.bands[0]
+        int i, j, y, y1, y2, x, x1, x2
+        Py_ssize_t h, w
+        Cell *dst
+        unsigned char cell_kind
+
+    h = graphics.shape[2]
+    w = graphics.shape[3]
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        y1 = band.y1 - root_y
+        y2 = band.y2 - root_y
+        j = 0
+        while j < band.len:
+            x1 = band.walls[j] - root_x
+            x2 = band.walls[j + 1] - root_x
+            for y in range(y1, y2):
+                for x in range(x1, x2):
+                    dst = &root_canvas[y, x]
+                    cell_kind = kind[y, x]
+                    if cell_kind != GRAPHICS:
+                        composite(dst.fg_color, bg_color, alpha)
+                        composite(dst.bg_color, bg_color, alpha)
+                    if cell_kind != GLYPH:
+                        composite_graphics(
+                            graphics[y, x], h, w, bg_color, alpha
+                        )
+
+
+cpdef void pane_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    tuple[int, int] root_pos,
+    bint is_transparent,
+    Region region,
+    tuple[int, int, int] bg_color,
+    double alpha,
+):
+    cdef:
+        unsigned char[3] bg
+        int root_y, root_x
+
+    bg[0] = bg_color[0]
+    bg[1] = bg_color[1]
+    bg[2] = bg_color[2]
+    root_y, root_x = root_pos
+
+    if is_transparent:
+        trans_pane_render(
+            root_canvas, graphics, kind, root_y, root_x, region, bg, alpha
+        )
+    else:
+        opaque_pane_render(root_canvas, graphics, kind, root_y, root_x, region, bg)
 
 
 cdef void opaque_text_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     unsigned char[:, ::1] kind,
-    Point root_pos,
+    int root_y,
+    int root_x,
     Region region,
     Cell[:, ::1] self_canvas,
 ):
     cdef:
         CRegion *cregion = &region.cregion
         Band *band = &cregion.bands[0]
-        int root_y, root_x, abs_y, abs_x
-        int src_y
+        int abs_y, abs_x, src_y
         int i, j, y, y1, y2, x, x1, x2
 
-    root_y, root_x = root_pos
     abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
 
     for i in range(cregion.len):
@@ -128,24 +223,24 @@ cdef void trans_text_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     unsigned char[:, ::1] kind,
-    Point root_pos,
+    int root_y,
+    int root_x,
     Region region,
     Cell[:, ::1] self_canvas,
-    float alpha,
+    double alpha,
 ):
     cdef:
         CRegion *cregion = &region.cregion
         Band *band = &cregion.bands[0]
         Cell *dst
         Cell *src
-        int root_y, root_x, abs_y, abs_x, src_y
+        int abs_y, abs_x, src_y
         Py_ssize_t h, w, i, j
         int y, y1, y2, x, x1, x2
-        float wgt, nwgt
+        double wgt, nwgt
         cnp.ndarray[unsigned char, ndim=1] rgb = np.empty(3, np.uint8)
         unsigned char cell_kind
 
-    root_y, root_x = root_pos
     abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
     h = graphics.shape[2]
     w = graphics.shape[3]
@@ -166,7 +261,7 @@ cdef void trans_text_render(
                     cell_kind = kind[y, x]
 
                     # FIXME: Consider all whitespace?
-                    if src.char_ == " " or src.char_ == "⠀":
+                    if src.char_ == u" " or src.char_ == u"⠀":
                         if cell_kind != GRAPHICS:
                             composite(dst.fg_color, src.bg_color, alpha)
                             composite(dst.bg_color, src.bg_color, alpha)
@@ -190,13 +285,13 @@ cdef void trans_text_render(
                             wgt = average_graphics(rgb, graphics[y, x], h, w)
                             nwgt = 1 - wgt
                             dst.bg_color[0] = <unsigned char>(
-                                <float>rgb[0] * wgt + <float>dst.bg_color[0] * nwgt
+                                <double>rgb[0] * wgt + <double>dst.bg_color[0] * nwgt
                             )
                             dst.bg_color[1] = <unsigned char>(
-                                <float>rgb[1] * wgt + <float>dst.bg_color[1] * nwgt
+                                <double>rgb[1] * wgt + <double>dst.bg_color[1] * nwgt
                             )
                             dst.bg_color[2] = <unsigned char>(
-                                <float>rgb[2] * wgt + <float>dst.bg_color[2] * nwgt
+                                <double>rgb[2] * wgt + <double>dst.bg_color[2] * nwgt
                             )
                         composite(dst.bg_color, src.bg_color, alpha)
 
@@ -205,72 +300,76 @@ cpdef void text_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     unsigned char[:, ::1] kind,
-    Point root_pos,
-    bool is_transparent,
+    tuple[int, int] root_pos,
+    bint is_transparent,
     Region region,
-    unsigned char[:, ::1] self_canvas,
-    float alpha,
+    Cell[:, ::1] self_canvas,
+    double alpha,
 ):
+    cdef int root_y, root_x
+    root_y, root_x = root_pos
     if is_transparent:
         trans_text_render(
-            root_canvas, graphics, kind, root_pos, region, self_canvas, alpha
+            root_canvas, graphics, kind, root_y, root_x, region, self_canvas, alpha
         )
     else:
-        opaque_text_render(root_canvas, graphics, kind, root_pos, region, self_canvas)
+        opaque_text_render(
+            root_canvas, graphics, kind, root_y, root_x, region, self_canvas
+        )
 
 
-cpdef void graphics_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    bool is_transparent,
-    Point root_pos,
-    Region region,
-    unsigned char[:, :, :, :, ::1] self_texture,
-):
-    if is_transparent:
-        pass
-    else:
-        pass
+# cpdef void graphics_render(
+#     Cell[:, ::1] root_canvas,
+#     unsigned char[:, :, :, :, ::1] graphics,
+#     unsigned char[:, ::1] kind,
+#     bint is_transparent,
+#     Point root_pos,
+#     Region region,
+#     unsigned char[:, :, :, :, ::1] self_texture,
+# ):
+#     if is_transparent:
+#         pass
+#     else:
+#         pass
 
 
-cpdef void field_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    bool is_transparent,
-    Point root_pos,
-    Region region,
-):
-    if is_transparent:
-        pass
-    else:
-        pass
+# cpdef void field_render(
+#     Cell[:, ::1] root_canvas,
+#     unsigned char[:, :, :, :, ::1] graphics,
+#     unsigned char[:, ::1] kind,
+#     bint is_transparent,
+#     Point root_pos,
+#     Region region,
+# ):
+#     if is_transparent:
+#         pass
+#     else:
+#         pass
 
 
-cpdef void graphics_field_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    bool is_transparent,
-    Point root_pos,
-    Region region,
-):
-    if is_transparent:
-        pass
-    else:
-        pass
+# cpdef void graphics_field_render(
+#     Cell[:, ::1] root_canvas,
+#     unsigned char[:, :, :, :, ::1] graphics,
+#     unsigned char[:, ::1] kind,
+#     bint is_transparent,
+#     Point root_pos,
+#     Region region,
+# ):
+#     if is_transparent:
+#         pass
+#     else:
+#         pass
 
 
-cpdef void terminal_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    bool is_transparent,
-    Point root_pos,
-    Region region,
-):
-    if is_transparent:
-        pass
-    else:
-        pass
+# cpdef void terminal_render(
+#     Cell[:, ::1] root_canvas,
+#     unsigned char[:, :, :, :, ::1] graphics,
+#     unsigned char[:, ::1] kind,
+#     bint is_transparent,
+#     Point root_pos,
+#     Region region,
+# ):
+#     if is_transparent:
+#         pass
+#     else:
+#         pass
