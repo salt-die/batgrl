@@ -1,6 +1,7 @@
 """A graphic gadget."""
 
 from pathlib import Path
+from typing import Final, Literal
 
 import cv2
 import numpy as np
@@ -14,15 +15,49 @@ from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clam
 
 __all__ = ["Graphics", "Interpolation", "Point", "Size"]
 
+# TODO: Add "quad" and "sextant" blitters.
+Blitter = Literal["half", "braille", "sixel"]
+"""Determines how graphics are rendered."""
+
+_BLITTER_GEOMETRY: Final = {
+    "half": Size(2, 1),
+    # TODO:
+    # "quad": Size(2, 2),
+    # "sextant": Size(3, 2),
+    "braille": Size(4, 2),
+    "sixel": Size(20, 10),
+}
+
+
+def _scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
+    """
+    Scale a point or size by some blitter geometry.
+
+    Parameters
+    ----------
+    blitter : Blitter
+        Blitter from which pixel geometry is chosen.
+    point_or_size : T
+        A point or size to scale.
+
+    Returns
+    -------
+    T
+        The scaled geometry.
+    """
+    h, w = _BLITTER_GEOMETRY[blitter]
+    a, b = point_or_size
+    return type(point_or_size)(h * a, w * b)
+
 
 class Graphics(Gadget):
     r"""
     A graphic gadget. Displays arbitrary RGBA textures.
 
-    Graphic gadgets are gadgets that are rendered entirely with the upper half block
-    character, "▀". Graphic gadgets' color information is stored in a uint8 RGBA array,
-    :attr:`texture`. Note that the height of :attr:`texture` is twice the height of the
-    gadget.
+    Graphic gadgets' color information is stored in a uint8 RGBA array, :attr:`texture`.
+    The size of :attr:`texture` depends on the geometry of the chosen blitter. For
+    instance, if the chosen blitter is "half", then the texture will be twice the height
+    of the gadget and the same width.
 
     Parameters
     ----------
@@ -32,6 +67,8 @@ class Graphics(Gadget):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -59,6 +96,8 @@ class Graphics(Gadget):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -162,12 +201,16 @@ class Graphics(Gadget):
         Handle a focus event.
     """
 
+    _sixel_support: bool = False
+    """Whether sixel is supported."""
+
     def __init__(
         self,
         *,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -189,9 +232,12 @@ class Graphics(Gadget):
         self.default_color = default_color
         self.alpha = alpha
         self.interpolation = interpolation
-
-        h, w = self.size
-        self.texture = np.full((2 * h, w, 4), default_color, dtype=np.uint8)
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        self._blitter: Blitter = blitter
+        self.texture = np.full(
+            _scale_geometry(blitter, self.size), default_color, dtype=np.uint8
+        )
 
     @property
     def alpha(self) -> float:
@@ -214,12 +260,40 @@ class Graphics(Gadget):
             raise TypeError(f"{interpolation} is not a valid interpolation type.")
         self._interpolation = interpolation
 
-    def on_size(self):
-        """Resize texture array."""
-        h, w = self.size
-        self.texture = resize_texture(self.texture, (2 * h, w), self.interpolation)
+    @property
+    def blitter(self) -> Blitter:
+        """Determines how graphics are rendered."""
+        return self._blitter
 
-    def _render(self, canvas: NDArray[Cell]):
+    @blitter.setter
+    def blitter(self, blitter: Blitter):
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        if blitter != self._blitter:
+            self._blitter = blitter
+            self.on_size()
+
+    def on_add(self) -> None:
+        """If blitter is sixel, but sixel isn't supported, downgrade."""
+        if self._blitter == "sixel" and not self._sixel_support:
+            self.blitter = "half"
+
+    def on_size(self) -> None:
+        """Resize texture array."""
+        self.texture = resize_texture(
+            self.texture, _scale_geometry(self._blitter, self.size), self.interpolation
+        )
+
+    def to_png(self, path: Path) -> None:
+        """Write :attr:`texture` to provided path as a `png` image."""
+        BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
+        cv2.imwrite(str(path.absolute()), BGRA)
+
+    def clear(self) -> None:
+        """Fill texture with default color."""
+        self.texture[:] = self.default_color
+
+    def _render(self, canvas: NDArray[Cell]) -> None:
         """Render visible region of gadget."""
         texture = self.texture
         chars = canvas["char"]
@@ -249,12 +323,3 @@ class Graphics(Gadget):
 
             chars[dst] = "▀"
             styles[dst] = False
-
-    def to_png(self, path: Path):
-        """Write :attr:`texture` to provided path as a `png` image."""
-        BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
-        cv2.imwrite(str(path.absolute()), BGRA)
-
-    def clear(self):
-        """Fill texture with default color."""
-        self.texture[:] = self.default_color

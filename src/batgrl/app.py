@@ -14,7 +14,7 @@ from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
 from .gadgets.gadget import Gadget
-from .gadgets.sixel_graphics import SixelGraphics
+from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics
 from .geometry import Point, Size
 from .rendering import render_root
 from .terminal import Vt100Terminal, app_mode, get_platform_terminal, get_sixel_info
@@ -404,10 +404,9 @@ class App(ABC):
                 await asyncio.sleep(self.render_interval)
 
         with app_mode(terminal, event_handler):
-            (
-                SixelGraphics._sixel_support,
-                SixelGraphics._pixel_geometry,
-            ) = await get_sixel_info(terminal)
+            sixel_support, pixel_geometry = await get_sixel_info(terminal)
+            Graphics._sixel_support = sixel_support
+            _BLITTER_GEOMETRY["sixel"] = pixel_geometry
 
             if self.title is not None:
                 terminal.set_title(self.title)

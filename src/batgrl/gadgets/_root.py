@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 from ..colors import BLACK, Color
 from ..text_tools import Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
-from .sixel_graphics import SixelGraphics
+from .graphics import Graphics, _scale_geometry
 
 
 class _Root(Gadget):
@@ -64,9 +64,10 @@ class _Root(Gadget):
         self._last_canvas = np.full(self._size, self._cell)
         self.canvas = self._last_canvas.copy()
 
-        h, w = SixelGraphics._scale_by_pixel_geometry(self._size)
-        self._last_sixel = np.full((h, w, 3), self._bg_color)
-        self.sixel_canvas = self._last_sixel.copy()
+        if Graphics._sixel_support:
+            h, w = _scale_geometry("sixel", self._size)
+            self._last_sixel = np.full((h, w, 3), self._bg_color)
+            self.sixel_canvas = self._last_sixel.copy()
 
     @property
     def bg_color(self) -> Color:
@@ -150,30 +151,12 @@ class _Root(Gadget):
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
             canvas = self.canvas
             canvas[:] = self._cell
-            self.sixel_canvas, self._last_sixel = self._last_sixel, self.sixel_canvas
-            sixel_canvas = self.sixel_canvas
-            sixel_canvas[:] = self.bg_color
+            # self.sixel_canvas, self._last_sixel = self._last_sixel, self.sixel_canvas
+            # sixel_canvas = self.sixel_canvas
+            # sixel_canvas[:] = self.bg_color
 
-            # Region calculations should eventually be moved to `_set_regions`:
-            sixel_region = Region()
-            cell_region = Region()
             for child in self.walk():
                 if not child._is_enabled or not child._is_visible:
                     continue
 
-                if isinstance(child, SixelGraphics):
-                    sixel_region += child._region
-                    cell_region -= child._region
-                    # Move bg color over:
-                    # for rect in (cell_region & child._region).rects():
-                    child._render(sixel_canvas)
-                else:
-                    cell_region += child._region
-                    # A non-sixel gadget may not necessarily destroy a sixel region.
-                    # Transparent whitespace on Text gadgets or transparent Panes can
-                    # intersect sixel regions without destroying bitmap...supporting
-                    # this will be a PITA though...
-                    sixel_region -= child._region
-                    # Move bg color over:
-                    # for rect in (sixel_region & child._region).rects():
-                    child._render(canvas)
+                child._render(canvas)
