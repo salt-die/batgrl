@@ -16,7 +16,7 @@ from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clam
 __all__ = ["Graphics", "Interpolation", "Point", "Size"]
 
 # TODO: Add "quad" and "sextant" blitters.
-Blitter = Literal["half", "braille", "sixel"]
+Blitter = Literal["half", "sixel"]
 """Determines how graphics are rendered."""
 
 _BLITTER_GEOMETRY: Final = {
@@ -24,7 +24,6 @@ _BLITTER_GEOMETRY: Final = {
     # TODO:
     # "quad": Size(2, 2),
     # "sextant": Size(3, 2),
-    "braille": Size(4, 2),
     "sixel": Size(20, 10),
 }
 
@@ -232,9 +231,7 @@ class Graphics(Gadget):
         self.default_color = default_color
         self.alpha = alpha
         self.interpolation = interpolation
-        if blitter not in Blitter.__args__:
-            raise TypeError(f"{blitter} is not a valid blitter type.")
-        self._blitter: Blitter = blitter
+        self.blitter = blitter
         self.texture = np.full(
             _scale_geometry(blitter, self.size), default_color, dtype=np.uint8
         )
@@ -269,14 +266,10 @@ class Graphics(Gadget):
     def blitter(self, blitter: Blitter):
         if blitter not in Blitter.__args__:
             raise TypeError(f"{blitter} is not a valid blitter type.")
-        if blitter != self._blitter:
-            self._blitter = blitter
-            self.on_size()
-
-    def on_add(self) -> None:
-        """If blitter is sixel, but sixel isn't supported, downgrade."""
-        if self._blitter == "sixel" and not self._sixel_support:
-            self.blitter = "half"
+        if blitter == "sixel" and not self._sixel_support:
+            blitter = "half"  # ? Should warn user that sixel isn't supported?
+        self._blitter = blitter
+        self.on_size()
 
     def on_size(self) -> None:
         """Resize texture array."""

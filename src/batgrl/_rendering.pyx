@@ -10,7 +10,7 @@ cimport numpy as cnp
 
 from .geometry.regions cimport Band, CRegion, Region
 
-cdef unsigned char GLYPH = 0, GRAPHICS = 1, MIXED = 2
+cdef unsigned char GLYPH = 0, SIXEL = 1, MIXED = 2
 
 
 cdef packed struct Cell:
@@ -153,7 +153,7 @@ cdef void trans_pane_render(
                 for x in range(x1, x2):
                     dst = &root_canvas[y, x]
                     cell_kind = kind[y, x]
-                    if cell_kind != GRAPHICS:
+                    if cell_kind != SIXEL:
                         composite(dst.fg_color, bg_color, alpha)
                         composite(dst.bg_color, bg_color, alpha)
                     if cell_kind != GLYPH:
@@ -260,7 +260,7 @@ cdef void trans_text_render(
 
                     # FIXME: Consider all whitespace?
                     if src.char_ == u" " or src.char_ == u"⠀":
-                        if cell_kind != GRAPHICS:
+                        if cell_kind != SIXEL:
                             composite(dst.fg_color, src.bg_color, alpha)
                             composite(dst.bg_color, src.bg_color, alpha)
                         if cell_kind != GLYPH:
@@ -277,7 +277,7 @@ cdef void trans_text_render(
                         dst.reverse = src.reverse
                         dst.fg_color = src.fg_color
                         kind[y, x] = GLYPH
-                        if cell_kind == GRAPHICS:
+                        if cell_kind == SIXEL:
                             average_graphics(dst.bg_color, graphics[y, x], h, w)
                         elif cell_kind == MIXED:
                             wgt = average_graphics(rgb, graphics[y, x], h, w)
@@ -325,7 +325,6 @@ cdef opaque_half_graphics_render(
     const int root_y,
     const int root_x,
     unsigned char[:, :, ::1] self_texture,
-    double alpha,
     CRegion *cregion,
 ):
     cdef:
@@ -414,7 +413,7 @@ cdef trans_half_graphics_render(
                             self_texture[src_y, src_x],
                             alpha,
                         )
-                    elif kind[y, x] == GRAPHICS:
+                    elif kind[y, x] == SIXEL:
                         sixel = graphics[y, x]
                         for gy in range(h // 2):
                             for gx in range(w):
@@ -505,66 +504,6 @@ cdef inline half_graphics_render(
             root_y,
             root_x,
             self_texture,
-            alpha,
-            cregion,
-        )
-
-
-cdef opaque_braille_graphics_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    const int root_y,
-    const int root_x,
-    unsigned char[:, :, ::1] self_texture,
-    double alpha,
-    CRegion *cregion,
-):
-    pass
-
-
-cdef trans_braille_graphics_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    const int root_y,
-    const int root_x,
-    unsigned char[:, :, ::1] self_texture,
-    double alpha,
-    CRegion *cregion,
-):
-    pass
-
-
-cdef inline braille_graphics_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    const int root_y,
-    const int root_x,
-    bint is_transparent,
-    unsigned char[:, :, ::1] self_texture,
-    double alpha,
-    CRegion *cregion,
-):
-    if is_transparent:
-        trans_braille_graphics_render(
-            root_canvas,
-            graphics,
-            kind,
-            root_y,
-            root_x,
-            self_texture,
-            alpha,
-            cregion,
-        )
-    else:
-        opaque_braille_graphics_render(
-            root_canvas,
-            graphics,
-            root_y,
-            root_x,
-            self_texture,
-            alpha,
             cregion,
         )
 
@@ -576,10 +515,44 @@ cdef opaque_sixel_graphics_render(
     const int root_y,
     const int root_x,
     unsigned char[:, :, ::1] self_texture,
-    double alpha,
     CRegion *cregion,
 ):
-    pass
+    cdef:
+        Band *band = &cregion.bands[0]
+        Py_ssize_t i, j, h, w, cy, cx
+        int abs_y, abs_x, src_y, src_x
+        int y, y1, y2, x, x1, x2
+
+    abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
+    h = graphics.shape[2]
+    w = graphics.shape[3]
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        y1 = band.y1 - root_y
+        y2 = band.y2 - root_y
+        j = 0
+        while j < band.len:
+            x1 = band.walls[j] - root_x
+            x2 = band.walls[j + 1] - root_x
+            for y in range(y1, y2):
+                src_y = h * (y - abs_y)
+                for x in range(x1, x2):
+                    src_x = w * (x - abs_x)
+                    kind[y, x] = SIXEL
+                    for cy in range(h):
+                        for cx in range(w):
+                            graphics[y, x, cy, cx, 0] = self_texture[
+                                src_y + cy, src_x + cx, 0
+                            ]
+                            graphics[y, x, cy, cx, 1] = self_texture[
+                                src_y + cy, src_x + cx, 1
+                            ]
+                            graphics[y, x, cy, cx, 2] = self_texture[
+                                src_y + cy, src_x + cx, 2
+                            ]
+                            graphics[y, x, cy, cx, 3] = 1
+            j += 2
 
 
 cdef trans_sixel_graphics_render(
@@ -625,7 +598,6 @@ cdef inline sixel_graphics_render(
             root_y,
             root_x,
             self_texture,
-            alpha,
             cregion,
         )
 
@@ -659,18 +631,6 @@ cpdef void graphics_render(
             alpha,
             cregion,
         )
-    elif blitter == "braille":
-        braille_graphics_render(
-            root_canvas,
-            graphics,
-            kind,
-            root_y,
-            root_x,
-            is_transparent,
-            self_texture,
-            alpha,
-            cregion,
-        )
     elif blitter == "sixel":
         sixel_graphics_render(
             root_canvas,
@@ -683,6 +643,64 @@ cpdef void graphics_render(
             alpha,
             cregion,
         )
+
+cdef opaque_braille_graphics_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    const int root_y,
+    const int root_x,
+    unsigned char[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
+):
+    pass
+
+
+cdef trans_braille_graphics_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    const int root_y,
+    const int root_x,
+    unsigned char[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
+):
+    pass
+
+
+# cpdef braille_graphics_render(
+#     Cell[:, ::1] root_canvas,
+#     unsigned char[:, :, :, :, ::1] graphics,
+#     unsigned char[:, ::1] kind,
+#     const int root_y,
+#     const int root_x,
+#     bint is_transparent,
+#     unsigned char[:, :, ::1] self_texture,
+#     double alpha,
+#     CRegion *cregion,
+# ):
+#     if is_transparent:
+#         trans_braille_graphics_render(
+#             root_canvas,
+#             graphics,
+#             kind,
+#             root_y,
+#             root_x,
+#             self_texture,
+#             alpha,
+#             cregion,
+#         )
+#     else:
+#         opaque_braille_graphics_render(
+#             root_canvas,
+#             graphics,
+#             root_y,
+#             root_x,
+#             self_texture,
+#             alpha,
+#             cregion,
+#         )
 
 
 # cpdef void field_render(
