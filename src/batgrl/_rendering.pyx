@@ -25,8 +25,9 @@ cdef packed struct Cell:
     unsigned char[3] bg_color
 
 
-cdef inline unsigned int rgb_eq(unsigned char[::1] a, unsigned char[::1] b):
-    return a[0] == b[0] and a[1] == b[1] and a[2] == b[2]
+cdef inline unsigned int rgba_eq(unsigned char[::1] a, unsigned char[::1] b):
+    return a[0] == b[0] and a[1] == b[1] and a[2] == b[2] and a[3] == b[3]
+
 
 cdef inline void composite(
     unsigned char[::1] dst, unsigned char[::1] src, double alpha
@@ -42,21 +43,6 @@ cdef inline void composite(
     a = <double>src[2]
     b = <double>dst[2]
     dst[2] = <unsigned char>((a - b) * alpha + b)
-
-
-cdef inline void composite_graphics(
-    unsigned char[:, :, ::1] dst,
-    Py_ssize_t h,
-    Py_ssize_t w,
-    unsigned char[::1] src,
-    double alpha,
-):
-    cdef Py_ssize_t y, x
-
-    for y in range(h):
-        for x in range(w):
-            if dst[y, x, 3]:
-                composite(dst[y, x], src, alpha)
 
 
 cdef inline double average_graphics(
@@ -134,7 +120,7 @@ cdef void trans_pane_render(
     cdef:
         Band *band
         int i, j, y, y1, y2, x, x1, x2
-        Py_ssize_t h, w
+        Py_ssize_t h, w, gy, gx
         Cell *dst
         unsigned char cell_kind
 
@@ -157,9 +143,10 @@ cdef void trans_pane_render(
                         composite(dst.fg_color, bg_color, alpha)
                         composite(dst.bg_color, bg_color, alpha)
                     if cell_kind != GLYPH:
-                        composite_graphics(
-                            graphics[y, x], h, w, bg_color, alpha
-                        )
+                        for gy in range(h):
+                            for gx in range(w):
+                                if graphics[y, x, gy, gx, 3]:
+                                    composite(graphics[y, x, gy, gx], bg_color, alpha)
             j += 2
 
 
@@ -233,11 +220,10 @@ cdef void trans_text_render(
         Cell *dst
         Cell *src
         int abs_y, abs_x, src_y
-        Py_ssize_t h, w, i, j
+        Py_ssize_t h, w, i, j, gy, gx
         int y, y1, y2, x, x1, x2
         double wgt, nwgt
         cnp.ndarray[unsigned char, ndim=1] rgb = np.empty(3, np.uint8)
-        unsigned char cell_kind
 
     abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
     h = graphics.shape[2]
@@ -256,17 +242,18 @@ cdef void trans_text_render(
                 for x in range(x1, x2):
                     dst = &root_canvas[y, x]
                     src = &self_canvas[src_y, x - abs_x]
-                    cell_kind = kind[y, x]
-
                     # FIXME: Consider all whitespace?
                     if src.char_ == u" " or src.char_ == u"⠀":
-                        if cell_kind != SIXEL:
+                        if kind[y, x] != SIXEL:
                             composite(dst.fg_color, src.bg_color, alpha)
                             composite(dst.bg_color, src.bg_color, alpha)
-                        if cell_kind != GLYPH:
-                            composite_graphics(
-                                graphics[y, x], h, w, src.bg_color, alpha
-                            )
+                        if kind[y, x] != GLYPH:
+                            for gy in range(h):
+                                for gx in range(w):
+                                    if graphics[y, x, gy, gx, 3]:
+                                        composite(
+                                            graphics[y, x, gy, gx], src.bg_color, alpha
+                                        )
                     else:
                         dst.char_ = src.char_
                         dst.bold = src.bold
@@ -276,10 +263,9 @@ cdef void trans_text_render(
                         dst.overline = src.overline
                         dst.reverse = src.reverse
                         dst.fg_color = src.fg_color
-                        kind[y, x] = GLYPH
-                        if cell_kind == SIXEL:
+                        if kind[y, x] == SIXEL:
                             average_graphics(dst.bg_color, graphics[y, x], h, w)
-                        elif cell_kind == MIXED:
+                        elif kind[y, x] == MIXED:
                             wgt = average_graphics(rgb, graphics[y, x], h, w)
                             nwgt = 1 - wgt
                             dst.bg_color[0] = <unsigned char>(
@@ -291,6 +277,7 @@ cdef void trans_text_render(
                             dst.bg_color[2] = <unsigned char>(
                                 <double>rgb[2] * wgt + <double>dst.bg_color[2] * nwgt
                             )
+                        kind[y, x] = GLYPH
                         composite(dst.bg_color, src.bg_color, alpha)
             j += 2
 
@@ -349,7 +336,7 @@ cdef opaque_half_graphics_render(
                 for x in range(x1, x2):
                     src_x = x - abs_x
                     dst = &root_canvas[y, x]
-                    dst.char_ = "▀"
+                    dst.char_ = u"▀"
                     dst.bold = False
                     dst.italic = False
                     dst.underline = False
@@ -380,9 +367,10 @@ cdef trans_half_graphics_render(
         Cell *dst
         Py_ssize_t h, w, i, j, gy, gx
         int abs_y, abs_x, src_y, src_x
-        int y, y1, y2, x, x1, x2, gx
-        double wgt, nwgt
+        int y, y1, y2, x, x1, x2
+        double wgt, nwgt, a
         unsigned char[:, :, ::1] sixel
+        unsigned char[::1] rgba
         cnp.ndarray[unsigned char, ndim=1] rgb = np.empty(3, np.uint8)
 
     abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
@@ -401,32 +389,34 @@ cdef trans_half_graphics_render(
                 src_y = 2 * (y - abs_y)
                 for x in range(x1, x2):
                     src_x = x - abs_x
-                    if rgb_eq(
+                    if rgba_eq(
                         self_texture[src_y, src_x], self_texture[src_y + 1, src_x]
                     ):
-                        trans_pane_render(
-                            root_canvas,
-                            graphics,
-                            kind,
-                            root_y,
-                            root_x,
-                            self_texture[src_y, src_x],
-                            alpha,
-                        )
+                        dst = &root_canvas[y, x]
+                        rgba = self_texture[src_y, src_x]
+                        a = alpha * <double>rgba[3] / 255
+                        if kind[y, x] != SIXEL:
+                           composite(dst.fg_color, rgba, a)
+                           composite(dst.bg_color, rgba, a)
+                        if kind[y, x] != GLYPH:
+                           for gy in range(h):
+                              for gx in range(w):
+                                  if graphics[y, x, gy, gx, 3]:
+                                      composite(graphics[y, x, gy, gx], rgba, a)
                     elif kind[y, x] == SIXEL:
                         sixel = graphics[y, x]
+                        rgba = self_texture[src_y, src_x]
+                        a = alpha * <double>rgba[3] / 255
                         for gy in range(h // 2):
                             for gx in range(w):
                                 sixel[gy, gx, 3] = 1
-                                composite(
-                                    sixel[gy, gx], self_texture[src_y, src_x], alpha
-                                )
+                                composite(sixel[gy, gx], rgba, a)
+                        rgba = self_texture[src_y + 1, src_x]
+                        a = alpha * <double>rgba[3] / 255
                         for gy in range(h // 2, h):
                             for gx in range(w):
                                 sixel[gy, gx, 3] = 1
-                                composite(
-                                    sixel[gy, gx], self_texture[src_y + 1, src_x], alpha
-                                )
+                                composite(sixel[gy, gx], rgba, a)
                     else:
                         dst = &root_canvas[y, x]
                         dst.bold = False
@@ -436,7 +426,7 @@ cdef trans_half_graphics_render(
                         dst.overline = False
                         dst.reverse = False
                         if kind[y, x] == MIXED:
-                            dst.char_ = "▀"
+                            dst.char_ = u"▀"
                             kind[y, x] = GLYPH
                             wgt = average_graphics(rgb, graphics[y, x], h, w)
                             nwgt = 1 - wgt
@@ -458,20 +448,16 @@ cdef trans_half_graphics_render(
                             dst.fg_color[2] = <unsigned char>(
                                 <double>rgb[2] * wgt + <double>dst.fg_color[2] * nwgt
                             )
-                        elif kind[y, x] == GLYPH:
-                            if dst.char_ == "▀":
-                                composite(
-                                    dst.fg_color, self_texture[src_y, src_x], alpha
-                                )
-                            else:
-                                dst.char_ = "▀"
+                        if kind[y, x] == GLYPH:
+                            if dst.char_ != u"▀":
+                                dst.char_ = u"▀"
                                 dst.fg_color = dst.bg_color
-                                composite(
-                                    dst.fg_color, self_texture[src_y, src_x], alpha
-                                )
-                            composite(
-                                dst.bg_color, self_texture[src_y + 1, src_x], alpha
-                            )
+                            rgba = self_texture[src_y, src_x]
+                            a = alpha * <double>rgba[3] / 255
+                            composite(dst.fg_color, rgba, a)
+                            rgba = self_texture[src_y + 1, src_x]
+                            a = alpha * <double>rgba[3] / 255
+                            composite(dst.bg_color, rgba, a)
             j += 2
 
 
@@ -519,7 +505,7 @@ cdef opaque_sixel_graphics_render(
 ):
     cdef:
         Band *band = &cregion.bands[0]
-        Py_ssize_t i, j, h, w, cy, cx
+        Py_ssize_t i, j, h, w, gy, gx
         int abs_y, abs_x, src_y, src_x
         int y, y1, y2, x, x1, x2
 
@@ -540,18 +526,18 @@ cdef opaque_sixel_graphics_render(
                 for x in range(x1, x2):
                     src_x = w * (x - abs_x)
                     kind[y, x] = SIXEL
-                    for cy in range(h):
-                        for cx in range(w):
-                            graphics[y, x, cy, cx, 0] = self_texture[
-                                src_y + cy, src_x + cx, 0
+                    for gy in range(h):
+                        for gx in range(w):
+                            graphics[y, x, gy, gx, 0] = self_texture[
+                                src_y + gy, src_x + gx, 0
                             ]
-                            graphics[y, x, cy, cx, 1] = self_texture[
-                                src_y + cy, src_x + cx, 1
+                            graphics[y, x, gy, gx, 1] = self_texture[
+                                src_y + gy, src_x + gx, 1
                             ]
-                            graphics[y, x, cy, cx, 2] = self_texture[
-                                src_y + cy, src_x + cx, 2
+                            graphics[y, x, gy, gx, 2] = self_texture[
+                                src_y + gy, src_x + gx, 2
                             ]
-                            graphics[y, x, cy, cx, 3] = 1
+                            graphics[y, x, gy, gx, 3] = 1
             j += 2
 
 
@@ -565,7 +551,82 @@ cdef trans_sixel_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
-    pass
+    cdef:
+        Band *band = &cregion.bands[0]
+        Cell *dst
+        Py_ssize_t i, j, h, w, gy, gx
+        int abs_y, abs_x, src_y, src_x
+        int y, y1, y2, x, x1, x2
+        unsigned char *bg_color
+        unsigned char[::1] rgba
+        unsigned char[:, :, ::1] sixel
+
+    abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
+    h = graphics.shape[2]
+    w = graphics.shape[3]
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        y1 = band.y1 - root_y
+        y2 = band.y2 - root_y
+        j = 0
+        while j < band.len:
+            x1 = band.walls[j] - root_x
+            x2 = band.walls[j + 1] - root_x
+            for y in range(y1, y2):
+                src_y = h * (y - abs_y)
+                for x in range(x1, x2):
+                    src_x = w * (x - abs_x)
+                    if kind[y, x] == SIXEL:
+                        sixel = graphics[y, x]
+                        for gy in range(h):
+                            for gx in range(w):
+                                rgba = self_texture[src_y + gy, src_x + gx]
+                                composite(
+                                    sixel[gy, gx],
+                                    rgba,
+                                    alpha * <double>rgba[3] / 255,
+                                )
+                    elif kind[y, x] == GLYPH:
+                        dst = &root_canvas[y, x]
+                        sixel = graphics[y, x]
+                        kind[y, x] = SIXEL
+                        for gy in range(h):
+                            for gx in range(w):
+                                rgba = self_texture[src_y + gy, src_x + gx]
+                                if rgba[3]:
+                                    sixel[gy, gx, 0] = dst.bg_color[0]
+                                    sixel[gy, gx, 1] = dst.bg_color[1]
+                                    sixel[gy, gx, 2] = dst.bg_color[2]
+                                    sixel[gy, gx, 3] = 1
+                                    composite(
+                                        sixel[gy, gx],
+                                        rgba,
+                                        alpha * <double>rgba[3] / 255,
+                                    )
+                                else:
+                                    kind[y, x] = MIXED
+                    elif kind[y, x] == MIXED:
+                        dst = &root_canvas[y, x]
+                        sixel = graphics[y, x]
+                        kind[y, x] = SIXEL
+                        for gy in range(h):
+                            for gx in range(w):
+                                rgba = self_texture[src_y + gy, src_x + gx]
+                                if rgba[3]:
+                                    if not sixel[gy, gx, 3]:
+                                        sixel[gy, gx, 0] = dst.bg_color[0]
+                                        sixel[gy, gx, 1] = dst.bg_color[1]
+                                        sixel[gy, gx, 2] = dst.bg_color[2]
+                                        sixel[gy, gx, 3] = 1
+                                    composite(
+                                        sixel[gy, gx],
+                                        rgba,
+                                        alpha * <double>rgba[3] / 255,
+                                    )
+                                elif not sixel[gy, gx, 3]:
+                                    kind[y, x] = MIXED
+            j += 2
 
 
 cdef inline sixel_graphics_render(
@@ -644,19 +705,19 @@ cpdef void graphics_render(
             cregion,
         )
 
-cdef opaque_braille_graphics_render(
+
+cdef opaque_braille_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     const int root_y,
     const int root_x,
     unsigned char[:, :, ::1] self_texture,
-    double alpha,
     CRegion *cregion,
 ):
     pass
 
 
-cdef trans_braille_graphics_render(
+cdef trans_braille_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     unsigned char[:, ::1] kind,
@@ -669,7 +730,7 @@ cdef trans_braille_graphics_render(
     pass
 
 
-# cpdef braille_graphics_render(
+# cpdef braille_render(
 #     Cell[:, ::1] root_canvas,
 #     unsigned char[:, :, :, :, ::1] graphics,
 #     unsigned char[:, ::1] kind,
@@ -681,7 +742,7 @@ cdef trans_braille_graphics_render(
 #     CRegion *cregion,
 # ):
 #     if is_transparent:
-#         trans_braille_graphics_render(
+#         trans_braille_render(
 #             root_canvas,
 #             graphics,
 #             kind,
@@ -692,13 +753,12 @@ cdef trans_braille_graphics_render(
 #             cregion,
 #         )
 #     else:
-#         opaque_braille_graphics_render(
+#         opaque_braille_render(
 #             root_canvas,
 #             graphics,
 #             root_y,
 #             root_x,
 #             self_texture,
-#             alpha,
 #             cregion,
 #         )
 
