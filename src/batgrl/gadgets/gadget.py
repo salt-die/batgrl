@@ -817,10 +817,8 @@ class Gadget:
             The point in local coordinates.
         """
         if self.parent is None:
-            return point
-
-        y, x = self.parent.to_local(point)
-        return Point(y - self.top, x - self.left)
+            return point - self.pos
+        return self.parent.to_local(point) - self.pos
 
     def collides_point(self, point: Point) -> bool:
         """
