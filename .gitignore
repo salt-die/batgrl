@@ -1,4 +1,5 @@
 *.c
+*.so
 *.pyc
 *.pyd
 *.egg-info
