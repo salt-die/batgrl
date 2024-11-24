@@ -71,7 +71,6 @@ cdef inline double average_graphics(
 
 cdef void opaque_pane_render(
     Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
     const int root_y,
     const int root_x,
     unsigned char[::1] bg_color,
@@ -172,12 +171,11 @@ cpdef void pane_render(
             root_canvas, graphics, kind, root_y, root_x, bg, alpha, cregion
         )
     else:
-        opaque_pane_render(root_canvas, graphics, root_y, root_x, bg, cregion)
+        opaque_pane_render(root_canvas, root_y, root_x, bg, cregion)
 
 
 cdef void opaque_text_render(
     Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
     const int root_y,
     const int root_x,
     Cell[:, ::1] self_canvas,
@@ -185,8 +183,9 @@ cdef void opaque_text_render(
 ):
     cdef:
         Band *band = &cregion.bands[0]
+        Py_ssize_t i, j
         int abs_y, abs_x, src_y
-        int i, j, y, y1, y2, x, x1, x2
+        int y, y1, y2, x, x1, x2
 
     abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
 
@@ -303,12 +302,11 @@ cpdef void text_render(
             root_canvas, graphics, kind, root_y, root_x, self_canvas, alpha, cregion
         )
     else:
-        opaque_text_render(root_canvas, graphics, root_y, root_x, self_canvas, cregion)
+        opaque_text_render(root_canvas, root_y, root_x, self_canvas, cregion)
 
 
 cdef opaque_half_graphics_render(
     Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
     const int root_y,
     const int root_x,
     unsigned char[:, :, ::1] self_texture,
@@ -484,18 +482,10 @@ cdef inline half_graphics_render(
             cregion,
         )
     else:
-        opaque_half_graphics_render(
-            root_canvas,
-            graphics,
-            root_y,
-            root_x,
-            self_texture,
-            cregion,
-        )
+        opaque_half_graphics_render(root_canvas, root_y, root_x, self_texture, cregion)
 
 
 cdef opaque_sixel_graphics_render(
-    Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
     unsigned char[:, ::1] kind,
     const int root_y,
@@ -653,13 +643,7 @@ cdef inline sixel_graphics_render(
         )
     else:
         opaque_sixel_graphics_render(
-            root_canvas,
-            graphics,
-            kind,
-            root_y,
-            root_x,
-            self_texture,
-            cregion,
+            graphics, kind, root_y, root_x, self_texture, cregion
         )
 
 
@@ -706,63 +690,6 @@ cpdef void graphics_render(
         )
 
 
-cdef opaque_braille_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    const int root_y,
-    const int root_x,
-    unsigned char[:, :, ::1] self_texture,
-    CRegion *cregion,
-):
-    pass
-
-
-cdef trans_braille_render(
-    Cell[:, ::1] root_canvas,
-    unsigned char[:, :, :, :, ::1] graphics,
-    unsigned char[:, ::1] kind,
-    const int root_y,
-    const int root_x,
-    unsigned char[:, :, ::1] self_texture,
-    double alpha,
-    CRegion *cregion,
-):
-    pass
-
-
-# cpdef braille_render(
-#     Cell[:, ::1] root_canvas,
-#     unsigned char[:, :, :, :, ::1] graphics,
-#     unsigned char[:, ::1] kind,
-#     const int root_y,
-#     const int root_x,
-#     bint is_transparent,
-#     unsigned char[:, :, ::1] self_texture,
-#     double alpha,
-#     CRegion *cregion,
-# ):
-#     if is_transparent:
-#         trans_braille_render(
-#             root_canvas,
-#             graphics,
-#             kind,
-#             root_y,
-#             root_x,
-#             self_texture,
-#             alpha,
-#             cregion,
-#         )
-#     else:
-#         opaque_braille_render(
-#             root_canvas,
-#             graphics,
-#             root_y,
-#             root_x,
-#             self_texture,
-#             cregion,
-#         )
-
-
 # cpdef void field_render(
 #     Cell[:, ::1] root_canvas,
 #     unsigned char[:, :, :, :, ::1] graphics,
@@ -791,15 +718,11 @@ cdef trans_braille_render(
 #         pass
 
 
-# cpdef void terminal_render(
-#     Cell[:, ::1] root_canvas,
-#     unsigned char[:, :, :, :, ::1] graphics,
-#     unsigned char[:, ::1] kind,
-#     bint is_transparent,
-#     Point root_pos,
-#     Region region,
-# ):
-#     if is_transparent:
-#         pass
-#     else:
-#         pass
+cpdef void terminal_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    tuple[int, int] root_pos,
+    Region region,
+):
+    pass
