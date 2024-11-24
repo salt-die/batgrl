@@ -13,7 +13,7 @@ from typing import Final
 from .events import Event, ResizeEvent
 from .vt100_terminal import Vt100Terminal
 
-STDIN: Final[int] = sys.stdin.fileno()
+STDIN: Final = sys.stdin.fileno()
 
 
 class LinuxTerminal(Vt100Terminal):

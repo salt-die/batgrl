@@ -11,12 +11,12 @@ from ..geometry import Size
 from .events import Event, ResizeEvent
 from .vt100_terminal import Vt100Terminal
 
-CTRL_SPACE_RE: Final[re.Pattern[str]] = re.compile(r"\x00+")
-CTRL_ALT_SPACE_RE: Final[re.Pattern[str]] = re.compile(r"\x00*\x1b\x00+")
+CTRL_SPACE_RE: Final = re.compile(r"\x00+")
+CTRL_ALT_SPACE_RE: Final = re.compile(r"\x00*\x1b\x00+")
 STDIN = windll.kernel32.GetStdHandle(DWORD(-10))
 STDOUT = windll.kernel32.GetStdHandle(DWORD(-11))
-KEY_EVENT: Final[int] = 1
-WINDOW_BUFFER_SIZE_EVENT: Final[int] = 4
+KEY_EVENT: Final = 1
+WINDOW_BUFFER_SIZE_EVENT: Final = 4
 # See: https://msdn.microsoft.com/pl-pl/library/windows/desktop/ms686033(v=vs.85).aspx
 ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
 ENABLE_VIRTUAL_TERMINAL_INPUT = 0x0200

@@ -32,11 +32,11 @@ from .terminal.events import (
 
 __all__ = ["App", "run_gadget_as_app"]
 
-_CTRL_C: Final[KeyEvent] = KeyEvent("c", ctrl=True)
+_CTRL_C: Final = KeyEvent("c", ctrl=True)
 """Keybind for exiting the app."""
-_TAB: Final[KeyEvent] = KeyEvent("tab")
+_TAB: Final = KeyEvent("tab")
 """Keybind for focusing next focusable."""
-_SHIFT_TAB: Final[KeyEvent] = KeyEvent("tab", shift=True)
+_SHIFT_TAB: Final = KeyEvent("tab", shift=True)
 """Keybind for focusing previous focusable."""
 
 
@@ -409,7 +409,7 @@ class App(ABC):
             if self.fg_color is None:
                 terminal.request_foreground_color()
             else:
-                self.root._cell["fg_color"] = self.bg_color
+                self.root._cell["fg_color"] = self.fg_color
 
             if self.bg_color is None:
                 terminal.request_background_color()

@@ -16,10 +16,10 @@ from .gadget import Gadget, PosHint, SizeHint
 from .scroll_view import ScrollView
 from .text import Text
 
-_CSI_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[[;\d]*\w")
+_CSI_RE: Final = re.compile(r"\x1b\[[;\d]*\w")
 """Control sequence pattern."""
 # Colors from VGA column of: https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
-_LOW_INTENSITY: Final[list[Color]] = [
+_LOW_INTENSITY: Final = (
     BLACK,
     Color(170, 0, 0),
     Color(0, 170, 0),
@@ -28,9 +28,9 @@ _LOW_INTENSITY: Final[list[Color]] = [
     Color(170, 0, 170),
     Color(0, 170, 170),
     Color(170, 170, 170),
-]
+)
 """Low intensity terminal colors."""
-_HIGH_INTENSITY: Final[list[Color]] = [
+_HIGH_INTENSITY: Final = (
     Color(85, 85, 85),
     Color(255, 85, 85),
     Color(85, 255, 85),
@@ -39,9 +39,9 @@ _HIGH_INTENSITY: Final[list[Color]] = [
     Color(255, 85, 255),
     Color(85, 255, 255),
     WHITE,
-]
+)
 """High intensity terminal colors."""
-_UTF8_CHARS: Final[str] = (
+_UTF8_CHARS: Final = (
     " ☺☻♥♦♣♠•◘○◙♂♀♪♫☼"
     "►◄↕‼¶§▬↨↑↓→←∟↔▲▼"
     " !\"#$%&'()*+,-./"
@@ -59,7 +59,7 @@ _UTF8_CHARS: Final[str] = (
     "αßΓπΣσµτΦΘΩδ∞φε∩"
     "≡±≥≤⌠⌡÷≈°∙·√ⁿ²■ "
 )  # See: https://wikipedia.org/wiki/Code_page_437
-_CP437_TO_UTF8: Final[dict[int, str]] = {i: char for i, char in enumerate(_UTF8_CHARS)}
+_CP437_TO_UTF8: Final = {i: char for i, char in enumerate(_UTF8_CHARS)}
 """Translation table from code page 437 to UTF-8."""
 # Following ords interpreted as escapes:
 del _CP437_TO_UTF8[0x0A], _CP437_TO_UTF8[0x1A], _CP437_TO_UTF8[0x1B]

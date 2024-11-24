@@ -29,21 +29,21 @@ from .events import (
     UnknownEscapeSequence,
 )
 
-CPR_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[(\d+);(\d+)R")
-COLOR_RE: Final[re.Pattern[str]] = re.compile(
+CPR_RE: Final = re.compile(r"\x1b\[(\d+);(\d+)R")
+COLOR_RE: Final = re.compile(
     r"\x1b\]1([10]);rgb:([0-9a-f]{4})/([0-9a-f]{4})/([0-9a-f]{4})\x1b\\"
 )
 # \x1b[?61;4;6;7;14;21;22;23;24;28;32;42c
-DEVICE_ATTRIBUTES_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[\?[0-9;]+c")
-MOUSE_SGR_RE: Final[re.Pattern[str]] = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
-PARAMS_RE: Final[re.Pattern[str]] = re.compile(r"[0-9;]")
-BRACKETED_PASTE_START: Final[str] = "\x1b[200~"
-BRACKETED_PASTE_END: Final[str] = "\x1b[201~"
-FOCUS_IN: Final[str] = "\x1b[I"
-FOCUS_OUT: Final[str] = "\x1b[O"
-ESCAPE_TIMEOUT: Final[float] = 0.05
+DEVICE_ATTRIBUTES_RE: Final = re.compile(r"\x1b\[\?[0-9;]+c")
+MOUSE_SGR_RE: Final = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
+PARAMS_RE: Final = re.compile(r"[0-9;]")
+BRACKETED_PASTE_START: Final = "\x1b[200~"
+BRACKETED_PASTE_END: Final = "\x1b[201~"
+FOCUS_IN: Final = "\x1b[I"
+FOCUS_OUT: Final = "\x1b[O"
+ESCAPE_TIMEOUT: Final = 0.05
 """Time in seconds before escape buffer is reset."""
-DRS_REQUEST_TIMEOUT: Final[float] = 0.1
+DRS_REQUEST_TIMEOUT: Final = 0.1
 """
 Time in seconds for the input parser to expect a response to a device status report
 request.

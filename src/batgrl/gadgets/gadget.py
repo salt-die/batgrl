@@ -35,8 +35,8 @@ __all__ = [
     "lerp",
 ]
 
-_UID: Final[count[int]] = count(1)
-_ANCHOR_TO_POS: Final[dict[Anchor, tuple[float, float]]] = {
+_UID: Final = count(1)
+_ANCHOR_TO_POS: Final = {
     "top-left": (0.0, 0.0),
     "top": (0.0, 0.5),
     "top-right": (0.0, 1.0),
@@ -47,7 +47,7 @@ _ANCHOR_TO_POS: Final[dict[Anchor, tuple[float, float]]] = {
     "bottom": (1.0, 0.5),
     "bottom-right": (1.0, 1.0),
 }
-_DEFAULT_POS_HINT: Final[PosHint] = {
+_DEFAULT_POS_HINT: Final = {
     "anchor": "center",
     "y_hint": None,
     "x_hint": None,
@@ -55,7 +55,7 @@ _DEFAULT_POS_HINT: Final[PosHint] = {
     "y_offset": 0,
 }
 """The default pos hint."""
-_DEFAULT_SIZE_HINT: Final[SizeHint] = {
+_DEFAULT_SIZE_HINT: Final = {
     "height_hint": None,
     "width_hint": None,
     "height_offset": 0,
