@@ -211,9 +211,8 @@ class _ConsoleTextbox(Textbox):
 
     def on_blur(self):
         # A hack to prevent textbox from losing focus when console is clicked:
-        if self.parent:
-            if self.console.is_focused:
-                self.focus()
+        if self.parent and self.console.is_focused:
+            self.focus()
 
 
 def _enter_callback(textbox: Textbox):
