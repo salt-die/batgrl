@@ -8,6 +8,7 @@ mask that indicates non-transparent pixels.
 import numpy as np
 cimport numpy as cnp
 
+from libc.string cimport memset
 from .geometry.regions cimport Band, CRegion, Region
 
 cdef unsigned char GLYPH = 0, SIXEL = 1, MIXED = 2
@@ -67,6 +68,78 @@ cdef inline double average_graphics(
     bg[1] = <unsigned char>(g // n)
     bg[2] = <unsigned char>(b // n)
     return <double>n / <double>(h * w)
+
+
+cdef inline void luminance_quant(
+    unsigned char *fg,
+    unsigned char *bg,
+    double *luminances,
+    unsigned char[:, :, ::1] texture,
+    Py_ssize_t y,
+    Py_ssize_t x,
+    Py_ssize_t h,
+    Py_ssize_t w,
+):
+    # Quantize a block of colors in texture to two colors by comparing luminances:
+    # Find average luminance. Compare each color's luminance to average luminance.
+    # If luminance is less than average, add to background else foreground.
+    # This is not necessarily a good quantization, but it is fast.
+
+    cdef:
+        Py_ssize_t i, j, k = 0, nfg = 0, nbg = 0
+        double average_luminance = 0
+        double[3] quant_fg, quant_bg
+
+    memset(luminances, 0, sizeof(double) * (h * w))
+    memset(quant_fg, 0, sizeof(double) * 3)
+    memset(quant_bg, 0, sizeof(double) * 3)
+
+    for i in range(y, y + h):
+        for j in range(x, x + w):
+            luminances[k] += .2126 * texture[i, j, 0]
+            luminances[k] += .7152 * texture[i, j, 1]
+            luminances[k] += .0722 * texture[i, j, 2]
+            k += 1
+
+    for i in range(k):
+        average_luminance += luminances[k]
+    average_luminance /= k
+
+    k = 0
+    for i in range(y, y + h):
+        for j in range(x, x + w):
+            if luminances[k] <= average_luminance:
+                quant_bg[0] += texture[i, j, 0]
+                quant_bg[1] += texture[i, j, 1]
+                quant_bg[2] += texture[i, j, 2]
+                nbg += 1
+                luminances[k] = 0
+            else:
+                quant_fg[0] += texture[i, j, 0]
+                quant_fg[1] += texture[i, j, 1]
+                quant_fg[2] += texture[i, j, 2]
+                nfg += 1
+                luminances[k] = 1
+            k += 1
+
+    # nbg won't be 0
+    quant_bg[0] /= nbg
+    quant_bg[1] /= nbg
+    quant_bg[2] /= nbg
+    if nfg:
+        quant_fg[0] /= nfg
+        quant_fg[1] /= nfg
+        quant_fg[2] /= nfg
+    else:
+        quant_fg[0] = quant_bg[0]
+        quant_fg[1] = quant_bg[1]
+        quant_fg[2] = quant_bg[2]
+    fg[0] = <unsigned char>quant_fg[0]
+    fg[1] = <unsigned char>quant_fg[1]
+    fg[2] = <unsigned char>quant_fg[2]
+    bg[0] = <unsigned char>quant_bg[0]
+    bg[1] = <unsigned char>quant_bg[1]
+    bg[2] = <unsigned char>quant_bg[2]
 
 
 cdef void opaque_pane_render(
@@ -394,13 +467,13 @@ cdef trans_half_graphics_render(
                         rgba = self_texture[src_y, src_x]
                         a = alpha * <double>rgba[3] / 255
                         if kind[y, x] != SIXEL:
-                           composite(dst.fg_color, rgba, a)
-                           composite(dst.bg_color, rgba, a)
+                            composite(dst.fg_color, rgba, a)
+                            composite(dst.bg_color, rgba, a)
                         if kind[y, x] != GLYPH:
-                           for gy in range(h):
-                              for gx in range(w):
-                                  if graphics[y, x, gy, gx, 3]:
-                                      composite(graphics[y, x, gy, gx], rgba, a)
+                            for gy in range(h):
+                                for gx in range(w):
+                                    if graphics[y, x, gy, gx, 3]:
+                                        composite(graphics[y, x, gy, gx], rgba, a)
                     elif kind[y, x] == SIXEL:
                         sixel = graphics[y, x]
                         rgba = self_texture[src_y, src_x]
@@ -647,6 +720,109 @@ cdef inline sixel_graphics_render(
         )
 
 
+cdef opaque_braille_graphics_render(
+    Cell[:, ::1] root_canvas,
+    const int root_y,
+    const int root_x,
+    unsigned char[:, :, ::1] self_texture,
+    CRegion *cregion,
+):
+    cdef:
+        Band *band = &cregion.bands[0]
+        Py_ssize_t i, j, gy, gx
+        int abs_y, abs_x, src_y, src_x
+        int y, y1, y2, x, x1, x2
+
+    abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        y1 = band.y1 - root_y
+        y2 = band.y2 - root_y
+        j = 0
+        while j < band.len:
+            x1 = band.walls[j] - root_x
+            x2 = band.walls[j + 1] - root_x
+            for y in range(y1, y2):
+                src_y = 4 * (y - abs_y)
+                for x in range(x1, x2):
+                    src_x = 2 * (x - abs_x)
+                    for gy in range(4):
+                        for gx in range(2):
+                            pass
+            j += 2
+
+
+cdef trans_braille_graphics_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    const int root_y,
+    const int root_x,
+    unsigned char[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
+):
+    cdef:
+        Band *band = &cregion.bands[0]
+        Cell *dst
+        Py_ssize_t i, j, h, w, gy, gx
+        int abs_y, abs_x, src_y, src_x
+        int y, y1, y2, x, x1, x2
+        unsigned char *bg_color
+        unsigned char[::1] rgba
+        unsigned char[:, :, ::1] sixel
+
+    abs_y, abs_x = band.y1 - root_y, band.walls[0] - root_x
+    h = graphics.shape[2]
+    w = graphics.shape[3]
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        y1 = band.y1 - root_y
+        y2 = band.y2 - root_y
+        j = 0
+        while j < band.len:
+            x1 = band.walls[j] - root_x
+            x2 = band.walls[j + 1] - root_x
+            for y in range(y1, y2):
+                src_y = 4 * (y - abs_y)
+                for x in range(x1, x2):
+                    src_x = 2 * (x - abs_x)
+                    for gy in range(4):
+                        for gx in range(2):
+                            pass
+            j += 2
+
+
+cdef inline braille_graphics_render(
+    Cell[:, ::1] root_canvas,
+    unsigned char[:, :, :, :, ::1] graphics,
+    unsigned char[:, ::1] kind,
+    const int root_y,
+    const int root_x,
+    bint is_transparent,
+    unsigned char[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
+):
+    if is_transparent:
+        trans_braille_graphics_render(
+            root_canvas,
+            graphics,
+            kind,
+            root_y,
+            root_x,
+            self_texture,
+            alpha,
+            cregion,
+        )
+    else:
+        opaque_braille_graphics_render(
+            root_canvas, root_y, root_x, self_texture, cregion
+        )
+
+
 cpdef void graphics_render(
     Cell[:, ::1] root_canvas,
     unsigned char[:, :, :, :, ::1] graphics,
@@ -678,6 +854,18 @@ cpdef void graphics_render(
         )
     elif blitter == "sixel":
         sixel_graphics_render(
+            root_canvas,
+            graphics,
+            kind,
+            root_y,
+            root_x,
+            is_transparent,
+            self_texture,
+            alpha,
+            cregion,
+        )
+    elif blitter == "braille":
+        braille_graphics_render(
             root_canvas,
             graphics,
             kind,
