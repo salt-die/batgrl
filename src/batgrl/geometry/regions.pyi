@@ -1,6 +1,8 @@
 """
 Functions and classes for determining gadget regions.
 
+Notes
+-----
 A gadget's region is calculated as a first step in compositing to determine its visible
 area in the terminal.
 
@@ -46,38 +48,14 @@ bottom y-coordinate. And finally, Regions are a sorted list of non-intersecting 
 """
 
 from collections.abc import Iterator
-from typing import Self
 
 from .basic import Point, Size
 
 __all__ = ["Region"]
 
-class _Band:
-    """A row of mutually exclusive rects."""
-
-    y1: int
-    """The y-coordinate of the top of the band."""
-    y2: int
-    """The y-coordinate of the bottom of the band."""
-    walls: list[int]
-    """
-    Each contiguous pair of ints in `walls` represent the left and right side of a rect
-    in the band.
-    """
-
 class Region:
     """
     Collection of mutually exclusive bands of rects.
-
-    Parameters
-    ----------
-    bands : list[_Band], default: []
-        Bands that make up the region.
-
-    Attributes
-    ----------
-    bands : list[_Band]
-        Bands that make up the region.
 
     Methods
     -------
@@ -87,22 +65,19 @@ class Region:
         Return a new region from a rect position and size.
     """
 
-    bands: list[_Band]
-    """Bands that make up the region."""
-
-    def __and__(self, other: Self) -> Self:
+    def __and__(self, other: Region) -> Region:
         """Return the intersection of self and other."""
 
-    def __or__(self, other: Self) -> Self:
+    def __or__(self, other: Region) -> Region:
         """Return the union of self and other."""
 
-    def __add__(self, other: Self) -> Self:
+    def __add__(self, other: Region) -> Region:
         """Return the union of self and other."""
 
-    def __sub__(self, other: Self) -> Self:
+    def __sub__(self, other: Region) -> Region:
         """Return the difference of self and other."""
 
-    def __xor__(self, other: Self) -> Self:
+    def __xor__(self, other: Region) -> Region:
         """Return the symmetric difference of self and other."""
 
     def __bool__(self) -> bool:
@@ -122,7 +97,7 @@ class Region:
         """
 
     @classmethod
-    def from_rect(cls, pos: Point, size: Size) -> Self:
+    def from_rect(cls, pos: Point, size: Size) -> Region:
         """
         Return a region from a rect position and size.
 
