@@ -21,9 +21,8 @@ class TextParticleField(Gadget):
     r"""
     A text particle field.
 
-    A particle field specializes in rendering many single "pixel" children by
-    setting particle positions, chars, and color pairs. This is more efficient than
-    rendering many 1x1 gadgets.
+    A particle field specializes in rendering many single "pixel" children. This is more
+    efficient than rendering many 1x1 gadgets.
 
     Parameters
     ----------
