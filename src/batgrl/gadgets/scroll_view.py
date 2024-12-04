@@ -716,7 +716,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         """
         Scroll the view so that a given rect is visible.
 
-        The rect is assumed to be within the view's bounding box.
+        Does nothing if the scroll view or one it's scrollbars are grabbed.
 
         Parameters
         ----------
@@ -726,19 +726,26 @@ class ScrollView(Themable, Grabbable, Gadget):
         size : Size, default: Size(1, 1)
             Size of rect.
         """
-        if self.view is None:
+        if (
+            self.view is None
+            or self.is_grabbed
+            or self._horizontal_bar.is_grabbed
+            or self._vertical_bar.is_grabbed
+        ):
             return
 
-        y, x = pos
         h, w = size
-        gy, gx = self.view.pos
-        ay, ax = gy + y, gx + x
+        ay, ax = self.view.pos + pos
         if ay < 0:
             self.scroll_up(-ay)
-        elif ay + h >= self.port_height:
+        elif h >= self.port_height:
+            self.scroll_down(ay)
+        elif h + ay >= self.port_height:
             self.scroll_down(ay + h - self.port_height)
 
         if ax < 0:
             self.scroll_left(-ax)
-        elif ax + w >= self.port_width:
+        elif w >= self.port_width:
+            self.scroll_right(ax)
+        elif w + ax >= self.port_width:
             self.scroll_right(ax + w - self.port_width)
