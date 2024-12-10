@@ -293,34 +293,8 @@ class Vt100Terminal(ABC):
         escape = self._escape_buffer.getvalue()
         self._escape_buffer = None
 
-        if self._drs_pending:
-            if cpr_match := CPR_RE.fullmatch(escape):
-                self._drs_pending -= 1
-                y, x = cpr_match.groups()
-                self._event_buffer.append(
-                    CursorPositionReportEvent(Point(int(y) - 1, int(x) - 1))
-                )
-                return
-
-            if color_match := COLOR_RE.fullmatch(escape):
-                self._drs_pending -= 1
-                kind, r, g, b = color_match.groups()
-                self._event_buffer.append(
-                    ColorReportEvent(
-                        kind="fg" if kind == "0" else "bg",
-                        color=Color.from_hex(f"{r[:2]}{g[:2]}{b[:2]}"),
-                    )
-                )
-                return
-
-            if device_attributes_match := DEVICE_ATTRIBUTES_RE.fullmatch(escape):
-                self._drs_pending -= 1
-                device_attributes = device_attributes_match.group()[3:-1].split(";")
-                self._event_buffer.append(
-                    DeviceAttributesReportEvent(frozenset(map(int, device_attributes)))
-                )
-                return
-
+        if self._drs_pending and self._execute_dsr_request(escape):
+            return
         if escape == BRACKETED_PASTE_START:
             self._state = ParserState.PASTE
             self._paste_buffer = StringIO(newline=None)
@@ -388,7 +362,7 @@ class Vt100Terminal(ABC):
         else:
             return False
 
-        self._dsr_request_times.popleft()
+        self._drs_pending -= 1
         self._event_buffer.append(event)
         return True
 
@@ -515,6 +489,14 @@ class Vt100Terminal(ABC):
     def request_device_attributes(self) -> None:
         """Report device attributes."""
         self._drs_request("\x1b[c")
+
+    def request_pixel_geometry(self) -> None:
+        """Report pixel geometry per cell."""
+        self._drs_request("\x1b[16t")
+
+    def request_terminal_geometry(self) -> None:
+        """Report pixel geometry of terminal."""
+        self._drs_request("\x1b[14t")
 
     def expect_dsr(self) -> bool:
         """Return whether a device status report is expected."""
