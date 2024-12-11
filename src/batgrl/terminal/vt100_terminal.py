@@ -153,7 +153,7 @@ class Vt100Terminal(ABC):
         """State of VT100 input parser."""
         self._timeout_escape: asyncio.TimerHandle | None = None
         """Timeout handle for executing escape buffer."""
-        self._drs_pending: int = 0
+        self._dsr_pending: int = 0
         """Pending device status report requests."""
         self._last_y: int = 0
         """Last mouse y-coordinate."""
@@ -279,9 +279,9 @@ class Vt100Terminal(ABC):
         escape = self._escape_buffer.getvalue()
         self._escape_buffer = None
 
-        if self._drs_pending:
+        if self._dsr_pending:
             if cpr_match := CPR_RE.fullmatch(escape):
-                self._drs_pending -= 1
+                self._dsr_pending -= 1
                 y, x = cpr_match.groups()
                 self._event_buffer.append(
                     CursorPositionResponseEvent(Point(int(y) - 1, int(x) - 1))
@@ -289,7 +289,7 @@ class Vt100Terminal(ABC):
                 return
 
             if color_match := COLOR_RE.fullmatch(escape):
-                self._drs_pending -= 1
+                self._dsr_pending -= 1
                 kind, r, g, b = color_match.groups()
                 self._event_buffer.append(
                     ColorReportEvent(
@@ -300,7 +300,7 @@ class Vt100Terminal(ABC):
                 return
 
             if device_attributes_match := DEVICE_ATTRIBUTES_RE.fullmatch(escape):
-                self._drs_pending -= 1
+                self._dsr_pending -= 1
                 device_attributes = device_attributes_match.group()[3:-1].split(";")
                 self._event_buffer.append(
                     DeviceAttributesReportEvent(frozenset(map(int, device_attributes)))
@@ -442,41 +442,41 @@ class Vt100Terminal(ABC):
         """Disable reporting terminal focus."""
         self._out_buffer.append("\x1b[?1004l")
 
-    def _drs_request(self, escape: str) -> None:
+    def _dsr_request(self, escape: str) -> None:
         """Make a device status report request and schedule its cancellation."""
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
             return
 
-        self._drs_pending += 1
-        loop.call_later(DRS_REQUEST_TIMEOUT, self._timeout_drs)
+        self._dsr_pending += 1
+        loop.call_later(DRS_REQUEST_TIMEOUT, self._timeout_dsr)
         self._out_buffer.append(escape)
         self.flush()
 
-    def _timeout_drs(self) -> None:
-        if self._drs_pending:
-            self._drs_pending -= 1
+    def _timeout_dsr(self) -> None:
+        if self._dsr_pending:
+            self._dsr_pending -= 1
 
     def request_cursor_position_report(self) -> None:
         """Report current cursor position."""
-        self._drs_request("\x1b[6n")
+        self._dsr_request("\x1b[6n")
 
     def request_foreground_color(self) -> None:
         """Report terminal foreground color."""
-        self._drs_request("\x1b]10;?\x1b\\")
+        self._dsr_request("\x1b]10;?\x1b\\")
 
     def request_background_color(self) -> None:
         """Report terminal background color."""
-        self._drs_request("\x1b]11;?\x1b\\")
+        self._dsr_request("\x1b]11;?\x1b\\")
 
     def request_device_attributes(self) -> None:
         """Report device attributes."""
-        self._drs_request("\x1b[c")
+        self._dsr_request("\x1b[c")
 
     def expect_dsr(self) -> bool:
         """Return whether a device status report is expected."""
-        return bool(self._drs_pending)
+        return bool(self._dsr_pending)
 
     def move_cursor(self, pos: Point) -> None:
         """
