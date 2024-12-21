@@ -13,8 +13,8 @@ gadgets include:
 * `Pane`, a gadget with a background color. An `alpha` attribute can modify its transparency.
 * `Graphics`, a gadget for arbitrary RGBA textures.
 * `Text`, the most general gadget. Its state is an array of cells where each cell carries
-attributes a terminal character can have such as its character, whether it's bold, or the
-color of its foreground.
+  attributes a terminal character can have such as its character, whether it's bold, or the
+  color of its foreground.
 
 Size and Pos Hints
 ------------------
