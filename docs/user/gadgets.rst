@@ -10,6 +10,7 @@ respectively.
 
 The base gadget is little more than a container for other gadgets. Some other more interesting
 gadgets include:
+
 * `Pane`, a gadget with a background color. An `alpha` attribute can modify its transparency.
 * `Graphics`, a gadget for arbitrary RGBA textures.
 * `Text`, the most general gadget. Its state is an array of cells where each cell carries
