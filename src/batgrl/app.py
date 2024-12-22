@@ -399,7 +399,7 @@ class App(ABC):
                     self._sixel_support = 4 in event.device_attributes
 
         async def auto_render():
-            """Render screen every :attr:`render_interval` seconds."""
+            """Render screen every ``render_interval`` seconds."""
             while True:
                 render_root(root, terminal)
                 await asyncio.sleep(self.render_interval)
