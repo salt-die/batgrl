@@ -83,9 +83,10 @@ Anchor = Literal[
 
 class _GadgetList(MutableSequence):
     """
-    A sequence of gadget's.
+    A sequence of sibling gadgets.
 
-    Gadget regions are invalidated if their index in the sequence changes.
+    Gadget regions are invalidated if gadgets later in the sequence are added or
+    removed.
     """
 
     def __init__(self) -> None:
@@ -97,21 +98,18 @@ class _GadgetList(MutableSequence):
     def __getitem__(self, index: int) -> Gadget:
         return self._gadgets[index]
 
-    def __setitem__(self, index: int, gadget: Gadget) -> None:
-        self._gadgets[index] = gadget
-        gadget._invalidate_region()
-
-    def _invalidate_regions_after_index(self, index: int) -> None:
-        for i in range(index, len(self)):
-            self[i]._invalidate_region()
+    def __setitem__(self, *_) -> None:
+        raise NotImplementedError("_GadgetList.__setitem__ not implemented.")
 
     def __delitem__(self, index: int) -> None:
         del self._gadgets[index]
-        self._invalidate_regions_after_index(index)
+        for i in range(index - 1, -1, -1):
+            self[i]._invalidate_region()
 
     def insert(self, index: int, gadget: Gadget) -> None:
         self._gadgets.insert(index, gadget)
-        self._invalidate_regions_after_index(index)
+        for i in range(index, -1, -1):
+            self[i]._invalidate_region()
 
     def __iter__(self) -> Iterator[Gadget]:
         return iter(self._gadgets)

@@ -16,8 +16,9 @@ class ToggleButtonBehavior(ButtonBehavior):
     """
     Toggle button behavior for gadgets.
 
-    Without a group, toggle button's states switch between "on" and "off" when pressed.
-    With a group, only a single button in the group can be in the "on" state at a time.
+    Without a group, a toggle button behaves like a checkbox (either on or off). With a
+    group, it behaves like a radio button (only a single button in a group is allowed to
+    be in the "on" state).
 
     Parameters
     ----------

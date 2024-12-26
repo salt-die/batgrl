@@ -390,6 +390,10 @@ class App(ABC):
                         root.size = Size(
                             min(self.inline_height, height), width - event.pos.x
                         )
+
+                        # Needs to be manually set in case root.size hasn't changed.
+                        root._resized = True
+
                         root.pos = event.pos
                 elif isinstance(event, ColorReportEvent):
                     if event.kind == "fg":
@@ -398,7 +402,7 @@ class App(ABC):
                         self.bg_color = event.color
 
         async def auto_render():
-            """Render screen every :attr:`render_interval` seconds."""
+            """Render screen every ``render_interval`` seconds."""
             while True:
                 render_root(root, terminal)
                 await asyncio.sleep(self.render_interval)

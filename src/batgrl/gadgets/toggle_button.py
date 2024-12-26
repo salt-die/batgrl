@@ -24,8 +24,9 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     r"""
     A toggle button gadget.
 
-    Without a group, a toggle button acts like a checkbox. With a group, it behaves like
-    a radio button (only a single button in a group is allowed to be in the "on" state).
+    Without a group, a toggle button behaves like a checkbox (either on or off). With a
+    group, it behaves like a radio button (only a single button in a group is allowed to
+    be in the "on" state).
 
     Parameters
     ----------
