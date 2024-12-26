@@ -83,6 +83,9 @@ class Region:
     def __bool__(self) -> bool:
         """Whether region is non-empty."""
 
+    def __eq__(self, other: Region) -> bool:
+        """Whether two regions are equal."""
+
     def __contains__(self, point: Point) -> bool:
         """Return whether point is in region."""
 
