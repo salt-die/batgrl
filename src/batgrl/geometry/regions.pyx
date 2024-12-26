@@ -159,20 +159,24 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
             if r.y2 <= s.y1:
                 if merge_bands(scanline, r.y2, r, &EMPTY, result, op) == -1:
                     return -1
+                scanline = r.y2
                 i += 1
             else:
                 if scanline < s.y1:
                     if merge_bands(scanline, s.y1, r, &EMPTY, result, op) == -1:
                         return -1
+                    scanline = s.y1
                 if r.y2 <= s.y2:
                     if merge_bands(s.y1, r.y2, r, s, result, op) == -1:
                         return -1
+                    scanline = r.y2
                     i += 1
                     if r.y2 == s.y2:
                         j += 1
                 else:
                     if merge_bands(s.y1, s.y2, r, s, result, op) == -1:
                         return -1
+                    scanline = s.y2
                     j += 1
         else:
             if scanline < s.y1:
@@ -180,23 +184,25 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
             if s.y2 <= r.y1:
                 if merge_bands(scanline, s.y2, &EMPTY, s, result, op) == -1:
                     return -1
+                scanline = s.y2
                 j += 1
             else:
                 if scanline < r.y1:
                     if merge_bands(scanline, r.y1, &EMPTY, s, result, op) == -1:
                         return -1
+                    scanline = r.y1
                 if s.y2 <= r.y2:
                     if merge_bands(r.y1, s.y2, r, s, result, op) == -1:
                         return -1
+                    scanline = s.y2
                     j += 1
                     if s.y2 == r.y2:
                         i += 1
                 else:
                     if merge_bands(r.y1, r.y2, r, s, result, op) == -1:
                         return -1
+                    scanline = r.y2
                     i += 1
-
-        scanline = result.bands[result.len - 1].y2
 
     while i < a.len:
         r = &a.bands[i]
