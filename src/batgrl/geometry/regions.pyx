@@ -331,6 +331,23 @@ cdef class Region:
     def __bool__(self) -> bool:
         return self.cregion.len > 0
 
+    def __eq__(self, other: Region) -> bool:
+        cdef:
+            Py_ssize_t i, j
+            Band *r
+            Band *s
+        if self.cregion.len != other.cregion.len:
+            return False
+        for i in range(self.cregion.len):
+            r = &self.cregion.bands[i]
+            s = &other.cregion.bands[i]
+            if r.y1 != s.y1 or r.y2 != s.y2 or r.len != s.len:
+                return False
+            for j in range(r.len):
+                if r.walls[j] != s.walls[j]:
+                    return False
+        return True
+
     def __contains__(self, point: Point) -> bool:
         cdef:
             int y, x
