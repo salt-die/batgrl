@@ -565,10 +565,10 @@ class Gadget:
         self.pos = Point(cy - h // 2, cx - w // 2)
 
     @property
-    def absolute_pos(self) -> Point | None:
+    def absolute_pos(self) -> Point:
         """Absolute position on screen."""
         if self.parent is None:
-            return None
+            return self.pos
         return self.pos + self.parent.absolute_pos
 
     @property
@@ -814,9 +814,7 @@ class Gadget:
         Point
             The point in local coordinates.
         """
-        if self.parent is None:
-            return point - self.pos
-        return self.parent.to_local(point) - self.pos
+        return point - self.absolute_pos
 
     def collides_point(self, point: Point) -> bool:
         """
@@ -832,13 +830,13 @@ class Gadget:
         bool
             Whether point collides with gadget.
         """
-        if self.root is None or not self.is_visible or not self.is_enabled:
+        if self.root is None or not (self.is_visible and self.is_enabled):
             return False
 
         return point in self._region or any(
             point in child._region
             for child in self.walk()
-            if child.is_visible or child.is_enabled
+            if child.is_visible and child.is_enabled
         )
 
     def collides_gadget(self, other: Self) -> bool:

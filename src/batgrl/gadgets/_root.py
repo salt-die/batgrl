@@ -79,10 +79,6 @@ class _Root(Gadget):
         self._bg_color = self._cell["bg_color"] = bg_color
 
     @property
-    def absolute_pos(self) -> Point:
-        return self._pos
-
-    @property
     def is_transparent(self) -> Literal[False]:
         return False
 
