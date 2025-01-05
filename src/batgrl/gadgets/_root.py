@@ -57,10 +57,6 @@ class _Root(Gadget):
         self.canvas = self._last_canvas.copy()
 
     @property
-    def absolute_pos(self) -> Point:
-        return self._pos
-
-    @property
     def is_transparent(self) -> Literal[False]:
         return False
 
