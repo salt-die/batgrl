@@ -11,6 +11,8 @@ from numpy.typing import NDArray
 if TYPE_CHECKING:
     from ..app import App
 
+from typing import Final
+
 from ..colors import BLACK, Color
 from ..text_tools import Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
@@ -50,13 +52,11 @@ class _Root(Gadget):
         self.canvas: NDArray[Cell]
         """Current rendering of gadget tree."""
 
-        self._pos = Point(0, 0)
+        self._pos: Final = Point(0, 0)
+        """Position of root gadget."""
         self._size = size
         """Size of root gadget."""
         self.on_size()
-
-    def __repr__(self):
-        return f"_Root(size={self._size}, pos={self._pos})"
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
@@ -77,6 +77,10 @@ class _Root(Gadget):
     @bg_color.setter
     def bg_color(self, bg_color: Color):
         self._bg_color = self._cell["bg_color"] = bg_color
+
+    @property
+    def pos(self) -> Point:
+        return self._pos
 
     @property
     def is_transparent(self) -> Literal[False]:
@@ -106,7 +110,7 @@ class _Root(Gadget):
     def _set_regions(self) -> None:
         """Recompute valid regions for all gadgets with invalid regions."""
         if not self._region_valid:
-            self._clipping_region = Region.from_rect(self.absolute_pos, self.size)
+            self._clipping_region = Region.from_rect(self._pos, self.size)
             self._region = self._clipping_region
 
         for child in self.walk():

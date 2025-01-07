@@ -141,6 +141,8 @@ class App(ABC):
         """Path where stderr is saved."""
         self._terminal: Vt100Terminal | None = None
         """Platform-specific terminal (only set while app is running)."""
+        self._app_pos: Point = Point(0, 0)
+        """Position of app in terminal."""
         self._exit_value: Any = None
         """Value set by ``exit(exit_value)`` and returned by ``run()``."""
         self._sixel_support: bool = False
@@ -186,7 +188,7 @@ class App(ABC):
         else:
             self._terminal.erase_in_display()
             self._terminal.enter_alternate_screen()
-            self.root.pos = Point(0, 0)
+            self._app_pos = Point(0, 0)
             self.root.size = self._terminal.get_size()
 
     def _scroll_inline(self) -> None:
@@ -367,6 +369,7 @@ class App(ABC):
                             Focusable.focus_previous()
                 elif isinstance(event, MouseEvent):
                     determine_nclicks(event)
+                    event.pos -= self._app_pos
                     root.dispatch_mouse(event)
                 elif isinstance(event, PasteEvent):
                     root.dispatch_paste(event)
@@ -393,8 +396,7 @@ class App(ABC):
 
                         # Needs to be manually set in case root.size hasn't changed.
                         root._resized = True
-
-                        root.pos = event.pos
+                        self._app_pos = event.pos
                 elif isinstance(event, ColorReportEvent):
                     if event.kind == "fg":
                         self.fg_color = event.color
@@ -404,7 +406,7 @@ class App(ABC):
         async def auto_render():
             """Render screen every ``render_interval`` seconds."""
             while True:
-                render_root(root, terminal)
+                render_root(root, terminal, self._app_pos)
                 await asyncio.sleep(self.render_interval)
 
         with app_mode(terminal, event_handler):

@@ -12,11 +12,12 @@ to do so.
 import numpy as np
 
 from .gadgets._root import _Root
+from .geometry import Point
 from .terminal import Vt100Terminal
 from .text_tools import char_width
 
 
-def render_root(root: _Root, terminal: Vt100Terminal) -> None:
+def render_root(root: _Root, terminal: Vt100Terminal, app_pos: Point) -> None:
     """
     Render root canvas into a terminal.
 
@@ -31,7 +32,6 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
         return
 
     w = root.width
-    inline_column = root.pos.x
     write = terminal._out_buffer.append
     inline = not terminal.in_alternate_screen
     last_y = 0
@@ -46,10 +46,9 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
         diffs = root._last_canvas != canvas
         ys, xs = diffs.nonzero()
 
-    # Save cursor
-    write("\x1b7")
+    write("\x1b7")  # Save cursor
     if inline:
-        terminal.move_cursor(root._pos)
+        terminal.move_cursor(app_pos)
     for y, x, cell in zip(ys, xs, canvas[ys, xs]):
         (
             char,
@@ -98,10 +97,8 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
         if inline:
             # Note that `y`s are non-decreasing.
             if last_y < y:
-                # Move down `y - last_y` rows.
-                write(f"\x1b[{y - last_y}B")
-            # Move to column `x + 1`.
-            write(f"\x1b[{inline_column + x + 1}G")
+                write(f"\x1b[{y - last_y}B")  # Move down `y - last_y` rows.
+            write(f"\x1b[{x + 1}G")  # Move to column `x + 1`.
         else:
             # Move cursor to position `(y + 1, x + 1)`.
             write(f"\x1b[{y + 1};{x + 1}H")
@@ -118,6 +115,5 @@ def render_root(root: _Root, terminal: Vt100Terminal) -> None:
             f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair.
             f"{char}"
         )
-    # Restore cursor
-    write("\x1b8")
+    write("\x1b8")  # Restore cursor
     terminal.flush()
