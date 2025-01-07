@@ -512,7 +512,6 @@ cdef trans_sixel_graphics_render(
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
         Cell *dst
-        uint8 *bg_color
         uint8[::1] rgba
         uint8[:, :, ::1] sixel
 
