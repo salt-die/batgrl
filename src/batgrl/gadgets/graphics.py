@@ -15,15 +15,12 @@ from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clam
 
 __all__ = ["Graphics", "Interpolation", "Point", "Size"]
 
-# TODO: Add "quad" and "sextant" blitters.
-Blitter = Literal["half", "sixel"]
+Blitter = Literal["braille", "half", "sixel"]
 """Determines how graphics are rendered."""
 
-_BLITTER_GEOMETRY: Final = {
+_BLITTER_GEOMETRY: Final[dict[Blitter, Size]] = {
+    "braille": Size(4, 2),
     "half": Size(2, 1),
-    # TODO:
-    # "quad": Size(2, 2),
-    # "sextant": Size(3, 2),
     "sixel": Size(20, 10),
 }
 
@@ -231,9 +228,11 @@ class Graphics(Gadget):
         self.default_color = default_color
         self.alpha = alpha
         self.interpolation = interpolation
-        self.blitter = blitter
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        self._blitter = blitter
         self.texture = np.full(
-            _scale_geometry(blitter, self.size), default_color, dtype=np.uint8
+            (*_scale_geometry(blitter, self.size), 4), default_color, dtype=np.uint8
         )
 
     @property
