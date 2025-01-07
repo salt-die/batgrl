@@ -438,7 +438,6 @@ class Gadget:
     def __repr__(self):
         return (
             f"{type(self).__name__}(size={self.size}, pos={self.pos}, "
-            f"size_hint={self._size_hint}, pos_hint={self._pos_hint}, "
             f"is_transparent={self.is_transparent}, is_visible={self.is_visible}, "
             f"is_enabled={self.is_enabled})"
         )
