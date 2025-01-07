@@ -23,11 +23,11 @@ repeated, run length encoding, "!rc", may be used instead where ``r`` is the num
 times to repeat ``c``.
 
 For generating sixel ansi, batgrl uses a cython implementation of notcurses'
-sixel.c.[1]_ This is a very efficient algorithm that requires only a single pass over
-the pixel data. For each band, for each sixel, each color encountered in that sixel is
-stored as an "active color". Afterwards, for each active color, a new color band is
-created or a previously created color band for that color is extended so that all color
-bands of a band are built up simultaneously.
+sixel.c.[1]_ This algorithm only requires a single pass over the pixel data; for each
+band, for each sixel, each color encountered in that sixel is stored as an "active
+color". Afterwards, for each active color, a new color band is created or a previously
+created color band for that color is extended so that all color bands of a band are
+built up simultaneously.
 
 References
 ----------
