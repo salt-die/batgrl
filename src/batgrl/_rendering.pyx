@@ -20,8 +20,7 @@ cdef struct RegionIterator:
     int y1, y2, y, x1, x2, x
     uint8 done
 
-cdef RegionIterator* iter_(CRegion* cregion):
-    cdef RegionIterator it
+cdef void init_iter(RegionIterator* it, CRegion* cregion):
     if cregion.len == 0:
         it.done = 1
     else:
@@ -35,7 +34,6 @@ cdef RegionIterator* iter_(CRegion* cregion):
         it.y = it.y1
         it.x = it.x1
         it.done = 0
-    return &it
 
 cdef void next_(RegionIterator* it):
     if it.done:
@@ -199,10 +197,10 @@ cdef void opaque_pane_render(
     uint8[::1] bg_color,
     CRegion *cregion,
 ):
-    cdef: 
-        RegionIterator* it = iter_(cregion)
-        Cell* cell
-    
+    cdef RegionIterator it
+    init_iter(&it, cregion)
+    cdef Cell* cell
+
     while not it.done:
         cell = &root_canvas[it.y, it.x]
         cell.char_ = u" "
@@ -215,7 +213,8 @@ cdef void opaque_pane_render(
         cell.bg_color[0] = bg_color[0]
         cell.bg_color[1] = bg_color[1]
         cell.bg_color[2] = bg_color[2]
-        next_(it)
+        next_(&it)
+
 
 cdef void trans_pane_render(
     Cell[:, ::1] root_canvas,
@@ -225,8 +224,9 @@ cdef void trans_pane_render(
     double alpha,
     CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
         Cell *dst
         uint8 cell_kind
@@ -242,7 +242,7 @@ cdef void trans_pane_render(
                 for gx in range(w):
                     if graphics[it.y, it.x, gy, gx, 3]:
                         composite(graphics[it.y, it.x, gy, gx], bg_color, alpha)
-        next_(it)
+        next_(&it)
 
 cpdef void pane_render(
     Cell[:, ::1] root_canvas,
@@ -266,13 +266,12 @@ cpdef void pane_render(
 cdef void opaque_text_render(
     Cell[:, ::1] root_canvas, Cell[:, ::1] self_canvas, CRegion *cregion
 ):
-    cdef:
-        RegionIterator* it = iter_(cregion)
-        int abs_y = it.y1, abs_x = it.x1
-
+    cdef RegionIterator it
+    init_iter(&it, cregion)
+    cdef int abs_y = it.y1, abs_x = it.x1
     while not it.done:
         root_canvas[it.y, it.x] = self_canvas[it.y - abs_y, it.x - abs_x]
-        next_(it)
+        next_(&it)
 
 
 cdef void trans_text_render(
@@ -283,8 +282,9 @@ cdef void trans_text_render(
     double alpha,
     CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1
         Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
         cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
@@ -332,7 +332,7 @@ cdef void trans_text_render(
                 )
             kind[it.y, it.x] = GLYPH
             composite(dst.bg_color, src.bg_color, alpha)
-        next_(it)
+        next_(&it)
 
 cpdef void text_render(
     Cell[:, ::1] root_canvas,
@@ -353,8 +353,9 @@ cpdef void text_render(
 cdef opaque_half_graphics_render(
     Cell[:, ::1] root_canvas, uint8[:, :, ::1] self_texture, CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Cell *dst
 
@@ -375,7 +376,7 @@ cdef opaque_half_graphics_render(
         dst.bg_color[0] = self_texture[src_y + 1, src_x, 0]
         dst.bg_color[1] = self_texture[src_y + 1, src_x, 1]
         dst.bg_color[2] = self_texture[src_y + 1, src_x, 2]
-        next_(it)
+        next_(&it)
 
 cdef trans_half_graphics_render(
     Cell[:, ::1] root_canvas,
@@ -385,8 +386,9 @@ cdef trans_half_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
         Cell *dst
@@ -467,7 +469,7 @@ cdef trans_half_graphics_render(
                 rgba = self_texture[src_y + 1, src_x]
                 a = alpha * <double>rgba[3] / 255
                 composite(dst.bg_color, rgba, a)
-        next_(it)
+        next_(&it)
 
 
 cdef opaque_sixel_graphics_render(
@@ -476,8 +478,9 @@ cdef opaque_sixel_graphics_render(
     uint8[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
         uint8[:, :, ::1] sixel
@@ -493,7 +496,7 @@ cdef opaque_sixel_graphics_render(
                 sixel[gy, gx, 1] = self_texture[src_y + gy, src_x + gx, 1]
                 sixel[gy, gx, 2] = self_texture[src_y + gy, src_x + gx, 2]
                 sixel[gy, gx, 3] = 1
-        next_(it)
+        next_(&it)
 
 cdef trans_sixel_graphics_render(
     Cell[:, ::1] root_canvas,
@@ -503,8 +506,9 @@ cdef trans_sixel_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
         Cell *dst
@@ -552,14 +556,15 @@ cdef trans_sixel_graphics_render(
                         composite(sixel[gy, gx], rgba, alpha * <double>rgba[3] / 255)
                     elif not sixel[gy, gx, 3]:
                         kind[it.y, it.x] = MIXED
-        next_(it)
+        next_(&it)
 
 
 cdef opaque_braille_graphics_render(
     Cell[:, ::1] root_canvas, uint8[:, :, ::1] self_texture, CRegion *cregion
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Py_ssize_t gy, gx
 
@@ -569,7 +574,7 @@ cdef opaque_braille_graphics_render(
         for gy in range(4):
             for gx in range(2):
                 pass
-        next_(it)
+        next_(&it)
 
 
 cdef trans_braille_graphics_render(
@@ -580,8 +585,9 @@ cdef trans_braille_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
     cdef:
-        RegionIterator* it = iter_(cregion)
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
         Py_ssize_t gy, gx
 
@@ -591,7 +597,7 @@ cdef trans_braille_graphics_render(
         for gy in range(4):
             for gx in range(2):
                 pass
-        next_(it)
+        next_(&it)
 
 
 cpdef void graphics_render(
