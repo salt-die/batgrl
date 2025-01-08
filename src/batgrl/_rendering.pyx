@@ -13,12 +13,15 @@ from .geometry.regions cimport CRegion, Region
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
+cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
+
 
 cdef struct RegionIterator:
     CRegion* cregion
     Py_ssize_t i, j
     int y1, y2, y, x1, x2, x
     uint8 done
+
 
 cdef void init_iter(RegionIterator* it, CRegion* cregion):
     if cregion.len == 0:
@@ -34,6 +37,7 @@ cdef void init_iter(RegionIterator* it, CRegion* cregion):
         it.y = it.y1
         it.x = it.x1
         it.done = 0
+
 
 cdef void next_(RegionIterator* it):
     if it.done:
@@ -136,7 +140,7 @@ cdef inline void luminance_quant(
     # This is not necessarily a good quantization, but it is fast.
 
     cdef:
-        Py_ssize_t i, j, k = 0, nfg = 0, nbg = 0
+        Py_ssize_t i, j, k, nfg = 0, nbg = 0
         double average_luminance = 0
         double[3] quant_fg, quant_bg
 
@@ -144,6 +148,7 @@ cdef inline void luminance_quant(
     memset(quant_fg, 0, sizeof(double) * 3)
     memset(quant_bg, 0, sizeof(double) * 3)
 
+    k = 0
     for i in range(y, y + h):
         for j in range(x, x + w):
             luminances[k] += .2126 * texture[i, j, 0]
@@ -151,8 +156,9 @@ cdef inline void luminance_quant(
             luminances[k] += .0722 * texture[i, j, 2]
             k += 1
 
+    k = h * w
     for i in range(k):
-        average_luminance += luminances[k]
+        average_luminance += luminances[i]
     average_luminance /= k
 
     k = 0
@@ -565,14 +571,32 @@ cdef opaque_braille_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
-        Py_ssize_t gy, gx
+        uint8[3] fg, bg
+        double[8] luminances
+        Cell* cell
+        uint8 i
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
-        for gy in range(4):
-            for gx in range(2):
-                pass
+        luminance_quant(&fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2)
+        cell = &root_canvas[it.y, it.x]
+        cell.char_ = 10240
+        for i in range(8):
+            if luminances[i]:
+                cell.char_ += BRAILLE_ENUM[i]
+        cell.bold = False
+        cell.italic = False
+        cell.underline = False
+        cell.strikethrough = False
+        cell.overline = False
+        cell.reverse = False
+        cell.fg_color[0] = fg[0]
+        cell.fg_color[1] = fg[1]
+        cell.fg_color[2] = fg[2]
+        cell.bg_color[0] = bg[0]
+        cell.bg_color[1] = bg[1]
+        cell.bg_color[2] = bg[2]
         next_(&it)
 
 
@@ -588,14 +612,53 @@ cdef trans_braille_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
-        Py_ssize_t gy, gx
+        uint8[3] fg, bg
+        double[8] luminances
+        Cell* cell
+        uint8 i, j
+        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3]
+        cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
+        double alpha_avg = 0
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
-        for gy in range(4):
-            for gx in range(2):
-                pass
+        luminance_quant(&fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2)
+        cell = &root_canvas[it.y, it.x]
+        cell.char_ = 10240
+        for i in range(8):
+            if luminances[i]:
+                cell.char_ += BRAILLE_ENUM[i]
+        cell.bold = False
+        cell.italic = False
+        cell.underline = False
+        cell.strikethrough = False
+        cell.overline = False
+        cell.reverse = False
+        cell.fg_color[0] = fg[0]
+        cell.fg_color[1] = fg[1]
+        cell.fg_color[2] = fg[2]
+        if kind[it.y, it.x] == SIXEL:
+            average_graphics(cell.bg_color, graphics[it.y, it.x], h, w)
+        elif kind[it.y, it.x] == MIXED:
+            wgt = average_graphics(rgb, graphics[it.y, it.x], h, w)
+            nwgt = 1 - wgt
+            cell.bg_color[0] = <uint8>(
+                <double>rgb[0] * wgt + <double>cell.bg_color[0] * nwgt
+            )
+            cell.bg_color[1] = <uint8>(
+                <double>rgb[1] * wgt + <double>cell.bg_color[1] * nwgt
+            )
+            cell.bg_color[2] = <uint8>(
+                <double>rgb[2] * wgt + <double>cell.bg_color[2] * nwgt
+            )
+        kind[it.y, it.x] = GLYPH
+
+        for i in range(src_y, src_y + 4):
+            for j in range(src_x, src_x + 2):
+                alpha_avg += self_texture[src_y, src_x, 3]
+        alpha_avg = alpha * (alpha_avg / (8 * 255))
+        composite(cell.bg_color, bg, alpha_avg)
         next_(&it)
 
 
