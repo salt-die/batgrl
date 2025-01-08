@@ -700,7 +700,6 @@ cpdef void graphics_render(
 #     uint8[:, :, :, :, ::1] graphics,
 #     uint8[:, ::1] kind,
 #     bint is_transparent,
-#     Point root_pos,
 #     Region region,
 # ):
 #     if is_transparent:
@@ -714,7 +713,6 @@ cpdef void graphics_render(
 #     uint8[:, :, :, :, ::1] graphics,
 #     uint8[:, ::1] kind,
 #     bint is_transparent,
-#     Point root_pos,
 #     Region region,
 # ):
 #     if is_transparent:
@@ -727,7 +725,7 @@ cpdef void terminal_render(
     Cell[:, ::1] root_canvas,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
-    tuple[int, int] root_pos,
     Region region,
+    tuple[int, int] app_pos,
 ):
     pass
