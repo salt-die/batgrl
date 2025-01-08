@@ -224,7 +224,6 @@ class TextParticleField(Gadget):
         """Render visible region of gadget."""
         chars = canvas[cell_sans("bg_color")]
         bg_color = canvas["bg_color"]
-        root_pos = self.root._pos
         abs_pos = self.absolute_pos
         ppos = self.particle_positions
         pchars = self.particle_cells[cell_sans("bg_color")]
@@ -241,7 +240,7 @@ class TextParticleField(Gadget):
             painted = pbg_color[where_inbounds]
 
             ys, xs = abs_ppos[where_inbounds].T
-            dst = rect_slice(pos - root_pos, size)
+            dst = rect_slice(pos, size)
             if self.is_transparent:
                 background = bg_color[dst][ys, xs]
                 _composite(background, painted, 255, self.alpha)

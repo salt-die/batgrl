@@ -229,7 +229,6 @@ class GraphicParticleField(Gadget):
         chars = canvas["char"]
         styles = canvas[cell_sans("char", "fg_color", "bg_color")]
         colors = structured_to_unstructured(canvas[["fg_color", "bg_color"]], np.uint8)
-        root_pos = self.root._pos
         abs_pos = self.absolute_pos
         ppos = self.particle_positions
         pcolors = self.particle_colors
@@ -240,7 +239,7 @@ class GraphicParticleField(Gadget):
             )
             ys, xs = abs_ppos[where_inbounds].T
 
-            dst = rect_slice(pos - root_pos, (h, w))
+            dst = rect_slice(pos, (h, w))
             color_rect = colors[dst]
 
             if self.is_transparent:

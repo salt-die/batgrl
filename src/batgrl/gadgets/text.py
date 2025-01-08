@@ -517,11 +517,10 @@ class Text(Gadget):
         text_chars = self.canvas["char"]
         text_sans_bg = self.canvas[cell_sans("bg_color")]
         text_bg = self.canvas["bg_color"]
-        root_pos = self.root._pos
         abs_pos = self.absolute_pos
         alpha = self.alpha
         for pos, size in self._region.rects():
-            dst = rect_slice(pos - root_pos, size)
+            dst = rect_slice(pos, size)
             src = rect_slice(pos - abs_pos, size)
             if self.is_transparent:
                 visible = np.isin(text_chars[src], (" ", "⠀"), invert=True)

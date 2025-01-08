@@ -292,11 +292,10 @@ class Graphics(Gadget):
         styles = canvas[cell_sans("char", "fg_color", "bg_color")]
         foreground = canvas["fg_color"]
         background = canvas["bg_color"]
-        root_pos = self.root._pos
         abs_pos = self.absolute_pos
         alpha = self.alpha
         for pos, (h, w) in self._region.rects():
-            dst = rect_slice(pos - root_pos, (h, w))
+            dst = rect_slice(pos, (h, w))
             src_top, src_left = pos - abs_pos
             src_bottom, src_right = src_top + h, src_left + w
             fg_rect = foreground[dst]

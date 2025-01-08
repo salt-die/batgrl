@@ -185,9 +185,8 @@ class Pane(Gadget):
         styles = canvas[cell_sans("char", "fg_color", "bg_color")]
         foreground = canvas["fg_color"]
         background = canvas["bg_color"]
-        root_pos = self.root._pos
         for pos, size in self._region.rects():
-            dst = rect_slice(pos - root_pos, size)
+            dst = rect_slice(pos, size)
             fg_rect = foreground[dst]
             bg_rect = background[dst]
             if self.is_transparent:
