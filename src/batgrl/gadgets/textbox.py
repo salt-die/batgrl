@@ -31,27 +31,6 @@ class _Box(Text):
                 canvas["char"][rect_slice(pos, size)] = textbox.hide_char
 
 
-class _Cursor(Cursor):
-    def _render(self, canvas):
-        textbox: Textbox = self.parent.parent
-        placeholder = textbox._placeholder_gadget
-        root_pos = self.root._pos
-        abs_pos = self.parent.absolute_pos
-        for pos, size in self._region.rects():
-            dst = rect_slice(pos - root_pos, size)
-            src = rect_slice(pos - abs_pos, size)
-            canvas[dst]["fg_color"] = self.fg_color
-            canvas[dst]["bg_color"] = self.bg_color
-            if pos.x > textbox._line_length:
-                continue
-            if placeholder.is_enabled:
-                canvas[dst]["char"] = placeholder.canvas[src]["char"]
-            elif textbox.hide_input:
-                canvas[dst]["char"] = textbox.hide_char
-            else:
-                canvas[dst]["char"] = textbox._box.canvas[src]["char"]
-
-
 class Textbox(Themable, Focusable, Grabbable, Gadget):
     r"""
     A textbox gadget for single-line editable text.
@@ -288,7 +267,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     ):
         self._placeholder_gadget = Text(alpha=0.0, is_transparent=is_transparent)
         self._placeholder_gadget.set_text(placeholder)
-        self._cursor = _Cursor()
+        self._cursor = Cursor()
         self._box = _Box(size=size, is_transparent=is_transparent)
         super().__init__(
             is_grabbable=is_grabbable,
