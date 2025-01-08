@@ -583,8 +583,7 @@ cdef opaque_braille_graphics_render(
         cell = &root_canvas[it.y, it.x]
         cell.char_ = 10240
         for i in range(8):
-            if luminances[i]:
-                cell.char_ += BRAILLE_ENUM[i]
+            cell.char_ += BRAILLE_ENUM[i] * luminances[i]
         cell.bold = False
         cell.italic = False
         cell.underline = False
@@ -627,8 +626,7 @@ cdef trans_braille_graphics_render(
         cell = &root_canvas[it.y, it.x]
         cell.char_ = 10240
         for i in range(8):
-            if luminances[i]:
-                cell.char_ += BRAILLE_ENUM[i]
+            cell.char_ += BRAILLE_ENUM[i] * luminances[i]
         cell.bold = False
         cell.italic = False
         cell.underline = False
