@@ -52,13 +52,15 @@ cdef:
         int color
         char rep
 
+ctypedef unsigned char uint8
+
 cdef inline Py_ssize_t sixel_count(Py_ssize_t h, Py_ssize_t w):
     return (h + 5) // 6 * w
 
 cdef inline Py_ssize_t sixel_band_count(Py_ssize_t h):
     return sixel_count(h, 1)
 
-cdef SixelMap* new_sixel_map(unsigned char[:, ::1] pixels):
+cdef SixelMap* new_sixel_map(uint8[:, ::1] pixels):
     cdef SixelMap* sixel_map = <SixelMap*>malloc(sizeof(SixelMap))
     if sixel_map is NULL:
         return NULL
@@ -112,8 +114,8 @@ cdef inline int build_sixel_band(
     Py_ssize_t n,
     SixelMap* sixel_map,
     Py_ssize_t ncolors,
-    unsigned char[:, ::1] pixels,
-    unsigned char[:, ::1] mask,
+    uint8[:, ::1] pixels,
+    uint8[:, ::1] mask,
     int *P2,
 ):
     cdef:
@@ -192,11 +194,7 @@ cdef inline int build_sixel_band(
     free(extenders)
     return 0
 
-cpdef str sixel_ansi(
-    unsigned char[:, ::1] palette,
-    unsigned char[:, ::1] pixels,
-    unsigned char[:, ::1] mask,
-):
+cpdef str sixel_ansi(uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, ::1] mask):
     """
     Generate sixel ansi from a palette and an array of indices into the palette and a
     mask indicating transparent pixels.
@@ -204,34 +202,34 @@ cpdef str sixel_ansi(
     Parameters
     ----------
     palette : NDArray[np.uint8]
-        An array of RGB colors scaled to 0-100 which is indexed by pixels. Palettes
-        should not be more than 256 colors.
-    pixels : NDArray[np.uint8]
+        An array of RGB colors scaled to 0-100 which is indexed by ``indices``.
+        Palettes should not be more than 256 colors.
+    indices : NDArray[np.uint8]
         An index into the palette for each pixel in an image.
 
     Returns
     -------
     str
-        The sixel ansi to generate an image give by palette and pixels.
+        The sixel ansi to generate an image given by ``palette`` and ``indices``.
     """
     cdef:
         Py_ssize_t ncolors = palette.shape[0], n, h, w
         int color, close_previous, P2 = 0
-        SixelMap* sixel_map = new_sixel_map(pixels)
+        SixelMap* sixel_map = new_sixel_map(indices)
         char** color_bands
-        unsigned char[::1] rgb
+        uint8[::1] rgb
 
     if sixel_map is NULL:
         raise MemoryError
     sixel_map.ncolors = ncolors
 
     for n in range(sixel_map.nbands):
-        if build_sixel_band(n, sixel_map, ncolors, pixels, mask, &P2) < 0:
+        if build_sixel_band(n, sixel_map, ncolors, indices, mask, &P2) < 0:
             sixel_map_free(sixel_map)
             raise MemoryError
 
-    h = pixels.shape[0]
-    w = pixels.shape[1]
+    h = indices.shape[0]
+    w = indices.shape[1]
     cdef list[str] ansi = [f'\x1bP;{P2};;q";;{h};{w}']
     for color in range(ncolors):
         rgb = palette[color]
