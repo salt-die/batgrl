@@ -10,6 +10,9 @@ cimport numpy as cnp
 
 from libc.string cimport memset
 from .geometry.regions cimport CRegion, Region
+from .colors.quantization import median_variance_quantization
+from ._sixel import sixel_ansi
+from .text_tools import char_width  # TODO: rewrite in cython
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
@@ -80,8 +83,34 @@ cdef packed struct Cell:
     uint8[3] bg_color
 
 
-cdef inline unsigned int rgba_eq(uint8[::1] a, uint8[::1] b):
+cdef inline bint rgb_eq(uint8* a, uint8* b):
+    return a[0] == b[0] and a[1] == b[1] and a[2] == b[2]
+
+
+cdef inline bint rgba_eq(uint8[::1] a, uint8[::1] b):
     return a[0] == b[0] and a[1] == b[1] and a[2] == b[2] and a[3] == b[3]
+
+
+cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
+    cdef Py_ssize_t h = a.shape[0], w = a.shape[1], y, x
+    for y in range(h):
+        for x in range(w):
+            if not rgba_eq(a[y, x], b[y, x]):
+                return 0
+    return 1
+
+
+cdef inline bint cell_eq(Cell* a, Cell* b):
+    return (
+        a.char_ == b.char_
+        and a.bold == b.bold
+        and a.italic == b.italic
+        and a.underline == b.underline
+        and a.overline == b.overline
+        and a.reverse == b.reverse
+        and rgb_eq(&a.fg_color[0], &b.fg_color[0])
+        and rgb_eq(&a.bg_color[0], &b.bg_color[0])
+    )
 
 
 cdef inline void composite(
@@ -579,7 +608,9 @@ cdef opaque_braille_graphics_render(
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
-        luminance_quant(&fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2)
+        luminance_quant(
+            &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
+        )
         cell = &root_canvas[it.y, it.x]
         cell.char_ = 10240
         for i in range(8):
@@ -622,7 +653,9 @@ cdef trans_braille_graphics_render(
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
-        luminance_quant(&fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2)
+        luminance_quant(
+            &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
+        )
         cell = &root_canvas[it.y, it.x]
         cell.char_ = 10240
         for i in range(8):
@@ -721,11 +754,170 @@ cpdef void graphics_render(
 #         pass
 
 
-cpdef void terminal_render(
-    Cell[:, ::1] root_canvas,
-    uint8[:, :, :, :, ::1] graphics,
-    uint8[:, ::1] kind,
-    Region region,
-    tuple[int, int] app_pos,
+cdef inline void output_glyph(
+    Py_ssize_t oy,
+    Py_ssize_t ox,
+    Py_ssize_t y,
+    Py_ssize_t x,
+    Py_ssize_t* cursor_y,
+    Py_ssize_t* cursor_x,
+    Cell[:, ::1] canvas,
+    Cell* last_sgr,
+    list buffer,
 ):
-    pass
+    cdef Cell* cell = &canvas[y, x]
+    cdef Py_ssize_t abs_y = y + oy, abs_x = x + ox
+    cdef list sgr_buffer = []
+    width = char_width(cell.char_)
+    if abs_y != cursor_y[0] or abs_x != cursor_x[0]:
+        if abs_y == cursor_y[0] + 1 and abs_x == 0:
+            buffer.append("\n")
+        else:
+            buffer.append(f"\x1b[{cursor_y[0] + 1};{cursor_x[0] + 1}H")
+    cursor_y[0] = abs_y
+    cursor_x[0] = abs_x
+
+    if cell.bold != last_sgr.bold:
+        if cell.bold:
+            sgr_buffer.append("1")
+        else:
+            sgr_buffer.append("22")
+    if cell.italic != last_sgr.italic:
+        if cell.italic:
+            sgr_buffer.append("3")
+        else:
+            sgr_buffer.append("23")
+    if cell.underline != last_sgr.underline:
+        if cell.underline:
+            sgr_buffer.append("3")
+        else:
+            sgr_buffer.append("24")
+    if cell.strikethrough != last_sgr.strikethrough:
+        if cell.strikethrough:
+            sgr_buffer.append("9")
+        else:
+            sgr_buffer.append("29")
+    if cell.overline != last_sgr.overline:
+        if cell.overline:
+            sgr_buffer.append("53")
+        else:
+            sgr_buffer.append("55")
+    if cell.reverse != last_sgr.reverse:
+        if cell.reverse:
+            sgr_buffer.append("7")
+        else:
+            sgr_buffer.append("27")
+    if not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
+        sgr_buffer.append(
+            f"38;2;{cell.fg_color[0]};{cell.fg_color[1]};{cell.fg_color[2]}"
+        )
+    if not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
+        sgr_buffer.append(
+            f"48;2;{cell.bg_color[0]};{cell.bg_color[1]};{cell.bg_color[2]}"
+        )
+    if len(sgr_buffer) > 0:
+        buffer.append("\x1b[")
+        buffer.append(";".join(sgr_buffer))
+        buffer.append("m")
+    buffer.append(cell.char_)
+    cursor_x[0] += width
+
+
+# DELETE THESE NOTES...
+# Before calling `render_terminal`...
+# if terminal.expect_dsr():
+#     return
+# resized = root._resized
+# root._render()
+# terminal_render(...)
+# terminal.flush()
+
+
+cpdef void terminal_render(
+    bint resized,
+    tuple[int, int] app_pos,
+    list buffer,
+    Cell[:, ::1] canvas,
+    Cell[:, ::1] prev_canvas,
+    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, :, :, ::1] prev_graphics,
+    uint8[:, ::1] kind,
+    uint8[:, ::1] prev_kind,
+):
+    cdef:
+        Py_ssize_t h = canvas.shape[0], w = canvas.shape[1], y, x, cursor_y, cursor_x
+        Py_ssize_t cell_h = graphics.shape[2], cell_w = graphics.shape[3], gh, gw
+        Py_ssize_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
+        Py_ssize_t oy = app_pos[0], ox = app_pos[1]
+        Cell* last_sgr = NULL
+        bint emit_sixel = resized
+        uint8[:, :, ::1] graphics_view
+        uint8[:, ::1] palette, indices
+
+    for y in range(h):
+        for x in range(w):
+            if kind[y, x] != GLYPH:
+                if y < min_y_sixel:
+                    min_y_sixel = y
+                if y > max_y_sixel:
+                    max_y_sixel = y
+                if x < min_x_sixel:
+                    min_x_sixel = x
+                if x > max_x_sixel:
+                    max_x_sixel = x
+                if not emit_sixel:
+                    if kind[y, x] != prev_kind[y, x]:
+                        emit_sixel = 1
+                    elif (
+                        kind[y, x] == MIXED
+                        and not cell_eq(&canvas[y, x], &prev_canvas[y, x])
+                    ):
+                        emit_sixel = 1
+                    elif not all_eq(graphics[y, x], prev_graphics[y, x]):
+                        emit_sixel = 1
+
+    # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
+    if emit_sixel:
+        cursor_y = oy
+        cursor_x = ox
+        for y in range(h):
+            for x in range(w):
+                if kind[y, x] == MIXED:
+                    if last_sgr == NULL:
+                        last_sgr = &canvas[y, x]
+                    output_glyph(
+                        oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr, buffer
+                    )
+                    last_sgr = &canvas[y, x]
+
+        gh = max_y_sixel + 1 - min_y_sixel
+        # If sixel graphics rect reaches last line of terminal, it must be truncated to
+        # nearest multiple of 6 to prevent scrolling.
+        if max_y_sixel + 1 == h:
+            gh -= gh % 6
+        gw = max_x_sixel + 1 - max_x_sixel
+        graphics_view = (
+            graphics[min_y_sixel: min_y_sixel + gh, min_x_sixel: min_x_sixel + gw]
+            .swapaxes(1, 2)
+            .reshape(gh * cell_h, gw * cell_w, 4)
+        )
+
+        palette, indices = median_variance_quantization(graphics_view)
+        buffer.append(f"\x1b[{min_y_sixel + 1};{min_x_sixel + 1}H")
+        buffer.append(sixel_ansi(palette, indices))
+
+    cursor_y = oy
+    cursor_x = ox
+    for y in range(h):
+        for x in range(w):
+            if kind[y, x] == GLYPH and (
+                resized
+                or prev_kind[y, x] != GLYPH
+                or not cell_eq(&canvas[y, x], &prev_canvas[y, x])
+            ):
+                if last_sgr == NULL:
+                    last_sgr = &canvas[y, x]
+                output_glyph(
+                    oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr, buffer
+                )
+                last_sgr = &canvas[y, x]
