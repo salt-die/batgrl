@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
 from itertools import count, islice
-from typing import Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol, TypeVar
 
 from ..terminal.events import MouseEvent
 from .behaviors.button_behavior import ButtonBehavior
@@ -23,7 +23,7 @@ __all__ = ["DataTable", "ColumnStyle", "Point", "Size"]
 class SupportsLessThan(Protocol):
     """Supports the less than (`<`) operator."""
 
-    def __lt__(self, other) -> bool: ...
+    def __lt__(self, other: Any, /) -> bool: ...
 
 
 T = TypeVar("T", bound=SupportsLessThan)
