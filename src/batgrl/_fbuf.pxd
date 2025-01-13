@@ -16,7 +16,7 @@ cdef extern from *:
         #include <unistd.h>
     #endif
     """
-    ssize_t write "write" (ssize_t, const void*, size_t)
+    ssize_t write(ssize_t, const void*, size_t)
 
 
 cdef struct fbuf:
