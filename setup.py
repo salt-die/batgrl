@@ -22,23 +22,21 @@ are omitted so if an ord doesn't belong to any interval we can assume it has wid
 def _create_char_widths():
     """Build ``_char_widths.py``."""
     groups = []
-    start = end = 0
+    start = 0
     group_width = 1
     for codepoint in range(sys.maxunicode + 1):
         char_width = max(wcwidth(chr(codepoint)), 0)
         if char_width != group_width:
             if group_width != 1:
-                groups.append((start, end, group_width))
+                groups.append((start, codepoint - 1, group_width))
             group_width = char_width
-            start = end = codepoint
-        else:
-            end = codepoint
+            start = codepoint
 
     with open("src/batgrl/_char_widths.py", "w") as file:
         file.write(_CHAR_WIDTHS_DOC)
         file.write("CHAR_WIDTHS = (\n")
         for group in groups:
-            file.write("    ({}, {}, {}),\n".format(*group))
+            file.write(f"    {group},\n")
         file.write(")\n")
 
 
