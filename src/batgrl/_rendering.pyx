@@ -765,18 +765,20 @@ cdef inline void output_glyph(
     Cell* last_sgr,
     list buffer,
 ):
-    cdef Cell* cell = &canvas[y, x]
     cdef Py_ssize_t abs_y = y + oy, abs_x = x + ox
-    cdef list sgr_buffer = []
-    width = char_width(cell.char_)
-    if abs_y != cursor_y[0] or abs_x != cursor_x[0]:
-        if abs_y == cursor_y[0] + 1 and abs_x == 0:
-            buffer.append("\n")
-        else:
-            buffer.append(f"\x1b[{cursor_y[0] + 1};{cursor_x[0] + 1}H")
+    if abs_y == cursor_y[0]:
+        if abs_x != cursor_x[0]:
+            # CHA, Cursor Horizontal Absolute
+            buffer.append(f"\x1b[{cursor_x[0] + 1}G")
+    else:
+        # CUP, Cursor Position
+        buffer.append(f"\x1b[{cursor_y[0] + 1};{cursor_x[0] + 1}H")
     cursor_y[0] = abs_y
     cursor_x[0] = abs_x
 
+    cdef Cell* cell = &canvas[y, x]
+    cdef list sgr_buffer = []
+    # Build up Select Graphic Rendition (SGR) parameters
     if cell.bold != last_sgr.bold:
         if cell.bold:
             sgr_buffer.append("1")
@@ -820,7 +822,7 @@ cdef inline void output_glyph(
         buffer.append(";".join(sgr_buffer))
         buffer.append("m")
     buffer.append(cell.char_)
-    cursor_x[0] += width
+    cursor_x[0] += char_width(cell.char_)
 
 
 # DELETE THESE NOTES...
