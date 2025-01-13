@@ -1,3 +1,9 @@
+"""
+A growable string buffer.
+
+Cython implementation of some of <https://github.com/dankamongmen/notcurses/blob/master/src/lib/fbuf.h>
+"""
+
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport memcpy
 
@@ -49,6 +55,7 @@ cdef inline int fbuf_putn(fbuf* f, const char* s, Py_ssize_t len):
     return len
 
 
+# Terminal._buffer will be replaced with a fbuf and use this write function.
 cdef inline int fbuf_write(int fd, fbuf* f):
     cdef Py_ssize_t written = 0, wrote
     while written < f.len:
