@@ -60,12 +60,13 @@ cdef inline int fbuf_putn(fbuf* f, const char* s, size_t len):
         return -1
     memcpy(f.buf + f.len, s, len)
     f.len += len
-    return len
+    return 0
 
 
 # Terminal._buffer will be replaced with a fbuf and use this write function.
-cdef inline int fbuf_write(int fd, fbuf* f):
-    cdef size_t written = 0, wrote
+cdef inline int fbuf_write(ssize_t fd, fbuf* f):
+    cdef size_t written = 0
+    cdef ssize_t wrote
     while written < f.len:
         wrote = write(fd, f.buf + written, f.len - written)
         if wrote < 0:
