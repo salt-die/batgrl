@@ -7,12 +7,20 @@ Cython implementation of some of <https://github.com/dankamongmen/notcurses/blob
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport memcpy
 
-cdef extern from "_write.h":
-    int write(int, const void*, unsigned int)
+
+cdef extern from *:
+    """
+    #ifdef _WIN32
+        #include <io.h>
+    #else
+        #include <unistd.h>
+    #endif
+    """
+    ssize_t write "write" (ssize_t, const void*, size_t)
 
 
 cdef struct fbuf:
-    Py_ssize_t size, len
+    size_t size, len
     char* buf
 
 
@@ -33,7 +41,7 @@ cdef inline void fbuf_free(fbuf* f):
     f.len = 0
 
 
-cdef inline int fbuf_grow(fbuf* f, Py_ssize_t n):
+cdef inline int fbuf_grow(fbuf* f, size_t n):
     if f.len + n <= f.size:
         return 0
     while f.len + n > f.size:
@@ -47,7 +55,7 @@ cdef inline int fbuf_grow(fbuf* f, Py_ssize_t n):
     return 0
 
 
-cdef inline int fbuf_putn(fbuf* f, const char* s, Py_ssize_t len):
+cdef inline int fbuf_putn(fbuf* f, const char* s, size_t len):
     if fbuf_grow(f, len):
         return -1
     memcpy(f.buf + f.len, s, len)
@@ -57,7 +65,7 @@ cdef inline int fbuf_putn(fbuf* f, const char* s, Py_ssize_t len):
 
 # Terminal._buffer will be replaced with a fbuf and use this write function.
 cdef inline int fbuf_write(int fd, fbuf* f):
-    cdef Py_ssize_t written = 0, wrote
+    cdef size_t written = 0, wrote
     while written < f.len:
         wrote = write(fd, f.buf + written, f.len - written)
         if wrote < 0:
