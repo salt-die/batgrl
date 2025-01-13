@@ -1,4 +1,4 @@
-"""Build cython extensions."""
+"""Build cython extensions and generated files."""
 
 import sys
 from itertools import groupby
