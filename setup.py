@@ -32,6 +32,9 @@ def _create_char_widths():
             group_width = char_width
             start = codepoint
 
+    if group_width != 1:
+        groups.append((start, codepoint - 1, group_width))
+
     with open("src/batgrl/_char_widths.py", "w") as file:
         file.write(_CHAR_WIDTHS_DOC)
         file.write("CHAR_WIDTHS = (\n")
@@ -41,10 +44,10 @@ def _create_char_widths():
 
 
 class build_py_with_char_widths(build_py):
-    """Generate width file on build."""
+    """Generate ``_char_widths.py`` on build."""
 
     def run(self):
-        """Generate width file on build."""
+        """Generate ``_char_widths.py`` on build."""
         super().run()
         _create_char_widths()
 
