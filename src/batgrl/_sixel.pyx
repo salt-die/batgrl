@@ -186,7 +186,7 @@ cdef inline int build_sixel_band(
         if extender.rle == 0:
             color_bands[color] = NULL
         else:
-            color_bands[color] = color_band_extend(color_bands[color], extender, w, x)
+            color_bands[color] = color_band_extend(color_bands[color], extender, w, w - 1)
             if color_bands[color] is NULL:
                 free(extenders)
                 return -1
