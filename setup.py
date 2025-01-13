@@ -11,6 +11,7 @@ setup(
             "src/batgrl/colors/quantization.pyx",
             "src/batgrl/_sixel.pyx",
             "src/batgrl/_rendering.pyx",
+            "src/batgrl/_test_fbuf.pyx",
         ]
     ),
     include_dirs=[np.get_include()],
