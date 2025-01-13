@@ -1,8 +1,4 @@
-"""
-A growable string buffer.
-
-Cython implementation of some of <https://github.com/dankamongmen/notcurses/blob/master/src/lib/fbuf.h>
-"""
+"""A growable string buffer."""
 
 from libc.stdlib cimport malloc, free, realloc
 from libc.string cimport memcpy
@@ -14,8 +10,10 @@ cdef extern from *:
         #include <io.h>
     #else
         #include <unistd.h>
+        ssize_t setmode(ssize_t, ssize_t){return 0;};
     #endif
     """
+    ssize_t setmode(ssize_t, ssize_t)  # On windows, need to setmode to UTF-8 before writing
     ssize_t write(ssize_t, const void*, size_t)
 
 
@@ -55,13 +53,14 @@ cdef inline int fbuf_grow(fbuf* f, size_t n):
     return 0
 
 
+# On windows, s should be UTF-16 encoded
 cdef inline int fbuf_putn(fbuf* f, const char* s, size_t len):
     if fbuf_grow(f, len):
         return -1
     memcpy(f.buf + f.len, s, len)
     f.len += len
     return 0
-
+    
 
 # Terminal._buffer will be replaced with a fbuf and use this write function.
 cdef inline int fbuf_write(ssize_t fd, fbuf* f):
