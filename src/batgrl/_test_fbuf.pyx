@@ -1,13 +1,12 @@
-from ._fbuf cimport fbuf, fbuf_init, fbuf_free, fbuf_write, fbuf_putn, setmode
+from ._fbuf cimport fbuf, fbuf_init, fbuf_free, fbuf_flush, fbuf_putn, get_value
 from sys import stdout
 from cpython.exc cimport PyErr_SetFromErrno
-import platform
 
-cdef class MyClass:
+
+cdef class CharBuffer:
     cdef fbuf f
 
     def __cinit__(self):
-        setmode(stdout.fileno(), 0x00040000)  # Does nothing on linux
         if fbuf_init(&self.f):
             raise MemoryError
 
@@ -15,11 +14,22 @@ cdef class MyClass:
         fbuf_free(&self.f)
 
     cpdef write(self, str s):
-        if platform.platform().startswith("Win"):
-            encoding = "utf-16"
-        else:
-            encoding = "utf-8"
-        b = s.encode(encoding)
+        b = s.encode()
         fbuf_putn(&self.f, b, len(b))
-        if fbuf_write(stdout.fileno(), &self.f):
+
+    cpdef flush(self):
+        if fbuf_flush(&self.f, stdout.fileno()):
             PyErr_SetFromErrno(OSError)
+
+    cpdef get_value(self):
+        return get_value(&self.f)
+
+
+def test():
+    c = CharBuffer()
+    for test in ["1", "▙", "𜴓"]:
+        c.write(test)
+        print("get value: ", c.get_value())
+        print("flush: ", flush=True, end="")
+        c.flush()
+        print()

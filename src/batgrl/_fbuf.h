@@ -1,0 +1,129 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <sys/types.h>
+
+#ifdef _WIN32
+    #include <Windows.h>
+    #include <io.h>
+    typedef SSIZE_T ssize_t;
+    typedef SIZE_T size_t;
+    typedef UINT64 uint64_t;
+#else
+    #include <unistd.h>
+    ssize_t setmode(ssize_t, ssize_t){return 0;};
+#endif
+
+
+typedef struct fbuf {
+  uint64_t size;
+  uint64_t len;
+  char* buf;
+} fbuf;
+
+
+static inline ssize_t fbuf_init(fbuf* f){
+    f->size = 0x200000ul;
+    f->len = 0;
+    f->buf = (char*)malloc(f->size);
+    if(f->buf == NULL){
+        return -1;
+    }
+    return 0;
+}
+
+static inline void fbuf_free(fbuf* f){
+    f->size = 0;
+    f->len = 0;
+    if(f->buf != NULL){
+        free(f->buf);
+        f->buf = NULL;
+    }
+}
+
+
+static inline ssize_t fbuf_grow(fbuf* f, size_t n){
+    if(f->len + n <= f->size){
+        return 0;
+    }
+    while(f->len + n > f->size){
+        f->size *= 2;
+    }
+    void* tmp = realloc(f->buf, f->size);
+    if(tmp == NULL){
+        return -1;
+    }
+    f->buf = (char*)tmp;
+    return 0;
+}
+
+
+static inline ssize_t fbuf_putn(fbuf* f, const char* s, size_t len){
+    if(fbuf_grow(f, len)){
+        return -1;
+    }
+    memcpy(f->buf + f->len, s, len);
+    f->len += len;
+    return 0;
+}
+
+
+static inline ssize_t fbuf_puts(fbuf* f, const char* s){
+  size_t slen = strlen(s);
+  return fbuf_putn(f, s, slen);
+}
+
+
+static inline ssize_t fbuf_printf(fbuf *f, const char* fmt, ...){
+    size_t unused = f->size - f->len;
+    if(unused < BUFSIZ){
+        if(fbuf_grow(f, BUFSIZ)){
+            return -1;
+        }
+    }
+    va_list va;
+    va_start(va, fmt);
+    size_t wrote = (size_t)vsnprintf(f->buf + f->len, unused, fmt, va);
+    va_end(va);
+    f->len += wrote;
+    return wrote;
+}
+
+#ifdef _WIN32
+static inline ssize_t fbuf_flush(fbuf* f, int fd){
+    HANDLE out = (HANDLE) _get_osfhandle(fd);
+    u_int old_cp = GetConsoleOutputCP();
+    SetConsoleOutputCP(CP_UTF8);
+    DWORD wrote = 0, write_len;
+    size_t written = 0;
+    while(written<f->len){
+        if(f->len - written > MAXDWORD){
+            write_len = MAXDWORD;
+        } else {
+            write_len = f->len - written;
+        }
+        if (!WriteConsoleA(out, f->buf + written, write_len, &wrote, NULL)){
+            return -1;
+        }
+        written += wrote;
+    }
+    f->len = 0;
+    SetConsoleOutputCP(old_cp);
+    return 0;
+}
+#else
+static inline ssize_t fbuf_flush(fbuf* f, int fd){
+    size_t written = 0;
+    ssize_t wrote = 0;
+    while(written < f->len){
+        wrote = write(fd, f->buf + written, f->len - written);
+        if (wrote < 0){
+            return -1;
+        }
+        written += wrote;
+    }
+    f->len = 0;
+    return 0;
+}
+#endif
