@@ -10,7 +10,15 @@ cimport numpy as cnp
 
 from libc.string cimport memset
 
-from ._fbuf cimport fbuf, fbuf_init, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putwc
+from ._fbuf cimport (
+    fbuf,
+    fbuf_init,
+    fbuf_flush,
+    fbuf_grow,
+    fbuf_printf,
+    fbuf_putn,
+    fbuf_putwc,
+)
 from ._sixel cimport csixel_ansi
 from .colors.quantization import median_variance_quantization
 from .geometry.regions cimport CRegion, Region
@@ -21,7 +29,7 @@ cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
 cdef unsigned int BOLD = 1, ITALIC = 2, UNDERLINE = 4
 cdef unsigned int STRIKETHROUGH = 8, OVERLINE = 16, REVERSE = 32
-cdef fbuf ANSI_BUFFER  # TODO: Attach to Terminal
+cdef fbuf ANSI_BUFFER
 if fbuf_init(&ANSI_BUFFER):
     raise MemoryError("Can't initialized ansi buffer.")
 
@@ -867,7 +875,10 @@ cpdef void terminal_render(
         for y in range(h):
             for x in range(w):
                 if kind[y, x] == MIXED:
-                    write_glyph(oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr)
+                    if write_glyph(
+                        oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr
+                    ):
+                        raise MemoryError
                     last_sgr = &canvas[y, x]
 
         gh = max_y_sixel + 1 - min_y_sixel
@@ -897,5 +908,8 @@ cpdef void terminal_render(
                 or prev_kind[y, x] != GLYPH
                 or not cell_eq(&canvas[y, x], &prev_canvas[y, x])
             ):
-                write_glyph(oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr)
+                if write_glyph(oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr):
+                    raise MemoryError
                 last_sgr = &canvas[y, x]
+
+    fbuf_flush(&ANSI_BUFFER, fd)

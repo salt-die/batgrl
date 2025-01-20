@@ -1,3 +1,5 @@
+// A growable string buffer.
+// Reference: https://github.com/dankamongmen/notcurses/blob/master/src/lib/fbuf.h
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -92,6 +94,37 @@ static inline ssize_t fbuf_printf(fbuf *f, const char* fmt, ...){
 }
 
 
+static inline ssize_t fbuf_putwc(fbuf *f, uint32_t wc){
+    // Put wide char (or PY_UCS4) as utf8.
+    // https://github.com/JeffBezanson/cutef8/blob/master/utf8.c
+    if(fbuf_grow(f, 4)){
+        return -1;
+    }
+    if(wc < 0x80){
+        f->buf[f->len++] = (char)wc;
+        return 0;
+    }
+    if(wc < 0x800){
+        f->buf[f->len++] = (wc>>6) | 0xC0;
+        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        return 0;
+    }
+    if(wc < 0x10000){
+        f->buf[f->len++] = (wc>>12) | 0xE0;
+        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        return 0;
+    }if(wc < 0x110000) {
+        f->buf[f->len++] = (wc>>18) | 0xF0;
+        f->buf[f->len++] = ((wc>>12) & 0x3F) | 0x80;
+        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        return 0;
+    }
+    return -1;
+}
+
+
 #ifdef _WIN32
 static inline ssize_t fbuf_flush(fbuf* f, int fd){
     HANDLE out = (HANDLE) _get_osfhandle(fd);
@@ -129,34 +162,3 @@ static inline ssize_t fbuf_flush(fbuf* f, int fd){
     return 0;
 }
 #endif
-
-
-static inline ssize_t fbuf_putwc(fbuf *f, uint32_t wc){
-    // Put wide char (or PY_UCS4) as utf8.
-    // https://github.com/JeffBezanson/cutef8/blob/master/utf8.c
-    if(fbuf_grow(f, 4)){
-        return -1;
-    }
-    if(wc < 0x80){
-        f->buf[f->len++] = (char)wc;
-        return 0;
-    }
-    if(wc < 0x800){
-        f->buf[f->len++] = (wc>>6) | 0xC0;
-        f->buf[f->len++] = (wc & 0x3F) | 0x80;
-        return 0;
-    }
-    if(wc < 0x10000){
-        f->buf[f->len++] = (wc>>12) | 0xE0;
-        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
-        f->buf[f->len++] = (wc & 0x3F) | 0x80;
-        return 0;
-    }if(wc < 0x110000) {
-        f->buf[f->len++] = (wc>>18) | 0xF0;
-        f->buf[f->len++] = ((wc>>12) & 0x3F) | 0x80;
-        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
-        f->buf[f->len++] = (wc & 0x3F) | 0x80;
-        return 0;
-    }
-    return -1;
-}

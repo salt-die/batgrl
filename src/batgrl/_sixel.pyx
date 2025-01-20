@@ -37,7 +37,7 @@ from libc.string cimport memset
 from libc.stdio cimport sprintf
 from libc.stdlib cimport free, malloc
 
-from ._fbuf cimport fbuf, fbuf_init, fbuf_printf, fbuf_putn, fbuf_puts
+from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts
 
 cdef:
     struct BandExtender:
@@ -195,7 +195,9 @@ cdef inline int build_sixel_band(
         if extender.rle == 0:
             color_bands[color] = NULL
         else:
-            color_bands[color] = color_band_extend(color_bands[color], extender, w, w - 1)
+            color_bands[color] = color_band_extend(
+                color_bands[color], extender, w, w - 1
+            )
             if color_bands[color] is NULL:
                 free(extenders)
                 return -1
@@ -208,7 +210,7 @@ cdef ssize_t csixel_ansi(
     fbuf* f, uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, :, ::1] texture
 ):
     cdef:
-        ssize_t ncolors = palette.shape[0], n, h, w, color, close_previous, P2 = 0, len
+        ssize_t ncolors = palette.shape[0], n, h, w, color, close_previous, P2 = 0
         SixelMap* sixel_map = new_sixel_map(indices)
         char** color_bands
         uint8[::1] rgb
@@ -224,7 +226,7 @@ cdef ssize_t csixel_ansi(
 
     h = indices.shape[0]
     w = indices.shape[1]
-    
+
     if fbuf_printf(f, "\x1bP;%d;;q\";;%d;%d", P2, h, w):
         sixel_map_free(sixel_map)
         return -1
@@ -261,12 +263,3 @@ cdef ssize_t csixel_ansi(
     if fbuf_putn(f, "\x1b\\", 3):
         return -1
     return 0
-
-
-def sixel_ansi(uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, :, ::1] texture) -> str:
-    cdef fbuf f
-    if fbuf_init(&f):
-        raise MemoryError
-    if csixel_ansi(&f, palette, indices, texture):
-        raise MemoryError
-    return f.buf[:f.len].decode()

@@ -12,5 +12,5 @@ cdef extern from "_fbuf.h":
     ssize_t fbuf_putn(fbuf* f, const char* s, size_t len)
     ssize_t fbuf_puts(fbuf* f, const char* s)
     ssize_t fbuf_printf(fbuf *f, const char* fmt, ...)
-    ssize_t fbuf_flush(fbuf* f, int fd)
     ssize_t fbuf_putwc(fbuf *f, unsigned long wc)
+    ssize_t fbuf_flush(fbuf* f, int fd)
