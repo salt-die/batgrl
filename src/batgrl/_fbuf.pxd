@@ -10,9 +10,7 @@ cdef extern from "_fbuf.h":
     void fbuf_free(fbuf* f)
     ssize_t fbuf_grow(fbuf* f, size_t n)
     ssize_t fbuf_putn(fbuf* f, const char* s, size_t len)
+    ssize_t fbuf_puts(fbuf* f, const char* s)
     ssize_t fbuf_printf(fbuf *f, const char* fmt, ...)
     ssize_t fbuf_flush(fbuf* f, int fd)
-
-
-cdef inline bytes get_value(fbuf* f):
-    return f.buf[:f.len]
+    ssize_t fbuf_putwc(fbuf *f, unsigned long wc)

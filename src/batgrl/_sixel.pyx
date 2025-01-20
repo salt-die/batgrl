@@ -33,10 +33,11 @@ References
 ----------
 .. [1] `sixel.c <https://github.com/dankamongmen/notcurses/blob/master/src/lib/sixel.c>`_.
 """
-
 from libc.string cimport memset
 from libc.stdio cimport sprintf
-from libc.stdlib cimport malloc, free
+from libc.stdlib cimport free, malloc
+
+from ._fbuf cimport fbuf, fbuf_init, fbuf_printf, fbuf_putn, fbuf_puts
 
 cdef:
     struct BandExtender:
@@ -54,11 +55,14 @@ cdef:
 
 ctypedef unsigned char uint8
 
+
 cdef inline Py_ssize_t sixel_count(Py_ssize_t h, Py_ssize_t w):
     return (h + 5) // 6 * w
 
+
 cdef inline Py_ssize_t sixel_band_count(Py_ssize_t h):
     return sixel_count(h, 1)
+
 
 cdef SixelMap* new_sixel_map(uint8[:, ::1] pixels):
     cdef SixelMap* sixel_map = <SixelMap*>malloc(sizeof(SixelMap))
@@ -72,12 +76,14 @@ cdef SixelMap* new_sixel_map(uint8[:, ::1] pixels):
         return NULL
     return sixel_map
 
+
 cdef void color_band_free(char** color_band, Py_ssize_t ncolors):
     cdef Py_ssize_t i
     for i in range(ncolors):
         if color_band[i] is not NULL:
             free(color_band[i])
     free(color_band)
+
 
 cdef void sixel_map_free(SixelMap *sixel_map):
     cdef Py_ssize_t i
@@ -86,6 +92,7 @@ cdef void sixel_map_free(SixelMap *sixel_map):
             color_band_free(sixel_map.bands[i], sixel_map.ncolors)
     free(sixel_map.bands)
     free(sixel_map)
+
 
 cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char rep):
     if rle > 2:
@@ -97,6 +104,7 @@ cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char
         color[length[0]] = rep
         length[0] += 1
     color[length[0]] = 0
+
 
 cdef inline char* color_band_extend(
     char* color_band, BandExtender *extender, Py_ssize_t w, Py_ssize_t x
@@ -110,16 +118,17 @@ cdef inline char* color_band_extend(
     write_rle(color_band, &extender.length, clear_len, 63)
     return color_band
 
+
 cdef inline int build_sixel_band(
-    Py_ssize_t n,
+    ssize_t n,
     SixelMap* sixel_map,
-    Py_ssize_t ncolors,
-    uint8[:, ::1] pixels,
-    uint8[:, ::1] mask,
-    int *P2,
+    ssize_t ncolors,
+    uint8[:, ::1] indices,
+    uint8[:, :, ::1] texture,
+    ssize_t *P2,
 ):
     cdef:
-        Py_ssize_t h = pixels.shape[0], w = pixels.shape[1]
+        Py_ssize_t h = indices.shape[0], w = indices.shape[1]
         size_t band_size = sizeof(char*) * ncolors
         size_t extenders_size = sizeof(BandExtender) * ncolors
         BandExtender *extenders = <BandExtender*>malloc(extenders_size)
@@ -146,11 +155,11 @@ cdef inline int build_sixel_band(
     for x in range(w):
         nactive_colors = 0
         for y in range(ystart, yend):
-            if mask[y, x] == 0:
+            if not texture[y, x, 3]:
                 P2[0] = 1
                 continue
 
-            pixel_color = pixels[y, x]
+            pixel_color = indices[y, x]
 
             for i in range(nactive_colors):
                 if active_colors[i].color == pixel_color:
@@ -194,46 +203,37 @@ cdef inline int build_sixel_band(
     free(extenders)
     return 0
 
-cpdef str sixel_ansi(uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, ::1] mask):
-    """
-    Generate sixel ansi from a palette and an array of indices into the palette and a
-    mask indicating transparent pixels.
 
-    Parameters
-    ----------
-    palette : NDArray[np.uint8]
-        An array of RGB colors scaled to 0-100 which is indexed by ``indices``.
-        Palettes should not be more than 256 colors.
-    indices : NDArray[np.uint8]
-        An index into the palette for each pixel in an image.
-
-    Returns
-    -------
-    str
-        The sixel ansi to generate an image given by ``palette`` and ``indices``.
-    """
+cdef ssize_t csixel_ansi(
+    fbuf* f, uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, :, ::1] texture
+):
     cdef:
-        Py_ssize_t ncolors = palette.shape[0], n, h, w
-        int color, close_previous, P2 = 0
+        ssize_t ncolors = palette.shape[0], n, h, w, color, close_previous, P2 = 0, len
         SixelMap* sixel_map = new_sixel_map(indices)
         char** color_bands
         uint8[::1] rgb
 
     if sixel_map is NULL:
-        raise MemoryError
+        return -1
     sixel_map.ncolors = ncolors
 
     for n in range(sixel_map.nbands):
-        if build_sixel_band(n, sixel_map, ncolors, indices, mask, &P2) < 0:
+        if build_sixel_band(n, sixel_map, ncolors, indices, texture, &P2) < 0:
             sixel_map_free(sixel_map)
-            raise MemoryError
+            return -1
 
     h = indices.shape[0]
     w = indices.shape[1]
-    cdef list[str] ansi = [f'\x1bP;{P2};;q";;{h};{w}']
+    
+    if fbuf_printf(f, "\x1bP;%d;;q\";;%d;%d", P2, h, w):
+        sixel_map_free(sixel_map)
+        return -1
+
     for color in range(ncolors):
         rgb = palette[color]
-        ansi.append(f"#{color};2;{rgb[0]};{rgb[1]};{rgb[2]}")
+        if fbuf_printf(f, "#%d;2;%d;%d;%d", color, rgb[0], rgb[1], rgb[2]):
+            sixel_map_free(sixel_map)
+            return -1
 
     for n in range(sixel_map.nbands):
         close_previous = 0
@@ -242,13 +242,31 @@ cpdef str sixel_ansi(uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, ::1]
             if color_bands[color] is NULL:
                 continue
             if close_previous == 1:
-                ansi.append("$")
+                if fbuf_putn(f, "$", 1):
+                    sixel_map_free(sixel_map)
+                    return -1
             else:
                 close_previous = 1
-            ansi.append(f"#{color}")
-            ansi.append(color_bands[color].decode())
-        ansi.append("-")
+            if fbuf_printf(f, "#%d", color):
+                sixel_map_free(sixel_map)
+                return -1
+            if fbuf_puts(f, color_bands[color]):
+                sixel_map_free(sixel_map)
+                return -1
+        if fbuf_putn(f, "-", 1):
+            sixel_map_free(sixel_map)
+            return -1
 
     sixel_map_free(sixel_map)
-    ansi.append("\x1b\\")
-    return "".join(ansi)
+    if fbuf_putn(f, "\x1b\\", 3):
+        return -1
+    return 0
+
+
+def sixel_ansi(uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, :, ::1] texture) -> str:
+    cdef fbuf f
+    if fbuf_init(&f):
+        raise MemoryError
+    if csixel_ansi(&f, palette, indices, texture):
+        raise MemoryError
+    return f.buf[:f.len].decode()

@@ -9,14 +9,21 @@ import numpy as np
 cimport numpy as cnp
 
 from libc.string cimport memset
-from .geometry.regions cimport CRegion, Region
+
+from ._fbuf cimport fbuf, fbuf_init, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putwc
+from ._sixel cimport csixel_ansi
 from .colors.quantization import median_variance_quantization
-from ._sixel import sixel_ansi
+from .geometry.regions cimport CRegion, Region
 from .text_tools import char_width  # TODO: rewrite in cython
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
+cdef unsigned int BOLD = 1, ITALIC = 2, UNDERLINE = 4
+cdef unsigned int STRIKETHROUGH = 8, OVERLINE = 16, REVERSE = 32
+cdef fbuf ANSI_BUFFER
+if fbuf_init(&ANSI_BUFFER):
+    raise MemoryError("Can't initialized ansi buffer.")
 
 
 cdef struct RegionIterator:
@@ -754,7 +761,23 @@ cpdef void graphics_render(
 #         pass
 
 
-cdef inline void output_glyph(
+cdef inline void write_sgr(uint8 param, bint* first):
+    if first[0]:
+        fbuf_printf(&ANSI_BUFFER, "\x1b[%d", param)
+        first[0] = 0
+    else:
+        fbuf_printf(&ANSI_BUFFER, ";%d", param)
+
+
+cdef inline void write_rgb(uint8 fg, uint8* rgb, bint* first):
+    if first:
+        fbuf_printf(&ANSI_BUFFER, "\x1b[%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
+        first[0] = 0
+    else:
+        fbuf_printf(&ANSI_BUFFER, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
+
+
+cdef inline ssize_t write_glyph(
     Py_ssize_t oy,
     Py_ssize_t ox,
     Py_ssize_t y,
@@ -763,66 +786,48 @@ cdef inline void output_glyph(
     Py_ssize_t* cursor_x,
     Cell[:, ::1] canvas,
     Cell* last_sgr,
-    list buffer,
 ):
-    cdef Py_ssize_t abs_y = y + oy, abs_x = x + ox
+    cdef:
+        Py_ssize_t abs_y = y + oy, abs_x = x + ox
+        Cell* cell = &canvas[y, x]
+        bint first = 1
+
     if abs_y == cursor_y[0]:
         if abs_x != cursor_x[0]:
             # CHA, Cursor Horizontal Absolute
-            buffer.append(f"\x1b[{cursor_x[0] + 1}G")
+            if fbuf_printf(&ANSI_BUFFER, "\x1b[%dG", cursor_x[0] + 1):
+                return -1
     else:
         # CUP, Cursor Position
-        buffer.append(f"\x1b[{cursor_y[0] + 1};{cursor_x[0] + 1}H")
+        if fbuf_printf(&ANSI_BUFFER, "\x1b[%d;%dH", cursor_y[0] + 1, cursor_x[0] + 1):
+            return -1
     cursor_y[0] = abs_y
     cursor_x[0] = abs_x
 
-    cdef Cell* cell = &canvas[y, x]
-    cdef list sgr_buffer = []
+    if(fbuf_grow(&ANSI_BUFFER, 128)):
+        return -1
     # Build up Select Graphic Rendition (SGR) parameters
-    if cell.bold != last_sgr.bold:
-        if cell.bold:
-            sgr_buffer.append("1")
-        else:
-            sgr_buffer.append("22")
-    if cell.italic != last_sgr.italic:
-        if cell.italic:
-            sgr_buffer.append("3")
-        else:
-            sgr_buffer.append("23")
-    if cell.underline != last_sgr.underline:
-        if cell.underline:
-            sgr_buffer.append("3")
-        else:
-            sgr_buffer.append("24")
-    if cell.strikethrough != last_sgr.strikethrough:
-        if cell.strikethrough:
-            sgr_buffer.append("9")
-        else:
-            sgr_buffer.append("29")
-    if cell.overline != last_sgr.overline:
-        if cell.overline:
-            sgr_buffer.append("53")
-        else:
-            sgr_buffer.append("55")
-    if cell.reverse != last_sgr.reverse:
-        if cell.reverse:
-            sgr_buffer.append("7")
-        else:
-            sgr_buffer.append("27")
-    if not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
-        sgr_buffer.append(
-            f"38;2;{cell.fg_color[0]};{cell.fg_color[1]};{cell.fg_color[2]}"
-        )
-    if not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
-        sgr_buffer.append(
-            f"48;2;{cell.bg_color[0]};{cell.bg_color[1]};{cell.bg_color[2]}"
-        )
-    if len(sgr_buffer) > 0:
-        buffer.append("\x1b[")
-        buffer.append(";".join(sgr_buffer))
-        buffer.append("m")
-    buffer.append(cell.char_)
-    cursor_x[0] += char_width(cell.char_)
+    if last_sgr == NULL or cell.bold != last_sgr.bold:
+        write_sgr(1 if cell.bold else 22, &first)
+    if last_sgr == NULL or cell.italic != last_sgr.italic:
+        write_sgr(3 if cell.italic else 23, &first)
+    if last_sgr == NULL or cell.underline != last_sgr.underline:
+        write_sgr(4 if cell.underline else 24, &first)
+    if last_sgr == NULL or cell.strikethrough != last_sgr.strikethrough:
+        write_sgr(9 if cell.strikethrough else 29, &first)
+    if last_sgr == NULL or cell.overline != last_sgr.overline:
+        write_sgr(53 if cell.overline else 54, &first)
+    if last_sgr == NULL or cell.reverse != last_sgr.reverse:
+        write_sgr(7 if cell.reverse else 27, &first)
+    if last_sgr == NULL or not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
+        write_rgb(38, &cell.fg_color[0], &first)
+    if last_sgr == NULL or not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
+        write_rgb(48, &cell.bg_color[0], &first)
+    if not first:
+        fbuf_putn(&ANSI_BUFFER, "m", 1)
+    fbuf_putwc(&ANSI_BUFFER, cell.char_)
+    cursor_x[0] += char_width(cell.char_)  # FIXME: Check clipping of wide chars
+    return 0
 
 
 # DELETE THESE NOTES...
@@ -838,7 +843,7 @@ cdef inline void output_glyph(
 cpdef void terminal_render(
     bint resized,
     tuple[int, int] app_pos,
-    list buffer,
+    int fd,
     Cell[:, ::1] canvas,
     Cell[:, ::1] prev_canvas,
     uint8[:, :, :, :, ::1] graphics,
@@ -885,16 +890,12 @@ cpdef void terminal_render(
         for y in range(h):
             for x in range(w):
                 if kind[y, x] == MIXED:
-                    if last_sgr == NULL:
-                        last_sgr = &canvas[y, x]
-                    output_glyph(
-                        oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr, buffer
-                    )
+                    write_glyph(oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr)
                     last_sgr = &canvas[y, x]
 
         gh = max_y_sixel + 1 - min_y_sixel
-        # If sixel graphics rect reaches last line of terminal, it must be truncated to
-        # nearest multiple of 6 to prevent scrolling.
+        # If sixel graphics rect reaches last line of terminal, it's height must be
+        # truncated to nearest multiple of 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
             gh -= gh % 6
         gw = max_x_sixel + 1 - max_x_sixel
@@ -905,8 +906,10 @@ cpdef void terminal_render(
         )
 
         palette, indices = median_variance_quantization(graphics_view)
-        buffer.append(f"\x1b[{min_y_sixel + 1};{min_x_sixel + 1}H")
-        buffer.append(sixel_ansi(palette, indices))
+        if fbuf_printf(&ANSI_BUFFER, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
+            raise MemoryError
+        if csixel_ansi(&ANSI_BUFFER, palette, indices, graphics_view):
+            raise MemoryError
 
     cursor_y = oy
     cursor_x = ox
@@ -917,9 +920,5 @@ cpdef void terminal_render(
                 or prev_kind[y, x] != GLYPH
                 or not cell_eq(&canvas[y, x], &prev_canvas[y, x])
             ):
-                if last_sgr == NULL:
-                    last_sgr = &canvas[y, x]
-                output_glyph(
-                    oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr, buffer
-                )
+                write_glyph(oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr)
                 last_sgr = &canvas[y, x]

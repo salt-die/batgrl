@@ -7,12 +7,12 @@
 #ifdef _WIN32
     #include <Windows.h>
     #include <io.h>
-    typedef SSIZE_T ssize_t;
     typedef SIZE_T size_t;
+    typedef SSIZE_T ssize_t;
+    typedef UINT32 uint32_t;
     typedef UINT64 uint64_t;
 #else
     #include <unistd.h>
-    ssize_t setmode(ssize_t, ssize_t){return 0;};
 #endif
 
 
@@ -32,6 +32,7 @@ static inline ssize_t fbuf_init(fbuf* f){
     }
     return 0;
 }
+
 
 static inline void fbuf_free(fbuf* f){
     f->size = 0;
@@ -87,8 +88,9 @@ static inline ssize_t fbuf_printf(fbuf *f, const char* fmt, ...){
     size_t wrote = (size_t)vsnprintf(f->buf + f->len, unused, fmt, va);
     va_end(va);
     f->len += wrote;
-    return wrote;
+    return 0;
 }
+
 
 #ifdef _WIN32
 static inline ssize_t fbuf_flush(fbuf* f, int fd){
@@ -127,3 +129,34 @@ static inline ssize_t fbuf_flush(fbuf* f, int fd){
     return 0;
 }
 #endif
+
+
+static inline ssize_t fbuf_putwc(fbuf *f, uint32_t wc){
+    // Put wide char (or PY_UCS4) as utf8.
+    // https://github.com/JeffBezanson/cutef8/blob/master/utf8.c
+    if(fbuf_grow(f, 4)){
+        return -1;
+    }
+    if(wc < 0x80){
+        f->buf[f->len++] = (char)wc;
+        return 0;
+    }
+    if(wc < 0x800){
+        f->buf[f->len++] = (wc>>6) | 0xC0;
+        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        return 0;
+    }
+    if(wc < 0x10000){
+        f->buf[f->len++] = (wc>>12) | 0xE0;
+        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        return 0;
+    }if(wc < 0x110000) {
+        f->buf[f->len++] = (wc>>18) | 0xF0;
+        f->buf[f->len++] = ((wc>>12) & 0x3F) | 0x80;
+        f->buf[f->len++] = ((wc>>6) & 0x3F) | 0x80;
+        f->buf[f->len++] = (wc & 0x3F) | 0x80;
+        return 0;
+    }
+    return -1;
+}
