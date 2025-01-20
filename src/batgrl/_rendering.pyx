@@ -789,7 +789,7 @@ cdef inline ssize_t write_glyph(
     cursor_y[0] = abs_y
     cursor_x[0] = abs_x
 
-    if(fbuf_grow(&ANSI_BUFFER, 128)):
+    if fbuf_grow(&ANSI_BUFFER, 128):
         return -1
     # Build up Select Graphic Rendition (SGR) parameters
     if last_sgr == NULL or cell.bold != last_sgr.bold:
