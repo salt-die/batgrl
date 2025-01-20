@@ -21,7 +21,7 @@ cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
 cdef unsigned int BOLD = 1, ITALIC = 2, UNDERLINE = 4
 cdef unsigned int STRIKETHROUGH = 8, OVERLINE = 16, REVERSE = 32
-cdef fbuf ANSI_BUFFER
+cdef fbuf ANSI_BUFFER  # TODO: Attach to Terminal
 if fbuf_init(&ANSI_BUFFER):
     raise MemoryError("Can't initialized ansi buffer.")
 
@@ -735,30 +735,7 @@ cpdef void graphics_render(
             opaque_braille_graphics_render(root_canvas, self_texture, cregion)
 
 
-# cpdef void field_render(
-#     Cell[:, ::1] root_canvas,
-#     uint8[:, :, :, :, ::1] graphics,
-#     uint8[:, ::1] kind,
-#     bint is_transparent,
-#     Region region,
-# ):
-#     if is_transparent:
-#         pass
-#     else:
-#         pass
-
-
-# cpdef void graphics_field_render(
-#     Cell[:, ::1] root_canvas,
-#     uint8[:, :, :, :, ::1] graphics,
-#     uint8[:, ::1] kind,
-#     bint is_transparent,
-#     Region region,
-# ):
-#     if is_transparent:
-#         pass
-#     else:
-#         pass
+# TODO: Missing renders: field_render, graphics_field_render, cursor_render
 
 
 cdef inline void write_sgr(uint8 param, bint* first):
