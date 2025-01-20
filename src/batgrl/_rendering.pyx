@@ -894,7 +894,7 @@ cpdef void terminal_render(
                     last_sgr = &canvas[y, x]
 
         gh = max_y_sixel + 1 - min_y_sixel
-        # If sixel graphics rect reaches last line of terminal, it's height must be
+        # If sixel graphics rect reaches last line of terminal, its height must be
         # truncated to nearest multiple of 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
             gh -= gh % 6
