@@ -755,7 +755,7 @@ cdef inline void write_sgr(uint8 param, bint* first):
 
 
 cdef inline void write_rgb(uint8 fg, uint8* rgb, bint* first):
-    if first:
+    if first[0]:
         fbuf_printf(&ANSI_BUFFER, "\x1b[%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
         first[0] = 0
     else:
