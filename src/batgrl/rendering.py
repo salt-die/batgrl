@@ -32,7 +32,7 @@ def render_root(root: _Root, terminal: Vt100Terminal, app_pos: Point) -> None:
         return
 
     w = root.width
-    write = terminal._out_buffer.append
+    write = terminal._out_buffer.write
     inline = not terminal.in_alternate_screen
     last_y = 0
 
@@ -46,7 +46,7 @@ def render_root(root: _Root, terminal: Vt100Terminal, app_pos: Point) -> None:
         diffs = root._last_canvas != canvas
         ys, xs = diffs.nonzero()
 
-    write("\x1b7")  # Save cursor
+    write(b"\x1b7")  # Save cursor
     if inline:
         terminal.move_cursor(app_pos)
     for y, x, cell in zip(ys, xs, canvas[ys, xs]):
@@ -97,23 +97,27 @@ def render_root(root: _Root, terminal: Vt100Terminal, app_pos: Point) -> None:
         if inline:
             # Note that `y`s are non-decreasing.
             if last_y < y:
-                write(f"\x1b[{y - last_y}B")  # Move down `y - last_y` rows.
-            write(f"\x1b[{x + 1}G")  # Move to column `x + 1`.
+                write(b"\x1b[%dB" % (y - last_y))  # Move down `y - last_y` rows.
+            write(b"\x1b[%dG" % (x + 1))  # Move to column `x + 1`.
         else:
             # Move cursor to position `(y + 1, x + 1)`.
-            write(f"\x1b[{y + 1};{x + 1}H")
+            write(b"\x1b[%d;%dH" % (y + 1, x + 1))
         last_y = y
 
-        write(
-            "\x1b[0;"  # Reset attributes.
-            f"{'1;' if bold else ''}"
-            f"{'3;' if italic else ''}"
-            f"{'4;' if underline else ''}"
-            f"{'9;' if strikethrough else ''}"
-            f"{'53;' if overline else ''}"
-            f"{'7;' if reverse else ''}"
-            f"38;2;{fr};{fg};{fb};48;2;{br};{bg};{bb}m"  # Set color pair.
-            f"{char}"
-        )
-    write("\x1b8")  # Restore cursor
+        write(b"\x1b[0;")  # Reset attributes.
+        if bold:
+            write(b"1;")
+        if italic:
+            write(b"3;")
+        if underline:
+            write(b"4;")
+        if strikethrough:
+            write(b"9;")
+        if overline:
+            write(b"53;")
+        if reverse:
+            write(b"7;")
+        write(b"38;2;%d;%d;%d;48;2;%d;%d;%dm" % (fr, fg, fb, br, bg, bb))
+        write(char.encode())
+    write(b"\x1b8")  # Restore cursor
     terminal.flush()

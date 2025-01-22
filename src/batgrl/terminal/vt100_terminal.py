@@ -3,7 +3,6 @@
 import asyncio
 import os
 import re
-import sys
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from enum import Enum, auto
@@ -12,6 +11,7 @@ from typing import Final, Literal
 
 from ..colors import Color
 from ..geometry import Point, Size
+from ._fbuf_wrapper import FBufWrapper
 from .ansi_escapes import ANSI_ESCAPES
 from .events import (
     ColorReportEvent,
@@ -33,14 +33,6 @@ COLOR_RE: Final = re.compile(
     r"\x1b\]1([10]);rgb:([0-9a-f]{4})/([0-9a-f]{4})/([0-9a-f]{4})\x1b\\"
 )
 # \x1b[?61;4;6;7;14;21;22;23;24;28;32;42c
-DEVICE_ATTRIBUTES_RE: Final = re.compile(r"\x1b\[\?[0-9;]+c")
-MOUSE_SGR_RE: Final = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
-PARAMS_RE: Final = re.compile(r"[0-9;]")
-BRACKETED_PASTE_START: Final = "\x1b[200~"
-BRACKETED_PASTE_END: Final = "\x1b[201~"
-FOCUS_IN: Final = "\x1b[I"
-FOCUS_OUT: Final = "\x1b[O"
-ESCAPE_TIMEOUT: Final = 0.05
 DEVICE_ATTRIBUTES_RE: Final = re.compile(r"\x1b\[\?[0-9;]+c")
 PIXEL_GEOMETRY_RE: Final = re.compile(r"\x1b\[([6|4]);(\d+);(\d+)t")
 MOUSE_SGR_RE: Final = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
@@ -157,7 +149,7 @@ class Vt100Terminal(ABC):
         """Paste buffer."""
         self._event_buffer: list[Event] = []
         """Events generated during input parsing."""
-        self._out_buffer: list[str] = []
+        self._out_buffer: FBufWrapper = FBufWrapper()
         """
         Output buffer.
 
@@ -393,72 +385,69 @@ class Vt100Terminal(ABC):
         if not self._out_buffer:
             return
 
-        data = "".join(self._out_buffer).encode(errors="replace")
-        self._out_buffer.clear()
-        sys.__stdout__.buffer.write(data)
-        sys.__stdout__.flush()
+        self._out_buffer.flush()
 
     def set_title(self, title: str) -> None:
         """Set terminal title."""
-        self._out_buffer.append(f"\x1b]2;{title}\x07")
+        self._out_buffer.write(b"\x1b]2;%b\x07" % title.encode())
 
     def enter_alternate_screen(self) -> None:
         """Enter alternate screen buffer."""
-        self._out_buffer.append("\x1b[?1049h\x1b[H")
+        self._out_buffer.write(b"\x1b[?1049h\x1b[H")
         self.in_alternate_screen = True
 
     def exit_alternate_screen(self) -> None:
         """Exit alternate screen buffer."""
-        self._out_buffer.append("\x1b[?1049l")
+        self._out_buffer.write(b"\x1b[?1049l")
         self.in_alternate_screen = False
 
     def enable_mouse_support(self) -> None:
         """Enable mouse support in terminal."""
-        self._out_buffer.append(
-            "\x1b[?1000h"  # SET_VT200_MOUSE
-            "\x1b[?1003h"  # SET_ANY_EVENT_MOUSE
-            "\x1b[?1006h"  # SET_SGR_EXT_MODE_MOUSE
-            "\x1b[?1015h"  # SET_URXVT_EXT_MODE_MOUSE
+        self._out_buffer.write(
+            b"\x1b[?1000h"  # SET_VT200_MOUSE
+            b"\x1b[?1003h"  # SET_ANY_EVENT_MOUSE
+            b"\x1b[?1006h"  # SET_SGR_EXT_MODE_MOUSE
+            b"\x1b[?1015h"  # SET_URXVT_EXT_MODE_MOUSE
         )
 
     def disable_mouse_support(self) -> None:
         """Disable mouse support in terminal."""
-        self._out_buffer.append(
-            "\x1b[?1000l"  # SET_VT200_MOUSE
-            "\x1b[?1003l"  # SET_ANY_EVENT_MOUSE
-            "\x1b[?1015l"  # SET_SGR_EXT_MODE_MOUSE
-            "\x1b[?1006l"  # SET_URXVT_EXT_MODE_MOUSE
+        self._out_buffer.write(
+            b"\x1b[?1000l"  # SET_VT200_MOUSE
+            b"\x1b[?1003l"  # SET_ANY_EVENT_MOUSE
+            b"\x1b[?1015l"  # SET_SGR_EXT_MODE_MOUSE
+            b"\x1b[?1006l"  # SET_URXVT_EXT_MODE_MOUSE
         )
 
     def reset_attributes(self) -> None:
         """Reset character attributes."""
-        self._out_buffer.append("\x1b[0m")
+        self._out_buffer.write(b"\x1b[0m")
 
     def enable_bracketed_paste(self) -> None:
         """Enable bracketed paste in terminal."""
-        self._out_buffer.append("\x1b[?2004h")
+        self._out_buffer.write(b"\x1b[?2004h")
 
     def disable_bracketed_paste(self) -> None:
         """Disable bracketed paste in terminal."""
-        self._out_buffer.append("\x1b[?2004l")
+        self._out_buffer.write(b"\x1b[?2004l")
 
     def show_cursor(self) -> None:
         """Show cursor in terminal."""
-        self._out_buffer.append("\x1b[?25h")
+        self._out_buffer.write(b"\x1b[?25h")
 
     def hide_cursor(self) -> None:
         """Hide cursor in terminal."""
-        self._out_buffer.append("\x1b[?25l")
+        self._out_buffer.write(b"\x1b[?25l")
 
     def enable_reporting_focus(self) -> None:
         """Enable reporting terminal focus."""
-        self._out_buffer.append("\x1b[?1004h")
+        self._out_buffer.write(b"\x1b[?1004h")
 
     def disable_reporting_focus(self) -> None:
         """Disable reporting terminal focus."""
-        self._out_buffer.append("\x1b[?1004l")
+        self._out_buffer.write(b"\x1b[?1004l")
 
-    def _dsr_request(self, escape: str) -> None:
+    def _dsr_request(self, escape: bytes) -> None:
         """Make a device status report request and schedule its cancellation."""
         try:
             loop = asyncio.get_running_loop()
@@ -467,7 +456,7 @@ class Vt100Terminal(ABC):
 
         self._dsr_pending += 1
         loop.call_later(DRS_REQUEST_TIMEOUT, self._timeout_dsr)
-        self._out_buffer.append(escape)
+        self._out_buffer.write(escape)
         self.flush()
 
     def _timeout_dsr(self) -> None:
@@ -476,27 +465,27 @@ class Vt100Terminal(ABC):
 
     def request_cursor_position_report(self) -> None:
         """Report current cursor position."""
-        self._dsr_request("\x1b[6n")
+        self._dsr_request(b"\x1b[6n")
 
     def request_foreground_color(self) -> None:
         """Report terminal foreground color."""
-        self._dsr_request("\x1b]10;?\x1b\\")
+        self._dsr_request(b"\x1b]10;?\x1b\\")
 
     def request_background_color(self) -> None:
         """Report terminal background color."""
-        self._dsr_request("\x1b]11;?\x1b\\")
+        self._dsr_request(b"\x1b]11;?\x1b\\")
 
     def request_device_attributes(self) -> None:
         """Report device attributes."""
-        self._dsr_request("\x1b[c")
+        self._dsr_request(b"\x1b[c")
 
     def request_pixel_geometry(self) -> None:
         """Report pixel geometry per cell."""
-        self._dsr_request("\x1b[16t")
+        self._dsr_request(b"\x1b[16t")
 
     def request_terminal_geometry(self) -> None:
         """Report pixel geometry of terminal."""
-        self._dsr_request("\x1b[14t")
+        self._dsr_request(b"\x1b[14t")
 
     def expect_dsr(self) -> bool:
         """Return whether a device status report is expected."""
@@ -512,7 +501,7 @@ class Vt100Terminal(ABC):
             Cursor's new position.
         """
         y, x = pos
-        self._out_buffer.append(f"\x1b[{y + 1};{x + 1}H")
+        self._out_buffer.write(b"\x1b[%d;%dH" % (y + 1, x + 1))
 
     def erase_in_display(self, n: Literal[0, 1, 2, 3] = 0) -> None:
         """
@@ -526,4 +515,4 @@ class Vt100Terminal(ABC):
             of the screen. If n is ``2``, clear entire screen. If n is ``3``, clear
             entire screen and delete all lines in scrollback buffer.
         """
-        self._out_buffer.append(f"\x1b[{n}J")
+        self._out_buffer.write(b"\x1b[%dJ" % n)

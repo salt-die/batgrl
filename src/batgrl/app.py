@@ -197,8 +197,8 @@ class App(ABC):
             return
 
         height = min(self.inline_height, self._terminal.get_size().height)
-        self._terminal._out_buffer.append("\x0a" * height)  # Feed lines (may scroll).
-        self._terminal._out_buffer.append(f"\x1b[{height}F")  # Move cursor back up.
+        self._terminal._out_buffer.write(b"\x0a" * height)  # Feed lines (may scroll).
+        self._terminal._out_buffer.write(b"\x1b[%dF" % height)  # Move cursor back up.
         self._terminal.request_cursor_position_report()
 
     @property

@@ -223,6 +223,21 @@ class WindowsTerminal(Vt100Terminal):
         Clear part of the screen.
     """
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._original_input_mode = DWORD()
+        """Original console input mode."""
+        windll.kernel32.GetConsoleMode(STDIN, byref(self._original_input_mode))
+
+        self._original_output_mode = DWORD()
+        """Original console output mode."""
+        windll.kernel32.GetConsoleMode(STDOUT, byref(self._original_output_mode))
+
+        self._original_input_cp = windll.kernel32.GetConsoleCP()
+        """Original console input code page."""
+        self._original_output_cp = windll.kernel32.GetConsoleOutputCP()
+        """Original console output code page."""
+
     def _feed(self, data: str) -> None:
         # Some versions of Windows Terminal generate spurious null characters for a few
         # input events. For instance, ctrl+" " generates 3 null characters instead of 1
@@ -273,21 +288,20 @@ class WindowsTerminal(Vt100Terminal):
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
-        self._original_output_mode = DWORD()
-        windll.kernel32.GetConsoleMode(STDOUT, byref(self._original_output_mode))
+        windll.kernel32.SetConsoleMode(STDIN, ENABLE_VIRTUAL_TERMINAL_INPUT)
         windll.kernel32.SetConsoleMode(
             STDOUT,
             self._original_output_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING,
         )
-        self._original_input_mode = DWORD()
-        windll.kernel32.GetConsoleMode(STDIN, byref(self._original_input_mode))
-        windll.kernel32.SetConsoleMode(STDIN, ENABLE_VIRTUAL_TERMINAL_INPUT)
+        windll.kernel32.SetConsoleCP(65001)
+        windll.kernel32.SetConsoleOutputCP(65001)
 
     def restore_console(self) -> None:
         """Restore console to its original mode."""
         windll.kernel32.SetConsoleMode(STDIN, self._original_input_mode)
         windll.kernel32.SetConsoleMode(STDOUT, self._original_output_mode)
-        del self._original_input_mode, self._original_output_mode
+        windll.kernel32.SetConsoleCP(self._original_input_cp)
+        windll.kernel32.SetConsoleOutputCP(self._original_output_cp)
 
     def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
         """

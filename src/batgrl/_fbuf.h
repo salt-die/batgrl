@@ -8,7 +8,6 @@
 
 #ifdef _WIN32
     #include <Windows.h>
-    #include <io.h>
     typedef SIZE_T size_t;
     typedef SSIZE_T ssize_t;
     typedef UINT32 uint32_t;
@@ -126,10 +125,7 @@ static inline ssize_t fbuf_putwc(fbuf *f, uint32_t wc){
 
 
 #ifdef _WIN32
-static inline ssize_t fbuf_flush(fbuf* f, int fd){
-    HANDLE out = (HANDLE) _get_osfhandle(fd);
-    u_int old_cp = GetConsoleOutputCP();
-    SetConsoleOutputCP(CP_UTF8);
+static inline ssize_t fbuf_flush(fbuf* f){
     DWORD wrote = 0, write_len;
     size_t written = 0;
     while(written<f->len){
@@ -138,21 +134,22 @@ static inline ssize_t fbuf_flush(fbuf* f, int fd){
         } else {
             write_len = f->len - written;
         }
-        if (!WriteConsoleA(out, f->buf + written, write_len, &wrote, NULL)){
+        if (!WriteConsoleA(
+            GetStdHandle(STD_OUTPUT_HANDLE), f->buf + written, write_len, &wrote, NULL)
+        ){
             return -1;
         }
         written += wrote;
     }
     f->len = 0;
-    SetConsoleOutputCP(old_cp);
     return 0;
 }
 #else
-static inline ssize_t fbuf_flush(fbuf* f, int fd){
+static inline ssize_t fbuf_flush(fbuf* f){
     size_t written = 0;
     ssize_t wrote = 0;
     while(written < f->len){
-        wrote = write(fd, f->buf + written, f->len - written);
+        wrote = write(1, f->buf + written, f->len - written);
         if (wrote < 0){
             return -1;
         }

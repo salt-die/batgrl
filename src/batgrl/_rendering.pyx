@@ -828,7 +828,6 @@ cdef inline ssize_t write_glyph(
 cpdef void terminal_render(
     bint resized,
     tuple[int, int] app_pos,
-    int fd,
     Cell[:, ::1] canvas,
     Cell[:, ::1] prev_canvas,
     uint8[:, :, :, :, ::1] graphics,
@@ -912,4 +911,4 @@ cpdef void terminal_render(
                     raise MemoryError
                 last_sgr = &canvas[y, x]
 
-    fbuf_flush(&ANSI_BUFFER, fd)
+    fbuf_flush(&ANSI_BUFFER)

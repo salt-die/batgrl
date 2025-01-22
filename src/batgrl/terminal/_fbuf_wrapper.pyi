@@ -1,0 +1,16 @@
+"""Growable string buffer."""
+
+class FBufWrapper:
+    """Growable string buffer."""
+
+    def __len__(self) -> int:
+        """Length of string buffer."""
+
+    def __bool__(self) -> bool:
+        """Whether string buffer is nonempty."""
+
+    def write(self, s: bytes) -> None:
+        """Write bytes to string buffer."""
+
+    def flush(self) -> None:
+        """Flush bytes to stdout."""
