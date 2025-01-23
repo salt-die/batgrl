@@ -1,9 +1,9 @@
 # distutils: language = c
 # distutils: sources = src/batgrl/cwidth.c
+from libc.string cimport memset
+
 import numpy as np
 cimport numpy as cnp
-
-from libc.string cimport memset
 
 from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4
 from ._sixel cimport csixel_ansi
@@ -730,7 +730,120 @@ cpdef void graphics_render(
             opaque_braille_graphics_render(cells, self_texture, cregion)
 
 
-# TODO: Missing renders: field_render, graphics_field_render, cursor_render
+cdef void opaque_cursor_render(
+    Cell[:, ::1] cells,
+    uint8* fg_color,
+    uint8* bg_color,
+    CRegion *cregion
+):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
+    cdef Cell* cell
+    cdef int abs_y = it.y1, abs_x = it.x1
+    while not it.done:
+        cell = &cells[it.y, it.x]
+        if fg_color is not NULL:
+            cell.fg_color[0] = fg_color[0]
+            cell.fg_color[1] = fg_color[1]
+            cell.fg_color[2] = fg_color[2]
+        if bg_color is not NULL:
+            cell.bg_color[0] = bg_color[0]
+            cell.bg_color[1] = bg_color[1]
+            cell.bg_color[2] = bg_color[2]
+        next_(&it)
+
+
+cdef void trans_cursor_render(
+    Cell[:, ::1] cells,
+    uint8[:, ::1] kind,
+    bint* bold,
+    bint* italic,
+    bint* underline,
+    bint* strikethrough,
+    bint* overline,
+    bint* reverse,
+    uint8* fg_color,
+    uint8* bg_color,
+    CRegion *cregion,
+):
+    cdef RegionIterator it
+    init_iter(&it, cregion)
+    cdef Cell* dst
+
+    while not it.done:
+        dst = &cells[it.y, it.x]
+        if kind[it.y, it.x] != SIXEL:
+            if bold is not NULL:
+                dst.bold = bold[0]
+            if italic is not NULL:
+                dst.italic = italic[0]
+            if underline is not NULL:
+                dst.underline = underline[0]
+            if strikethrough is not NULL:
+                dst.strikethrough = strikethrough[0]
+            if overline is not NULL:
+                dst.overline = overline[0]
+            if reverse is not NULL:
+                dst.reverse = reverse[0]
+            if fg_color is not NULL:
+                dst.fg_color[0] = fg_color[0]
+                dst.fg_color[1] = fg_color[1]
+                dst.fg_color[2] = fg_color[2]
+            if bg_color is not NULL:
+                dst.bg_color[0] = bg_color[0]
+                dst.bg_color[1] = bg_color[1]
+                dst.bg_color[2] = bg_color[2]
+        next_(&it)
+
+
+cpdef void cursor_render(
+    Cell[:, ::1] cells,
+    uint8[:, ::1] kind,
+    bint bold,
+    bint italic,
+    bint underline,
+    bint strikethrough,
+    bint overline,
+    bint reverse,
+    tuple[int, int, int] fg_color,
+    tuple[int, int, int] bg_color,
+    bint is_transparent,
+    Region region,
+):
+    cdef CRegion *cregion = &region.cregion
+    cdef uint8[3] fg, bg
+    if fg_color is not None:
+        fg[0] = fg_color[0]
+        fg[1] = fg_color[1]
+        fg[2] = fg_color[2]
+    if bg_color is not None:
+        bg[0] = bg_color[0]
+        bg[1] = bg_color[1]
+        bg[2] = bg_color[2]
+    if is_transparent:
+        trans_cursor_render(
+            cells,
+            kind,
+            NULL if bold is None else &bold,
+            NULL if italic is None else &italic,
+            NULL if underline is None else &underline,
+            NULL if strikethrough is None else &strikethrough,
+            NULL if overline is None else &overline,
+            NULL if reverse is None else &reverse,
+            NULL if fg_color is None else <uint8*>&fg,
+            NULL if bg_color is None else <uint8*>&bg,
+            cregion
+        )
+    else:
+        opaque_cursor_render(
+            cells,
+            NULL if fg_color is None else <uint8*>&fg,
+            NULL if bg_color is None else <uint8*>&bg,
+            cregion,
+        )
+
+
+# TODO: Missing renders: field_render, graphics_field_render
 
 
 cdef inline void write_sgr(fbuf* f, uint8 param, bint* first):
