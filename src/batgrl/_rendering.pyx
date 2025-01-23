@@ -1,27 +1,13 @@
-"""
-Notes:
-
-`graphics` is (h, w, cell_h, cell_w, 4)-shaped where (cell_h, cell_w)
-is pixel geometry of terminal and last axis is RGBM, where M is a
-mask that indicates non-transparent pixels.
-"""
 import numpy as np
 cimport numpy as cnp
 
 from libc.string cimport memset
 
-from ._fbuf cimport (
-    fbuf,
-    fbuf_init,
-    fbuf_flush,
-    fbuf_grow,
-    fbuf_printf,
-    fbuf_putn,
-    fbuf_putwc,
-)
+from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putwc
 from ._sixel cimport csixel_ansi
 from .colors.quantization import median_variance_quantization
 from .geometry.regions cimport CRegion, Region
+from .terminal._fbuf_wrapper cimport FBufWrapper
 from .text_tools import char_width  # TODO: rewrite in cython
 
 ctypedef unsigned char uint8
@@ -29,9 +15,6 @@ cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
 cdef unsigned int BOLD = 1, ITALIC = 2, UNDERLINE = 4
 cdef unsigned int STRIKETHROUGH = 8, OVERLINE = 16, REVERSE = 32
-cdef fbuf ANSI_BUFFER
-if fbuf_init(&ANSI_BUFFER):
-    raise MemoryError("Can't initialized ansi buffer.")
 
 
 cdef struct RegionIterator:
@@ -243,16 +226,14 @@ cdef inline void luminance_quant(
 
 
 cdef void opaque_pane_render(
-    Cell[:, ::1] root_canvas,
-    uint8[::1] bg_color,
-    CRegion *cregion,
+    Cell[:, ::1] cells, uint8[::1] bg_color, CRegion *cregion
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef Cell* cell
 
     while not it.done:
-        cell = &root_canvas[it.y, it.x]
+        cell = &cells[it.y, it.x]
         cell.char_ = u" "
         cell.bold = False
         cell.italic = False
@@ -267,7 +248,7 @@ cdef void opaque_pane_render(
 
 
 cdef void trans_pane_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[::1] bg_color,
@@ -282,7 +263,7 @@ cdef void trans_pane_render(
         uint8 cell_kind
 
     while not it.done:
-        dst = &root_canvas[it.y, it.x]
+        dst = &cells[it.y, it.x]
         cell_kind = kind[it.y, it.x]
         if cell_kind != SIXEL:
             composite(dst.fg_color, bg_color, alpha)
@@ -295,7 +276,7 @@ cdef void trans_pane_render(
         next_(&it)
 
 cpdef void pane_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     bint is_transparent,
@@ -308,24 +289,24 @@ cpdef void pane_render(
         cnp.ndarray[uint8, ndim=1] bg = np.array(bg_color, np.uint8)
 
     if is_transparent:
-        trans_pane_render(root_canvas, graphics, kind, bg, alpha, cregion)
+        trans_pane_render(cells, graphics, kind, bg, alpha, cregion)
     else:
-        opaque_pane_render(root_canvas, bg, cregion)
+        opaque_pane_render(cells, bg, cregion)
 
 
 cdef void opaque_text_render(
-    Cell[:, ::1] root_canvas, Cell[:, ::1] self_canvas, CRegion *cregion
+    Cell[:, ::1] cells, Cell[:, ::1] self_canvas, CRegion *cregion
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef int abs_y = it.y1, abs_x = it.x1
     while not it.done:
-        root_canvas[it.y, it.x] = self_canvas[it.y - abs_y, it.x - abs_x]
+        cells[it.y, it.x] = self_canvas[it.y - abs_y, it.x - abs_x]
         next_(&it)
 
 
 cdef void trans_text_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     Cell[:, ::1] self_canvas,
@@ -344,7 +325,7 @@ cdef void trans_text_render(
 
     while not it.done:
         src = &self_canvas[it.y - abs_y, it.x - abs_x]
-        dst = &root_canvas[it.y, it.x]
+        dst = &cells[it.y, it.x]
         # FIXME: Consider all whitespace?
         if src.char_ == u" " or src.char_ == u"⠀":
             if kind[it.y, it.x] != SIXEL:
@@ -385,7 +366,7 @@ cdef void trans_text_render(
         next_(&it)
 
 cpdef void text_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     bint is_transparent,
@@ -395,13 +376,13 @@ cpdef void text_render(
 ):
     cdef CRegion *cregion = &region.cregion
     if is_transparent:
-        trans_text_render(root_canvas, graphics, kind, self_canvas, alpha, cregion)
+        trans_text_render(cells, graphics, kind, self_canvas, alpha, cregion)
     else:
-        opaque_text_render(root_canvas, self_canvas, cregion)
+        opaque_text_render(cells, self_canvas, cregion)
 
 
 cdef opaque_half_graphics_render(
-    Cell[:, ::1] root_canvas, uint8[:, :, ::1] self_texture, CRegion *cregion,
+    Cell[:, ::1] cells, uint8[:, :, ::1] self_texture, CRegion *cregion
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
@@ -410,7 +391,7 @@ cdef opaque_half_graphics_render(
         Cell *dst
 
     while not it.done:
-        dst = &root_canvas[it.y, it.x]
+        dst = &cells[it.y, it.x]
         dst.char_ = u"▀"
         dst.bold = False
         dst.italic = False
@@ -429,7 +410,7 @@ cdef opaque_half_graphics_render(
         next_(&it)
 
 cdef trans_half_graphics_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
@@ -453,7 +434,7 @@ cdef trans_half_graphics_render(
         if rgba_eq(
             self_texture[src_y, src_x], self_texture[src_y + 1, src_x]
         ):
-            dst = &root_canvas[it.y, it.x]
+            dst = &cells[it.y, it.x]
             rgba = self_texture[src_y, src_x]
             a = alpha * <double>rgba[3] / 255
             if kind[it.y, it.x] != SIXEL:
@@ -479,7 +460,7 @@ cdef trans_half_graphics_render(
                     sixel[gy, gx, 3] = 1
                     composite(sixel[gy, gx], rgba, a)
         else:
-            dst = &root_canvas[it.y, it.x]
+            dst = &cells[it.y, it.x]
             dst.bold = False
             dst.italic = False
             dst.underline = False
@@ -549,7 +530,7 @@ cdef opaque_sixel_graphics_render(
         next_(&it)
 
 cdef trans_sixel_graphics_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
@@ -575,7 +556,7 @@ cdef trans_sixel_graphics_render(
                     rgba = self_texture[src_y + gy, src_x + gx]
                     composite(sixel[gy, gx], rgba, alpha * <double>rgba[3] / 255)
         elif kind[it.y, it.x] == GLYPH:
-            dst = &root_canvas[it.y, it.x]
+            dst = &cells[it.y, it.x]
             sixel = graphics[it.y, it.x]
             kind[it.y, it.x] = SIXEL
             for gy in range(h):
@@ -590,7 +571,7 @@ cdef trans_sixel_graphics_render(
                     else:
                         kind[it.y, it.x] = MIXED
         elif kind[it.y, it.x] == MIXED:
-            dst = &root_canvas[it.y, it.x]
+            dst = &cells[it.y, it.x]
             sixel = graphics[it.y, it.x]
             kind[it.y, it.x] = SIXEL
             for gy in range(h):
@@ -609,7 +590,7 @@ cdef trans_sixel_graphics_render(
 
 
 cdef opaque_braille_graphics_render(
-    Cell[:, ::1] root_canvas, uint8[:, :, ::1] self_texture, CRegion *cregion
+    Cell[:, ::1] cells, uint8[:, :, ::1] self_texture, CRegion *cregion
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
@@ -626,7 +607,7 @@ cdef opaque_braille_graphics_render(
         luminance_quant(
             &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
         )
-        cell = &root_canvas[it.y, it.x]
+        cell = &cells[it.y, it.x]
         cell.char_ = 10240
         for i in range(8):
             cell.char_ += BRAILLE_ENUM[i] * luminances[i]
@@ -646,7 +627,7 @@ cdef opaque_braille_graphics_render(
 
 
 cdef trans_braille_graphics_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
@@ -671,7 +652,7 @@ cdef trans_braille_graphics_render(
         luminance_quant(
             &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
         )
-        cell = &root_canvas[it.y, it.x]
+        cell = &cells[it.y, it.x]
         cell.char_ = 10240
         for i in range(8):
             cell.char_ += BRAILLE_ENUM[i] * luminances[i]
@@ -709,7 +690,7 @@ cdef trans_braille_graphics_render(
 
 
 cpdef void graphics_render(
-    Cell[:, ::1] root_canvas,
+    Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
     uint8[:, ::1] kind,
     str blitter,
@@ -723,46 +704,47 @@ cpdef void graphics_render(
     if blitter == "half":
         if is_transparent:
             trans_half_graphics_render(
-                root_canvas, graphics, kind, self_texture, alpha, cregion
+                cells, graphics, kind, self_texture, alpha, cregion
             )
         else:
-            opaque_half_graphics_render(root_canvas, self_texture, cregion)
+            opaque_half_graphics_render(cells, self_texture, cregion)
     elif blitter == "sixel":
         if is_transparent:
             trans_sixel_graphics_render(
-                root_canvas, graphics, kind, self_texture, alpha, cregion
+                cells, graphics, kind, self_texture, alpha, cregion
             )
         else:
             opaque_sixel_graphics_render(graphics, kind, self_texture, cregion)
     elif blitter == "braille":
         if is_transparent:
             trans_braille_graphics_render(
-                root_canvas, graphics, kind, self_texture, alpha, cregion
+                cells, graphics, kind, self_texture, alpha, cregion
             )
         else:
-            opaque_braille_graphics_render(root_canvas, self_texture, cregion)
+            opaque_braille_graphics_render(cells, self_texture, cregion)
 
 
 # TODO: Missing renders: field_render, graphics_field_render, cursor_render
 
 
-cdef inline void write_sgr(uint8 param, bint* first):
+cdef inline void write_sgr(fbuf* f, uint8 param, bint* first):
     if first[0]:
-        fbuf_printf(&ANSI_BUFFER, "\x1b[%d", param)
+        fbuf_printf(f, "\x1b[%d", param)
         first[0] = 0
     else:
-        fbuf_printf(&ANSI_BUFFER, ";%d", param)
+        fbuf_printf(f, ";%d", param)
 
 
-cdef inline void write_rgb(uint8 fg, uint8* rgb, bint* first):
+cdef inline void write_rgb(fbuf* f, uint8 fg, uint8* rgb, bint* first):
     if first[0]:
-        fbuf_printf(&ANSI_BUFFER, "\x1b[%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
+        fbuf_printf(f, "\x1b[%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
         first[0] = 0
     else:
-        fbuf_printf(&ANSI_BUFFER, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
+        fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
 
 
 cdef inline ssize_t write_glyph(
+    fbuf* f,
     Py_ssize_t oy,
     Py_ssize_t ox,
     Py_ssize_t y,
@@ -780,37 +762,37 @@ cdef inline ssize_t write_glyph(
     if abs_y == cursor_y[0]:
         if abs_x != cursor_x[0]:
             # CHA, Cursor Horizontal Absolute
-            if fbuf_printf(&ANSI_BUFFER, "\x1b[%dG", cursor_x[0] + 1):
+            if fbuf_printf(f, "\x1b[%dG", cursor_x[0] + 1):
                 return -1
     else:
         # CUP, Cursor Position
-        if fbuf_printf(&ANSI_BUFFER, "\x1b[%d;%dH", cursor_y[0] + 1, cursor_x[0] + 1):
+        if fbuf_printf(f, "\x1b[%d;%dH", cursor_y[0] + 1, cursor_x[0] + 1):
             return -1
     cursor_y[0] = abs_y
     cursor_x[0] = abs_x
 
-    if fbuf_grow(&ANSI_BUFFER, 128):
+    if fbuf_grow(f, 128):
         return -1
     # Build up Select Graphic Rendition (SGR) parameters
     if last_sgr == NULL or cell.bold != last_sgr.bold:
-        write_sgr(1 if cell.bold else 22, &first)
+        write_sgr(f, 1 if cell.bold else 22, &first)
     if last_sgr == NULL or cell.italic != last_sgr.italic:
-        write_sgr(3 if cell.italic else 23, &first)
+        write_sgr(f, 3 if cell.italic else 23, &first)
     if last_sgr == NULL or cell.underline != last_sgr.underline:
-        write_sgr(4 if cell.underline else 24, &first)
+        write_sgr(f, 4 if cell.underline else 24, &first)
     if last_sgr == NULL or cell.strikethrough != last_sgr.strikethrough:
-        write_sgr(9 if cell.strikethrough else 29, &first)
+        write_sgr(f, 9 if cell.strikethrough else 29, &first)
     if last_sgr == NULL or cell.overline != last_sgr.overline:
-        write_sgr(53 if cell.overline else 54, &first)
+        write_sgr(f, 53 if cell.overline else 54, &first)
     if last_sgr == NULL or cell.reverse != last_sgr.reverse:
-        write_sgr(7 if cell.reverse else 27, &first)
+        write_sgr(f, 7 if cell.reverse else 27, &first)
     if last_sgr == NULL or not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
-        write_rgb(38, &cell.fg_color[0], &first)
+        write_rgb(f, 38, &cell.fg_color[0], &first)
     if last_sgr == NULL or not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
-        write_rgb(48, &cell.bg_color[0], &first)
+        write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
-        fbuf_putn(&ANSI_BUFFER, "m", 1)
-    fbuf_putwc(&ANSI_BUFFER, cell.char_)
+        fbuf_putn(f, "m", 1)
+    fbuf_putwc(f, cell.char_)
     cursor_x[0] += char_width(cell.char_)  # FIXME: Check clipping of wide chars
     return 0
 
@@ -827,6 +809,7 @@ cdef inline ssize_t write_glyph(
 
 cpdef void terminal_render(
     bint resized,
+    FBufWrapper fwrap,
     tuple[int, int] app_pos,
     Cell[:, ::1] canvas,
     Cell[:, ::1] prev_canvas,
@@ -836,6 +819,7 @@ cpdef void terminal_render(
     uint8[:, ::1] prev_kind,
 ):
     cdef:
+        fbuf* f = &fwrap.f
         Py_ssize_t h = canvas.shape[0], w = canvas.shape[1], y, x, cursor_y, cursor_x
         Py_ssize_t cell_h = graphics.shape[2], cell_w = graphics.shape[3], gh, gw
         Py_ssize_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
@@ -875,7 +859,7 @@ cpdef void terminal_render(
             for x in range(w):
                 if kind[y, x] == MIXED:
                     if write_glyph(
-                        oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr
+                        f, oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr
                     ):
                         raise MemoryError
                     last_sgr = &canvas[y, x]
@@ -893,9 +877,9 @@ cpdef void terminal_render(
         )
 
         palette, indices = median_variance_quantization(graphics_view)
-        if fbuf_printf(&ANSI_BUFFER, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
+        if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
             raise MemoryError
-        if csixel_ansi(&ANSI_BUFFER, palette, indices, graphics_view):
+        if csixel_ansi(f, palette, indices, graphics_view):
             raise MemoryError
 
     cursor_y = oy
@@ -907,8 +891,10 @@ cpdef void terminal_render(
                 or prev_kind[y, x] != GLYPH
                 or not cell_eq(&canvas[y, x], &prev_canvas[y, x])
             ):
-                if write_glyph(oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr):
+                if write_glyph(
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr
+                ):
                     raise MemoryError
                 last_sgr = &canvas[y, x]
 
-    fbuf_flush(&ANSI_BUFFER)
+    fbuf_flush(f)
