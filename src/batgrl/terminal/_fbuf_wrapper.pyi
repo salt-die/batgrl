@@ -1,4 +1,9 @@
-"""Growable string buffer."""
+"""
+Growable string buffer.
+
+This wrapper around ``fbuf`` should be removed shortly after sixel branch is merged and
+Vt100Terminal can be rewritten in cython to handle `fbuf` directly.
+"""
 
 class FBufWrapper:
     """Growable string buffer."""
