@@ -13,8 +13,6 @@ from .text_tools import char_width  # TODO: rewrite in cython
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
-cdef unsigned int BOLD = 1, ITALIC = 2, UNDERLINE = 4
-cdef unsigned int STRIKETHROUGH = 8, OVERLINE = 16, REVERSE = 32
 
 
 cdef struct RegionIterator:
