@@ -7,10 +7,9 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
+from .._rendering import graphics_render
 from ..colors import TRANSPARENT, AColor
-from ..geometry import rect_slice
-from ..text_tools import cell_sans
-from ..texture_tools import Interpolation, _composite, resize_texture
+from ..texture_tools import Interpolation, resize_texture
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
 __all__ = ["Graphics", "Interpolation", "Point", "Size"]
@@ -228,12 +227,8 @@ class Graphics(Gadget):
         self.default_color = default_color
         self.alpha = alpha
         self.interpolation = interpolation
-        if blitter not in Blitter.__args__:
-            raise TypeError(f"{blitter} is not a valid blitter type.")
-        self._blitter = blitter
-        self.texture = np.full(
-            (*_scale_geometry(blitter, self.size), 4), default_color, dtype=np.uint8
-        )
+        self.texture = np.full((1, 1, 4), default_color, np.uint8)
+        self.blitter = blitter  # Property setter will correctly resize texture.
 
     @property
     def alpha(self) -> float:
@@ -266,7 +261,7 @@ class Graphics(Gadget):
         if blitter not in Blitter.__args__:
             raise TypeError(f"{blitter} is not a valid blitter type.")
         if blitter == "sixel" and not self._sixel_support:
-            blitter = "half"  # ? Should warn user that sixel isn't supported?
+            blitter = "half"
         self._blitter = blitter
         self.on_size()
 
@@ -285,32 +280,17 @@ class Graphics(Gadget):
         """Fill texture with default color."""
         self.texture[:] = self.default_color
 
-    def _render(self, canvas: NDArray[Cell]) -> None:
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ) -> None:
         """Render visible region of gadget."""
-        texture = self.texture
-        chars = canvas["char"]
-        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
-        foreground = canvas["fg_color"]
-        background = canvas["bg_color"]
-        abs_pos = self.absolute_pos
-        alpha = self.alpha
-        for pos, (h, w) in self._region.rects():
-            dst = rect_slice(pos, (h, w))
-            src_top, src_left = pos - abs_pos
-            src_bottom, src_right = src_top + h, src_left + w
-            fg_rect = foreground[dst]
-            bg_rect = background[dst]
-            even_rows = texture[2 * src_top : 2 * src_bottom : 2, src_left:src_right]
-            odd_rows = texture[2 * src_top + 1 : 2 * src_bottom : 2, src_left:src_right]
-
-            if self.is_transparent:
-                mask = chars[dst] != "▀"
-                fg_rect[mask] = bg_rect[mask]
-                _composite(fg_rect, even_rows[..., :3], even_rows[..., 3, None], alpha)
-                _composite(bg_rect, odd_rows[..., :3], odd_rows[..., 3, None], alpha)
-            else:
-                fg_rect[:] = even_rows[..., :3]
-                bg_rect[:] = odd_rows[..., :3]
-
-            chars[dst] = "▀"
-            styles[dst] = False
+        graphics_render(
+            cells,
+            graphics,
+            kind,
+            self._blitter,
+            self._is_transparent,
+            self.texture,
+            self._alpha,
+            self._region,
+        )
