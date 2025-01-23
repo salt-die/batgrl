@@ -90,7 +90,7 @@ def get_platform_terminal() -> Vt100Terminal:
         return LinuxTerminal()
 
 
-async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size | None]:
+async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size]:
     """
     Determine if terminal has sixel support and, if supported, its pixel geometry.
 
@@ -101,11 +101,11 @@ async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size | None]:
 
     Returns
     -------
-    tuple[bool, Size | None]
+    tuple[bool, Size]
         Whether sixel is supported and the pixel geometry.
     """
     sixel_support: bool = False
-    pixel_geometry: Size | None = None
+    pixel_geometry: Size = Size(20, 10)
     report_timeout: asyncio.TimerHandle
     terminal_info_reported: asyncio.Event = asyncio.Event()
     cell_reported: bool = False
@@ -145,6 +145,4 @@ async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size | None]:
     )
     await terminal_info_reported.wait()
     terminal._event_handler = old_handler
-    if sixel_support and pixel_geometry is None:
-        pixel_geometry = Size(20, 10)
     return sixel_support, pixel_geometry
