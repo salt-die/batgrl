@@ -646,7 +646,9 @@ class Gadget:
         """The running app."""
         return self.root.app
 
-    def _render(self, canvas: NDArray[Cell]) -> None:
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ) -> None:
         """Render visible region of gadget."""
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
