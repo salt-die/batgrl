@@ -410,9 +410,11 @@ class App(ABC):
                 await asyncio.sleep(self.render_interval)
 
         with app_mode(terminal, event_handler):
-            sixel_support, pixel_geometry = await get_sixel_info(terminal)
-            Graphics._sixel_support = sixel_support
-            _BLITTER_GEOMETRY["sixel"] = pixel_geometry
+            (
+                Graphics._sixel_support,
+                _BLITTER_GEOMETRY["sixel"],
+            ) = await get_sixel_info(terminal)
+            root.on_size()  # Make cell and graphics arrays.
 
             if self.title is not None:
                 terminal.set_title(self.title)
