@@ -60,7 +60,7 @@ def _create_cwidth():
             start = codepoint
 
     if group_width != 1:
-        groups.append((start, codepoint - 1, group_width))
+        groups.append((start, codepoint, group_width))
 
     with open("src/batgrl/cwidth.c", "w") as file:
         file.write(_CWIDTH_HEADER)
