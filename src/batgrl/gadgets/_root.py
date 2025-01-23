@@ -51,7 +51,7 @@ class _Root(Gadget):
         """Whether terminal has resized since last render."""
         self.canvas: NDArray[Cell]
         """Current rendering of gadget tree."""
-        self.sixel: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
+        self.sixel: NDArray[np.uint8] = np.empty((0, 0, 0, 0, 4), np.uint8)
         """Current sixel rendering."""
         self.kind: NDArray[np.uint8]
         """Whether a cell should use canvas, sixel or both."""
@@ -71,8 +71,9 @@ class _Root(Gadget):
         self._last_kind = self.kind.copy()
 
         if Graphics._sixel_support:
-            h, w = _scale_geometry("sixel", self._size)
-            self.sixel = np.full((h, w, 4), self._bg_color)
+            gh, gw = _scale_geometry("sixel", Size(1, 1))
+            h, w = self.size
+            self.sixel = np.full((h, w, gh, gw, 4), self._bg_color)
             self._last_sixel = self.sixel.copy()
 
     @property
