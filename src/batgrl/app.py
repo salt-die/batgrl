@@ -9,6 +9,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any, Final
 
+from ._rendering import terminal_render
 from .colors import DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
@@ -16,7 +17,6 @@ from .gadgets.behaviors.themable import Themable
 from .gadgets.gadget import Gadget
 from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics
 from .geometry import Point, Size
-from .rendering import render_root
 from .terminal import Vt100Terminal, app_mode, get_platform_terminal, get_sixel_info
 from .terminal.events import (
     ColorReportEvent,
@@ -406,8 +406,24 @@ class App(ABC):
         async def auto_render():
             """Render screen every ``render_interval`` seconds."""
             while True:
-                render_root(root, terminal, self._app_pos)
                 await asyncio.sleep(self.render_interval)
+
+                if terminal.expect_dsr():
+                    continue
+
+                resized = root._resized
+                root._render()
+                terminal_render(
+                    resized,
+                    terminal._out_buffer,
+                    self._app_pos,
+                    root.canvas,
+                    root._last_canvas,
+                    root.sixel,
+                    root._last_sixel,
+                    root.kind,
+                    root._last_kind,
+                )
 
         with app_mode(terminal, event_handler):
             (
