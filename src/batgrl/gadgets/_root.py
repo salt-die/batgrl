@@ -40,34 +40,40 @@ class _Root(Gadget):
         self._all_regions_valid = False
         """Whether all regions in gadget tree are valid."""
         self._region_valid = False
-
-        self._resized: bool
-        """Whether terminal has resized since last render."""
-        self._last_sixel: NDArray[np.uint8]
-        """Previous sixel rendering."""
-        self._last_canvas: NDArray[Cell]
-        """Previous rendering of gadget tree."""
-        self.sixel_canvas: NDArray[np.uint8]
-        """Current sixel rendering."""
-        self.canvas: NDArray[Cell]
-        """Current rendering of gadget tree."""
-
+        """Whether current region is valid."""
         self._pos: Final = Point(0, 0)
         """Position of root gadget."""
         self._size = size
         """Size of root gadget."""
-        self.on_size()
+
+        # Following attributes set in `on_size()`:
+        self._resized: bool
+        """Whether terminal has resized since last render."""
+        self.canvas: NDArray[Cell]
+        """Current rendering of gadget tree."""
+        self.sixel: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
+        """Current sixel rendering."""
+        self.kind: NDArray[np.uint8]
+        """Whether a cell should use canvas, sixel or both."""
+        self._last_canvas: NDArray[Cell]
+        """Previous rendering of gadget tree."""
+        self._last_sixel: NDArray[np.uint8] = self.sixel.copy()
+        """Previous sixel rendering."""
+        self._last_kind: NDArray[np.uint8]
+        """Previous kind."""
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
-        self._last_canvas = np.full(self._size, self._cell)
-        self.canvas = self._last_canvas.copy()
+        self.canvas = np.full(self._size, self._cell)
+        self._last_canvas = self.canvas.copy()
+        self.kind = np.zeros(self._size, np.uint8)
+        self._last_kind = self.kind.copy()
 
         if Graphics._sixel_support:
             h, w = _scale_geometry("sixel", self._size)
-            self._last_sixel = np.full((h, w, 3), self._bg_color)
-            self.sixel_canvas = self._last_sixel.copy()
+            self.sixel = np.full((h, w, 4), self._bg_color)
+            self._last_sixel = self.sixel.copy()
 
     @property
     def bg_color(self) -> Color:
@@ -149,14 +155,15 @@ class _Root(Gadget):
                 self._set_regions()
 
             self.canvas, self._last_canvas = self._last_canvas, self.canvas
-            canvas = self.canvas
-            canvas[:] = self._cell
-            # self.sixel_canvas, self._last_sixel = self._last_sixel, self.sixel_canvas
-            # sixel_canvas = self.sixel_canvas
-            # sixel_canvas[:] = self.bg_color
+            self.sixel, self._last_sixel = self._last_sixel, self.sixel
+            self.kind, self._last_kind = self._last_kind, self.kind
+
+            self.canvas[:] = self._cell
+            self.sixel[:] = self.bg_color
+            self.kind[:] = 0
 
             for child in self.walk():
                 if not child._is_enabled or not child._is_visible:
                     continue
 
-                child._render(canvas)
+                child._render(self.canvas, self.sixel, self.kind)
