@@ -277,6 +277,7 @@ cdef void trans_pane_render(
                         composite(graphics[it.y, it.x, gy, gx], bg_color, alpha)
         next_(&it)
 
+
 cpdef void pane_render(
     Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
@@ -367,6 +368,7 @@ cdef void trans_text_render(
             composite(dst.bg_color, src.bg_color, alpha)
         next_(&it)
 
+
 cpdef void text_render(
     Cell[:, ::1] cells,
     uint8[:, :, :, :, ::1] graphics,
@@ -410,6 +412,7 @@ cdef opaque_half_graphics_render(
         dst.bg_color[1] = self_texture[src_y + 1, src_x, 1]
         dst.bg_color[2] = self_texture[src_y + 1, src_x, 2]
         next_(&it)
+
 
 cdef trans_half_graphics_render(
     Cell[:, ::1] cells,
@@ -530,6 +533,7 @@ cdef opaque_sixel_graphics_render(
                 sixel[gy, gx, 2] = self_texture[src_y + gy, src_x + gx, 2]
                 sixel[gy, gx, 3] = 1
         next_(&it)
+
 
 cdef trans_sixel_graphics_render(
     Cell[:, ::1] cells,
