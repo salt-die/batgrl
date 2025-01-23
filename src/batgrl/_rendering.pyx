@@ -803,16 +803,6 @@ cdef inline ssize_t write_glyph(
     return 0
 
 
-# DELETE THESE NOTES...
-# Before calling `render_terminal`...
-# if terminal.expect_dsr():
-#     return
-# resized = root._resized
-# root._render()
-# terminal_render(...)
-# terminal.flush()
-
-
 cpdef void terminal_render(
     bint resized,
     FBufWrapper fwrap,
@@ -826,14 +816,20 @@ cpdef void terminal_render(
 ):
     cdef:
         fbuf* f = &fwrap.f
-        Py_ssize_t h = canvas.shape[0], w = canvas.shape[1], y, x, cursor_y, cursor_x
+        Py_ssize_t h = canvas.shape[0], w = canvas.shape[1], y, x
         Py_ssize_t cell_h = graphics.shape[2], cell_w = graphics.shape[3], gh, gw
         Py_ssize_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
-        Py_ssize_t oy = app_pos[0], ox = app_pos[1]
+        Py_ssize_t oy = app_pos[0], ox = app_pos[1], cursor_y = oy, cursor_x = ox
         Cell* last_sgr = NULL
         bint emit_sixel = resized
         uint8[:, :, ::1] graphics_view
         uint8[:, ::1] palette, indices
+
+    if fbuf_putn(f, "\x1b7", 2):  # Save cursor
+        raise MemoryError
+    # CUP, Cursor Position
+    if fbuf_printf(f, "\x1b[%d;%dH", cursor_y + 1, cursor_x + 1):
+        raise MemoryError
 
     for y in range(h):
         for x in range(w):
@@ -859,8 +855,6 @@ cpdef void terminal_render(
 
     # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
     if emit_sixel:
-        cursor_y = oy
-        cursor_x = ox
         for y in range(h):
             for x in range(w):
                 if kind[y, x] == MIXED:
@@ -903,4 +897,6 @@ cpdef void terminal_render(
                     raise MemoryError
                 last_sgr = &canvas[y, x]
 
+    if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
+        raise MemoryError
     fbuf_flush(f)
