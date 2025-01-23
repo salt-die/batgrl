@@ -1,14 +1,12 @@
 """Tools for text."""
 
-from bisect import bisect
-from functools import lru_cache
-from operator import itemgetter
+from functools import cache
 
 import numpy as np
 from numpy.typing import NDArray
 
 from ._batgrl_markdown import find_md_tokens
-from ._char_widths import CHAR_WIDTHS
+from .char_width import char_width
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 
@@ -18,12 +16,10 @@ __all__ = [
     "binary_to_box",
     "binary_to_braille",
     "new_cell",
-    "char_width",
     "coerce_cell",
     "is_word_char",
     "smooth_horizontal_bar",
     "smooth_vertical_bar",
-    "str_width",
 ]
 
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
@@ -36,54 +32,6 @@ _vectorized_chr = np.vectorize(chr)
 
 _vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟█".__getitem__)
 """Vectorized box enum to box char."""
-
-
-@lru_cache(maxsize=1024)
-def char_width(char: str) -> int:
-    """
-    Return the column width of a character.
-
-    Parameters
-    ----------
-    char : str
-        A unicode character.
-
-    Returns
-    -------
-    int
-        The character column width.
-    """
-    if char == "":
-        return 0
-
-    char_ord = ord(char)
-    i = bisect(CHAR_WIDTHS, char_ord, key=itemgetter(0))
-    if i == 0:
-        return 1
-
-    _, high, width = CHAR_WIDTHS[i - 1]
-    if char_ord <= high:
-        return width
-
-    return 1
-
-
-@lru_cache(maxsize=256)
-def str_width(chars: str) -> int:
-    """
-    Return the total column width of a string.
-
-    Parameters
-    ----------
-    chars : str
-        A string.
-
-    Returns
-    -------
-    int
-        The total column width of the string.
-    """
-    return sum(map(char_width, chars))
 
 
 def is_word_char(char: str) -> bool:
@@ -121,7 +69,7 @@ Cell = np.dtype(
 """A structured array type that represents a single cell in a terminal."""
 
 
-@lru_cache
+@cache
 def cell_sans(*names: str) -> list[str]:
     r"""
     Return all fields of ``Cell`` not in names.

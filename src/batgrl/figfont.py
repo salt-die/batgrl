@@ -30,7 +30,7 @@ from typing import Self
 import numpy as np
 from numpy.typing import NDArray
 
-from .text_tools import char_width, str_width
+from .char_width import char_width, str_width
 
 __all__ = ["FullLayout", "FIGFont"]
 

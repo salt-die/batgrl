@@ -8,6 +8,7 @@ from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
 from pygments.style import Style
 
+from ..char_width import char_width, str_width
 from ..colors import Color, Neptune
 from ..geometry import rect_slice
 from ..text_tools import (
@@ -16,9 +17,7 @@ from ..text_tools import (
     _write_lines_to_canvas,
     add_text,
     cell_sans,
-    char_width,
     coerce_cell,
-    str_width,
 )
 from ..texture_tools import _composite
 from .gadget import (

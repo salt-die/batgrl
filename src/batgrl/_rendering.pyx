@@ -1,18 +1,22 @@
+# distutils: language = c
+# distutils: sources = src/batgrl/cwidth.c
 import numpy as np
 cimport numpy as cnp
 
 from libc.string cimport memset
 
-from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putwc
+from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4
 from ._sixel cimport csixel_ansi
 from .colors.quantization import median_variance_quantization
 from .geometry.regions cimport CRegion, Region
 from .terminal._fbuf_wrapper cimport FBufWrapper
-from .text_tools import char_width  # TODO: rewrite in cython
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
+
+cdef extern from "cwidth.h":
+    int cwidth(Py_UCS4)
 
 
 cdef struct RegionIterator:
@@ -790,8 +794,8 @@ cdef inline ssize_t write_glyph(
         write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
-    fbuf_putwc(f, cell.char_)
-    cursor_x[0] += char_width(cell.char_)  # FIXME: Check clipping of wide chars
+    fbuf_putucs4(f, cell.char_)
+    cursor_x[0] += cwidth(cell.char_)  # FIXME: Check clipping of wide chars
     return 0
 
 

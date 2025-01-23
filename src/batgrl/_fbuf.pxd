@@ -1,8 +1,11 @@
 """A growable string buffer."""
 
 cdef extern from "_fbuf.h":
+    ctypedef unsigned long uint32_t
+    ctypedef unsigned long long uint64_t
+
     struct fbuf:
-        unsigned long long size, len
+        uint64_t size, len
         char* buf
 
     ssize_t write(ssize_t, const void*, size_t)
@@ -12,5 +15,5 @@ cdef extern from "_fbuf.h":
     ssize_t fbuf_putn(fbuf* f, const char* s, size_t len)
     ssize_t fbuf_puts(fbuf* f, const char* s)
     ssize_t fbuf_printf(fbuf *f, const char* fmt, ...)
-    ssize_t fbuf_putwc(fbuf *f, unsigned long wc)
+    ssize_t fbuf_putucs4(fbuf *f, uint32_t wc)
     ssize_t fbuf_flush(fbuf* f)

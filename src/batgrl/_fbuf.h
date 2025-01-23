@@ -1,17 +1,10 @@
 // A growable string buffer.
 // Reference: https://github.com/dankamongmen/notcurses/blob/master/src/lib/fbuf.h
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
 #include <stdio.h>
-#include <sys/types.h>
-
+#include <stdint.h>
 #ifdef _WIN32
     #include <Windows.h>
-    typedef SIZE_T size_t;
     typedef SSIZE_T ssize_t;
-    typedef UINT32 uint32_t;
-    typedef UINT64 uint64_t;
 #else
     #include <unistd.h>
 #endif
@@ -93,8 +86,8 @@ static inline ssize_t fbuf_printf(fbuf *f, const char* fmt, ...){
 }
 
 
-static inline ssize_t fbuf_putwc(fbuf *f, uint32_t wc){
-    // Put wide char (or PY_UCS4) as utf8.
+static inline ssize_t fbuf_putucs4(fbuf *f, uint32_t wc){
+    // Put PY_UCS4 as utf8.
     // https://github.com/JeffBezanson/cutef8/blob/master/utf8.c
     if(fbuf_grow(f, 4)){
         return -1;

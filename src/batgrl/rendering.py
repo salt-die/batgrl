@@ -11,10 +11,10 @@ to do so.
 
 import numpy as np
 
+from .char_width import char_width
 from .gadgets._root import _Root
 from .geometry import Point
 from .terminal import Vt100Terminal
-from .text_tools import char_width
 
 
 def render_root(root: _Root, terminal: Vt100Terminal, app_pos: Point) -> None:
