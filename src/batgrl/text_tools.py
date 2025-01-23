@@ -117,6 +117,8 @@ def new_cell(
         Whether cell is strikethrough.
     overline : bool, default: False
         Whether cell is overlined.
+    reverse : bool, default: False
+        Whether cell is reversed.
     fg_color : Color, default: WHITE
         Foreground color of cell.
     bg_color : Color, default: BLACK
