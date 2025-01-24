@@ -212,10 +212,10 @@ cdef inline void luminance_quant(
                 luminances[k] = 1
             k += 1
 
-    # nbg won't be 0
-    quant_bg[0] /= nbg
-    quant_bg[1] /= nbg
-    quant_bg[2] /= nbg
+    if nbg:
+        quant_bg[0] /= nbg
+        quant_bg[1] /= nbg
+        quant_bg[2] /= nbg
     if nfg:
         quant_fg[0] /= nfg
         quant_fg[1] /= nfg
@@ -224,6 +224,11 @@ cdef inline void luminance_quant(
         quant_fg[0] = quant_bg[0]
         quant_fg[1] = quant_bg[1]
         quant_fg[2] = quant_bg[2]
+    if not nbg:
+        quant_bg[0] = quant_fg[0]
+        quant_bg[1] = quant_fg[1]
+        quant_bg[2] = quant_fg[2]
+
     fg[0] = <uint8>quant_fg[0]
     fg[1] = <uint8>quant_fg[1]
     fg[2] = <uint8>quant_fg[2]
@@ -638,6 +643,7 @@ cdef opaque_braille_graphics_render(
         double[8] luminances
         Cell* cell
         uint8 i
+        unsigned long char_
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
@@ -646,9 +652,14 @@ cdef opaque_braille_graphics_render(
             &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
         )
         cell = &cells[it.y, it.x]
-        cell.char_ = 10240
-        for i in range(8):
-            cell.char_ += BRAILLE_ENUM[i] * luminances[i]
+        if rgb_eq(&fg[0], &bg[0]):
+            char_ = 32
+        else:
+            char_ = 10240
+            for i in range(8):
+                if luminances[i]:
+                    char_ += BRAILLE_ENUM[i]
+        cell.char_ = char_
         cell.bold = False
         cell.italic = False
         cell.underline = False
@@ -685,6 +696,7 @@ cdef trans_braille_graphics_render(
         size_t oy, ox
         cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
         double alpha_avg = 0
+        unsigned long char_
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
@@ -693,9 +705,14 @@ cdef trans_braille_graphics_render(
             &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
         )
         cell = &cells[it.y, it.x]
-        cell.char_ = 10240
-        for i in range(8):
-            cell.char_ += BRAILLE_ENUM[i] * luminances[i]
+        if rgb_eq(&fg[0], &bg[0]):
+            char_ = 32
+        else:
+            char_ = 10240
+            for i in range(8):
+                if luminances[i]:
+                    char_ += BRAILLE_ENUM[i]
+        cell.char_ = char_
         cell.bold = False
         cell.italic = False
         cell.underline = False
