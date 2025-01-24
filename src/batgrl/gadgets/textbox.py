@@ -11,10 +11,10 @@ from ..char_width import str_width
 from ..geometry import rect_slice
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
 from ..text_tools import is_word_char
-from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
+from .cursor import Cursor
 from .gadget import Cell, Gadget, Point, PosHint, Region, Size, SizeHint
 from .text import Text
 
@@ -335,8 +335,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         bg = primary.bg
         self._box.canvas["fg_color"] = self._box.default_fg_color = fg
         self._box.canvas["bg_color"] = self._box.default_bg_color = bg
-        self._cursor.fg_color = bg
-        self._cursor.bg_color = fg
 
         placeholder = self.color_theme.textbox_placeholder
         self._placeholder_gadget.default_fg_color = placeholder.fg
