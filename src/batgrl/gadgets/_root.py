@@ -18,6 +18,22 @@ from ..text_tools import Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
 from .graphics import Graphics, _scale_geometry
 
+# Current bug with cython raises error when passing type "w" (PY_UCS4).
+# When calling cython functions, re-view "w" field as uint32.
+_Cell = np.dtype(
+    [
+        ("char", "uint32"),
+        ("bold", "?"),
+        ("italic", "?"),
+        ("underline", "?"),
+        ("strikethrough", "?"),
+        ("overline", "?"),
+        ("reverse", "?"),
+        ("fg_color", "u1", (3,)),
+        ("bg_color", "u1", (3,)),
+    ]
+)
+
 
 class _Root(Gadget):
     """
@@ -33,7 +49,7 @@ class _Root(Gadget):
         """Lock held during rendering to prevent errors related to invalid geometry."""
         self._app = app
         """The running app."""
-        self._cell = new_cell()
+        self._cell: Cell = new_cell()
         """Default cell of root canvas."""
         self._bg_color = BLACK
         """Background color of the app."""
@@ -49,13 +65,13 @@ class _Root(Gadget):
         # Following attributes set in `on_size()`:
         self._resized: bool
         """Whether terminal has resized since last render."""
-        self.cells: NDArray[Cell]
+        self.cells: NDArray[_Cell]
         """Current rendering of gadget tree."""
-        self.graphics: NDArray[np.uint8] = np.empty((0, 0, 0, 0, 4), np.uint8)
+        self.graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Current graphics rendering."""
         self.kind: NDArray[np.uint8]
         """Whether a cell should use canvas, graphics or both."""
-        self._last_cells: NDArray[Cell]
+        self._last_cells: NDArray[_Cell]
         """Previous rendering of gadget tree."""
         self._last_graphics: NDArray[np.uint8] = self.graphics.copy()
         """Previous graphics rendering."""
@@ -65,7 +81,7 @@ class _Root(Gadget):
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
-        self.cells = np.full(self._size, self._cell)
+        self.cells = np.full(self._size, self._cell.view(_Cell))
         self._last_cells = self.cells.copy()
         self.kind = np.zeros(self._size, np.uint8)
         self._last_kind = self.kind.copy()
@@ -73,7 +89,7 @@ class _Root(Gadget):
         if Graphics._sixel_support:
             gh, gw = _scale_geometry("sixel", Size(1, 1))
             h, w = self.size
-            self.graphics = np.full((h, w, gh, gw, 4), self._bg_color)
+            self.graphics = np.full((h * gh, w * gw, 4), (*self._bg_color, 0), np.uint8)
             self._last_graphics = self.graphics.copy()
 
     @property
@@ -159,8 +175,8 @@ class _Root(Gadget):
             self.graphics, self._last_graphics = self._last_graphics, self.graphics
             self.kind, self._last_kind = self._last_kind, self.kind
 
-            self.cells[:] = self._cell
-            self.graphics[:] = self.bg_color
+            self.cells[:] = self._cell.view(_Cell)
+            self.graphics[:] = (*self.bg_color, 0)
             self.kind[:] = 0
 
             for child in self.walk():
