@@ -49,32 +49,32 @@ class _Root(Gadget):
         # Following attributes set in `on_size()`:
         self._resized: bool
         """Whether terminal has resized since last render."""
-        self.canvas: NDArray[Cell]
+        self.cells: NDArray[Cell]
         """Current rendering of gadget tree."""
-        self.sixel: NDArray[np.uint8] = np.empty((0, 0, 0, 0, 4), np.uint8)
-        """Current sixel rendering."""
+        self.graphics: NDArray[np.uint8] = np.empty((0, 0, 0, 0, 4), np.uint8)
+        """Current graphics rendering."""
         self.kind: NDArray[np.uint8]
-        """Whether a cell should use canvas, sixel or both."""
-        self._last_canvas: NDArray[Cell]
+        """Whether a cell should use canvas, graphics or both."""
+        self._last_cells: NDArray[Cell]
         """Previous rendering of gadget tree."""
-        self._last_sixel: NDArray[np.uint8] = self.sixel.copy()
-        """Previous sixel rendering."""
+        self._last_graphics: NDArray[np.uint8] = self.graphics.copy()
+        """Previous graphics rendering."""
         self._last_kind: NDArray[np.uint8]
         """Previous kind."""
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
-        self.canvas = np.full(self._size, self._cell)
-        self._last_canvas = self.canvas.copy()
+        self.cells = np.full(self._size, self._cell)
+        self._last_cells = self.cells.copy()
         self.kind = np.zeros(self._size, np.uint8)
         self._last_kind = self.kind.copy()
 
         if Graphics._sixel_support:
             gh, gw = _scale_geometry("sixel", Size(1, 1))
             h, w = self.size
-            self.sixel = np.full((h, w, gh, gw, 4), self._bg_color)
-            self._last_sixel = self.sixel.copy()
+            self.graphics = np.full((h, w, gh, gw, 4), self._bg_color)
+            self._last_graphics = self.graphics.copy()
 
     @property
     def bg_color(self) -> Color:
@@ -155,16 +155,16 @@ class _Root(Gadget):
             if not self._all_regions_valid:
                 self._set_regions()
 
-            self.canvas, self._last_canvas = self._last_canvas, self.canvas
-            self.sixel, self._last_sixel = self._last_sixel, self.sixel
+            self.cells, self._last_cells = self._last_cells, self.cells
+            self.graphics, self._last_graphics = self._last_graphics, self.graphics
             self.kind, self._last_kind = self._last_kind, self.kind
 
-            self.canvas[:] = self._cell
-            self.sixel[:] = self.bg_color
+            self.cells[:] = self._cell
+            self.graphics[:] = self.bg_color
             self.kind[:] = 0
 
             for child in self.walk():
                 if not child._is_enabled or not child._is_visible:
                     continue
 
-                child._render(self.canvas, self.sixel, self.kind)
+                child._render(self.cells, self.graphics, self.kind)
