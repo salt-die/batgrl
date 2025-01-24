@@ -21,7 +21,7 @@ cdef extern from "cwidth.h":
 
 cdef struct RegionIterator:
     CRegion* cregion
-    Py_ssize_t i, j
+    size_t i, j
     int y1, y2, y, x1, x2, x
     uint8 done
 
@@ -92,7 +92,7 @@ cdef inline bint rgba_eq(uint8[::1] a, uint8[::1] b):
 
 
 cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
-    cdef Py_ssize_t h = a.shape[0], w = a.shape[1], y, x
+    cdef size_t h = a.shape[0], w = a.shape[1], y, x
     for y in range(h):
         for x in range(w):
             if not rgba_eq(a[y, x], b[y, x]):
@@ -113,6 +113,14 @@ cdef inline bint cell_eq(Cell* a, Cell* b):
     )
 
 
+cdef inline size_t graphics_geom_height(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
+    return graphics.shape[0] // cells.shape[0]
+
+
+cdef inline size_t graphics_geom_width(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
+    return graphics.shape[1] // cells.shape[1]
+
+
 cdef inline void composite(
     uint8[::1] dst, uint8[::1] src, double alpha
 ):
@@ -129,15 +137,12 @@ cdef inline void composite(
     dst[2] = <uint8>((a - b) * alpha + b)
 
 
-cdef inline double average_graphics(
-    uint8[3] bg,
-    uint8 [:, :, ::1] graphics,
-    Py_ssize_t h,
-    Py_ssize_t w,
-):
+cdef inline double average_graphics(uint8[3] bg, uint8 [:, :, ::1] graphics):
     cdef:
-        Py_ssize_t y, x, n = 0
-        unsigned int r = 0, g = 0, b = 0
+        size_t h = graphics.shape[0]
+        size_t w = graphics.shape[1]
+        size_t y, x
+        unsigned long r = 0, g = 0, b = 0, n = 0
 
     for y in range(h):
         for x in range(w):
@@ -158,10 +163,10 @@ cdef inline void luminance_quant(
     uint8 *bg,
     double *luminances,
     uint8[:, :, ::1] texture,
-    Py_ssize_t y,
-    Py_ssize_t x,
-    Py_ssize_t h,
-    Py_ssize_t w,
+    size_t y,
+    size_t x,
+    size_t h,
+    size_t w,
 ):
     # Quantize a block of colors in texture to two colors by comparing luminances:
     # Find average luminance. Compare each color's luminance to average luminance.
@@ -169,7 +174,7 @@ cdef inline void luminance_quant(
     # This is not necessarily a good quantization, but it is fast.
 
     cdef:
-        Py_ssize_t i, j, k, nfg = 0, nbg = 0
+        size_t i, j, k, nfg = 0, nbg = 0
         double average_luminance = 0
         double[3] quant_fg, quant_bg
 
@@ -251,7 +256,7 @@ cdef void opaque_pane_render(
 
 cdef void trans_pane_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[::1] bg_color,
     double alpha,
@@ -260,27 +265,29 @@ cdef void trans_pane_render(
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
         Cell *dst
-        uint8 cell_kind
 
     while not it.done:
         dst = &cells[it.y, it.x]
-        cell_kind = kind[it.y, it.x]
-        if cell_kind != SIXEL:
+        if kind[it.y, it.x] != SIXEL:
             composite(dst.fg_color, bg_color, alpha)
             composite(dst.bg_color, bg_color, alpha)
-        if cell_kind != GLYPH:
+        if kind[it.y, it.x] != GLYPH:
+            oy = it.y * h
+            ox = it.x * w
             for gy in range(h):
                 for gx in range(w):
-                    if graphics[it.y, it.x, gy, gx, 3]:
-                        composite(graphics[it.y, it.x, gy, gx], bg_color, alpha)
+                    if graphics[oy + gy, ox + gx, 3]:
+                        composite(graphics[oy + gy, ox + gx], bg_color, alpha)
         next_(&it)
 
 
 cpdef void pane_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     bint is_transparent,
     Region region,
@@ -310,7 +317,7 @@ cdef void opaque_text_render(
 
 cdef void trans_text_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     Cell[:, ::1] self_canvas,
     double alpha,
@@ -320,7 +327,9 @@ cdef void trans_text_render(
     init_iter(&it, cregion)
     cdef:
         int abs_y = it.y1, abs_x = it.x1
-        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
         cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
         double wgt, nwgt
         Cell *dst
@@ -335,12 +344,12 @@ cdef void trans_text_render(
                 composite(dst.fg_color, src.bg_color, alpha)
                 composite(dst.bg_color, src.bg_color, alpha)
             if kind[it.y, it.x] != GLYPH:
+                oy = it.y * h
+                ox = it.x * w
                 for gy in range(h):
                     for gx in range(w):
-                        if graphics[it.y, it.x, gy, gx, 3]:
-                            composite(
-                                graphics[it.y, it.x, gy, gx], src.bg_color, alpha
-                            )
+                        if graphics[oy + gy, ox + gx, 3]:
+                            composite(graphics[oy + gy, ox + gx], src.bg_color, alpha)
         else:
             dst.char_ = src.char_
             dst.bold = src.bold
@@ -351,9 +360,13 @@ cdef void trans_text_render(
             dst.reverse = src.reverse
             dst.fg_color = src.fg_color
             if kind[it.y, it.x] == SIXEL:
-                average_graphics(dst.bg_color, graphics[it.y, it.x], h, w)
+                oy = it.y * h
+                ox = it.x * w
+                average_graphics(dst.bg_color, graphics[oy:oy + h, ox:ox + w])
             elif kind[it.y, it.x] == MIXED:
-                wgt = average_graphics(rgb, graphics[it.y, it.x], h, w)
+                oy = it.y * h
+                ox = it.x * w
+                wgt = average_graphics(rgb, graphics[oy: oy + h, ox:ox + w])
                 nwgt = 1 - wgt
                 dst.bg_color[0] = <uint8>(
                     <double>rgb[0] * wgt + <double>dst.bg_color[0] * nwgt
@@ -371,7 +384,7 @@ cdef void trans_text_render(
 
 cpdef void text_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     bint is_transparent,
     Region region,
@@ -416,7 +429,7 @@ cdef opaque_half_graphics_render(
 
 cdef trans_half_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
     double alpha,
@@ -426,10 +439,11 @@ cdef trans_half_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
-        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
         Cell *dst
         double wgt, nwgt, a
-        uint8[:, :, ::1] sixel
         uint8[::1] rgba
         cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
 
@@ -446,24 +460,27 @@ cdef trans_half_graphics_render(
                 composite(dst.fg_color, rgba, a)
                 composite(dst.bg_color, rgba, a)
             if kind[it.y, it.x] != GLYPH:
+                oy = it.y * h
+                ox = it.x * w
                 for gy in range(h):
                     for gx in range(w):
-                        if graphics[it.y, it.x, gy, gx, 3]:
-                            composite(graphics[it.y, it.x, gy, gx], rgba, a)
+                        if graphics[oy + gy, ox + gx, 3]:
+                            composite(graphics[oy + gy, ox + gx], rgba, a)
         elif kind[it.y, it.x] == SIXEL:
-            sixel = graphics[it.y, it.x]
+            oy = it.y * h
+            ox = it.x * w
             rgba = self_texture[src_y, src_x]
             a = alpha * <double>rgba[3] / 255
             for gy in range(h // 2):
                 for gx in range(w):
-                    sixel[gy, gx, 3] = 1
-                    composite(sixel[gy, gx], rgba, a)
+                    graphics[oy + gy, ox + gx, 3] = 1
+                    composite(graphics[oy + gy, ox + gx], rgba, a)
             rgba = self_texture[src_y + 1, src_x]
             a = alpha * <double>rgba[3] / 255
             for gy in range(h // 2, h):
                 for gx in range(w):
-                    sixel[gy, gx, 3] = 1
-                    composite(sixel[gy, gx], rgba, a)
+                    graphics[oy + gy, ox + gx, 3] = 1
+                    composite(graphics[oy + gy, ox + gx], rgba, a)
         else:
             dst = &cells[it.y, it.x]
             dst.bold = False
@@ -475,7 +492,9 @@ cdef trans_half_graphics_render(
             if kind[it.y, it.x] == MIXED:
                 dst.char_ = u"▀"
                 kind[it.y, it.x] = GLYPH
-                wgt = average_graphics(rgb, graphics[it.y, it.x], h, w)
+                oy = it.y * h
+                ox = it.x * w
+                wgt = average_graphics(rgb, graphics[oy: oy + h, ox: ox + w])
                 nwgt = 1 - wgt
                 dst.bg_color[0] = <uint8>(
                     <double>rgb[0] * wgt + <double>dst.bg_color[0] * nwgt
@@ -509,7 +528,8 @@ cdef trans_half_graphics_render(
 
 
 cdef opaque_sixel_graphics_render(
-    uint8[:, :, :, :, ::1] graphics,
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
     CRegion *cregion,
@@ -518,26 +538,28 @@ cdef opaque_sixel_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
-        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
-        uint8[:, :, ::1] sixel
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
 
     while not it.done:
+        oy = it.y * h
+        ox = it.x * w
         src_y = h * (it.y - abs_y)
         src_x = w * (it.x - abs_x)
         kind[it.y, it.x] = SIXEL
-        sixel = graphics[it.y, it.x]
         for gy in range(h):
             for gx in range(w):
-                sixel[gy, gx, 0] = self_texture[src_y + gy, src_x + gx, 0]
-                sixel[gy, gx, 1] = self_texture[src_y + gy, src_x + gx, 1]
-                sixel[gy, gx, 2] = self_texture[src_y + gy, src_x + gx, 2]
-                sixel[gy, gx, 3] = 1
+                graphics[oy + gy, ox + gx, 0] = self_texture[src_y + gy, src_x + gx, 0]
+                graphics[oy + gy, ox + gx, 1] = self_texture[src_y + gy, src_x + gx, 1]
+                graphics[oy + gy, ox + gx, 2] = self_texture[src_y + gy, src_x + gx, 2]
+                graphics[oy + gy, ox + gx, 3] = 1
         next_(&it)
 
 
 cdef trans_sixel_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
     double alpha,
@@ -547,50 +569,60 @@ cdef trans_sixel_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int abs_y = it.y1, abs_x = it.x1, src_y, src_x
-        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3], gy, gx
-        Cell *dst
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
+        uint8 *bg
         uint8[::1] rgba
-        uint8[:, :, ::1] sixel
 
     while not it.done:
+        oy = it.y * h
+        ox = it.x * w
         src_y = h * (it.y - abs_y)
         src_x = w * (it.x - abs_x)
         if kind[it.y, it.x] == SIXEL:
-            sixel = graphics[it.y, it.x]
             for gy in range(h):
                 for gx in range(w):
                     rgba = self_texture[src_y + gy, src_x + gx]
-                    composite(sixel[gy, gx], rgba, alpha * <double>rgba[3] / 255)
+                    composite(
+                        graphics[oy + gy, ox + gx], rgba, alpha * <double>rgba[3] / 255
+                    )
         elif kind[it.y, it.x] == GLYPH:
-            dst = &cells[it.y, it.x]
-            sixel = graphics[it.y, it.x]
+            bg = &cells[it.y, it.x].bg_color[0]
             kind[it.y, it.x] = SIXEL
             for gy in range(h):
                 for gx in range(w):
                     rgba = self_texture[src_y + gy, src_x + gx]
                     if rgba[3]:
-                        sixel[gy, gx, 0] = dst.bg_color[0]
-                        sixel[gy, gx, 1] = dst.bg_color[1]
-                        sixel[gy, gx, 2] = dst.bg_color[2]
-                        sixel[gy, gx, 3] = 1
-                        composite(sixel[gy, gx], rgba, alpha * <double>rgba[3] / 255)
+                        graphics[oy + gy, ox + gx, 0] = bg[0]
+                        graphics[oy + gy, ox + gx, 1] = bg[1]
+                        graphics[oy + gy, ox + gx, 2] = bg[2]
+                        graphics[oy + gy, ox + gx, 3] = 1
+                        composite(
+                            graphics[oy + gy, ox + gx],
+                            rgba,
+                            alpha * <double>rgba[3] / 255,
+                        )
                     else:
                         kind[it.y, it.x] = MIXED
         elif kind[it.y, it.x] == MIXED:
-            dst = &cells[it.y, it.x]
-            sixel = graphics[it.y, it.x]
+            bg = &cells[it.y, it.x].bg_color[0]
             kind[it.y, it.x] = SIXEL
             for gy in range(h):
                 for gx in range(w):
                     rgba = self_texture[src_y + gy, src_x + gx]
                     if rgba[3]:
-                        if not sixel[gy, gx, 3]:
-                            sixel[gy, gx, 0] = dst.bg_color[0]
-                            sixel[gy, gx, 1] = dst.bg_color[1]
-                            sixel[gy, gx, 2] = dst.bg_color[2]
-                            sixel[gy, gx, 3] = 1
-                        composite(sixel[gy, gx], rgba, alpha * <double>rgba[3] / 255)
-                    elif not sixel[gy, gx, 3]:
+                        if not graphics[oy + gy, ox + gx, 3]:
+                            graphics[oy + gy, ox + gx, 0] = bg[0]
+                            graphics[oy + gy, ox + gx, 1] = bg[1]
+                            graphics[oy + gy, ox + gx, 2] = bg[2]
+                            graphics[oy + gy, ox + gx, 3] = 1
+                        composite(
+                            graphics[oy + gy, ox + gx],
+                            rgba,
+                            alpha * <double>rgba[3] / 255,
+                        )
+                    elif not graphics[oy + gy, ox + gx, 3]:
                         kind[it.y, it.x] = MIXED
         next_(&it)
 
@@ -634,7 +666,7 @@ cdef opaque_braille_graphics_render(
 
 cdef trans_braille_graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     uint8[:, :, ::1] self_texture,
     double alpha,
@@ -648,7 +680,9 @@ cdef trans_braille_graphics_render(
         double[8] luminances
         Cell* cell
         uint8 i, j
-        Py_ssize_t h = graphics.shape[2], w = graphics.shape[3]
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox
         cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
         double alpha_avg = 0
 
@@ -672,9 +706,13 @@ cdef trans_braille_graphics_render(
         cell.fg_color[1] = fg[1]
         cell.fg_color[2] = fg[2]
         if kind[it.y, it.x] == SIXEL:
-            average_graphics(cell.bg_color, graphics[it.y, it.x], h, w)
+            oy = it.y * h
+            ox = it.x * w
+            average_graphics(cell.bg_color, graphics[oy:oy + h, ox:ox + w])
         elif kind[it.y, it.x] == MIXED:
-            wgt = average_graphics(rgb, graphics[it.y, it.x], h, w)
+            oy = it.y * h
+            ox = it.x * w
+            wgt = average_graphics(rgb, graphics[oy:oy + h, ox: ox + w])
             nwgt = 1 - wgt
             cell.bg_color[0] = <uint8>(
                 <double>rgb[0] * wgt + <double>cell.bg_color[0] * nwgt
@@ -697,7 +735,7 @@ cdef trans_braille_graphics_render(
 
 cpdef void graphics_render(
     Cell[:, ::1] cells,
-    uint8[:, :, :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
     str blitter,
     bint is_transparent,
@@ -720,7 +758,7 @@ cpdef void graphics_render(
                 cells, graphics, kind, self_texture, alpha, cregion
             )
         else:
-            opaque_sixel_graphics_render(graphics, kind, self_texture, cregion)
+            opaque_sixel_graphics_render(cells, graphics, kind, self_texture, cregion)
     elif blitter == "braille":
         if is_transparent:
             trans_braille_graphics_render(
@@ -742,7 +780,7 @@ cpdef void cursor_render(
     tuple[int, int, int] bg_color,
     Region region,
 ):
-    cdef: 
+    cdef:
         int cbold, citalic, cunderline, cstrikethrough, coverline, creverse
         CRegion* cregion = &region.cregion
         uint8[3] fg, bg
@@ -763,7 +801,7 @@ cpdef void cursor_render(
         bg[0] = bg_color[0]
         bg[1] = bg_color[1]
         bg[2] = bg_color[2]
-    
+
     init_iter(&it, cregion)
     while not it.done:
         dst = &cells[it.y, it.x]
@@ -793,7 +831,7 @@ cpdef void cursor_render(
 cpdef void text_field_render(
     Cell[:, ::1] cells,
     uint8[:, ::1] kind,
-    uint8[:, : , :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     long[::1] positions,
     Cell[::1] particles,
     double alpha,
@@ -806,7 +844,7 @@ cpdef void text_field_render(
 cpdef void graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, ::1] kind,
-    uint8[:, : , :, :, ::1] graphics,
+    uint8[:, :, ::1] graphics,
     long[::1] positions,
     uint8[::1] particles,  # RGBA
     double alpha,
@@ -835,17 +873,17 @@ cdef inline void write_rgb(fbuf* f, uint8 fg, uint8* rgb, bint* first):
 
 cdef inline ssize_t write_glyph(
     fbuf* f,
-    Py_ssize_t oy,
-    Py_ssize_t ox,
-    Py_ssize_t y,
-    Py_ssize_t x,
-    Py_ssize_t* cursor_y,
-    Py_ssize_t* cursor_x,
+    size_t oy,
+    size_t ox,
+    size_t y,
+    size_t x,
+    size_t* cursor_y,
+    size_t* cursor_x,
     Cell[:, ::1] canvas,
     Cell* last_sgr,
 ):
     cdef:
-        Py_ssize_t abs_y = y + oy, abs_x = x + ox
+        size_t abs_y = y + oy, abs_x = x + ox
         Cell* cell = &canvas[y, x]
         bint first = 1
 
@@ -891,22 +929,23 @@ cpdef void terminal_render(
     bint resized,
     FBufWrapper fwrap,
     tuple[int, int] app_pos,
-    Cell[:, ::1] canvas,
-    Cell[:, ::1] prev_canvas,
-    uint8[:, :, :, :, ::1] graphics,
-    uint8[:, :, :, :, ::1] prev_graphics,
+    Cell[:, ::1] cells,
+    Cell[:, ::1] prev_cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, :, ::1] prev_graphics,
     uint8[:, ::1] kind,
     uint8[:, ::1] prev_kind,
 ):
     cdef:
         fbuf* f = &fwrap.f
-        Py_ssize_t h = canvas.shape[0], w = canvas.shape[1], y, x
-        Py_ssize_t cell_h = graphics.shape[2], cell_w = graphics.shape[3], gh, gw
-        Py_ssize_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
-        Py_ssize_t oy = app_pos[0], ox = app_pos[1], cursor_y = oy, cursor_x = ox
+        size_t h = cells.shape[0], w = cells.shape[1], y, x
+        size_t cell_h = graphics_geom_height(cells, graphics)
+        size_t cell_w = graphics_geom_width(cells, graphics)
+        size_t gh, gw
+        size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
+        size_t oy = app_pos[0], ox = app_pos[1], cursor_y = oy, cursor_x = ox
         Cell* last_sgr = NULL
-        bint emit_sixel = resized
-        uint8[:, :, ::1] graphics_view
+        bint emit_sixel = 0
         uint8[:, ::1] palette, indices
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
@@ -927,43 +966,47 @@ cpdef void terminal_render(
                 if x > max_x_sixel:
                     max_x_sixel = x
                 if not emit_sixel:
-                    if kind[y, x] != prev_kind[y, x]:
+                    if resized:
+                        emit_sixel = 1
+                    elif kind[y, x] != prev_kind[y, x]:
                         emit_sixel = 1
                     elif (
                         kind[y, x] == MIXED
-                        and not cell_eq(&canvas[y, x], &prev_canvas[y, x])
+                        and not cell_eq(&cells[y, x], &prev_cells[y, x])
                     ):
                         emit_sixel = 1
-                    elif not all_eq(graphics[y, x], prev_graphics[y, x]):
-                        emit_sixel = 1
-
+                    else:
+                        gh = y * cell_h
+                        gw = x * cell_w
+                        emit_sixel = not all_eq(
+                            graphics[gh:gh + cell_h, gw:gw + cell_w],
+                            prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                        )
     # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
     if emit_sixel:
         for y in range(h):
             for x in range(w):
                 if kind[y, x] == MIXED:
                     if write_glyph(
-                        f, oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr
+                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, last_sgr
                     ):
                         raise MemoryError
-                    last_sgr = &canvas[y, x]
+                    last_sgr = &cells[y, x]
 
-        gh = max_y_sixel + 1 - min_y_sixel
+        gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
         # If sixel graphics rect reaches last line of terminal, its height must be
         # truncated to nearest multiple of 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
             gh -= gh % 6
-        gw = max_x_sixel + 1 - max_x_sixel
-        graphics_view = (
-            graphics[min_y_sixel: min_y_sixel + gh, min_x_sixel: min_x_sixel + gw]
-            .swapaxes(1, 2)
-            .reshape(gh * cell_h, gw * cell_w, 4)
+        gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
+        palette, indices = median_variance_quantization(
+            graphics, min_y_sixel * cell_h, min_x_sixel * cell_w, gh, gw
         )
-
-        palette, indices = median_variance_quantization(graphics_view)
         if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
             raise MemoryError
-        if csixel_ansi(f, palette, indices, graphics_view):
+        if csixel_ansi(
+            f, palette, indices, graphics, min_y_sixel * cell_h, min_x_sixel * cell_w
+        ):
             raise MemoryError
 
     cursor_y = oy
@@ -973,13 +1016,13 @@ cpdef void terminal_render(
             if kind[y, x] == GLYPH and (
                 resized
                 or prev_kind[y, x] != GLYPH
-                or not cell_eq(&canvas[y, x], &prev_canvas[y, x])
+                or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
                 if write_glyph(
-                    f, oy, ox, y, x, &cursor_y, &cursor_x, canvas, last_sgr
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, last_sgr
                 ):
                     raise MemoryError
-                last_sgr = &canvas[y, x]
+                last_sgr = &cells[y, x]
 
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
         raise MemoryError
