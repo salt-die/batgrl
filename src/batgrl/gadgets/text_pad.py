@@ -2,8 +2,9 @@
 
 from dataclasses import astuple
 
+from ..char_width import str_width
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
-from ..text_tools import is_word_char, str_width
+from ..text_tools import is_word_char
 from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable

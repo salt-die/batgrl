@@ -10,9 +10,10 @@ from typing import Literal
 import cv2
 import numpy as np
 
+from ..char_width import str_width
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
-from ..text_tools import binary_to_box, binary_to_braille, str_width
+from ..text_tools import binary_to_box, binary_to_braille
 from .behaviors.movable import Movable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
 from .pane import Pane

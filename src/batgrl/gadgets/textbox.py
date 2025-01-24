@@ -7,9 +7,10 @@ from dataclasses import astuple
 
 from numpy.typing import NDArray
 
+from ..char_width import str_width
 from ..geometry import rect_slice
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
-from ..text_tools import is_word_char, str_width
+from ..text_tools import is_word_char
 from ._cursor import Cursor
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
