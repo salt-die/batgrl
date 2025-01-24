@@ -5,4 +5,6 @@ cdef ssize_t csixel_ansi(
     unsigned char[:, ::1] palette, 
     unsigned char[:, ::1] indices, 
     unsigned char[:, :, ::1] texture,
+    size_t oy,
+    size_t ox,
 )

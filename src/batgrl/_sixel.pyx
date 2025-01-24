@@ -37,16 +37,16 @@ from libc.string cimport memset
 from libc.stdio cimport sprintf
 from libc.stdlib cimport free, malloc
 
-from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts
+from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts, fbuf_init, fbuf_free, fbuf_flush
 
 cdef:
     struct BandExtender:
-        Py_ssize_t length, wrote
+        size_t length, wrote
         int rle
         char rep
 
     struct SixelMap:
-        Py_ssize_t nbands, ncolors
+        size_t nbands, ncolors
         char*** bands
 
     struct ActiveColor:
@@ -56,11 +56,11 @@ cdef:
 ctypedef unsigned char uint8
 
 
-cdef inline Py_ssize_t sixel_count(Py_ssize_t h, Py_ssize_t w):
+cdef inline size_t sixel_count(size_t h, size_t w):
     return (h + 5) // 6 * w
 
 
-cdef inline Py_ssize_t sixel_band_count(Py_ssize_t h):
+cdef inline size_t sixel_band_count(size_t h):
     return sixel_count(h, 1)
 
 
@@ -77,8 +77,8 @@ cdef SixelMap* new_sixel_map(uint8[:, ::1] pixels):
     return sixel_map
 
 
-cdef void color_band_free(char** color_band, Py_ssize_t ncolors):
-    cdef Py_ssize_t i
+cdef void color_band_free(char** color_band, size_t ncolors):
+    cdef size_t i
     for i in range(ncolors):
         if color_band[i] is not NULL:
             free(color_band[i])
@@ -86,7 +86,7 @@ cdef void color_band_free(char** color_band, Py_ssize_t ncolors):
 
 
 cdef void sixel_map_free(SixelMap *sixel_map):
-    cdef Py_ssize_t i
+    cdef size_t i
     for i in range(sixel_map.nbands):
         if sixel_map.bands[i] is not NULL:
             color_band_free(sixel_map.bands[i], sixel_map.ncolors)
@@ -94,7 +94,7 @@ cdef void sixel_map_free(SixelMap *sixel_map):
     free(sixel_map)
 
 
-cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char rep):
+cdef inline void write_rle(char* color, size_t *length, ssize_t rle, char rep):
     if rle > 2:
         length[0] += sprintf(&color[length[0]], "!%d", <int>rle)
     elif rle == 2:
@@ -107,14 +107,14 @@ cdef inline void write_rle(char* color, Py_ssize_t *length, Py_ssize_t rle, char
 
 
 cdef inline char* color_band_extend(
-    char* color_band, BandExtender *extender, Py_ssize_t w, Py_ssize_t x
+    char* color_band, BandExtender *extender, size_t w, size_t x
 ):
     if color_band is NULL:
         color_band = <char*>malloc(w + 1)
     if color_band is NULL:
         return NULL
     write_rle(color_band, &extender.length, extender.rle, extender.rep + 63)
-    cdef Py_ssize_t clear_len = x - (extender.rle + extender.wrote)
+    cdef ssize_t clear_len = x - (extender.rle + extender.wrote)
     write_rle(color_band, &extender.length, clear_len, 63)
     return color_band
 
@@ -125,10 +125,12 @@ cdef inline int build_sixel_band(
     ssize_t ncolors,
     uint8[:, ::1] indices,
     uint8[:, :, ::1] texture,
+    size_t oy,
+    size_t ox,
     ssize_t *P2,
 ):
     cdef:
-        Py_ssize_t h = indices.shape[0], w = indices.shape[1]
+        size_t h = indices.shape[0], w = indices.shape[1]
         size_t band_size = sizeof(char*) * ncolors
         size_t extenders_size = sizeof(BandExtender) * ncolors
         BandExtender *extenders = <BandExtender*>malloc(extenders_size)
@@ -147,7 +149,7 @@ cdef inline int build_sixel_band(
     memset(extenders, 0, extenders_size)
 
     cdef:
-        Py_ssize_t ystart = n * 6, yend = min(ystart + 6, h), x, y, i
+        size_t ystart = n * 6, yend = min(ystart + 6, h), x, y, i
         ActiveColor[6] active_colors
         int pixel_color, nactive_colors, color
         BandExtender* extender
@@ -155,7 +157,7 @@ cdef inline int build_sixel_band(
     for x in range(w):
         nactive_colors = 0
         for y in range(ystart, yend):
-            if not texture[y, x, 3]:
+            if not texture[oy + y, ox + x, 3]:
                 P2[0] = 1
                 continue
 
@@ -207,7 +209,12 @@ cdef inline int build_sixel_band(
 
 
 cdef ssize_t csixel_ansi(
-    fbuf* f, uint8[:, ::1] palette, uint8[:, ::1] indices, uint8[:, :, ::1] texture
+    fbuf* f,
+    uint8[:, ::1] palette,
+    uint8[:, ::1] indices,
+    uint8[:, :, ::1] texture,
+    size_t oy,
+    size_t ox,
 ):
     cdef:
         ssize_t ncolors = palette.shape[0], n, h, w, color, close_previous, P2 = 0
@@ -220,7 +227,7 @@ cdef ssize_t csixel_ansi(
     sixel_map.ncolors = ncolors
 
     for n in range(sixel_map.nbands):
-        if build_sixel_band(n, sixel_map, ncolors, indices, texture, &P2) < 0:
+        if build_sixel_band(n, sixel_map, ncolors, indices, texture, oy, ox, &P2) < 0:
             sixel_map_free(sixel_map)
             return -1
 
@@ -263,3 +270,16 @@ cdef ssize_t csixel_ansi(
     if fbuf_putn(f, "\x1b\\", 3):
         return -1
     return 0
+
+
+def _sixel_ansi_as_str_for_testing(    
+    uint8[:, ::1] palette,
+    uint8[:, ::1] indices,
+    uint8[:, :, ::1] texture,
+) -> str:
+    cdef fbuf f
+    fbuf_init(&f)
+    csixel_ansi(&f, palette, indices, texture, 0, 0)
+    cdef str ansi = f.buf[:f.len].decode()
+    fbuf_free(&f)
+    return ansi

@@ -20,7 +20,7 @@ from numpy.typing import NDArray
 __all__ = ["median_variance_quantization"]
 
 def median_variance_quantization(
-    texture: NDArray[np.uint8],
+    texture: NDArray[np.uint8], oy: int, ox: int, h: int, w: int
 ) -> tuple[NDArray[np.uint8], NDArray[np.uint8]]:
     """
     Cython implementation of Wu's Color Quantizer.
@@ -29,6 +29,14 @@ def median_variance_quantization(
     ----------
     texture : NDArray[np.uint8]
         A RGB or RGBA texture to quantize.
+    oy : int
+        Y-coordinate of rect in texture to quantize.
+    ox : int
+        X-coordinate of rect in texture to quantize.
+    h : int
+        Height of rect in texture to quantize.
+    w : int
+        Width of rect in texture to quantize.
 
     Returns
     -------

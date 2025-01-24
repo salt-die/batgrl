@@ -37,6 +37,10 @@ cdef:
 @cython.wraparound(False)
 cdef void hist3d(
     unsigned char[:, :, ::1] texture,
+    size_t oy,
+    size_t ox,
+    size_t h,
+    size_t w,
     int[:, :, ::1] wt,
     int[:, :, ::1] mr,
     int[:, :, ::1] mg,
@@ -46,18 +50,15 @@ cdef void hist3d(
 ):
     """Build 3-D color histogram of counts."""
     cdef:
-        Py_ssize_t h, w, y, x
+        size_t y, x
         unsigned char r, g, b, inr, ing, inb
         cnp.ndarray[double, ndim=1] sqr = np.arange(256, dtype=float)**2
 
-    h = texture.shape[0]
-    w = texture.shape[1]
-
     for y in range(h):
         for x in range(w):
-            r = texture[y, x][0]
-            g = texture[y, x][1]
-            b = texture[y, x][2]
+            r = texture[oy + y, ox + x][0]
+            g = texture[oy + y, ox + x][1]
+            b = texture[oy + y, ox + x][2]
 
             inr = (r >> 3) + 1
             ing = (g >> 3) + 1
@@ -370,7 +371,7 @@ cdef int cut(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
-    cdef Py_ssize_t r, g, b
+    cdef unsigned int r, g, b
     for r in range(cube.r0 + 1, cube.r1 + 1):
         for g in range(cube.g0 + 1, cube.g1 + 1):
             for b in range(cube.b0 + 1, cube.b1 + 1):
@@ -380,7 +381,7 @@ cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def median_variance_quantization(
-    cnp.ndarray[unsigned char, ndim=3] texture,
+    unsigned char[:, :, ::1] texture, size_t oy, size_t ox, size_t h, size_t w
 ) -> tuple[NDArray[np.uint8], NDArray[np.uint8]]:
     """
     Cython implementation of Wu's Color Quantizer.
@@ -410,14 +411,11 @@ def median_variance_quantization(
     `Wu's Implementation <https://gist.github.com/bert/1192520>`_
     """
     cdef:
-        Py_ssize_t h, w, y, x
+        size_t y, x
         int i, j, k
         double temp, weight
         Box[256] cubes
         double[256] vv
-
-    h = texture.shape[0]
-    w = texture.shape[1]
 
     cdef:
         cnp.ndarray[unsigned char, ndim=3] quant = np.zeros((h, w, 3), dtype=np.uint8)
@@ -429,7 +427,7 @@ def median_variance_quantization(
         cnp.ndarray[double, ndim=3] m2 = np.zeros((33, 33, 33), dtype=float)
         cnp.ndarray[unsigned char, ndim=3] tag = np.zeros((33, 33, 33), dtype=np.uint8)
 
-    hist3d(texture, wt, mr, mg, mb, m2, quant)
+    hist3d(texture, oy, ox, h, w, wt, mr, mg, mb, m2, quant)
     moments(wt, mr, mg, mb, m2)
 
     cubes[0].r0 = cubes[0].g0 = cubes[0].b0 = 0
