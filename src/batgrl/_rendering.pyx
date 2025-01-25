@@ -848,8 +848,8 @@ cpdef void cursor_render(
     bint strikethrough,
     bint overline,
     bint reverse,
-    tuple[int, int, int] fg_color,
-    tuple[int, int, int] bg_color,
+    object fg_color,
+    object bg_color,
     Region region,
 ):
     cdef:
