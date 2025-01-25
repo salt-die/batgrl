@@ -23,7 +23,7 @@ cdef struct RegionIterator:
     CRegion* cregion
     size_t i, j
     int y1, y2, y, x1, x2, x
-    uint8 done
+    bint done
 
 
 cdef void init_iter(RegionIterator* it, CRegion* cregion):
@@ -61,6 +61,7 @@ cdef void next_(RegionIterator* it):
         return
     it.i += 1
     if it.i < it.cregion.len:
+        it.j = 0
         it.y1 = it.cregion.bands[it.i].y1
         it.y2 = it.cregion.bands[it.i].y2
         it.y = it.y1
