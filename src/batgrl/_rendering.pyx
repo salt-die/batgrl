@@ -1003,7 +1003,7 @@ cpdef void terminal_render(
 
     for y in range(h):
         for x in range(w):
-            if kind[y, x] != GLYPH:
+            if kind[y, x]:
                 if y < min_y_sixel:
                     min_y_sixel = y
                 if y > max_y_sixel:
@@ -1033,7 +1033,16 @@ cpdef void terminal_render(
     if emit_sixel:
         for y in range(h):
             for x in range(w):
-                if kind[y, x] == MIXED:
+                # Output glyph if kind[y, x] outputs glyphs when cell is pure sixel or
+                # mixed. Should only need to output glyph when kind[y, x] is mixed, but
+                # seeing some artifacts on first render with latter.
+
+                # Output glyph if prev_kind[y, x] to clear entire previous
+                # bitmap, but this can maybe be more efficient if there is a way to
+                # clear/wipe an entire rect at once.
+                # At least, the sgr parameters probably aren't important and
+                # can just dump a few well-positioned lines of spaces.
+                if kind[y, x] or prev_kind[y, x]:
                     if write_glyph(
                         f, oy, ox, y, x, &cursor_y, &cursor_x, cells, last_sgr
                     ):
@@ -1042,7 +1051,7 @@ cpdef void terminal_render(
 
         gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
         # If sixel graphics rect reaches last line of terminal, its height must be
-        # truncated to nearest multiple of 6 - 6 to prevent scrolling.
+        # truncated to (nearest multiple of 6) - 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
             gh -= 6 + gh % 6
         gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
@@ -1062,7 +1071,7 @@ cpdef void terminal_render(
         for x in range(w):
             if kind[y, x] == GLYPH and (
                 resized
-                or prev_kind[y, x] != GLYPH
+                or prev_kind[y, x]
                 or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
                 if write_glyph(
