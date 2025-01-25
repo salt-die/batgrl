@@ -268,7 +268,7 @@ class Graphics(Gadget):
     def on_size(self) -> None:
         """Resize texture array."""
         self.texture = resize_texture(
-            self.texture, _scale_geometry(self._blitter, self.size), self.interpolation
+            self.texture, _scale_geometry(self._blitter, self.size), self._interpolation
         )
 
     def to_png(self, path: Path) -> None:

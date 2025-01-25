@@ -178,7 +178,6 @@ class Image(Graphics):
         self,
         *,
         path: Path | None = None,
-        is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
@@ -187,12 +186,12 @@ class Image(Graphics):
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
         self._otexture = np.zeros((2, 1, 4), dtype=np.uint8)
         super().__init__(
-            is_transparent=is_transparent,
             default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
@@ -201,6 +200,7 @@ class Image(Graphics):
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -229,7 +229,7 @@ class Image(Graphics):
         self.texture = resize_texture(
             self._otexture,
             _scale_geometry(self._blitter, self.size),
-            self.interpolation,
+            self._interpolation,
         )
 
     @classmethod
