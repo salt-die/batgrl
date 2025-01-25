@@ -411,9 +411,9 @@ cpdef void text_render(
     uint8[:, ::1] kind,
     tuple[int, int] abs_pos,
     bint is_transparent,
-    Region region,
     Cell[:, ::1] self_canvas,
     double alpha,
+    Region region,
 ):
     cdef:
         int abs_y = abs_pos[0], abs_x = abs_pos[1]

@@ -12,15 +12,17 @@ from .._rendering import text_render
 from ..char_width import char_width, str_width
 from ..colors import Color, Neptune
 from ..text_tools import (
+    Cell,
+    _Cell,
     _parse_batgrl_md,
     _text_to_cells,
     _write_lines_to_canvas,
     add_text,
     cell_sans,
     coerce_cell,
+    new_cell,
 )
 from .gadget import (
-    Cell,
     Gadget,
     Point,
     PosHint,
@@ -28,7 +30,6 @@ from .gadget import (
     SizeHint,
     bindable,
     clamp,
-    new_cell,
 )
 
 __all__ = [
@@ -517,7 +518,7 @@ class Text(Gadget):
             kind,
             self.absolute_pos,
             self._is_transparent,
-            self._region,
-            self.canvas,
+            self.canvas.view(_Cell),
             self.alpha,
+            self._region,
         )
