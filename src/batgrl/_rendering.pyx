@@ -583,8 +583,8 @@ cdef trans_sixel_graphics_render(
     while not it.done:
         oy = it.y * h
         ox = it.x * w
-        src_y = h * (it.y - abs_y)
-        src_x = w * (it.x - abs_x)
+        src_y = oy - abs_y * h
+        src_x = ox - abs_x * w
         if kind[it.y, it.x] == SIXEL:
             for gy in range(h):
                 for gx in range(w):
@@ -761,7 +761,6 @@ cpdef void graphics_render(
     Region region,
 ):
     cdef CRegion *cregion = &region.cregion
-
     if blitter == "half":
         if is_transparent:
             trans_half_graphics_render(
@@ -894,24 +893,24 @@ cdef inline ssize_t write_glyph(
     size_t ox,
     size_t y,
     size_t x,
-    size_t* cursor_y,
-    size_t* cursor_x,
+    ssize_t* cursor_y,
+    ssize_t* cursor_x,
     Cell[:, ::1] canvas,
     Cell* last_sgr,
 ):
     cdef:
-        size_t abs_y = y + oy, abs_x = x + ox
+        ssize_t abs_y = y + oy, abs_x = x + ox
         Cell* cell = &canvas[y, x]
         bint first = 1
 
     if abs_y == cursor_y[0]:
         if abs_x != cursor_x[0]:
             # CHA, Cursor Horizontal Absolute
-            if fbuf_printf(f, "\x1b[%dG", cursor_x[0] + 1):
+            if fbuf_printf(f, "\x1b[%dG", abs_x):
                 return -1
     else:
         # CUP, Cursor Position
-        if fbuf_printf(f, "\x1b[%d;%dH", cursor_y[0] + 1, cursor_x[0] + 1):
+        if fbuf_printf(f, "\x1b[%d;%dH", abs_y + 1, abs_x + 1):
             return -1
     cursor_y[0] = abs_y
     cursor_x[0] = abs_x
@@ -960,15 +959,13 @@ cpdef void terminal_render(
         size_t cell_w = graphics_geom_width(cells, graphics)
         size_t gh, gw
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
-        size_t oy = app_pos[0], ox = app_pos[1], cursor_y = oy, cursor_x = ox
+        size_t oy = app_pos[0], ox = app_pos[1]
+        ssize_t cursor_y = -1, cursor_x = -1
         Cell* last_sgr = NULL
         bint emit_sixel = 0
         uint8[:, ::1] palette, indices
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
-        raise MemoryError
-    # CUP, Cursor Position
-    if fbuf_printf(f, "\x1b[%d;%dH", cursor_y + 1, cursor_x + 1):
         raise MemoryError
 
     for y in range(h):
@@ -1026,8 +1023,8 @@ cpdef void terminal_render(
         ):
             raise MemoryError
 
-    cursor_y = oy
-    cursor_x = ox
+    cursor_y = -1
+    cursor_x = -1
     for y in range(h):
         for x in range(w):
             if kind[y, x] == GLYPH and (

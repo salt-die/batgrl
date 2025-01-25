@@ -104,8 +104,12 @@ async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size]:
     tuple[bool, Size]
         Whether sixel is supported and the pixel geometry.
     """
+    # ! FIXME: This seems to be a bug in windows terminal...
+    # ! FIXME: Reported pixel height on windows is off by factor of 2
+    pixel_height_scale = 2 if platform.system() == "Windows" else 1
+
     sixel_support: bool = False
-    pixel_geometry: Size = Size(20, 10)
+    pixel_geometry: Size = Size(20 // pixel_height_scale, 10)
     report_timeout: asyncio.TimerHandle
     terminal_info_reported: asyncio.Event = asyncio.Event()
     cell_reported: bool = False
@@ -129,12 +133,13 @@ async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size]:
             elif isinstance(event, PixelGeometryReportEvent):
                 report_timeout.cancel()
                 if event.kind == "cell":
-                    pixel_geometry = event.geometry
+                    h, w = event.geometry
+                    pixel_geometry = Size(h // pixel_height_scale, w)
                     cell_reported = True
                 elif not cell_reported:
                     th, tw = terminal.get_size()
                     ph, pw = event.geometry
-                    pixel_geometry = Size(ph // th, tw // pw)
+                    pixel_geometry = Size(ph // (th * pixel_height_scale), tw // pw)
                 terminal_info_reported.set()
 
     old_handler = terminal._event_handler

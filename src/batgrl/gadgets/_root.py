@@ -87,9 +87,8 @@ class _Root(Gadget):
         self._last_kind = self.kind.copy()
 
         if Graphics._sixel_support:
-            gh, gw = _scale_geometry("sixel", Size(1, 1))
-            h, w = self.size
-            self.graphics = np.full((h * gh, w * gw, 4), (*self._bg_color, 0), np.uint8)
+            h, w = _scale_geometry("sixel", self.size)
+            self.graphics = np.full((h, w, 4), (*self._bg_color, 0), np.uint8)
             self._last_graphics = self.graphics.copy()
 
     @property
