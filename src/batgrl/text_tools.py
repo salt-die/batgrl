@@ -68,6 +68,22 @@ Cell = np.dtype(
 )
 """A structured array type that represents a single cell in a terminal."""
 
+# Current bug with cython raises an error when passing type "w" (PY_UCS4, the "char"
+# field). When calling cython functions, re-view "char" field as uint32.
+_Cell = np.dtype(
+    [
+        ("char", "uint32"),
+        ("bold", "?"),
+        ("italic", "?"),
+        ("underline", "?"),
+        ("strikethrough", "?"),
+        ("overline", "?"),
+        ("reverse", "?"),
+        ("fg_color", "u1", (3,)),
+        ("bg_color", "u1", (3,)),
+    ]
+)
+
 
 @cache
 def cell_sans(*names: str) -> list[str]:
