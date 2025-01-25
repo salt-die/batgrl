@@ -3,7 +3,7 @@ import asyncio
 import numpy as np
 from batgrl.app import App
 from batgrl.colors import Color
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, _scale_geometry
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
 
@@ -16,8 +16,9 @@ FILL_COLOR = Color.from_hex("2fa399")
 class SPH(Graphics):
     def __init__(self, nparticles, is_transparent=False, **kwargs):
         super().__init__(is_transparent=is_transparent, **kwargs)
-        y, x = self.size
-        self.sph_solver = SPHSolver(nparticles, (2 * y, x))
+        self.sph_solver = SPHSolver(
+            nparticles, _scale_geometry(self._blitter, self.size)
+        )
 
     def on_add(self):
         super().on_add()
@@ -40,9 +41,9 @@ class SPH(Graphics):
             return False
 
         # Apply a force from click to every particle in the solver.
-        my, mx = self.to_local(mouse_event.pos)
+        my, mx = _scale_geometry(self._blitter, self.to_local(mouse_event.pos))
 
-        relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
+        relative_positions = self.sph_solver.state[:, :2] - (my, mx)
 
         self.sph_solver.state[:, 2:4] += (
             1e2
@@ -63,8 +64,9 @@ class SPH(Graphics):
             xs = xs + (self.width - solver.WIDTH) // 2  # Center the particles.
 
             # Some solver configurations are unstable. Clip positions to prevent errors.
-            ys = np.clip(ys, 0, 2 * self.height - 1)
-            xs = np.clip(xs, 0, self.width - 1)
+            h, w = _scale_geometry(self._blitter, self.size)
+            ys = np.clip(ys, 0, h - 1)
+            xs = np.clip(xs, 0, w - 1)
 
             self.clear()
             self.texture[ys, xs, :3] = WATER_COLOR
@@ -83,7 +85,7 @@ class SPHApp(App):
             ("MASS", "Mass", 10.0, 500.0),
             ("DT", "DT", 0.001, 0.03),
             ("GRAVITY", "Gravity", 0.0, 1e5),
-            ("WIDTH", "Width", 5, width),
+            ("WIDTH", "Width", 5, width * 2),
         )
         sliders_height = (len(slider_settings) + 1) // 2 * 2
 
