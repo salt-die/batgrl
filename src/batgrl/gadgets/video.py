@@ -20,7 +20,7 @@ from .graphics import (
     PosHint,
     Size,
     SizeHint,
-    _scale_geometry,
+    scale_geometry,
 )
 
 __all__ = ["Video", "Interpolation", "Point", "Size"]
@@ -280,14 +280,14 @@ class Video(Graphics):
         h, w = self.size
         if self._current_frame is None or h == 0 or w == 0:
             self.texture = np.full(
-                (*_scale_geometry(self._blitter, self.size), 4),
+                (*scale_geometry(self._blitter, self.size), 4),
                 self.default_color,
                 np.uint8,
             )
         else:
             self.texture = resize_texture(
                 self._current_frame,
-                _scale_geometry(self._blitter, self.size),
+                scale_geometry(self._blitter, self.size),
                 self._interpolation,
             )
 

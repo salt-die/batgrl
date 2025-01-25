@@ -14,25 +14,9 @@ if TYPE_CHECKING:
 from typing import Final
 
 from ..colors import BLACK, Color
-from ..text_tools import Cell, new_cell
+from ..text_tools import Cell, _Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
-from .graphics import Graphics, _scale_geometry
-
-# Current bug with cython raises error when passing type "w" (PY_UCS4).
-# When calling cython functions, re-view "w" field as uint32.
-_Cell = np.dtype(
-    [
-        ("char", "uint32"),
-        ("bold", "?"),
-        ("italic", "?"),
-        ("underline", "?"),
-        ("strikethrough", "?"),
-        ("overline", "?"),
-        ("reverse", "?"),
-        ("fg_color", "u1", (3,)),
-        ("bg_color", "u1", (3,)),
-    ]
-)
+from .graphics import Graphics, scale_geometry
 
 
 class _Root(Gadget):
@@ -91,7 +75,7 @@ class _Root(Gadget):
         self._last_kind = self.kind.copy()
 
         if Graphics._sixel_support:
-            h, w = _scale_geometry("sixel", self.size)
+            h, w = scale_geometry("sixel", self.size)
             self.graphics = np.full((h, w, 4), (*self._bg_color, 0), np.uint8)
             self._last_graphics = self.graphics.copy()
             self._indices = np.empty((h, w), np.uint8)

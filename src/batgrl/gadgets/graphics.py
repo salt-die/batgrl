@@ -12,7 +12,7 @@ from ..colors import TRANSPARENT, AColor
 from ..texture_tools import Interpolation, resize_texture
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
-__all__ = ["Graphics", "Interpolation", "Point", "Size"]
+__all__ = ["Graphics", "Interpolation", "Point", "Size", "scale_geometry"]
 
 Blitter = Literal["braille", "half", "sixel"]
 """Determines how graphics are rendered."""
@@ -24,7 +24,7 @@ _BLITTER_GEOMETRY: Final[dict[Blitter, Size]] = {
 }
 
 
-def _scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
+def scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
     """
     Scale a point or size by some blitter geometry.
 
@@ -268,7 +268,7 @@ class Graphics(Gadget):
     def on_size(self) -> None:
         """Resize texture array."""
         self.texture = resize_texture(
-            self.texture, _scale_geometry(self._blitter, self.size), self._interpolation
+            self.texture, scale_geometry(self._blitter, self.size), self._interpolation
         )
 
     def to_png(self, path: Path) -> None:

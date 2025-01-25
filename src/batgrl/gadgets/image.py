@@ -16,7 +16,7 @@ from .graphics import (
     PosHint,
     Size,
     SizeHint,
-    _scale_geometry,
+    scale_geometry,
 )
 
 __all__ = ["Image", "Interpolation", "Point", "Size"]
@@ -228,7 +228,7 @@ class Image(Graphics):
         """Resize texture array."""
         self.texture = resize_texture(
             self._otexture,
-            _scale_geometry(self._blitter, self.size),
+            scale_geometry(self._blitter, self.size),
             self._interpolation,
         )
 

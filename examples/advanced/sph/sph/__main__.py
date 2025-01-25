@@ -3,7 +3,7 @@ import asyncio
 import numpy as np
 from batgrl.app import App
 from batgrl.colors import Color
-from batgrl.gadgets.graphics import Graphics, _scale_geometry
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
 
@@ -17,7 +17,7 @@ class SPH(Graphics):
     def __init__(self, nparticles, is_transparent=False, **kwargs):
         super().__init__(is_transparent=is_transparent, **kwargs)
         self.sph_solver = SPHSolver(
-            nparticles, _scale_geometry(self._blitter, self.size)
+            nparticles, scale_geometry(self._blitter, self.size)
         )
 
     def on_add(self):
@@ -41,7 +41,7 @@ class SPH(Graphics):
             return False
 
         # Apply a force from click to every particle in the solver.
-        my, mx = _scale_geometry(self._blitter, self.to_local(mouse_event.pos))
+        my, mx = scale_geometry(self._blitter, self.to_local(mouse_event.pos))
 
         relative_positions = self.sph_solver.state[:, :2] - (my, mx)
 
@@ -64,7 +64,7 @@ class SPH(Graphics):
             xs = xs + (self.width - solver.WIDTH) // 2  # Center the particles.
 
             # Some solver configurations are unstable. Clip positions to prevent errors.
-            h, w = _scale_geometry(self._blitter, self.size)
+            h, w = scale_geometry(self._blitter, self.size)
             ys = np.clip(ys, 0, h - 1)
             xs = np.clip(xs, 0, w - 1)
 
