@@ -951,21 +951,21 @@ cdef inline ssize_t write_glyph(
     if fbuf_grow(f, 128):
         return -1
     # Build up Select Graphic Rendition (SGR) parameters
-    if last_sgr == NULL or cell.bold != last_sgr.bold:
+    if last_sgr is NULL or cell.bold != last_sgr.bold:
         write_sgr(f, 1 if cell.bold else 22, &first)
-    if last_sgr == NULL or cell.italic != last_sgr.italic:
+    if last_sgr is NULL or cell.italic != last_sgr.italic:
         write_sgr(f, 3 if cell.italic else 23, &first)
-    if last_sgr == NULL or cell.underline != last_sgr.underline:
+    if last_sgr is NULL or cell.underline != last_sgr.underline:
         write_sgr(f, 4 if cell.underline else 24, &first)
-    if last_sgr == NULL or cell.strikethrough != last_sgr.strikethrough:
+    if last_sgr is NULL or cell.strikethrough != last_sgr.strikethrough:
         write_sgr(f, 9 if cell.strikethrough else 29, &first)
-    if last_sgr == NULL or cell.overline != last_sgr.overline:
+    if last_sgr is NULL or cell.overline != last_sgr.overline:
         write_sgr(f, 53 if cell.overline else 54, &first)
-    if last_sgr == NULL or cell.reverse != last_sgr.reverse:
+    if last_sgr is NULL or cell.reverse != last_sgr.reverse:
         write_sgr(f, 7 if cell.reverse else 27, &first)
-    if last_sgr == NULL or not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
+    if last_sgr is NULL or not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
         write_rgb(f, 38, &cell.fg_color[0], &first)
-    if last_sgr == NULL or not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
+    if last_sgr is NULL or not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
         write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
