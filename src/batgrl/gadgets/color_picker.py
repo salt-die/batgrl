@@ -35,23 +35,22 @@ GRAD = tuple(pairwise([ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED]))
 
 class _ShadeSelector(Grabbable, Graphics):
     def __init__(self, color_swatch, label, **kwargs):
-        super().__init__(**kwargs)
-
-        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_cell="○")
         self._shade_hint = 0.0, 1.0
-        self.add_gadget(self._shade_indicator)
-
+        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_cell="○")
+        self.hue = ARED
         self.color_swatch = color_swatch
         self.label = label
+
+        super().__init__(**kwargs)
+        self.add_gadget(self._shade_indicator)
         self.update_hue(ARED)
 
     def on_size(self):
+        super().on_size()
         h, w = self._size
         hh, wh = self._shade_hint
 
-        self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
         self._shade_indicator.pos = round((h - 1) * hh), round((w - 1) * wh)
-
         self.update_hue(self.hue)
 
     def update_hue(self, hue: AColor):
@@ -109,11 +108,11 @@ class _HueSelector(Grabbable, Graphics):
         self.add_gadget(self._hue_indicator)
 
     def on_size(self):
+        super().on_size()
         h, w = self._size
-
-        self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
-
         d, r = divmod(w, 6)
+        if d == 1:
+            return
 
         rainbow = []
         for i, (a, b) in enumerate(GRAD):
