@@ -3,8 +3,6 @@
 from collections.abc import Callable
 from itertools import pairwise
 
-import numpy as np
-
 from ..colors import (
     ABLACK,
     ABLUE,
