@@ -939,7 +939,7 @@ cdef inline ssize_t write_glyph(
     if abs_y == cursor_y[0]:
         if abs_x != cursor_x[0]:
             # CHA, Cursor Horizontal Absolute
-            if fbuf_printf(f, "\x1b[%dG", abs_x):
+            if fbuf_printf(f, "\x1b[%dG", abs_x + 1):
                 return -1
     else:
         # CUP, Cursor Position
@@ -1033,16 +1033,7 @@ cpdef void terminal_render(
     if emit_sixel:
         for y in range(h):
             for x in range(w):
-                # Output glyph if kind[y, x] outputs glyphs when cell is pure sixel or
-                # mixed. Should only need to output glyph when kind[y, x] is mixed, but
-                # seeing some artifacts on first render with latter.
-
-                # Output glyph if prev_kind[y, x] to clear entire previous
-                # bitmap, but this can maybe be more efficient if there is a way to
-                # clear/wipe an entire rect at once.
-                # At least, the sgr parameters probably aren't important and
-                # can just dump a few well-positioned lines of spaces.
-                if kind[y, x] or prev_kind[y, x]:
+                if kind[y, x] == MIXED:
                     if write_glyph(
                         f, oy, ox, y, x, &cursor_y, &cursor_x, cells, last_sgr
                     ):
