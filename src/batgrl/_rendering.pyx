@@ -310,11 +310,14 @@ cpdef void pane_render(
 
 
 cdef void opaque_text_render(
-    Cell[:, ::1] cells, Cell[:, ::1] self_canvas, CRegion *cregion
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    Cell[:, ::1] self_canvas,
+    CRegion *cregion
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
-    cdef int abs_y = it.y1, abs_x = it.x1
     while not it.done:
         cells[it.y, it.x] = self_canvas[it.y - abs_y, it.x - abs_x]
         next_(&it)
@@ -324,6 +327,8 @@ cdef void trans_text_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
     Cell[:, ::1] self_canvas,
     double alpha,
     CRegion *cregion,
@@ -331,7 +336,6 @@ cdef void trans_text_render(
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
@@ -391,25 +395,35 @@ cpdef void text_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    tuple[int, int] abs_pos,
     bint is_transparent,
     Region region,
     Cell[:, ::1] self_canvas,
     double alpha,
 ):
-    cdef CRegion *cregion = &region.cregion
+    cdef:
+        int abs_y = abs_pos[0], abs_x = abs_pos[1]
+        CRegion *cregion = &region.cregion
+
     if is_transparent:
-        trans_text_render(cells, graphics, kind, self_canvas, alpha, cregion)
+        trans_text_render(
+            cells, graphics, kind, abs_y, abs_x, self_canvas, alpha, cregion
+        )
     else:
-        opaque_text_render(cells, self_canvas, cregion)
+        opaque_text_render(cells, abs_y, abs_x, self_canvas, cregion)
 
 
 cdef opaque_half_graphics_render(
-    Cell[:, ::1] cells, uint8[:, :, ::1] self_texture, CRegion *cregion
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    CRegion *cregion,
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1, src_y, src_x
+        int src_y, src_x
         Cell *dst
 
     while not it.done:
@@ -436,6 +450,8 @@ cdef trans_half_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
     uint8[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
@@ -443,7 +459,7 @@ cdef trans_half_graphics_render(
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1, src_y, src_x
+        int src_y, src_x
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
@@ -536,13 +552,15 @@ cdef opaque_sixel_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
     uint8[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1, src_y, src_x
+        int src_y, src_x
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
@@ -566,6 +584,8 @@ cdef trans_sixel_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
     uint8[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
@@ -573,7 +593,7 @@ cdef trans_sixel_graphics_render(
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1, src_y, src_x
+        int src_y, src_x
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
@@ -633,12 +653,16 @@ cdef trans_sixel_graphics_render(
 
 
 cdef opaque_braille_graphics_render(
-    Cell[:, ::1] cells, uint8[:, :, ::1] self_texture, CRegion *cregion
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    CRegion *cregion,
 ):
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1, src_y, src_x
+        int src_y, src_x
         uint8[3] fg, bg
         double[8] luminances
         Cell* cell
@@ -679,6 +703,8 @@ cdef trans_braille_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
     uint8[:, :, ::1] self_texture,
     double alpha,
     CRegion *cregion,
@@ -686,7 +712,7 @@ cdef trans_braille_graphics_render(
     cdef RegionIterator it
     init_iter(&it, cregion)
     cdef:
-        int abs_y = it.y1, abs_x = it.x1, src_y, src_x
+        int src_y, src_x
         uint8[3] fg, bg
         double[8] luminances
         Cell* cell
@@ -754,34 +780,40 @@ cpdef void graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
+    tuple[int, int] abs_pos,
     str blitter,
     bint is_transparent,
     uint8[:, :, ::1] self_texture,
     double alpha,
     Region region,
 ):
-    cdef CRegion *cregion = &region.cregion
+    cdef:
+        int abs_y = abs_pos[0], abs_x = abs_pos[1]
+        CRegion *cregion = &region.cregion
+
     if blitter == "half":
         if is_transparent:
             trans_half_graphics_render(
-                cells, graphics, kind, self_texture, alpha, cregion
+                cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
             )
         else:
-            opaque_half_graphics_render(cells, self_texture, cregion)
+            opaque_half_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
     elif blitter == "sixel":
         if is_transparent:
             trans_sixel_graphics_render(
-                cells, graphics, kind, self_texture, alpha, cregion
+                cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
             )
         else:
-            opaque_sixel_graphics_render(cells, graphics, kind, self_texture, cregion)
+            opaque_sixel_graphics_render(
+                cells, graphics, kind, abs_y, abs_x, self_texture, cregion
+            )
     elif blitter == "braille":
         if is_transparent:
             trans_braille_graphics_render(
-                cells, graphics, kind, self_texture, alpha, cregion
+                cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
             )
         else:
-            opaque_braille_graphics_render(cells, self_texture, cregion)
+            opaque_braille_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
 
 
 cpdef void cursor_render(
@@ -1009,9 +1041,9 @@ cpdef void terminal_render(
 
         gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
         # If sixel graphics rect reaches last line of terminal, its height must be
-        # truncated to nearest multiple of 6 to prevent scrolling.
+        # truncated to nearest multiple of 6 - 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
-            gh -= gh % 6
+            gh -= 6 + gh % 6
         gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
         palette, indices = median_variance_quantization(
             graphics, min_y_sixel * cell_h, min_x_sixel * cell_w, gh, gw

@@ -515,6 +515,7 @@ class Text(Gadget):
             cells,
             graphics,
             kind,
+            self.absolute_pos,
             self._is_transparent,
             self._region,
             self.canvas,

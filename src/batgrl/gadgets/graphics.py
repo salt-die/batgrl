@@ -288,6 +288,7 @@ class Graphics(Gadget):
             cells,
             graphics,
             kind,
+            self.absolute_pos,
             self._blitter,
             self._is_transparent,
             self.texture,
