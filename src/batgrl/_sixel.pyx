@@ -37,7 +37,7 @@ from libc.string cimport memset
 from libc.stdio cimport sprintf
 from libc.stdlib cimport free, malloc
 
-from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts, fbuf_init, fbuf_free, fbuf_flush
+from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts, fbuf_init, fbuf_free
 
 cdef:
     struct BandExtender:
