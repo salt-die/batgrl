@@ -353,7 +353,7 @@ cdef void trans_text_render(
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
-        cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
+        uint8[3] rgb
         double wgt, nwgt
         Cell *dst
         Cell *src
@@ -484,7 +484,7 @@ cdef trans_half_graphics_render(
         Cell *dst
         double wgt, nwgt, a
         uint8[::1] rgba
-        cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
+        uint8[3] rgb
 
     while not it.done:
         src_y = 2 * (it.y - abs_y)
@@ -742,7 +742,7 @@ cdef trans_braille_graphics_render(
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox
-        cnp.ndarray[uint8, ndim=1] rgb = np.empty(3, np.uint8)
+        uint8[3] rgb
         double alpha_avg = 0
         unsigned long char_
 
