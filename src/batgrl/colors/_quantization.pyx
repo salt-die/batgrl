@@ -16,27 +16,25 @@ Graphics Gems II, (ed. James Arvo), Academic Press: Boston, 1991.
 import cython
 import numpy as np
 cimport numpy as cnp
-from numpy.typing import NDArray
-
-__all__ = ["median_variance_quantization"]
 
 cdef:
-    unsigned char RED = 2, GREEN = 1, BLUE = 0
+    ctypedef unsigned char uint8
+    uint8 RED = 2, GREEN = 1, BLUE = 0
 
     struct Box:
-        unsigned char r0
-        unsigned char r1
-        unsigned char g0
-        unsigned char g1
-        unsigned char b0
-        unsigned char b1
+        uint8 r0
+        uint8 r1
+        uint8 g0
+        uint8 g1
+        uint8 b0
+        uint8 b1
         int volume
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void hist3d(
-    unsigned char[:, :, ::1] texture,
+    uint8[:, :, ::1] texture,
     size_t oy,
     size_t ox,
     size_t h,
@@ -46,16 +44,18 @@ cdef void hist3d(
     int[:, :, ::1] mg,
     int[:, :, ::1] mb,
     double[:, :, ::1] m2,
-    unsigned char[:, :, ::1] quant,
+    uint8[:, :, ::1] quant,
 ):
     """Build 3-D color histogram of counts."""
     cdef:
         size_t y, x
-        unsigned char r, g, b, inr, ing, inb
+        uint8 r, g, b, inr, ing, inb
         cnp.ndarray[double, ndim=1] sqr = np.arange(256, dtype=float)**2
 
     for y in range(h):
         for x in range(w):
+            if not texture[oy + y, ox + x][3]:
+                continue
             r = texture[oy + y, ox + x][0]
             g = texture[oy + y, ox + x][1]
             b = texture[oy + y, ox + x][2]
@@ -87,7 +87,7 @@ cdef void moments(
     """Compute cumulative moments."""
     cdef:
         int line, line_r, line_g, line_b
-        unsigned char r, g, b
+        uint8 r, g, b
         double line_2
         cnp.ndarray[int, ndim=1] area = np.empty(33, dtype=np.intc)
         cnp.ndarray[int, ndim=1] area_red = np.empty(33, dtype=np.intc)
@@ -161,7 +161,7 @@ cdef double volume_float(Box *cube, double[:, :, ::1] moment):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef int bottom(Box *cube, unsigned char direction, int[:, :, ::1] moment):
+cdef int bottom(Box *cube, uint8 direction, int[:, :, ::1] moment):
     """
     Compute part of volume(cube, mmt) that doesn't depend on r1, g1, or b1
     (depending on dir).
@@ -194,9 +194,9 @@ cdef int bottom(Box *cube, unsigned char direction, int[:, :, ::1] moment):
 @cython.wraparound(False)
 cdef int top(
     Box *cube,
-    unsigned char direction,
+    uint8 direction,
     int[:, :, ::1] moment,
-    unsigned char pos,
+    uint8 pos,
 ):
     """
     Compute remainder of volume(cube, mmt), substituting pos for r1, g1, or b1
@@ -251,9 +251,9 @@ cdef double variance(
 @cython.wraparound(False)
 cdef double minimize(
     Box *cube,
-    unsigned char direction,
-    unsigned char first,
-    unsigned char last,
+    uint8 direction,
+    uint8 first,
+    uint8 last,
     int *cut,
     int whole_w,
     int whole_r,
@@ -268,7 +268,7 @@ cdef double minimize(
     cdef:
         int half_w, half_r, half_g, half_b
         int base_w, base_r, base_g, base_b
-        unsigned char i
+        uint8 i
         double temp, max_
 
     base_w = bottom(cube, direction, wt)
@@ -312,7 +312,7 @@ cdef int cut(
     int[:, :, ::1] mb,
 ):
     cdef:
-        unsigned char direction
+        uint8 direction
         int cut_r, cut_g, cut_b, whole_w, whole_r, whole_g, whole_b
         double max_r, max_g, max_b
 
@@ -370,7 +370,7 @@ cdef int cut(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
+cdef void mark(Box *cube, int label, uint8[:, :, ::1] tag):
     cdef unsigned int r, g, b
     for r in range(cube.r0 + 1, cube.r1 + 1):
         for g in range(cube.g0 + 1, cube.g1 + 1):
@@ -380,52 +380,28 @@ cdef void mark(Box *cube, int label, unsigned char[:, :, ::1] tag):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def median_variance_quantization(
-    unsigned char[:, :, ::1] texture, size_t oy, size_t ox, size_t h, size_t w
-) -> tuple[NDArray[np.uint8], NDArray[np.uint8]]:
-    """
-    Cython implementation of Wu's Color Quantizer.
-
-    Parameters
-    ----------
-    texture : NDArray[np.uint8]
-        A RGB or RGBA texture to quantize.
-
-    Returns
-    -------
-    tuple[NDArray[np.uint8], NDArray[np.uint8]]
-        The quantized palette and an array of indices into the palette of each pixel in
-        the original texture. Palette color channels range from 0 to 100 to conform to
-        the sixel format.
-
-    Notes
-    -----
-    Greedy orthogonal bipartition of RGB space for variance minimization aided by
-    inclusion-exclusion tricks. For speed, no nearest neighbor search is done.
-
-    References
-    ----------
-    Xiaolin Wu, "Efficient Statistical Computations for Optimal Color Quantization",
-    Graphics Gems II, (ed. James Arvo), Academic Press: Boston, 1991.
-
-    `Wu's Implementation <https://gist.github.com/bert/1192520>`_
-    """
+cdef size_t median_variance_quantization(
+    uint8[:, :, ::1] texture,
+    size_t oy,
+    size_t ox,
+    size_t h,
+    size_t w,
+    palette,
+    indices,
+):
     cdef:
         size_t y, x
         int i, j, k
         double temp, weight
         Box[256] cubes
         double[256] vv
-
-    cdef:
-        cnp.ndarray[unsigned char, ndim=3] quant = np.zeros((h, w, 3), dtype=np.uint8)
-        cnp.ndarray[unsigned char, ndim=2] out = np.zeros((h, w), dtype=np.uint8)
+        cnp.ndarray[uint8, ndim=3] quant = np.zeros((h, w, 3), dtype=np.uint8)
         cnp.ndarray[int, ndim=3] wt = np.zeros((33, 33, 33), dtype=np.intc)
         cnp.ndarray[int, ndim=3] mr = np.zeros((33, 33, 33), dtype=np.intc)
         cnp.ndarray[int, ndim=3] mg = np.zeros((33, 33, 33), dtype=np.intc)
         cnp.ndarray[int, ndim=3] mb = np.zeros((33, 33, 33), dtype=np.intc)
         cnp.ndarray[double, ndim=3] m2 = np.zeros((33, 33, 33), dtype=float)
-        cnp.ndarray[unsigned char, ndim=3] tag = np.zeros((33, 33, 33), dtype=np.uint8)
+        cnp.ndarray[uint8, ndim=3] tag = np.zeros((33, 33, 33), dtype=np.uint8)
 
     hist3d(texture, oy, ox, h, w, wt, mr, mg, mb, m2, quant)
     moments(wt, mr, mg, mb, m2)
@@ -459,8 +435,6 @@ def median_variance_quantization(
         if temp <= 0.0:
             break
 
-    cdef cnp.ndarray[unsigned char, ndim=2] palette = np.ndarray((j, 3), dtype=np.uint8)
-
     for i in range(j):
         mark(&cubes[i], i, tag)
         weight = <double>volume_int(&cubes[i], wt)
@@ -469,9 +443,9 @@ def median_variance_quantization(
             # values will be between 0-100 for sixel.
             # Magic number is 100 / 255...
             weight = 0.39215686274509803 / weight
-            palette[i, 0] = <unsigned char>(volume_int(&cubes[i], mr) * weight)
-            palette[i, 1] = <unsigned char>(volume_int(&cubes[i], mg) * weight)
-            palette[i, 2] = <unsigned char>(volume_int(&cubes[i], mb) * weight)
+            palette[i, 0] = <uint8>(volume_int(&cubes[i], mr) * weight)
+            palette[i, 1] = <uint8>(volume_int(&cubes[i], mg) * weight)
+            palette[i, 2] = <uint8>(volume_int(&cubes[i], mb) * weight)
         else:
             palette[i, 0] = 0
             palette[i, 1] = 0
@@ -479,6 +453,6 @@ def median_variance_quantization(
 
     for y in range(h):
         for x in range(w):
-            out[y, x] = tag[quant[y, x, 0], quant[y, x, 1], quant[y, x, 2]]
+            indices[y, x] = tag[quant[y, x, 0], quant[y, x, 1], quant[y, x, 2]]
 
-    return palette, out
+    return j

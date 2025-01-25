@@ -423,6 +423,8 @@ class App(ABC):
                     root._last_graphics,
                     root.kind,
                     root._last_kind,
+                    root._palette,
+                    root._indices,
                 )
 
         with app_mode(terminal, event_handler):

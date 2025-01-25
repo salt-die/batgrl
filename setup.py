@@ -84,7 +84,7 @@ setup(
             "src/batgrl/_rendering.pyx",
             "src/batgrl/_sixel.pyx",
             "src/batgrl/char_width.pyx",
-            "src/batgrl/colors/quantization.pyx",
+            "src/batgrl/colors/_quantization.pyx",
             "src/batgrl/geometry/regions.pyx",
             "src/batgrl/terminal/_fbuf_wrapper.pyx",
         ]

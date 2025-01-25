@@ -2,12 +2,13 @@
 # distutils: sources = src/batgrl/cwidth.c
 from libc.string cimport memset
 
+import cython
 import numpy as np
 cimport numpy as cnp
 
 from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4
 from ._sixel cimport csixel_ansi
-from .colors.quantization import median_variance_quantization
+from .colors._quantization cimport median_variance_quantization
 from .geometry.regions cimport CRegion, Region
 from .terminal._fbuf_wrapper cimport FBufWrapper
 
@@ -42,6 +43,8 @@ cdef void init_iter(RegionIterator* it, CRegion* cregion):
         it.done = 0
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void next_(RegionIterator* it):
     if it.done:
         return
@@ -92,6 +95,8 @@ cdef inline bint rgba_eq(uint8[::1] a, uint8[::1] b):
     return a[0] == b[0] and a[1] == b[1] and a[2] == b[2] and a[3] == b[3]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     cdef size_t h = a.shape[0], w = a.shape[1], y, x
     for y in range(h):
@@ -101,6 +106,8 @@ cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     return 1
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline bint cell_eq(Cell* a, Cell* b):
     return (
         a.char_ == b.char_
@@ -122,6 +129,8 @@ cdef inline size_t graphics_geom_width(Cell[:, ::1] cells, uint8[:, :, ::1] grap
     return graphics.shape[1] // cells.shape[1]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline void composite(
     uint8[::1] dst, uint8[::1] src, double alpha
 ):
@@ -138,6 +147,8 @@ cdef inline void composite(
     dst[2] = <uint8>((a - b) * alpha + b)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline double average_graphics(uint8[3] bg, uint8 [:, :, ::1] graphics):
     cdef:
         size_t h = graphics.shape[0]
@@ -159,6 +170,8 @@ cdef inline double average_graphics(uint8[3] bg, uint8 [:, :, ::1] graphics):
     return <double>n / <double>(h * w)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline void luminance_quant(
     uint8 *fg,
     uint8 *bg,
@@ -414,6 +427,8 @@ cpdef void text_render(
         opaque_text_render(cells, abs_y, abs_x, self_canvas, cregion)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef opaque_half_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -447,6 +462,8 @@ cdef opaque_half_graphics_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef trans_half_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -549,6 +566,8 @@ cdef trans_half_graphics_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef opaque_sixel_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -581,6 +600,8 @@ cdef opaque_sixel_graphics_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef trans_sixel_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -777,6 +798,8 @@ cdef trans_braille_graphics_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -974,6 +997,8 @@ cdef inline ssize_t write_glyph(
     return 0
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void terminal_render(
     bint resized,
     FBufWrapper fwrap,
@@ -984,19 +1009,20 @@ cpdef void terminal_render(
     uint8[:, :, ::1] prev_graphics,
     uint8[:, ::1] kind,
     uint8[:, ::1] prev_kind,
+    uint8[:, ::1] palette,
+    uint8[:, ::1] indices,
 ):
     cdef:
         fbuf* f = &fwrap.f
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_geom_height(cells, graphics)
         size_t cell_w = graphics_geom_width(cells, graphics)
-        size_t gh, gw
+        size_t gy, gx, gh, gw, ncolors
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
         Cell* last_sgr = NULL
         bint emit_sixel = 0
-        uint8[:, ::1] palette, indices
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
         raise MemoryError
@@ -1040,20 +1066,21 @@ cpdef void terminal_render(
                         raise MemoryError
                     last_sgr = &cells[y, x]
 
+        gy = min_y_sixel * cell_h
+        gx = min_x_sixel * cell_w
         gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
         # If sixel graphics rect reaches last line of terminal, its height must be
         # truncated to (nearest multiple of 6) - 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
             gh -= 6 + gh % 6
         gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
-        palette, indices = median_variance_quantization(
-            graphics, min_y_sixel * cell_h, min_x_sixel * cell_w, gh, gw
+
+        ncolors = median_variance_quantization(
+            graphics, gy, gx, gh, gw, palette, indices
         )
         if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
             raise MemoryError
-        if csixel_ansi(
-            f, palette, indices, graphics, min_y_sixel * cell_h, min_x_sixel * cell_w
-        ):
+        if csixel_ansi(f, palette, indices, graphics, ncolors, gy, gx, gh, gw):
             raise MemoryError
 
     cursor_y = -1

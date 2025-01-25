@@ -77,6 +77,10 @@ class _Root(Gadget):
         """Previous graphics rendering."""
         self._last_kind: NDArray[np.uint8]
         """Previous kind."""
+        self._palette: NDArray[np.uint8] = np.empty((256, 3), np.uint8)
+        """Stores quantized colors when generating sixel."""
+        self._indices: NDArray[np.uint8] = np.empty((0, 0), np.uint8)
+        """Indices into palette for quantized graphics."""
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
@@ -90,6 +94,7 @@ class _Root(Gadget):
             h, w = _scale_geometry("sixel", self.size)
             self.graphics = np.full((h, w, 4), (*self._bg_color, 0), np.uint8)
             self._last_graphics = self.graphics.copy()
+            self._indices = np.empty((h, w), np.uint8)
 
     @property
     def bg_color(self) -> Color:
