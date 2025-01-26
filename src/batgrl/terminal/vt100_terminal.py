@@ -401,7 +401,6 @@ class Vt100Terminal(ABC):
         self._out_buffer.append(
             "\x1b[?1000h"  # SET_VT200_MOUSE
             "\x1b[?1003h"  # SET_ANY_EVENT_MOUSE
-            "\x1b[?1015h"  # SET_URXVT_EXT_MODE_MOUSE
             "\x1b[?1006h"  # SET_SGR_EXT_MODE_MOUSE
         )
 
@@ -410,8 +409,7 @@ class Vt100Terminal(ABC):
         self._out_buffer.append(
             "\x1b[?1000l"  # SET_VT200_MOUSE
             "\x1b[?1003l"  # SET_ANY_EVENT_MOUSE
-            "\x1b[?1015l"  # SET_SGR_EXT_MODE_MOUSE
-            "\x1b[?1006l"  # SET_URXVT_EXT_MODE_MOUSE
+            "\x1b[?1006l"  # SET_SGR_EXT_MODE_MOUSE
         )
 
     def reset_attributes(self) -> None:
