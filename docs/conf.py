@@ -22,7 +22,7 @@ autodoc_default_options = {
     "inherited-members": True,
     "ignore-module-all": True,
 }
-autodoc_mock_imports = ["_char_widths"]
+autodoc_mock_imports = ["batgrl._char_widths"]
 html_theme = "pydata_sphinx_theme"
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 html_theme_options = {
