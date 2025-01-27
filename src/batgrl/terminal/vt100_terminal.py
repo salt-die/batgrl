@@ -158,7 +158,7 @@ class Vt100Terminal(ABC):
         self._last_y: int = 0
         """Last mouse y-coordinate."""
         self._last_x: int = 0
-        """Laste mouse x-coordinate."""
+        """Last mouse x-coordinate."""
         self._event_handler: Callable[[list[Event]], None] | None = None
         """Event handler set with ``attach()`` or unset with ``unattach()``."""
 
