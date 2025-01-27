@@ -414,7 +414,7 @@ class Vt100Terminal(ABC):
         self._out_buffer.write(
             "\x1b[?1000l"  # SET_VT200_MOUSE
             "\x1b[?1003l"  # SET_ANY_EVENT_MOUSE
-            "\x1b[?1015l"  # SET_SGR_EXT_MODE_MOUSE
+            "\x1b[?1006l"  # SET_SGR_EXT_MODE_MOUSE
         )
 
     def reset_attributes(self) -> None:
