@@ -14,7 +14,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "numpydoc",
 ]
-
 autosummary_generate = True
 autodoc_default_options = {
     "members": True,
@@ -23,6 +22,11 @@ autodoc_default_options = {
     "inherited-members": True,
     "ignore-module-all": True,
 }
+
+# FIXME: May need to mock other some other pyx files...
+# FIXME: Not sure if `batgrl.char_width` needs to be mocked
+autodoc_mock_imports = ["batgrl.char_width"]
+
 html_theme = "pydata_sphinx_theme"
 html_sidebars = {"**": ["search-field", "sidebar-nav-bs"]}
 html_theme_options = {

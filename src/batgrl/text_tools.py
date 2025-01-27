@@ -6,7 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ._batgrl_markdown import find_md_tokens
-from .char_width import char_width
+from .char_width import char_width  # type: ignore
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 
