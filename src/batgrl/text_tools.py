@@ -8,7 +8,14 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ._batgrl_markdown import find_md_tokens
-from ._char_widths import CHAR_WIDTHS
+
+try:
+    from ._char_widths import CHAR_WIDTHS  # type: ignore
+except ImportError:
+    # Doc generation will fail to import `_char_widths` because it hasn't been generated
+    # yet.
+    CHAR_WIDTHS = ()
+
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 

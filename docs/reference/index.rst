@@ -8,7 +8,7 @@ batgrl Reference
 :Date: |today|
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree: generated
    :recursive:
 
    app
