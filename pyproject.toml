@@ -29,14 +29,6 @@ dynamic = ["version"]
 [tool.setuptools.dynamic]
 version = {attr = "batgrl.__version__"}
 
-[tool.setuptools.packages.find]
-where = ["src"]
-exclude = [
-    "docs**",
-    "examples**",
-    "preview_images**",
-]
-
 [tool.ruff.lint]
 select = [
     "D",  # pydocstyle
