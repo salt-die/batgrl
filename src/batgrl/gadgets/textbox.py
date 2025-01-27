@@ -22,8 +22,8 @@ __all__ = ["Textbox", "Point", "Size"]
 
 
 class _Box(Text):
-    def _render(self, canvas):
-        super()._render(canvas)
+    def _render(self, canvas, graphics, kind):
+        super()._render(canvas, graphics, kind)
         textbox: Textbox = self.parent
         if textbox.hide_input:
             hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_length))
