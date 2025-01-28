@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 
 from .._rendering import graphics_field_render
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
-from .graphics import _BLITTER_GEOMETRY, Blitter
+from .graphics import _BLITTER_GEOMETRY, Blitter, Graphics
 
 __all__ = ["GraphicParticleField", "Point", "Size"]
 
@@ -241,7 +241,7 @@ class GraphicParticleField(Gadget):
     def blitter(self, blitter: Blitter):
         if blitter not in Blitter.__args__:
             raise TypeError(f"{blitter} is not a valid blitter type.")
-        if blitter == "sixel" and not self._sixel_support:
+        if blitter == "sixel" and not Graphics._sixel_support:
             blitter = "half"
         self._blitter = blitter
 
