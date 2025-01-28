@@ -9,7 +9,7 @@ cimport numpy as cnp
 from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4
 from ._sixel cimport csixel_ansi
 from .colors._quantization cimport median_variance_quantization
-from .geometry.regions cimport CRegion, Region
+from .geometry.regions cimport CRegion, Region, contains
 from .terminal._fbuf_wrapper cimport FBufWrapper
 
 ctypedef unsigned char uint8
@@ -87,11 +87,15 @@ cdef packed struct Cell:
     uint8[3] bg_color
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline bint rgb_eq(uint8* a, uint8* b):
     return a[0] == b[0] and a[1] == b[1] and a[2] == b[2]
 
 
-cdef inline bint rgba_eq(uint8[::1] a, uint8[::1] b):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef inline bint rgba_eq(uint8 *a, uint8 *b):
     return a[0] == b[0] and a[1] == b[1] and a[2] == b[2] and a[3] == b[3]
 
 
@@ -101,7 +105,7 @@ cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     cdef size_t h = a.shape[0], w = a.shape[1], y, x
     for y in range(h):
         for x in range(w):
-            if not rgba_eq(a[y, x], b[y, x]):
+            if not rgba_eq(&a[y, x, 0], &b[y, x, 0]):
                 return 0
     return 1
 
@@ -121,35 +125,49 @@ cdef inline bint cell_eq(Cell* a, Cell* b):
     )
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline size_t graphics_geom_height(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
     return graphics.shape[0] // cells.shape[0]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline size_t graphics_geom_width(Cell[:, ::1] cells, uint8[:, :, ::1] graphics):
     return graphics.shape[1] // cells.shape[1]
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline void composite(
-    uint8[::1] dst, uint8[::1] src, double alpha
-):
-    cdef double a, b
-
-    a = <double>src[0]
-    b = <double>dst[0]
-    dst[0] = <uint8>((a - b) * alpha + b)
-    a = <double>src[1]
+cdef inline void composite(uint8 *dst, uint8 *src, double alpha):
+    cdef double b = <double>dst[0]
+    dst[0] = <uint8>((<double>src[0] - b) * alpha + b)
     b = <double>dst[1]
-    dst[1] = <uint8>((a - b) * alpha + b)
-    a = <double>src[2]
+    dst[1] = <uint8>((<double>src[1] - b) * alpha + b)
     b = <double>dst[2]
-    dst[2] = <uint8>((a - b) * alpha + b)
+    dst[2] = <uint8>((<double>src[2] - b) * alpha + b)
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline double average_graphics(uint8[3] bg, uint8 [:, :, ::1] graphics):
+cdef inline bint composite_sixels_on_glyph(
+    uint8 *bg, uint8 *rgba, uint8 *graphics, double alpha
+):
+    cdef bint mixed = 0
+    if rgba[3]:
+        graphics[0] = bg[0]
+        graphics[1] = bg[1]
+        graphics[2] = bg[2]
+        graphics[3] = 1
+        composite(graphics, rgba, alpha * <double>rgba[3] / 255)
+    else:
+        mixed = 1
+    return mixed
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef inline double average_graphics(uint8 *bg, uint8 [:, :, ::1] graphics):
     cdef:
         size_t h = graphics.shape[0]
         size_t w = graphics.shape[1]
@@ -163,11 +181,19 @@ cdef inline double average_graphics(uint8[3] bg, uint8 [:, :, ::1] graphics):
                 r += graphics[y, x, 0]
                 g += graphics[y, x, 1]
                 b += graphics[y, x, 2]
-
+    if not n:
+        return 0
     bg[0] = <uint8>(r // n)
     bg[1] = <uint8>(g // n)
     bg[2] = <uint8>(b // n)
     return <double>n / <double>(h * w)
+
+
+cdef inline void lerp_rgb(uint8* src, uint8* dst, double p):
+    cdef double negp = 1 - p
+    dst[0] = <uint8>(<double>src[0] * p + <double>dst[0] * negp)
+    dst[1] = <uint8>(<double>src[1] * p + <double>dst[1] * negp)
+    dst[2] = <uint8>(<double>src[2] * p + <double>dst[2] * negp)
 
 
 @cython.boundscheck(False)
@@ -251,6 +277,8 @@ cdef inline void luminance_quant(
     bg[2] = <uint8>quant_bg[2]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void opaque_pane_render(
     Cell[:, ::1] cells, uint8[::1] bg_color, CRegion *cregion
 ):
@@ -273,6 +301,8 @@ cdef void opaque_pane_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void trans_pane_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -292,18 +322,20 @@ cdef void trans_pane_render(
     while not it.done:
         dst = &cells[it.y, it.x]
         if kind[it.y, it.x] != SIXEL:
-            composite(dst.fg_color, bg_color, alpha)
-            composite(dst.bg_color, bg_color, alpha)
+            composite(&dst.fg_color[0], &bg_color[0], alpha)
+            composite(&dst.bg_color[0], &bg_color[0], alpha)
         if kind[it.y, it.x] != GLYPH:
             oy = it.y * h
             ox = it.x * w
             for gy in range(h):
                 for gx in range(w):
                     if graphics[oy + gy, ox + gx, 3]:
-                        composite(graphics[oy + gy, ox + gx], bg_color, alpha)
+                        composite(&graphics[oy + gy, ox + gx, 0], &bg_color[0], alpha)
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void pane_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -323,6 +355,8 @@ cpdef void pane_render(
         opaque_pane_render(cells, bg, cregion)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void opaque_text_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -337,6 +371,8 @@ cdef void opaque_text_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void trans_text_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -354,7 +390,7 @@ cdef void trans_text_render(
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         uint8[3] rgb
-        double wgt, nwgt
+        double p
         Cell *dst
         Cell *src
 
@@ -364,15 +400,17 @@ cdef void trans_text_render(
         # FIXME: Consider all whitespace?
         if src.char_ == u" " or src.char_ == u"⠀":
             if kind[it.y, it.x] != SIXEL:
-                composite(dst.fg_color, src.bg_color, alpha)
-                composite(dst.bg_color, src.bg_color, alpha)
+                composite(&dst.fg_color[0], &src.bg_color[0], alpha)
+                composite(&dst.bg_color[0], &src.bg_color[0], alpha)
             if kind[it.y, it.x] != GLYPH:
                 oy = it.y * h
                 ox = it.x * w
                 for gy in range(h):
                     for gx in range(w):
-                        if graphics[oy + gy, ox + gx, 3]:
-                            composite(graphics[oy + gy, ox + gx], src.bg_color, alpha)
+                        graphics[oy + gy, ox + gx, 3] = <uint8>(alpha * 255)
+                        composite(
+                            &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
+                        )
         else:
             dst.char_ = src.char_
             dst.bold = src.bold
@@ -385,26 +423,19 @@ cdef void trans_text_render(
             if kind[it.y, it.x] == SIXEL:
                 oy = it.y * h
                 ox = it.x * w
-                average_graphics(dst.bg_color, graphics[oy:oy + h, ox:ox + w])
+                average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
             elif kind[it.y, it.x] == MIXED:
                 oy = it.y * h
                 ox = it.x * w
-                wgt = average_graphics(rgb, graphics[oy: oy + h, ox:ox + w])
-                nwgt = 1 - wgt
-                dst.bg_color[0] = <uint8>(
-                    <double>rgb[0] * wgt + <double>dst.bg_color[0] * nwgt
-                )
-                dst.bg_color[1] = <uint8>(
-                    <double>rgb[1] * wgt + <double>dst.bg_color[1] * nwgt
-                )
-                dst.bg_color[2] = <uint8>(
-                    <double>rgb[2] * wgt + <double>dst.bg_color[2] * nwgt
-                )
+                p = average_graphics(&rgb[0], graphics[oy: oy + h, ox:ox + w])
+                lerp_rgb(&rgb[0], &dst.bg_color[0], p)
             kind[it.y, it.x] = GLYPH
             composite(dst.bg_color, src.bg_color, alpha)
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void text_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -482,87 +513,68 @@ cdef trans_half_graphics_render(
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
-        double wgt, nwgt, a
-        uint8[::1] rgba
-        uint8[3] rgb
+        double a_top, a_bot
+        uint8* rgba_top
+        uint8* rgba_bot
 
     while not it.done:
         src_y = 2 * (it.y - abs_y)
         src_x = it.x - abs_x
-        if rgba_eq(
-            self_texture[src_y, src_x], self_texture[src_y + 1, src_x]
-        ):
-            dst = &cells[it.y, it.x]
-            rgba = self_texture[src_y, src_x]
-            a = alpha * <double>rgba[3] / 255
+        dst = &cells[it.y, it.x]
+        rgba_top = &self_texture[src_y, src_x, 0]
+        a_top = alpha * <double>rgba_top[3] / 255
+        rgba_bot = &self_texture[src_y + 1, src_x, 0]
+        a_bot = alpha * <double>rgba_bot[3] / 255
+        if rgba_eq(rgba_top, rgba_bot):
             if kind[it.y, it.x] != SIXEL:
-                composite(dst.fg_color, rgba, a)
-                composite(dst.bg_color, rgba, a)
+                composite(&dst.fg_color[0], rgba_top, a_top)
+                composite(&dst.bg_color[0], rgba_top, a_top)
             if kind[it.y, it.x] != GLYPH:
                 oy = it.y * h
                 ox = it.x * w
                 for gy in range(h):
                     for gx in range(w):
                         if graphics[oy + gy, ox + gx, 3]:
-                            composite(graphics[oy + gy, ox + gx], rgba, a)
-        elif kind[it.y, it.x] == SIXEL:
-            oy = it.y * h
-            ox = it.x * w
-            rgba = self_texture[src_y, src_x]
-            a = alpha * <double>rgba[3] / 255
-            for gy in range(h // 2):
-                for gx in range(w):
-                    graphics[oy + gy, ox + gx, 3] = 1
-                    composite(graphics[oy + gy, ox + gx], rgba, a)
-            rgba = self_texture[src_y + 1, src_x]
-            a = alpha * <double>rgba[3] / 255
-            for gy in range(h // 2, h):
-                for gx in range(w):
-                    graphics[oy + gy, ox + gx, 3] = 1
-                    composite(graphics[oy + gy, ox + gx], rgba, a)
-        else:
-            dst = &cells[it.y, it.x]
+                            composite(&graphics[oy + gy, ox + gx, 0], rgba_top, a_top)
+        elif kind[it.y, it.x] == GLYPH:
             dst.bold = False
             dst.italic = False
             dst.underline = False
             dst.strikethrough = False
             dst.overline = False
             dst.reverse = False
-            if kind[it.y, it.x] == MIXED:
+            if dst.char_ != u"▀":
+                dst.fg_color = dst.bg_color
                 dst.char_ = u"▀"
-                kind[it.y, it.x] = GLYPH
-                oy = it.y * h
-                ox = it.x * w
-                wgt = average_graphics(rgb, graphics[oy: oy + h, ox: ox + w])
-                nwgt = 1 - wgt
-                dst.bg_color[0] = <uint8>(
-                    <double>rgb[0] * wgt + <double>dst.bg_color[0] * nwgt
-                )
-                dst.bg_color[1] = <uint8>(
-                    <double>rgb[1] * wgt + <double>dst.bg_color[1] * nwgt
-                )
-                dst.bg_color[2] = <uint8>(
-                    <double>rgb[2] * wgt + <double>dst.bg_color[2] * nwgt
-                )
-                dst.fg_color[0] = <uint8>(
-                    <double>rgb[0] * wgt + <double>dst.fg_color[0] * nwgt
-                )
-                dst.fg_color[1] = <uint8>(
-                    <double>rgb[1] * wgt + <double>dst.fg_color[1] * nwgt
-                )
-                dst.fg_color[2] = <uint8>(
-                    <double>rgb[2] * wgt + <double>dst.fg_color[2] * nwgt
-                )
-            if kind[it.y, it.x] == GLYPH:
+            composite(&dst.fg_color[0], rgba_top, a_top)
+            composite(&dst.bg_color[0], rgba_bot, a_bot)
+        else:
+            oy = it.y * h
+            ox = it.x * w
+            if kind[it.y, it.x] == MIXED:
+                kind[it.y, it.x] = SIXEL
                 if dst.char_ != u"▀":
-                    dst.char_ = u"▀"
                     dst.fg_color = dst.bg_color
-                rgba = self_texture[src_y, src_x]
-                a = alpha * <double>rgba[3] / 255
-                composite(dst.fg_color, rgba, a)
-                rgba = self_texture[src_y + 1, src_x]
-                a = alpha * <double>rgba[3] / 255
-                composite(dst.bg_color, rgba, a)
+                composite(&dst.fg_color[0], rgba_top, a_top)
+                composite(&dst.bg_color[0], rgba_bot, a_bot)
+            for gy in range(h // 2):
+                for gx in range(w):
+                    if graphics[oy + gy, ox + gx, 3]:
+                        composite(&graphics[oy + gy, ox + gx, 0], rgba_top, a_top)
+                    else:
+                        graphics[oy + gy, ox + gx, 0] = dst.fg_color[0]
+                        graphics[oy + gy, ox + gx, 1] = dst.fg_color[1]
+                        graphics[oy + gy, ox + gx, 2] = dst.fg_color[2]
+                        graphics[oy + gy, ox + gx, 3] = 1
+            for gy in range(h // 2, h):
+                for gx in range(w):
+                    if graphics[oy + gy, ox + gx, 3]:
+                        composite(&graphics[oy + gy, ox + gx, 0], rgba_bot, a_bot)
+                    else:
+                        graphics[oy + gy, ox + gx, 0] = dst.bg_color[0]
+                        graphics[oy + gy, ox + gx, 1] = dst.bg_color[1]
+                        graphics[oy + gy, ox + gx, 2] = dst.bg_color[2]
+                        graphics[oy + gy, ox + gx, 3] = 1
         next_(&it)
 
 
@@ -619,8 +631,7 @@ cdef trans_sixel_graphics_render(
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
-        uint8 *bg
-        uint8[::1] rgba
+        uint8 *rgba
 
     while not it.done:
         oy = it.y * h
@@ -630,50 +641,73 @@ cdef trans_sixel_graphics_render(
         if kind[it.y, it.x] == SIXEL:
             for gy in range(h):
                 for gx in range(w):
-                    rgba = self_texture[src_y + gy, src_x + gx]
-                    composite(
-                        graphics[oy + gy, ox + gx], rgba, alpha * <double>rgba[3] / 255
-                    )
+                    rgba = &self_texture[src_y + gy, src_x + gx, 0]
+                    if rgba[3]:
+                        composite(
+                            &graphics[oy + gy, ox + gx, 0],
+                            rgba,
+                            alpha * <double>rgba[3] / 255,
+                        )
+                        graphics[oy + gy, ox + gx, 3] = 1
         elif kind[it.y, it.x] == GLYPH:
-            bg = &cells[it.y, it.x].bg_color[0]
+            # ! Special case half-blocks
+            # ! For other blitters, probably don't special case.
+            kind[it.y, it.x] = SIXEL
+            if cells[it.y, it.x].char_ == u"▀":
+                for gy in range(h // 2):
+                    for gx in range(w):
+                        if composite_sixels_on_glyph(
+                            &cells[it.y, it.x].fg_color[0],
+                            &self_texture[src_y + gy, src_x + gx, 0],
+                            &graphics[oy + gy, ox + gx, 0],
+                            alpha,
+                        ):
+                            kind[it.y, it.x] = MIXED
+                for gy in range(h // 2, h):
+                    for gx in range(w):
+                        if composite_sixels_on_glyph(
+                            &cells[it.y, it.x].bg_color[0],
+                            &self_texture[src_y + gy, src_x + gx, 0],
+                            &graphics[oy + gy, ox + gx, 0],
+                            alpha,
+                        ):
+                            kind[it.y, it.x] = MIXED
+            else:
+                for gy in range(h):
+                    for gx in range(w):
+                        if composite_sixels_on_glyph(
+                            &cells[it.y, it.x].bg_color[0],
+                            &self_texture[src_y + gy, src_x + gx, 0],
+                            &graphics[oy + gy, ox + gx, 0],
+                            alpha,
+                        ):
+                            kind[it.y, it.x] = MIXED
+        elif kind[it.y, it.x] == MIXED:
             kind[it.y, it.x] = SIXEL
             for gy in range(h):
                 for gx in range(w):
-                    rgba = self_texture[src_y + gy, src_x + gx]
-                    if rgba[3]:
-                        graphics[oy + gy, ox + gx, 0] = bg[0]
-                        graphics[oy + gy, ox + gx, 1] = bg[1]
-                        graphics[oy + gy, ox + gx, 2] = bg[2]
-                        graphics[oy + gy, ox + gx, 3] = 1
-                        composite(
-                            graphics[oy + gy, ox + gx],
-                            rgba,
-                            alpha * <double>rgba[3] / 255,
+                    if not graphics[oy + gy, ox + gx, 3]:
+                        kind[it.y, it.x] = MIXED
+                        composite_sixels_on_glyph(
+                            &cells[it.y, it.x].bg_color[0],
+                            &self_texture[src_y + gy, src_x + gx, 0],
+                            &graphics[oy + gy, ox + gx, 0],
+                            alpha,
                         )
                     else:
-                        kind[it.y, it.x] = MIXED
-        elif kind[it.y, it.x] == MIXED:
-            bg = &cells[it.y, it.x].bg_color[0]
-            kind[it.y, it.x] = SIXEL
-            for gy in range(h):
-                for gx in range(w):
-                    rgba = self_texture[src_y + gy, src_x + gx]
-                    if rgba[3]:
-                        if not graphics[oy + gy, ox + gx, 3]:
-                            graphics[oy + gy, ox + gx, 0] = bg[0]
-                            graphics[oy + gy, ox + gx, 1] = bg[1]
-                            graphics[oy + gy, ox + gx, 2] = bg[2]
+                        rgba = &self_texture[src_y + gy, src_x + gx, 0]
+                        if rgba[3]:
+                            composite(
+                                &graphics[oy + gy, ox + gx, 0],
+                                rgba,
+                                alpha * <double>rgba[3] / 255,
+                            )
                             graphics[oy + gy, ox + gx, 3] = 1
-                        composite(
-                            graphics[oy + gy, ox + gx],
-                            rgba,
-                            alpha * <double>rgba[3] / 255,
-                        )
-                    elif not graphics[oy + gy, ox + gx, 3]:
-                        kind[it.y, it.x] = MIXED
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef opaque_braille_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -721,6 +755,8 @@ cdef opaque_braille_graphics_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef trans_braille_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -741,60 +777,64 @@ cdef trans_braille_graphics_render(
         uint8 i, j
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
-        size_t oy, ox
+        size_t oy, ox, gy, gx
         uint8[3] rgb
-        double alpha_avg = 0
+        double alpha_avg = 0, p
         unsigned long char_
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
+        if not self_texture[src_y, src_x, 3]:
+            next_(&it)
+            continue
         luminance_quant(
             &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
         )
         cell = &cells[it.y, it.x]
-        if rgb_eq(&fg[0], &bg[0]):
-            char_ = 32
-        else:
-            char_ = 10240
-            for i in range(8):
-                if luminances[i]:
-                    char_ += BRAILLE_ENUM[i]
-        cell.char_ = char_
+        char_ = 10240
+        for i in range(8):
+            if luminances[i]:
+                char_ += BRAILLE_ENUM[i]
+        if char_ != 10240:
+            cell.char_ = char_
+            cell.fg_color = fg
         cell.bold = False
         cell.italic = False
         cell.underline = False
         cell.strikethrough = False
         cell.overline = False
         cell.reverse = False
-        cell.fg_color[0] = fg[0]
-        cell.fg_color[1] = fg[1]
-        cell.fg_color[2] = fg[2]
-        if kind[it.y, it.x] == SIXEL:
+        if char_ == 10240:
+            if kind[it.y, it.x] != SIXEL:
+                composite(&cell.fg_color[0], &bg[0], alpha)
+                composite(&cell.bg_color[0], &bg[0], alpha)
+            if kind[it.y, it.x] != GLYPH:
+                oy = it.y * h
+                ox = it.x * w
+                for gy in range(h):
+                    for gx in range(w):
+                        graphics[oy + gy, ox + gx, 3] = <uint8>(alpha * 255)
+                        composite(
+                            &graphics[oy + gy, ox + gx, 0], &bg[0], alpha
+                        )
+        elif kind[it.y, it.x] == SIXEL:
             oy = it.y * h
             ox = it.x * w
-            average_graphics(cell.bg_color, graphics[oy:oy + h, ox:ox + w])
+            average_graphics(&cell.bg_color[0], graphics[oy:oy + h, ox:ox + w])
+            kind[it.y, it.x] = GLYPH
         elif kind[it.y, it.x] == MIXED:
             oy = it.y * h
             ox = it.x * w
-            wgt = average_graphics(rgb, graphics[oy:oy + h, ox: ox + w])
-            nwgt = 1 - wgt
-            cell.bg_color[0] = <uint8>(
-                <double>rgb[0] * wgt + <double>cell.bg_color[0] * nwgt
-            )
-            cell.bg_color[1] = <uint8>(
-                <double>rgb[1] * wgt + <double>cell.bg_color[1] * nwgt
-            )
-            cell.bg_color[2] = <uint8>(
-                <double>rgb[2] * wgt + <double>cell.bg_color[2] * nwgt
-            )
-        kind[it.y, it.x] = GLYPH
+            p = average_graphics(&rgb[0], graphics[oy:oy + h, ox: ox + w])
+            lerp_rgb(&rgb[0], &cell.bg_color[0], p)
+            kind[it.y, it.x] = GLYPH
 
         for i in range(src_y, src_y + 4):
             for j in range(src_x, src_x + 2):
                 alpha_avg += self_texture[src_y, src_x, 3]
-        alpha_avg = alpha * (alpha_avg / (8 * 255))
-        composite(cell.bg_color, bg, alpha_avg)
+        alpha_avg *= alpha / 2040
+        composite(&cell.bg_color[0], &bg[0], alpha_avg)
         next_(&it)
 
 
@@ -840,91 +880,364 @@ cpdef void graphics_render(
             opaque_braille_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
 
 
-cpdef void cursor_render(
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def cursor_render(
     Cell[:, ::1] cells,
-    bint bold,
-    bint italic,
-    bint underline,
-    bint strikethrough,
-    bint overline,
-    bint reverse,
-    object fg_color,
-    object bg_color,
-    Region region,
-):
+    bold: bool | None,
+    italic: bool | None,
+    underline: bool | None,
+    strikethrough: bool | None,
+    overline: bool | None,
+    reverse: bool | None,
+    fg_color: tuple[int, int, int] | None,
+    bg_color: tuple[int, int, int] | None,
+    region: Region,
+) -> None:
     cdef:
-        int cbold, citalic, cunderline, cstrikethrough, coverline, creverse
         CRegion* cregion = &region.cregion
-        uint8[3] fg, bg
         RegionIterator it
         Cell* dst
-
-    cbold = -1 if bold is None else bold
-    citalic = -1 if italic is None else italic
-    cunderline = -1 if underline is None else underline
-    cstrikethrough = -1 if strikethrough is None else strikethrough
-    coverline = -1 if overline is None else overline
-    creverse = -1 if reverse is None else reverse
-    if fg_color is not None:
-        fg[0] = fg_color[0]
-        fg[1] = fg_color[1]
-        fg[2] = fg_color[2]
-    if bg_color is not None:
-        bg[0] = bg_color[0]
-        bg[1] = bg_color[1]
-        bg[2] = bg_color[2]
 
     init_iter(&it, cregion)
     while not it.done:
         dst = &cells[it.y, it.x]
-        if cbold >= 0:
-            dst.bold = cbold
-        if citalic >= 0:
-            dst.italic = citalic
-        if cunderline >= 0:
-            dst.underline = cunderline
-        if cstrikethrough >= 0:
-            dst.strikethrough = cstrikethrough
-        if coverline >= 0:
-            dst.overline = coverline
-        if creverse >= 0:
-            dst.reverse = creverse
+        if bold is not None:
+            dst.bold = bold
+        if italic is not None:
+            dst.italic = italic
+        if underline is not None:
+            dst.underline = underline
+        if strikethrough is not None:
+            dst.strikethrough = strikethrough
+        if overline is not None:
+            dst.overline = overline
+        if reverse is not None:
+            dst.reverse = reverse
         if fg_color is not None:
-            dst.fg_color[0] = fg[0]
-            dst.fg_color[1] = fg[1]
-            dst.fg_color[2] = fg[2]
+            dst.fg_color = fg_color
         if bg_color is not None:
-            dst.bg_color[0] = bg[0]
-            dst.bg_color[1] = bg[1]
-            dst.bg_color[2] = bg[2]
+            dst.bg_color = bg_color
         next_(&it)
+
+
+cdef void opaque_text_field_render(
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    long long[:, ::1] positions,
+    Cell[::1] particles,
+    CRegion *cregion
+):
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        int py, px
+
+    for i in range(nparticles):
+        py = positions[i][0] + abs_y
+        px = positions[i][1] + abs_x
+        if contains(cregion, py, px):
+            cells[py, px] = particles[i]
+
+
+cdef void trans_text_field_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    long long[:, ::1] positions,
+    Cell[::1] particles,
+    double alpha,
+    CRegion *cregion,
+):
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        int py, px
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
+        uint8[3] rgb
+        double p
+        Cell *dst
+        Cell *src
+
+    for i in range(nparticles):
+        py = positions[i][0] + abs_y
+        px = positions[i][1] + abs_x
+        if not contains(cregion, py, px):
+            continue
+        src = &particles[i]
+        dst = &cells[py, px]
+        # FIXME: Consider all whitespace?
+        if src.char_ == u" " or src.char_ == u"⠀":
+            if kind[py, px] != SIXEL:
+                composite(&dst.fg_color[0], &src.bg_color[0], alpha)
+                composite(&dst.bg_color[0], &src.bg_color[0], alpha)
+            if kind[py, px] != GLYPH:
+                oy = py * h
+                ox = px * w
+                for gy in range(h):
+                    for gx in range(w):
+                        graphics[oy + gy, ox + gx, 3] = <uint8>(alpha * 255)
+                        composite(
+                            &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
+                        )
+        else:
+            dst.char_ = src.char_
+            dst.bold = src.bold
+            dst.italic = src.italic
+            dst.underline = src.underline
+            dst.strikethrough = src.strikethrough
+            dst.overline = src.overline
+            dst.reverse = src.reverse
+            dst.fg_color = src.fg_color
+            if kind[py, px] == SIXEL:
+                oy = py * h
+                ox = px * w
+                average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
+            elif kind[py, px] == MIXED:
+                oy = py * h
+                ox = px * w
+                p = average_graphics(&rgb[0], graphics[oy: oy + h, ox:ox + w])
+                lerp_rgb(&rgb[0], &dst.bg_color[0], p)
+            kind[py, px] = GLYPH
+            composite(dst.bg_color, src.bg_color, alpha)
 
 
 cpdef void text_field_render(
     Cell[:, ::1] cells,
-    uint8[:, ::1] kind,
     uint8[:, :, ::1] graphics,
-    long[::1] positions,
+    uint8[:, ::1] kind,
+    tuple[int, int] abs_pos,
+    bint is_transparent,
+    long long[:, ::1] positions,
     Cell[::1] particles,
     double alpha,
-    bint is_transparent,
     Region region,
+):
+    cdef:
+        int abs_y = abs_pos[0], abs_x = abs_pos[1]
+        CRegion *cregion = &region.cregion
+
+    if is_transparent:
+        trans_text_field_render(
+            cells, graphics, kind, abs_y, abs_x, positions, particles, alpha, cregion
+        )
+    else:
+        opaque_text_field_render(cells, abs_y, abs_x, positions, particles, cregion)
+
+
+cdef opaque_half_graphics_field_render(
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
+    CRegion *cregion,
+):
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        double py, px
+        int ipy, ipx
+        Cell *dst
+        uint8 *dst_rgb
+
+    for i in range(nparticles):
+        py = positions[i][0] + abs_y
+        ipy = <int>py
+        px = positions[i][1] + abs_x
+        ipx = <int>px
+        if not contains(cregion, ipy, ipx):
+            continue
+        dst = &cells[ipy, ipx]
+        dst.bold = False
+        dst.italic = False
+        dst.underline = False
+        dst.strikethrough = False
+        dst.overline = False
+        dst.reverse = False
+        if py - ipy < .5:
+            dst_rgb = &dst.fg_color[0]
+        else:
+            dst_rgb = &dst.bg_color[0]
+        if dst.char_ != u"▀":
+            dst.fg_color = dst.bg_color
+            dst.char_ = u"▀"
+        dst_rgb[0] = particles[i, 0]
+        dst_rgb[1] = particles[i, 1]
+        dst_rgb[2] = particles[i, 2]
+
+
+cdef trans_half_graphics_field_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
+    double alpha,
+    CRegion *cregion,
+):
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        double py, px
+        int ipy, ipx
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx, gtop, gbot
+        Cell *dst
+        double a
+        uint8* src_rgba
+        uint8* dst_rgb
+
+    for i in range(nparticles):
+        py = positions[i][0] + abs_y
+        ipy = <int>py
+        px = positions[i][1] + abs_x
+        ipx = <int>px
+        if not contains(cregion, ipy, ipx):
+            continue
+        src_rgba = &particles[i, 0]
+        a = alpha * <double>src_rgba[3] / 255
+        dst = &cells[ipy, ipx]
+        if kind[ipy, ipx] == GLYPH:
+            dst.bold = False
+            dst.italic = False
+            dst.underline = False
+            dst.strikethrough = False
+            dst.overline = False
+            dst.reverse = False
+            if dst.char_ != u"▀":
+                dst.fg_color = dst.bg_color
+                dst.char_ = u"▀"
+            if py - ipy < .5:
+                composite(&dst.fg_color[0], src_rgba, a)
+            else:
+                composite(&dst.bg_color[0], src_rgba, a)
+        else:
+            if py - ipy <= .5:
+                gtop = 0
+                gbot = h // 2
+                dst_rgb = &dst.fg_color[0]
+            else:
+                gtop = h // 2
+                gbot = h
+                dst_rgb = &dst.bg_color[0]
+            if kind[ipy, ipx] == MIXED:
+                kind[ipy, ipx] = SIXEL
+                if dst.char_ != u"▀":
+                    dst.fg_color = dst.bg_color
+                composite(dst_rgb, src_rgba, a)
+            oy = ipy * h
+            ox = ipx * w
+            for gy in range(gtop, gbot):
+                for gx in range(w):
+                    if graphics[oy + gy, ox + gx, 3]:
+                        composite(&graphics[oy + gy, ox + gx, 0], src_rgba, a)
+                    else:
+                        graphics[oy + gy, ox + gx, 0] = dst_rgb[0]
+                        graphics[oy + gy, ox + gx, 1] = dst_rgb[1]
+                        graphics[oy + gy, ox + gx, 2] = dst_rgb[2]
+                        graphics[oy + gy, ox + gx, 3] = 1
+
+
+cdef opaque_sixel_graphics_field_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    CRegion *cregion,
+):
+    pass
+
+
+cdef trans_sixel_graphics_field_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
+):
+    pass
+
+
+cdef opaque_braille_graphics_field_render(
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    CRegion *cregion,
+):
+    pass
+
+
+cdef trans_braille_graphics_field_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
 ):
     pass
 
 
 cpdef void graphics_field_render(
     Cell[:, ::1] cells,
-    uint8[:, ::1] kind,
     uint8[:, :, ::1] graphics,
-    long[::1] positions,
-    uint8[::1] particles,  # RGBA
-    double alpha,
+    uint8[:, ::1] kind,
+    tuple[int, int] abs_pos,
+    str blitter,
     bint is_transparent,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
+    double alpha,
     Region region,
 ):
-    pass
-# TODO: Missing renders: field_render, graphics_field_render
+    cdef:
+        int abs_y = abs_pos[0], abs_x = abs_pos[1]
+        CRegion *cregion = &region.cregion
+
+    if blitter == "half":
+        if is_transparent:
+            trans_half_graphics_field_render(
+                cells,
+                graphics,
+                kind,
+                abs_y,
+                abs_x,
+                positions,
+                particles,
+                alpha,
+                cregion,
+            )
+        else:
+            opaque_half_graphics_field_render(
+                cells, abs_y, abs_x, positions, particles, cregion
+            )
+    elif blitter == "sixel":
+        if is_transparent:
+            pass
+            # trans_sixel_graphics_field_render
+        else:
+            pass
+            # opaque_sixel_graphics_field_render
+    elif blitter == "braille":
+        if is_transparent:
+            pass
+            # trans_braille_graphics_field_render
+        else:
+            pass
+            # opaque_braille_graphics_field_render
 
 
 cdef inline void write_sgr(fbuf* f, uint8 param, bint* first):
@@ -943,6 +1256,8 @@ cdef inline void write_rgb(fbuf* f, uint8 fg, uint8* rgb, bint* first):
         fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline ssize_t write_glyph(
     fbuf* f,
     size_t oy,
@@ -982,6 +1297,7 @@ cdef inline ssize_t write_glyph(
         write_sgr(f, 4 if cell.underline else 24, &first)
     if last_sgr is NULL or cell.strikethrough != last_sgr.strikethrough:
         write_sgr(f, 9 if cell.strikethrough else 29, &first)
+    # FIXME: overline off is buggy
     if last_sgr is NULL or cell.overline != last_sgr.overline:
         write_sgr(f, 53 if cell.overline else 54, &first)
     if last_sgr is NULL or cell.reverse != last_sgr.reverse:
@@ -1090,6 +1406,11 @@ cpdef void terminal_render(
             if kind[y, x] == GLYPH and (
                 resized
                 or prev_kind[y, x]
+                or (
+                    emit_sixel
+                    and min_y_sixel <= y <= max_y_sixel
+                    and min_x_sixel <= x <= max_x_sixel
+                )
                 or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
                 if write_glyph(
