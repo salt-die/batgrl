@@ -2,28 +2,20 @@
 
 from math import ceil
 
-import numpy as np
+from ..geometry import Region
+from .gadget import Gadget, Point, PosHint, Size, SizeHint
 
-from ..colors import TRANSPARENT, AColor
-from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
-
-__all__ = ["TiledImage", "Interpolation", "Point", "Size"]
+__all__ = ["Tiled", "Point", "Size"]
 
 
-class TiledImage(Graphics):
+class Tiled(Gadget):
     r"""
-    A tiled image.
+    Tile a gadget over the visible region of ``Tiled``.
 
     Parameters
     ----------
-    tile : Graphics
+    tile : Gadget
         The gadget to tile.
-    default_color : AColor, default: AColor(0, 0, 0, 0)
-        Default texture color.
-    alpha : float, default: 1.0
-        Transparency of gadget.
-    interpolation : Interpolation, default: "linear"
-        Interpolation used when gadget is resized.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -45,14 +37,6 @@ class TiledImage(Graphics):
     ----------
     tile : Graphics
         The gadget to tile.
-    texture : NDArray[np.uint8]
-        uint8 RGBA color array.
-    default_color : AColor
-        Default texture color.
-    alpha : float
-        Transparency of gadget.
-    interpolation : Interpolation
-        Interpolation used when gadget is resized.
     size : Size
         Size of gadget.
     height : int
@@ -102,10 +86,6 @@ class TiledImage(Graphics):
 
     Methods
     -------
-    to_png(path)
-        Write :attr:`texture` to provided path as a `png` image.
-    clear()
-        Fill texture with default color.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -159,60 +139,34 @@ class TiledImage(Graphics):
     def __init__(
         self,
         *,
-        tile: Graphics,
-        is_transparent: bool = True,
-        default_color: AColor = TRANSPARENT,
-        alpha: float = 1.0,
-        interpolation: Interpolation = "linear",
+        tile: Gadget,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
         super().__init__(
-            is_transparent=is_transparent,
-            default_color=default_color,
-            alpha=alpha,
-            interpolation=interpolation,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
         self.tile = tile
 
-    @property
-    def tile(self):
-        """
-        The gadget to tile.
-
-        Setting this attribute updates the texture immediately.
-        """
-        return self._tile
-
-    @tile.setter
-    def tile(self, new_tile):
-        self._tile = new_tile
-        self.on_size()
-
-    def on_size(self):
-        """Retile gadget on resize."""
+    def _render(self, cells, graphics, kind):
         h, w = self._size
-        tile = self.tile
-
-        v_repeat = ceil(h / tile.height)
-        h_repeat = ceil(w / tile.width)
-
-        texture = np.tile(tile.texture, (v_repeat, h_repeat, 1))
-
-        vr = h % tile.height
-        hr = w % tile.width
-
-        vertical_slice = np.s_[: (-tile.height + vr) if vr else None]
-        horizontal_slice = np.s_[: (-tile.width + hr) if hr else None]
-
-        self.texture = texture[vertical_slice, horizontal_slice].copy()
+        th, tw = tsize = self.tile.size
+        oy, ox = self.absolute_pos
+        for y in range(ceil(h / th)):
+            for x in range(ceil(w / tw)):
+                self.tile.pos = oy + y * th, ox + x * tw
+                self.tile._region = (
+                    Region.from_rect(self.tile.pos, tsize) & self._clipping_region
+                )
+                self.tile._render(cells, graphics, kind)
