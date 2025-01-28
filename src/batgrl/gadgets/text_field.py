@@ -9,9 +9,9 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from ..geometry import clamp, rect_slice
-from ..text_tools import cell_sans
-from ..texture_tools import _composite
+from .._rendering import text_field_render
+from ..geometry import clamp
+from ..text_tools import _Cell
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, new_cell
 
 __all__ = ["TextParticleField", "particle_data_from_canvas", "Point", "Size"]
@@ -192,12 +192,14 @@ class TextParticleField(Gadget):
         if particle_positions is None:
             self.particle_positions = np.zeros((0, 2), dtype=int)
         else:
-            self.particle_positions = np.asarray(particle_positions, dtype=int)
+            self.particle_positions = np.ascontiguousarray(
+                particle_positions, dtype=int
+            )
 
         if particle_cells is None:
             self.particle_cells = np.full(len(self.particle_positions), new_cell())
         else:
-            self.particle_cells = np.asarray(particle_cells, dtype=Cell)
+            self.particle_cells = np.ascontiguousarray(particle_cells, dtype=Cell)
 
         if particle_properties is None:
             self.particle_properties = {}
@@ -220,35 +222,24 @@ class TextParticleField(Gadget):
         """Number of particles in particle field."""
         return len(self.particle_positions)
 
-    def _render(self, canvas: NDArray[Cell]):
+    def _render(
+        self,
+        cells: NDArray[Cell],
+        graphics: NDArray[np.uint8],
+        kind: NDArray[np.uint8],
+    ):
         """Render visible region of gadget."""
-        chars = canvas[cell_sans("bg_color")]
-        bg_color = canvas["bg_color"]
-        abs_pos = self.absolute_pos
-        ppos = self.particle_positions
-        pchars = self.particle_cells[cell_sans("bg_color")]
-        pbg_color = self.particle_cells["bg_color"]
-        for pos, size in self._region.rects():
-            abs_ppos = ppos - (pos - abs_pos)
-            inbounds = (((0, 0) <= abs_ppos) & (abs_ppos < size)).all(axis=1)
-
-            if self.is_transparent:
-                not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
-                where_inbounds = np.nonzero(inbounds & not_whitespace)
-            else:
-                where_inbounds = np.nonzero(inbounds)
-            painted = pbg_color[where_inbounds]
-
-            ys, xs = abs_ppos[where_inbounds].T
-            dst = rect_slice(pos, size)
-            if self.is_transparent:
-                background = bg_color[dst][ys, xs]
-                _composite(background, painted, 255, self.alpha)
-                bg_color[dst][ys, xs] = background
-            else:
-                bg_color[dst][ys, xs] = painted
-
-            chars[dst][ys, xs] = pchars[where_inbounds]
+        text_field_render(
+            cells,
+            graphics,
+            kind,
+            self.absolute_pos,
+            self._is_transparent,
+            self.particle_positions,
+            self.particle_cells.view(_Cell),
+            self._alpha,
+            self._region,
+        )
 
 
 def particle_data_from_canvas(
