@@ -36,7 +36,7 @@ FRICTION = 0.99
 
 NCOLORS = 100
 YELLOW = Color.from_hex("c4a219")
-BLUE = Color.from_hex("070c25")
+BLUE = Color.from_hex("123456")
 
 COLOR_CHANGE_SPEED = 5
 PERCENTS = tuple(np.linspace(0, 1, 30))
