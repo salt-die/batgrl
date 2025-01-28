@@ -11,3 +11,6 @@ cdef struct CRegion:
 
 cdef class Region:
     cdef CRegion cregion
+
+
+cdef bint contains(CRegion *cregion, int y, int x)

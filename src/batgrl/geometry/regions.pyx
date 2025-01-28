@@ -245,6 +245,20 @@ cdef inline Py_ssize_t bisect_walls(Band *band, int x):
     return lo
 
 
+cdef bint contains(CRegion *cregion, int y, int x):
+    cdef Py_ssize_t i
+
+    i = bisect_bands(cregion, y)
+    if i == 0:
+        return 0
+
+    if cregion.bands[i - 1].y2 <= y:
+        return 0
+
+    i = bisect_walls(&cregion.bands[i - 1], x)
+    return i % 2 == 1
+
+
 cdef class Region:
     def __cinit__(self):
         self.cregion.bands = <Band*>malloc(sizeof(Band) * 8)
@@ -349,20 +363,8 @@ cdef class Region:
         return True
 
     def __contains__(self, point: Point) -> bool:
-        cdef:
-            int y, x
-            Py_ssize_t i
-
-        y, x = point
-        i = bisect_bands(&self.cregion, y)
-        if i == 0:
-            return False
-
-        if self.cregion.bands[i - 1].y2 <= y:
-            return False
-
-        i = bisect_walls(&self.cregion.bands[i - 1], x)
-        return i % 2 == 1
+        cdef int y = point[0], x = point[1]
+        return contains(&self.cregion, y, x)
 
     def rects(self) -> Iterator[tuple[Point, Size]]:
         cdef:
