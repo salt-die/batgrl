@@ -47,10 +47,10 @@ class Sandbox(Graphics):
         for particle in self.world.flatten():
             particle.sleep()
 
-    def _render(self, canvas):
+    def _render(self, cells, graphics, kind):
         # Color of each particle in `self.world` is written into color array.
         self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
-        super()._render(canvas)
+        super()._render(cells, graphics, kind)
 
     def on_mouse(self, mouse_event):
         if mouse_event.button != "left" or not self.collides_point(mouse_event.pos):

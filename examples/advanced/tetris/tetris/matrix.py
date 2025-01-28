@@ -35,8 +35,8 @@ class MatrixGadget(Graphics):
 
             await asyncio.sleep(sleep)
 
-    def _render(self, canvas):
-        super()._render(canvas)
+    def _render(self, cells, graphics, kind):
+        super()._render(cells, graphics, kind)
         glow = self._glow
         abs_pos = self.absolute_pos
         for pos, size in self._region.rects():
@@ -51,11 +51,11 @@ class MatrixGadget(Graphics):
                 ]
                 == 255
             )
-            fg = canvas["fg_color"][dst_y, dst_x]
+            fg = cells["fg_color"][dst_y, dst_x]
             fg[visible[::2]] = (fg[visible[::2]] * (1 - glow) + glow * 255).astype(
                 np.uint8
             )
-            bg = canvas["bg_color"][dst_y, dst_x]
+            bg = cells["bg_color"][dst_y, dst_x]
             bg[visible[1::2]] = (bg[visible[1::2]] * (1 - glow) + glow * 255).astype(
                 np.uint8
             )

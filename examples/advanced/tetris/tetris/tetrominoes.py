@@ -38,7 +38,7 @@ class Tetromino:
                 np.kron(shape, np.ones((2, 2), int))[..., None], 4, axis=-1
             )
             texture *= (*color, 255)
-            self.textures[orientation] = texture
+            self.textures[orientation] = texture.astype(np.uint8)
 
         self.kicks = kicks
 
