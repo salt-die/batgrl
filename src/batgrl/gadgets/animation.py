@@ -9,7 +9,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
-from .image import Image, Interpolation
+from .graphics import Blitter, Graphics, Interpolation
+from .image import Image
 
 __all__ = ["Animation", "Interpolation", "Point", "Size"]
 
@@ -50,6 +51,8 @@ class Animation(Gadget):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -81,6 +84,8 @@ class Animation(Gadget):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -199,6 +204,7 @@ class Animation(Gadget):
         reverse: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -234,6 +240,7 @@ class Animation(Gadget):
         self.frame_durations = _check_frame_durations(self.frames, frame_durations)
         self.alpha = alpha
         self.interpolation = interpolation
+        self.blitter = blitter
         self.loop = loop
         self.reverse = reverse
         self._i = len(self.frames) - 1 if self.reverse else 0
@@ -276,6 +283,21 @@ class Animation(Gadget):
         self._interpolation = interpolation
         for frame in self.frames:
             frame.interpolation = interpolation
+
+    @property
+    def blitter(self) -> Blitter:
+        """Determines how graphics are rendered."""
+        return self._blitter
+
+    @blitter.setter
+    def blitter(self, blitter: Blitter):
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        if blitter == "sixel" and not Graphics._sixel_support:
+            blitter = "half"
+        self._blitter = blitter
+        for frame in self.frames:
+            frame.blitter = blitter
 
     async def _play_animation(self):
         while self.frames:
@@ -328,13 +350,15 @@ class Animation(Gadget):
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
 
-    def _render(self, canvas: NDArray[Cell]):
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ):
         """Render visible region of gadget."""
         if self.frames:
             self.frames[self._i]._region = self._region
-            self.frames[self._i]._render(canvas)
+            self.frames[self._i]._render(cells, graphics, kind)
         else:
-            super()._render(canvas)
+            super()._render(cells, graphics, kind)
 
     @classmethod
     def from_textures(
@@ -346,6 +370,7 @@ class Animation(Gadget):
         reverse: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -372,6 +397,8 @@ class Animation(Gadget):
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -399,11 +426,12 @@ class Animation(Gadget):
             reverse=reverse,
             alpha=alpha,
             interpolation=interpolation,
-            is_transparent=is_transparent,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -413,6 +441,7 @@ class Animation(Gadget):
                 size=animation.size,
                 alpha=animation.alpha,
                 interpolation=animation.interpolation,
+                blitter=blitter,
             )
             for texture in textures
         ]
@@ -433,6 +462,7 @@ class Animation(Gadget):
         reverse: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -459,6 +489,8 @@ class Animation(Gadget):
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -486,6 +518,7 @@ class Animation(Gadget):
             reverse=reverse,
             alpha=alpha,
             interpolation=interpolation,
+            blitter=blitter,
             is_transparent=is_transparent,
             size=size,
             pos=pos,
@@ -497,6 +530,7 @@ class Animation(Gadget):
         animation.frames = list(images)
         for image in animation.frames:
             image.interpolation = animation.interpolation
+            image.blitter = animation.blitter
             image.size = animation.size
             image.alpha = animation.alpha
             image.parent = animation

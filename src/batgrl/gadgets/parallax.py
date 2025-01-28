@@ -18,7 +18,8 @@ from .gadget import (
     bindable,
     clamp,
 )
-from .image import Image, Interpolation
+from .graphics import Graphics
+from .image import Blitter, Image, Interpolation
 
 __all__ = ["Parallax", "Interpolation", "Point", "Size"]
 
@@ -56,6 +57,8 @@ class Parallax(Gadget):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -89,6 +92,8 @@ class Parallax(Gadget):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -199,11 +204,12 @@ class Parallax(Gadget):
         speeds: Sequence[float] | None = None,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
@@ -219,11 +225,11 @@ class Parallax(Gadget):
                 layer.parent = self
 
         super().__init__(
-            is_transparent=is_transparent,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -231,6 +237,7 @@ class Parallax(Gadget):
         self.speeds = _check_layer_speeds(self.layers, speeds)
         self.alpha = alpha
         self.interpolation = interpolation
+        self.blitter = blitter
         self._vertical_offset = self._horizontal_offset = 0.0
         self.on_size()
 
@@ -272,8 +279,24 @@ class Parallax(Gadget):
     def interpolation(self, interpolation: Interpolation):
         if interpolation not in {"nearest", "linear", "cubic", "area", "lanczos"}:
             raise ValueError(f"{interpolation} is not a valid interpolation type.")
+        self._interpolation = interpolation
         for layer in self.layers:
             layer.interpolation = interpolation
+
+    @property
+    def blitter(self) -> Blitter:
+        """Determines how graphics are rendered."""
+        return self._blitter
+
+    @blitter.setter
+    def blitter(self, blitter: Blitter):
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        if blitter == "sixel" and not Graphics._sixel_support:
+            blitter = "half"
+        self._blitter = blitter
+        for layer in self.layers:
+            layer.blitter = blitter
 
     @property
     def vertical_offset(self) -> float:
@@ -321,13 +344,15 @@ class Parallax(Gadget):
             )
             layer.texture = np.roll(texture, rolls, axis=(0, 1))
 
-    def _render(self, canvas: NDArray[Cell]):
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ):
         """Render visible region of gadget."""
         if self.layers:
             for layer in self.layers:
-                layer._render(canvas)
+                layer._render(cells, graphics, kind)
         else:
-            super()._render(canvas)
+            super()._render(cells, graphics, kind)
 
     @classmethod
     def from_textures(
@@ -337,11 +362,12 @@ class Parallax(Gadget):
         speeds: Sequence[float] | None = None,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ) -> Self:
@@ -359,6 +385,8 @@ class Parallax(Gadget):
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -384,11 +412,12 @@ class Parallax(Gadget):
         parallax = cls(
             alpha=alpha,
             interpolation=interpolation,
-            is_transparent=is_transparent,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -398,6 +427,7 @@ class Parallax(Gadget):
                 size=parallax.size,
                 alpha=parallax.alpha,
                 interpolation=parallax.interpolation,
+                blitter=blitter,
             )
             for texture in textures
         ]
@@ -414,11 +444,12 @@ class Parallax(Gadget):
         speeds: Sequence[float] | None = None,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ) -> Self:
@@ -436,6 +467,8 @@ class Parallax(Gadget):
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -461,17 +494,19 @@ class Parallax(Gadget):
         parallax = cls(
             alpha=alpha,
             interpolation=interpolation,
-            is_transparent=is_transparent,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
         parallax.layers = list(images)
         for image in parallax.layers:
             image.interpolation = parallax.interpolation
+            image.blitter = blitter
             image.size = parallax.size
             image.alpha = parallax.alpha
             image.parent = parallax
