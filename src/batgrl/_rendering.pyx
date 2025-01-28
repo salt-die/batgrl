@@ -196,85 +196,46 @@ cdef inline void lerp_rgb(uint8* src, uint8* dst, double p):
     dst[2] = <uint8>(<double>src[2] * p + <double>dst[2] * negp)
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cdef inline void luminance_quant(
+cdef inline double average_quant(
     uint8 *fg,
-    uint8 *bg,
-    double *luminances,
+    bint *pixels,
     uint8[:, :, ::1] texture,
     size_t y,
     size_t x,
     size_t h,
     size_t w,
 ):
-    # Quantize a block of colors in texture to two colors by comparing luminances:
-    # Find average luminance. Compare each color's luminance to average luminance.
-    # If luminance is less than average, add to background else foreground.
-    # This is not necessarily a good quantization, but it is fast.
+    """Quantize a block of colors to a single colors by averaging them."""
 
     cdef:
-        size_t i, j, k, nfg = 0, nbg = 0
-        double average_luminance = 0
-        double[3] quant_fg, quant_bg
+        size_t i, j, k = 0, nfg = 0
+        double a, average_alpha = 0
+        double[3] quant_fg
 
-    memset(luminances, 0, sizeof(double) * (h * w))
+    memset(pixels, 0, sizeof(bint) * (h * w))
     memset(quant_fg, 0, sizeof(double) * 3)
-    memset(quant_bg, 0, sizeof(double) * 3)
 
-    k = 0
     for i in range(y, y + h):
         for j in range(x, x + w):
-            luminances[k] += .2126 * texture[i, j, 0]
-            luminances[k] += .7152 * texture[i, j, 1]
-            luminances[k] += .0722 * texture[i, j, 2]
-            k += 1
-
-    k = h * w
-    for i in range(k):
-        average_luminance += luminances[i]
-    average_luminance /= k
-
-    k = 0
-    for i in range(y, y + h):
-        for j in range(x, x + w):
-            if luminances[k] <= average_luminance:
-                quant_bg[0] += texture[i, j, 0]
-                quant_bg[1] += texture[i, j, 1]
-                quant_bg[2] += texture[i, j, 2]
-                nbg += 1
-                luminances[k] = 0
-            else:
-                quant_fg[0] += texture[i, j, 0]
-                quant_fg[1] += texture[i, j, 1]
-                quant_fg[2] += texture[i, j, 2]
+            if texture[i, j, 3]:
+                pixels[k] = 1
+                a = texture[i, j, 3] / 255
+                average_alpha += a
                 nfg += 1
-                luminances[k] = 1
+                quant_fg[0] += texture[i, j, 0] * a
+                quant_fg[1] += texture[i, j, 1] * a
+                quant_fg[2] += texture[i, j, 2] * a
             k += 1
 
-    if nbg:
-        quant_bg[0] /= nbg
-        quant_bg[1] /= nbg
-        quant_bg[2] /= nbg
     if nfg:
         quant_fg[0] /= nfg
         quant_fg[1] /= nfg
         quant_fg[2] /= nfg
-    else:
-        quant_fg[0] = quant_bg[0]
-        quant_fg[1] = quant_bg[1]
-        quant_fg[2] = quant_bg[2]
-    if not nbg:
-        quant_bg[0] = quant_fg[0]
-        quant_bg[1] = quant_fg[1]
-        quant_bg[2] = quant_fg[2]
-
-    fg[0] = <uint8>quant_fg[0]
-    fg[1] = <uint8>quant_fg[1]
-    fg[2] = <uint8>quant_fg[2]
-    bg[0] = <uint8>quant_bg[0]
-    bg[1] = <uint8>quant_bg[1]
-    bg[2] = <uint8>quant_bg[2]
+        fg[0] = <uint8>quant_fg[0]
+        fg[1] = <uint8>quant_fg[1]
+        fg[2] = <uint8>quant_fg[2]
+        return average_alpha / nfg
+    return average_alpha
 
 
 @cython.boundscheck(False)
@@ -719,39 +680,34 @@ cdef opaque_braille_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int src_y, src_x
-        uint8[3] fg, bg
-        double[8] luminances
+        uint8[3] fg
+        bint[8] pixels
         Cell* cell
         uint8 i
+        double average_alpha
         unsigned long char_
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
-        luminance_quant(
-            &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
+        average_alpha = average_quant(
+            &fg[0], &pixels[0], self_texture, src_y, src_x, 4, 2
         )
-        cell = &cells[it.y, it.x]
-        if rgb_eq(&fg[0], &bg[0]):
-            char_ = 32
-        else:
+        if average_alpha:
+            cell = &cells[it.y, it.x]
             char_ = 10240
             for i in range(8):
-                if luminances[i]:
+                if pixels[i]:
                     char_ += BRAILLE_ENUM[i]
-        cell.char_ = char_
-        cell.bold = False
-        cell.italic = False
-        cell.underline = False
-        cell.strikethrough = False
-        cell.overline = False
-        cell.reverse = False
-        cell.fg_color[0] = fg[0]
-        cell.fg_color[1] = fg[1]
-        cell.fg_color[2] = fg[2]
-        cell.bg_color[0] = bg[0]
-        cell.bg_color[1] = bg[1]
-        cell.bg_color[2] = bg[2]
+            cell.char_ = char_
+            cell.bold = False
+            cell.italic = False
+            cell.underline = False
+            cell.strikethrough = False
+            cell.overline = False
+            cell.reverse = False
+            cell.fg_color = cell.bg_color
+            composite(&cell.fg_color[0], &fg[0], average_alpha)
         next_(&it)
 
 
@@ -771,54 +727,38 @@ cdef trans_braille_graphics_render(
     init_iter(&it, cregion)
     cdef:
         int src_y, src_x
-        uint8[3] fg, bg
-        double[8] luminances
+        bint[8] pixels
         Cell* cell
-        uint8 i, j
+        uint8 i
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
-        size_t oy, ox, gy, gx
-        uint8[3] rgb
-        double alpha_avg = 0, p
+        size_t oy, ox
+        uint8[3] rgb, fg
+        double p, average_alpha
         unsigned long char_
 
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
-        if not self_texture[src_y, src_x, 3]:
+        average_alpha = average_quant(
+            &fg[0], &pixels[0], self_texture, src_y, src_x, 4, 2
+        )
+        if not average_alpha:
             next_(&it)
             continue
-        luminance_quant(
-            &fg[0], &bg[0], &luminances[0], self_texture, src_y, src_x, 4, 2
-        )
         cell = &cells[it.y, it.x]
         char_ = 10240
         for i in range(8):
-            if luminances[i]:
+            if pixels[i]:
                 char_ += BRAILLE_ENUM[i]
-        if char_ != 10240:
-            cell.char_ = char_
-            cell.fg_color = fg
+        cell.char_ = char_
         cell.bold = False
         cell.italic = False
         cell.underline = False
         cell.strikethrough = False
         cell.overline = False
         cell.reverse = False
-        if char_ == 10240:
-            if kind[it.y, it.x] != SIXEL:
-                composite(&cell.fg_color[0], &bg[0], alpha)
-                composite(&cell.bg_color[0], &bg[0], alpha)
-            if kind[it.y, it.x] != GLYPH:
-                oy = it.y * h
-                ox = it.x * w
-                for gy in range(h):
-                    for gx in range(w):
-                        graphics[oy + gy, ox + gx, 3] = <uint8>(alpha * 255)
-                        composite(
-                            &graphics[oy + gy, ox + gx, 0], &bg[0], alpha
-                        )
-        elif kind[it.y, it.x] == SIXEL:
+        if kind[it.y, it.x] == SIXEL:
             oy = it.y * h
             ox = it.x * w
             average_graphics(&cell.bg_color[0], graphics[oy:oy + h, ox:ox + w])
@@ -829,12 +769,8 @@ cdef trans_braille_graphics_render(
             p = average_graphics(&rgb[0], graphics[oy:oy + h, ox: ox + w])
             lerp_rgb(&rgb[0], &cell.bg_color[0], p)
             kind[it.y, it.x] = GLYPH
-
-        for i in range(src_y, src_y + 4):
-            for j in range(src_x, src_x + 2):
-                alpha_avg += self_texture[src_y, src_x, 3]
-        alpha_avg *= alpha / 2040
-        composite(&cell.bg_color[0], &bg[0], alpha_avg)
+        cell.fg_color = cell.bg_color
+        composite(&cell.fg_color[0], &fg[0], average_alpha)
         next_(&it)
 
 
