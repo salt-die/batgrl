@@ -1,6 +1,7 @@
 # distutils: language = c
 # distutils: sources = src/batgrl/cwidth.c
 from libc.string cimport memset
+from libc.math cimport round
 
 import cython
 import numpy as np
@@ -89,7 +90,7 @@ cdef packed struct Cell:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline bint rgb_eq(uint8* a, uint8* b):
+cdef inline bint rgb_eq(uint8 *a, uint8 *b):
     return a[0] == b[0] and a[1] == b[1] and a[2] == b[2]
 
 
@@ -1085,10 +1086,40 @@ cdef opaque_sixel_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
     CRegion *cregion,
 ):
-    pass
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        double py, px
+        int ipy, ipx
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx, pgy, pgx
+
+    for i in range(nparticles):
+        py = positions[i][0] + abs_y
+        ipy = <int>py
+        px = positions[i][1] + abs_x
+        ipx = <int>px
+        if not contains(cregion, ipy, ipx):
+            continue
+        oy = ipy * h
+        ox = ipx * w
+        pgy = oy + <int>round((py - ipy) * h)
+        if pgy >= graphics.shape[0]:
+            continue
+        pgx = ox + <int>round((px - ipx) * w)
+        if pgx >= graphics.shape[1]:
+            continue
+        graphics[pgy, pgx] = particles[i]
+        kind[ipy, ipx] = SIXEL
+        for gy in range(h):
+            for gx in range(w):
+                if not graphics[oy + gy, ox + gx, 3]:
+                    kind[ipy, ipx] = MIXED
+                    break
 
 
 cdef trans_sixel_graphics_field_render(
@@ -1097,21 +1128,99 @@ cdef trans_sixel_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
     double alpha,
     CRegion *cregion,
 ):
-    pass
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        double py, px
+        int ipy, ipx
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx, pgy, pgx
+
+    for i in range(nparticles):
+        if not particles[i, 3]:
+            continue
+        py = positions[i][0] + abs_y
+        ipy = <int>py
+        px = positions[i][1] + abs_x
+        ipx = <int>px
+        if not contains(cregion, ipy, ipx):
+            continue
+        oy = ipy * h
+        ox = ipx * w
+        pgy = oy + <int>round((py - ipy) * h)
+        if pgy >= graphics.shape[0]:
+            continue
+        pgx = ox + <int>round((px - ipx) * w)
+        if pgx >= graphics.shape[1]:
+            continue
+        if (
+            kind[ipy, ipx] == GLYPH
+            or kind[ipy, ipx] == MIXED and not graphics[pgy, pgx, 3]
+        ):
+            if cells[ipy, ipx].char_ == u"▀" and py - ipy < .5:
+                graphics[pgy, pgx, 0] = cells[ipy, ipx].fg_color[0]
+                graphics[pgy, pgx, 1] = cells[ipy, ipx].fg_color[1]
+                graphics[pgy, pgx, 2] = cells[ipy, ipx].fg_color[2]
+            else:
+                graphics[pgy, pgx, 0] = cells[ipy, ipx].bg_color[0]
+                graphics[pgy, pgx, 1] = cells[ipy, ipx].bg_color[1]
+                graphics[pgy, pgx, 2] = cells[ipy, ipx].bg_color[2]
+        composite(&graphics[pgy, pgx, 0], &particles[i, 0], alpha)
+        graphics[pgy, pgx, 3] = 1
+        kind[ipy, ipx] = SIXEL
+        for gy in range(h):
+            for gx in range(w):
+                if not graphics[oy + gy, ox + gx, 3]:
+                    kind[ipy, ipx] = MIXED
+                    break
 
 
 cdef opaque_braille_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
     CRegion *cregion,
 ):
-    pass
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        double py, px
+        int ipy, ipx
+        Cell *dst
+        size_t pgy, pgx
+        unsigned long cell_
+
+    for i in range(nparticles):
+        py = positions[i][0] + abs_y
+        ipy = <int>py
+        px = positions[i][1] + abs_x
+        ipx = <int>px
+        if not contains(cregion, ipy, ipx):
+            continue
+        pgy = <int>((py - ipy) * 4)
+        pgx = <int>((px - ipx) * 2)
+        dst = &cells[ipy, ipx]
+        cell_ = dst.char_
+        if cell_ < 10240 or cell_ >= 10496:
+            cell_ = 10240
+        cell_ |= BRAILLE_ENUM[pgy * 2 + pgx]
+        dst.char_ = cell_
+        dst.bold = False
+        dst.italic = False
+        dst.underline = False
+        dst.strikethrough = False
+        dst.overline = False
+        dst.reverse = False
+        # FIXME: Average fg colors for particles in same cells.
+        dst.fg_color[0] = particles[i, 0]
+        dst.fg_color[1] = particles[i, 1]
+        dst.fg_color[2] = particles[i, 2]
 
 
 cdef trans_braille_graphics_field_render(
@@ -1120,11 +1229,62 @@ cdef trans_braille_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    uint8[:, :, ::1] self_texture,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
     double alpha,
     CRegion *cregion,
 ):
-    pass
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        double py, px
+        int ipy, ipx
+        Cell *dst
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t pgy, pgx
+        unsigned long char_
+        uint8[3] rgb
+
+    for i in range(nparticles):
+        if not particles[i, 3]:
+            continue
+        py = positions[i][0] + abs_y
+        ipy = <int>py
+        px = positions[i][1] + abs_x
+        ipx = <int>px
+        if not contains(cregion, ipy, ipx):
+            continue
+        pgy = <int>((py - ipy) * 4)
+        pgx = <int>((px - ipx) * 2)
+        dst = &cells[ipy, ipx]
+        char_ = dst.char_
+        # ! Assumed if char_ is braille, that background has already been composited.
+        if char_ < 10240 or char_ >= 10496:
+            char_ = 10240
+            if kind[ipy, ipx] == SIXEL:
+                oy = ipy * h
+                ox = ipx * w
+                average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
+                kind[ipy, ipx] = GLYPH
+            elif kind[ipy, ipx] == MIXED:
+                oy = ipy * h
+                ox = ipx * w
+                p = average_graphics(&rgb[0], graphics[oy:oy + h, ox: ox + w])
+                lerp_rgb(&rgb[0], &dst.bg_color[0], p)
+                kind[ipy, ipx] = GLYPH
+        kind[ipy, ipx] = GLYPH
+        char_ |= BRAILLE_ENUM[pgy * 2 + pgx]
+        dst.char_ = char_
+        dst.bold = False
+        dst.italic = False
+        dst.underline = False
+        dst.strikethrough = False
+        dst.overline = False
+        dst.reverse = False
+        # FIXME: Average fg colors for particles in same cells.
+        dst.fg_color[0] = particles[i, 0]
+        dst.fg_color[1] = particles[i, 1]
+        dst.fg_color[2] = particles[i, 2]
 
 
 cpdef void graphics_field_render(
@@ -1162,18 +1322,38 @@ cpdef void graphics_field_render(
             )
     elif blitter == "sixel":
         if is_transparent:
-            pass
-            # trans_sixel_graphics_field_render
+            trans_sixel_graphics_field_render(
+                cells,
+                graphics,
+                kind,
+                abs_y,
+                abs_x,
+                positions,
+                particles,
+                alpha,
+                cregion,
+            )
         else:
-            pass
-            # opaque_sixel_graphics_field_render
+            opaque_sixel_graphics_field_render(
+                cells, graphics, kind, abs_y, abs_x, positions, particles, cregion
+            )
     elif blitter == "braille":
         if is_transparent:
-            pass
-            # trans_braille_graphics_field_render
+            trans_braille_graphics_field_render(
+                cells,
+                graphics,
+                kind,
+                abs_y,
+                abs_x,
+                positions,
+                particles,
+                alpha,
+                cregion,
+            )
         else:
-            pass
-            # opaque_braille_graphics_field_render
+            opaque_braille_graphics_field_render(
+                cells, abs_y, abs_x, positions, particles, cregion
+            )
 
 
 cdef inline void write_sgr(fbuf* f, uint8 param, bint* first):
