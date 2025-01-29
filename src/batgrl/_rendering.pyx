@@ -206,7 +206,7 @@ cdef inline double average_quant(
     size_t h,
     size_t w,
 ):
-    """Quantize a block of colors to a single colors by averaging them."""
+    # Average the colors in a rect in texture and return the average alpha.
 
     cdef:
         size_t i, j, k = 0, nfg = 0
@@ -1413,9 +1413,8 @@ cdef inline ssize_t write_glyph(
         write_sgr(f, 4 if cell.underline else 24, &first)
     if last_sgr is NULL or cell.strikethrough != last_sgr.strikethrough:
         write_sgr(f, 9 if cell.strikethrough else 29, &first)
-    # FIXME: overline off is buggy
     if last_sgr is NULL or cell.overline != last_sgr.overline:
-        write_sgr(f, 53 if cell.overline else 54, &first)
+        write_sgr(f, 53 if cell.overline else 55, &first)
     if last_sgr is NULL or cell.reverse != last_sgr.reverse:
         write_sgr(f, 7 if cell.reverse else 27, &first)
     if last_sgr is NULL or not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
@@ -1504,7 +1503,7 @@ cpdef void terminal_render(
         gx = min_x_sixel * cell_w
         gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
         # If sixel graphics rect reaches last line of terminal, its height must be
-        # truncated to (nearest multiple of 6) - 6 to prevent scrolling.
+        # truncated to nearest multiple of 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
             gh -= gh % 6
         gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
