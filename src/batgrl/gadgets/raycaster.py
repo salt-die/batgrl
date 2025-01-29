@@ -17,6 +17,7 @@ from .graphics import (
     Size,
     SizeHint,
     clamp,
+    scale_geometry,
 )
 
 __all__ = ["Raycaster", "Sprite", "RaycasterCamera", "RgbaTexture", "Point", "Size"]
@@ -402,9 +403,9 @@ class Raycaster(Graphics):
 
     def on_size(self):
         """Resize texture array and re-make caster buffers."""
-        h, w = self._size
-
-        self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
+        h, w = scale_geometry(self._blitter, self._size)
+        self.texture = np.zeros((h, w, 4), dtype=np.uint8)
+        h //= 2
 
         # Precalculate angle of rays cast.
         self._ray_angles = angles = np.ones((w, 2), dtype=float)
@@ -449,7 +450,7 @@ class Raycaster(Graphics):
         self.texture[h:, :, :3] = self.floor_color
         self.texture[..., 3] = 255
 
-        for column in range(self.width):
+        for column in range(self.texture.shape[1]):
             self._cast_ray(column)
 
         self._cast_sprites()
