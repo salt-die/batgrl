@@ -925,6 +925,7 @@ class Gadget:
         """
         self.children.append(gadget)
         gadget.parent = self
+        self._invalidate_region()
 
         if self.root is not None:
             gadget.on_add()
@@ -959,6 +960,7 @@ class Gadget:
 
         self.children.remove(gadget)
         gadget.parent = None
+        self._invalidate_region()
 
     def prolicide(self) -> None:
         """Recursively remove all children."""
