@@ -198,6 +198,8 @@ cdef inline void lerp_rgb(uint8* src, uint8* dst, double p):
     dst[2] = <uint8>(<double>src[2] * p + <double>dst[2] * negp)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline double average_quant(
     uint8 *fg,
     bint *pixels,
@@ -859,6 +861,8 @@ def cursor_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void opaque_text_field_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -878,6 +882,8 @@ cdef void opaque_text_field_render(
             cells[py, px] = particles[i]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void trans_text_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -943,6 +949,8 @@ cdef void trans_text_field_render(
             composite(dst.bg_color, src.bg_color, alpha)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void text_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -966,6 +974,8 @@ cpdef void text_field_render(
         opaque_text_field_render(cells, abs_y, abs_x, positions, particles, cregion)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef opaque_half_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -1007,6 +1017,8 @@ cdef opaque_half_graphics_field_render(
         dst_rgb[2] = particles[i, 2]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef trans_half_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -1081,6 +1093,8 @@ cdef trans_half_graphics_field_render(
                         graphics[oy + gy, ox + gx, 3] = 1
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef opaque_sixel_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -1123,6 +1137,8 @@ cdef opaque_sixel_graphics_field_render(
                     break
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef trans_sixel_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -1187,6 +1203,8 @@ cdef struct BraillePixel:
     unsigned int ncolors
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef opaque_braille_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -1250,6 +1268,8 @@ cdef opaque_braille_graphics_field_render(
     free(pixels)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef trans_braille_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -1337,6 +1357,8 @@ cdef trans_braille_graphics_field_render(
     free(pixels)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
