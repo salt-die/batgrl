@@ -214,6 +214,8 @@ cdef ssize_t csixel_ansi(
     uint8[:, ::1] palette,
     uint8[:, ::1] indices,
     uint8[:, :, ::1] texture,
+    unsigned int aspect_h,
+    unsigned int aspect_w,
     size_t ncolors,
     size_t oy,
     size_t ox,
@@ -238,7 +240,7 @@ cdef ssize_t csixel_ansi(
             sixel_map_free(sixel_map)
             return -1
 
-    if fbuf_printf(f, "\x1bP;%d;q\"1;1;%d;%d", P2, w, h):
+    if fbuf_printf(f, "\x1bP;%d;q\"%d;%d;%d;%d", P2, aspect_h, aspect_w, w, h):
         sixel_map_free(sixel_map)
         return -1
 
@@ -269,7 +271,7 @@ cdef ssize_t csixel_ansi(
         if fbuf_putn(f, "-", 1):
             sixel_map_free(sixel_map)
             return -1
-
+    f.len -= 1  # Remove last "-"
     sixel_map_free(sixel_map)
     if fbuf_putn(f, "\x1b\\", 3):
         return -1

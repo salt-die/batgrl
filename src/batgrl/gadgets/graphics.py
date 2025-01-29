@@ -12,7 +12,7 @@ from ..colors import TRANSPARENT, AColor
 from ..texture_tools import Interpolation, resize_texture
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
-__all__ = ["Graphics", "Interpolation", "Point", "Size", "scale_geometry"]
+__all__ = ["Blitter", "Graphics", "Interpolation", "Point", "Size", "scale_geometry"]
 
 Blitter = Literal["braille", "half", "sixel"]
 """Determines how graphics are rendered."""
@@ -42,6 +42,9 @@ def scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
     """
     h, w = _BLITTER_GEOMETRY[blitter]
     a, b = point_or_size
+    if blitter == "sixel":
+        ah, _ = Graphics._sixel_aspect_ratio
+        return type(point_or_size)(h * a // ah, w * b)
     return type(point_or_size)(h * a, w * b)
 
 
@@ -198,6 +201,8 @@ class Graphics(Gadget):
 
     _sixel_support: bool = False
     """Whether sixel is supported."""
+    _sixel_aspect_ratio: Size = Size(1, 1)
+    """Sixel aspect ratio."""
 
     def __init__(
         self,
@@ -270,6 +275,12 @@ class Graphics(Gadget):
         self.texture = resize_texture(
             self.texture, scale_geometry(self._blitter, self.size), self._interpolation
         )
+
+    def on_add(self) -> None:
+        """Resize if geometry is incorrect on add."""
+        if self.texture.shape[:2] != scale_geometry(self._blitter, self.size):
+            self.on_size()
+        super().on_add()
 
     def to_png(self, path: Path) -> None:
         """Write :attr:`texture` to provided path as a `png` image."""

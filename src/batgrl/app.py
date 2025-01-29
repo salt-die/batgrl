@@ -87,6 +87,8 @@ class App(ABC):
         Duration in seconds between consecutive frame renders.
     redirect_stderr : Path | None
         Path where stderr is saved.
+    sixel_geometry : Size
+        Current sixel geometry.
     root : _Root | None
         Root of gadget tree.
     children : list[Gadget]
@@ -94,6 +96,8 @@ class App(ABC):
 
     Methods
     -------
+    set_sixel_aspect_ratio(aspect_ratio)
+        Set sixel aspect ratio.
     on_start()
         Coroutine scheduled when app is run.
     run()
@@ -145,10 +149,6 @@ class App(ABC):
         """Position of app in terminal."""
         self._exit_value: Any = None
         """Value set by ``exit(exit_value)`` and returned by ``run()``."""
-        self._sixel_support: bool = False
-        """Whether terminal has sixel support."""
-        self._sixel_geometry: Size = Size(20, 10)
-        """Pixel geometry per cell."""
 
     def __repr__(self):
         return (
@@ -276,6 +276,30 @@ class App(ABC):
             self._terminal.request_background_color()
         else:
             self.root.bg_color = bg_color
+
+    @property
+    def sixel_geometry(self) -> Size:
+        """Current sixel geometry."""
+        return _BLITTER_GEOMETRY["sixel"]
+
+    def set_sixel_aspect_ratio(self, aspect_ratio: Size) -> None:
+        """
+        Set sixel aspect ratio.
+
+        Parameters
+        ----------
+        aspect_ratio : Size
+            The desired aspect ratio. Aspect width must be 1 and aspect height must
+            divide sixel geometry height.
+        """
+        h, w = aspect_ratio
+        if w != 1 or _BLITTER_GEOMETRY["sixel"].height % h:
+            raise ValueError(f"Unsupported aspect ratio: {aspect_ratio}.")
+        Graphics._sixel_aspect_ratio = Size(h, w)
+        if self.root is not None:
+            for gadget in self.root.walk_reverse():
+                gadget.on_size()
+            self.root.on_size()
 
     @abstractmethod
     async def on_start(self):
@@ -425,6 +449,7 @@ class App(ABC):
                     root._last_kind,
                     root._palette,
                     root._indices,
+                    Graphics._sixel_aspect_ratio,
                 )
 
         with app_mode(terminal, event_handler):

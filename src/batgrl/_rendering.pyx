@@ -1443,6 +1443,7 @@ cpdef void terminal_render(
     uint8[:, ::1] prev_kind,
     uint8[:, ::1] palette,
     uint8[:, ::1] indices,
+    tuple[int, int] aspect_ratio,
 ):
     cdef:
         fbuf* f = &fwrap.f
@@ -1455,6 +1456,7 @@ cpdef void terminal_render(
         ssize_t cursor_y = -1, cursor_x = -1
         Cell* last_sgr = NULL
         bint emit_sixel = 0
+        unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
         raise MemoryError
@@ -1504,7 +1506,7 @@ cpdef void terminal_render(
         # If sixel graphics rect reaches last line of terminal, its height must be
         # truncated to (nearest multiple of 6) - 6 to prevent scrolling.
         if max_y_sixel + 1 == h:
-            gh -= 6 + gh % 6
+            gh -= gh % 6
         gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
 
         ncolors = median_variance_quantization(
@@ -1512,7 +1514,9 @@ cpdef void terminal_render(
         )
         if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
             raise MemoryError
-        if csixel_ansi(f, palette, indices, graphics, ncolors, gy, gx, gh, gw):
+        if csixel_ansi(
+            f, palette, indices, graphics, aspect_h, aspect_w, ncolors, gy, gx, gh, gw
+        ):
             raise MemoryError
 
     cursor_y = -1
