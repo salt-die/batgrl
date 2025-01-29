@@ -20,8 +20,8 @@ class GraphicParticleField(Gadget):
     r"""
     A graphic particle field.
 
-    A particle field specializes in rendering many single "pixel" children. This is more
-    efficient than rendering many 1x1 gadgets.
+    A particle field specializes in rendering many single "pixel" children from an array
+    of particle positions and particle colors.
 
     Parameters
     ----------
