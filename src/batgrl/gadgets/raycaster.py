@@ -8,7 +8,16 @@ from numpy.typing import NDArray
 
 from ..colors import BLACK, TRANSPARENT, AColor, Color
 from ..texture_tools import _composite
-from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint, clamp
+from .graphics import (
+    Blitter,
+    Graphics,
+    Interpolation,
+    Point,
+    PosHint,
+    Size,
+    SizeHint,
+    clamp,
+)
 
 __all__ = ["Raycaster", "Sprite", "RaycasterCamera", "RgbaTexture", "Point", "Size"]
 
@@ -164,6 +173,8 @@ class Raycaster(Graphics):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -213,6 +224,8 @@ class Raycaster(Graphics):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -335,6 +348,7 @@ class Raycaster(Graphics):
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -347,6 +361,7 @@ class Raycaster(Graphics):
             default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
