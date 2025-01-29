@@ -1583,7 +1583,7 @@ cpdef void terminal_render(
         ncolors = median_variance_quantization(
             graphics, gy, gx, gh, gw, palette, indices
         )
-        if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1, min_x_sixel + 1):
+        if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1 + oy, min_x_sixel + 1 + ox):
             raise MemoryError
         if csixel_ansi(
             f, palette, indices, graphics, aspect_h, aspect_w, ncolors, gy, gx, gh, gw
