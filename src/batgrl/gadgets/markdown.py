@@ -21,7 +21,7 @@ from ..geometry import Point, Size
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .gadget import Gadget, PosHint, SizeHint
-from .graphics import Graphics
+from .graphics import Blitter, Graphics
 from .grid_layout import GridLayout
 from .image import Image
 from .pane import Pane
@@ -216,16 +216,16 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
 
 
 class _MarkdownImage(_HasTitle, Image):
-    def __init__(self, title: str, path: Path, width: int):
-        super().__init__(title=title, path=path)
+    def __init__(self, title: str, path: Path, width: int, blitter: Blitter):
+        super().__init__(title=title, path=path, blitter=blitter)
         oh, ow, _ = self._otexture.shape
         width = min(ow / _PIXELS_PER_CHAR, width)
         self.size = int(oh * width / ow) // 2, width
 
 
 class _MarkdownGif(_HasTitle, Video):
-    def __init__(self, title: str, path: Path, width: int):
-        super().__init__(title=title, source=path)
+    def __init__(self, title: str, path: Path, width: int, blitter: Blitter):
+        super().__init__(title=title, source=path, blitter=blitter)
         oh = self._resource.get(cv2.CAP_PROP_FRAME_HEIGHT)
         ow = self._resource.get(cv2.CAP_PROP_FRAME_WIDTH)
         width = min(ow / _PIXELS_PER_CHAR, width)
@@ -318,11 +318,12 @@ class _BatgrlRenderer(BaseRenderer):
     quote_depth: int = 0
     last_token: span_token.SpanToken | block_token.BlockToken | None = None
 
-    def __init__(self, width, syntax_highlighting_style):
+    def __init__(self, width, syntax_highlighting_style, blitter):
         super().__init__(BlankLine, Spaces, EmojiCode)
         block_token.remove_token(block_token.Footnote)
         self.width = max(width, _MIN_MARKDOWN_WIDTH)
         self.syntax_highlighting_style = syntax_highlighting_style
+        self.blitter = blitter
         self.render_map["SetextHeading"] = self.render_setext_heading
         self.render_map["CodeFence"] = self.render_block_code
 
@@ -472,9 +473,17 @@ class _BatgrlRenderer(BaseRenderer):
         if path.exists():
             if path.suffix == ".gif":
                 return _MarkdownGif(
-                    path=path, title=token.title, width=self.render_width
+                    path=path,
+                    title=token.title,
+                    width=self.render_width,
+                    blitter=self.blitter,
                 )
-            return _MarkdownImage(path=path, title=token.title, width=self.render_width)
+            return _MarkdownImage(
+                path=path,
+                title=token.title,
+                width=self.render_width,
+                blitter=self.blitter,
+            )
         token.children.insert(0, span_token.RawText("🖼️  "))
         content = self.render_inner(token)
         content.canvas[["fg_color", "bg_color"]] = Themable.color_theme.markdown_image
@@ -703,6 +712,12 @@ class Markdown(Themable, Gadget):
 
     Parameters
     ----------
+    markdown : str
+        The markdown string.
+    syntax_highlighting_style : pygments.style.Style, default: Neptune
+        The syntax highlighting style for code blocks.
+    blitter : Blitter, default: "half"
+        Determines how images are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -726,6 +741,8 @@ class Markdown(Themable, Gadget):
         The markdown string.
     syntax_highlighting_style : pygments.style.Style
         The syntax highlighting style for code blocks.
+    blitter : Blitter, default: "half"
+        Determines how images are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -832,6 +849,7 @@ class Markdown(Themable, Gadget):
         *,
         markdown: str,
         syntax_highlighting_style: Style = Neptune,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -867,9 +885,11 @@ class Markdown(Themable, Gadget):
         )
         self._link_hint.is_enabled = False
         self.add_gadgets(self._scroll_view, self._link_hint)
-        self.markdown = markdown
-        self.syntax_highlighting_style = syntax_highlighting_style
+        self.markdown: str = markdown
+        self.syntax_highlighting_style: Style = syntax_highlighting_style
         """The syntax highlighting style for code blocks."""
+        self.blitter = blitter
+        """Determines how images are rendered."""
 
     @property
     def markdown(self) -> str:
@@ -881,15 +901,39 @@ class Markdown(Themable, Gadget):
         self._markdown = markdown
         self._build_markdown()
 
+    @property
+    def syntax_highlighting_style(self) -> Style:
+        """The syntax highlighting style for code blocks."""
+        return self._style
+
+    @syntax_highlighting_style.setter
+    def syntax_highlighting_style(self, syntax_highlighting_style: Style):
+        self._style = syntax_highlighting_style
+        self._build_markdown()
+
+    @property
+    def blitter(self) -> Blitter:
+        """Determines how images are rendered."""
+        return self._blitter
+
+    @blitter.setter
+    def blitter(self, blitter: Blitter):
+        self._blitter = blitter
+        for child in self.walk():
+            if isinstance(child, Graphics):
+                child.blitter = blitter
+
     def _build_markdown(self):
         if not self.root:
             return
 
         with _BatgrlRenderer(
-            self._scroll_view.port_width, self.syntax_highlighting_style
+            self._scroll_view.port_width, self.syntax_highlighting_style, self.blitter
         ) as renderer:
             rendered = renderer.render(Document(self.markdown))
 
+        if self._scroll_view.view is not None:
+            self._scroll_view.view.destroy()
         self._scroll_view.view = rendered
 
     def update_theme(self):
@@ -904,6 +948,7 @@ class Markdown(Themable, Gadget):
 
     def on_size(self):
         """Rebuild markdown on resize."""
+        super().on_size()
         self._build_markdown()
 
     def on_add(self):

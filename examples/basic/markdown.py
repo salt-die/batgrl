@@ -78,7 +78,9 @@ class MarkdownApp(App):
 
     async def on_start(self):
         markdown = Markdown(
-            markdown=MARKDOWN_TEXT, size_hint={"height_hint": 1.0, "width_hint": 1.0}
+            markdown=MARKDOWN_TEXT,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            blitter="sixel",
         )
         self.add_gadget(markdown)
 
