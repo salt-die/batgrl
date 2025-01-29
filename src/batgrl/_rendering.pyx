@@ -1,7 +1,8 @@
 # distutils: language = c
 # distutils: sources = src/batgrl/cwidth.c
-from libc.string cimport memset
 from libc.math cimport round
+from libc.stdlib cimport malloc, free
+from libc.string cimport memset
 
 import cython
 import numpy as np
@@ -10,7 +11,7 @@ cimport numpy as cnp
 from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4
 from ._sixel cimport csixel_ansi
 from .colors._quantization cimport median_variance_quantization
-from .geometry.regions cimport CRegion, Region, contains
+from .geometry.regions cimport CRegion, Region, contains, bounding_rect
 from .terminal._fbuf_wrapper cimport FBufWrapper
 
 ctypedef unsigned char uint8
@@ -1180,6 +1181,12 @@ cdef trans_sixel_graphics_field_render(
                     break
 
 
+cdef struct BraillePixel:
+    unsigned long char_
+    double[3] total_fg
+    unsigned int ncolors
+
+
 cdef opaque_braille_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -1191,10 +1198,18 @@ cdef opaque_braille_graphics_field_render(
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
-        int ipy, ipx
+        int ipy, ipx, y, x, pgy, pgx
+        size_t h, w
         Cell *dst
-        size_t pgy, pgx
-        unsigned long cell_
+
+    bounding_rect(cregion, &y, &x, &h, &w)
+    cdef:
+        BraillePixel *pixels = <BraillePixel*>malloc(sizeof(BraillePixel) * h * w)
+        BraillePixel *pixel
+
+    if pixels is NULL:
+        return
+    memset(pixels, 0, sizeof(BraillePixel) * h * w)
 
     for i in range(nparticles):
         py = positions[i][0] + abs_y
@@ -1203,24 +1218,36 @@ cdef opaque_braille_graphics_field_render(
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
+        pixel = &pixels[(ipy - y) * w + ipx - x]
+        # ! Why isn't pixel.char_ == 0 sufficient?
+        if pixel.char_ < 10240 or pixel.char_ > 10495:
+            pixel.char_ = 10240
         pgy = <int>((py - ipy) * 4)
         pgx = <int>((px - ipx) * 2)
-        dst = &cells[ipy, ipx]
-        cell_ = dst.char_
-        if cell_ < 10240 or cell_ >= 10496:
-            cell_ = 10240
-        cell_ |= BRAILLE_ENUM[pgy * 2 + pgx]
-        dst.char_ = cell_
+        pixel.char_ |= BRAILLE_ENUM[pgy * 2 + pgx]
+        pixel.total_fg[0] += particles[i, 0]
+        pixel.total_fg[1] += particles[i, 1]
+        pixel.total_fg[2] += particles[i, 2]
+        pixel.ncolors += 1
+
+    for i in range(h * w):
+        pixel = &pixels[i]
+        # ! Why does pixel.char_ need to be checked?
+        if not pixel.ncolors or pixel.char_ < 10240 or pixel.char_ > 10495:
+            continue
+        dst = &cells[(i // w) + y, (i % w) + x]
+        dst.char_ = pixel.char_
         dst.bold = False
         dst.italic = False
         dst.underline = False
         dst.strikethrough = False
         dst.overline = False
         dst.reverse = False
-        # FIXME: Average fg colors for particles in same cells.
-        dst.fg_color[0] = particles[i, 0]
-        dst.fg_color[1] = particles[i, 1]
-        dst.fg_color[2] = particles[i, 2]
+        dst.fg_color[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
+        dst.fg_color[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
+        dst.fg_color[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
+
+    free(pixels)
 
 
 cdef trans_braille_graphics_field_render(
@@ -1237,13 +1264,22 @@ cdef trans_braille_graphics_field_render(
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
-        int ipy, ipx
+        int ipy, ipx, y, x
         Cell *dst
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
-        size_t pgy, pgx
-        unsigned long char_
+        size_t rh, rw
+        int pgy, pgx
         uint8[3] rgb
+
+    bounding_rect(cregion, &y, &x, &rh, &rw)
+    cdef:
+        BraillePixel *pixels = <BraillePixel*>malloc(sizeof(BraillePixel) * rh * rw)
+        BraillePixel *pixel
+
+    if pixels is NULL:
+        return
+    memset(pixels, 0, sizeof(BraillePixel) * rh * rw)
 
     for i in range(nparticles):
         if not particles[i, 3]:
@@ -1254,37 +1290,51 @@ cdef trans_braille_graphics_field_render(
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
-        pgy = <int>((py - ipy) * 4)
-        pgx = <int>((px - ipx) * 2)
-        dst = &cells[ipy, ipx]
-        char_ = dst.char_
+        pixel = &pixels[(ipy - y) * rw + ipx - x]
+        # ! Why isn't pixel.char_ == 0 sufficient?
         # ! Assumed if char_ is braille, that background has already been composited.
-        if char_ < 10240 or char_ >= 10496:
-            char_ = 10240
+        if pixel.char_ < 10240 or pixel.char_ > 10495:
+            pixel.char_ = 10240
             if kind[ipy, ipx] == SIXEL:
                 oy = ipy * h
                 ox = ipx * w
-                average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
+                average_graphics(
+                    &cells[ipy, ipx].bg_color[0], graphics[oy:oy + h, ox:ox + w]
+                )
                 kind[ipy, ipx] = GLYPH
             elif kind[ipy, ipx] == MIXED:
                 oy = ipy * h
                 ox = ipx * w
                 p = average_graphics(&rgb[0], graphics[oy:oy + h, ox: ox + w])
-                lerp_rgb(&rgb[0], &dst.bg_color[0], p)
+                lerp_rgb(&rgb[0], &cells[ipy, ipx].bg_color[0], p)
                 kind[ipy, ipx] = GLYPH
         kind[ipy, ipx] = GLYPH
-        char_ |= BRAILLE_ENUM[pgy * 2 + pgx]
-        dst.char_ = char_
+        pgy = <int>((py - ipy) * 4)
+        pgx = <int>((px - ipx) * 2)
+        pixel.char_ |= BRAILLE_ENUM[pgy * 2 + pgx]
+        pixel.total_fg[0] += particles[i, 0]
+        pixel.total_fg[1] += particles[i, 1]
+        pixel.total_fg[2] += particles[i, 2]
+        pixel.ncolors += 1
+
+    for i in range(rh * rw):
+        pixel = &pixels[i]
+        # ! Why does pixel.char_ need to be checked?
+        if not pixel.ncolors or pixel.char_ < 10240 or pixel.char_ > 10495:
+            continue
+        dst = &cells[(i // rw) + y, (i % rw) + x]
+        dst.char_ = pixel.char_
         dst.bold = False
         dst.italic = False
         dst.underline = False
         dst.strikethrough = False
         dst.overline = False
         dst.reverse = False
-        # FIXME: Average fg colors for particles in same cells.
-        dst.fg_color[0] = particles[i, 0]
-        dst.fg_color[1] = particles[i, 1]
-        dst.fg_color[2] = particles[i, 2]
+        dst.fg_color[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
+        dst.fg_color[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
+        dst.fg_color[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
+
+    free(pixels)
 
 
 cpdef void graphics_field_render(
