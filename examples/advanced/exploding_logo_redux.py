@@ -125,9 +125,7 @@ class ExplodingLogoApp(App):
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
         field = PokeParticleField(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            alpha=0.7,
-            is_transparent=False,
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, alpha=0.7
         )
         texture = resize_texture(read_texture(PATH_TO_LOGO_FULL), LOGO_SIZE)
         field.particles_from_texture(texture)
