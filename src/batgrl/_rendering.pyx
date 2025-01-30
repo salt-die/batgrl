@@ -1,5 +1,6 @@
 # distutils: language = c
 # distutils: sources = src/batgrl/cwidth.c
+
 from libc.math cimport round
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
