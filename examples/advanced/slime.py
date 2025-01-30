@@ -5,9 +5,7 @@ import asyncio
 import cv2
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG
-from batgrl.gadgets.graphics import Graphics
-from batgrl.gadgets.pane import Pane
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 
 SENSE_SIZE = 7
 SENSE_ANGLE = np.pi / 4
@@ -15,7 +13,7 @@ TURN_SPEED = np.pi / 8
 MOVE_SPEED = 1.3
 DISSIPATE = 0.01
 BLUR = 0.4
-NAGENTS = 200
+NAGENTS = 3000
 
 rng = np.random.default_rng()
 
@@ -39,8 +37,7 @@ class Slime(Graphics):
             self._simulation_task = asyncio.create_task(self._simulate())
 
     async def _simulate(self):
-        h, w = self.size
-        h *= 2
+        h, w = scale_geometry(self._blitter, self.size)
 
         def as_pos(coords):
             ys, xs = np.clip(coords.astype(int), ((0,), (0,)), ((h - 1,), (w - 1,)))
@@ -109,12 +106,10 @@ class Slime(Graphics):
 
 class SlimeApp(App):
     async def on_start(self):
-        background = Pane(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            bg_color=DEFAULT_PRIMARY_BG,
+        slime = Slime(
+            size_hint={"height_hint": 1.0, "width_hint": 1.0}, blitter="braille"
         )
-        slime = Slime(size_hint={"height_hint": 1.0, "width_hint": 1.0})
-        self.add_gadgets(background, slime)
+        self.add_gadgets(slime)
 
 
 if __name__ == "__main__":

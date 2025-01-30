@@ -22,7 +22,7 @@ from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
-from .graphics import Graphics
+from .graphics import Graphics, scale_geometry
 from .pane import Pane
 from .text import Text, new_cell
 
@@ -54,11 +54,11 @@ class _ShadeSelector(Grabbable, Graphics):
     def update_hue(self, hue: AColor):
         self.hue = hue
 
-        h, w = self._size
+        h, w = scale_geometry(self._blitter, self._size)
         if w == 0:
             return
-        left_side = gradient(AWHITE, ABLACK, 2 * h)
-        right_side = gradient(hue, ABLACK, 2 * h)
+        left_side = gradient(AWHITE, ABLACK, h)
+        right_side = gradient(hue, ABLACK, h)
 
         for row, left, right in zip(self.texture, left_side, right_side):
             row[:] = gradient(left, right, w)

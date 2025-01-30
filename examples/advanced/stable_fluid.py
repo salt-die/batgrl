@@ -11,7 +11,7 @@ from itertools import cycle
 import numpy as np
 from batgrl.app import App
 from batgrl.colors import ABLACK, DEFAULT_PRIMARY_BG, rainbow_gradient
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.terminal.events import MouseEvent
 from scipy.ndimage import convolve, map_coordinates
 
@@ -54,9 +54,7 @@ class StableFluid(Graphics):
         self._update_task.cancel()
 
     def on_size(self):
-        h, w = self._size
-        h *= 2
-
+        h, w = scale_geometry(self._blitter, self._size)
         self.texture = np.full((h, w, 4), self.default_color, dtype=np.uint8)
         self.dye = np.zeros((4, h, w))
         self.indices = np.indices((h, w))
@@ -69,9 +67,7 @@ class StableFluid(Graphics):
         ):
             return False
 
-        y, x = self.to_local(mouse_event.pos)
-        y *= 2
-
+        y, x = scale_geometry(self._blitter, self.to_local(mouse_event.pos))
         ys, xs = self.indices
         ry = ys - y
         rx = xs - x
