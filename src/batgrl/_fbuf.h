@@ -13,11 +13,11 @@
 typedef struct fbuf {
   uint64_t size;
   uint64_t len;
-  char* buf;
+  char *buf;
 } fbuf;
 
 
-static inline ssize_t fbuf_init(fbuf* f){
+static inline ssize_t fbuf_init(fbuf *f){
     f->size = 0x200000ul;
     f->len = 0;
     f->buf = (char*)malloc(f->size);
@@ -28,7 +28,7 @@ static inline ssize_t fbuf_init(fbuf* f){
 }
 
 
-static inline void fbuf_free(fbuf* f){
+static inline void fbuf_free(fbuf *f){
     f->size = 0;
     f->len = 0;
     if(f->buf != NULL){
@@ -38,14 +38,14 @@ static inline void fbuf_free(fbuf* f){
 }
 
 
-static inline ssize_t fbuf_grow(fbuf* f, size_t n){
+static inline ssize_t fbuf_grow(fbuf *f, size_t n){
     if(f->len + n <= f->size){
         return 0;
     }
     while(f->len + n > f->size){
         f->size *= 2;
     }
-    void* tmp = realloc(f->buf, f->size);
+    void *tmp = realloc(f->buf, f->size);
     if(tmp == NULL){
         return -1;
     }
@@ -54,7 +54,7 @@ static inline ssize_t fbuf_grow(fbuf* f, size_t n){
 }
 
 
-static inline ssize_t fbuf_putn(fbuf* f, const char* s, size_t len){
+static inline ssize_t fbuf_putn(fbuf *f, const char *s, size_t len){
     if(fbuf_grow(f, len)){
         return -1;
     }
@@ -64,13 +64,13 @@ static inline ssize_t fbuf_putn(fbuf* f, const char* s, size_t len){
 }
 
 
-static inline ssize_t fbuf_puts(fbuf* f, const char* s){
+static inline ssize_t fbuf_puts(fbuf *f, const char *s){
   size_t slen = strlen(s);
   return fbuf_putn(f, s, slen);
 }
 
 
-static inline ssize_t fbuf_printf(fbuf *f, const char* fmt, ...){
+static inline ssize_t fbuf_printf(fbuf *f, const char *fmt, ...){
     size_t unused = f->size - f->len;
     if(unused < BUFSIZ){
         if(fbuf_grow(f, BUFSIZ)){
@@ -118,7 +118,7 @@ static inline ssize_t fbuf_putucs4(fbuf *f, uint32_t wc){
 
 
 #ifdef _WIN32
-static inline ssize_t fbuf_flush(fbuf* f){
+static inline ssize_t fbuf_flush(fbuf *f){
     DWORD wrote = 0, write_len;
     size_t written = 0;
     while(written<f->len){
@@ -138,7 +138,7 @@ static inline ssize_t fbuf_flush(fbuf* f){
     return 0;
 }
 #else
-static inline ssize_t fbuf_flush(fbuf* f){
+static inline ssize_t fbuf_flush(fbuf *f){
     size_t written = 0;
     ssize_t wrote = 0;
     while(written < f->len){

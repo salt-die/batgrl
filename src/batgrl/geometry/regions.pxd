@@ -1,12 +1,12 @@
 cdef struct Band:
     int y1, y2
     size_t size, len
-    int* walls
+    int *walls
 
 
 cdef struct CRegion:
     size_t size, len
-    Band* bands
+    Band *bands
 
 
 cdef class Region:

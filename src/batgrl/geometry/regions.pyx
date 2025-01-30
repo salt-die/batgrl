@@ -31,7 +31,7 @@ cdef bint csub(bint a, bint b):
 
 
 cdef inline int add_wall(Band *band, int wall):
-    cdef int* new_walls
+    cdef int *new_walls
     if band.len == band.size:
         new_walls = <int*>realloc(band.walls, sizeof(Band) * (band.size << 1))
         if new_walls is NULL:
@@ -136,7 +136,8 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
     cdef:
         Band *r
         Band *s
-        int i = 0, j = 0, scanline = 0
+        unsigned int i = 0, j = 0
+        int scanline = 0
 
     if a.len > 0:
         if b.len > 0:

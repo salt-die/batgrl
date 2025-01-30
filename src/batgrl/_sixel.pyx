@@ -47,10 +47,10 @@ cdef:
 
     struct SixelMap:
         size_t nbands, ncolors
-        char*** bands
+        char ***bands
 
     struct ActiveColor:
-        int color
+        unsigned int color
         char rep
 
 ctypedef unsigned char uint8
@@ -64,8 +64,8 @@ cdef inline size_t sixel_band_count(size_t h):
     return sixel_count(h, 1)
 
 
-cdef SixelMap* new_sixel_map(size_t h):
-    cdef SixelMap* sixel_map = <SixelMap*>malloc(sizeof(SixelMap))
+cdef SixelMap *new_sixel_map(size_t h):
+    cdef SixelMap *sixel_map = <SixelMap*>malloc(sizeof(SixelMap))
     if sixel_map is NULL:
         return NULL
     sixel_map.ncolors = 0
@@ -77,7 +77,7 @@ cdef SixelMap* new_sixel_map(size_t h):
     return sixel_map
 
 
-cdef void color_band_free(char** color_band, size_t ncolors):
+cdef void color_band_free(char **color_band, size_t ncolors):
     cdef size_t i
     for i in range(ncolors):
         if color_band[i] is not NULL:
@@ -94,7 +94,7 @@ cdef void sixel_map_free(SixelMap *sixel_map):
     free(sixel_map)
 
 
-cdef inline void write_rle(char* color, size_t *length, ssize_t rle, char rep):
+cdef inline void write_rle(char *color, size_t *length, ssize_t rle, char rep):
     if rle > 2:
         length[0] += sprintf(&color[length[0]], "!%d", <int>rle)
     elif rle == 2:
@@ -106,8 +106,8 @@ cdef inline void write_rle(char* color, size_t *length, ssize_t rle, char rep):
     color[length[0]] = 0
 
 
-cdef inline char* color_band_extend(
-    char* color_band, BandExtender *extender, size_t w, size_t x
+cdef inline char *color_band_extend(
+    char *color_band, BandExtender *extender, size_t w, size_t x
 ):
     if color_band is NULL:
         color_band = <char*>malloc(w + 1)
@@ -121,7 +121,7 @@ cdef inline char* color_band_extend(
 
 cdef inline int build_sixel_band(
     size_t n,
-    SixelMap* sixel_map,
+    SixelMap *sixel_map,
     size_t ncolors,
     uint8[:, ::1] indices,
     uint8[:, :, ::1] texture,
@@ -135,7 +135,7 @@ cdef inline int build_sixel_band(
         size_t band_size = sizeof(char*) * ncolors
         size_t extenders_size = sizeof(BandExtender) * ncolors
         BandExtender *extenders = <BandExtender*>malloc(extenders_size)
-        char** color_bands
+        char **color_bands
 
     if extenders is NULL:
         return -1
@@ -152,8 +152,8 @@ cdef inline int build_sixel_band(
     cdef:
         size_t ystart = n * 6, yend = min(ystart + 6, h), x, y, i
         ActiveColor[6] active_colors
-        int pixel_color, nactive_colors, color
-        BandExtender* extender
+        unsigned int pixel_color, nactive_colors, color
+        BandExtender *extender
 
     for x in range(w):
         nactive_colors = 0
@@ -210,7 +210,7 @@ cdef inline int build_sixel_band(
 
 
 cdef ssize_t csixel_ansi(
-    fbuf* f,
+    fbuf *f,
     uint8[:, ::1] palette,
     uint8[:, ::1] indices,
     uint8[:, :, ::1] texture,
@@ -225,8 +225,8 @@ cdef ssize_t csixel_ansi(
     cdef:
         size_t n, color, P2 = 0
         bint close_previous
-        SixelMap* sixel_map = new_sixel_map(h)
-        char** color_bands
+        SixelMap *sixel_map = new_sixel_map(h)
+        char **color_bands
         uint8[::1] rgb
 
     if sixel_map is NULL:

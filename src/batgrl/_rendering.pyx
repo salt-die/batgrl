@@ -24,13 +24,13 @@ cdef extern from "cwidth.h":
 
 
 cdef struct RegionIterator:
-    CRegion* cregion
+    CRegion *cregion
     size_t i, j
     int y1, y2, y, x1, x2, x
     bint done
 
 
-cdef void init_iter(RegionIterator* it, CRegion* cregion):
+cdef void init_iter(RegionIterator *it, CRegion *cregion):
     if cregion.len == 0:
         it.done = 1
     else:
@@ -48,7 +48,7 @@ cdef void init_iter(RegionIterator* it, CRegion* cregion):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef void next_(RegionIterator* it):
+cdef void next_(RegionIterator *it):
     if it.done:
         return
     it.x += 1
@@ -115,7 +115,7 @@ cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline bint cell_eq(Cell* a, Cell* b):
+cdef inline bint cell_eq(Cell *a, Cell *b):
     return (
         a.char_ == b.char_
         and a.bold == b.bold
@@ -190,7 +190,7 @@ cdef inline double average_graphics(uint8 *bg, uint8 [:, :, ::1] graphics):
     return <double>n / <double>(h * w)
 
 
-cdef inline void lerp_rgb(uint8* src, uint8* dst, double p):
+cdef inline void lerp_rgb(uint8 *src, uint8 *dst, double p):
     cdef double negp = 1 - p
     dst[0] = <uint8>(<double>src[0] * p + <double>dst[0] * negp)
     dst[1] = <uint8>(<double>src[1] * p + <double>dst[1] * negp)
@@ -248,7 +248,7 @@ cdef void opaque_pane_render(
 ):
     cdef:
         RegionIterator it
-        Cell* cell
+        Cell *cell
 
     init_iter(&it, cregion)
     while not it.done:
@@ -549,8 +549,8 @@ cdef void trans_half_graphics_render(
         size_t oy, ox, gy, gx
         Cell *dst
         double a_top, a_bot
-        uint8* rgba_top
-        uint8* rgba_bot
+        uint8 *rgba_top
+        uint8 *rgba_bot
 
     init_iter(&it, cregion)
     while not it.done:
@@ -756,7 +756,7 @@ cdef void opaque_braille_graphics_render(
         int src_y, src_x
         uint8[3] fg
         bint[8] pixels
-        Cell* cell
+        Cell *cell
         uint8 i
         double average_alpha
         unsigned long char_
@@ -802,7 +802,7 @@ cdef void trans_braille_graphics_render(
         RegionIterator it
         int src_y, src_x
         bint[8] pixels
-        Cell* cell
+        Cell *cell
         uint8 i
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
@@ -913,9 +913,9 @@ def cursor_render(
     region: Region,
 ) -> None:
     cdef:
-        CRegion* cregion = &region.cregion
+        CRegion *cregion = &region.cregion
         RegionIterator it
-        Cell* dst
+        Cell *dst
 
     init_iter(&it, cregion)
     while not it.done:
@@ -1106,7 +1106,7 @@ cdef void trans_full_graphics_field_render(
         size_t oy, ox, gy, gx
         Cell *dst
         double a
-        uint8* src_rgba
+        uint8 *src_rgba
 
     for i in range(nparticles):
         py = <int>positions[i][0] + abs_y
@@ -1199,8 +1199,8 @@ cdef void trans_half_graphics_field_render(
         size_t oy, ox, gy, gx, gtop, gbot
         Cell *dst
         double a
-        uint8* src_rgba
-        uint8* dst_rgb
+        uint8 *src_rgba
+        uint8 *dst_rgb
 
     for i in range(nparticles):
         py = positions[i][0] + abs_y
@@ -1605,7 +1605,7 @@ cpdef void graphics_field_render(
             )
 
 
-cdef inline void write_sgr(fbuf* f, uint8 param, bint* first):
+cdef inline void write_sgr(fbuf *f, uint8 param, bint *first):
     if first[0]:
         fbuf_printf(f, "\x1b[%d", param)
         first[0] = 0
@@ -1613,7 +1613,7 @@ cdef inline void write_sgr(fbuf* f, uint8 param, bint* first):
         fbuf_printf(f, ";%d", param)
 
 
-cdef inline void write_rgb(fbuf* f, uint8 fg, uint8* rgb, bint* first):
+cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
     if first[0]:
         fbuf_printf(f, "\x1b[%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
         first[0] = 0
@@ -1644,23 +1644,23 @@ cdef void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline ssize_t write_glyph(
-    fbuf* f,
+    fbuf *f,
     size_t oy,
     size_t ox,
     size_t y,
     size_t x,
-    ssize_t* cursor_y,
-    ssize_t* cursor_x,
+    ssize_t *cursor_y,
+    ssize_t *cursor_x,
     Cell[:, ::1] canvas,
     int[:, ::1] widths,
-    Cell* last_sgr,
+    Cell *last_sgr,
 ):
     if not widths[y, x]:
         return 0
 
     cdef:
         ssize_t abs_y = y + oy, abs_x = x + ox
-        Cell* cell = &canvas[y, x]
+        Cell *cell = &canvas[y, x]
         bint first = 1
 
     if abs_y == cursor_y[0]:
@@ -1721,7 +1721,7 @@ cpdef void terminal_render(
     normalize_canvas(cells, widths)
 
     cdef:
-        fbuf* f = &fwrap.f
+        fbuf *f = &fwrap.f
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_geom_height(cells, graphics)
         size_t cell_w = graphics_geom_width(cells, graphics)
@@ -1729,7 +1729,7 @@ cpdef void terminal_render(
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
-        Cell* last_sgr = NULL
+        Cell *last_sgr = NULL
         bint emit_sixel = 0
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
 

@@ -6,7 +6,7 @@ cdef extern from "cwidth.h":
 
 cdef extern from "Python.h":
     Py_ssize_t PyUnicode_GetLength(object)
-    void* PyUnicode_DATA(object)
+    void *PyUnicode_DATA(object)
     int PyUnicode_KIND(object)
     Py_UCS4 PyUnicode_READ(int, void*, Py_ssize_t)
     Py_UCS4 PyUnicode_READ_CHAR(object, Py_ssize_t)
@@ -22,9 +22,9 @@ cpdef int str_width(str chars):
     cdef:
         int width = 0
         Py_ssize_t length = PyUnicode_GetLength(chars), i
-        const void* chars_buffer = PyUnicode_DATA(chars)
+        const void *chars_buffer = PyUnicode_DATA(chars)
         int kind = PyUnicode_KIND(chars)
-    
+
     for i in range(length):
         width += cwidth(PyUnicode_READ(kind, chars_buffer, i))
     return width
