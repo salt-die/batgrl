@@ -925,10 +925,10 @@ cdef void trans_text_field_render(
                 ox = px * w
                 for gy in range(h):
                     for gx in range(w):
-                        graphics[oy + gy, ox + gx, 3] = <uint8>(alpha * 255)
-                        composite(
-                            &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
-                        )
+                        if graphics[oy + gy, ox + gx, 3]:
+                            composite(
+                                &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
+                            )
         else:
             dst.char_ = src.char_
             dst.bold = src.bold
