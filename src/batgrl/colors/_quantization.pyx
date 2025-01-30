@@ -17,8 +17,9 @@ import cython
 import numpy as np
 cimport numpy as cnp
 
+ctypedef unsigned char uint8
+
 cdef:
-    ctypedef unsigned char uint8
     uint8 RED = 2, GREEN = 1, BLUE = 0
 
     struct Box:
