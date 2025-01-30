@@ -55,6 +55,8 @@ class _Root(Gadget):
         """Current graphics rendering."""
         self.kind: NDArray[np.uint8]
         """Whether a cell should use canvas, graphics or both."""
+        self._widths: NDArray[np.int32]
+        """Column widths of characters in canvas."""
         self._last_cells: NDArray[_Cell]
         """Previous rendering of gadget tree."""
         self._last_graphics: NDArray[np.uint8] = self.graphics.copy()
@@ -71,6 +73,7 @@ class _Root(Gadget):
         self._resized = True
         self.cells = np.full(self._size, self._cell.view(_Cell))
         self._last_cells = self.cells.copy()
+        self._widths = np.zeros(self._size, dtype=np.int32)
         self.kind = np.zeros(self._size, np.uint8)
         self._last_kind = self.kind.copy()
 

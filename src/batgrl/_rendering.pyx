@@ -1446,6 +1446,26 @@ cdef inline void write_rgb(fbuf* f, uint8 fg, uint8* rgb, bint* first):
         fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
 
 
+cdef void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
+    cdef size_t h = cells.shape[0], w = cells.shape[1], y, x
+
+    # Try to prevent wide chars from clipping. If there is clipping,
+    # replace wide chars with whitespace.
+
+    for y in range(h):
+        for x in range(w):
+            widths[y, x] = cwidth(cells[y, x].char_)
+
+    for y in range(h):
+        for x in range(w):
+            if (
+                widths[y, x] == 0 and (x == 0 or widths[y, x - 1] != 2)
+                or widths[y, x] == 2 and (x == w - 1 or widths[y, x + 1] != 0)
+            ):
+                cells[y, x].char_ = u" "
+                widths[y, x] = 1
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline ssize_t write_glyph(
@@ -1457,8 +1477,12 @@ cdef inline ssize_t write_glyph(
     ssize_t* cursor_y,
     ssize_t* cursor_x,
     Cell[:, ::1] canvas,
+    int[:, ::1] widths,
     Cell* last_sgr,
 ):
+    if not widths[y, x]:
+        return 0
+
     cdef:
         ssize_t abs_y = y + oy, abs_x = x + ox
         Cell* cell = &canvas[y, x]
@@ -1498,7 +1522,7 @@ cdef inline ssize_t write_glyph(
     if not first:
         fbuf_putn(f, "m", 1)
     fbuf_putucs4(f, cell.char_)
-    cursor_x[0] += cwidth(cell.char_)  # FIXME: Check clipping of wide chars
+    cursor_x[0] += widths[y, x]
     return 0
 
 
@@ -1510,6 +1534,7 @@ cpdef void terminal_render(
     tuple[int, int] app_pos,
     Cell[:, ::1] cells,
     Cell[:, ::1] prev_cells,
+    int[:, ::1] widths,
     uint8[:, :, ::1] graphics,
     uint8[:, :, ::1] prev_graphics,
     uint8[:, ::1] kind,
@@ -1518,6 +1543,8 @@ cpdef void terminal_render(
     uint8[:, ::1] indices,
     tuple[int, int] aspect_ratio,
 ):
+    normalize_canvas(cells, widths)
+
     cdef:
         fbuf* f = &fwrap.f
         size_t h = cells.shape[0], w = cells.shape[1], y, x
@@ -1568,7 +1595,7 @@ cpdef void terminal_render(
             for x in range(w):
                 if kind[y, x] == MIXED:
                     if write_glyph(
-                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, last_sgr
+                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, last_sgr
                     ):
                         raise MemoryError
                     last_sgr = &cells[y, x]
@@ -1607,7 +1634,7 @@ cpdef void terminal_render(
                 or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
                 if write_glyph(
-                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, last_sgr
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, last_sgr
                 ):
                     raise MemoryError
                 last_sgr = &cells[y, x]

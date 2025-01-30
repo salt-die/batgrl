@@ -443,6 +443,7 @@ class App(ABC):
                     self._app_pos,
                     root.cells,
                     root._last_cells,
+                    root._widths,
                     root.graphics,
                     root._last_graphics,
                     root.kind,
