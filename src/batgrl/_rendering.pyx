@@ -247,10 +247,11 @@ cdef inline double average_quant(
 cdef void opaque_pane_render(
     Cell[:, ::1] cells, uint8[::1] bg_color, CRegion *cregion
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
-    cdef Cell* cell
+    cdef:
+        RegionIterator it
+        Cell* cell
 
+    init_iter(&it, cregion)
     while not it.done:
         cell = &cells[it.y, it.x]
         cell.char_ = u" "
@@ -276,14 +277,14 @@ cdef void trans_pane_render(
     double alpha,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         Cell *dst
 
+    init_iter(&it, cregion)
     while not it.done:
         dst = &cells[it.y, it.x]
         if kind[it.y, it.x] != SIXEL:
@@ -330,6 +331,7 @@ cdef void opaque_text_render(
     CRegion *cregion
 ):
     cdef RegionIterator it
+
     init_iter(&it, cregion)
     while not it.done:
         cells[it.y, it.x] = self_canvas[it.y - abs_y, it.x - abs_x]
@@ -348,9 +350,8 @@ cdef void trans_text_render(
     double alpha,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
@@ -359,6 +360,7 @@ cdef void trans_text_render(
         Cell *dst
         Cell *src
 
+    init_iter(&it, cregion)
     while not it.done:
         src = &self_canvas[it.y - abs_y, it.x - abs_x]
         dst = &cells[it.y, it.x]
@@ -372,10 +374,10 @@ cdef void trans_text_render(
                 ox = it.x * w
                 for gy in range(h):
                     for gx in range(w):
-                        graphics[oy + gy, ox + gx, 3] = <uint8>(alpha * 255)
-                        composite(
-                            &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
-                        )
+                        if graphics[oy + gy, ox + gx, 3]:
+                            composite(
+                                &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
+                            )
         else:
             dst.char_ = src.char_
             dst.bold = src.bold
@@ -395,7 +397,7 @@ cdef void trans_text_render(
                 p = average_graphics(&rgb[0], graphics[oy: oy + h, ox:ox + w])
                 lerp_rgb(&rgb[0], &dst.bg_color[0], p)
             kind[it.y, it.x] = GLYPH
-            composite(dst.bg_color, src.bg_color, alpha)
+            composite(&dst.bg_color[0], &src.bg_color[0], alpha)
         next_(&it)
 
 
@@ -432,12 +434,12 @@ cdef opaque_half_graphics_render(
     uint8[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         int src_y, src_x
         Cell *dst
 
+    init_iter(&it, cregion)
     while not it.done:
         dst = &cells[it.y, it.x]
         dst.char_ = u"▀"
@@ -470,9 +472,8 @@ cdef trans_half_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         int src_y, src_x
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
@@ -482,6 +483,7 @@ cdef trans_half_graphics_render(
         uint8* rgba_top
         uint8* rgba_bot
 
+    init_iter(&it, cregion)
     while not it.done:
         src_y = 2 * (it.y - abs_y)
         src_x = it.x - abs_x
@@ -554,14 +556,14 @@ cdef opaque_sixel_graphics_render(
     uint8[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         int src_y, src_x
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
 
+    init_iter(&it, cregion)
     while not it.done:
         oy = it.y * h
         ox = it.x * w
@@ -589,15 +591,15 @@ cdef trans_sixel_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         int src_y, src_x
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         uint8 *rgba
 
+    init_iter(&it, cregion)
     while not it.done:
         oy = it.y * h
         ox = it.x * w
@@ -680,9 +682,8 @@ cdef opaque_braille_graphics_render(
     uint8[:, :, ::1] self_texture,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         int src_y, src_x
         uint8[3] fg
         bint[8] pixels
@@ -691,6 +692,7 @@ cdef opaque_braille_graphics_render(
         double average_alpha
         unsigned long char_
 
+    init_iter(&it, cregion)
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
@@ -727,9 +729,8 @@ cdef trans_braille_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
-    cdef RegionIterator it
-    init_iter(&it, cregion)
     cdef:
+        RegionIterator it
         int src_y, src_x
         bint[8] pixels
         Cell* cell
@@ -741,6 +742,7 @@ cdef trans_braille_graphics_render(
         double p, average_alpha
         unsigned long char_
 
+    init_iter(&it, cregion)
     while not it.done:
         src_y = 4 * (it.y - abs_y)
         src_x = 2 * (it.x - abs_x)
