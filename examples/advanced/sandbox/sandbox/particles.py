@@ -120,17 +120,7 @@ class Element(ABC):
         world = self.world
         h, w = world.shape
         y, x = self.pos
-        deltas = (
-            (-1, -1),
-            (-1, 0),
-            (-1, 1),
-            (0, -1),
-            (0, 1),
-            (1, -1),
-            (1, 0),
-            (1, 1),
-        )
-
+        deltas = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
         for dy, dx in deltas:
             if 0 <= y + dy < h and 0 <= x + dx < w:
                 yield world[y + dy, x + dx]
