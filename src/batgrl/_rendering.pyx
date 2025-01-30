@@ -155,16 +155,14 @@ cdef inline void composite(uint8 *dst, uint8 *src, double alpha):
 cdef inline bint composite_sixels_on_glyph(
     uint8 *bg, uint8 *rgba, uint8 *graphics, double alpha
 ):
-    cdef bint mixed = 0
     if rgba[3]:
         graphics[0] = bg[0]
         graphics[1] = bg[1]
         graphics[2] = bg[2]
         graphics[3] = 1
         composite(graphics, rgba, alpha * <double>rgba[3] / 255)
-    else:
-        mixed = 1
-    return mixed
+        return 0
+    return 1
 
 
 @cython.boundscheck(False)
@@ -425,6 +423,8 @@ cpdef void text_render(
         opaque_text_render(cells, abs_y, abs_x, self_canvas, cregion)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void opaque_full_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -454,6 +454,8 @@ cdef void opaque_full_graphics_render(
         next_(&it)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void trans_full_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
@@ -1049,6 +1051,8 @@ cpdef void text_field_render(
         opaque_text_field_render(cells, abs_y, abs_x, positions, particles, cregion)
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void opaque_full_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
@@ -1080,6 +1084,8 @@ cdef void opaque_full_graphics_field_render(
         dst.bg_color[2] = particles[i, 2]
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef void trans_full_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
