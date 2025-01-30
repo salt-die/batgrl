@@ -13,8 +13,6 @@ from .geometry import Size
 __all__ = [
     "Cell",
     "add_text",
-    "binary_to_box",
-    "binary_to_braille",
     "new_cell",
     "coerce_cell",
     "is_word_char",
@@ -24,14 +22,6 @@ __all__ = [
 
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
 HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
-_BRAILLE_ENUM = np.array([[1, 8], [2, 16], [4, 32], [64, 128]])
-_BOX_ENUM = np.array([[1, 4], [2, 8]])
-
-_vectorized_chr = np.vectorize(chr)
-"""Vectorized `chr`."""
-
-_vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟█".__getitem__)
-"""Vectorized box enum to box char."""
 
 
 def is_word_char(char: str) -> bool:
@@ -459,41 +449,3 @@ def smooth_horizontal_bar(
         The bar as a tuple of characters.
     """
     return _smooth_bar(HORIZONTAL_BLOCKS, max_width, proportion, offset)
-
-
-def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
-    r"""
-    Convert a (h, w, 4, 2)-shaped boolean array into a (h, w) array of braille unicode
-    characters.
-
-    Parameters
-    ----------
-    array_4x2 : NDArray[np.bool\_]
-        A (h, w, 4, 2)-shaped boolean numpy array.
-
-    Returns
-    -------
-    NDArray[np.dtype("<U1")]
-        A numpy array of braille unicode characters.
-    """
-    return _vectorized_chr(
-        np.sum(array_4x2 * _BRAILLE_ENUM, axis=(2, 3), initial=0x2800)
-    )
-
-
-def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint]) -> NDArray[np.dtype("<U1")]:
-    r"""
-    Convert a (h, w, 2, 2)-shaped boolean array into a (h, w) array of box unicode
-    characters.
-
-    Parameters
-    ----------
-    array_2x2 : NDArray[np.bool\_]
-        A (h, w, 2, 2)-shaped boolean numpy array.
-
-    Returns
-    -------
-    NDArray[np.dtype("<U1")]
-        A numpy array of box unicode characters.
-    """
-    return _vectorized_box_map(np.sum(array_2x2 * _BOX_ENUM, axis=(2, 3)))
