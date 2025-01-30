@@ -14,11 +14,12 @@ from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clam
 
 __all__ = ["Blitter", "Graphics", "Interpolation", "Point", "Size", "scale_geometry"]
 
-Blitter = Literal["braille", "half", "sixel"]
+Blitter = Literal["braille", "full", "half", "sixel"]
 """Determines how graphics are rendered."""
 
 _BLITTER_GEOMETRY: Final[dict[Blitter, Size]] = {
     "braille": Size(4, 2),
+    "full": Size(1, 1),
     "half": Size(2, 1),
     "sixel": Size(20, 10),
 }

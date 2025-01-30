@@ -425,9 +425,75 @@ cpdef void text_render(
         opaque_text_render(cells, abs_y, abs_x, self_canvas, cregion)
 
 
+cdef void opaque_full_graphics_render(
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    CRegion *cregion,
+):
+    cdef:
+        RegionIterator it
+        Cell *cell
+        uint8 *bg_color
+
+    init_iter(&it, cregion)
+    while not it.done:
+        cell = &cells[it.y, it.x]
+        cell.char_ = u" "
+        cell.bold = False
+        cell.italic = False
+        cell.underline = False
+        cell.strikethrough = False
+        cell.overline = False
+        cell.reverse = False
+        bg_color = &self_texture[it.y - abs_y, it.x - abs_x, 0]
+        cell.bg_color[0] = bg_color[0]
+        cell.bg_color[1] = bg_color[1]
+        cell.bg_color[2] = bg_color[2]
+        next_(&it)
+
+
+cdef void trans_full_graphics_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    uint8[:, :, ::1] self_texture,
+    double alpha,
+    CRegion *cregion,
+):
+    cdef:
+        RegionIterator it
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
+        Cell *dst
+        uint8 *bg_color
+        double a
+
+    init_iter(&it, cregion)
+    while not it.done:
+        dst = &cells[it.y, it.x]
+        bg_color = &self_texture[it.y - abs_y, it.x - abs_x, 0]
+        a = alpha * <double>bg_color[3] / 255
+        if kind[it.y, it.x] != SIXEL:
+            composite(&dst.fg_color[0], bg_color, a)
+            composite(&dst.bg_color[0], bg_color, a)
+        if kind[it.y, it.x] != GLYPH:
+            oy = it.y * h
+            ox = it.x * w
+            for gy in range(h):
+                for gx in range(w):
+                    if graphics[oy + gy, ox + gx, 3]:
+                        composite(&graphics[oy + gy, ox + gx, 0], bg_color, a)
+        next_(&it)
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef opaque_half_graphics_render(
+cdef void opaque_half_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
@@ -462,7 +528,7 @@ cdef opaque_half_graphics_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef trans_half_graphics_render(
+cdef void trans_half_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -547,7 +613,7 @@ cdef trans_half_graphics_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef opaque_sixel_graphics_render(
+cdef void opaque_sixel_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -581,7 +647,7 @@ cdef opaque_sixel_graphics_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef trans_sixel_graphics_render(
+cdef void trans_sixel_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -675,7 +741,7 @@ cdef trans_sixel_graphics_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef opaque_braille_graphics_render(
+cdef void opaque_braille_graphics_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
@@ -719,7 +785,7 @@ cdef opaque_braille_graphics_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef trans_braille_graphics_render(
+cdef void trans_braille_graphics_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -797,13 +863,27 @@ cpdef void graphics_render(
         int abs_y = abs_pos[0], abs_x = abs_pos[1]
         CRegion *cregion = &region.cregion
 
-    if blitter == "half":
+    if blitter == "full":
+        if is_transparent:
+            trans_full_graphics_render(
+                cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
+            )
+        else:
+            opaque_full_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
+    elif blitter == "half":
         if is_transparent:
             trans_half_graphics_render(
                 cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
             )
         else:
             opaque_half_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
+    elif blitter == "braille":
+        if is_transparent:
+            trans_braille_graphics_render(
+                cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
+            )
+        else:
+            opaque_braille_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
     elif blitter == "sixel":
         if is_transparent:
             trans_sixel_graphics_render(
@@ -813,13 +893,6 @@ cpdef void graphics_render(
             opaque_sixel_graphics_render(
                 cells, graphics, kind, abs_y, abs_x, self_texture, cregion
             )
-    elif blitter == "braille":
-        if is_transparent:
-            trans_braille_graphics_render(
-                cells, graphics, kind, abs_y, abs_x, self_texture, alpha, cregion
-            )
-        else:
-            opaque_braille_graphics_render(cells, abs_y, abs_x, self_texture, cregion)
 
 
 @cython.boundscheck(False)
@@ -976,9 +1049,87 @@ cpdef void text_field_render(
         opaque_text_field_render(cells, abs_y, abs_x, positions, particles, cregion)
 
 
+cdef void opaque_full_graphics_field_render(
+    Cell[:, ::1] cells,
+    int abs_y,
+    int abs_x,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
+    CRegion *cregion,
+):
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        int py, px
+        Cell *dst
+
+    for i in range(nparticles):
+        py = <int>positions[i][0] + abs_y
+        px = <int>positions[i][1] + abs_x
+        if not contains(cregion, py, px):
+            continue
+        dst = &cells[py, px]
+        dst.char_ = u" "
+        dst.bold = False
+        dst.italic = False
+        dst.underline = False
+        dst.strikethrough = False
+        dst.overline = False
+        dst.reverse = False
+        dst.bg_color[0] = particles[i, 0]
+        dst.bg_color[1] = particles[i, 1]
+        dst.bg_color[2] = particles[i, 2]
+
+
+cdef void trans_full_graphics_field_render(
+    Cell[:, ::1] cells,
+    uint8[:, :, ::1] graphics,
+    uint8[:, ::1] kind,
+    int abs_y,
+    int abs_x,
+    double[:, ::1] positions,
+    uint8[:, ::1] particles,
+    double alpha,
+    CRegion *cregion,
+):
+    cdef:
+        size_t nparticles = particles.shape[0], i
+        int py, px
+        size_t h = graphics_geom_height(cells, graphics)
+        size_t w = graphics_geom_width(cells, graphics)
+        size_t oy, ox, gy, gx
+        Cell *dst
+        double a
+        uint8* src_rgba
+
+    for i in range(nparticles):
+        py = <int>positions[i][0] + abs_y
+        px = <int>positions[i][1] + abs_x
+        if not contains(cregion, py, px):
+            continue
+        src_rgba = &particles[i, 0]
+        a = alpha * <double>src_rgba[3] / 255
+        if kind[py, px] != SIXEL:
+            dst = &cells[py, px]
+            dst.char_ = u" "
+            dst.bold = False
+            dst.italic = False
+            dst.underline = False
+            dst.strikethrough = False
+            dst.overline = False
+            dst.reverse = False
+            composite(&dst.bg_color[0], src_rgba, a)
+        if kind[py, px] != GLYPH:
+            oy = py * h
+            ox = px * w
+            for gy in range(h):
+                for gx in range(w):
+                    if graphics[oy + gy, ox + gx, 3]:
+                        composite(&graphics[oy + gy, ox + gx, 0], src_rgba, a)
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef opaque_half_graphics_field_render(
+cdef void opaque_half_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
@@ -1021,7 +1172,7 @@ cdef opaque_half_graphics_field_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef trans_half_graphics_field_render(
+cdef void trans_half_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -1097,7 +1248,7 @@ cdef trans_half_graphics_field_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef opaque_sixel_graphics_field_render(
+cdef void opaque_sixel_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -1141,7 +1292,7 @@ cdef opaque_sixel_graphics_field_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef trans_sixel_graphics_field_render(
+cdef void trans_sixel_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -1207,7 +1358,7 @@ cdef struct BraillePixel:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef opaque_braille_graphics_field_render(
+cdef void opaque_braille_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
@@ -1272,7 +1423,7 @@ cdef opaque_braille_graphics_field_render(
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef trans_braille_graphics_field_render(
+cdef void trans_braille_graphics_field_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
@@ -1377,7 +1528,24 @@ cpdef void graphics_field_render(
         int abs_y = abs_pos[0], abs_x = abs_pos[1]
         CRegion *cregion = &region.cregion
 
-    if blitter == "half":
+    if blitter == "full":
+        if is_transparent:
+            trans_full_graphics_field_render(
+                cells,
+                graphics,
+                kind,
+                abs_y,
+                abs_x,
+                positions,
+                particles,
+                alpha,
+                cregion,
+            )
+        else:
+            opaque_full_graphics_field_render(
+                cells, abs_y, abs_x, positions, particles, cregion
+            )
+    elif blitter == "half":
         if is_transparent:
             trans_half_graphics_field_render(
                 cells,
@@ -1392,6 +1560,23 @@ cpdef void graphics_field_render(
             )
         else:
             opaque_half_graphics_field_render(
+                cells, abs_y, abs_x, positions, particles, cregion
+            )
+    elif blitter == "braille":
+        if is_transparent:
+            trans_braille_graphics_field_render(
+                cells,
+                graphics,
+                kind,
+                abs_y,
+                abs_x,
+                positions,
+                particles,
+                alpha,
+                cregion,
+            )
+        else:
+            opaque_braille_graphics_field_render(
                 cells, abs_y, abs_x, positions, particles, cregion
             )
     elif blitter == "sixel":
@@ -1410,23 +1595,6 @@ cpdef void graphics_field_render(
         else:
             opaque_sixel_graphics_field_render(
                 cells, graphics, kind, abs_y, abs_x, positions, particles, cregion
-            )
-    elif blitter == "braille":
-        if is_transparent:
-            trans_braille_graphics_field_render(
-                cells,
-                graphics,
-                kind,
-                abs_y,
-                abs_x,
-                positions,
-                particles,
-                alpha,
-                cregion,
-            )
-        else:
-            opaque_braille_graphics_field_render(
-                cells, abs_y, abs_x, positions, particles, cregion
             )
 
 
