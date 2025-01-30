@@ -66,12 +66,9 @@ class _ShadeSelector(Grabbable, Graphics):
         self.update_swatch_label()
 
     def update_swatch_label(self):
-        y, x = self._shade_indicator.pos
-
-        r, g, b = self.texture[y * 2, x, :3].tolist()
-
+        y, x = scale_geometry(self._blitter, self._shade_indicator.pos)
+        r, g, b = self.texture[y, x, :3].tolist()
         self.color_swatch.bg_color = r, g, b
-
         self.label.add_str(hex(r * 2**16 + g * 2**8 + b)[2:], pos=(1, 1))
         self.label.add_str(f"R: {r:>3}", pos=(3, 1))
         self.label.add_str(f"G: {g:>3}", pos=(4, 1))
@@ -107,7 +104,7 @@ class _HueSelector(Grabbable, Graphics):
 
     def on_size(self):
         super().on_size()
-        h, w = self._size
+        _, w = self._size
         d, r = divmod(w, 6)
         if d == 1:
             return

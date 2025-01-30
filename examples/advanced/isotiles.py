@@ -1,11 +1,11 @@
 import asyncio
+from math import ceil
 from pathlib import Path
 from time import perf_counter
 
 import batgrl.colors as colors
 from batgrl.app import App
-from batgrl.colors import AWHITE
-from batgrl.gadgets.graphics import Graphics, Point, Size
+from batgrl.gadgets.graphics import Graphics, Point, Size, scale_geometry
 from batgrl.gadgets.scroll_view import ScrollView
 from batgrl.terminal.events import MouseEvent
 from batgrl.texture_tools import composite, read_texture
@@ -42,11 +42,15 @@ TILES = (
 
 
 class WorldGadget(Graphics):
-    def __init__(self):
+    def __init__(self, blitter):
         wh, ww = WORLD_SIZE
         th, tw = TILE_SIZE
+        h, w = scale_geometry(blitter, Size(1, 1))
 
-        super().__init__(size=(wh * th // 2, ww * tw), default_color=AWHITE)
+        super().__init__(
+            size=(ceil(wh * th / h), ceil(ww * tw / w)),
+            blitter=blitter,
+        )
         self.tile_map = [[0 for _ in range(ww)] for _ in range(wh)]
         self.selected_tile = -1, -1
         self.paint_world()
@@ -117,9 +121,7 @@ class WorldGadget(Graphics):
 
             return True
 
-        y, x = self.to_local(mouse_event.pos)
-        y *= 2
-
+        y, x = scale_geometry(self._blitter, self.to_local(mouse_event.pos))
         tile_y, tile_offset_y = divmod(y, TILE_SIZE.height)
         tile_x, tile_offset_x = divmod(x, TILE_SIZE.width)
 
@@ -150,7 +152,7 @@ class IsoTileApp(App):
             show_horizontal_bar=False,
             mouse_button="middle",
         )
-        sv.view = WorldGadget()
+        sv.view = WorldGadget(blitter="half")
         self.add_gadget(sv)
 
 
