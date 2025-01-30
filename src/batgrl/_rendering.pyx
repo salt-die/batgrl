@@ -869,7 +869,7 @@ cdef void opaque_text_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    long long[:, ::1] positions,
+    double[:, ::1] positions,
     Cell[::1] particles,
     CRegion *cregion
 ):
@@ -878,8 +878,8 @@ cdef void opaque_text_field_render(
         int py, px
 
     for i in range(nparticles):
-        py = positions[i][0] + abs_y
-        px = positions[i][1] + abs_x
+        py = <int>positions[i][0] + abs_y
+        px = <int>positions[i][1] + abs_x
         if contains(cregion, py, px):
             cells[py, px] = particles[i]
 
@@ -892,7 +892,7 @@ cdef void trans_text_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    long long[:, ::1] positions,
+    double[:, ::1] positions,
     Cell[::1] particles,
     double alpha,
     CRegion *cregion,
@@ -909,8 +909,8 @@ cdef void trans_text_field_render(
         Cell *src
 
     for i in range(nparticles):
-        py = positions[i][0] + abs_y
-        px = positions[i][1] + abs_x
+        py = <int>positions[i][0] + abs_y
+        px = <int>positions[i][1] + abs_x
         if not contains(cregion, py, px):
             continue
         src = &particles[i]
@@ -959,7 +959,7 @@ cpdef void text_field_render(
     uint8[:, ::1] kind,
     tuple[int, int] abs_pos,
     bint is_transparent,
-    long long[:, ::1] positions,
+    double[:, ::1] positions,
     Cell[::1] particles,
     double alpha,
     Region region,

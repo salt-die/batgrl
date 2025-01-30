@@ -25,11 +25,11 @@ class GraphicParticleField(Gadget):
 
     Parameters
     ----------
-    particle_positions : NDArray[np.int32] | None, default: None
+    particle_positions : NDArray[np.float64] | None, default: None
         An array of particle positions with shape `(N, 2)`.
     particle_colors : NDArray[np.uint8] | None, default: None
         A RGBA array of particle colors with shape `(N, 4)`.
-    particle_properties : dict[str, NDArray[Any]] | None, default: None
+    particle_properties : dict[str, Any] | None, default: None
         Additional particle properties.
     alpha : float, default: 1.0
         Transparency of gadget.
@@ -56,11 +56,11 @@ class GraphicParticleField(Gadget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : NDArray[np.int32]
+    particle_positions : NDArray[np.float64]
         An array of particle positions with shape `(N, 2)`.
     particle_colors : NDArray[np.uint8]
         A RGBA array of particle colors with shape `(N, 4)`.
-    particle_properties : dict[str, NDArray[Any]]
+    particle_properties : dict[str, Any]
         Additional particle properties.
     alpha : float
         Transparency of gadget.
@@ -170,9 +170,9 @@ class GraphicParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_positions: NDArray[np.int32] | None = None,
+        particle_positions: NDArray[np.float64] | None = None,
         particle_colors: NDArray[np.uint8] | None = None,
-        particle_properties: dict[str, NDArray[Any]] | None = None,
+        particle_properties: dict[str, Any] | None = None,
         alpha: float = 1.0,
         blitter: Blitter = "half",
         size: Size = Size(10, 10),
@@ -192,13 +192,13 @@ class GraphicParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.particle_positions: NDArray[np.float32]
+        self.particle_positions: NDArray[np.float64]
         """An array of particle positions with shape `(N, 2)`."""
         if particle_positions is None:
-            self.particle_positions = np.zeros((0, 2), dtype=float)
+            self.particle_positions = np.zeros((0, 2), dtype=np.float64)
         else:
             self.particle_positions = np.ascontiguousarray(
-                particle_positions, dtype=float
+                particle_positions, dtype=np.float64
             )
 
         self.particle_colors: NDArray[np.uint8]
@@ -210,7 +210,7 @@ class GraphicParticleField(Gadget):
         else:
             self.particle_colors = np.ascontiguousarray(particle_colors, dtype=np.uint8)
 
-        self.particle_properties: dict[str, NDArray[Any]]
+        self.particle_properties: dict[str, Any]
         """Additional particle properties."""
         if particle_properties is None:
             self.particle_properties = {}
@@ -262,7 +262,7 @@ class GraphicParticleField(Gadget):
         positions = np.argwhere(texture[..., 3])
         pys, pxs = positions.T
         self.particle_colors = np.ascontiguousarray(texture[pys, pxs])
-        self.particle_positions = np.ascontiguousarray(positions.astype(float))
+        self.particle_positions = np.ascontiguousarray(positions.astype(np.float64))
         self.particle_positions /= _BLITTER_GEOMETRY[self._blitter]
 
     def _render(

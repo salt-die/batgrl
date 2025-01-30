@@ -8,9 +8,9 @@ from time import perf_counter
 import numpy as np
 
 from ...colors import BLUE, WHITE, Color, gradient, lerp_colors
-from ...geometry import BezierCurve, Point, Size, move_along_path
+from ...geometry import BezierCurve, Point, move_along_path
 from ..text import Text
-from ..text_field import TextParticleField, particle_data_from_canvas
+from ..text_field import TextParticleField
 from ._particle import Particle
 
 RNG = np.random.default_rng()
@@ -31,20 +31,15 @@ async def ring_effect(text: Text):
     --------
     Modifying `text` size while effect is running will break the effect.
     """
-    pos, cells = particle_data_from_canvas(text.canvas)
-    indices = np.arange(len(pos))
-    RNG.shuffle(indices)
-
-    field = TextParticleField(
-        particle_positions=pos,
-        particle_cells=cells,
-        size_hint={"height_hint": 1.0, "width_hint": 1.0},
-    )
+    field = TextParticleField(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+    field.particles_from_cells(text.canvas)
+    # indices = np.arange(len(pos))
+    # RNG.shuffle(indices)
 
     particles = list(Particle.iter_from_field(field))
     for particle in particles:
-        particle.final_pos = particle.pos
-    positions = (RNG.random((field.nparticles, 2)) * text.size).astype(int)
+        particle.final_pos = Point(int(particle.pos.y), int(particle.pos.x))
+    positions = RNG.random((field.nparticles, 2)) * text.size
     field.particle_positions = positions
 
     min_dim = min(text.height, text.width / 2)
@@ -57,10 +52,10 @@ async def ring_effect(text: Text):
 
     radius_to_particles = await _move_to_rings(particles, radii, center)
     await _spin_rings(radius_to_particles, center)
-    await _disperse(particles, text.size)
+    await _disperse(particles)
     radius_to_particles = await _move_to_rings(particles, radii, center)
     await _spin_rings(radius_to_particles, center, reverse=True)
-    await _disperse(particles, text.size)
+    await _disperse(particles)
     radius_to_particles = await _move_to_rings(particles, radii, center)
     await _spin_rings(radius_to_particles, center)
     await _settle(particles, text)
@@ -171,13 +166,13 @@ async def _spin_rings(
                 y, x = _rotate_around_center(
                     particle.ring_point, center, direction * theta
                 )
-                particle.pos = int(y), int(x)
+                particle.pos = y, x
 
         theta += tau / 100
         await asyncio.sleep(0)
 
 
-async def _disperse(particles: list[Particle], field_size: Size):
+async def _disperse(particles: list[Particle]):
     paths = []
     for particle in particles:
         controls = [particle.pos] + [

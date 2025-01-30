@@ -82,7 +82,7 @@ class PokeParticleField(GraphicParticleField):
             speed_mask = speeds > MAX_PARTICLE_SPEED
             velocities[speed_mask] *= MAX_PARTICLE_SPEED / speeds[:, None][speed_mask]
 
-            positions[:] += velocities
+            positions += velocities
             velocities *= FRICTION
 
             # Boundary conditions

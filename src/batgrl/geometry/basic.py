@@ -58,7 +58,7 @@ def points_on_circle(
     radius: float = 1.0,
     center: tuple[float, float] = (0.0, 0.0),
     offset: float = 0.0,
-) -> NDArray[np.float32]:
+) -> NDArray[np.float64]:
     """
     Return `n` points on a circle.
 
