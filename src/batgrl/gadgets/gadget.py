@@ -9,7 +9,7 @@ from itertools import count
 from numbers import Real
 from time import perf_counter
 from types import MappingProxyType
-from typing import Final, Literal, Self, TypedDict
+from typing import TYPE_CHECKING, Final, Literal, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -18,6 +18,9 @@ from numpy.typing import NDArray
 from ..geometry import EASINGS, Easing, Point, Region, Size, clamp, lerp, round_down
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import Cell, new_cell
+
+if TYPE_CHECKING:
+    from ._root import _Root
 
 __all__ = [
     "Anchor",
@@ -637,7 +640,7 @@ class Gadget:
                 self._invalidate_region()
 
     @property
-    def root(self) -> Self | None:
+    def root(self) -> _Root | None:
         """Return the root gadget if connected to gadget tree."""
         return self.parent and self.parent.root
 
@@ -740,7 +743,7 @@ class Gadget:
         ) or self.on_terminal_focus(focus_event)
 
     def _invalidate_region(self, notify_root: bool = True) -> None:
-        """Invalidate region and all children's regions."""
+        """Invalidate region and recursively invalidate all children regions."""
         self._region_valid = False
         if notify_root and self.root is not None:
             self.root._all_regions_valid = False
@@ -840,7 +843,7 @@ class Gadget:
             if child.is_visible and child.is_enabled
         )
 
-    def collides_gadget(self, other: Self) -> bool:
+    def collides_gadget(self, other: Gadget) -> bool:
         """
         Return true if other is within gadget's bounding box.
 
@@ -875,7 +878,7 @@ class Gadget:
             self.parent.children.remove(self)
             self.parent.children.append(self)
 
-    def walk(self) -> Iterator[Self]:
+    def walk(self) -> Iterator[Gadget]:
         """
         Yield all descendents of this gadget (preorder traversal).
 
@@ -888,7 +891,7 @@ class Gadget:
             yield child
             yield from child.walk()
 
-    def walk_reverse(self) -> Iterator[Self]:
+    def walk_reverse(self) -> Iterator[Gadget]:
         """
         Yield all descendents of this gadget (reverse postorder traversal).
 
@@ -901,7 +904,7 @@ class Gadget:
             yield from child.walk_reverse()
             yield child
 
-    def ancestors(self) -> Iterator[Self]:
+    def ancestors(self) -> Iterator[Gadget]:
         """
         Yield all ancestors of this gadget.
 
@@ -914,7 +917,7 @@ class Gadget:
             yield self.parent
             yield from self.parent.ancestors()
 
-    def add_gadget(self, gadget: Self) -> None:
+    def add_gadget(self, gadget: Gadget) -> None:
         """
         Add a child gadget.
 
@@ -930,7 +933,7 @@ class Gadget:
         if self.root is not None:
             gadget.on_add()
 
-    def add_gadgets(self, *gadgets: Self) -> None:
+    def add_gadgets(self, *gadgets: Gadget) -> None:
         r"""
         Add multiple child gadgets.
 
@@ -946,7 +949,7 @@ class Gadget:
         for gadget in gadgets:
             self.add_gadget(gadget)
 
-    def remove_gadget(self, gadget: Self) -> None:
+    def remove_gadget(self, gadget: Gadget) -> None:
         """
         Remove a child gadget.
 
