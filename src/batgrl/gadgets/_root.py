@@ -3,20 +3,18 @@
 from __future__ import annotations
 
 from threading import RLock
-from typing import TYPE_CHECKING, Literal, Self
+from typing import TYPE_CHECKING, Final, Literal, Self
 
 import numpy as np
 from numpy.typing import NDArray
-
-if TYPE_CHECKING:
-    from ..app import App
-
-from typing import Final
 
 from ..colors import BLACK, Color
 from ..text_tools import Cell, _Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
 from .graphics import Graphics, scale_geometry
+
+if TYPE_CHECKING:
+    from ..app import App
 
 
 class _Root(Gadget):
