@@ -88,8 +88,7 @@ class _GadgetList(MutableSequence):
     """
     A sequence of sibling gadgets.
 
-    Gadget regions are invalidated if gadgets later in the sequence are added or
-    removed.
+    Gadget regions are invalidated when ``_GadgetList`` is mutated.
     """
 
     def __init__(self) -> None:
@@ -105,14 +104,12 @@ class _GadgetList(MutableSequence):
         raise NotImplementedError("_GadgetList.__setitem__ not implemented.")
 
     def __delitem__(self, index: int) -> None:
+        self._gadgets[index]._invalidate_regions()
         del self._gadgets[index]
-        for i in range(index - 1, -1, -1):
-            self[i]._invalidate_region()
 
     def insert(self, index: int, gadget: Gadget) -> None:
+        gadget._invalidate_regions()
         self._gadgets.insert(index, gadget)
-        for i in range(index, -1, -1):
-            self[i]._invalidate_region()
 
     def __iter__(self) -> Iterator[Gadget]:
         return iter(self._gadgets)
@@ -429,12 +426,6 @@ class Gadget:
         """Whether gadget is visible."""
         self._is_enabled = is_enabled
         """Whether gadget is enabled."""
-        self._region_valid: bool = False
-        """Whether current region is valid."""
-        self._clipping_region: Region = Region()
-        """Initial region clipped by ancestor regions."""
-        self._root_region_before: Region = Region()
-        """The root's region before gadget's region is removed from it."""
         self._region: Region = Region()
         """The visible portion of the gadget on the screen."""
 
@@ -464,7 +455,7 @@ class Gadget:
         else:
             with self.root._render_lock:
                 self._size = size
-                self._invalidate_region()
+                self._invalidate_regions()
 
         self._apply_pos_hints()
         for child in self.children:
@@ -511,7 +502,7 @@ class Gadget:
         else:
             with self.root._render_lock:
                 self._pos = pos
-                self._invalidate_region()
+                self._invalidate_regions()
 
     @property
     def top(self) -> int:
@@ -604,7 +595,7 @@ class Gadget:
         if is_transparent != self._is_transparent:
             self._is_transparent = is_transparent
             if self.root is not None:
-                self._invalidate_region()
+                self._invalidate_regions()
             self.on_transparency()
 
     @property
@@ -621,7 +612,7 @@ class Gadget:
         if is_visible != self._is_visible:
             self._is_visible = is_visible
             if self.root is not None:
-                self._invalidate_region()
+                self._invalidate_regions()
 
     @property
     def is_enabled(self) -> bool:
@@ -637,7 +628,7 @@ class Gadget:
         if is_enabled != self._is_enabled:
             self._is_enabled = is_enabled
             if self.root is not None:
-                self._invalidate_region()
+                self._invalidate_regions()
 
     @property
     def root(self) -> _Root | None:
@@ -742,13 +733,10 @@ class Gadget:
             if gadget.is_enabled
         ) or self.on_terminal_focus(focus_event)
 
-    def _invalidate_region(self, notify_root: bool = True) -> None:
-        """Invalidate region and recursively invalidate all children regions."""
-        self._region_valid = False
-        if notify_root and self.root is not None:
-            self.root._all_regions_valid = False
-        for child in self.children:
-            child._invalidate_region(False)
+    def _invalidate_regions(self) -> None:
+        """Invalidate regions."""
+        if self.root is not None:
+            self.root._regions_valid = False
 
     def apply_hints(self) -> None:
         """
@@ -928,7 +916,7 @@ class Gadget:
         """
         self.children.append(gadget)
         gadget.parent = self
-        self._invalidate_region()
+        self._invalidate_regions()
 
         if self.root is not None:
             gadget.on_add()
@@ -963,7 +951,7 @@ class Gadget:
 
         self.children.remove(gadget)
         gadget.parent = None
-        self._invalidate_region()
+        self._invalidate_regions()
 
     def prolicide(self) -> None:
         """Recursively remove all children."""

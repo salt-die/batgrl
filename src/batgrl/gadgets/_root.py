@@ -35,10 +35,8 @@ class _Root(Gadget):
         """Default cell of root canvas."""
         self._bg_color = BLACK
         """Background color of the app."""
-        self._all_regions_valid = False
+        self._regions_valid = False
         """Whether all regions in gadget tree are valid."""
-        self._region_valid = False
-        """Whether current region is valid."""
         self._pos: Final = Point(0, 0)
         """Position of root gadget."""
         self._size = size
@@ -120,42 +118,29 @@ class _Root(Gadget):
         return self._app
 
     def _set_regions(self) -> None:
-        """Recompute valid regions for all gadgets with invalid regions."""
-        if not self._region_valid:
-            self._clipping_region = Region.from_rect(self._pos, self.size)
-            self._region = self._clipping_region
+        """Recompute all gadget regions."""
+        self._region = Region.from_rect(self._pos, self.size)
 
         for child in self.walk():
-            if not child._region_valid:
-                child._clipping_region = (
-                    child.parent._clipping_region
-                    & Region.from_rect(child.absolute_pos, child.size)
-                    if child._is_enabled and child._is_visible
-                    else Region()
-                )
+            child._region = (
+                child.parent._region & Region.from_rect(child.absolute_pos, child.size)
+                if child._is_enabled and child._is_visible
+                else Region()
+            )
 
-        skip_valid_regions = True
         for child in self.walk_reverse():
-            if skip_valid_regions and child._region_valid:
-                pass
-            elif child._region_valid and child._root_region_before == self._region:
-                skip_valid_regions = True
-            else:
-                child._root_region_before = self._region
-                child._region = self._region & child._clipping_region
-                child._region_valid = True
-                skip_valid_regions = False
+            if child._is_enabled and child._is_visible:
+                child._region &= self._region
+                if not child._is_transparent:
+                    self._region -= child._region
 
-            if not child._is_transparent:
-                self._region -= child._region
-
-        self._all_regions_valid = True
+        self._regions_valid = True
         self._resized = False
 
     def _render(self):
         """Render gadget tree into :attr:``canvas``."""
         with self._render_lock:
-            if not self._all_regions_valid:
+            if not self._regions_valid:
                 self._set_regions()
 
             self.cells, self._last_cells = self._last_cells, self.cells
