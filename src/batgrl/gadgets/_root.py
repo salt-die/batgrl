@@ -139,19 +139,17 @@ class _Root(Gadget):
         skip_valid_regions = True
         for child in self.walk_reverse():
             if skip_valid_regions and child._region_valid:
-                continue
-
-            if child._region_valid and child._root_region_before == self._region:
+                pass
+            elif child._region_valid and child._root_region_before == self._region:
                 skip_valid_regions = True
-                continue
+            else:
+                child._root_region_before = self._region
+                child._region = self._region & child._clipping_region
+                child._region_valid = True
+                skip_valid_regions = False
 
-            child._root_region_before = self._region
-            child._region = self._region & child._clipping_region
             if not child._is_transparent:
                 self._region -= child._region
-
-            child._region_valid = True
-            skip_valid_regions = False
 
         self._all_regions_valid = True
         self._resized = False
