@@ -49,20 +49,18 @@ class _Root(Gadget):
         """Current rendering of gadget tree."""
         self.graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Current graphics rendering."""
+        self._sgraphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
+        """Used by renderer to scale graphics from 0-255 to 0-100 for sixel."""
         self.kind: NDArray[np.uint8]
         """Whether a cell should use canvas, graphics or both."""
         self._widths: NDArray[np.int32]
         """Column widths of characters in canvas."""
         self._last_cells: NDArray[_Cell]
         """Previous rendering of gadget tree."""
-        self._last_graphics: NDArray[np.uint8] = self.graphics.copy()
+        self._last_graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Previous graphics rendering."""
         self._last_kind: NDArray[np.uint8]
         """Previous kind."""
-        self._palette: NDArray[np.uint8] = np.empty((256, 3), np.uint8)
-        """Stores quantized colors when generating sixel."""
-        self._indices: NDArray[np.uint8] = np.empty((0, 0), np.uint8)
-        """Indices into palette for quantized graphics."""
 
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
@@ -77,7 +75,7 @@ class _Root(Gadget):
             h, w = scale_geometry("sixel", self.size)
             self.graphics = np.full((h, w, 4), (*self._bg_color, 0), np.uint8)
             self._last_graphics = self.graphics.copy()
-            self._indices = np.empty((h, w), np.uint8)
+            self._sgraphics = np.zeros((h, w, 4), np.uint8)
 
     @property
     def bg_color(self) -> Color:

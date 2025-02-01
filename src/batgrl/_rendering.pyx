@@ -10,8 +10,7 @@ import numpy as np
 cimport numpy as cnp
 
 from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4, FBufWrapper
-from ._sixel cimport csixel_ansi
-from .colors._quantization cimport median_variance_quantization
+from ._sixel cimport sixel, OctTree
 from .geometry.regions cimport CRegion, Region, contains, bounding_rect
 
 ctypedef unsigned char uint8
@@ -1705,16 +1704,16 @@ cdef inline ssize_t write_glyph(
 cpdef void terminal_render(
     bint resized,
     FBufWrapper fwrap,
+    OctTree octree,
     tuple[int, int] app_pos,
     Cell[:, ::1] cells,
     Cell[:, ::1] prev_cells,
     int[:, ::1] widths,
     uint8[:, :, ::1] graphics,
     uint8[:, :, ::1] prev_graphics,
+    uint8[:, :, ::1] sgraphics,
     uint8[:, ::1] kind,
     uint8[:, ::1] prev_kind,
-    uint8[:, ::1] palette,
-    uint8[:, ::1] indices,
     tuple[int, int] aspect_ratio,
 ):
     normalize_canvas(cells, widths)
@@ -1783,13 +1782,10 @@ cpdef void terminal_render(
             gh -= gh % 6
         gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
 
-        ncolors = median_variance_quantization(
-            graphics, gy, gx, gh, gw, palette, indices
-        )
         if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1 + oy, min_x_sixel + 1 + ox):
             raise MemoryError
-        if csixel_ansi(
-            f, palette, indices, graphics, aspect_h, aspect_w, ncolors, gy, gx, gh, gw
+        if sixel(
+            f, &octree.qs, graphics, sgraphics, aspect_h, aspect_w, gy, gx, gh, gw
         ):
             raise MemoryError
 

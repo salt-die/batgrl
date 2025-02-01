@@ -10,6 +10,7 @@ from time import perf_counter
 from typing import Any, Final
 
 from ._rendering import terminal_render
+from ._sixel import OctTree
 from .colors import DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
@@ -149,6 +150,8 @@ class App(ABC):
         """Position of app in terminal."""
         self._exit_value: Any = None
         """Value set by ``exit(exit_value)`` and returned by ``run()``."""
+        self._octree: Final = OctTree()
+        """Used by renderer to quantize graphics."""
 
     def __repr__(self):
         return (
@@ -440,16 +443,16 @@ class App(ABC):
                 terminal_render(
                     resized,
                     terminal._out_buffer,
+                    self._octree,
                     self._app_pos,
                     root.cells,
                     root._last_cells,
                     root._widths,
                     root.graphics,
                     root._last_graphics,
+                    root._sgraphics,
                     root.kind,
                     root._last_kind,
-                    root._palette,
-                    root._indices,
                     Graphics._sixel_aspect_ratio,
                 )
 
