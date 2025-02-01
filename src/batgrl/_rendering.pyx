@@ -815,7 +815,7 @@ cdef void trans_braille_graphics_render(
         src_x = 2 * (it.x - abs_x)
         average_alpha = average_quant(
             &fg[0], &pixels[0], self_texture, src_y, src_x, 4, 2
-        )
+        ) * alpha
         if not average_alpha:
             next_(&it)
             continue
@@ -1357,7 +1357,7 @@ cdef void trans_sixel_graphics_field_render(
 
 cdef struct BraillePixel:
     unsigned long char_
-    double[3] total_fg
+    double[4] total_fg
     unsigned int ncolors
 
 
@@ -1486,6 +1486,7 @@ cdef void trans_braille_graphics_field_render(
                 p = average_graphics(&rgb[0], graphics[oy:oy + h, ox: ox + w])
                 lerp_rgb(&rgb[0], &cells[ipy, ipx].bg_color[0], p)
                 kind[ipy, ipx] = GLYPH
+            cells[ipy, ipx].fg_color = cells[ipy, ipx].bg_color
         kind[ipy, ipx] = GLYPH
         pgy = <int>((py - ipy) * 4)
         pgx = <int>((px - ipx) * 2)
@@ -1493,6 +1494,7 @@ cdef void trans_braille_graphics_field_render(
         pixel.total_fg[0] += particles[i, 0]
         pixel.total_fg[1] += particles[i, 1]
         pixel.total_fg[2] += particles[i, 2]
+        pixel.total_fg[3] += particles[i, 3]
         pixel.ncolors += 1
 
     for i in range(rh * rw):
@@ -1508,10 +1510,11 @@ cdef void trans_braille_graphics_field_render(
         dst.strikethrough = False
         dst.overline = False
         dst.reverse = False
-        dst.fg_color[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
-        dst.fg_color[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
-        dst.fg_color[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
 
+        rgb[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
+        rgb[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
+        rgb[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
+        composite(&dst.fg_color[0], &rgb[0], pixel.total_fg[3] / 255 / pixel.ncolors * alpha)
     free(pixels)
 
 
