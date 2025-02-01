@@ -242,8 +242,9 @@ class GraphicParticleField(Gadget):
         if blitter not in Blitter.__args__:
             raise TypeError(f"{blitter} is not a valid blitter type.")
         if blitter == "sixel" and not Graphics._sixel_support:
-            blitter = "half"
-        self._blitter = blitter
+            self._blitter = "half"
+        else:
+            self._blitter = blitter
 
     @property
     def nparticles(self) -> int:
