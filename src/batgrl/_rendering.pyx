@@ -9,11 +9,10 @@ import cython
 import numpy as np
 cimport numpy as cnp
 
-from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4
+from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4, FBufWrapper
 from ._sixel cimport csixel_ansi
 from .colors._quantization cimport median_variance_quantization
 from .geometry.regions cimport CRegion, Region, contains, bounding_rect
-from .terminal._fbuf_wrapper cimport FBufWrapper
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2

@@ -387,8 +387,8 @@ cdef size_t median_variance_quantization(
     size_t ox,
     size_t h,
     size_t w,
-    palette,
-    indices,
+    uint8[:, ::1] palette,
+    uint8[:, ::1] indices,
 ):
     cdef:
         size_t y, x

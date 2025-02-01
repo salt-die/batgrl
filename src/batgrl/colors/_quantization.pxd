@@ -4,6 +4,6 @@ cdef size_t median_variance_quantization(
     size_t ox,
     size_t h,
     size_t w,
-    palette,
-    indices,
+    unsigned char[:, ::1] palette,
+    unsigned char[:, ::1] indices,
 )

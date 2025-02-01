@@ -1,4 +1,4 @@
-from .._fbuf cimport fbuf_flush, fbuf_free, fbuf_init, fbuf_putn
+from ._fbuf cimport fbuf_flush, fbuf_free, fbuf_init, fbuf_putn
 
 
 cdef class FBufWrapper:

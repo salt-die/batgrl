@@ -17,3 +17,7 @@ cdef extern from "_fbuf.h":
     ssize_t fbuf_printf(fbuf *f, const char *fmt, ...)
     ssize_t fbuf_putucs4(fbuf *f, uint32_t wc)
     ssize_t fbuf_flush(fbuf *f)
+
+
+cdef class FBufWrapper:
+    cdef fbuf f

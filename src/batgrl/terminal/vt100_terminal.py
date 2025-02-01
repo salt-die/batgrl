@@ -9,9 +9,9 @@ from enum import Enum, auto
 from io import StringIO
 from typing import Final, Literal
 
+from .._fbuf import FBufWrapper
 from ..colors import Color
 from ..geometry import Point, Size
-from ._fbuf_wrapper import FBufWrapper
 from .ansi_escapes import ANSI_ESCAPES
 from .events import (
     ColorReportEvent,
