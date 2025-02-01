@@ -190,7 +190,7 @@ class Image(Graphics):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._otexture = np.zeros((2, 1, 4), dtype=np.uint8)
+        self._otexture = np.zeros((1, 1, 4), dtype=np.uint8)
         super().__init__(
             default_color=default_color,
             alpha=alpha,
