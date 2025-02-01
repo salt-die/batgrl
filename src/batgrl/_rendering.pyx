@@ -1619,7 +1619,7 @@ cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
         fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
 
 
-cdef void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
+cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
     cdef size_t h = cells.shape[0], w = cells.shape[1], y, x
 
     # Try to prevent wide chars from clipping. If there is clipping,
