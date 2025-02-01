@@ -280,7 +280,9 @@ class Graphics(Gadget):
 
     def on_add(self) -> None:
         """Resize if geometry is incorrect on add."""
-        if self.texture.shape[:2] != scale_geometry(self._blitter, self.size):
+        if self._blitter == "sixel" and not Graphics._sixel_support:
+            self.blitter = "half"
+        elif self.texture.shape[:2] != scale_geometry(self._blitter, self.size):
             self.on_size()
         super().on_add()
 
