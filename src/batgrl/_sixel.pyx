@@ -20,7 +20,7 @@ bottom, if that pixel matches the current color add ``2**n``. The result is a va
 repeated, run length encoding, "!rc", may be used instead where ``r`` is the number of
 times to repeat ``c``.
 """
-# This implementation is nearly verbatim notcurses' sixel.c, but implemented in cython.
+# This is nearly verbatim notcurses' sixel.c, but in cython.
 # notcurses' sixel.c:
 #   https://github.com/dankamongmen/notcurses/blob/master/src/lib/sixel.c
 #
