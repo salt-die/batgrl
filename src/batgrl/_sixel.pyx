@@ -91,7 +91,9 @@ cdef inline uint make_chosen(uint cidx):
 
 
 cdef inline uint qidx(const qnode *q):
-    return q.cidx & ~0x8000
+    if q.cidx & 0x8000:
+        return q.cidx ^ 0x8000
+    return q.cidx
 
 
 cdef inline int insert_color(qstate *qs, uint8 *srgb):
@@ -221,13 +223,13 @@ cdef inline int find_next_lowest_chosen(
             while i >= 0:
                 h = o.q[i]
                 if h and is_chosen(h):
-                    hq = &h
+                    hq[0] = h
                     return z * 8 + i
                 i += 1
                 if i >= 8:
                     break
         elif is_chosen(h):
-            hq = &h
+            hq[0] = h
             return z * 8
         z += 1
         if z >= QNODES_COUNT:
@@ -257,7 +259,7 @@ cdef inline void choose(
         else:
             q.cidx = qidx(hq[0])
     else:
-        lq = &q
+        lq[0] = q
         lo[0] = z * 8
 
 
@@ -286,7 +288,7 @@ cdef inline int merge_color_table(qstate *qs):
         const qnode *hq = NULL
         const onode *o
 
-    for z in range(0, QNODES_COUNT):
+    for z in range(QNODES_COUNT):
         if qs.qnodes[z].pop == 0:
             if qs.qnodes.qlink == 0:
                 continue
@@ -314,17 +316,18 @@ cdef inline void load_color_table(const qstate *qs):
             qs.table[3 * qidx(q)] = q.srgb[0]
             qs.table[3 * qidx(q) + 1] = q.srgb[1]
             qs.table[3 * qidx(q) + 2] = q.srgb[2]
+            loaded += 1
 
 
 cdef int alloc_qstate(qstate *qs):
-    qs.dynnodes_free = MAX_COLORS
-    qs.dynnodes_total = qs.dynnodes_free
+    qs.dynnodes_total = MAX_COLORS
+    qs.dynnodes_free = qs.dynnodes_total
     qs.qnodes = <qnode*>malloc((QNODES_COUNT + qs.dynnodes_total) * sizeof(qnode))
     if qs.qnodes is NULL:
         return -1
 
-    qs.onodes_free = qs.dynnodes_total // 8
-    qs.onodes_total = qs.onodes_free
+    qs.onodes_total = qs.dynnodes_total // 8
+    qs.onodes_free = qs.onodes_total
     qs.onodes = <onode*>malloc(qs.onodes_total * sizeof(onode))
     if qs.onodes is NULL:
         free(qs.qnodes)
@@ -343,8 +346,8 @@ cdef int alloc_qstate(qstate *qs):
 
 cdef void reset_qstate(qstate *qs):
     memset(qs.qnodes, 0, sizeof(qnode) * QNODES_COUNT)
-    qs.dynnodes_free = MAX_COLORS
-    qs.onodes_free = qs.dynnodes_total // 8
+    qs.dynnodes_free = qs.dynnodes_total
+    qs.onodes_free = qs.onodes_total
     qs.ncolors = 0
 
 
