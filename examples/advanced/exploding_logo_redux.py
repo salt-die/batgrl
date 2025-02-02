@@ -12,8 +12,11 @@ from pathlib import Path
 
 import numpy as np
 from batgrl.app import App
-from batgrl.gadgets.graphic_field import _BLITTER_GEOMETRY, GraphicParticleField
+from batgrl.gadgets.graphic_field import Blitter, GraphicParticleField
+from batgrl.gadgets.graphics import scale_geometry
 from batgrl.gadgets.image import Image, Point, Size
+from batgrl.gadgets.slider import Slider
+from batgrl.gadgets.toggle_button import ToggleButton
 from batgrl.geometry.easings import out_bounce
 from batgrl.texture_tools import read_texture, resize_texture
 
@@ -43,9 +46,9 @@ class PokeParticleField(GraphicParticleField):
     def on_size(self):
         super().on_size()
         old_origin = self._origin
-        h, w = _BLITTER_GEOMETRY[self._blitter]
-        y, x = LOGO_SIZE.center
-        self._origin = self.center - Point(y // h, x // w)
+        h, w = self._size
+        th, tw = LOGO_SIZE  # scale_geometry(self._blitter, LOGO_SIZE)
+        self._origin = Point((h - th) // 2, (w - tw) // 2)
         dif = old_origin - self._origin
         self.particle_properties["original_positions"] -= dif
         self.particle_positions -= dif
@@ -121,19 +124,69 @@ class PokeParticleField(GraphicParticleField):
 
 class ExplodingLogoApp(App):
     async def on_start(self):
+        # For performance reasons, increase sixel aspect ratio x4.
+        self.set_sixel_aspect_ratio((4, 1))
+
         background = Image(
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
         field = PokeParticleField(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0}, alpha=0.7
+            size_hint={"height_hint": 1.0, "width_hint": 1.0},
+            alpha=0.7,
+            blitter="sixel",
+            is_transparent=False,
         )
-        texture = resize_texture(read_texture(PATH_TO_LOGO_FULL), LOGO_SIZE)
-        field.particles_from_texture(texture)
-        field.particle_properties = {
-            "original_positions": field.particle_positions.copy(),
-            "velocities": np.zeros((field.nparticles, 2), float),
-        }
-        self.add_gadgets(background, field)
+
+        def toggle_cb(blitter):
+            def cb(toggle):
+                if toggle == "on":
+                    field._origin = Point(0, 0)
+                    field.blitter = blitter
+                    texture = resize_texture(
+                        read_texture(PATH_TO_LOGO_FULL),
+                        scale_geometry(blitter, LOGO_SIZE),
+                    )
+                    field.particles_from_texture(texture)
+                    field.particle_properties = {
+                        "original_positions": field.particle_positions.copy(),
+                        "velocities": np.zeros((field.nparticles, 2), float),
+                    }
+                    field.on_size()
+
+            return cb
+
+        buttons = [
+            ToggleButton(
+                label=blitter,
+                callback=toggle_cb(blitter),
+                pos=(i, 0),
+                size=(1, 15),
+                group=0,
+            )
+            for i, blitter in enumerate(Blitter.__args__)
+        ]
+        buttons[0].callback("on")
+
+        def toggle_trans(toggle):
+            field.is_transparent = toggle == "on"
+
+        trans_button = ToggleButton(
+            label="Transparent", callback=toggle_trans, size=(1, 15), pos=(4, 0)
+        )
+
+        def on_slide(p):
+            field.alpha = p
+
+        slider = Slider(
+            min=0.0,
+            max=1.0,
+            start_value=0.7,
+            callback=on_slide,
+            size=(1, 15),
+            pos=(5, 0),
+        )
+
+        self.add_gadgets(background, field, *buttons, trans_button, slider)
 
 
 if __name__ == "__main__":
