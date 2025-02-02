@@ -18,7 +18,7 @@ KERNEL = np.array(
         [1, 1, 1],
     ]
 )
-UPDATE_SPEED = 0.1
+UPDATE_SPEED = 1 / 60
 
 
 class Life(Graphics):
