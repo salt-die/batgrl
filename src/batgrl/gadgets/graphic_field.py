@@ -1,7 +1,8 @@
 """
 A graphic particle field.
 
-A particle field specializes in handling many single "pixel" children.
+A particle field specializes in rendering many single "pixel" children from an array of
+particle positions and and an particle colors.
 """
 
 from typing import Any
@@ -21,14 +22,18 @@ class GraphicParticleField(Gadget):
     A graphic particle field.
 
     A particle field specializes in rendering many single "pixel" children from an array
-    of particle positions and particle colors.
+    of particle positions and and an particle colors. Particles positions are a
+    ``(N, 2)`` shaped array of floats. The decimal part of the positions allows
+    different blitters to place correct "subpixel" characters. For instance a position
+    ``(0.0, 0.0)`` might render the character ``"⠁"``, while ``(0.5, 0.0)`` might render
+    ``"⠄"``.
 
     Parameters
     ----------
     particle_positions : NDArray[np.float64] | None, default: None
-        An array of particle positions with shape `(N, 2)`.
+        An array of particle positions with shape ``(N, 2)``.
     particle_colors : NDArray[np.uint8] | None, default: None
-        A RGBA array of particle colors with shape `(N, 4)`.
+        A RGBA array of particle colors with shape ``(N, 4)``.
     particle_properties : dict[str, Any] | None, default: None
         Additional particle properties.
     alpha : float, default: 1.0
@@ -245,6 +250,12 @@ class GraphicParticleField(Gadget):
             self._blitter = "half"
         else:
             self._blitter = blitter
+
+    def on_add(self) -> None:
+        """Change sixel blitter if sixel is not supported on add."""
+        if self._blitter == "sixel" and not Graphics._sixel_support:
+            self.blitter = "half"
+        super().on_add()
 
     @property
     def nparticles(self) -> int:

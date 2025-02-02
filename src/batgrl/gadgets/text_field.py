@@ -1,7 +1,8 @@
 """
 A text particle field.
 
-A particle field specializes in handling many single "pixel" children.
+A particle field specializes in rendering many single "pixel" children from an array of
+particle positions and an array of particle cells.
 """
 
 from typing import Any
@@ -22,7 +23,7 @@ class TextParticleField(Gadget):
     A text particle field.
 
     A particle field specializes in rendering many single "pixel" children from an array
-    of particle positions and particle cells.
+    of particle positions and an array of particle cells.
 
     Parameters
     ----------
