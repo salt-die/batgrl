@@ -11,7 +11,7 @@ from numpy.typing import NDArray
 
 from .._rendering import graphics_field_render
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
-from .graphics import _BLITTER_GEOMETRY, Blitter, Graphics
+from .graphics import Blitter, Graphics, scale_geometry
 
 __all__ = ["GraphicParticleField", "Point", "Size"]
 
@@ -264,7 +264,7 @@ class GraphicParticleField(Gadget):
         pys, pxs = positions.T
         self.particle_colors = np.ascontiguousarray(texture[pys, pxs])
         self.particle_positions = np.ascontiguousarray(positions.astype(np.float64))
-        self.particle_positions /= _BLITTER_GEOMETRY[self._blitter]
+        self.particle_positions /= scale_geometry(self._blitter, Size(1, 1))
 
     def _render(
         self,

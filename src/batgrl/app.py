@@ -301,7 +301,8 @@ class App(ABC):
         Graphics._sixel_aspect_ratio = Size(h, w)
         if self.root is not None:
             for gadget in self.root.walk_reverse():
-                gadget.on_size()
+                if hasattr(gadget, "blitter") and gadget.blitter == "sixel":
+                    gadget.on_size()
             self.root.on_size()
 
     @abstractmethod
