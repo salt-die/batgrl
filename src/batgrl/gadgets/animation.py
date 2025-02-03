@@ -219,7 +219,7 @@ class Animation(Graphics):
         """Frames of the animation."""
         # Set in `on_size`
         self._sized_frames: list[NDArray[np.uint8]]
-        """Resized frames of the animation"""
+        """Resized frames of the animation."""
 
         if path is None:
             self.frames = []
@@ -270,7 +270,7 @@ class Animation(Graphics):
     def texture(self, texture: NDArray[np.uint8]) -> None:
         self._texture = texture
 
-    def on_remove(self):
+    def on_remove(self) -> None:
         """Pause animation."""
         self.pause()
         super().on_remove()
@@ -323,12 +323,12 @@ class Animation(Graphics):
         self._animation_task = asyncio.create_task(self._play_animation())
         return self._animation_task
 
-    def pause(self):
+    def pause(self) -> None:
         """Pause animation."""
         if self._animation_task is not None:
             self._animation_task.cancel()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the animation and reset current frame."""
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0

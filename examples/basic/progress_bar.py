@@ -10,11 +10,10 @@ from batgrl.gadgets.text_animation import TextAnimation
 
 class ProgressBarApp(App):
     async def on_start(self):
-        label_a = Text(
-            default_cell=new_cell(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
-            )
+        default_cell = new_cell(
+            fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
         )
+        label_a = Text(default_cell=default_cell)
         horizontal_a = ProgressBar(pos=(0, 10), size=(1, 50))
 
         label_b = TextAnimation(
@@ -22,8 +21,7 @@ class ProgressBarApp(App):
             frame_durations=1 / 12,
             size=(1, 10),
             pos=(2, 0),
-            animation_fg_color=DEFAULT_PRIMARY_FG,
-            animation_bg_color=DEFAULT_PRIMARY_BG,
+            default_cell=default_cell,
         )
         label_b.play()
 

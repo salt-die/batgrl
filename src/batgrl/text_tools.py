@@ -6,18 +6,20 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ._batgrl_markdown import find_md_tokens
-from .char_width import char_width  # type: ignore
+from .char_width import char_width, str_width
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 
 __all__ = [
     "Cell",
     "add_text",
+    "char_width",
     "new_cell",
     "coerce_cell",
     "is_word_char",
     "smooth_horizontal_bar",
     "smooth_vertical_bar",
+    "str_width",
 ]
 
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
