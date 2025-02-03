@@ -9,9 +9,17 @@ import cython
 import numpy as np
 cimport numpy as cnp
 
-from ._fbuf cimport fbuf, fbuf_flush, fbuf_grow, fbuf_printf, fbuf_putn, fbuf_putucs4, FBufWrapper
-from ._sixel cimport sixel, OctTree
-from .geometry.regions cimport CRegion, Region, contains, bounding_rect
+from ._fbuf cimport (
+    FBufWrapper,
+    fbuf,
+    fbuf_flush,
+    fbuf_grow,
+    fbuf_printf,
+    fbuf_putn,
+    fbuf_putucs4,
+)
+from ._sixel cimport OctTree, sixel
+from .geometry.regions cimport CRegion, Region, bounding_rect, contains
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
@@ -1514,7 +1522,9 @@ cdef void trans_braille_graphics_field_render(
         rgb[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
         rgb[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
         rgb[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
-        composite(&dst.fg_color[0], &rgb[0], pixel.total_fg[3] / 255 / pixel.ncolors * alpha)
+        composite(
+            &dst.fg_color[0], &rgb[0], pixel.total_fg[3] / 255 / pixel.ncolors * alpha
+        )
     free(pixels)
 
 
@@ -1726,7 +1736,7 @@ cpdef void terminal_render(
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_geom_height(cells, graphics)
         size_t cell_w = graphics_geom_width(cells, graphics)
-        size_t gy, gx, gh, gw, ncolors
+        size_t gy, gx, gh, gw
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
