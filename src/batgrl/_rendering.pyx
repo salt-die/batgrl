@@ -1278,6 +1278,7 @@ cdef void opaque_sixel_graphics_field_render(
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx, pgy, pgx
+        RegionIterator it
 
     for i in range(nparticles):
         py = positions[i][0] + abs_y
@@ -1296,11 +1297,16 @@ cdef void opaque_sixel_graphics_field_render(
             continue
         graphics[pgy, pgx] = particles[i]
         kind[ipy, ipx] = SIXEL
-        for gy in range(h):
-            for gx in range(w):
-                if not graphics[oy + gy, ox + gx, 3]:
-                    kind[ipy, ipx] = MIXED
-                    break
+
+    init_iter(&it, cregion)
+    while not it.done:
+        if kind[it.y, it.x] == SIXEL:
+            oy = it.y * h
+            ox = it.x * w
+            for gy in range(h):
+                for gx in range(w):
+                    graphics[oy + gy, ox + gx, 3] = 1
+        next_(&it)
 
 
 @cython.boundscheck(False)
