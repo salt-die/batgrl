@@ -574,7 +574,7 @@ cdef int sixel(
         for color in range(qs.ncolors):
             if color_bands[color] is NULL:
                 continue
-            if close_previous == 1:
+            if close_previous:
                 if fbuf_putn(f, "$", 1):
                     sixel_map_free(sixel_map, qs.ncolors)
                     return -1
@@ -592,7 +592,7 @@ cdef int sixel(
 
     f.len -= 1  # Remove last "-"
     sixel_map_free(sixel_map, qs.ncolors)
-    if fbuf_putn(f, "\x1b\\", 3):
+    if fbuf_putn(f, "\x1b\\", 2):
         return -1
 
     return 0
