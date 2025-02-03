@@ -128,7 +128,7 @@ class Vt100Terminal(ABC):
         Report terminal background color.
     request_device_attributes()
         Report device attributes.
-    request_cell_geometry()
+    request_pixel_geometry()
         Report pixel geometry per cell.
     request_terminal_geometry()
         Report pixel geometry of terminal.
