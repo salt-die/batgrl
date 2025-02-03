@@ -20,7 +20,7 @@ from batgrl.gadgets.toggle_button import ToggleButton
 from batgrl.geometry.easings import out_bounce
 from batgrl.texture_tools import read_texture, resize_texture
 
-LOGO_SIZE = Size(36, 36)
+LOGO_SIZE = Size(18, 36)
 POWER = 2
 MAX_PARTICLE_SPEED = 10
 FRICTION = 0.99
@@ -124,9 +124,6 @@ class PokeParticleField(GraphicParticleField):
 
 class ExplodingLogoApp(App):
     async def on_start(self):
-        # For performance reasons, increase sixel aspect ratio x4.
-        self.set_sixel_aspect_ratio((4, 1))
-
         background = Image(
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
         )
