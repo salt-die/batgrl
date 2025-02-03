@@ -154,9 +154,10 @@ class App(ABC):
         """Used by renderer to quantize graphics."""
 
     def __repr__(self):
+        bg_color = self.bg_color if self.bg_color is None else (*self.bg_color,)
         return (
             f"{type(self).__name__}(\n"
-            f"    bg_color={(*self.bg_color,)},\n"
+            f"    bg_color={bg_color},\n"
             f"    title={self.title!r},\n"
             f"    inline={self.inline},\n"
             f"    inline_height={self.inline_height},\n"
