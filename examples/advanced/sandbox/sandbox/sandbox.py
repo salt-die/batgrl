@@ -23,7 +23,7 @@ class Sandbox(Graphics):
             size=size,
             pos_hint={"y_hint": 0.5, "x_hint": 0.5},
             default_color=ABLACK,
-            blitter="braille",
+            blitter="full",
         )
 
     def on_add(self):
