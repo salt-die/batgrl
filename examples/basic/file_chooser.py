@@ -10,7 +10,7 @@ ASSETS = Path(__file__).parent.parent / "assets"
 
 class FileApp(App):
     async def on_start(self):
-        label = Text(size=(1, 50), pos=(0, 26))
+        label = Text(size=(1, 50), pos=(0, 26), is_transparent=True)
 
         def select_callback(path):
             label.add_str(f"{f'{path.name} selected!':<50}"[:50])
