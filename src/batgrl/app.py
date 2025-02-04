@@ -88,8 +88,12 @@ class App(ABC):
         Duration in seconds between consecutive frame renders.
     redirect_stderr : Path | None
         Path where stderr is saved.
+    sixel_supported : bool
+        Whether sixel is supported.
     sixel_geometry : Size
         Current sixel geometry.
+    sixel_aspect_ratio : Size
+        Current sixel aspect ratio.
     root : _Root | None
         Root of gadget tree.
     children : list[Gadget]
@@ -282,9 +286,23 @@ class App(ABC):
             self.root.bg_color = bg_color
 
     @property
+    def sixel_supported(self) -> bool:
+        """
+        Whether sixel is supported.
+
+        Will return ``False`` before app has run.
+        """
+        return Graphics._sixel_supported
+
+    @property
     def sixel_geometry(self) -> Size:
         """Current sixel geometry."""
         return _BLITTER_GEOMETRY["sixel"]
+
+    @property
+    def sixel_aspect_ratio(self) -> Size:
+        """Current sixel aspect ratio."""
+        return Graphics._sixel_aspect_ratio
 
     def set_sixel_aspect_ratio(self, aspect_ratio: Size) -> None:
         """
