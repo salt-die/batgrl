@@ -1672,7 +1672,7 @@ cdef inline ssize_t write_glyph(
     ssize_t *cursor_x,
     Cell[:, ::1] canvas,
     int[:, ::1] widths,
-    Cell *last_sgr,
+    Cell **last_sgr,
 ):
     if not widths[y, x]:
         return 0
@@ -1680,6 +1680,7 @@ cdef inline ssize_t write_glyph(
     cdef:
         ssize_t abs_y = y + oy, abs_x = x + ox
         Cell *cell = &canvas[y, x]
+        Cell *last = last_sgr[0]
         bint first = 1
 
     if abs_y == cursor_y[0]:
@@ -1697,26 +1698,27 @@ cdef inline ssize_t write_glyph(
     if fbuf_grow(f, 128):
         return -1
     # Build up Select Graphic Rendition (SGR) parameters
-    if last_sgr is NULL or cell.bold != last_sgr.bold:
+    if last is NULL or cell.bold != last.bold:
         write_sgr(f, 1 if cell.bold else 22, &first)
-    if last_sgr is NULL or cell.italic != last_sgr.italic:
+    if last is NULL or cell.italic != last.italic:
         write_sgr(f, 3 if cell.italic else 23, &first)
-    if last_sgr is NULL or cell.underline != last_sgr.underline:
+    if last is NULL or cell.underline != last.underline:
         write_sgr(f, 4 if cell.underline else 24, &first)
-    if last_sgr is NULL or cell.strikethrough != last_sgr.strikethrough:
+    if last is NULL or cell.strikethrough != last.strikethrough:
         write_sgr(f, 9 if cell.strikethrough else 29, &first)
-    if last_sgr is NULL or cell.overline != last_sgr.overline:
+    if last is NULL or cell.overline != last.overline:
         write_sgr(f, 53 if cell.overline else 55, &first)
-    if last_sgr is NULL or cell.reverse != last_sgr.reverse:
+    if last is NULL or cell.reverse != last.reverse:
         write_sgr(f, 7 if cell.reverse else 27, &first)
-    if last_sgr is NULL or not rgb_eq(&cell.fg_color[0], &last_sgr.fg_color[0]):
+    if last is NULL or not rgb_eq(&cell.fg_color[0], &last.fg_color[0]):
         write_rgb(f, 38, &cell.fg_color[0], &first)
-    if last_sgr is NULL or not rgb_eq(&cell.bg_color[0], &last_sgr.bg_color[0]):
+    if last is NULL or not rgb_eq(&cell.bg_color[0], &last.bg_color[0]):
         write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
     fbuf_putucs4(f, cell.char_)
     cursor_x[0] += widths[y, x]
+    last_sgr[0] = cell
     return 0
 
 
@@ -1748,9 +1750,11 @@ cpdef void terminal_render(
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
-        Cell *last_sgr = NULL
+        Cell **last_sgr
         bint emit_sixel = 0
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
+
+    last_sgr[0] = NULL
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
         raise MemoryError
@@ -1792,7 +1796,6 @@ cpdef void terminal_render(
                         f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, last_sgr
                     ):
                         raise MemoryError
-                    last_sgr = &cells[y, x]
 
         gy = min_y_sixel * cell_h
         gx = min_x_sixel * cell_w
@@ -1828,7 +1831,6 @@ cpdef void terminal_render(
                     f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, last_sgr
                 ):
                     raise MemoryError
-                last_sgr = &cells[y, x]
 
     if f.len == 2:
         f.len = 0  # Only 'Save Cursor' in buffer. Don't flush.
