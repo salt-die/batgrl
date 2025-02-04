@@ -127,7 +127,7 @@ static inline ssize_t fbuf_flush(fbuf *f){
         } else {
             write_len = f->len - written;
         }
-        if (!WriteConsoleA(
+        if (!WriteConsoleA( // ! Any reason to use WriteFile instead?
             GetStdHandle(STD_OUTPUT_HANDLE), f->buf + written, write_len, &wrote, NULL)
         ){
             return -1;
