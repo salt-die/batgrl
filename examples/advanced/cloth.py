@@ -77,10 +77,10 @@ def make_mesh(size: Size) -> tuple[list[Node], list[Link]]:
 
 class Cloth(Graphics):
     def __init__(self, mesh_size: Size, scale=5, mesh_color: AColor = AWHITE, **kwargs):
-        super().__init__(**kwargs)
         self.nodes, self.links = make_mesh(mesh_size)
         self.scale = scale
         self.mesh_color = mesh_color
+        super().__init__(**kwargs)
         self.on_size()
 
     def on_size(self):
