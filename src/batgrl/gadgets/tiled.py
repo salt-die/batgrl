@@ -160,6 +160,7 @@ class Tiled(Gadget):
         self.tile = tile
 
     def _render(self, cells, graphics, kind):
+        # ! Maybe add custom renderer?
         h, w = self._size
         th, tw = tsize = self.tile.size
         oy, ox = self.absolute_pos
@@ -167,6 +168,6 @@ class Tiled(Gadget):
             for x in range(ceil(w / tw)):
                 self.tile.pos = oy + y * th, ox + x * tw
                 self.tile._region = (
-                    Region.from_rect(self.tile.pos, tsize) & self._clipping_region
+                    Region.from_rect(self.tile.pos, tsize) & self._region
                 )
                 self.tile._render(cells, graphics, kind)
