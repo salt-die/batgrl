@@ -34,6 +34,8 @@ from libc.stdlib cimport free, malloc, qsort
 from libc.string cimport memset, memcpy
 from libc.math cimport round
 
+cimport cython
+
 from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts
 from ._sixel cimport onode, qnode, qstate
 
@@ -420,6 +422,8 @@ cdef inline char *color_band_extend(
     return color_band
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline int build_sixel_band(
     size_t n,
     SixelMap *sixel_map,
@@ -511,6 +515,8 @@ cdef inline int build_sixel_band(
     return 0
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef int sixel(
     fbuf *f,
     qstate *qs,

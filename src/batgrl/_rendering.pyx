@@ -5,7 +5,7 @@ from libc.math cimport round
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
-import cython
+cimport cython
 import numpy as np
 cimport numpy as cnp
 
