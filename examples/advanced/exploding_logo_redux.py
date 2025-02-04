@@ -141,7 +141,7 @@ class ExplodingLogoApp(App):
                     field.blitter = blitter
                     texture = resize_texture(
                         read_texture(PATH_TO_LOGO_FULL),
-                        scale_geometry(blitter, LOGO_SIZE),
+                        scale_geometry(field.blitter, LOGO_SIZE),
                     )
                     field.particles_from_texture(texture)
                     field.particle_properties = {
@@ -174,6 +174,7 @@ class ExplodingLogoApp(App):
         def on_slide(p):
             field.alpha = p
 
+        bg_color = ToggleButton.color_theme.button_normal.bg
         slider = Slider(
             min=0.0,
             max=1.0,
@@ -181,6 +182,7 @@ class ExplodingLogoApp(App):
             callback=on_slide,
             size=(1, 15),
             pos=(5, 0),
+            bg_color=bg_color,
         )
 
         self.add_gadgets(background, field, *buttons, trans_button, slider)
