@@ -289,10 +289,9 @@ cdef inline int merge_color_table(qstate *qs):
         const qnode *lq = NULL
         const qnode *hq = NULL
         const onode *o
-
     for z in range(QNODES_COUNT):
         if qs.qnodes[z].pop == 0:
-            if qs.qnodes.qlink == 0:
+            if qs.qnodes[z].qlink == 0:
                 continue
             o = &qs.onodes[qs.qnodes[z].qlink - 1]
             for i in range(8):
@@ -543,7 +542,6 @@ cdef int sixel(
                     return -1
             else:
                 stexture[y, x, 3] = 0
-
     if merge_color_table(qs):
         return -1
 

@@ -17,7 +17,7 @@ cdef:
         unsigned int dynnodes_total
         unsigned onodes_free
         unsigned onodes_total
-        unsigned ncolors
+        unsigned long ncolors
         unsigned char *table
 
     int sixel(
