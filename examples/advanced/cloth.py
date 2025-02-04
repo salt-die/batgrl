@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from batgrl.app import App
 from batgrl.colors import AWHITE, AColor
-from batgrl.gadgets.graphics import Graphics, Size
+from batgrl.gadgets.graphics import Graphics, Size, scale_geometry
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
 from numpy.typing import NDArray
@@ -109,7 +109,9 @@ class Cloth(Graphics):
     def on_mouse(self, mouse_event):
         if mouse_event.button != "left":
             return False
-        mouse_pos = np.array(self.to_local(mouse_event.pos))
+        mouse_pos = np.array(
+            scale_geometry(self._blitter, self.to_local(mouse_event.pos))
+        )
         for node in self.nodes:
             force_direction = self.scale_pos(node.position) - mouse_pos
             magnitude = np.linalg.norm(force_direction)
