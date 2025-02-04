@@ -127,6 +127,7 @@ cdef inline bint cell_eq(Cell *a, Cell *b):
         and a.bold == b.bold
         and a.italic == b.italic
         and a.underline == b.underline
+        and a.strikethrough == b.strikethrough
         and a.overline == b.overline
         and a.reverse == b.reverse
         and rgb_eq(&a.fg_color[0], &b.fg_color[0])
@@ -221,7 +222,6 @@ cdef inline double average_quant(
         double a, average_alpha = 0
         double[3] quant_fg
 
-    memset(pixels, 0, sizeof(bint) * (h * w))
     memset(quant_fg, 0, sizeof(double) * 3)
 
     for i in range(y, y + h):
@@ -234,6 +234,8 @@ cdef inline double average_quant(
                 quant_fg[0] += texture[i, j, 0] * a
                 quant_fg[1] += texture[i, j, 1] * a
                 quant_fg[2] += texture[i, j, 2] * a
+            else:
+                pixels[k] = 0
             k += 1
 
     if nfg:
@@ -1828,6 +1830,11 @@ cpdef void terminal_render(
                     raise MemoryError
                 last_sgr = &cells[y, x]
 
+    if f.len == 2:
+        f.len = 0  # Only 'Save Cursor' in buffer. Don't flush.
+        return
+
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
         raise MemoryError
+
     fbuf_flush(f)
