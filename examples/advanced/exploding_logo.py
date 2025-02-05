@@ -45,19 +45,22 @@ PERCENTS = [in_exp(p) for p in np.linspace(0, 1, 30)]
 
 class PokeParticleField(TextParticleField):
     _origin = Point(0, 0)
-
-    def on_add(self):
-        super().on_add()
-        self._reset_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self._update_task = asyncio.create_task(self.update())
+    _reset_task: asyncio.Task | None = None
+    _update_task: asyncio.Task | None = None
 
     def on_remove(self):
         super().on_remove()
-        self._reset_task.cancel()
-        self._update_task.cancel()
+        if self._reset_task is not None:
+            self._reset_task.cancel()
+        if self._update_task is not None:
+            self._update_task.cancel()
 
     def on_size(self):
         super().on_size()
+        if self._reset_task is not None:
+            self._reset_task.cancel()
+        if self._update_task is not None:
+            self._update_task.cancel()
         old_origin = self._origin
         self._origin = self.center - LOGO_SIZE.center
         dif = old_origin - self._origin
@@ -76,12 +79,15 @@ class PokeParticleField(TextParticleField):
                 POWER * relative_distances / distances_sq[:, None]
             )
 
-            if self._update_task.done():
+            if self._reset_task is not None:
                 self._reset_task.cancel()
+            if self._update_task is None or self._update_task.done():
                 self._update_task = asyncio.create_task(self.update())
 
     def on_key(self, key_event):
-        if key_event.key == "r" and self._reset_task.done():
+        if key_event.key == "r" and (
+            self._reset_task is None or self._reset_task.done()
+        ):
             self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
@@ -123,7 +129,8 @@ class PokeParticleField(TextParticleField):
             await asyncio.sleep(0)
 
     async def reset(self):
-        self._update_task.cancel()
+        if self._update_task is not None:
+            self._update_task.cancel()
         self.particle_properties["velocities"][:] = 0
         pos = self.particle_positions
         start = pos.copy()

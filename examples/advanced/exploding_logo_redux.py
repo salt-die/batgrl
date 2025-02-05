@@ -32,18 +32,21 @@ PATH_TO_LOGO_FULL = ASSETS / "python_discord_logo.png"
 
 class PokeParticleField(GraphicParticleField):
     _origin = Point(0, 0)
-
-    def on_add(self):
-        super().on_add()
-        self._reset_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self._update_task = asyncio.create_task(self.update())
+    _reset_task: asyncio.Task | None = None
+    _update_task: asyncio.Task | None = None
 
     def on_remove(self):
         super().on_remove()
-        self._reset_task.cancel()
-        self._update_task.cancel()
+        if self._reset_task is not None:
+            self._reset_task.cancel()
+        if self._update_task is not None:
+            self._update_task.cancel()
 
     def on_size(self):
+        if self._reset_task is not None:
+            self._reset_task.cancel()
+        if self._update_task is not None:
+            self._update_task.cancel()
         super().on_size()
         old_origin = self._origin
         h, w = self._size
@@ -65,12 +68,15 @@ class PokeParticleField(GraphicParticleField):
                 POWER * relative_distances / distances_sq[:, None]
             )
 
-            if self._update_task.done():
+            if self._reset_task is not None:
                 self._reset_task.cancel()
+            if self._update_task is None or self._update_task.done():
                 self._update_task = asyncio.create_task(self.update())
 
     def on_key(self, key_event):
-        if key_event.key == "r" and self._reset_task.done():
+        if key_event.key == "r" and (
+            self._reset_task is None or self._reset_task.done()
+        ):
             self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
@@ -111,7 +117,8 @@ class PokeParticleField(GraphicParticleField):
             await asyncio.sleep(0)
 
     async def reset(self):
-        self._update_task.cancel()
+        if self._update_task is not None:
+            self._update_task.cancel()
         self.particle_properties["velocities"][:] = 0
         pos = self.particle_positions
         start = pos.copy()
