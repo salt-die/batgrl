@@ -88,7 +88,7 @@ class App(ABC):
         Duration in seconds between consecutive frame renders.
     redirect_stderr : Path | None
         Path where stderr is saved.
-    sixel_supported : bool
+    sixel_support : bool
         Whether sixel is supported.
     sixel_geometry : Size
         Current sixel geometry.
@@ -286,13 +286,13 @@ class App(ABC):
             self.root.bg_color = bg_color
 
     @property
-    def sixel_supported(self) -> bool:
+    def sixel_support(self) -> bool:
         """
         Whether sixel is supported.
 
         Will return ``False`` before app has run.
         """
-        return Graphics._sixel_supported
+        return Graphics._sixel_support
 
     @property
     def sixel_geometry(self) -> Size:
