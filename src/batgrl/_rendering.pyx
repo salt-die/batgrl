@@ -6,8 +6,6 @@ from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
 cimport cython
-import numpy as np
-cimport numpy as cnp
 
 from ._fbuf cimport (
     FBufWrapper,
@@ -96,16 +94,12 @@ cdef packed struct Cell:
     uint8[3] bg_color
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef inline bint rgb_eq(uint8 *a, uint8 *b):
-    return a[0] == b[0] and a[1] == b[1] and a[2] == b[2]
+    return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2])
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef inline bint rgba_eq(uint8 *a, uint8 *b):
-    return a[0] == b[0] and a[1] == b[1] and a[2] == b[2] and a[3] == b[3]
+    return (a[0] == b[0]) & (a[1] == b[1]) & (a[2] == b[2]) & (a[3] == b[3])
 
 
 @cython.boundscheck(False)
@@ -119,19 +113,17 @@ cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     return 1
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef inline bint cell_eq(Cell *a, Cell *b):
     return (
-        a.char_ == b.char_
-        and a.bold == b.bold
-        and a.italic == b.italic
-        and a.underline == b.underline
-        and a.strikethrough == b.strikethrough
-        and a.overline == b.overline
-        and a.reverse == b.reverse
-        and rgb_eq(&a.fg_color[0], &b.fg_color[0])
-        and rgb_eq(&a.bg_color[0], &b.bg_color[0])
+        (a.char_ == b.char_)
+        & (a.bold == b.bold)
+        & (a.italic == b.italic)
+        & (a.underline == b.underline)
+        & (a.strikethrough == b.strikethrough)
+        & (a.overline == b.overline)
+        & (a.reverse == b.reverse)
+        & (rgb_eq(&a.fg_color[0], &b.fg_color[0]))
+        & (rgb_eq(&a.bg_color[0], &b.bg_color[0]))
     )
 
 
@@ -147,8 +139,6 @@ cdef inline size_t graphics_geom_width(Cell[:, ::1] cells, uint8[:, :, ::1] grap
     return graphics.shape[1] // cells.shape[1]
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef inline void composite(uint8 *dst, uint8 *src, double alpha):
     cdef double b = <double>dst[0]
     dst[0] = <uint8>((<double>src[0] - b) * alpha + b)
@@ -158,8 +148,6 @@ cdef inline void composite(uint8 *dst, uint8 *src, double alpha):
     dst[2] = <uint8>((<double>src[2] - b) * alpha + b)
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef inline bint composite_sixels_on_glyph(
     uint8 *bg, uint8 *rgba, uint8 *graphics, double alpha
 ):
@@ -252,7 +240,7 @@ cdef inline double average_quant(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void opaque_pane_render(
-    Cell[:, ::1] cells, uint8[::1] bg_color, CRegion *cregion
+    Cell[:, ::1] cells, uint8 *bg_color, CRegion *cregion
 ):
     cdef:
         RegionIterator it
@@ -280,7 +268,7 @@ cdef void trans_pane_render(
     Cell[:, ::1] cells,
     uint8[:, :, ::1] graphics,
     uint8[:, ::1] kind,
-    uint8[::1] bg_color,
+    uint8 *bg_color,
     double alpha,
     CRegion *cregion,
 ):
@@ -295,15 +283,15 @@ cdef void trans_pane_render(
     while not it.done:
         dst = &cells[it.y, it.x]
         if kind[it.y, it.x] != SIXEL:
-            composite(&dst.fg_color[0], &bg_color[0], alpha)
-            composite(&dst.bg_color[0], &bg_color[0], alpha)
+            composite(&dst.fg_color[0], bg_color, alpha)
+            composite(&dst.bg_color[0], bg_color, alpha)
         if kind[it.y, it.x] != GLYPH:
             oy = it.y * h
             ox = it.x * w
             for gy in range(h):
                 for gx in range(w):
                     if graphics[oy + gy, ox + gx, 3]:
-                        composite(&graphics[oy + gy, ox + gx, 0], &bg_color[0], alpha)
+                        composite(&graphics[oy + gy, ox + gx, 0], bg_color, alpha)
         next_(&it)
 
 
@@ -320,12 +308,16 @@ cpdef void pane_render(
 ):
     cdef:
         CRegion *cregion = &region.cregion
-        cnp.ndarray[uint8, ndim=1] bg = np.array(bg_color, np.uint8)
+        uint8[3] bg
+
+    bg[0] = bg_color[0]
+    bg[1] = bg_color[1]
+    bg[2] = bg_color[2]
 
     if is_transparent:
-        trans_pane_render(cells, graphics, kind, bg, alpha, cregion)
+        trans_pane_render(cells, graphics, kind, &bg[0], alpha, cregion)
     else:
-        opaque_pane_render(cells, bg, cregion)
+        opaque_pane_render(cells, &bg[0], cregion)
 
 
 @cython.boundscheck(False)
@@ -1640,6 +1632,8 @@ cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
         fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
     cdef size_t h = cells.shape[0], w = cells.shape[1], y, x
 
@@ -1688,12 +1682,13 @@ cdef inline ssize_t write_glyph(
             # CHA, Cursor Horizontal Absolute
             if fbuf_printf(f, "\x1b[%dG", abs_x + 1):
                 return -1
+            cursor_x[0] = abs_x
     else:
         # CUP, Cursor Position
         if fbuf_printf(f, "\x1b[%d;%dH", abs_y + 1, abs_x + 1):
             return -1
-    cursor_y[0] = abs_y
-    cursor_x[0] = abs_x
+        cursor_y[0] = abs_y
+        cursor_x[0] = abs_x
 
     if fbuf_grow(f, 128):
         return -1
@@ -1750,11 +1745,9 @@ cpdef void terminal_render(
         size_t min_y_sixel = h, min_x_sixel = w, max_y_sixel = 0, max_x_sixel = 0
         size_t oy = app_pos[0], ox = app_pos[1]
         ssize_t cursor_y = -1, cursor_x = -1
-        Cell **last_sgr
+        Cell *last_sgr = NULL
         bint emit_sixel = 0
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
-
-    last_sgr[0] = NULL
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
         raise MemoryError
@@ -1793,7 +1786,7 @@ cpdef void terminal_render(
             for x in range(w):
                 if kind[y, x] == MIXED:
                     if write_glyph(
-                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, last_sgr
+                        f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
                     ):
                         raise MemoryError
 
@@ -1828,7 +1821,7 @@ cpdef void terminal_render(
                 or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
                 if write_glyph(
-                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, last_sgr
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
                 ):
                     raise MemoryError
 
