@@ -1,5 +1,12 @@
-// A growable string buffer.
-// Reference: https://github.com/dankamongmen/notcurses/blob/master/src/lib/fbuf.h
+// This is nearly verbatim notcurses' fbuf.h, but in cython.
+// notcurses' fbuf.h:
+//   https://github.com/dankamongmen/notcurses/blob/master/src/lib/fbuf.h
+//
+// notcurses is copyright 2019-2025 Nick Black et al and is licensed under the Apache
+// License, Version 2.0:
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+
 #include <stdio.h>
 #include <stdint.h>
 #ifdef _WIN32
