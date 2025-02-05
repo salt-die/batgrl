@@ -1292,6 +1292,7 @@ cdef void opaque_sixel_graphics_field_render(
         graphics[pgy, pgx] = particles[i]
         kind[ipy, ipx] = SIXEL
 
+    # For all sixel cells in region, mark graphics as opaque:
     init_iter(&it, cregion)
     while not it.done:
         if kind[it.y, it.x] == SIXEL:
