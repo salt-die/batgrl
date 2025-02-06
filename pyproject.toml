@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "Cython >= 3.0.3", "wcwidth"]
+requires = ["setuptools", "Cython>=3.0.3", "numpy>=2.0.0", "wcwidth"]
 build-backend = "setuptools.build_meta"
 
 [project]
