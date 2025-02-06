@@ -1,31 +1,31 @@
 """
 Spinners can be used as frames in a `TextAnimation`.
 
-Spinners credit to `cli-spinners` (https://github.com/sindresorhus/cli-spinners).
-`cli-spinners` is licensed under the MIT License:
-
-Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in the
-Software without restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
-Software, and to permit persons to whom the Software is furnished to do so, subject
-to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies
-or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-OR OTHER DEALINGS IN THE SOFTWARE.
-
 See Also
 --------
 `examples/basic/spinners.py`.
 """
+
+# Spinners credit to `cli-spinners` (https://github.com/sindresorhus/cli-spinners).
+# `cli-spinners` is licensed under the MIT License:
+#
+# Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in the
+# Software without restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+# Software, and to permit persons to whom the Software is furnished to do so, subject
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies
+# or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+# CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+# OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 SPINNERS = {
     "dots": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
@@ -196,6 +196,7 @@ SPINNERS = {
         "⠀⡀",
     ],
     "dots13": ["⣼", "⣹", "⢻", "⠿", "⡟", "⣏", "⣧", "⣶"],
+    "dots14": ["⠉⠉", "⠈⠙", "⠀⠹", "⠀⢸", "⠀⣰", "⢀⣠", "⣀⣀", "⣄⡀", "⣆⠀", "⡇⠀", "⠏⠀", "⠋⠁"],
     "dots8bit": [
         "⠀",
         "⠁",
@@ -454,6 +455,7 @@ SPINNERS = {
         "⣾",
         "⣿",
     ],
+    "dots_circle": ["⢎ ", "⠎⠁", "⠊⠑", "⠈⠱", " ⡱", "⢀⡰", "⢄⡠", "⢆⡀"],
     "sand": [
         "⠁",
         "⠂",
@@ -509,6 +511,18 @@ SPINNERS = {
     "box_bounce": ["▖", "▘", "▝", "▗"],
     "box_bounce2": ["▌", "▀", "▐", "▄"],
     "triangle": ["◢", "◣", "◤", "◥"],
+    "binary": [
+        "010010",
+        "001100",
+        "100101",
+        "111010",
+        "111101",
+        "010111",
+        "101011",
+        "111000",
+        "110011",
+        "110101",
+    ],
     "arc": ["◜", "◠", "◝", "◞", "◡", "◟"],
     "circle": ["◡", "⊙", "◠"],
     "square_corners": ["◰", "◳", "◲", "◱"],
@@ -536,6 +550,7 @@ SPINNERS = {
         "[=   ]",
         "[==  ]",
         "[=== ]",
+        "[====]",
         "[ ===]",
         "[  ==]",
         "[   =]",
