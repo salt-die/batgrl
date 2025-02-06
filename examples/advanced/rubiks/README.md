@@ -1,9 +1,9 @@
-# 3D Rubik's Cube.
+# 3-D Rubik's Cube
 
 Shameless port of [Robust Reindeer's Codejam 8 Project](https://github.com/bjoseru/pdcj8-robust-reindeer) to `batgrl`. `python -m rubiks` to run.
 
-Controls
---------
+## Controls
+
 `r` to rotate selected plane counter-clockwise
 
 `R` to rotate selected plane clockwise

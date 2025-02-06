@@ -269,10 +269,10 @@ class _DataCell(_CellBase):
 
 
 class _FauxPane(Pane):
-    def _render(self, canvas):
+    def _render(self, canvas, graphics, kind):
         data_table: DataTable = self.parent.parent
         self._region -= data_table._table._region
-        super()._render(canvas)
+        super()._render(canvas, graphics, kind)
 
 
 class DataTable(Themable, Gadget):

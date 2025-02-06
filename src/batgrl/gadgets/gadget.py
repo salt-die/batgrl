@@ -9,7 +9,7 @@ from itertools import count
 from numbers import Real
 from time import perf_counter
 from types import MappingProxyType
-from typing import Final, Literal, Self, TypedDict
+from typing import TYPE_CHECKING, Final, Literal, TypedDict
 from weakref import WeakKeyDictionary
 
 import numpy as np
@@ -18,6 +18,9 @@ from numpy.typing import NDArray
 from ..geometry import EASINGS, Easing, Point, Region, Size, clamp, lerp, round_down
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import Cell, new_cell
+
+if TYPE_CHECKING:
+    from ._root import _Root
 
 __all__ = [
     "Anchor",
@@ -85,8 +88,7 @@ class _GadgetList(MutableSequence):
     """
     A sequence of sibling gadgets.
 
-    Gadget regions are invalidated if gadgets later in the sequence are added or
-    removed.
+    Gadget regions are invalidated when ``_GadgetList`` is mutated.
     """
 
     def __init__(self) -> None:
@@ -102,14 +104,12 @@ class _GadgetList(MutableSequence):
         raise NotImplementedError("_GadgetList.__setitem__ not implemented.")
 
     def __delitem__(self, index: int) -> None:
+        self._gadgets[index]._invalidate_regions()
         del self._gadgets[index]
-        for i in range(index - 1, -1, -1):
-            self[i]._invalidate_region()
 
     def insert(self, index: int, gadget: Gadget) -> None:
+        gadget._invalidate_regions()
         self._gadgets.insert(index, gadget)
-        for i in range(index, -1, -1):
-            self[i]._invalidate_region()
 
     def __iter__(self) -> Iterator[Gadget]:
         return iter(self._gadgets)
@@ -426,19 +426,12 @@ class Gadget:
         """Whether gadget is visible."""
         self._is_enabled = is_enabled
         """Whether gadget is enabled."""
-        self._region_valid: bool = False
-        """Whether current region is valid."""
-        self._clipping_region: Region = Region()
-        """Initial region clipped by ancestor regions."""
-        self._root_region_before: Region = Region()
-        """The root's region before gadget's region is removed from it."""
         self._region: Region = Region()
         """The visible portion of the gadget on the screen."""
 
     def __repr__(self):
         return (
             f"{type(self).__name__}(size={self.size}, pos={self.pos}, "
-            f"size_hint={self._size_hint}, pos_hint={self._pos_hint}, "
             f"is_transparent={self.is_transparent}, is_visible={self.is_visible}, "
             f"is_enabled={self.is_enabled})"
         )
@@ -462,7 +455,7 @@ class Gadget:
         else:
             with self.root._render_lock:
                 self._size = size
-                self._invalidate_region()
+                self._invalidate_regions()
 
         self._apply_pos_hints()
         for child in self.children:
@@ -509,7 +502,7 @@ class Gadget:
         else:
             with self.root._render_lock:
                 self._pos = pos
-                self._invalidate_region()
+                self._invalidate_regions()
 
     @property
     def top(self) -> int:
@@ -602,7 +595,7 @@ class Gadget:
         if is_transparent != self._is_transparent:
             self._is_transparent = is_transparent
             if self.root is not None:
-                self._invalidate_region()
+                self._invalidate_regions()
             self.on_transparency()
 
     @property
@@ -619,7 +612,7 @@ class Gadget:
         if is_visible != self._is_visible:
             self._is_visible = is_visible
             if self.root is not None:
-                self._invalidate_region()
+                self._invalidate_regions()
 
     @property
     def is_enabled(self) -> bool:
@@ -635,10 +628,10 @@ class Gadget:
         if is_enabled != self._is_enabled:
             self._is_enabled = is_enabled
             if self.root is not None:
-                self._invalidate_region()
+                self._invalidate_regions()
 
     @property
-    def root(self) -> Self | None:
+    def root(self) -> _Root | None:
         """Return the root gadget if connected to gadget tree."""
         return self.parent and self.parent.root
 
@@ -647,7 +640,9 @@ class Gadget:
         """The running app."""
         return self.root.app
 
-    def _render(self, canvas: NDArray[Cell]) -> None:
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ) -> None:
         """Render visible region of gadget."""
 
     def dispatch_key(self, key_event: KeyEvent) -> bool | None:
@@ -738,13 +733,10 @@ class Gadget:
             if gadget.is_enabled
         ) or self.on_terminal_focus(focus_event)
 
-    def _invalidate_region(self, notify_root: bool = True) -> None:
-        """Invalidate region and all children's regions."""
-        self._region_valid = False
-        if notify_root and self.root is not None:
-            self.root._all_regions_valid = False
-        for child in self.children:
-            child._invalidate_region(False)
+    def _invalidate_regions(self) -> None:
+        """Invalidate regions."""
+        if self.root is not None:
+            self.root._regions_valid = False
 
     def apply_hints(self) -> None:
         """
@@ -839,7 +831,7 @@ class Gadget:
             if child.is_visible and child.is_enabled
         )
 
-    def collides_gadget(self, other: Self) -> bool:
+    def collides_gadget(self, other: Gadget) -> bool:
         """
         Return true if other is within gadget's bounding box.
 
@@ -874,7 +866,7 @@ class Gadget:
             self.parent.children.remove(self)
             self.parent.children.append(self)
 
-    def walk(self) -> Iterator[Self]:
+    def walk(self) -> Iterator[Gadget]:
         """
         Yield all descendents of this gadget (preorder traversal).
 
@@ -887,7 +879,7 @@ class Gadget:
             yield child
             yield from child.walk()
 
-    def walk_reverse(self) -> Iterator[Self]:
+    def walk_reverse(self) -> Iterator[Gadget]:
         """
         Yield all descendents of this gadget (reverse postorder traversal).
 
@@ -900,7 +892,7 @@ class Gadget:
             yield from child.walk_reverse()
             yield child
 
-    def ancestors(self) -> Iterator[Self]:
+    def ancestors(self) -> Iterator[Gadget]:
         """
         Yield all ancestors of this gadget.
 
@@ -913,7 +905,7 @@ class Gadget:
             yield self.parent
             yield from self.parent.ancestors()
 
-    def add_gadget(self, gadget: Self) -> None:
+    def add_gadget(self, gadget: Gadget) -> None:
         """
         Add a child gadget.
 
@@ -924,11 +916,12 @@ class Gadget:
         """
         self.children.append(gadget)
         gadget.parent = self
+        self._invalidate_regions()
 
         if self.root is not None:
             gadget.on_add()
 
-    def add_gadgets(self, *gadgets: Self) -> None:
+    def add_gadgets(self, *gadgets: Gadget) -> None:
         r"""
         Add multiple child gadgets.
 
@@ -944,7 +937,7 @@ class Gadget:
         for gadget in gadgets:
             self.add_gadget(gadget)
 
-    def remove_gadget(self, gadget: Self) -> None:
+    def remove_gadget(self, gadget: Gadget) -> None:
         """
         Remove a child gadget.
 
@@ -958,6 +951,7 @@ class Gadget:
 
         self.children.remove(gadget)
         gadget.parent = None
+        self._invalidate_regions()
 
     def prolicide(self) -> None:
         """Recursively remove all children."""

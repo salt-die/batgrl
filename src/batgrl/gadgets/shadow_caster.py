@@ -13,7 +13,16 @@ from numpy.typing import NDArray
 from ..colors import AWHITE, BLACK, TRANSPARENT, WHITE, AColor, Color
 from ..geometry import Region, rect_slice
 from ..texture_tools import resize_texture
-from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint, clamp
+from .graphics import (
+    Blitter,
+    Graphics,
+    Interpolation,
+    Point,
+    PosHint,
+    Size,
+    SizeHint,
+    clamp,
+)
 
 __all__ = [
     "ShadowCaster",
@@ -188,6 +197,8 @@ class ShadowCaster(Graphics):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -235,6 +246,8 @@ class ShadowCaster(Graphics):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -356,26 +369,28 @@ class ShadowCaster(Graphics):
         radius: int = 20,
         smoothing: float = 1.0 / 3.0,
         not_visible_blocks: bool = True,
-        is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
+        blitter: Blitter = "half",
         interpolation: Interpolation = "linear",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
         super().__init__(
-            is_transparent=is_transparent,
             default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )

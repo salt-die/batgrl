@@ -1,8 +1,6 @@
-"""
-Markdown emoji codes.
+"""Markdown emoji codes."""
 
-Source: https://github.com/markdown-templates/markdown-emojis
-"""
+# Source: https://github.com/markdown-templates/markdown-emojis
 
 EMOJIS = {
     "100": "💯",

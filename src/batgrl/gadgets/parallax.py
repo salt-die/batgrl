@@ -7,55 +7,42 @@ from typing import Self
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget import (
-    Cell,
-    Gadget,
+from ..colors import TRANSPARENT, AColor
+from ..texture_tools import composite, read_texture, resize_texture
+from .graphics import (
+    Blitter,
+    Graphics,
+    Interpolation,
     Point,
     PosHint,
-    Region,
     Size,
     SizeHint,
-    bindable,
-    clamp,
+    scale_geometry,
 )
-from .image import Image, Interpolation
 
 __all__ = ["Parallax", "Interpolation", "Point", "Size"]
 
 
-def _check_layer_speeds(
-    layers: Sequence[Image], speeds: Sequence[float] | None
-) -> Sequence[float]:
-    """
-    Raise `ValueError` if `layers` and `speeds` are incompatible, else return a sequence
-    of layer speeds.
-    """
-    nlayers = len(layers)
-    if speeds is None:
-        return [1 / (nlayers - i) for i in range(nlayers)]
-
-    if len(speeds) != nlayers:
-        raise ValueError("number of layers doesn't match number of layer speeds")
-
-    return speeds
-
-
-class Parallax(Gadget):
+class Parallax(Graphics):
     r"""
     A parallax gadget.
 
     Parameters
     ----------
     path : Path | None, default: None
-        Path to directory of images for layers of the parallax (loaded
-        in lexographical order of filenames) layered from background to foreground.
+        Path to directory of images for layers of the parallax (loaded in lexographical
+        order of filenames) layered from background to foreground.
     speeds : Sequence[float] | None, default: None
         The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N` is
         the number of layers and `i` is the index of a layer.
+    default_color : AColor, default: AColor(0, 0, 0, 0)
+        Default texture color.
     alpha : float, default: 1.0
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -75,20 +62,26 @@ class Parallax(Gadget):
 
     Attributes
     ----------
-    offset : tuple[float, float]
-        Vertical and horizontal offset of first layer of the parallax.
     layers : list[Image]
         Layers of the parallax.
     speeds : Sequence[float]
         The scrolling speed of each layer.
+    offset : tuple[float, float]
+        Vertical and horizontal offset of the parallax.
     vertical_offset : float
-        Vertical offset of first layer of the parallax.
+        Vertical offset of the parallax.
     horizontal_offset : float
-        Horizontal offset of first layer of the parallax.
+        Horizontal offset of the parallax.
+    texture : NDArray[np.uint8]
+        uint8 RGBA color array.
+    default_color : AColor
+        Default texture color.
     alpha : float
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -140,8 +133,10 @@ class Parallax(Gadget):
     -------
     from_textures(textures, ...)
         Create a :class:`Parallax` from an iterable of uint8 RGBA numpy array.
-    from_images(images, ...)
-        Create a :class:`Parallax` from an iterable of :class:`Image`.
+    to_png(path)
+        Write :attr:`texture` to provided path as a `png` image.
+    clear()
+        Fill texture with default color.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -197,137 +192,102 @@ class Parallax(Gadget):
         *,
         path: Path | None = None,
         speeds: Sequence[float] | None = None,
+        default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.layers: list[Image]
+        self.layers: list[NDArray[np.uint8]]
         """Layers of the parallax."""
 
         if path is None:
             self.layers = []
         else:
             paths = sorted(path.iterdir(), key=lambda file: file.name)
-            self.layers = [Image(path=path, is_transparent=True) for path in paths]
-            for layer in self.layers:
-                layer.parent = self
+            self.layers = [read_texture(path) for path in paths]
+
+        self.speeds: Sequence[float]
+        """The scrolling speed of each layer."""
+
+        nlayers = len(self.layers)
+        if speeds is None:
+            self.speeds = [1 / (nlayers - i) for i in range(nlayers)]
+        elif nlayers != len(speeds):
+            raise ValueError("number of layers doesn't match number of layer speeds")
+        else:
+            self.speeds = speeds
+
+        self._vertical_offset = self._horizontal_offset = 0.0
 
         super().__init__(
-            is_transparent=is_transparent,
+            default_color=default_color,
+            alpha=alpha,
+            interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
 
-        self.speeds = _check_layer_speeds(self.layers, speeds)
-        self.alpha = alpha
-        self.interpolation = interpolation
-        self._vertical_offset = self._horizontal_offset = 0.0
-        self.on_size()
-
-    @property
-    def _region(self) -> Region:
-        """The visible portion of the gadget on the screen."""
-        return self._region_value
-
-    @_region.setter
-    def _region(self, region: Region):
-        self._region_value = region
-        for layer in self.layers:
-            layer._region = region
-
     def on_size(self):
         """Resize parallax layers."""
-        for layer in self.layers:
-            layer.size = self._size
-        self._otextures = [layer.texture for layer in self.layers]
-
-    @property
-    def alpha(self) -> float:
-        """Transparency of gadget."""
-        return self._alpha
-
-    @alpha.setter
-    @bindable
-    def alpha(self, alpha: float):
-        self._alpha = clamp(float(alpha), 0.0, 1.0)
-        for layer in self.layers:
-            layer.alpha = alpha
-
-    @property
-    def interpolation(self) -> Interpolation:
-        """Interpolation used when gadget is resized."""
-        return self._interpolation
-
-    @interpolation.setter
-    def interpolation(self, interpolation: Interpolation):
-        if interpolation not in {"nearest", "linear", "cubic", "area", "lanczos"}:
-            raise ValueError(f"{interpolation} is not a valid interpolation type.")
-        for layer in self.layers:
-            layer.interpolation = interpolation
+        h, w = scale_geometry(self._blitter, self._size)
+        self.texture = np.empty((h, w, 4), np.uint8)
+        self._sized_layers = [
+            resize_texture(texture, (h, w), self.interpolation)
+            for texture in self.layers
+        ]
+        self._update_texture()
 
     @property
     def vertical_offset(self) -> float:
-        """Vertical offset of first layer of the parallax."""
+        """Vertical offset of the parallax."""
         return self._vertical_offset
 
     @vertical_offset.setter
     def vertical_offset(self, offset: float):
         self._vertical_offset = offset
-        self._adjust()
+        self._update_texture()
 
     @property
     def horizontal_offset(self) -> float:
-        """Horizontal offset of first layer of the parallax."""
+        """Horizontal offset of the parallax."""
         return self._horizontal_offset
 
     @horizontal_offset.setter
     def horizontal_offset(self, offset: float):
         self._horizontal_offset = offset
-        self._adjust()
+        self._update_texture()
 
     @property
     def offset(self) -> tuple[float, float]:
-        """
-        Vertical and horizontal offset of first layer of the parallax.
-
-        Other layers will be adjusted automatically when offset is set.
-        """
+        """Vertical and horizontal offset of the parallax."""
         return self._vertical_offset, self._horizontal_offset
 
     @offset.setter
     def offset(self, offset: tuple[float, float]):
         self._vertical_offset, self._horizontal_offset = offset
-        self._adjust()
+        self._update_texture()
 
-    def _adjust(self):
-        for speed, texture, layer in zip(
-            self.speeds,
-            self._otextures,
-            self.layers,
-        ):
+    def _update_texture(self):
+        self.clear()
+        for speed, texture in zip(self.speeds, self._sized_layers):
             rolls = (
                 -round(speed * self._vertical_offset),
                 -round(speed * self._horizontal_offset),
             )
-            layer.texture = np.roll(texture, rolls, axis=(0, 1))
-
-    def _render(self, canvas: NDArray[Cell]):
-        """Render visible region of gadget."""
-        if self.layers:
-            for layer in self.layers:
-                layer._render(canvas)
-        else:
-            super()._render(canvas)
+            composite(np.roll(texture, rolls, axis=(0, 1)), self.texture)
 
     @classmethod
     def from_textures(
@@ -335,13 +295,15 @@ class Parallax(Gadget):
         textures: Iterable[NDArray[np.uint8]],
         *,
         speeds: Sequence[float] | None = None,
+        default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ) -> Self:
@@ -355,10 +317,14 @@ class Parallax(Gadget):
         speeds : Sequence[float] | None, default: None
             The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N`
             is the number of layers and `i` is the index of a layer.
+        default_color : AColor, default: AColor(0, 0, 0, 0)
+            Default texture color.
         alpha : float, default: 1.0
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -381,99 +347,27 @@ class Parallax(Gadget):
         Parallax
             A new parallax gadget.
         """
+        layers = list(textures)
+        nlayers = len(layers)
+        if speeds is None:
+            speeds = [1 / (nlayers - i) for i in range(nlayers)]
+        elif nlayers != len(speeds):
+            raise ValueError("number of layers doesn't match number of layer speeds")
+
         parallax = cls(
+            default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
-            is_transparent=is_transparent,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
-            is_visible=is_visible,
-            is_enabled=is_enabled,
-        )
-        parallax.layers = [
-            Image.from_texture(
-                texture,
-                size=parallax.size,
-                alpha=parallax.alpha,
-                interpolation=parallax.interpolation,
-            )
-            for texture in textures
-        ]
-        for layer in parallax.layers:
-            layer.parent = parallax
-        parallax.speeds = _check_layer_speeds(parallax.layers, speeds)
-        return parallax
-
-    @classmethod
-    def from_images(
-        cls,
-        images: Iterable[Image],
-        *,
-        speeds: Sequence[float] | None = None,
-        alpha: float = 1.0,
-        interpolation: Interpolation = "linear",
-        is_transparent: bool = True,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
-        size_hint: SizeHint | None = None,
-        pos_hint: PosHint | None = None,
-        is_visible: bool = True,
-        is_enabled: bool = True,
-    ) -> Self:
-        """
-        Create an :class:`Parallax` from an iterable of :class:`Image`.
-
-        Parameters
-        ----------
-        textures : Iterable[Image]
-            An iterable of images that will be the layers of the parallax.
-        speeds : Sequence[float] | None, default: None
-            The scrolling speed of each layer. Default speeds are `1/(N - i)` where `N`
-            is the number of layers and `i` is the index of a layer.
-        alpha : float, default: 1.0
-            Transparency of gadget.
-        interpolation : Interpolation, default: "linear"
-            Interpolation used when gadget is resized.
-        size : Size, default: Size(10, 10)
-            Size of gadget.
-        pos : Point, default: Point(0, 0)
-            Position of upper-left corner in parent.
-        size_hint : SizeHint | None, default: None
-            Size as a proportion of parent's height and width.
-        pos_hint : PosHint | None, default: None
-            Position as a proportion of parent's height and width.
-        is_transparent : bool, default: True
-            Whether gadget is transparent.
-        is_visible : bool, default: True
-            Whether gadget is visible. Gadget will still receive input events if not
-            visible.
-        is_enabled : bool, default: True
-            Whether gadget is enabled. A disabled gadget is not painted and doesn't
-            receive input events.
-
-        Returns
-        -------
-        Parallax
-            A new parallax gadget.
-        """
-        parallax = cls(
-            alpha=alpha,
-            interpolation=interpolation,
             is_transparent=is_transparent,
-            size=size,
-            pos=pos,
-            size_hint=size_hint,
-            pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        parallax.layers = list(images)
-        for image in parallax.layers:
-            image.interpolation = parallax.interpolation
-            image.size = parallax.size
-            image.alpha = parallax.alpha
-            image.parent = parallax
-        parallax.speeds = _check_layer_speeds(parallax.layers, speeds)
+        parallax.layers = layers
+        parallax.speeds = speeds
+        parallax.on_size()
         return parallax

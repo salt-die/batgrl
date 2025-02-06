@@ -31,7 +31,7 @@ cdef bint csub(bint a, bint b):
 
 
 cdef inline int add_wall(Band *band, int wall):
-    cdef int* new_walls
+    cdef int *new_walls
     if band.len == band.size:
         new_walls = <int*>realloc(band.walls, sizeof(Band) * (band.size << 1))
         if new_walls is NULL:
@@ -45,7 +45,7 @@ cdef inline int add_wall(Band *band, int wall):
 
 
 cdef inline int add_band(CRegion *region):
-    cdef Py_ssize_t i
+    cdef size_t i
     if region.len == region.size:
         new_bands = <Band*>realloc(region.bands, sizeof(Band) * (region.size << 1))
         if new_bands is NULL:
@@ -75,7 +75,7 @@ cdef int merge_bands(
 
     cdef:
         Band *new_band = &region.bands[region.len - 1]
-        Py_ssize_t i = 0, j = 0
+        size_t i = 0, j = 0
         bint inside_r = 0, inside_s = 0, inside_region = 0
         int threshold
 
@@ -136,7 +136,8 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
     cdef:
         Band *r
         Band *s
-        int i = 0, j = 0, scanline = 0
+        unsigned int i = 0, j = 0
+        int scanline = 0
 
     if a.len > 0:
         if b.len > 0:
@@ -223,8 +224,8 @@ cdef int merge_regions(CRegion *a, CRegion *b, CRegion *result, bool_op op):
     return 0
 
 
-cdef inline Py_ssize_t bisect_bands(CRegion *region, int y):
-    cdef Py_ssize_t lo = 0, hi = region.len, mid
+cdef inline size_t bisect_bands(CRegion *region, int y):
+    cdef size_t lo = 0, hi = region.len, mid
     while lo < hi:
         mid = (lo + hi) // 2
         if y < region.bands[mid].y1:
@@ -234,8 +235,8 @@ cdef inline Py_ssize_t bisect_bands(CRegion *region, int y):
     return lo
 
 
-cdef inline Py_ssize_t bisect_walls(Band *band, int x):
-    cdef Py_ssize_t lo = 0, hi = band.len, mid
+cdef inline size_t bisect_walls(Band *band, int x):
+    cdef size_t lo = 0, hi = band.len, mid
     while lo < hi:
         mid = (lo + hi) // 2
         if x < band.walls[mid]:
@@ -243,6 +244,42 @@ cdef inline Py_ssize_t bisect_walls(Band *band, int x):
         else:
             lo = mid + 1
     return lo
+
+
+cdef bint contains(CRegion *cregion, int y, int x):
+    cdef size_t i
+
+    i = bisect_bands(cregion, y)
+    if i == 0:
+        return 0
+
+    if cregion.bands[i - 1].y2 <= y:
+        return 0
+
+    i = bisect_walls(&cregion.bands[i - 1], x)
+    return i % 2 == 1
+
+
+cdef void bounding_rect(CRegion *cregion, int *y, int *x, size_t *h, size_t *w):
+    if not cregion.len:
+        return
+
+    cdef:
+        size_t i
+        int min_x = cregion.bands[0].walls[0], max_x = min_x
+        Band *band
+
+    for i in range(cregion.len):
+        band = &cregion.bands[i]
+        if band.walls[0] < min_x:
+            min_x = band.walls[0]
+        if band.walls[band.len - 1] > max_x:
+            max_x = band.walls[band.len - 1]
+
+    y[0] = cregion.bands[0].y1
+    h[0] = cregion.bands[cregion.len - 1].y2 - y[0]
+    x[0] = min_x
+    w[0] = max_x - min_x
 
 
 cdef class Region:
@@ -260,7 +297,7 @@ cdef class Region:
         if self.cregion.bands is NULL:
             return
 
-        cdef Py_ssize_t i
+        cdef size_t i
         for i in range(self.cregion.len):
             if self.cregion.bands[i].walls is not NULL:
                 free(self.cregion.bands[i].walls)
@@ -333,7 +370,7 @@ cdef class Region:
 
     def __eq__(self, other: Region) -> bool:
         cdef:
-            Py_ssize_t i, j
+            size_t i, j
             Band *r
             Band *s
         if self.cregion.len != other.cregion.len:
@@ -349,24 +386,12 @@ cdef class Region:
         return True
 
     def __contains__(self, point: Point) -> bool:
-        cdef:
-            int y, x
-            Py_ssize_t i
-
-        y, x = point
-        i = bisect_bands(&self.cregion, y)
-        if i == 0:
-            return False
-
-        if self.cregion.bands[i - 1].y2 <= y:
-            return False
-
-        i = bisect_walls(&self.cregion.bands[i - 1], x)
-        return i % 2 == 1
+        cdef int y = point[0], x = point[1]
+        return contains(&self.cregion, y, x)
 
     def rects(self) -> Iterator[tuple[Point, Size]]:
         cdef:
-            Py_ssize_t i, j
+            size_t i, j
             Band *band
 
         for i in range(self.cregion.len):

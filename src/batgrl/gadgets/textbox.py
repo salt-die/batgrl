@@ -7,13 +7,14 @@ from dataclasses import astuple
 
 from numpy.typing import NDArray
 
+from ..char_width import str_width
 from ..geometry import rect_slice
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
-from ..text_tools import is_word_char, str_width
-from ._cursor import Cursor
+from ..text_tools import is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
+from .cursor import Cursor
 from .gadget import Cell, Gadget, Point, PosHint, Region, Size, SizeHint
 from .text import Text
 
@@ -21,35 +22,14 @@ __all__ = ["Textbox", "Point", "Size"]
 
 
 class _Box(Text):
-    def _render(self, canvas):
-        super()._render(canvas)
+    def _render(self, canvas, graphics, kind):
+        super()._render(canvas, graphics, kind)
         textbox: Textbox = self.parent
         if textbox.hide_input:
             hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_length))
             hider_region = self._region & hider_rect
             for pos, size in hider_region.rects():
                 canvas["char"][rect_slice(pos, size)] = textbox.hide_char
-
-
-class _Cursor(Cursor):
-    def _render(self, canvas):
-        textbox: Textbox = self.parent.parent
-        placeholder = textbox._placeholder_gadget
-        root_pos = self.root._pos
-        abs_pos = self.parent.absolute_pos
-        for pos, size in self._region.rects():
-            dst = rect_slice(pos - root_pos, size)
-            src = rect_slice(pos - abs_pos, size)
-            canvas[dst]["fg_color"] = self.fg_color
-            canvas[dst]["bg_color"] = self.bg_color
-            if pos.x > textbox._line_length:
-                continue
-            if placeholder.is_enabled:
-                canvas[dst]["char"] = placeholder.canvas[src]["char"]
-            elif textbox.hide_input:
-                canvas[dst]["char"] = textbox.hide_char
-            else:
-                canvas[dst]["char"] = textbox._box.canvas[src]["char"]
 
 
 class Textbox(Themable, Focusable, Grabbable, Gadget):
@@ -288,7 +268,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     ):
         self._placeholder_gadget = Text(alpha=0.0, is_transparent=is_transparent)
         self._placeholder_gadget.set_text(placeholder)
-        self._cursor = _Cursor()
+        self._cursor = Cursor()
         self._box = _Box(size=size, is_transparent=is_transparent)
         super().__init__(
             is_grabbable=is_grabbable,
@@ -355,8 +335,6 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         bg = primary.bg
         self._box.canvas["fg_color"] = self._box.default_fg_color = fg
         self._box.canvas["bg_color"] = self._box.default_bg_color = bg
-        self._cursor.fg_color = bg
-        self._cursor.bg_color = fg
 
         placeholder = self.color_theme.textbox_placeholder
         self._placeholder_gadget.default_fg_color = placeholder.fg

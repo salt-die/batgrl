@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, lerp_colors
 from ..terminal.events import MouseEvent
 from ..text_tools import smooth_vertical_bar
-from ._cursor import Cursor
+from .cursor import Cursor
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .text import Text, add_text
 
@@ -209,7 +209,7 @@ class Sparkline(Gadget):
         is_enabled: bool = True,
     ):
         self._sparkline = Text(size_hint={"height_hint": 1.0, "width_hint": 1.0})
-        self._selector = Cursor(size_hint={"height_hint": 1.0})
+        self._selector = Cursor(reverse=False, size_hint={"height_hint": 1.0})
         self._tooltip = _Tooltip(size=(7, 18), is_enabled=False)
 
         super().__init__(

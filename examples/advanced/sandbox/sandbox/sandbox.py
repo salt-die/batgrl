@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 from batgrl.colors import ABLACK
-from batgrl.gadgets.graphics import Graphics, Size
+from batgrl.gadgets.graphics import Graphics, Size, scale_geometry
 from batgrl.gadgets.text import Text, new_cell
 
 from .element_buttons import MENU_BACKGROUND_COLOR, ButtonContainer
@@ -20,15 +20,19 @@ class Sandbox(Graphics):
 
     def __init__(self, size: Size):
         super().__init__(
-            size=size, pos_hint={"y_hint": 0.5, "x_hint": 0.5}, default_color=ABLACK
+            size=size,
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
+            default_color=ABLACK,
+            blitter="full",
         )
 
     def on_add(self):
         super().on_add()
         # Build array of particles -- Initially all Air
-        self.world = world = np.full((2 * self.height, self.width), None, dtype=object)
-        for y in range(2 * self.height):
-            for x in range(self.width):
+        h, w = scale_geometry(self._blitter, self._size)
+        self.world = world = np.full((h, w), None, dtype=object)
+        for y in range(h):
+            for x in range(w):
                 world[y, x] = Air(world, (y, x))
 
         self.display = Text(
@@ -47,10 +51,10 @@ class Sandbox(Graphics):
         for particle in self.world.flatten():
             particle.sleep()
 
-    def _render(self, canvas):
+    def _render(self, cells, graphics, kind):
         # Color of each particle in `self.world` is written into color array.
         self.texture[..., :3] = np.dstack(particles_to_colors(self.world))
-        super()._render(canvas)
+        super()._render(cells, graphics, kind)
 
     def on_mouse(self, mouse_event):
         if mouse_event.button != "left" or not self.collides_point(mouse_event.pos):
@@ -58,9 +62,9 @@ class Sandbox(Graphics):
 
         world = self.world
         particle_type = self.particle_type
-        y, x = self.to_local(mouse_event.pos)
-
-        world[2 * y, x].replace(particle_type)
-        world[2 * y + 1, x].replace(particle_type)
-
+        y, x = scale_geometry(self._blitter, self.to_local(mouse_event.pos))
+        h, w = scale_geometry(self._blitter, Size(1, 1))
+        for i in range(h):
+            for j in range(w):
+                world[y + i, x + j].replace(particle_type)
         return True

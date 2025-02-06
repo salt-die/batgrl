@@ -2,22 +2,23 @@ import asyncio
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import Color
-from batgrl.gadgets.graphics import Graphics
+from batgrl.colors import AColor, Color
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text
 
 from .solver import SPHSolver
 
-WATER_COLOR = Color.from_hex("1e1ea8")
+WATER_COLOR = AColor.from_hex("1e1ea8ff")
 FILL_COLOR = Color.from_hex("2fa399")
 
 
 class SPH(Graphics):
-    def __init__(self, nparticles, is_transparent=False, **kwargs):
-        super().__init__(is_transparent=is_transparent, **kwargs)
-        y, x = self.size
-        self.sph_solver = SPHSolver(nparticles, (2 * y, x))
+    def __init__(self, nparticles, **kwargs):
+        super().__init__(**kwargs)
+        self.sph_solver = SPHSolver(
+            nparticles, scale_geometry(self._blitter, self.size)
+        )
 
     def on_add(self):
         super().on_add()
@@ -40,34 +41,31 @@ class SPH(Graphics):
             return False
 
         # Apply a force from click to every particle in the solver.
-        my, mx = self.to_local(mouse_event.pos)
-
-        relative_positions = self.sph_solver.state[:, :2] - (2 * my, mx)
-
+        my, mx = scale_geometry(self._blitter, self.to_local(mouse_event.pos))
+        relative_positions = self.sph_solver.state[:, :2] - (my, mx)
         self.sph_solver.state[:, 2:4] += (
             1e2
             * relative_positions
             / np.linalg.norm(relative_positions, axis=-1, keepdims=True)
         )
-
         return True
 
     async def _update(self):
         while True:
+            h, w = scale_geometry(self._blitter, self.size)
             solver = self.sph_solver
             solver.step()
-
             positions = solver.state[:, :2]
 
             ys, xs = positions.astype(int).T
-            xs = xs + (self.width - solver.WIDTH) // 2  # Center the particles.
+            xs = xs + (w - solver.WIDTH) // 2  # Center the particles.
 
             # Some solver configurations are unstable. Clip positions to prevent errors.
-            ys = np.clip(ys, 0, 2 * self.height - 1)
-            xs = np.clip(xs, 0, self.width - 1)
+            ys = np.clip(ys, 0, h - 1)
+            xs = np.clip(xs, 0, w - 1)
 
             self.clear()
-            self.texture[ys, xs, :3] = WATER_COLOR
+            self.texture[ys, xs] = WATER_COLOR
 
             await asyncio.sleep(0)
 
@@ -90,7 +88,7 @@ class SPHApp(App):
         container = Text(size=(height, width), pos_hint={"y_hint": 0.5, "x_hint": 0.5})
 
         fluid = SPH(
-            nparticles=225,
+            nparticles=300,
             pos=(sliders_height, 0),
             size=(height - sliders_height, width),
         )
@@ -118,7 +116,7 @@ class SPHApp(App):
                 callback=create_callback(caption, attr, y, x),
                 size=(1, width // 2),
                 fill_color=FILL_COLOR,
-                slider_color=WATER_COLOR,
+                slider_color=WATER_COLOR[:3],
             )
             container.add_gadget(slider)
         self.add_gadget(container)

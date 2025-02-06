@@ -3,8 +3,6 @@
 from collections.abc import Callable
 from itertools import pairwise
 
-import numpy as np
-
 from ..colors import (
     ABLACK,
     ABLUE,
@@ -24,7 +22,7 @@ from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .button import Button
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
-from .graphics import Graphics
+from .graphics import Graphics, scale_geometry
 from .pane import Pane
 from .text import Text, new_cell
 
@@ -35,33 +33,32 @@ GRAD = tuple(pairwise([ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED]))
 
 class _ShadeSelector(Grabbable, Graphics):
     def __init__(self, color_swatch, label, **kwargs):
-        super().__init__(**kwargs)
-
-        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_cell="○")
         self._shade_hint = 0.0, 1.0
-        self.add_gadget(self._shade_indicator)
-
+        self._shade_indicator = Text(size=(1, 1), is_transparent=True, default_cell="○")
+        self.hue = ARED
         self.color_swatch = color_swatch
         self.label = label
+
+        super().__init__(**kwargs)
+        self.add_gadget(self._shade_indicator)
         self.update_hue(ARED)
 
     def on_size(self):
+        super().on_size()
         h, w = self._size
         hh, wh = self._shade_hint
 
-        self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
         self._shade_indicator.pos = round((h - 1) * hh), round((w - 1) * wh)
-
         self.update_hue(self.hue)
 
     def update_hue(self, hue: AColor):
         self.hue = hue
 
-        h, w = self._size
+        h, w = scale_geometry(self._blitter, self._size)
         if w == 0:
             return
-        left_side = gradient(AWHITE, ABLACK, 2 * h)
-        right_side = gradient(hue, ABLACK, 2 * h)
+        left_side = gradient(AWHITE, ABLACK, h)
+        right_side = gradient(hue, ABLACK, h)
 
         for row, left, right in zip(self.texture, left_side, right_side):
             row[:] = gradient(left, right, w)
@@ -69,12 +66,9 @@ class _ShadeSelector(Grabbable, Graphics):
         self.update_swatch_label()
 
     def update_swatch_label(self):
-        y, x = self._shade_indicator.pos
-
-        r, g, b = self.texture[y * 2, x, :3].tolist()
-
+        y, x = scale_geometry(self._blitter, self._shade_indicator.pos)
+        r, g, b = self.texture[y, x, :3].tolist()
         self.color_swatch.bg_color = r, g, b
-
         self.label.add_str(hex(r * 2**16 + g * 2**8 + b)[2:], pos=(1, 1))
         self.label.add_str(f"R: {r:>3}", pos=(3, 1))
         self.label.add_str(f"G: {g:>3}", pos=(4, 1))
@@ -109,11 +103,11 @@ class _HueSelector(Grabbable, Graphics):
         self.add_gadget(self._hue_indicator)
 
     def on_size(self):
-        h, w = self._size
-
-        self.texture = np.zeros((h * 2, w, 4), dtype=np.uint8)
-
+        super().on_size()
+        _, w = self._size
         d, r = divmod(w, 6)
+        if d == 1:
+            return
 
         rainbow = []
         for i, (a, b) in enumerate(GRAD):

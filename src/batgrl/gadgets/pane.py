@@ -1,11 +1,10 @@
 """A gadget with a background color that is composited if transparent."""
 
+import numpy as np
 from numpy.typing import NDArray
 
+from .._rendering import pane_render
 from ..colors import BLACK, Color
-from ..geometry import rect_slice
-from ..text_tools import cell_sans
-from ..texture_tools import _composite
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
 __all__ = ["Pane", "Point", "Size"]
@@ -179,21 +178,16 @@ class Pane(Gadget):
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
-    def _render(self, canvas: NDArray[Cell]):
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ) -> None:
         """Render visible region of gadget."""
-        chars = canvas["char"]
-        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
-        foreground = canvas["fg_color"]
-        background = canvas["bg_color"]
-        root_pos = self.root._pos
-        for pos, size in self._region.rects():
-            dst = rect_slice(pos - root_pos, size)
-            fg_rect = foreground[dst]
-            bg_rect = background[dst]
-            if self.is_transparent:
-                _composite(fg_rect, self.bg_color, 255, self.alpha)
-                _composite(bg_rect, self.bg_color, 255, self.alpha)
-            else:
-                chars[dst] = " "
-                styles[dst] = False
-                fg_rect[:] = bg_rect[:] = self.bg_color
+        pane_render(
+            cells,
+            graphics,
+            kind,
+            self._is_transparent,
+            self._region,
+            self.bg_color,
+            self.alpha,
+        )

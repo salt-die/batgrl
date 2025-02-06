@@ -1,40 +1,45 @@
 """
 A graphic particle field.
 
-A particle field specializes in handling many single "pixel" children.
+A particle field specializes in rendering many single "pixel" children from an array of
+particle positions and and an particle colors.
 """
 
 from typing import Any
 
 import numpy as np
-from numpy.lib.recfunctions import structured_to_unstructured
 from numpy.typing import NDArray
 
-from ..geometry import rect_slice
-from ..text_tools import cell_sans
-from ..texture_tools import _composite
+from .._rendering import graphics_field_render
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
+from .graphics import Blitter, Graphics, scale_geometry
 
-__all__ = ["GraphicParticleField", "particle_data_from_texture", "Point", "Size"]
+__all__ = ["GraphicParticleField", "Point", "Size"]
 
 
 class GraphicParticleField(Gadget):
     r"""
     A graphic particle field.
 
-    A particle field specializes in rendering many single "pixel" children. This is more
-    efficient than rendering many 1x1 gadgets.
+    A particle field specializes in rendering many single "pixel" children from an array
+    of particle positions and and an particle colors. Particles positions are a
+    ``(N, 2)`` shaped array of floats. The decimal part of the positions allows
+    different blitters to place correct "subpixel" characters. For instance a position
+    ``(0.0, 0.0)`` might render the character ``"⠁"``, while ``(0.5, 0.0)`` might render
+    ``"⠄"``.
 
     Parameters
     ----------
-    particle_positions : NDArray[np.int32] | None, default: None
-        An array of particle positions with shape `(N, 2)`.
+    particle_positions : NDArray[np.float64] | None, default: None
+        An array of particle positions with shape ``(N, 2)``.
     particle_colors : NDArray[np.uint8] | None, default: None
-        An array of particle colors with shape `(N, 4)`.
-    particle_properties : dict[str, NDArray[Any]] | None, default: None
+        A RGBA array of particle colors with shape ``(N, 4)``.
+    particle_properties : dict[str, Any] | None, default: None
         Additional particle properties.
     alpha : float, default: 1.0
         Transparency of gadget.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -56,14 +61,16 @@ class GraphicParticleField(Gadget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : NDArray[np.int32]
+    particle_positions : NDArray[np.float64]
         An array of particle positions with shape `(N, 2)`.
     particle_colors : NDArray[np.uint8]
-        An array of particle colors with shape `(N, 4)`.
-    particle_properties : dict[str, NDArray[Any]]
+        A RGBA array of particle colors with shape `(N, 4)`.
+    particle_properties : dict[str, Any]
         Additional particle properties.
     alpha : float
         Transparency of gadget.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -114,7 +121,7 @@ class GraphicParticleField(Gadget):
     Methods
     -------
     particles_from_texture(texture)
-        Return positions and colors of visible pixels of an RGBA texture.
+        Set particle positions and colors from visible pixels of an RGBA texture.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -168,10 +175,11 @@ class GraphicParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_positions: NDArray[np.int32] | None = None,
+        particle_positions: NDArray[np.float64] | None = None,
         particle_colors: NDArray[np.uint8] | None = None,
-        particle_properties: dict[str, NDArray[Any]] = None,
+        particle_properties: dict[str, Any] | None = None,
         alpha: float = 1.0,
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -189,25 +197,35 @@ class GraphicParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
+        self.particle_positions: NDArray[np.float64]
+        """An array of particle positions with shape `(N, 2)`."""
         if particle_positions is None:
-            self.particle_positions = np.zeros((0, 2), dtype=int)
+            self.particle_positions = np.zeros((0, 2), dtype=np.float64)
         else:
-            self.particle_positions = np.asarray(particle_positions, dtype=int)
+            self.particle_positions = np.ascontiguousarray(
+                particle_positions, dtype=np.float64
+            )
 
+        self.particle_colors: NDArray[np.uint8]
+        """A RGBA array of particle colors with shape `(N, 4)`."""
         if particle_colors is None:
             self.particle_colors = np.zeros(
                 (len(self.particle_positions), 4), dtype=np.uint8
             )
         else:
-            self.particle_colors = np.asarray(particle_colors, dtype=np.uint8)
+            self.particle_colors = np.ascontiguousarray(particle_colors, dtype=np.uint8)
 
+        self.particle_properties: dict[str, Any]
+        """Additional particle properties."""
         if particle_properties is None:
             self.particle_properties = {}
         else:
             self.particle_properties = particle_properties
 
         self.alpha = alpha
+        """Transparency of gadget."""
+        self.blitter = blitter
+        """Determines how graphics are rendered."""
 
     @property
     def alpha(self) -> float:
@@ -220,66 +238,61 @@ class GraphicParticleField(Gadget):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     @property
+    def blitter(self) -> Blitter:
+        """Determines how graphics are rendered."""
+        return self._blitter
+
+    @blitter.setter
+    def blitter(self, blitter: Blitter):
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        if blitter == "sixel" and not Graphics._sixel_support:
+            self._blitter = "half"
+        else:
+            self._blitter = blitter
+
+    def on_add(self) -> None:
+        """Change sixel blitter if sixel is not supported on add."""
+        if self._blitter == "sixel" and not Graphics._sixel_support:
+            self.blitter = "half"
+        super().on_add()
+
+    @property
     def nparticles(self) -> int:
         """Number of particles in particle field."""
         return len(self.particle_positions)
 
-    def _render(self, canvas: NDArray[Cell]):
+    def particles_from_texture(self, texture: NDArray[np.uint8]) -> None:
+        """
+        Set particle positions and colors from visible pixels of an RGBA texture.
+
+        Parameters
+        ----------
+        texture : NDArray[np.uint8]
+            A uint8 RGBA numpy array.
+        """
+        positions = np.argwhere(texture[..., 3])
+        pys, pxs = positions.T
+        self.particle_colors = np.ascontiguousarray(texture[pys, pxs])
+        self.particle_positions = np.ascontiguousarray(positions.astype(np.float64))
+        self.particle_positions /= scale_geometry(self._blitter, Size(1, 1))
+
+    def _render(
+        self,
+        cells: NDArray[Cell],
+        graphics: NDArray[np.uint8],
+        kind: NDArray[np.uint8],
+    ):
         """Render visible region of gadget."""
-        chars = canvas["char"]
-        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
-        colors = structured_to_unstructured(canvas[["fg_color", "bg_color"]], np.uint8)
-        root_pos = self.root._pos
-        abs_pos = self.absolute_pos
-        ppos = self.particle_positions
-        pcolors = self.particle_colors
-        for pos, (h, w) in self._region.rects():
-            abs_ppos = ppos - (pos - abs_pos)
-            where_inbounds = np.nonzero(
-                (((0, 0) <= abs_ppos) & (abs_ppos < (2 * h, w))).all(axis=1)
-            )
-            ys, xs = abs_ppos[where_inbounds].T
-
-            dst = rect_slice(pos - root_pos, (h, w))
-            color_rect = colors[dst]
-
-            if self.is_transparent:
-                mask = chars[dst] != "▀"
-                color_rect[..., :3][mask] = color_rect[..., 3:][mask]
-
-            texture = (
-                color_rect.reshape(h, w, 2, 3).swapaxes(1, 2).reshape(2 * h, w, 3)
-            )  # Not a view.
-            painted = pcolors[where_inbounds]
-
-            if self.is_transparent:
-                background = texture[ys, xs]
-                _composite(background, painted[:, :3], painted[:, 3, None], self.alpha)
-                texture[ys, xs] = background
-            else:
-                texture[ys, xs] = painted[..., :3]
-
-            color_rect[:] = texture.reshape(h, 2, w, 3).swapaxes(1, 2).reshape(h, w, 6)
-            chars[dst] = "▀"
-            styles[dst] = False
-
-
-def particle_data_from_texture(
-    texture: NDArray[np.uint8],
-) -> tuple[NDArray[np.int32], NDArray[np.uint8]]:
-    """
-    Return positions and colors of visible pixels of an RGBA texture.
-
-    Parameters
-    ----------
-    texture : NDArray[np.uint8]
-        A uint8 RGBA numpy array.
-
-    Returns
-    -------
-    tuple[NDArray[np.int32], NDArray[np.uint8]]
-        Position and colors of visible pixels of the texture.
-    """
-    positions = np.argwhere(texture[..., 3])
-    pys, pxs = positions.T
-    return positions, texture[pys, pxs]
+        graphics_field_render(
+            cells,
+            graphics,
+            kind,
+            self.absolute_pos,
+            self._blitter,
+            self._is_transparent,
+            self.particle_positions,
+            self.particle_colors,
+            self._alpha,
+            self._region,
+        )

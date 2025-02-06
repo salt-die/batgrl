@@ -12,7 +12,7 @@ import networkx as nx
 import numpy as np
 from batgrl.app import run_gadget_as_app
 from batgrl.colors import AWHITE, AColor, gradient
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 
 GREEN = AColor.from_hex("0bbf23")
 BLUE = AColor.from_hex("0b38bf")
@@ -30,27 +30,43 @@ def _path_yx(a, b):
 
 
 class Labyrinth(Graphics):
+    _new_level_task = None
+    _player_task = None
+    _reconfigure_task = None
+
     def on_add(self):
-        self._new_level_task = asyncio.create_task(asyncio.sleep(0))  # dummy task
-        self._player_task = asyncio.create_task(self._update_player())
-        self._reconfigure_task = asyncio.create_task(self._step_reconfigure())
-        self.on_size()
         super().on_add()
+        if self._player_task is not None:
+            self._player_task.cancel()
+        if self._reconfigure_task is not None:
+            self._reconfigure_task.cancel()
+        if self._new_level_task is not None:
+            self._new_level_task.cancel()
+        self.new_level()
 
     def on_remove(self):
         super().on_remove()
-        self._player_task.cancel()
-        self._new_level_task.cancel()
-        self._reconfigure_task.cancel()
+        if self._new_level_task is not None:
+            self._new_level_task.cancel()
+        if self._player_task is not None:
+            self._player_task.cancel()
+        if self._reconfigure_task is not None:
+            self._reconfigure_task.cancel()
 
     def on_size(self):
-        h, w = self._size
-        self.texture = np.zeros((2 * h, w, 4), dtype=np.uint8)
+        h, w = scale_geometry(self._blitter, self._size)
+        self.texture = np.zeros((h, w, 4), dtype=np.uint8)
 
+        if self.root is None:
+            return
         # Creating new level is intensive. To prevent lock-up when resizing terminal,
         # defer creation for a small amount of time.
-        self._suspend_tasks = True
-        self._new_level_task.cancel()
+        if self._player_task is not None:
+            self._player_task.cancel()
+        if self._reconfigure_task is not None:
+            self._reconfigure_task.cancel()
+        if self._new_level_task is not None:
+            self._new_level_task.cancel()
         self._new_level_task = asyncio.create_task(self._new_level_soon())
 
     async def _new_level_soon(self):
@@ -59,11 +75,14 @@ class Labyrinth(Graphics):
 
     def new_level(self):
         self.player = 1, 0
-        self._suspend_tasks = False
+        if self._player_task is not None:
+            self._player_task.cancel()
+        self._player_task = asyncio.create_task(self._update_player())
+        if self._reconfigure_task is not None:
+            self._reconfigure_task.cancel()
+        self._reconfigure_task = asyncio.create_task(self._step_reconfigure())
 
-        h, w = self._size
-        h *= 2
-
+        h, w = scale_geometry(self._blitter, self._size)
         self.grid_graph = gg = nx.grid_graph(((w - 1) // 2, (h - 1) // 2))
         for e in gg.edges:
             gg.edges[e]["weight"] = random()
@@ -89,14 +108,12 @@ class Labyrinth(Graphics):
 
     async def _update_player(self):
         while True:
-            if not self._suspend_tasks:
-                self.texture[self.player] = next(PLAYER_GRADIENT)
+            self.texture[self.player] = next(PLAYER_GRADIENT)
             await asyncio.sleep(0.03)
 
     async def _step_reconfigure(self):
         while True:
-            if not self._suspend_tasks:
-                self._reconfigure_maze()
+            self._reconfigure_maze()
             await asyncio.sleep(1)
 
     def _reconfigure_maze(self):

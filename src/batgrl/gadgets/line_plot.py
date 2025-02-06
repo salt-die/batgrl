@@ -5,16 +5,16 @@ from __future__ import annotations
 from collections.abc import Sequence
 from math import ceil
 from numbers import Real
-from typing import Literal
 
 import cv2
 import numpy as np
 
+from ..char_width import str_width
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
-from ..text_tools import binary_to_box, binary_to_braille, str_width
 from .behaviors.movable import Movable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
+from .graphics import Blitter, Graphics, scale_geometry
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, add_text, new_cell
@@ -85,8 +85,8 @@ class LinePlot(Gadget):
         x-coordinates of each plot.
     ys : Sequence[Sequence[Real]]
         y-coordinates of each plot.
-    mode : Literal["braille", "box"], default: "braille"
-        Determines which characters are used to draw the plot.
+    blitter : Blitter, default: "braille"
+        Determines how the line plot is rendered.
     min_x : Real | None, default: None
         Minimum x-value of plot. If `None`, min_x will be minimum of all xs.
     max_x : Real | None, default: None
@@ -132,8 +132,8 @@ class LinePlot(Gadget):
         x-coordinates of each plot.
     ys : Sequence[Sequence[Real]]
         y-coordinates of each plot.
-    mode : Literal["braille", "box"]
-        Determines which characters are used to draw the plot.
+    blitter : Blitter
+        Determines how the line plot is rendered.
     min_x : Real | None
         Minimum x-value of plot. If `None`, min_x will be minimum of all xs.
     max_x : Real | None
@@ -259,7 +259,7 @@ class LinePlot(Gadget):
     """x-coordinates of each plot."""
     ys: Sequence[Sequence[Real]] = _LinePlotProperty()
     """x-coordinates of each plot."""
-    mode: Literal["box", "braille"] = _LinePlotProperty()
+    blitter: Blitter = _LinePlotProperty()
     """Determines which characters are used to draw the plot."""
     min_x: Real | None = _LinePlotProperty()
     """Minimum x-value of plot."""
@@ -277,7 +277,7 @@ class LinePlot(Gadget):
         *,
         xs: Sequence[Sequence[Real]],
         ys: Sequence[Sequence[Real]],
-        mode: Literal["box", "braille"] = "braille",
+        blitter: Blitter = "braille",
         min_x: Real | None = None,
         max_x: Real | None = None,
         min_y: Real | None = None,
@@ -298,7 +298,7 @@ class LinePlot(Gadget):
         is_enabled: bool = True,
     ):
         default_cell = new_cell(fg_color=plot_fg_color, bg_color=plot_bg_color)
-        self._traces = Text(default_cell=default_cell)
+        self._traces = Graphics(default_color=(*plot_bg_color, 0), is_transparent=True)
         self._scroll_view = ScrollView(
             show_vertical_bar=False,
             show_horizontal_bar=False,
@@ -328,7 +328,7 @@ class LinePlot(Gadget):
 
         self._xs = xs
         self._ys = ys
-        self._mode = mode
+        self._blitter = blitter
         self._min_x = min_x
         self._max_x = max_x
         self._min_y = min_y
@@ -371,7 +371,6 @@ class LinePlot(Gadget):
 
     def on_transparency(self) -> None:
         """Update gadget after transparency is enabled/disabled."""
-        self._traces.is_transparent = self.is_transparent
         self._scroll_view.is_transparent = self.is_transparent
         self._x_ticks.is_transparent = self.is_transparent
         self._y_ticks.is_transparent = self.is_transparent
@@ -422,6 +421,8 @@ class LinePlot(Gadget):
                 child.default_bg_color = plot_bg_color
             elif isinstance(child, Pane):
                 child.bg_color = plot_bg_color
+            elif isinstance(child, Graphics):
+                child.default_color = (*plot_bg_color, 0)
 
         self._legend._build_legend()
 
@@ -506,17 +507,14 @@ class LinePlot(Gadget):
         if offset_h <= 1 or offset_w <= 1:
             return
 
-        self._traces.canvas["char"][:] = " "
-        self._traces.canvas["fg_color"] = self.plot_fg_color
-        self._traces.canvas["bg_color"] = self.plot_bg_color
+        self._traces.clear()
+        if self._traces.blitter != self.blitter:
+            self._traces.blitter = self.blitter
 
         min_x = min(xs.min() for xs in self.xs) if self.min_x is None else self.min_x
         max_x = max(xs.max() for xs in self.xs) if self.max_x is None else self.max_x
         min_y = min(ys.min() for ys in self.ys) if self.min_y is None else self.min_y
         max_y = max(ys.max() for ys in self.ys) if self.max_y is None else self.max_y
-
-        chars_view = self._traces.canvas["char"][:, TICK_HALF:plot_right]
-        colors_view = self._traces.canvas["fg_color"][:, TICK_HALF:plot_right]
 
         if self.line_colors is None:
             line_colors = rainbow_gradient(len(self.xs))
@@ -526,34 +524,16 @@ class LinePlot(Gadget):
         x_delta = max_x - min_x
         y_delta = max_y - min_y
 
-        plot_w = offset_w * 2
-        if self.mode == "braille":
-            plot_h = offset_h * 4
-        else:
-            plot_h = offset_h * 2
-
+        plot_h, plot_w = scale_geometry(self._blitter, Size(offset_h, offset_w))
+        plot = np.zeros((plot_h, plot_w, 4), np.uint8)
         for xs, ys, color in zip(self.xs, self.ys, line_colors, strict=True):
-            plot = np.zeros((plot_h, plot_w), np.uint8)
-
             scaled_ys = plot_h * (ys - min_y) / y_delta
             scaled_xs = plot_w * (xs - min_x) / x_delta
             coords = np.dstack((scaled_xs, plot_h - scaled_ys)).astype(int)
-
-            cv2.polylines(plot, coords, isClosed=False, color=1)
-
-            if self.mode == "braille":
-                sectioned = np.swapaxes(plot.reshape(offset_h, 4, offset_w, 2), 1, 2)
-                braille = binary_to_braille(sectioned)
-                where_braille = braille != chr(0x2800)  # empty braille character
-
-                chars_view[where_braille] = braille[where_braille]
-                colors_view[where_braille] = color
-            else:
-                sectioned = np.swapaxes(plot.reshape(offset_h, 2, offset_w, 2), 1, 2)
-                boxes = binary_to_box(sectioned)
-                where_boxes = boxes != " "
-                chars_view[where_boxes] = boxes[where_boxes]
-                colors_view[where_boxes] = color
+            cv2.polylines(plot, coords, isClosed=False, color=(*color, 255))
+        _, left = scale_geometry(self._blitter, Size(1, TICK_HALF))
+        _, right = scale_geometry(self._blitter, Size(1, plot_right))
+        self._traces.texture[:, left:right] = plot
 
         # Regenerate Ticks
         self._y_ticks.size = self._traces.height, TICK_WIDTH

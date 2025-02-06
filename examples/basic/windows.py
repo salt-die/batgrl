@@ -28,7 +28,11 @@ class WindowsApp(App):
         window_kwargs = dict(size=(25, 50), alpha=0.8)
 
         animation = Video(
-            source=SPINNER, interpolation="nearest", is_transparent=True, alpha=0.7
+            source=SPINNER,
+            interpolation="nearest",
+            is_transparent=True,
+            alpha=0.5,
+            blitter="sixel",
         )
         window_1 = Window(title=SPINNER.name, **window_kwargs)
         window_1.view = animation

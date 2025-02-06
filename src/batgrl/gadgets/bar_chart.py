@@ -2,8 +2,9 @@
 
 from numbers import Real
 
+from ..char_width import str_width
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
-from ..text_tools import add_text, smooth_vertical_bar, str_width
+from ..text_tools import add_text, smooth_vertical_bar
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
 from .pane import Pane
 from .scroll_view import ScrollView

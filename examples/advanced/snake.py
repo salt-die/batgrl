@@ -127,7 +127,9 @@ class SnakeApp(App):
         kwargs = dict(
             size=(HEIGHT // 2, WIDTH), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
         )
-        background = Video(source=SPINNER, alpha=0.5, is_transparent=True, **kwargs)
+        background = Video(
+            source=SPINNER, alpha=0.5, is_transparent=True, blitter="sixel", **kwargs
+        )
         background.play()
         snake = Snake(**kwargs)
 

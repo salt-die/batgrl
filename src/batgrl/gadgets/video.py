@@ -12,7 +12,16 @@ import numpy as np
 
 from ..colors import ABLACK, AColor
 from ..texture_tools import resize_texture
-from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
+from .graphics import (
+    Blitter,
+    Graphics,
+    Interpolation,
+    Point,
+    PosHint,
+    Size,
+    SizeHint,
+    scale_geometry,
+)
 
 __all__ = ["Video", "Interpolation", "Point", "Size"]
 
@@ -36,6 +45,8 @@ class Video(Graphics):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -69,6 +80,8 @@ class Video(Graphics):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -186,29 +199,31 @@ class Video(Graphics):
         source: Path | str | int,
         loop: bool = True,
         default_color: AColor = ABLACK,
-        is_transparent: bool = False,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
+        self._current_frame = None
         super().__init__(
             default_color=default_color,
-            is_transparent=is_transparent,
             alpha=alpha,
             interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._current_frame = None
         self._resource = None
         self._video_task = None
         self.source = source
@@ -264,11 +279,17 @@ class Video(Graphics):
     def _display_current_frame(self):
         h, w = self.size
         if self._current_frame is None or h == 0 or w == 0:
-            return
-
-        self.texture = resize_texture(
-            self._current_frame, (2 * h, w), self.interpolation
-        )
+            self.texture = np.full(
+                (*scale_geometry(self._blitter, self.size), 4),
+                self.default_color,
+                np.uint8,
+            )
+        else:
+            self.texture = resize_texture(
+                self._current_frame,
+                scale_geometry(self._blitter, self.size),
+                self._interpolation,
+            )
 
     async def _play_video(self):
         if self._resource is None:
@@ -301,8 +322,6 @@ class Video(Graphics):
 
     def on_size(self):
         """Resize current frame on resize."""
-        h, w = self.size
-        self.texture = np.full((2 * h, w, 4), self.default_color, dtype=np.uint8)
         self._display_current_frame()
 
     def on_remove(self):

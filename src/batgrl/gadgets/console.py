@@ -9,7 +9,6 @@ import time
 from code import InteractiveInterpreter
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
-from typing import Self
 
 from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
@@ -130,7 +129,7 @@ class _ConsoleTextbox(Textbox):
     """A custom textbox that grows and shrinks with its input."""
 
     @property
-    def console(self) -> Self:
+    def console(self) -> Console:
         return self.parent.parent.parent
 
     @property
@@ -157,7 +156,7 @@ class _ConsoleTextbox(Textbox):
             self.console._container.width = self.right
         else:
             self.console._container.width = self.console._min_line_length
-        # self.cursor = self.cursor
+        self.cursor = self.cursor
 
     def _del_text(self, start: int, end: int):
         result = super()._del_text(start, end)
@@ -249,10 +248,10 @@ class _Prompt(Text):
 
 
 class _AlmostPane(Pane):
-    def _render(self, canvas):
+    def _render(self, canvas, graphics, kind):
         console: Console = self.parent.parent
         self._region -= console._input._region
-        super()._render(canvas)
+        super()._render(canvas, graphics, kind)
 
 
 class Console(Themable, Focusable, Gadget):
@@ -565,8 +564,6 @@ class Console(Themable, Focusable, Gadget):
         self._input._box.default_fg_color = primary.fg
         self._input._box.canvas["bg_color"] = primary.bg
         self._input._box.default_bg_color = primary.bg
-        self._input._cursor.fg_color = primary.bg
-        self._input._cursor.bg_color = primary.fg
 
     def on_add(self):
         """Add running app and root gadget to console's locals."""

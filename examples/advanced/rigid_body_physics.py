@@ -14,7 +14,7 @@ import numpy as np
 import pymunk
 from batgrl.app import App
 from batgrl.colors import AWHITE, AColor
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.gadgets.image import Image
 from batgrl.texture_tools import composite, read_texture, resize_texture
 from pymunk.vec2d import Vec2d
@@ -72,7 +72,8 @@ class SpaceRenderer(Graphics):
 
     def _to_texture_coords(self, point: Vec2d) -> tuple[int, int]:
         x, y = point
-        return round(x), 2 * self.height - round(y) - 1
+        h, _ = scale_geometry(self._blitter, self._size)
+        return round(x), h - round(y) - 1
 
     def _draw_space(self):
         self.clear()

@@ -211,6 +211,10 @@ class WindowsTerminal(Vt100Terminal):
         Report terminal background color.
     request_device_attributes()
         Report device attributes.
+    request_pixel_geometry()
+        Report pixel geometry per cell.
+    request_terminal_geometry()
+        Report pixel geometry of terminal.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)
@@ -218,6 +222,21 @@ class WindowsTerminal(Vt100Terminal):
     erase_in_display(n)
         Clear part of the screen.
     """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._original_input_mode = DWORD()
+        """Original console input mode."""
+        windll.kernel32.GetConsoleMode(STDIN, byref(self._original_input_mode))
+
+        self._original_output_mode = DWORD()
+        """Original console output mode."""
+        windll.kernel32.GetConsoleMode(STDOUT, byref(self._original_output_mode))
+
+        self._original_input_cp = windll.kernel32.GetConsoleCP()
+        """Original console input code page."""
+        self._original_output_cp = windll.kernel32.GetConsoleOutputCP()
+        """Original console output code page."""
 
     def _feed(self, data: str) -> None:
         # Some versions of Windows Terminal generate spurious null characters for a few
@@ -269,21 +288,20 @@ class WindowsTerminal(Vt100Terminal):
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
-        self._original_output_mode = DWORD()
-        windll.kernel32.GetConsoleMode(STDOUT, byref(self._original_output_mode))
+        windll.kernel32.SetConsoleMode(STDIN, ENABLE_VIRTUAL_TERMINAL_INPUT)
         windll.kernel32.SetConsoleMode(
             STDOUT,
             self._original_output_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING,
         )
-        self._original_input_mode = DWORD()
-        windll.kernel32.GetConsoleMode(STDIN, byref(self._original_input_mode))
-        windll.kernel32.SetConsoleMode(STDIN, ENABLE_VIRTUAL_TERMINAL_INPUT)
+        windll.kernel32.SetConsoleCP(65001)
+        windll.kernel32.SetConsoleOutputCP(65001)
 
     def restore_console(self) -> None:
         """Restore console to its original mode."""
         windll.kernel32.SetConsoleMode(STDIN, self._original_input_mode)
         windll.kernel32.SetConsoleMode(STDOUT, self._original_output_mode)
-        del self._original_input_mode, self._original_output_mode
+        windll.kernel32.SetConsoleCP(self._original_input_cp)
+        windll.kernel32.SetConsoleOutputCP(self._original_output_cp)
 
     def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
         """
@@ -296,26 +314,26 @@ class WindowsTerminal(Vt100Terminal):
         """
         self._event_buffer.clear()
         self._event_handler = event_handler
-        loop = asyncio.get_running_loop()
-        wait_for = windll.kernel32.WaitForMultipleObjects
-        self._remove_event = HANDLE(
+        self._remove_event = remove_event = HANDLE(
             windll.kernel32.CreateEventA(
                 SECURITY_ATTRIBUTES(), BOOL(True), BOOL(False), None
             )
         )
-        EVENTS = (HANDLE * 2)(self._remove_event, STDIN)
+        loop = asyncio.get_running_loop()
+        wait_for = windll.kernel32.WaitForMultipleObjects
+        EVENTS = (HANDLE * 2)(remove_event, STDIN)
 
         def ready():
             try:
                 self.process_stdin()
-                event_handler(self.events())
+                if self._event_handler is not None:
+                    self._event_handler(self.events())
             finally:
                 loop.run_in_executor(None, wait)
 
         def wait():
             if wait_for(2, EVENTS, BOOL(False), DWORD(-1)) == 0:
-                windll.kernel32.CloseHandle(self._remove_event)
-                del self._remove_event
+                windll.kernel32.CloseHandle(remove_event)
             else:
                 loop.call_soon_threadsafe(ready)
 

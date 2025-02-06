@@ -7,7 +7,7 @@ from batgrl.gadgets.text import Text
 
 class MenuApp(App):
     async def on_start(self):
-        label = Text(size=(1, 50))
+        label = Text(size=(1, 50), is_transparent=True)
 
         def add_label(text):
             def inner():

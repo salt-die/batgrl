@@ -8,7 +8,16 @@ from numpy.typing import NDArray
 
 from ..colors import TRANSPARENT, AColor
 from ..texture_tools import read_texture, resize_texture
-from .graphics import Graphics, Interpolation, Point, PosHint, Size, SizeHint
+from .graphics import (
+    Blitter,
+    Graphics,
+    Interpolation,
+    Point,
+    PosHint,
+    Size,
+    SizeHint,
+    scale_geometry,
+)
 
 __all__ = ["Image", "Interpolation", "Point", "Size"]
 
@@ -27,6 +36,8 @@ class Image(Graphics):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -56,6 +67,8 @@ class Image(Graphics):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -165,27 +178,29 @@ class Image(Graphics):
         self,
         *,
         path: Path | None = None,
-        is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._otexture = np.zeros((2, 1, 4), dtype=np.uint8)
+        self._otexture = np.zeros((1, 1, 4), dtype=np.uint8)
         super().__init__(
-            is_transparent=is_transparent,
             default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -211,8 +226,11 @@ class Image(Graphics):
 
     def on_size(self):
         """Resize texture array."""
-        h, w = self._size
-        self.texture = resize_texture(self._otexture, (2 * h, w), self.interpolation)
+        self.texture = resize_texture(
+            self._otexture,
+            scale_geometry(self._blitter, self.size),
+            self._interpolation,
+        )
 
     @classmethod
     def from_texture(
@@ -222,6 +240,7 @@ class Image(Graphics):
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -243,6 +262,8 @@ class Image(Graphics):
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -269,6 +290,7 @@ class Image(Graphics):
             default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,

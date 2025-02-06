@@ -8,21 +8,21 @@ from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
 from pygments.style import Style
 
+from .._rendering import text_render
+from ..char_width import char_width, str_width
 from ..colors import Color, Neptune
-from ..geometry import rect_slice
 from ..text_tools import (
+    Cell,
+    _Cell,
     _parse_batgrl_md,
     _text_to_cells,
     _write_lines_to_canvas,
     add_text,
     cell_sans,
-    char_width,
     coerce_cell,
-    str_width,
+    new_cell,
 )
-from ..texture_tools import _composite
 from .gadget import (
-    Cell,
     Gadget,
     Point,
     PosHint,
@@ -30,7 +30,6 @@ from .gadget import (
     SizeHint,
     bindable,
     clamp,
-    new_cell,
 )
 
 __all__ = [
@@ -509,27 +508,17 @@ class Text(Gadget):
             self.canvas[-n:] = self.canvas[:n]
             self.canvas[:-n] = self.default_cell
 
-    def _render(self, canvas: NDArray[Cell]):
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ) -> None:
         """Render visible region of gadget."""
-        sans_bg = canvas[cell_sans("bg_color")]
-        foreground = canvas["fg_color"]
-        background = canvas["bg_color"]
-        text_chars = self.canvas["char"]
-        text_sans_bg = self.canvas[cell_sans("bg_color")]
-        text_bg = self.canvas["bg_color"]
-        root_pos = self.root._pos
-        abs_pos = self.absolute_pos
-        alpha = self.alpha
-        for pos, size in self._region.rects():
-            dst = rect_slice(pos - root_pos, size)
-            src = rect_slice(pos - abs_pos, size)
-            if self.is_transparent:
-                visible = np.isin(text_chars[src], (" ", "⠀"), invert=True)
-                invisible = ~visible
-                sans_bg[dst][visible] = text_sans_bg[src][visible]
-                fg = foreground[dst][invisible]  # Not a view.
-                _composite(fg, text_bg[src][invisible], 255, alpha)
-                foreground[dst][invisible] = fg
-                _composite(background[dst], text_bg[src], 255, alpha)
-            else:
-                canvas[dst] = self.canvas[src]
+        text_render(
+            cells,
+            graphics,
+            kind,
+            self.absolute_pos,
+            self._is_transparent,
+            self.canvas.view(_Cell),
+            self.alpha,
+            self._region,
+        )

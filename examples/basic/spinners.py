@@ -26,23 +26,21 @@ class SpinnersApp(App):
             orientation="tb-lr",
             is_transparent=True,
         )
+        default_cell = new_cell(
+            fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+        )
 
         for name, frames in SPINNERS.items():
             label = Text(
                 pos_hint={"y_hint": 0.5, "anchor": "left"},
-                default_cell=new_cell(
-                    fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
-                ),
+                default_cell=default_cell,
             )
             label.set_text(f"{name}: ")
 
             animation = TextAnimation(
-                pos=(0, label.right),
-                frames=frames,
-                animation_fg_color=DEFAULT_PRIMARY_FG,
-                animation_bg_color=DEFAULT_PRIMARY_BG,
+                pos=(0, label.right), frames=frames, default_cell=default_cell
             )
-            animation.size = animation.frames[0].size
+            animation.size = animation.min_animation_size
             animation.play()
 
             container = Gadget(

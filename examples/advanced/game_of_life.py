@@ -8,7 +8,7 @@ import asyncio
 
 import numpy as np
 from batgrl.app import run_gadget_as_app
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from cv2 import BORDER_CONSTANT, filter2D
 
 KERNEL = np.array(
@@ -18,7 +18,7 @@ KERNEL = np.array(
         [1, 1, 1],
     ]
 )
-UPDATE_SPEED = 0.1
+UPDATE_SPEED = 1 / 60
 
 
 class Life(Graphics):
@@ -35,13 +35,10 @@ class Life(Graphics):
         self._reset()
 
     def _reset(self):
-        h, w = self._size
-
-        self.universe = np.random.randint(0, 2, (h * 2, w), dtype=bool)
-
-        self.texture[..., :3] = np.random.randint(0, 256, (h * 2, w, 3))
-        self.texture[..., 3] = 255
-        self.texture[~self.universe, :3] = 0
+        h, w = scale_geometry(self._blitter, self._size)
+        self.universe = np.random.randint(0, 2, (h, w), dtype=bool)
+        self.texture[..., :3] = np.random.randint(0, 256, (h, w, 3))
+        self.texture[~self.universe] = 0
 
     async def _update(self):
         while True:
@@ -56,6 +53,8 @@ class Life(Graphics):
             new_colors = filter2D(rgb, -1, KERNEL / 3)
             rgb[~still_alive] = 0
             rgb[new_borns] = new_colors[new_borns]
+            self.texture[..., 3] = 0
+            self.texture[..., 3][self.universe] = 255
 
             await asyncio.sleep(UPDATE_SPEED)
 
@@ -66,9 +65,7 @@ class Life(Graphics):
 
     def on_mouse(self, mouse_event):
         if mouse_event.button != "no_button" and self.collides_point(mouse_event.pos):
-            h, w = self.to_local(mouse_event.pos)
-            h *= 2
-
+            h, w = scale_geometry(self._blitter, mouse_event.pos)
             self.universe[h - 1 : h + 3, w - 1 : w + 2] = 1
             self.texture[h - 1 : h + 3, w - 1 : w + 2, :3] = np.random.randint(
                 0, 256, 3
@@ -77,5 +74,6 @@ class Life(Graphics):
 
 if __name__ == "__main__":
     run_gadget_as_app(
-        Life(size_hint={"height_hint": 1.0, "width_hint": 1.0}), title="Game of Life"
+        Life(size_hint={"height_hint": 1.0, "width_hint": 1.0}, blitter="braille"),
+        title="Game of Life",
     )

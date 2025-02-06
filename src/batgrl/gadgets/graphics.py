@@ -1,28 +1,62 @@
 """A graphic gadget."""
 
 from pathlib import Path
+from typing import Final, Literal
 
 import cv2
 import numpy as np
 from numpy.typing import NDArray
 
+from .._rendering import graphics_render
 from ..colors import TRANSPARENT, AColor
-from ..geometry import rect_slice
-from ..text_tools import cell_sans
-from ..texture_tools import Interpolation, _composite, resize_texture
+from ..texture_tools import Interpolation, resize_texture
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
-__all__ = ["Graphics", "Interpolation", "Point", "Size"]
+__all__ = ["Blitter", "Graphics", "Interpolation", "Point", "Size", "scale_geometry"]
+
+Blitter = Literal["braille", "full", "half", "sixel"]
+"""Determines how graphics are rendered."""
+
+_BLITTER_GEOMETRY: Final[dict[Blitter, Size]] = {
+    "braille": Size(4, 2),
+    "full": Size(1, 1),
+    "half": Size(2, 1),
+    "sixel": Size(20, 10),
+}
+
+
+def scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
+    """
+    Scale a point or size by some blitter geometry.
+
+    Parameters
+    ----------
+    blitter : Blitter
+        Blitter from which pixel geometry is chosen.
+    point_or_size : T
+        A point or size to scale.
+
+    Returns
+    -------
+    T
+        The scaled geometry.
+    """
+    h, w = _BLITTER_GEOMETRY[blitter]
+    a, b = point_or_size
+    if blitter == "sixel":
+        ah, _ = Graphics._sixel_aspect_ratio
+        return type(point_or_size)(h * a // ah, w * b)
+    return type(point_or_size)(h * a, w * b)
 
 
 class Graphics(Gadget):
     r"""
     A graphic gadget. Displays arbitrary RGBA textures.
 
-    Graphic gadgets are gadgets that are rendered entirely with the upper half block
-    character, "▀". Graphic gadgets' color information is stored in a uint8 RGBA array,
-    :attr:`texture`. Note that the height of :attr:`texture` is twice the height of the
-    gadget.
+    Graphic gadgets' color information is stored in a uint8 RGBA array, :attr:`texture`.
+    The size of :attr:`texture` depends on the geometry of the chosen blitter. For
+    instance, if the chosen blitter is "half", then the texture will be twice the height
+    of the gadget and the same width.
 
     Parameters
     ----------
@@ -32,6 +66,8 @@ class Graphics(Gadget):
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -59,6 +95,8 @@ class Graphics(Gadget):
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -162,26 +200,32 @@ class Graphics(Gadget):
         Handle a focus event.
     """
 
+    _sixel_support: bool = False
+    """Whether sixel is supported."""
+    _sixel_aspect_ratio: Size = Size(1, 1)
+    """Sixel aspect ratio."""
+
     def __init__(
         self,
         *,
-        is_transparent: bool = True,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
         super().__init__(
-            is_transparent=is_transparent,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
+            is_transparent=is_transparent,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
@@ -189,9 +233,8 @@ class Graphics(Gadget):
         self.default_color = default_color
         self.alpha = alpha
         self.interpolation = interpolation
-
-        h, w = self.size
-        self.texture = np.full((2 * h, w, 4), default_color, dtype=np.uint8)
+        self.texture = np.full((1, 1, 4), default_color, np.uint8)
+        self.blitter = blitter  # Property setter will correctly resize texture.
 
     @property
     def alpha(self) -> float:
@@ -214,47 +257,56 @@ class Graphics(Gadget):
             raise TypeError(f"{interpolation} is not a valid interpolation type.")
         self._interpolation = interpolation
 
-    def on_size(self):
+    @property
+    def blitter(self) -> Blitter:
+        """Determines how graphics are rendered."""
+        return self._blitter
+
+    @blitter.setter
+    def blitter(self, blitter: Blitter):
+        if blitter not in Blitter.__args__:
+            raise TypeError(f"{blitter} is not a valid blitter type.")
+        if blitter == "sixel" and not self._sixel_support:
+            self._blitter = "half"
+        else:
+            self._blitter = blitter
+        self.on_size()
+
+    def on_size(self) -> None:
         """Resize texture array."""
-        h, w = self.size
-        self.texture = resize_texture(self.texture, (2 * h, w), self.interpolation)
+        self.texture = resize_texture(
+            self.texture, scale_geometry(self._blitter, self.size), self._interpolation
+        )
 
-    def _render(self, canvas: NDArray[Cell]):
-        """Render visible region of gadget."""
-        texture = self.texture
-        chars = canvas["char"]
-        styles = canvas[cell_sans("char", "fg_color", "bg_color")]
-        foreground = canvas["fg_color"]
-        background = canvas["bg_color"]
-        root_pos = self.root._pos
-        abs_pos = self.absolute_pos
-        alpha = self.alpha
-        for pos, (h, w) in self._region.rects():
-            dst = rect_slice(pos - root_pos, (h, w))
-            src_top, src_left = pos - abs_pos
-            src_bottom, src_right = src_top + h, src_left + w
-            fg_rect = foreground[dst]
-            bg_rect = background[dst]
-            even_rows = texture[2 * src_top : 2 * src_bottom : 2, src_left:src_right]
-            odd_rows = texture[2 * src_top + 1 : 2 * src_bottom : 2, src_left:src_right]
+    def on_add(self) -> None:
+        """Resize if geometry is incorrect on add."""
+        if self._blitter == "sixel" and not Graphics._sixel_support:
+            self.blitter = "half"
+        elif self.texture.shape[:2] != scale_geometry(self._blitter, self.size):
+            self.on_size()
+        super().on_add()
 
-            if self.is_transparent:
-                mask = chars[dst] != "▀"
-                fg_rect[mask] = bg_rect[mask]
-                _composite(fg_rect, even_rows[..., :3], even_rows[..., 3, None], alpha)
-                _composite(bg_rect, odd_rows[..., :3], odd_rows[..., 3, None], alpha)
-            else:
-                fg_rect[:] = even_rows[..., :3]
-                bg_rect[:] = odd_rows[..., :3]
-
-            chars[dst] = "▀"
-            styles[dst] = False
-
-    def to_png(self, path: Path):
+    def to_png(self, path: Path) -> None:
         """Write :attr:`texture` to provided path as a `png` image."""
         BGRA = cv2.cvtColor(self.texture, cv2.COLOR_RGBA2BGRA)
         cv2.imwrite(str(path.absolute()), BGRA)
 
-    def clear(self):
+    def clear(self) -> None:
         """Fill texture with default color."""
         self.texture[:] = self.default_color
+
+    def _render(
+        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+    ) -> None:
+        """Render visible region of gadget."""
+        graphics_render(
+            cells,
+            graphics,
+            kind,
+            self.absolute_pos,
+            self._blitter,
+            self._is_transparent,
+            self.texture,
+            self._alpha,
+            self._region,
+        )

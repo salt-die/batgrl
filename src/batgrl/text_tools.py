@@ -1,26 +1,22 @@
 """Tools for text."""
 
-from bisect import bisect
-from functools import lru_cache
-from operator import itemgetter
+from functools import cache
 
 import numpy as np
 from numpy.typing import NDArray
 
 from ._batgrl_markdown import find_md_tokens
-from ._char_widths import CHAR_WIDTHS  # type: ignore
+from .char_width import char_width, str_width
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 
 __all__ = [
     "Cell",
     "add_text",
-    "binary_to_box",
-    "binary_to_braille",
-    "new_cell",
     "char_width",
     "coerce_cell",
     "is_word_char",
+    "new_cell",
     "smooth_horizontal_bar",
     "smooth_vertical_bar",
     "str_width",
@@ -28,62 +24,6 @@ __all__ = [
 
 VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
 HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
-_BRAILLE_ENUM = np.array([[1, 8], [2, 16], [4, 32], [64, 128]])
-_BOX_ENUM = np.array([[1, 4], [2, 8]])
-
-_vectorized_chr = np.vectorize(chr)
-"""Vectorized `chr`."""
-
-_vectorized_box_map = np.vectorize(" ▘▖▌▝▀▞▛▗▚▄▙▐▜▟█".__getitem__)
-"""Vectorized box enum to box char."""
-
-
-@lru_cache(maxsize=1024)
-def char_width(char: str) -> int:
-    """
-    Return the column width of a character.
-
-    Parameters
-    ----------
-    char : str
-        A unicode character.
-
-    Returns
-    -------
-    int
-        The character column width.
-    """
-    if char == "":
-        return 0
-
-    char_ord = ord(char)
-    i = bisect(CHAR_WIDTHS, char_ord, key=itemgetter(0))
-    if i == 0:
-        return 1
-
-    _, high, width = CHAR_WIDTHS[i - 1]
-    if char_ord <= high:
-        return width
-
-    return 1
-
-
-@lru_cache(maxsize=256)
-def str_width(chars: str) -> int:
-    """
-    Return the total column width of a string.
-
-    Parameters
-    ----------
-    chars : str
-        A string.
-
-    Returns
-    -------
-    int
-        The total column width of the string.
-    """
-    return sum(map(char_width, chars))
 
 
 def is_word_char(char: str) -> bool:
@@ -120,8 +60,24 @@ Cell = np.dtype(
 )
 """A structured array type that represents a single cell in a terminal."""
 
+# Current bug with cython raises an error when passing type "w" (PY_UCS4, the "char"
+# field). When calling cython functions, re-view "char" field as uint32.
+_Cell = np.dtype(
+    [
+        ("char", "uint32"),
+        ("bold", "?"),
+        ("italic", "?"),
+        ("underline", "?"),
+        ("strikethrough", "?"),
+        ("overline", "?"),
+        ("reverse", "?"),
+        ("fg_color", "u1", (3,)),
+        ("bg_color", "u1", (3,)),
+    ]
+)
 
-@lru_cache
+
+@cache
 def cell_sans(*names: str) -> list[str]:
     r"""
     Return all fields of ``Cell`` not in names.
@@ -169,6 +125,8 @@ def new_cell(
         Whether cell is strikethrough.
     overline : bool, default: False
         Whether cell is overlined.
+    reverse : bool, default: False
+        Whether cell is reversed.
     fg_color : Color, default: WHITE
         Foreground color of cell.
     bg_color : Color, default: BLACK
@@ -493,41 +451,3 @@ def smooth_horizontal_bar(
         The bar as a tuple of characters.
     """
     return _smooth_bar(HORIZONTAL_BLOCKS, max_width, proportion, offset)
-
-
-def binary_to_braille(array_4x2: NDArray[np.bool_]) -> NDArray[np.dtype("<U1")]:
-    r"""
-    Convert a (h, w, 4, 2)-shaped boolean array into a (h, w) array of braille unicode
-    characters.
-
-    Parameters
-    ----------
-    array_4x2 : NDArray[np.bool\_]
-        A (h, w, 4, 2)-shaped boolean numpy array.
-
-    Returns
-    -------
-    NDArray[np.dtype("<U1")]
-        A numpy array of braille unicode characters.
-    """
-    return _vectorized_chr(
-        np.sum(array_4x2 * _BRAILLE_ENUM, axis=(2, 3), initial=0x2800)
-    )
-
-
-def binary_to_box(array_2x2: NDArray[np.bool_ | np.uint]) -> NDArray[np.dtype("<U1")]:
-    r"""
-    Convert a (h, w, 2, 2)-shaped boolean array into a (h, w) array of box unicode
-    characters.
-
-    Parameters
-    ----------
-    array_2x2 : NDArray[np.bool\_]
-        A (h, w, 2, 2)-shaped boolean numpy array.
-
-    Returns
-    -------
-    NDArray[np.dtype("<U1")]
-        A numpy array of box unicode characters.
-    """
-    return _vectorized_box_map(np.sum(array_2x2 * _BOX_ENUM, axis=(2, 3)))

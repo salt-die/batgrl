@@ -9,18 +9,19 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any, Final
 
+from ._rendering import terminal_render
+from ._sixel import OctTree
 from .colors import DEFAULT_COLOR_THEME, Color, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
 from .gadgets.gadget import Gadget
+from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics
 from .geometry import Point, Size
-from .rendering import render_root
-from .terminal import Vt100Terminal, app_mode, get_platform_terminal
+from .terminal import Vt100Terminal, app_mode, get_platform_terminal, get_sixel_info
 from .terminal.events import (
     ColorReportEvent,
-    CursorPositionResponseEvent,
-    DeviceAttributesReportEvent,
+    CursorPositionReportEvent,
     Event,
     FocusEvent,
     KeyEvent,
@@ -47,9 +48,11 @@ class App(ABC):
     Parameters
     ----------
     fg_color : Color | None, default: None
-        Foreground color of app. If not given, try to use terminal foreground.
+        Foreground color of the root gadget. If not given, the app will try to use the
+        terminal foreground.
     bg_color : Color | None, default: None
-        Background color of app. If not given, try to use terminal background.
+        Background color of the root gadget. If not given, the app will try to use the
+        terminal background.
     title : str | None, default: None
         The terminal's title.
     inline : bool, default: False
@@ -68,9 +71,9 @@ class App(ABC):
     Attributes
     ----------
     fg_color : Color | None
-        Foreground color of app.
+        Foreground color of the root gadget.
     bg_color : Color
-        Background color of app.
+        Background color of the root gadget.
     title : str | None
         The terminal's title.
     inline : bool
@@ -85,6 +88,12 @@ class App(ABC):
         Duration in seconds between consecutive frame renders.
     redirect_stderr : Path | None
         Path where stderr is saved.
+    sixel_support : bool
+        Whether sixel is supported.
+    sixel_geometry : Size
+        Current sixel geometry.
+    sixel_aspect_ratio : Size
+        Current sixel aspect ratio.
     root : _Root | None
         Root of gadget tree.
     children : list[Gadget]
@@ -92,6 +101,8 @@ class App(ABC):
 
     Methods
     -------
+    set_sixel_aspect_ratio(aspect_ratio)
+        Set sixel aspect ratio.
     on_start()
         Coroutine scheduled when app is run.
     run()
@@ -120,9 +131,9 @@ class App(ABC):
         self.root: _Root | None = None
         """Root of gadget tree (only set while app is running)."""
         self.fg_color = fg_color
-        """Foreground color of app."""
+        """Foreground color of the root gadget."""
         self.bg_color = bg_color
-        """Background color of app."""
+        """Background color of the root gadget."""
         self.title = title
         """The terminal's title."""
         self._inline = inline
@@ -139,15 +150,18 @@ class App(ABC):
         """Path where stderr is saved."""
         self._terminal: Vt100Terminal | None = None
         """Platform-specific terminal (only set while app is running)."""
+        self._app_pos: Point = Point(0, 0)
+        """Position of app in terminal."""
         self._exit_value: Any = None
         """Value set by ``exit(exit_value)`` and returned by ``run()``."""
-        self._sixel_support: bool = False
-        """Whether terminal has sixel support."""
+        self._octree: Final = OctTree()
+        """Used by renderer to quantize graphics."""
 
     def __repr__(self):
+        bg_color = self.bg_color if self.bg_color is None else (*self.bg_color,)
         return (
             f"{type(self).__name__}(\n"
-            f"    bg_color={(*self.bg_color,)},\n"
+            f"    bg_color={bg_color},\n"
             f"    title={self.title!r},\n"
             f"    inline={self.inline},\n"
             f"    inline_height={self.inline_height},\n"
@@ -182,7 +196,7 @@ class App(ABC):
         else:
             self._terminal.erase_in_display()
             self._terminal.enter_alternate_screen()
-            self.root.pos = Point(0, 0)
+            self._app_pos = Point(0, 0)
             self.root.size = self._terminal.get_size()
 
     def _scroll_inline(self) -> None:
@@ -191,8 +205,8 @@ class App(ABC):
             return
 
         height = min(self.inline_height, self._terminal.get_size().height)
-        self._terminal._out_buffer.append("\x0a" * height)  # Feed lines (may scroll).
-        self._terminal._out_buffer.append(f"\x1b[{height}F")  # Move cursor back up.
+        self._terminal._out_buffer.write(b"\x0a" * height)  # Feed lines (may scroll).
+        self._terminal._out_buffer.write(b"\x1b[%dF" % height)  # Move cursor back up.
         self._terminal.request_cursor_position_report()
 
     @property
@@ -229,7 +243,7 @@ class App(ABC):
     @property
     def fg_color(self) -> Color | None:
         """
-        Foreground color of app.
+        Foreground color of the root gadget.
 
         If set to ``None``, the terminal foreground color will be queried. If the
         terminal reports the foreground color, then :attr:``fg_color`` will be updated
@@ -252,7 +266,7 @@ class App(ABC):
     @property
     def bg_color(self) -> Color | None:
         """
-        Background color of app.
+        Background color of the root gadget.
 
         If set to ``None``, the terminal background color will be queried. If the
         terminal reports the background color, then :attr:``bg_color`` will be updated
@@ -269,7 +283,46 @@ class App(ABC):
         if bg_color is None:
             self._terminal.request_background_color()
         else:
-            self.root._cell["bg_color"] = bg_color
+            self.root.bg_color = bg_color
+
+    @property
+    def sixel_support(self) -> bool:
+        """
+        Whether sixel is supported.
+
+        Will return ``False`` before app has run.
+        """
+        return Graphics._sixel_support
+
+    @property
+    def sixel_geometry(self) -> Size:
+        """Current sixel geometry."""
+        return _BLITTER_GEOMETRY["sixel"]
+
+    @property
+    def sixel_aspect_ratio(self) -> Size:
+        """Current sixel aspect ratio."""
+        return Graphics._sixel_aspect_ratio
+
+    def set_sixel_aspect_ratio(self, aspect_ratio: Size) -> None:
+        """
+        Set sixel aspect ratio.
+
+        Parameters
+        ----------
+        aspect_ratio : Size
+            The desired aspect ratio. Aspect width must be 1 and aspect height must
+            divide sixel geometry height.
+        """
+        h, w = aspect_ratio
+        if w != 1 or _BLITTER_GEOMETRY["sixel"].height % h:
+            raise ValueError(f"Unsupported aspect ratio: {aspect_ratio}.")
+        Graphics._sixel_aspect_ratio = Size(h, w)
+        if self.root is not None:
+            for gadget in self.root.walk_reverse():
+                if hasattr(gadget, "blitter") and gadget.blitter == "sixel":
+                    gadget.on_size()
+            self.root.on_size()
 
     @abstractmethod
     async def on_start(self):
@@ -349,6 +402,8 @@ class App(ABC):
 
         def event_handler(events: list[Event]) -> None:
             """Handle input events."""
+            nonlocal last_size
+
             for event in events:
                 if isinstance(event, KeyEvent):
                     if event == _CTRL_C:
@@ -361,13 +416,13 @@ class App(ABC):
                             Focusable.focus_previous()
                 elif isinstance(event, MouseEvent):
                     determine_nclicks(event)
+                    event.pos -= self._app_pos
                     root.dispatch_mouse(event)
                 elif isinstance(event, PasteEvent):
                     root.dispatch_paste(event)
                 elif isinstance(event, FocusEvent):
                     root.dispatch_terminal_focus(event)
                 elif isinstance(event, ResizeEvent):
-                    nonlocal last_size
                     if event.size == last_size:
                         # Sometimes spurious resize events can appear such as when a
                         # terminal first enables VT100 processing or when
@@ -379,7 +434,7 @@ class App(ABC):
                         self._scroll_inline()
                     else:
                         root.size = event.size
-                elif isinstance(event, CursorPositionResponseEvent):
+                elif isinstance(event, CursorPositionReportEvent):
                     if self.inline:
                         height, width = last_size
                         root.size = Size(
@@ -388,24 +443,45 @@ class App(ABC):
 
                         # Needs to be manually set in case root.size hasn't changed.
                         root._resized = True
-
-                        root.pos = event.pos
+                        self._app_pos = event.pos
                 elif isinstance(event, ColorReportEvent):
                     if event.kind == "fg":
                         self.fg_color = event.color
                     else:
                         self.bg_color = event.color
-                elif isinstance(event, DeviceAttributesReportEvent):
-                    self._sixel_support = 4 in event.device_attributes
 
         async def auto_render():
             """Render screen every ``render_interval`` seconds."""
             while True:
-                render_root(root, terminal)
                 await asyncio.sleep(self.render_interval)
 
+                if terminal.expect_dsr():
+                    continue
+
+                resized = root._resized
+                root._render()
+                terminal_render(
+                    resized,
+                    terminal._out_buffer,
+                    self._octree,
+                    self._app_pos,
+                    root.cells,
+                    root._last_cells,
+                    root._widths,
+                    root.graphics,
+                    root._last_graphics,
+                    root._sgraphics,
+                    root.kind,
+                    root._last_kind,
+                    Graphics._sixel_aspect_ratio,
+                )
+
         with app_mode(terminal, event_handler):
-            terminal.request_device_attributes()
+            (
+                Graphics._sixel_support,
+                _BLITTER_GEOMETRY["sixel"],
+            ) = await get_sixel_info(terminal)
+            root.on_size()  # Make cell and graphics arrays.
 
             if self.title is not None:
                 terminal.set_title(self.title)
@@ -418,7 +494,7 @@ class App(ABC):
             if self.bg_color is None:
                 terminal.request_background_color()
             else:
-                self.root._cell["bg_color"] = self.bg_color
+                self.root.bg_color = self.bg_color
 
             if self.inline:
                 self._scroll_inline()
@@ -480,9 +556,9 @@ def run_gadget_as_app(
     gadget : Gadget
         A gadget to run as an app.
     fg_color : Color | None, default: None
-        Foreground color of app.
+        Foreground color of the root gadget.
     bg_color : Color | None, default: None
-        Background color of app.
+        Background color of the root gadget.
     title : str | None, default: None
         The terminal's title.
     inline : bool, default: False

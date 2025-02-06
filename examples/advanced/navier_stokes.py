@@ -11,7 +11,7 @@ import asyncio
 import numpy as np
 from batgrl.app import run_gadget_as_app
 from batgrl.colors import AColor
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from cv2 import filter2D
 
 # Kernels
@@ -62,11 +62,10 @@ class Fluid(Graphics):
         self._update_task.cancel()
 
     def on_size(self):
-        h, w = self._size
+        h, w = scale_geometry(self._blitter, self._size)
+        size_with_border = h + 4, w + 4
 
-        size_with_border = 2 * h + 4, w + 4
-
-        self.texture = np.zeros((2 * h, w, 4), dtype=int)
+        self.texture = np.zeros((h, w, 4), dtype=np.uint8)
         self.pressure = np.zeros(size_with_border, dtype=float)
         self.momentum = np.zeros(size_with_border, dtype=float)
 
@@ -75,12 +74,8 @@ class Fluid(Graphics):
             return False
 
         if mouse_event.button != "no_button":
-            y, x = self.to_local(mouse_event.pos)
-
-            Y = 2 * y + 2
-
-            self.pressure[Y : Y + 2, x + 2 : x + 4] += 2.0
-
+            y, x = scale_geometry(self._blitter, self.to_local(mouse_event.pos))
+            self.pressure[y + 2 : y + 4, x + 2 : x + 4] += 2.0
             return True
 
     def on_key(self, key_event):
@@ -107,7 +102,7 @@ class Fluid(Graphics):
             # Note the alpha channel is affected by `pressure` as well.
             self.texture[:] = (
                 sigmoid(self.pressure[2:-2, 2:-2, None]) * WATER_COLOR
-            ).astype(int)
+            ).astype(np.uint8)
 
             await asyncio.sleep(0)
 

@@ -1,7 +1,8 @@
 """
 A text particle field.
 
-A particle field specializes in handling many single "pixel" children.
+A particle field specializes in rendering many single "pixel" children from an array of
+particle positions and an array of particle cells.
 """
 
 from typing import Any
@@ -9,24 +10,24 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from ..geometry import clamp, rect_slice
-from ..text_tools import cell_sans
-from ..texture_tools import _composite
+from .._rendering import text_field_render
+from ..geometry import clamp
+from ..text_tools import _Cell
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, new_cell
 
-__all__ = ["TextParticleField", "particle_data_from_canvas", "Point", "Size"]
+__all__ = ["TextParticleField", "Point", "Size"]
 
 
 class TextParticleField(Gadget):
     r"""
     A text particle field.
 
-    A particle field specializes in rendering many single "pixel" children. This is more
-    efficient than rendering many 1x1 gadgets.
+    A particle field specializes in rendering many single "pixel" children from an array
+    of particle positions and an array of particle cells.
 
     Parameters
     ----------
-    particle_positions : NDArray[np.int32] | None, default: None
+    particle_positions : NDArray[np.float64] | None, default: None
         An array of particle positions with shape `(N, 2)`.
     particle_cells : NDArray[Cell] | None, default: None
         An array of Cells of particles with shape `(N,)`.
@@ -55,7 +56,7 @@ class TextParticleField(Gadget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : NDArray[np.int32]
+    particle_positions : NDArray[np.float64]
         An array of particle positions with shape `(N, 2)`.
     particle_cells : NDArray[Cell]
         An array of Cells of particles with shape `(N,)`.
@@ -113,7 +114,7 @@ class TextParticleField(Gadget):
     Methods
     -------
     particles_from_cells(cells)
-        Return positions and cells of non-whitespace characters of a Cell array.
+        Set particle positions and cells from non-whitespace characters of a Cell array.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -167,7 +168,7 @@ class TextParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_positions: NDArray[np.int32] | None = None,
+        particle_positions: NDArray[np.float64] | None = None,
         particle_cells: NDArray[Cell] | None = None,
         particle_properties: dict[str, Any] = None,
         alpha: float = 0.0,
@@ -188,23 +189,31 @@ class TextParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-
+        self.particle_positions: NDArray[np.float64]
+        """An array of particle positions with shape `(N, 2)`."""
         if particle_positions is None:
-            self.particle_positions = np.zeros((0, 2), dtype=int)
+            self.particle_positions = np.zeros((0, 2), dtype=np.float64)
         else:
-            self.particle_positions = np.asarray(particle_positions, dtype=int)
+            self.particle_positions = np.ascontiguousarray(
+                particle_positions, dtype=np.float64
+            )
 
+        self.particle_cells: NDArray[Cell]
+        """An array of Cells of particles with shape `(N,)`"""
         if particle_cells is None:
             self.particle_cells = np.full(len(self.particle_positions), new_cell())
         else:
-            self.particle_cells = np.asarray(particle_cells, dtype=Cell)
+            self.particle_cells = np.ascontiguousarray(particle_cells, dtype=Cell)
 
+        self.particle_properties: dict[str, Any]
+        """Additional particle properties."""
         if particle_properties is None:
             self.particle_properties = {}
         else:
             self.particle_properties = particle_properties
 
         self.alpha = alpha
+        """Transparency of gadget."""
 
     @property
     def alpha(self) -> float:
@@ -220,54 +229,35 @@ class TextParticleField(Gadget):
         """Number of particles in particle field."""
         return len(self.particle_positions)
 
-    def _render(self, canvas: NDArray[Cell]):
+    def particles_from_cells(self, cells: NDArray[Cell]) -> None:
+        """
+        Set particle positions and cells from non-whitespace characters of a Cell array.
+
+        Parameters
+        ----------
+        cells : NDArray[Cell]
+            A Cell numpy array (such as a :class:`Text` gadget's canvas).
+        """
+        positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
+        pys, pxs = positions.T
+        self.particle_positions = np.ascontiguousarray(positions.astype(np.float64))
+        self.particle_cells = np.ascontiguousarray(cells[pys, pxs])
+
+    def _render(
+        self,
+        cells: NDArray[Cell],
+        graphics: NDArray[np.uint8],
+        kind: NDArray[np.uint8],
+    ):
         """Render visible region of gadget."""
-        chars = canvas[cell_sans("bg_color")]
-        bg_color = canvas["bg_color"]
-        root_pos = self.root._pos
-        abs_pos = self.absolute_pos
-        ppos = self.particle_positions
-        pchars = self.particle_cells[cell_sans("bg_color")]
-        pbg_color = self.particle_cells["bg_color"]
-        for pos, size in self._region.rects():
-            abs_ppos = ppos - (pos - abs_pos)
-            inbounds = (((0, 0) <= abs_ppos) & (abs_ppos < size)).all(axis=1)
-
-            if self.is_transparent:
-                not_whitespace = np.isin(pchars["char"], (" ", "⠀"), invert=True)
-                where_inbounds = np.nonzero(inbounds & not_whitespace)
-            else:
-                where_inbounds = np.nonzero(inbounds)
-            painted = pbg_color[where_inbounds]
-
-            ys, xs = abs_ppos[where_inbounds].T
-            dst = rect_slice(pos - root_pos, size)
-            if self.is_transparent:
-                background = bg_color[dst][ys, xs]
-                _composite(background, painted, 255, self.alpha)
-                bg_color[dst][ys, xs] = background
-            else:
-                bg_color[dst][ys, xs] = painted
-
-            chars[dst][ys, xs] = pchars[where_inbounds]
-
-
-def particle_data_from_canvas(
-    canvas: NDArray[Cell],
-) -> tuple[NDArray[np.int32], NDArray[Cell]]:
-    """
-    Return positions and cells of non-whitespace characters of a Cell array.
-
-    Parameters
-    ----------
-    canvas : NDArray[Cell]
-        A Cell numpy array (such as a :class:`Text` gadget's canvas).
-
-    Returns
-    -------
-    tuple[NDArray[np.int32], NDArray[Cell]]
-        Position and cells of non-whitespace characters of the canvas.
-    """
-    positions = np.argwhere(np.isin(canvas["char"], (" ", "⠀"), invert=True))
-    pys, pxs = positions.T
-    return positions, canvas[pys, pxs]
+        text_field_render(
+            cells,
+            graphics,
+            kind,
+            self.absolute_pos,
+            self._is_transparent,
+            self.particle_positions,
+            self.particle_cells.view(_Cell),
+            self._alpha,
+            self._region,
+        )

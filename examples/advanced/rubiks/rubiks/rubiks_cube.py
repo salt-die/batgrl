@@ -174,7 +174,7 @@ class RubiksCube(Grabbable, Graphics):
         beta = np.pi * mouse_event.dx / self.width
         self.camera.rotate_y(beta)
 
-    def _render(self, canvas):
+    def _render(self, cells, graphics, kind):
         texture = self.texture
         texture[:] = 0
 
@@ -185,4 +185,4 @@ class RubiksCube(Grabbable, Graphics):
         for cube in cubes:
             cam.render_cube(cube, texture, self.aspect_ratio)
 
-        super()._render(canvas)
+        super()._render(cells, graphics, kind)

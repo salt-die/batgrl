@@ -75,6 +75,10 @@ class LinuxTerminal(Vt100Terminal):
         Report terminal background color.
     request_device_attributes()
         Report device attributes.
+    request_pixel_geometry()
+        Report pixel geometry per cell.
+    request_terminal_geometry()
+        Report pixel geometry of terminal.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)
@@ -129,7 +133,8 @@ class LinuxTerminal(Vt100Terminal):
 
         def process():
             self.process_stdin()
-            event_handler(self.events())
+            if self._event_handler is not None:
+                self._event_handler(self.events())
 
         loop = asyncio.get_running_loop()
         loop.add_reader(STDIN, process)

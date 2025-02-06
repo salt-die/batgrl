@@ -3,11 +3,11 @@
 import asyncio
 from collections.abc import Iterable, Sequence
 
-from ..colors import BLACK, WHITE, Color
-from .animation import _check_frame_durations
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
-from .pane import Pane
-from .text import Text
+import numpy as np
+from numpy.typing import NDArray
+
+from ..text_tools import Cell, add_text, str_width
+from .text import Point, PosHint, Size, SizeHint, Text
 
 __all__ = ["TextAnimation", "Point", "Size"]
 
@@ -17,7 +17,7 @@ class _Frame(Text):
         pass
 
 
-class TextAnimation(Gadget):
+class TextAnimation(Text):
     r"""
     A text animation gadget.
 
@@ -28,15 +28,13 @@ class TextAnimation(Gadget):
     frame_durations : float | int | Sequence[float| int], default: 1/12
         Time each frame is displayed. If a sequence is provided, it's length
         should be equal to number of frames.
-    animation_fg_color : Color, default: WHITE
-        Foreground color of animation.
-    animation_bg_color : Color, default: BLACK
-        Background color of animation.
     loop : bool, default: True
         Whether to restart animation after last frame.
     reverse : bool, default: False
         Whether to play animation in reverse.
-    alpha : float, default: 1.0
+    default_cell : NDArray[Cell] | str, default: " "
+        Default cell of text canvas.
+    alpha : float, default: 0.0
         Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
@@ -57,18 +55,24 @@ class TextAnimation(Gadget):
 
     Attributes
     ----------
-    frames : list[Text]
+    min_animation_size : Size
+        The minimum size needed to not clip any frames of the animation.
+    frames : list[str]
         Frames of the animation.
     frame_durations : list[int | float]
         Time each frame is displayed.
-    animation_fg_color : Color
-        Foreground color of animation.
-    animation_bg_color : Color
-        Background color of animation.
     loop : bool
         Whether to restart animation after last frame.
     reverse : bool
         Whether to play animation in reverse.
+    canvas : NDArray[Cell]
+        The array of characters for the gadget.
+    default_cell : NDArray[Cell]
+        Default cell of text canvas.
+    default_fg_color : Color
+        Foreground color of default cell.
+    default_bg_color : Color
+        Background color of default cell.
     alpha : float
         Transparency of gadget.
     size : Size
@@ -126,6 +130,18 @@ class TextAnimation(Gadget):
         Pause the animation
     stop()
         Stop the animation and reset current frame.
+    add_border(style="light", ...)
+        Add a border to the gadget.
+    add_syntax_highlighting(lexer, style)
+        Add syntax highlighting to current text in canvas.
+    add_str(str, pos, ...)
+        Add a single line of text to the canvas.
+    set_text(text, ...)
+        Resize gadget to fit text, erase canvas, then fill canvas with text.
+    clear()
+        Fill canvas with default cell.
+    shift(n=1)
+        Shift content in canvas up (or down in case of negative `n`).
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -181,11 +197,10 @@ class TextAnimation(Gadget):
         *,
         frames: Iterable[str] | None = None,
         frame_durations: float | Sequence[float] = 1 / 12,
-        animation_fg_color: Color = WHITE,
-        animation_bg_color: Color = BLACK,
         loop: bool = True,
         reverse: bool = False,
-        alpha: float = 1.0,
+        default_cell: NDArray[Cell] | str = " ",
+        alpha: float = 0.0,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -194,18 +209,24 @@ class TextAnimation(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.frames: Iterable[Text] = []
-        if frames is not None:
-            for frame in frames:
-                self.frames.append(Text())
-                self.frames[-1].set_text(frame)
-                self.frames[-1].parent = self
-        self._pane = Pane(
-            size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            is_transparent=is_transparent,
-        )
-        self._frame = _Frame(is_enabled=False, is_transparent=True)
+        self.frames: Iterable[str] = list(frames)
+        """Frames of the animation."""
+        self.frame_durations: Sequence[float]
+        """Time each frame is displayed."""
+
+        nframes = len(frames)
+        if isinstance(frame_durations, Sequence):
+            if len(frame_durations) != nframes:
+                raise ValueError(
+                    "number of frames doesn't match number of frame durations"
+                )
+            self.frame_durations = frame_durations
+        else:
+            self.frame_durations = [frame_durations] * nframes
+
         super().__init__(
+            default_cell=default_cell,
+            alpha=alpha,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -214,70 +235,62 @@ class TextAnimation(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.add_gadgets(self._pane, self._frame)
-        self.frame_durations: list[float] = _check_frame_durations(
-            self.frames, frame_durations
-        )
-        self.animation_fg_color = animation_fg_color
-        self.animation_bg_color = animation_bg_color
+
+        self._sized_frames: list[NDArray[Cell]] = []
+        """Frames of the animation converted to NDArray[Cell] and sized to gadget."""
+        for frame in self.frames:
+            canvas = self._canvas.copy()
+            add_text(canvas, frame, truncate_text=True)
+            self._sized_frames.append(canvas)
+
         self.loop = loop
         self.reverse = reverse
-        self.alpha = alpha
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
 
     @property
-    def animation_fg_color(self) -> Color:
-        """Foreground color pair of animation."""
-        return self._pane.fg_color
+    def canvas(self) -> NDArray[Cell]:
+        """The array of characters for the gadget."""
+        if self._i < len(self.frames):
+            return self._sized_frames[self._i]
+        return self._canvas
 
-    @animation_fg_color.setter
-    def animation_fg_color(self, animation_fg_color: Color):
-        self._pane.fg_color = animation_fg_color
-        self._animation_fg_color = animation_fg_color
-        for frame in self.frames:
-            frame.canvas["fg_color"] = animation_fg_color
-
-    @property
-    def animation_bg_color(self) -> Color:
-        """Foreground color pair of animation."""
-        return self._pane.bg_color
-
-    @animation_bg_color.setter
-    def animation_bg_color(self, animation_bg_color: Color):
-        self._pane.bg_color = animation_bg_color
-        self._animation_bg_color = animation_bg_color
-        for frame in self.frames:
-            frame.canvas["bg_color"] = animation_bg_color
-
-    def on_transparency(self) -> None:
-        """Update gadget after transparency is enabled/disabled."""
-        self._pane.is_transparent = self.is_transparent
+    @canvas.setter
+    def canvas(self, canvas: NDArray[Cell]) -> None:
+        self._canvas = canvas
 
     @property
-    def alpha(self) -> bool:
-        """Transparency of gadget."""
-        return self._pane.alpha
+    def min_animation_size(self) -> Size:
+        """The minimum size needed to not clip any frames of the animation."""
+        h = w = 0
+        for frame in self.frames:
+            lines = frame.split("\n")
+            if len(lines) > h:
+                h = len(lines)
+            frame_width = max(str_width(line) for line in lines)
+            if frame_width > w:
+                w = frame_width
+        return Size(h, w)
 
-    @alpha.setter
-    def alpha(self, alpha: float):
-        self._pane.alpha = alpha
-
-    def on_remove(self):
+    def on_remove(self) -> None:
         """Pause animation on remove."""
         self.pause()
         super().on_remove()
 
+    def on_size(self) -> None:
+        """Update size of all frames on resize."""
+        self._canvas = np.full(self._size, self._default_cell)
+        self._sized_frames = []
+        for frame in self.frames:
+            canvas = self._canvas.copy()
+            add_text(canvas, frame, truncate_text=True)
+            self._sized_frames.append(canvas)
+
     async def _play_animation(self):
         while self.frames:
-            current_frame = self.frames[self._i]
-            self._frame.canvas = current_frame.canvas
-            self._frame.size = current_frame.size
-            self._frame.is_enabled = True
             try:
                 await asyncio.sleep(self.frame_durations[self._i])
             except asyncio.CancelledError:
-                self._frame.is_enabled = False
                 return
 
             if self.reverse:
@@ -286,7 +299,6 @@ class TextAnimation(Gadget):
                     self._i = len(self.frames) - 1
 
                     if not self.loop:
-                        self._frame.is_enabled = False
                         return
             else:
                 self._i += 1
@@ -294,7 +306,6 @@ class TextAnimation(Gadget):
                     self._i = 0
 
                     if not self.loop:
-                        self._frame.is_enabled = False
                         return
 
     def play(self) -> asyncio.Task:
@@ -316,12 +327,12 @@ class TextAnimation(Gadget):
         self._animation_task = asyncio.create_task(self._play_animation())
         return self._animation_task
 
-    def pause(self):
+    def pause(self) -> None:
         """Pause animation."""
         if self._animation_task is not None:
             self._animation_task.cancel()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the animation and reset current frame."""
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0

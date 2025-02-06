@@ -8,37 +8,31 @@ from typing import Self
 import numpy as np
 from numpy.typing import NDArray
 
-from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
-from .image import Image, Interpolation
+from ..colors import TRANSPARENT, AColor
+from ..texture_tools import read_texture, resize_texture
+from .graphics import (
+    Blitter,
+    Graphics,
+    Interpolation,
+    Point,
+    PosHint,
+    Size,
+    SizeHint,
+    scale_geometry,
+)
 
 __all__ = ["Animation", "Interpolation", "Point", "Size"]
 
 
-def _check_frame_durations(
-    frames: list[Image], frame_durations: float | Sequence[float]
-) -> Sequence[float]:
-    """
-    Raise `ValueError` if `frames` and `frame_durations` are incompatible,
-    else return a sequence of frame durations.
-    """
-    if not isinstance(frame_durations, Sequence):
-        return [frame_durations] * len(frames)
-
-    if len(frame_durations) != len(frames):
-        raise ValueError("number of frames doesn't match number of frame durations")
-
-    return frame_durations
-
-
-class Animation(Gadget):
+class Animation(Graphics):
     r"""
     An animation gadget.
 
     Parameters
     ----------
     path : Path | None, default: None
-        Path to directory of images for frames in the animation (loaded
-        in lexographical order of filenames).
+        Path to directory of images for frames in the animation (loaded in lexographical
+        order of filenames).
     frame_durations : float | Sequence[float], default: 1/12
         Time each frame is displayed. If a sequence is provided, it's length should be
         equal to number of frames.
@@ -46,10 +40,14 @@ class Animation(Gadget):
         Whether to restart animation after last frame.
     reverse : bool, default: False
         Whether to play animation in reverse.
+    default_color : AColor, default: AColor(0, 0, 0, 0)
+        Default texture color.
     alpha : float, default: 1.0
         Transparency of gadget.
     interpolation : Interpolation, default: "linear"
         Interpolation used when gadget is resized.
+    blitter : Blitter, default: "half"
+        Determines how graphics are rendered.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -77,10 +75,16 @@ class Animation(Gadget):
         Whether to animation is restarted after last frame.
     reverse : bool
         Whether to animation is played in reverse.
+    texture : NDArray[np.uint8]
+        uint8 RGBA color array.
+    default_color : AColor
+        Default texture color.
     alpha : float
         Transparency of gadget.
     interpolation : Interpolation
         Interpolation used when gadget is resized.
+    blitter : Blitter
+        Determines how graphics are rendered.
     size : Size
         Size of gadget.
     height : int
@@ -138,8 +142,10 @@ class Animation(Gadget):
         Stop the animation and reset current frame.
     from_textures(textures, ...)
         Create an :class:`Animation` from an iterable of uint8 RGBA numpy array.
-    from_images(images, ...)
-        Create an :class:`Animation` from an iterable of :class:`Image`.
+    to_png(path)
+        Write :attr:`texture` to provided path as a `png` image.
+    clear()
+        Fill texture with default color.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -197,8 +203,10 @@ class Animation(Gadget):
         frame_durations: float | Sequence[float] = 1 / 12,
         loop: bool = True,
         reverse: bool = False,
+        default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -207,21 +215,36 @@ class Animation(Gadget):
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.frames: list[Image]
+        self.frames: list[NDArray[np.uint8]]
         """Frames of the animation."""
+        # Set in `on_size`
+        self._sized_frames: list[NDArray[np.uint8]]
+        """Resized frames of the animation."""
 
-        if path is not None:
-            paths = sorted(path.iterdir(), key=lambda file: file.name)
-            self.frames = [
-                Image(path=path, size=size, is_transparent=is_transparent)
-                for path in paths
-            ]
-            for frame in self.frames:
-                frame.parent = self
-        else:
+        if path is None:
             self.frames = []
+        else:
+            paths = sorted(path.iterdir(), key=lambda file: file.name)
+            self.frames = [read_texture(path) for path in paths]
+
+        self.frame_durations: Sequence[float]
+        """Time each frame is displayed."""
+
+        nframes = len(self.frames)
+        if isinstance(frame_durations, Sequence):
+            if len(frame_durations) != nframes:
+                raise ValueError(
+                    "number of frames doesn't match number of frame durations"
+                )
+            self.frame_durations = frame_durations
+        else:
+            self.frame_durations = [frame_durations] * nframes
 
         super().__init__(
+            default_color=default_color,
+            alpha=alpha,
+            interpolation=interpolation,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
@@ -231,51 +254,34 @@ class Animation(Gadget):
             is_enabled=is_enabled,
         )
 
-        self.frame_durations = _check_frame_durations(self.frames, frame_durations)
-        self.alpha = alpha
-        self.interpolation = interpolation
         self.loop = loop
         self.reverse = reverse
         self._i = len(self.frames) - 1 if self.reverse else 0
         self._animation_task = None
 
-    def on_remove(self):
+    @property
+    def texture(self) -> NDArray[np.uint8]:
+        """uint8 RGBA color array."""
+        if self._i < len(self.frames):
+            return self._sized_frames[self._i]
+        return self._texture
+
+    @texture.setter
+    def texture(self, texture: NDArray[np.uint8]) -> None:
+        self._texture = texture
+
+    def on_remove(self) -> None:
         """Pause animation."""
         self.pause()
         super().on_remove()
 
     def on_size(self) -> None:
         """Update size of all frames on resize."""
-        for frame in self.frames:
-            frame.size = self._size
-
-    def on_transparency(self) -> None:
-        """Update gadget after transparency is enabled/disabled."""
-        for frame in self.frames:
-            frame.is_transparent = self.is_transparent
-
-    @property
-    def alpha(self) -> float:
-        """Transparency of gadget."""
-        return self._alpha
-
-    @alpha.setter
-    @bindable
-    def alpha(self, alpha: float):
-        self._alpha = clamp(float(alpha), 0.0, 1.0)
-        for frame in self.frames:
-            frame.alpha = alpha
-
-    @property
-    def interpolation(self) -> Interpolation:
-        """Interpolation used when gadget is resized."""
-        return self._interpolation
-
-    @interpolation.setter
-    def interpolation(self, interpolation: Interpolation):
-        self._interpolation = interpolation
-        for frame in self.frames:
-            frame.interpolation = interpolation
+        size = scale_geometry(self._blitter, self._size)
+        self._texture = np.full((*size, 4), self.default_color, np.uint8)
+        self._sized_frames = [
+            resize_texture(texture, size, self.interpolation) for texture in self.frames
+        ]
 
     async def _play_animation(self):
         while self.frames:
@@ -288,12 +294,11 @@ class Animation(Gadget):
                 self._i -= 1
                 if self._i < 0:
                     self._i = len(self.frames) - 1
-
                     if not self.loop:
                         return
             else:
                 self._i += 1
-                if self._i == len(self.frames):
+                if self._i >= len(self.frames):
                     self._i = 0
 
                     if not self.loop:
@@ -318,23 +323,15 @@ class Animation(Gadget):
         self._animation_task = asyncio.create_task(self._play_animation())
         return self._animation_task
 
-    def pause(self):
+    def pause(self) -> None:
         """Pause animation."""
         if self._animation_task is not None:
             self._animation_task.cancel()
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the animation and reset current frame."""
         self.pause()
         self._i = len(self.frames) - 1 if self.reverse else 0
-
-    def _render(self, canvas: NDArray[Cell]):
-        """Render visible region of gadget."""
-        if self.frames:
-            self.frames[self._i]._region = self._region
-            self.frames[self._i]._render(canvas)
-        else:
-            super()._render(canvas)
 
     @classmethod
     def from_textures(
@@ -344,8 +341,10 @@ class Animation(Gadget):
         frame_durations: float | Sequence[float] = 1 / 12,
         loop: bool = True,
         reverse: bool = False,
+        default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
+        blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
@@ -368,10 +367,14 @@ class Animation(Gadget):
             Whether to restart animation after last frame.
         reverse : bool, default: False
             Whether to play animation in reverse.
+        default_color : AColor, default: AColor(0, 0, 0, 0)
+            Default texture color.
         alpha : float, default: 1.0
             Transparency of gadget.
         interpolation : Interpolation, default: "linear"
             Interpolation used when gadget is resized.
+        blitter : Blitter, default: "half"
+            Determines how graphics are rendered.
         size : Size, default: Size(10, 10)
             Size of gadget.
         pos : Point, default: Point(0, 0)
@@ -394,113 +397,32 @@ class Animation(Gadget):
         Animation
             A new animation gadget.
         """
+        frames = list(textures)
+        nframes = len(frames)
+        if isinstance(frame_durations, Sequence):
+            if len(frame_durations) != nframes:
+                raise ValueError(
+                    "number of frames doesn't match number of frame durations"
+                )
+        else:
+            frame_durations = [frame_durations] * nframes
+
         animation = cls(
             loop=loop,
             reverse=reverse,
+            default_color=default_color,
             alpha=alpha,
             interpolation=interpolation,
-            is_transparent=is_transparent,
+            blitter=blitter,
             size=size,
             pos=pos,
             size_hint=size_hint,
             pos_hint=pos_hint,
-            is_visible=is_visible,
-            is_enabled=is_enabled,
-        )
-        animation.frames = [
-            Image.from_texture(
-                texture,
-                size=animation.size,
-                alpha=animation.alpha,
-                interpolation=animation.interpolation,
-            )
-            for texture in textures
-        ]
-        for frame in animation.frames:
-            frame.parent = animation
-        animation.frame_durations = _check_frame_durations(
-            animation.frames, frame_durations
-        )
-        return animation
-
-    @classmethod
-    def from_images(
-        cls,
-        images: Iterable[Image],
-        *,
-        frame_durations: float | Sequence[float] = 1 / 12,
-        loop: bool = True,
-        reverse: bool = False,
-        alpha: float = 1.0,
-        interpolation: Interpolation = "linear",
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
-        size_hint: SizeHint | None = None,
-        pos_hint: PosHint | None = None,
-        is_transparent: bool = True,
-        is_visible: bool = True,
-        is_enabled: bool = True,
-    ) -> Self:
-        """
-        Create an :class:`Animation` from an iterable of :class:`Image`.
-
-        Parameters
-        ----------
-        images : Iterable[Image]
-            An iterable of images that will be the frames of the animation.
-        frame_durations : float | Sequence[float], default: 1/12
-            Time each frame is displayed. If a sequence is provided, it's length should
-            be equal to number of frames.
-        loop : bool, default: True
-            Whether to restart animation after last frame.
-        reverse : bool, default: False
-            Whether to play animation in reverse.
-        alpha : float, default: 1.0
-            Transparency of gadget.
-        interpolation : Interpolation, default: "linear"
-            Interpolation used when gadget is resized.
-        size : Size, default: Size(10, 10)
-            Size of gadget.
-        pos : Point, default: Point(0, 0)
-            Position of upper-left corner in parent.
-        size_hint : SizeHint | None, default: None
-            Size as a proportion of parent's height and width.
-        pos_hint : PosHint | None, default: None
-            Position as a proportion of parent's height and width.
-        is_transparent : bool, default: True
-            Whether gadget is transparent.
-        is_visible : bool, default: True
-            Whether gadget is visible. Gadget will still receive input events if not
-            visible.
-        is_enabled : bool, default: True
-            Whether gadget is enabled. A disabled gadget is not painted and doesn't
-            receive input events.
-
-        Returns
-        -------
-        Animation
-            A new animation gadget.
-        """
-        animation = cls(
-            loop=loop,
-            reverse=reverse,
-            alpha=alpha,
-            interpolation=interpolation,
             is_transparent=is_transparent,
-            size=size,
-            pos=pos,
-            size_hint=size_hint,
-            pos_hint=pos_hint,
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        animation.frames = list(images)
-        for image in animation.frames:
-            image.interpolation = animation.interpolation
-            image.size = animation.size
-            image.alpha = animation.alpha
-            image.parent = animation
-        animation.frame_durations = _check_frame_durations(
-            animation.frames, frame_durations
-        )
+        animation.frames = frames
+        animation.frame_durations = frame_durations
+        animation.on_size()
         return animation

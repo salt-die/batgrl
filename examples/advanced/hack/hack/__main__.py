@@ -53,9 +53,14 @@ class HackApp(App):
         modal.memory = memory
 
         terminal = Image(
-            path=TERMINAL, size=(36, 63), pos_hint={"y_hint": 0.5, "x_hint": 0.5}
+            path=TERMINAL,
+            size=(36, 63),
+            pos_hint={"y_hint": 0.5, "x_hint": 0.5},
+            blitter="sixel",
         )
-        container = Pane(size=(22, 53), pos=(5, 5), bg_color=DARK_GREEN)
+        container = Pane(
+            size=(22, 53), pos=(5, 5), bg_color=DARK_GREEN, is_transparent=False
+        )
         crt = BOLDCRT(size=(22, 53), is_transparent=True)
 
         terminal.add_gadget(container)

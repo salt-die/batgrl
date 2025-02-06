@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 from ...colors import BLACK, WHITE, Color, gradient, lerp_colors
 from ...geometry import BezierCurve, Point, clamp, move_along_path, points_on_circle
 from ..text import Text
-from ..text_field import TextParticleField, particle_data_from_canvas
+from ..text_field import TextParticleField
 from ._particle import Particle
 
 STARS = "*✸✺✹✷✵✶⋆'.⬫⬪⬩⬨⬧⬦⬥"
@@ -42,19 +42,12 @@ async def black_hole_effect(text: Text):
     --------
     Modifying `text` size while effect is running will break the effect.
     """
-    pos, cells = particle_data_from_canvas(text.canvas)
-    indices = np.arange(len(pos))
-    RNG.shuffle(indices)
-
-    field = TextParticleField(
-        particle_positions=pos[indices],
-        particle_cells=cells[indices],
-        size_hint={"height_hint": 1.0, "width_hint": 1.0},
-    )
+    field = TextParticleField(size_hint={"height_hint": 1.0, "width_hint": 1.0})
+    field.particles_from_cells(text.canvas)
 
     all_particles = list(Particle.iter_from_field(field))
 
-    positions = (RNG.random((field.nparticles, 2)) * text.size).astype(int)
+    positions = RNG.random((field.nparticles, 2)) * text.size
     for particle, position in zip(all_particles, positions):
         particle.final_char = particle.cell["char"]
         particle.final_fg_color = Color(*particle.cell["fg_color"].tolist())
@@ -138,7 +131,7 @@ async def _forming(particles: list[Particle], positions: NDArray[np.float32]):
 
 
 async def _rotating(
-    black_hole: TextParticleField, positions: NDArray[np.float32], center: Point
+    black_hole: TextParticleField, positions: NDArray[np.float64], center: Point
 ):
     angles = np.linspace(0, 2 * np.pi, 100, endpoint=False)
     cos = np.cos(angles)
@@ -150,7 +143,7 @@ async def _rotating(
         new_positions = positions @ rot[i]
         new_positions[:, 1] *= 2
         new_positions += center
-        black_hole.particle_positions = new_positions.astype(int)
+        black_hole.particle_positions = new_positions
         i += 1
         i %= 100
         await asyncio.sleep(0.01)
@@ -220,7 +213,7 @@ async def _collapsing(
 
 
 async def _point_char(black_hole: TextParticleField, center: Point):
-    black_hole.particle_positions = np.array([center])
+    black_hole.particle_positions = np.array([center]).astype(np.float64)
     black_hole.particle_cells = black_hole.particle_cells[:1]
     for _ in range(3):
         for char in UNSTABLE:

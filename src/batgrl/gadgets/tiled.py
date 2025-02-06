@@ -1,30 +1,21 @@
-"""An image painted with box unicode characters."""
+"""A tiled image gadget."""
 
-from pathlib import Path
+from math import ceil
 
-import cv2
-import numpy as np
-
-from ..text_tools import binary_to_box
-from ..texture_tools import Interpolation, resize_texture
+from ..geometry import Region
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
-from .text import Text
 
-__all__ = ["BoxImage", "Interpolation", "Point", "Size"]
+__all__ = ["Tiled", "Point", "Size"]
 
 
-class BoxImage(Gadget):
+class Tiled(Gadget):
     r"""
-    An image painted with box unicode characters.
+    Tile a gadget over the visible region of ``Tiled``.
 
     Parameters
     ----------
-    path : pathlib.Path
-        Path to image.
-    alpha : float, default: 1.0
-        Transparency of gadget.
-    interpolation : Interpolation, default: "linear"
-        Interpolation used when gadget is resized.
+    tile : Gadget
+        The gadget to tile.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -33,7 +24,7 @@ class BoxImage(Gadget):
         Size as a proportion of parent's height and width.
     pos_hint : PosHint | None, default: None
         Position as a proportion of parent's height and width.
-    is_transparent : bool, default: False
+    is_transparent : bool, default: True
         Whether gadget is transparent.
     is_visible : bool, default: True
         Whether gadget is visible. Gadget will still receive input events if not
@@ -44,12 +35,8 @@ class BoxImage(Gadget):
 
     Attributes
     ----------
-    path : pathlib.Path
-        Path to image.
-    alpha : float
-        Transparency of gadget.
-    interpolation : Interpolation
-        Interpolation used when gadget is resized.
+    tile : Graphics
+        The gadget to tile.
     size : Size
         Size of gadget.
     height : int
@@ -152,18 +139,15 @@ class BoxImage(Gadget):
     def __init__(
         self,
         *,
-        path: Path,
-        alpha: float = 1.0,
-        interpolation: Interpolation = "linear",
+        tile: Gadget,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
-        is_transparent: bool = False,
+        is_transparent: bool = True,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._image = Text(is_transparent=is_transparent)
         super().__init__(
             size=size,
             pos=pos,
@@ -173,89 +157,17 @@ class BoxImage(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.add_gadget(self._image)
-        self.alpha = alpha
-        self.interpolation = interpolation
-        self.path = path
+        self.tile = tile
 
-    @property
-    def alpha(self) -> float:
-        """Transparency of gadget."""
-        return self._image.alpha
-
-    @alpha.setter
-    def alpha(self, alpha: float):
-        self._image.alpha = alpha
-
-    @property
-    def interpolation(self) -> Interpolation:
-        """Interpolation used when gadget is resized."""
-        return self._interpolation
-
-    @interpolation.setter
-    def interpolation(self, interpolation: Interpolation):
-        if interpolation not in Interpolation.__args__:
-            raise TypeError(f"{interpolation} is not a valid interpolation type.")
-        self._interpolation = interpolation
-
-    @property
-    def path(self) -> Path | None:
-        """Path to image."""
-        return self._path
-
-    @path.setter
-    def path(self, path: Path | None):
-        self._path: Path | None = path
-
-        if path is None:
-            self._otexture = np.zeros((1, 1, 3), dtype=np.uint8)
-        else:
-            self._otexture = cv2.imread(str(path.absolute()), cv2.IMREAD_COLOR)
-        self._load_texture()
-
-    def on_transparency(self) -> None:
-        """Update gadget after transparency is enabled/disabled."""
-        self._image.is_transparent = self.is_transparent
-
-    def on_size(self):
-        """Remake canvas."""
-        self._image.size = self.size
-        self._load_texture()
-
-    def _load_texture(self):
-        h, w = self.size
-        if h == 0 or w == 0:
-            return
-
-        canvas = self._image.canvas
-        img_bgr = resize_texture(self._otexture, (2 * h, 2 * w), self.interpolation)
-        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-        img_hls = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HLS)
-
-        rgb_sectioned = np.swapaxes(img_rgb.reshape(h, 2, w, 2, 3), 1, 2)
-        hls_sectioned = np.swapaxes(img_hls.reshape(h, 2, w, 2, 3), 1, 2)
-
-        # First, find the average lightness of each 2x2 section of the image
-        # (`average_lightness`). Boxes are placed where the lightness is greater than
-        # `average_lightness`. The background color will be the average of the colors
-        # darker than `average_lightness`. The foreground color will be the average of
-        # the colors lighter than `average_lightness`.
-
-        lightness = hls_sectioned[..., 1]
-        average_lightness = np.average(lightness, axis=(2, 3))
-        where_boxes = lightness > average_lightness[..., None, None]
-
-        canvas["char"] = binary_to_box(where_boxes)
-
-        nboxes = where_boxes.sum(axis=(2, 3))
-        nboxes_neg = 4 - nboxes
-        nboxes[nboxes == 0] = 1
-        nboxes_neg[nboxes_neg == 0] = 1
-
-        foreground = rgb_sectioned.copy()
-        foreground[~where_boxes] = 0
-        canvas["fg_color"] = foreground.sum(axis=(2, 3)) / nboxes[..., None]
-
-        background = rgb_sectioned.copy()
-        background[where_boxes] = 0
-        canvas["bg_color"] = background.sum(axis=(2, 3)) / nboxes_neg[..., None]
+    def _render(self, cells, graphics, kind):
+        # ! Maybe add custom renderer?
+        h, w = self._size
+        th, tw = tsize = self.tile.size
+        oy, ox = self.absolute_pos
+        for y in range(ceil(h / th)):
+            for x in range(ceil(w / tw)):
+                self.tile.pos = oy + y * th, ox + x * tw
+                self.tile._region = (
+                    Region.from_rect(self.tile.pos, tsize) & self._region
+                )
+                self.tile._render(cells, graphics, kind)

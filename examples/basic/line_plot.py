@@ -12,7 +12,7 @@ YS_3 = np.random.randint(0, 100, 20)
 
 class PlotApp(App):
     async def on_start(self):
-        BUTTON_WIDTH = 15
+        BUTTON_WIDTH = 17
 
         plot = LinePlot(
             xs=[XS, XS, XS],
@@ -21,32 +21,46 @@ class PlotApp(App):
             y_label="Y Values",
             legend_labels=["Before", "During", "After"],
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
-            mode="box",
+            blitter="braille",
         )
-
-        def set_box_mode(toggle_state):
-            if toggle_state == "on":
-                plot.mode = "box"
 
         def set_braille_mode(toggle_state):
             if toggle_state == "on":
-                plot.mode = "braille"
+                plot.blitter = "braille"
 
-        box_button = ToggleButton(
-            size=(1, BUTTON_WIDTH), label="Box Mode", callback=set_box_mode, group=0
-        )
+        def set_half_mode(toggle_state):
+            if toggle_state == "on":
+                plot.blitter = "half"
+
+        def set_sixel_mode(toggle_state):
+            if toggle_state == "on":
+                plot.blitter = "sixel"
+
         braille_button = ToggleButton(
             size=(1, BUTTON_WIDTH),
-            pos=(1, 0),
-            label="Braille Mode",
+            label="Braille Blitter",
             callback=set_braille_mode,
+            group=0,
+        )
+        half_button = ToggleButton(
+            size=(1, BUTTON_WIDTH),
+            pos=(1, 0),
+            label="Half Blitter",
+            callback=set_half_mode,
+            group=0,
+        )
+        sixel_button = ToggleButton(
+            size=(1, BUTTON_WIDTH),
+            pos=(2, 0),
+            label="Sixel Blitter",
+            callback=set_sixel_mode,
             group=0,
         )
 
         container = Gadget(
-            size=(2, BUTTON_WIDTH), pos_hint={"x_hint": 1.0, "anchor": "top-right"}
+            size=(3, BUTTON_WIDTH), pos_hint={"x_hint": 1.0, "anchor": "top-right"}
         )
-        container.add_gadgets(box_button, braille_button)
+        container.add_gadgets(braille_button, half_button, sixel_button)
         self.add_gadgets(plot, container)
 
 

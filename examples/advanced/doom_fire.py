@@ -6,7 +6,7 @@ import numpy as np
 from batgrl.app import App
 from batgrl.colors import Color
 from batgrl.gadgets.gadget import Gadget, clamp
-from batgrl.gadgets.graphics import Graphics
+from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.gadgets.slider import Slider
 from batgrl.gadgets.text import Text, new_cell
 
@@ -50,7 +50,8 @@ FIRE_PALETTE = np.array(
         [223, 223, 159, 255],
         [239, 239, 199, 255],
         [255, 255, 255, 255],
-    ]
+    ],
+    dtype=np.uint8,
 )
 
 MAX_STRENGTH = len(FIRE_PALETTE) - 1
@@ -61,11 +62,8 @@ SLIDER_HANDLE = Color(239, 239, 199)
 
 class DoomFire(Graphics):
     def __init__(self, fire_strength=MAX_STRENGTH, **kwargs):
+        self._fire_strength = fire_strength
         super().__init__(**kwargs)
-
-        h, w = self.size
-        self._fire_values = np.zeros((2 * h, w), dtype=int)
-        self.fire_strength = fire_strength
 
     def on_add(self):
         super().on_add()
@@ -82,17 +80,19 @@ class DoomFire(Graphics):
     @fire_strength.setter
     def fire_strength(self, fire_strength):
         self._fire_strength = clamp(fire_strength, 0, MAX_STRENGTH)
+        _, w = scale_geometry(self._blitter, self._size)
 
         np.clip(
-            self._fire_strength + np.random.randint(-3, 4, self.width),
+            self._fire_strength + np.random.randint(-3, 4, w),
             0,
             MAX_STRENGTH,
             out=self._fire_values[-1],
         )
 
     def on_size(self):
-        h, w = self._size
-        self._fire_values = np.zeros((2 * h, w), dtype=int)
+        self._fire_values = np.zeros(
+            scale_geometry(self._blitter, self._size), dtype=int
+        )
         self.fire_strength = self.fire_strength  # Trigger `fire_strength.setter`
         self.texture = FIRE_PALETTE[self._fire_values]
 

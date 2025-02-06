@@ -6,13 +6,12 @@ from batgrl.geometry import rect_slice
 class Darken(Gadget):
     """Darken view."""
 
-    def _render(self, canvas):
-        super()._render(canvas)
-        root_pos = self.root._pos
+    def _render(self, cells, graphics, kind):
+        super()._render(cells, graphics, kind)
         for pos, size in self._region.rects():
-            s = rect_slice(pos - root_pos, size)
-            canvas["fg_color"][s] >>= 1
-            canvas["bg_color"][s] >>= 1
+            s = rect_slice(pos, size)
+            cells["fg_color"][s] >>= 1
+            cells["bg_color"][s] >>= 1
 
 
 class BOLDCRT(Gadget):
@@ -23,7 +22,7 @@ class BOLDCRT(Gadget):
         self._i = 0
         self.pct = np.ones((*self.size, 1), float)
 
-    def _render(self, canvas):
+    def _render(self, cells, graphics, kind):
         py, px = self.absolute_pos
         h, w = self.size
         size = h * w
@@ -33,13 +32,13 @@ class BOLDCRT(Gadget):
             y, x = divmod(self._i, w)
 
             dst = slice(py, py + h), slice(px, px + w)
-            canvas[dst]["bold"] = True
+            cells[dst]["bold"] = True
 
             self.pct[y, x] = 1
-            canvas["fg_color"][dst] = (canvas["fg_color"][dst] * self.pct).astype(
+            cells["fg_color"][dst] = (cells["fg_color"][dst] * self.pct).astype(
                 np.uint8
             )
-            canvas["bg_color"][dst] = (canvas["bg_color"][dst] * self.pct).astype(
+            cells["bg_color"][dst] = (cells["bg_color"][dst] * self.pct).astype(
                 np.uint8
             )
             self._i += 1

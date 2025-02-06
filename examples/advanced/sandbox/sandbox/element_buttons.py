@@ -13,7 +13,8 @@ class ElementButton(ButtonBehavior, Text):
 
     def __init__(self, pos, element):
         self.element = element
-        self.down_color = lerp_colors(WHITE, element.COLOR, 0.5)
+        self.hover_color = lerp_colors(element.COLOR, WHITE, 0.25)
+        self.down_color = lerp_colors(element.COLOR, WHITE, 0.5)
         super().__init__(
             size=(2, 4),
             pos=pos,
@@ -26,6 +27,9 @@ class ElementButton(ButtonBehavior, Text):
 
     def update_normal(self):
         self.canvas["bg_color"] = self.default_bg_color
+
+    def update_hover(self):
+        self.canvas["bg_color"] = self.hover_color
 
     def on_release(self):
         element = self.element

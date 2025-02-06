@@ -2,12 +2,13 @@
 
 from dataclasses import astuple
 
+from ..char_width import str_width
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
-from ..text_tools import is_word_char, str_width
-from ._cursor import Cursor
+from ..text_tools import is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
+from .cursor import Cursor
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .scroll_view import ScrollView
 from .text import Text
@@ -264,8 +265,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         fg = primary.fg
         bg = primary.bg
 
-        self._cursor.bg_color = fg
-        self._cursor.fg_color = bg
         self._pad.canvas["fg_color"] = self._pad.default_fg_color = fg
         self._pad.canvas["bg_color"] = self._pad.default_bg_color = bg
         self._highlight_selection()

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from batgrl.app import App
 from batgrl.gadgets.image import Image
-from batgrl.gadgets.tiled_image import TiledImage
+from batgrl.gadgets.tiled import Tiled
 
 ASSETS = Path(__file__).parent.parent / "assets"
 LOGO_PATH = ASSETS / "python_discord_logo.png"
@@ -15,7 +15,7 @@ class TiledApp(App):
         tile_1 = Image(size=(10, 25), path=LOGO_PATH)
         tile_2 = Image(size=(9, 19), path=LOGO_FLAT)
 
-        tiled_image = TiledImage(size=(25, 50), tile=tile_1)
+        tiled_image = Tiled(size=(25, 50), tile=tile_1)
 
         self.add_gadget(tiled_image)
 

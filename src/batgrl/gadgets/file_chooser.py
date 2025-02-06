@@ -4,7 +4,7 @@ import platform
 from collections.abc import Callable
 from pathlib import Path
 
-from ..text_tools import str_width
+from ..char_width import str_width
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .scroll_view import ScrollView
 from .tree_view import TreeView, TreeViewNode

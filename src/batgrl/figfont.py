@@ -30,7 +30,7 @@ from typing import Self
 import numpy as np
 from numpy.typing import NDArray
 
-from .text_tools import char_width, str_width
+from .char_width import char_width, str_width
 
 __all__ = ["FullLayout", "FIGFont"]
 
@@ -131,7 +131,7 @@ class FIGFont:
     from_path(path)
         Load a FIGFont from a path.
     render_array(text)
-        Render text as ascii art into a 2D "<U1" numpy array.
+        Render text as ascii art into a 2-D "<U1" numpy array.
     render_str(text)
         Render text as ascii art into a multiline string.
     """
@@ -393,7 +393,7 @@ class FIGFont:
 
     def render_array(self, text: str) -> NDArray[np.dtype("<U1")]:
         """
-        Render text as ascii art into a 2D "<U1" numpy array.
+        Render text as ascii art into a 2-D "<U1" numpy array.
 
         Parameters
         ----------

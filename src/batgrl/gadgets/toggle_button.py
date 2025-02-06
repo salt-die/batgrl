@@ -15,7 +15,7 @@ from .text import Text
 __all__ = ["ToggleButton", "ToggleState", "ButtonState", "Point", "Size"]
 
 CHECK_OFF = "☐ "
-CHECK_ON = "☑ "
+CHECK_ON = "🗹 "
 TOGGLE_OFF = "○ "
 TOGGLE_ON = "● "
 
