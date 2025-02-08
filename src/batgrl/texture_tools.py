@@ -87,23 +87,6 @@ def resize_texture(
     )
 
 
-def _composite(
-    dest: NDArray[np.uint8],
-    rgb: tuple[int, int, int] | NDArray[np.uint8],
-    a: int | NDArray[np.uint8],
-    alpha: float = 1.0,
-) -> None:
-    """
-    Composite an rgb texture or color onto ``dest``.
-
-    This is an internal function used in various ``_render()`` methods.
-    """
-    buffer = np.subtract(rgb, dest, dtype=float)
-    buffer *= a
-    buffer *= alpha / 255
-    np.add(buffer, dest, out=dest, casting="unsafe")
-
-
 def composite(
     source: NDArray[np.uint8],
     dest: NDArray[np.uint8],
@@ -142,4 +125,7 @@ def composite(
             mask = source_alpha == 255
             dest_tex[mask] = source_tex[mask]
         else:
-            _composite(dest_tex, source_tex, source_alpha[..., None])
+            buffer = np.subtract(source_tex, dest_tex, dtype=float)
+            buffer *= source_alpha[..., None]
+            buffer /= 255
+            np.add(buffer, dest_tex, out=dest_tex, casting="unsafe")
