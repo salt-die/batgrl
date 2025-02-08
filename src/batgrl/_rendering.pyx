@@ -16,6 +16,7 @@ from ._fbuf cimport (
     fbuf_putn,
     fbuf_putucs4,
 )
+from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
 from .geometry.regions cimport CRegion, Region, bounding_rect, contains
 
@@ -80,18 +81,6 @@ cdef void next_(RegionIterator *it):
         it.x = it.x1
         return
     it.done = 1
-
-
-cdef packed struct Cell:
-    Py_UCS4 char_
-    uint8 bold
-    uint8 italic
-    uint8 underline
-    uint8 strikethrough
-    uint8 overline
-    uint8 reverse
-    uint8[3] fg_color
-    uint8[3] bg_color
 
 
 cdef inline bint rgb_eq(uint8 *a, uint8 *b):

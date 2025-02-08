@@ -5,11 +5,10 @@ from itertools import cycle, pairwise
 from pathlib import Path
 from time import perf_counter
 
-import cv2
 import numpy as np
 from batgrl.app import App
 from batgrl.colors import GREEN
-from batgrl.gadgets.raycaster import Raycaster, RaycasterCamera, RgbaTexture, Sprite
+from batgrl.gadgets.raycaster import Raycaster
 from batgrl.gadgets.text_raycaster import TextRaycaster
 from batgrl.gadgets.video import Video
 from batgrl.geometry import lerp
@@ -30,11 +29,12 @@ def load_assets():
 
     wall = assets / "wall.txt"
     yield np.array(
-        [[int(char) for char in line] for line in wall.read_text().splitlines()]
+        [[int(char) for char in line] for line in wall.read_text().splitlines()],
+        np.uint8,
     )
 
     tree = assets / "tree.txt"
-    yield np.array([list(line) for line in tree.read_text().splitlines()])
+    yield tree.read_text()
 
 
 SPINNER, CHECKER, PYTHON, WALL, TREE = load_assets()
@@ -55,24 +55,6 @@ MAP = np.array(
 )
 
 
-class VideoTexture(Video, RgbaTexture):
-    """A video player that implements the `RgbaTexture` protocol."""
-
-    def __init__(self, source):
-        super().__init__(source=source)
-        oh = self._resource.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        ow = self._resource.get(cv2.CAP_PROP_FRAME_WIDTH)
-        self.size = oh // 2, ow
-
-    @property
-    def shape(self):
-        """Shape of the texture."""
-        return self.texture.shape
-
-    def __getitem__(self, key):
-        return self.texture[key]
-
-
 class RaycasterApp(App):
     """A raycaster app."""
 
@@ -80,23 +62,29 @@ class RaycasterApp(App):
         points = np.array([[2.5, 2.5], [2.5, 7.5], [7.5, 7.5], [7.5, 2.5]])
         angles = [np.pi, np.pi / 2, 0, 3 * np.pi / 2]
 
-        video = VideoTexture(source=SPINNER)
+        # To achieve an animated texture, we'll set the wall texture to this video's
+        # texture while it plays.
+        video = Video(source=SPINNER, size=(256, 256), blitter="full")
         video.play()
-        camera = RaycasterCamera(pos=points[0], theta=angles[0])
         raycaster = Raycaster(
             caster_map=MAP,
-            camera=camera,
-            wall_textures=[video],
-            sprites=[Sprite(pos=points[i], texture_idx=0) for i in range(4)],
+            wall_textures=[video.texture],
+            camera_position=points[0],
+            camera_angle=angles[0],
+            sprite_positions=points,
+            sprite_indexes=np.zeros(4, np.uint8),
             sprite_textures=[PYTHON],
+            ceiling=CHECKER,
             floor=CHECKER,
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
         )
         text_raycaster = TextRaycaster(
             caster_map=MAP,
-            camera=camera,
             wall_textures=[WALL],
-            sprites=[Sprite(pos=points[i], texture_idx=0) for i in range(4)],
+            camera_position=points[0],
+            camera_angle=angles[0],
+            sprite_positions=points,
+            sprite_indexes=np.zeros(4, np.uint8),
             sprite_textures=[TREE],
             default_cell=new_cell(fg_color=GREEN),
             size_hint={"height_hint": 1.0, "width_hint": 0.5},
@@ -118,12 +106,13 @@ class RaycasterApp(App):
                 current_time = perf_counter()
                 elapsed += current_time - last_time
                 last_time = current_time
-                camera.theta = lerp(u, v, elapsed / turn_duration)
+                raycaster.camera_angle = lerp(u, v, elapsed / turn_duration)
+                text_raycaster.camera_angle = raycaster.camera_angle
                 raycaster.cast_rays()
                 text_raycaster.cast_rays()
                 await asyncio.sleep(0)
 
-            camera.theta = v
+            raycaster.camera_angle = v
             elapsed -= turn_duration
 
             while elapsed < move_duration:
@@ -131,12 +120,15 @@ class RaycasterApp(App):
                 elapsed += current_time - last_time
                 last_time = current_time
 
-                camera.pos = lerp(points[i], points[j], elapsed / move_duration)
+                raycaster.camera_position = lerp(
+                    points[i], points[j], elapsed / move_duration
+                )
+                text_raycaster.camera_position = raycaster.camera_position
                 raycaster.cast_rays()
                 text_raycaster.cast_rays()
                 await asyncio.sleep(0)
 
-            camera.pos = points[j]
+            raycaster.camera_position = points[j]
             elapsed -= move_duration
 
 
