@@ -131,7 +131,7 @@ def cast_rays(
     uint8[:, :, ::1] ceiling_texture,
     uint8[:, :, ::1] floor_texture,
     uint8[::1] sprite_indexes,
-    double[:, ::1] sprite_positions,
+    double[:, ::1] sprite_coords,
     list[uint8[:, :, ::1]] sprite_textures,
 ) -> None:
     cdef size_t h = texture.shape[0], w = texture.shape[1]
@@ -291,8 +291,8 @@ def cast_rays(
     sprites = <Sprite*>malloc(nsprites * sizeof(Sprite))
     for i in range(nsprites):
         sprite = &sprites[i]
-        sprite.y = sprite_positions[i, 0]
-        sprite.x = sprite_positions[i, 1]
+        sprite.y = sprite_coords[i, 0]
+        sprite.x = sprite_coords[i, 1]
         sprite.texture_idx = sprite_indexes[i]
         sprite.distance = (
             (pos_y - sprite.y) * (pos_y - sprite.y)
@@ -384,7 +384,7 @@ def text_cast_rays(
     double camera_fov,
     list[uint8[:, ::1]] wall_textures,
     uint8[::1] sprite_indexes,
-    double[:, ::1] sprite_positions,
+    double[:, ::1] sprite_coords,
     list[Cell[:, ::1]] sprite_textures,
     unsigned int[::1] ascii_map,
 ) -> None:
@@ -521,8 +521,8 @@ def text_cast_rays(
     sprites = <Sprite*>malloc(nsprites * sizeof(Sprite))
     for i in range(nsprites):
         sprite = &sprites[i]
-        sprite.y = sprite_positions[i, 0]
-        sprite.x = sprite_positions[i, 1]
+        sprite.y = sprite_coords[i, 0]
+        sprite.x = sprite_coords[i, 1]
         sprite.texture_idx = sprite_indexes[i]
         sprite.distance = (
             (pos_y - sprite.y) * (pos_y - sprite.y)

@@ -40,7 +40,7 @@ async def ring_effect(text: Text):
     for particle in particles:
         particle.final_pos = Point(int(particle.pos.y), int(particle.pos.x))
     positions = RNG.random((field.nparticles, 2)) * text.size
-    field.particle_positions = positions
+    field.particle_coords = positions
 
     min_dim = min(text.height, text.width / 2)
     max_radius = int(2**0.5 * (min_dim / 2))

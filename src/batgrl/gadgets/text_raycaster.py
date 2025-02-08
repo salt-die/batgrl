@@ -20,13 +20,13 @@ class TextRaycaster(Text):
         The raycaster map.
     wall_textures : List[NDArray[np.uint8]]
         Textures for walls.
-    camera_position : tuple[float, float], default: (0.0, 0.0)
+    camera_coord : tuple[float, float], default: (0.0, 0.0)
         The camera's position.
     camera_angle : float, default: 0.0
         The camera's angle.
     camera_fov : float, default: 0.66
         The camera's field-of-view. Somewhere between 0-1.
-    sprite_positions : NDArray[np.float64] | None, default: None
+    sprite_coords : NDArray[np.float64] | None, default: None
         Positions of sprites.
     sprite_indexes : NDArray[np.uint8] | None, default: None
         Texture indexes of sprites.
@@ -61,13 +61,13 @@ class TextRaycaster(Text):
         The raycaster map.
     wall_textures : List[NDArray[np.uint8]]
         Textures for walls.
-    camera_position : tuple[float, float]
+    camera_coord : tuple[float, float]
         The camera's position.
     camera_angle : float
         The camera's angle.
     camera_fov : float
         The camera's field-of-view. Somewhere between 0-1.
-    sprite_positions : NDArray[np.float64]
+    sprite_coords : NDArray[np.float64]
         Positions of sprites.
     sprite_indexes : NDArray[np.uint8]
         Texture indexes of sprites.
@@ -203,10 +203,10 @@ class TextRaycaster(Text):
         *,
         caster_map: NDArray[np.uint8],
         wall_textures: list[NDArray[np.uint8]] | None,
-        camera_position: tuple[float, float] = (0.0, 0.0),
+        camera_coord: tuple[float, float] = (0.0, 0.0),
         camera_angle: float = 0.0,
         camera_fov: float = 0.66,
-        sprite_positions: NDArray[np.float64] | None = None,
+        sprite_coords: NDArray[np.float64] | None = None,
         sprite_indexes: NDArray[np.uint8] | None = None,
         sprite_textures: list[str] | None = None,
         ascii_map: str = " .,:;<+*LtCa4U80dQM@",
@@ -235,19 +235,19 @@ class TextRaycaster(Text):
         """The raycaster map."""
         self.wall_textures = wall_textures
         """Textures for walls."""
-        self.camera_position = camera_position
+        self.camera_coord = camera_coord
         """The camera's position."""
         self.camera_angle = camera_angle
         """The camera's angle."""
         self.camera_fov = camera_fov
         """The camera's field-of-view. Somewhere between 0-1."""
 
-        self.sprite_positions: NDArray[np.float64]
+        self.sprite_coords: NDArray[np.float64]
         """Positions of sprites."""
-        if sprite_positions is None:
-            self.sprite_positions = np.empty((0, 2), np.float64)
+        if sprite_coords is None:
+            self.sprite_coords = np.empty((0, 2), np.float64)
         else:
-            self.sprite_positions = sprite_positions
+            self.sprite_coords = sprite_coords
 
         self.sprite_indexes: NDArray[np.uint8]
         """Texture indexes of sprites."""
@@ -287,12 +287,12 @@ class TextRaycaster(Text):
         text_cast_rays(
             self.canvas.view(_Cell),
             self.caster_map,
-            self.camera_position,
+            self.camera_coord,
             self.camera_angle,
             self.camera_fov,
             self.wall_textures,
             self.sprite_indexes,
-            self.sprite_positions,
+            self.sprite_coords,
             self.sprite_textures,
             self._ascii_map,
         )

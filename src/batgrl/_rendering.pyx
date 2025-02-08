@@ -934,7 +934,7 @@ cdef void opaque_text_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     Cell[::1] particles,
     CRegion *cregion
 ):
@@ -943,8 +943,8 @@ cdef void opaque_text_field_render(
         int py, px
 
     for i in range(nparticles):
-        py = <int>positions[i][0] + abs_y
-        px = <int>positions[i][1] + abs_x
+        py = <int>coords[i][0] + abs_y
+        px = <int>coords[i][1] + abs_x
         if contains(cregion, py, px):
             cells[py, px] = particles[i]
 
@@ -957,7 +957,7 @@ cdef void trans_text_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     Cell[::1] particles,
     double alpha,
     CRegion *cregion,
@@ -974,8 +974,8 @@ cdef void trans_text_field_render(
         Cell *src
 
     for i in range(nparticles):
-        py = <int>positions[i][0] + abs_y
-        px = <int>positions[i][1] + abs_x
+        py = <int>coords[i][0] + abs_y
+        px = <int>coords[i][1] + abs_x
         if not contains(cregion, py, px):
             continue
         src = &particles[i]
@@ -1024,7 +1024,7 @@ cpdef void text_field_render(
     uint8[:, ::1] kind,
     tuple[int, int] abs_pos,
     bint is_transparent,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     Cell[::1] particles,
     double alpha,
     Region region,
@@ -1035,10 +1035,10 @@ cpdef void text_field_render(
 
     if is_transparent:
         trans_text_field_render(
-            cells, graphics, kind, abs_y, abs_x, positions, particles, alpha, cregion
+            cells, graphics, kind, abs_y, abs_x, coords, particles, alpha, cregion
         )
     else:
-        opaque_text_field_render(cells, abs_y, abs_x, positions, particles, cregion)
+        opaque_text_field_render(cells, abs_y, abs_x, coords, particles, cregion)
 
 
 @cython.boundscheck(False)
@@ -1047,7 +1047,7 @@ cdef void opaque_full_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     CRegion *cregion,
 ):
@@ -1057,8 +1057,8 @@ cdef void opaque_full_graphics_field_render(
         Cell *dst
 
     for i in range(nparticles):
-        py = <int>positions[i][0] + abs_y
-        px = <int>positions[i][1] + abs_x
+        py = <int>coords[i][0] + abs_y
+        px = <int>coords[i][1] + abs_x
         if not contains(cregion, py, px):
             continue
         dst = &cells[py, px]
@@ -1082,7 +1082,7 @@ cdef void trans_full_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     double alpha,
     CRegion *cregion,
@@ -1098,8 +1098,8 @@ cdef void trans_full_graphics_field_render(
         uint8 *src_rgba
 
     for i in range(nparticles):
-        py = <int>positions[i][0] + abs_y
-        px = <int>positions[i][1] + abs_x
+        py = <int>coords[i][0] + abs_y
+        px = <int>coords[i][1] + abs_x
         if not contains(cregion, py, px):
             continue
         src_rgba = &particles[i, 0]
@@ -1129,7 +1129,7 @@ cdef void opaque_half_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     CRegion *cregion,
 ):
@@ -1141,9 +1141,9 @@ cdef void opaque_half_graphics_field_render(
         uint8 *dst_rgb
 
     for i in range(nparticles):
-        py = positions[i][0] + abs_y
+        py = coords[i][0] + abs_y
         ipy = <int>py
-        px = positions[i][1] + abs_x
+        px = coords[i][1] + abs_x
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
@@ -1174,7 +1174,7 @@ cdef void trans_half_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     double alpha,
     CRegion *cregion,
@@ -1192,9 +1192,9 @@ cdef void trans_half_graphics_field_render(
         uint8 *dst_rgb
 
     for i in range(nparticles):
-        py = positions[i][0] + abs_y
+        py = coords[i][0] + abs_y
         ipy = <int>py
-        px = positions[i][1] + abs_x
+        px = coords[i][1] + abs_x
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
@@ -1250,7 +1250,7 @@ cdef void opaque_sixel_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     CRegion *cregion,
 ):
@@ -1264,9 +1264,9 @@ cdef void opaque_sixel_graphics_field_render(
         RegionIterator it
 
     for i in range(nparticles):
-        py = positions[i][0] + abs_y
+        py = coords[i][0] + abs_y
         ipy = <int>py
-        px = positions[i][1] + abs_x
+        px = coords[i][1] + abs_x
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
@@ -1301,7 +1301,7 @@ cdef void trans_sixel_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     double alpha,
     CRegion *cregion,
@@ -1317,9 +1317,9 @@ cdef void trans_sixel_graphics_field_render(
     for i in range(nparticles):
         if not particles[i, 3]:
             continue
-        py = positions[i][0] + abs_y
+        py = coords[i][0] + abs_y
         ipy = <int>py
-        px = positions[i][1] + abs_x
+        px = coords[i][1] + abs_x
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
@@ -1365,7 +1365,7 @@ cdef void opaque_braille_graphics_field_render(
     Cell[:, ::1] cells,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     CRegion *cregion,
 ):
@@ -1386,9 +1386,9 @@ cdef void opaque_braille_graphics_field_render(
     memset(pixels, 0, sizeof(BraillePixel) * h * w)
 
     for i in range(nparticles):
-        py = positions[i][0] + abs_y
+        py = coords[i][0] + abs_y
         ipy = <int>py
-        px = positions[i][1] + abs_x
+        px = coords[i][1] + abs_x
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
@@ -1432,7 +1432,7 @@ cdef void trans_braille_graphics_field_render(
     uint8[:, ::1] kind,
     int abs_y,
     int abs_x,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     double alpha,
     CRegion *cregion,
@@ -1460,9 +1460,9 @@ cdef void trans_braille_graphics_field_render(
     for i in range(nparticles):
         if not particles[i, 3]:
             continue
-        py = positions[i][0] + abs_y
+        py = coords[i][0] + abs_y
         ipy = <int>py
-        px = positions[i][1] + abs_x
+        px = coords[i][1] + abs_x
         ipx = <int>px
         if not contains(cregion, ipy, ipx):
             continue
@@ -1527,7 +1527,7 @@ cpdef void graphics_field_render(
     tuple[int, int] abs_pos,
     str blitter,
     bint is_transparent,
-    double[:, ::1] positions,
+    double[:, ::1] coords,
     uint8[:, ::1] particles,
     double alpha,
     Region region,
@@ -1544,14 +1544,14 @@ cpdef void graphics_field_render(
                 kind,
                 abs_y,
                 abs_x,
-                positions,
+                coords,
                 particles,
                 alpha,
                 cregion,
             )
         else:
             opaque_full_graphics_field_render(
-                cells, abs_y, abs_x, positions, particles, cregion
+                cells, abs_y, abs_x, coords, particles, cregion
             )
     elif blitter == "half":
         if is_transparent:
@@ -1561,14 +1561,14 @@ cpdef void graphics_field_render(
                 kind,
                 abs_y,
                 abs_x,
-                positions,
+                coords,
                 particles,
                 alpha,
                 cregion,
             )
         else:
             opaque_half_graphics_field_render(
-                cells, abs_y, abs_x, positions, particles, cregion
+                cells, abs_y, abs_x, coords, particles, cregion
             )
     elif blitter == "braille":
         if is_transparent:
@@ -1578,14 +1578,14 @@ cpdef void graphics_field_render(
                 kind,
                 abs_y,
                 abs_x,
-                positions,
+                coords,
                 particles,
                 alpha,
                 cregion,
             )
         else:
             opaque_braille_graphics_field_render(
-                cells, abs_y, abs_x, positions, particles, cregion
+                cells, abs_y, abs_x, coords, particles, cregion
             )
     elif blitter == "sixel":
         if is_transparent:
@@ -1595,14 +1595,14 @@ cpdef void graphics_field_render(
                 kind,
                 abs_y,
                 abs_x,
-                positions,
+                coords,
                 particles,
                 alpha,
                 cregion,
             )
         else:
             opaque_sixel_graphics_field_render(
-                cells, graphics, kind, abs_y, abs_x, positions, particles, cregion
+                cells, graphics, kind, abs_y, abs_x, coords, particles, cregion
             )
 
 

@@ -62,11 +62,11 @@ async def black_hole_effect(text: Text):
     black_hole_radius = clamp(text.height // 3, 3, text.width // 3)
     black_hole_center = Point(text.height // 2, text.width // 2)
     nparticles = black_hole_radius * 3
-    black_hole.particle_positions = field.particle_positions[-nparticles:]
+    black_hole.particle_coords = field.particle_coords[-nparticles:]
     black_hole.particle_cells = field.particle_cells[-nparticles:]
     black_hole_particles = list(Particle.iter_from_field(black_hole))
 
-    field.particle_positions = field.particle_positions[:-nparticles]
+    field.particle_coords = field.particle_coords[:-nparticles]
     field.particle_cells = field.particle_cells[:-nparticles]
     other_particles = all_particles[:-nparticles]
 
@@ -88,13 +88,13 @@ async def black_hole_effect(text: Text):
 
     await _collapsing(
         black_hole_particles,
-        black_hole.particle_positions,
+        black_hole.particle_coords,
         black_hole_center,
         black_hole_radius,
     )
 
-    field.particle_positions = np.vstack(
-        [field.particle_positions, black_hole.particle_positions]
+    field.particle_coords = np.vstack(
+        [field.particle_coords, black_hole.particle_coords]
     )
     field.particle_cells = np.append(field.particle_cells, black_hole.particle_cells)
 
@@ -143,7 +143,7 @@ async def _rotating(
         new_positions = positions @ rot[i]
         new_positions[:, 1] *= 2
         new_positions += center
-        black_hole.particle_positions = new_positions
+        black_hole.particle_coords = new_positions
         i += 1
         i %= 100
         await asyncio.sleep(0.01)
@@ -213,7 +213,7 @@ async def _collapsing(
 
 
 async def _point_char(black_hole: TextParticleField, center: Point):
-    black_hole.particle_positions = np.array([center]).astype(np.float64)
+    black_hole.particle_coords = np.array([center]).astype(np.float64)
     black_hole.particle_cells = black_hole.particle_cells[:1]
     for _ in range(3):
         for char in UNSTABLE:

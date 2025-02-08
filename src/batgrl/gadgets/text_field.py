@@ -27,7 +27,7 @@ class TextParticleField(Gadget):
 
     Parameters
     ----------
-    particle_positions : NDArray[np.float64] | None, default: None
+    particle_coords : NDArray[np.float64] | None, default: None
         An array of particle positions with shape `(N, 2)`.
     particle_cells : NDArray[Cell] | None, default: None
         An array of Cells of particles with shape `(N,)`.
@@ -56,7 +56,7 @@ class TextParticleField(Gadget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : NDArray[np.float64]
+    particle_coords : NDArray[np.float64]
         An array of particle positions with shape `(N, 2)`.
     particle_cells : NDArray[Cell]
         An array of Cells of particles with shape `(N,)`.
@@ -168,7 +168,7 @@ class TextParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_positions: NDArray[np.float64] | None = None,
+        particle_coords: NDArray[np.float64] | None = None,
         particle_cells: NDArray[Cell] | None = None,
         particle_properties: dict[str, Any] = None,
         alpha: float = 0.0,
@@ -189,19 +189,19 @@ class TextParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.particle_positions: NDArray[np.float64]
+        self.particle_coords: NDArray[np.float64]
         """An array of particle positions with shape `(N, 2)`."""
-        if particle_positions is None:
-            self.particle_positions = np.zeros((0, 2), dtype=np.float64)
+        if particle_coords is None:
+            self.particle_coords = np.zeros((0, 2), dtype=np.float64)
         else:
-            self.particle_positions = np.ascontiguousarray(
-                particle_positions, dtype=np.float64
+            self.particle_coords = np.ascontiguousarray(
+                particle_coords, dtype=np.float64
             )
 
         self.particle_cells: NDArray[Cell]
         """An array of Cells of particles with shape `(N,)`"""
         if particle_cells is None:
-            self.particle_cells = np.full(len(self.particle_positions), new_cell())
+            self.particle_cells = np.full(len(self.particle_coords), new_cell())
         else:
             self.particle_cells = np.ascontiguousarray(particle_cells, dtype=Cell)
 
@@ -227,7 +227,7 @@ class TextParticleField(Gadget):
     @property
     def nparticles(self) -> int:
         """Number of particles in particle field."""
-        return len(self.particle_positions)
+        return len(self.particle_coords)
 
     def particles_from_cells(self, cells: NDArray[Cell]) -> None:
         """
@@ -240,7 +240,7 @@ class TextParticleField(Gadget):
         """
         positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
         pys, pxs = positions.T
-        self.particle_positions = np.ascontiguousarray(positions.astype(np.float64))
+        self.particle_coords = np.ascontiguousarray(positions.astype(np.float64))
         self.particle_cells = np.ascontiguousarray(cells[pys, pxs])
 
     def _render(
@@ -256,7 +256,7 @@ class TextParticleField(Gadget):
             kind,
             self.absolute_pos,
             self._is_transparent,
-            self.particle_positions,
+            self.particle_coords,
             self.particle_cells.view(_Cell),
             self._alpha,
             self._region,

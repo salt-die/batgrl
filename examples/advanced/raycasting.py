@@ -69,9 +69,9 @@ class RaycasterApp(App):
         raycaster = Raycaster(
             caster_map=MAP,
             wall_textures=[video.texture],
-            camera_position=points[0],
+            camera_coord=points[0],
             camera_angle=angles[0],
-            sprite_positions=points,
+            sprite_coords=points,
             sprite_indexes=np.zeros(4, np.uint8),
             sprite_textures=[PYTHON],
             ceiling=CHECKER,
@@ -81,9 +81,9 @@ class RaycasterApp(App):
         text_raycaster = TextRaycaster(
             caster_map=MAP,
             wall_textures=[WALL],
-            camera_position=points[0],
+            camera_coord=points[0],
             camera_angle=angles[0],
-            sprite_positions=points,
+            sprite_coords=points,
             sprite_indexes=np.zeros(4, np.uint8),
             sprite_textures=[TREE],
             default_cell=new_cell(fg_color=GREEN),
@@ -120,15 +120,15 @@ class RaycasterApp(App):
                 elapsed += current_time - last_time
                 last_time = current_time
 
-                raycaster.camera_position = lerp(
+                raycaster.camera_coord = lerp(
                     points[i], points[j], elapsed / move_duration
                 )
-                text_raycaster.camera_position = raycaster.camera_position
+                text_raycaster.camera_coord = raycaster.camera_coord
                 raycaster.cast_rays()
                 text_raycaster.cast_rays()
                 await asyncio.sleep(0)
 
-            raycaster.camera_position = points[j]
+            raycaster.camera_coord = points[j]
             elapsed -= move_duration
 
 

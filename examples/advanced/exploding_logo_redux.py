@@ -54,13 +54,13 @@ class PokeParticleField(GraphicParticleField):
         self._origin = Point((h - th) // 2, (w - tw) // 2)
         dif = old_origin - self._origin
         self.particle_properties["original_positions"] -= dif
-        self.particle_positions -= dif
+        self.particle_coords -= dif
 
     def on_mouse(self, mouse_event):
         if mouse_event.button == "left" and self.collides_point(mouse_event.pos):
             y, x = self.to_local(mouse_event.pos)
 
-            relative_distances = self.particle_positions - (y, x)
+            relative_distances = self.particle_coords - (y, x)
             distances_sq = (relative_distances**2).sum(axis=1)
             distances_sq[distances_sq == 0] = 1
 
@@ -80,7 +80,7 @@ class PokeParticleField(GraphicParticleField):
             self._reset_task = asyncio.create_task(self.reset())
 
     async def update(self):
-        positions = self.particle_positions
+        positions = self.particle_coords
         velocities = self.particle_properties["velocities"]
 
         while True:
@@ -120,7 +120,7 @@ class PokeParticleField(GraphicParticleField):
         if self._update_task is not None:
             self._update_task.cancel()
         self.particle_properties["velocities"][:] = 0
-        pos = self.particle_positions
+        pos = self.particle_coords
         start = pos.copy()
         end = self.particle_properties["original_positions"]
         for percent in PERCENTS:
@@ -152,7 +152,7 @@ class ExplodingLogoApp(App):
                     )
                     field.particles_from_texture(texture)
                     field.particle_properties = {
-                        "original_positions": field.particle_positions.copy(),
+                        "original_positions": field.particle_coords.copy(),
                         "velocities": np.zeros((field.nparticles, 2), float),
                     }
                     field.on_size()

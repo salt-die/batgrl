@@ -30,7 +30,7 @@ class GraphicParticleField(Gadget):
 
     Parameters
     ----------
-    particle_positions : NDArray[np.float64] | None, default: None
+    particle_coords : NDArray[np.float64] | None, default: None
         An array of particle positions with shape ``(N, 2)``.
     particle_colors : NDArray[np.uint8] | None, default: None
         A RGBA array of particle colors with shape ``(N, 4)``.
@@ -61,7 +61,7 @@ class GraphicParticleField(Gadget):
     ----------
     nparticles : int
         Number of particles in particle field.
-    particle_positions : NDArray[np.float64]
+    particle_coords : NDArray[np.float64]
         An array of particle positions with shape `(N, 2)`.
     particle_colors : NDArray[np.uint8]
         A RGBA array of particle colors with shape `(N, 4)`.
@@ -175,7 +175,7 @@ class GraphicParticleField(Gadget):
     def __init__(
         self,
         *,
-        particle_positions: NDArray[np.float64] | None = None,
+        particle_coords: NDArray[np.float64] | None = None,
         particle_colors: NDArray[np.uint8] | None = None,
         particle_properties: dict[str, Any] | None = None,
         alpha: float = 1.0,
@@ -197,20 +197,20 @@ class GraphicParticleField(Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.particle_positions: NDArray[np.float64]
+        self.particle_coords: NDArray[np.float64]
         """An array of particle positions with shape `(N, 2)`."""
-        if particle_positions is None:
-            self.particle_positions = np.zeros((0, 2), dtype=np.float64)
+        if particle_coords is None:
+            self.particle_coords = np.zeros((0, 2), dtype=np.float64)
         else:
-            self.particle_positions = np.ascontiguousarray(
-                particle_positions, dtype=np.float64
+            self.particle_coords = np.ascontiguousarray(
+                particle_coords, dtype=np.float64
             )
 
         self.particle_colors: NDArray[np.uint8]
         """A RGBA array of particle colors with shape `(N, 4)`."""
         if particle_colors is None:
             self.particle_colors = np.zeros(
-                (len(self.particle_positions), 4), dtype=np.uint8
+                (len(self.particle_coords), 4), dtype=np.uint8
             )
         else:
             self.particle_colors = np.ascontiguousarray(particle_colors, dtype=np.uint8)
@@ -260,7 +260,7 @@ class GraphicParticleField(Gadget):
     @property
     def nparticles(self) -> int:
         """Number of particles in particle field."""
-        return len(self.particle_positions)
+        return len(self.particle_coords)
 
     def particles_from_texture(self, texture: NDArray[np.uint8]) -> None:
         """
@@ -274,8 +274,8 @@ class GraphicParticleField(Gadget):
         positions = np.argwhere(texture[..., 3])
         pys, pxs = positions.T
         self.particle_colors = np.ascontiguousarray(texture[pys, pxs])
-        self.particle_positions = np.ascontiguousarray(positions.astype(np.float64))
-        self.particle_positions /= scale_geometry(self._blitter, Size(1, 1))
+        self.particle_coords = np.ascontiguousarray(positions.astype(np.float64))
+        self.particle_coords /= scale_geometry(self._blitter, Size(1, 1))
 
     def _render(
         self,
@@ -291,7 +291,7 @@ class GraphicParticleField(Gadget):
             self.absolute_pos,
             self._blitter,
             self._is_transparent,
-            self.particle_positions,
+            self.particle_coords,
             self.particle_colors,
             self._alpha,
             self._region,
