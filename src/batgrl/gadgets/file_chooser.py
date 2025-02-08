@@ -1,6 +1,6 @@
 """A file chooser gadget."""
 
-import platform
+import sys
 from collections.abc import Callable
 from pathlib import Path
 
@@ -16,7 +16,7 @@ _FOLDER_PREFIX = "▶ 📁 "
 _NESTED_PREFIX = "  "
 _OPEN_FOLDER_PREFIX = "▼ 📂 "
 
-if platform.system() == "Windows":
+if sys.platform == "win32":
     from ctypes import windll
 
     def _is_hidden(path: Path) -> bool:

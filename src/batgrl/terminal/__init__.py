@@ -1,7 +1,6 @@
 """Platform specific VT100 terminals."""
 
 import asyncio
-import platform
 import sys
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
@@ -77,7 +76,7 @@ def get_platform_terminal() -> Vt100Terminal:
     if not sys.stdin.isatty():
         raise RuntimeError("Terminal is non-interactive.")
 
-    if platform.system() == "Windows":
+    if sys.platform == "win32":
         from .windows_terminal import WindowsTerminal, is_vt100_enabled
 
         if not is_vt100_enabled():
