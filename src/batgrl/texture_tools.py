@@ -54,7 +54,10 @@ def read_texture(path: Path) -> NDArray[np.uint8]:
 
 
 def resize_texture(
-    texture: NDArray[np.uint8], size: Size, interpolation: Interpolation = "linear"
+    texture: NDArray[np.uint8],
+    size: Size,
+    interpolation: Interpolation = "linear",
+    out: NDArray[np.uint8] | None = None,
 ) -> NDArray[np.uint8]:
     """
     Resize texture.
@@ -67,6 +70,8 @@ def resize_texture(
         The new size of the texture.
     interpolation : Interpolation, default: "linear"
         Interpolation used when resizing texture.
+    out : NDArray[np.uint8] | None, default: None
+        Optional output array. If None, a new array is created.
 
     Returns
     -------
@@ -78,7 +83,7 @@ def resize_texture(
     if old_h == 0 or old_w == 0 or h == 0 or w == 0:
         return np.zeros((h, w, 4), np.uint8)
     return cv2.resize(
-        texture, (w, h), interpolation=_INTERPOLATION_TO_CV_ENUM[interpolation]
+        texture, (w, h), dst=out, interpolation=_INTERPOLATION_TO_CV_ENUM[interpolation]
     )
 
 

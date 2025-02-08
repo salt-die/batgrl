@@ -8,7 +8,6 @@ from pathlib import Path
 from platform import uname
 
 import cv2
-import numpy as np
 
 from ..colors import ABLACK, AColor
 from ..texture_tools import resize_texture
@@ -279,17 +278,14 @@ class Video(Graphics):
     def _display_current_frame(self):
         h, w = self.size
         if self._current_frame is None or h == 0 or w == 0:
-            self.texture = np.full(
-                (*scale_geometry(self._blitter, self.size), 4),
-                self.default_color,
-                np.uint8,
-            )
-        else:
-            self.texture = resize_texture(
-                self._current_frame,
-                scale_geometry(self._blitter, self.size),
-                self._interpolation,
-            )
+            return
+
+        resize_texture(
+            self._current_frame,
+            scale_geometry(self._blitter, self._size),
+            self._interpolation,
+            out=self.texture,
+        )
 
     async def _play_video(self):
         if self._resource is None:
@@ -322,6 +318,7 @@ class Video(Graphics):
 
     def on_size(self):
         """Resize current frame on resize."""
+        super().on_size()
         self._display_current_frame()
 
     def on_remove(self):
