@@ -371,6 +371,8 @@ def cast_rays(
 
 
 cdef uint8 shade_wall(uint8 value, double distance):
+    # ! Should shading be set by kwarg in caster?
+    # ! `-0.15` is pretty arbitrary.
     return <uint8>(value * exp(-0.15 * distance))
 
 
@@ -507,6 +509,7 @@ def text_cast_rays(
                 continue
 
             tex_pos += step
+            # ! How much to shade a side wall? `2.0 * side` for now...
             wall_value = shade_wall(
                 wall_texture[tex_y, tex_x], perp_wall_dist + 2.0 * side
             )

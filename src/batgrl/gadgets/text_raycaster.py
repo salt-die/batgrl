@@ -12,7 +12,23 @@ __all__ = ["TextRaycaster", "Point", "Size"]
 
 class TextRaycaster(Text):
     r"""
-    A raycaster gadget.
+    A raycaster gadget that renders with text.
+
+    ``caster_map`` should not contain a value greater than the length of
+    ``wall_textures``. A non-zero value ``N`` in ``caster_map`` represents a wall with
+    texture ``wall_textures[N - 1]``.
+
+    The integer arrays in ``wall_textures`` determine how walls are shaded. With low
+    values darker and high values lighter.
+
+    ``sprite_indexes`` should not contain a value greater than or equal to the length of
+    ``sprite_textures``. A value ``N`` in ``sprite_indexes`` represents a sprite with
+    texture ``sprite_textures[N]``. ``sprite_coords`` and ``sprite_indexes`` must be the
+    same length.
+
+    It's convention in ``batgrl`` to refer to RGBA arrays as textures. ``wall_textures``
+    and ``sprite_textures`` do not contain RGBA arrays, but the names are kept to be
+    consistent with the graphics raycaster.
 
     Parameters
     ----------

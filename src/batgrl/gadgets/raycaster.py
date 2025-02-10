@@ -14,6 +14,15 @@ class Raycaster(Graphics):
     r"""
     A raycaster gadget.
 
+    ``caster_map`` should not contain a value greater than the length of
+    ``wall_textures``. A non-zero value ``N`` in ``caster_map`` represents a wall with
+    texture ``wall_textures[N - 1]``.
+
+    ``sprite_indexes`` should not contain a value greater than or equal to the length of
+    ``sprite_textures``. A value ``N`` in ``sprite_indexes`` represents a sprite with
+    texture ``sprite_textures[N]``. ``sprite_coords`` and ``sprite_indexes`` must be the
+    same length.
+
     Parameters
     ----------
     caster_map : NDArray[np.uint8]
