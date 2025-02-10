@@ -1,18 +1,14 @@
 """A shadow caster gadget."""
 
-from bisect import bisect
 from collections.abc import Callable
-from dataclasses import dataclass, field
 from itertools import product
-from math import dist
 from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
 
-from ..colors import AWHITE, BLACK, TRANSPARENT, WHITE, AColor, Color
-from ..geometry import Region, rect_slice
-from ..texture_tools import resize_texture
+from ..colors import AWHITE, BLACK, TRANSPARENT, AColor, Color
+from ._shadow_casting import cast_shadows
 from .graphics import (
     Blitter,
     Graphics,
@@ -24,23 +20,16 @@ from .graphics import (
     clamp,
 )
 
-__all__ = [
-    "ShadowCaster",
-    "Restrictiveness",
-    "ShadowCasterCamera",
-    "LightSource",
-    "Point",
-    "Size",
-]
+__all__ = ["ShadowCaster", "Restrictiveness", "Point", "Size"]
 
 AGRAY = AColor(50, 50, 50)
 QUADS = tuple(product((1, -1), (1, -1), (False, True)))
 
-Restrictiveness = Literal["permissive", "moderate", "reestrictive"]
+Restrictiveness = Literal["permissive", "moderate", "restrictive"]
 """
 The restrictiveness of the shadow caster.
 
-:class:`Restrictiveness` is one of "permissive", "moderate", "restrictive".
+``Restrictiveness`` is one of "permissive", "moderate", "restrictive".
 
 For "permissive", any interval is visible as long as any of it's start, center, or end
 points are visible. For "moderate", the center and either end must be visible. For
@@ -48,118 +37,10 @@ points are visible. For "moderate", the center and either end must be visible. F
 """
 
 
-@dataclass(slots=True)
-class ShadowCasterCamera:
-    """
-    The camera determines the visible portion of the map.
-
-    If the camera's size is not equal to the caster's size, the camera will resize the
-    visible portion of the map to fill the caster's size. To prevent resizing the
-    visible portion of the map, the camera's size should be equal to the caster's size.
-
-    Parameters
-    ----------
-    pos : Point
-        The position of the upper-left corner of the camera on the map.
-    size : Size
-        Size of the camera.
-
-    Methods
-    -------
-    get_submap(map)
-        Get the section of the map visible by the camera.
-
-    Notes
-    -----
-    Submap values for areas of the camera that are out-of-bounds of the map will be
-    zero.
-    """
-
-    pos: Point
-    size: Size
-
-    def get_submap(self, map: NDArray[np.uint32]) -> NDArray[np.uint32]:
-        """
-        Get the section of a map visible by the camera.
-
-        Returns
-        -------
-        NDArray[np.uint32]
-            Section of map visible by the camera.
-        """
-        submap = np.zeros(self.size, dtype=np.uint8)
-
-        source = Region.from_rect((0, 0), map.shape)
-        dest = Region.from_rect(self.pos, self.size)
-
-        if intersection := source & dest:
-            pos, size = next(intersection.rects())
-            src = rect_slice(pos, size)
-            dst = rect_slice(pos - self.pos, size)
-            submap[dst] = map[src]
-
-        return submap
-
-
-@dataclass(slots=True)
-class LightSource:
-    """
-    A light source.
-
-    Parameters
-    ----------
-    coords : float[tuple, tuple], default: (0.0, 0.0)
-        Coordinates of light source on map.
-    color : Color, default: WHITE
-        Color of light source.
-
-    Attributes
-    ----------
-    coords : float[tuple, tuple]
-        Coordinates of light source on map.
-    color : Color
-        Color of light source.
-    """
-
-    coords: tuple[float, float] = 0.0, 0.0
-    color: Color = WHITE
-
-
-@dataclass(slots=True)
-class _Interval:
-    """
-    A continuous interval.
-
-    Parameters
-    ----------
-    start : float
-        Start of interval.
-    end : float
-        End of interval.
-
-    Attributes
-    ----------
-    start : float
-        Start of interval.
-    end : float
-        End of interval.
-    """
-
-    start: float
-    end: float
-    center: float = field(init=False)
-
-    def __post_init__(self):
-        self.center = (self.start + self.end) / 2
-
-    def __contains__(self, item: float) -> bool:
-        return self.start <= item <= self.end
-
-    def __gt__(self, other):
-        if isinstance(other, (float, int)):
-            return other < self.start
-
-        return (other.start, other.end) < (self.start, self.end)
+def default_light_decay(x: float) -> float:
+    if x == 0:
+        return 1
+    return 1 / x
 
 
 class ShadowCaster(Graphics):
@@ -168,29 +49,41 @@ class ShadowCaster(Graphics):
 
     :meth:`cast_shadows` must be called to generate or update :attr:`texture`.
 
+    Light decay distance and :attr:`radius` are calculated from the point of view of the
+    ``caster_map`` and does not depend on the size of the camera or the size of the
+    caster. As a consequence, changing the blitter should only change the resolution of
+    the caster.
+
+    ``light_coords`` and ``light_colors`` must be same length.
+
     Parameters
     ----------
-    map : NDArray[np.uint32]
+    caster_map : NDArray[np.uint8]
         A 2-d map. Non-zero values are walls.
-    camera : ShadowCasterCamera
-        A camera that determines the visible portion of the map.
+    camera_pos : Point
+        Position of camera in map.
+    camera_size : Size
+        Size of camera. Determines how much of the map is visible.
     tile_colors : list[AColor] | None, default: None
-        A value `n` in the map will be colored ``tile_colors[n]``. If ``None``,
-        `tile_colors` will be set to ``[AGRAY, AWHITE]``.
-    light_sources : list[LightSource] | None, default: None
-        A list of all light sources on the map.
+        A value ``n`` in the map will be colored ``tile_colors[n]``. If ``None``,
+        ``tile_colors`` will be set to ``[AGRAY, AWHITE]``.
+    light_coords : list[tuple[float, float]] | None, default: None
+        A list of coordinates for all light sources on the map.
+    light_colors : list[Color] | None, default: None
+        A list of colors for all light sources on the map.
     ambient_light : Color, default: BLACK
         Color of ambient light. Default is no light.
-    restrictiveness : Restrictiveness, default: "moderate"
+    restrictiveness : Restrictiveness, default: "permissive"
         Restrictiveness of casting algorithm.
-    light_decay : Callable[[float], float], default: lambda d: 1 if d == 0 else 1 / d
-        The strength of light as a function of distance from origin.
     radius : int, default: 20
         Max visible radius from a light source.
     smoothing : float, default: 1.0 / 3.0
-        Smoothness of shadow edges. This value will be clamped between `0` and `1`.
+        Smoothness of shadow edges. This value will be clamped between ``0`` and ``1``.
     not_visible_blocks : bool, default: True
         Whether all not-visible cells will be treated as opaque.
+    light_decay : Callable[[float], float], default: default_light_decay
+        The strength of light as a function of distance from light origin. The default
+        decay is ``1 / distance``.
     default_color : AColor, default: AColor(0, 0, 0, 0)
         Default texture color.
     alpha : float, default: 1.0
@@ -218,26 +111,30 @@ class ShadowCaster(Graphics):
 
     Attributes
     ----------
-    map : NDArray[np.uint32]
+    caster_map : NDArray[np.uint8]
         A 2-d map. Non-zero values are walls.
-    camera : ShadowCasterCamera
-        A camera that determines the visible portion of the map.
+    camera_pos : Point
+        Position of camera in map.
+    camera_size : Size
+        Size of camera. Determines how much of the map is visible.
     tile_colors : list[AColor]
-        A value `n` in the map will be colored ``tile_colors[n]``.
-    light_sources : list[LightSource]
-        A list of all light sources on the map.
+        A value ``n`` in the map will be colored ``tile_colors[n]``.
+    light_coords : list[tuple[float, float]] | None
+        A list of coordinates for all light sources on the map.
+    light_colors : list[Color] | None
+        A list of colors for all light sources on the map.
     ambient_light : Color
         Color of ambient light.
     restrictiveness : Restrictiveness
         Restrictiveness of casting algorithm.
-    light_decay : Callable[[float], float]
-        The strength of light as a function of distance from origin.
     radius : int
         Max visible radius from a light source.
     smoothing : float
         Smoothness of shadow edges.
     not_visible_blocks : bool
         Whether all not-visible cells will be treated as opaque.
+    light_decay : Callable[[float], float]
+        The strength of light as a function of distance from origin.
     texture : NDArray[np.uint8]
         uint8 RGBA color array.
     default_color : AColor
@@ -359,16 +256,18 @@ class ShadowCaster(Graphics):
     def __init__(
         self,
         *,
-        map: NDArray[np.uint32],
-        camera: ShadowCasterCamera,
+        caster_map: NDArray[np.uint8],
+        camera_pos: Point,
+        camera_size: Size,
         tile_colors: list[AColor] | None = None,
-        light_sources: list[LightSource] | None = None,
+        light_coords: list[tuple[float, float]] | None = None,
+        light_colors: list[Color] | None = None,
         ambient_light: Color = BLACK,
-        restrictiveness: Restrictiveness = "moderate",
-        light_decay: Callable[[float], float] = lambda d: 1 if d == 0 else 1 / d,
+        restrictiveness: Restrictiveness = "permissive",
         radius: int = 20,
         smoothing: float = 1.0 / 3.0,
         not_visible_blocks: bool = True,
+        light_decay: Callable[[float], float] = default_light_decay,
         default_color: AColor = TRANSPARENT,
         alpha: float = 1.0,
         blitter: Blitter = "half",
@@ -395,152 +294,43 @@ class ShadowCaster(Graphics):
             is_enabled=is_enabled,
         )
 
-        self.map = map
-        self.camera = camera
-        self.tile_colors = np.array(tile_colors or [AGRAY, AWHITE], dtype=np.uint8)
-        self.light_sources = light_sources or []
+        self.caster_map = caster_map
+        self.camera_pos = camera_pos
+        self.camera_size = camera_size
+        self.tile_colors = tile_colors or [AGRAY, AWHITE]
+        self.light_coords = light_coords or []
+        self.light_colors = light_colors or []
         self.ambient_light = ambient_light
         self.restrictiveness = restrictiveness
-        self.light_decay = light_decay
         self.radius = radius
         self.smoothing = clamp(smoothing, 0.0, 1.0)
         self.not_visible_blocks = not_visible_blocks
+        self.light_decay = light_decay
+
+    def on_size(self):
+        """Resize ``texture`` and ``_light_intensity`` buffer on size."""
+        super().on_size()
+        h, w, _ = self.texture.shape
+        self._light_intensity = np.empty((h, w, 3), float)
 
     def cast_shadows(self):
         """Update texture by shadow casting all light sources."""
-        h, w, _ = self.texture.shape
-        if h == 0 or w == 0:
-            return
-
-        cy, cx = self.camera.pos
-        ch, cw = self.camera.size
-
-        v_scale = h / ch
-        h_scale = w / cw
-
-        map = resize_texture(self.camera.get_submap(self.map), (h, w), "nearest")
-
-        # Combined light colors for all light_sources:
-        total_light = np.full((h, w, 3), self.ambient_light, dtype=float)
-
-        for light_source in self.light_sources:
-            colors = np.zeros_like(total_light)
-
-            # Calculate light position in camera's coordinates:
-            ly, lx = light_source.coords
-            origin = round(v_scale * (ly - cy)), round(h_scale * (lx - cx))
-
-            color = light_source.color
-
-            for quad in QUADS:
-                self._visible_points_quad(quad, origin, color, colors, map)
-
-            total_light += colors
-
-        colored_map = self.tile_colors[map]
-        self.texture[..., :3] = colored_map[..., :3] * np.clip(
-            total_light / 255, 0.0, 1.0
+        self._light_intensity[:] = self.ambient_light
+        cast_shadows(
+            self.texture,
+            self._light_intensity,
+            self.caster_map,
+            self.camera_pos,
+            self.camera_size,
+            self.tile_colors,
+            self.light_coords,
+            self.light_colors,
+            self.restrictiveness,
+            self.radius,
+            self.smoothing,
+            self.not_visible_blocks,
+            self.light_decay,
         )
-        self.texture[..., 3] = colored_map[..., 3]
-
-    def _visible_points_quad(self, quad, origin, color, colors, map):
-        y, x, vert = quad
-        oy, ox = origin
-        h, w, _ = colors.shape
-
-        light_decay = self.light_decay
-        smooth_radius = self.radius + self.smoothing
-
-        obstructions = []
-        for i in range(self.radius):
-            if (
-                len(obstructions) == 1
-                and obstructions[0].start == 0.0
-                and obstructions[0].end == 1.0
-            ):
-                return
-
-            theta = 1.0 / float(i + 1)
-            if vert:
-                py = oy + i * y
-            else:
-                px = ox + i * x
-
-            for j in range(i + 1):
-                if vert:
-                    px = ox + j * x
-                else:
-                    py = oy + j * y
-
-                p = py, px
-
-                if not (0 <= py < h and 0 <= px < w):
-                    continue
-
-                if (d := dist(origin, p)) <= smooth_radius:
-                    interval = _Interval(j * theta, (j + 1) * theta)
-
-                    if self._point_is_visible(interval, obstructions):
-                        colors[p] = color
-                        colors[p] *= light_decay(d)
-
-                        if map[p] != 0:
-                            self._add_obstruction(obstructions, interval)
-
-                    elif self.not_visible_blocks:
-                        self._add_obstruction(obstructions, interval)
-
-    def _point_is_visible(self, interval: _Interval, obstructions):
-        start_visible = center_visible = end_visible = True
-
-        a = bisect(obstructions, interval.start)
-        if a > 0:
-            a -= 1
-
-        b = bisect(obstructions, interval.end)
-        if b < len(obstructions):
-            b += 1
-
-        for i in range(a, b):
-            obstruction = obstructions[i]
-
-            if start_visible and interval.start in obstruction:
-                start_visible = False
-
-            if center_visible and interval.center in obstruction:
-                center_visible = False
-
-            if end_visible and interval.end in obstruction:
-                end_visible = False
-
-        if self.restrictiveness == "permissive":
-            return center_visible or start_visible or end_visible
-        if self.restrictiveness == "moderate":
-            return center_visible and (start_visible or end_visible)
-        if self.restrictiveness == "restrictive":
-            return center_visible and start_visible and end_visible
-
-    def _add_obstruction(self, obstructions, obstruction: _Interval):
-        start = obstruction.start
-        end = obstruction.end
-
-        a = bisect(obstructions, start)
-        b = bisect(obstructions, end)
-
-        if a > 0 and start <= obstructions[a - 1].end:
-            start = obstructions[a - 1].start
-            a -= 1
-
-        if b < len(obstructions) and obstructions[b].end <= end:
-            end = obstructions[b].end
-            b += 1
-        elif b > 0 and end < obstructions[b - 1].end:
-            end = obstructions[b - 1].end
-
-        if a == b:
-            obstructions.insert(a, _Interval(start, end))
-        else:
-            obstructions[a:b] = [_Interval(start, end)]
 
     def to_map_coords(self, point: Point) -> tuple[float, float]:
         """
@@ -560,7 +350,7 @@ class ShadowCaster(Graphics):
         y, x = point
         h, w = self.size
 
-        cy, cx = self.camera.pos
-        ch, cw = self.camera.size
+        cy, cx = self.camera_pos
+        ch, cw = self.camera_size
 
         return ch / h * y + cy, cw / w * x + cx

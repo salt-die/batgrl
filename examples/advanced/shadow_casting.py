@@ -20,7 +20,7 @@ from batgrl.colors import (
 from batgrl.gadgets.behaviors.grabbable import Grabbable
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.grid_layout import GridLayout
-from batgrl.gadgets.shadow_caster import LightSource, ShadowCaster, ShadowCasterCamera
+from batgrl.gadgets.shadow_caster import ShadowCaster
 from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.toggle_button import ToggleButton
 
@@ -51,16 +51,17 @@ class Selector(Grabbable, Text):
 
 class ShadowCasterApp(App):
     async def on_start(self):
-        map_ = np.zeros((34, 34), int)
+        caster_map = np.zeros((34, 34), np.uint8)
 
         caster = ShadowCaster(
             size=(17, 34),
-            map=map_,
-            camera=ShadowCasterCamera((0, 0), (34, 34)),
+            caster_map=caster_map,
+            camera_pos=(0, 0),
+            camera_size=(34, 34),
             tile_colors=[AWHITE, ACYAN, AMAGENTA],
-            light_sources=[LightSource(), LightSource()],
+            light_coords=[(0, 0), (0, 0)],
+            light_colors=[WHITE, WHITE],
             radius=40,
-            restrictiveness="permissive",
         )
 
         label_kwargs = dict(
@@ -102,7 +103,7 @@ class ShadowCasterApp(App):
 
         def make_slider_callback(light_source, colors):
             def callback(i):
-                caster.light_sources[light_source].color = colors[round(i)]
+                caster.light_colors[light_source] = colors[round(i)]
 
             return callback
 
@@ -199,22 +200,22 @@ class ShadowCasterApp(App):
         while True:
             for i in chain(range(21), range(21)[::-1]):
                 # Move boxes
-                map_[:] = 0
-                map_[8:12, 5 + i : 5 + i + 4] = 1
-                map_[22:26, 25 - i : 25 - i + 4] = 2
+                caster_map[:] = 0
+                caster_map[8:12, 5 + i : 5 + i + 4] = 1
+                caster_map[22:26, 25 - i : 25 - i + 4] = 2
                 # Move light sources
                 theta = (theta + 0.1) % math.tau
-                caster.light_sources[0].coords = (
+                caster.light_coords[0] = (
                     18 * math.sin(theta) + 17,
                     18 * math.cos(theta) + 17,
                 )
-                caster.light_sources[1].coords = (
+                caster.light_coords[1] = (
                     17 * math.cos(theta) + 17,
                     17 * math.sin(theta) + 17,
                 )
                 caster.cast_shadows()
 
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.0166666)
 
 
 if __name__ == "__main__":

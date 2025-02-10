@@ -86,6 +86,7 @@ setup(
             "src/batgrl/_sixel.pyx",
             "src/batgrl/char_width.pyx",
             "src/batgrl/gadgets/_raycasting.pyx",
+            "src/batgrl/gadgets/_shadow_casting.pyx",
             "src/batgrl/geometry/regions.pyx",
         ]
     ),
