@@ -8,7 +8,7 @@ from typing import Final
 
 from ..geometry import Size
 from .events import DeviceAttributesReportEvent, Event, PixelGeometryReportEvent
-from .vt100_terminal import DRS_REQUEST_TIMEOUT, Vt100Terminal
+from .vt100_terminal import DSR_REQUEST_TIMEOUT, Vt100Terminal
 
 __all__ = [
     "Vt100Terminal",
@@ -121,7 +121,7 @@ async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size]:
                     terminal.request_pixel_geometry()
                     terminal.request_terminal_geometry()
                     report_timeout = asyncio.get_running_loop().call_later(
-                        DRS_REQUEST_TIMEOUT, terminal_info_reported.set
+                        DSR_REQUEST_TIMEOUT, terminal_info_reported.set
                     )
                 else:
                     terminal_info_reported.set()
@@ -140,7 +140,7 @@ async def get_sixel_info(terminal: Vt100Terminal) -> tuple[bool, Size]:
     terminal._event_handler = report_handler
     terminal.request_device_attributes()
     report_timeout = asyncio.get_running_loop().call_later(
-        DRS_REQUEST_TIMEOUT, terminal_info_reported.set
+        DSR_REQUEST_TIMEOUT, terminal_info_reported.set
     )
     await terminal_info_reported.wait()
     terminal._event_handler = old_handler

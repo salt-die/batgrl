@@ -43,7 +43,7 @@ FOCUS_IN: Final = "\x1b[I"
 FOCUS_OUT: Final = "\x1b[O"
 ESCAPE_TIMEOUT: Final = 0.05
 """Time in seconds before escape buffer is reset."""
-DRS_REQUEST_TIMEOUT: Final = 0.1
+DSR_REQUEST_TIMEOUT: Final = 0.1
 """
 Time in seconds for the input parser to expect a response to a device status report
 request.
@@ -453,7 +453,7 @@ class Vt100Terminal(ABC):
             return
 
         self._dsr_pending += 1
-        loop.call_later(DRS_REQUEST_TIMEOUT, self._timeout_dsr)
+        loop.call_later(DSR_REQUEST_TIMEOUT, self._timeout_dsr)
         self._out_buffer.write(escape)
         self.flush()
 
