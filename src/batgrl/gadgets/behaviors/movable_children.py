@@ -19,9 +19,9 @@ class MovableChildren(Grabbable):
 
     Parameters
     ----------
-    disable_child_oob : bool, default: False
-        Disallow child gadgets from being translated out-of-bounds if true.
-    disable_child_ptf : bool, default: False
+    allow_child_oob : bool, default: True
+        Whether child gadgets can be dragged out of parent's bounding box.
+    ptf_child_on_grab : bool, default: False
         Whether child gadgets are pulled-to-front when clicked.
     is_grabbable : bool, default: True
         Whether grabbable behavior is enabled.
@@ -32,9 +32,9 @@ class MovableChildren(Grabbable):
 
     Attributes
     ----------
-    disable_child_oob : bool
-        Disallow child gadgets from being translated out-of-bounds if true.
-    disable_child_ptf : bool
+    allow_child_oob : bool
+        Whether child gadgets can be dragged out of parent's bounding box.
+    ptf_child_on_grab : bool
         Whether child gadgets are pulled-to-front when clicked.
     is_grabbable : bool
         Whether grabbable behavior is enabled.
@@ -58,8 +58,8 @@ class MovableChildren(Grabbable):
     def __init__(
         self,
         *,
-        disable_child_oob=False,
-        disable_child_ptf=False,
+        allow_child_oob=True,
+        ptf_child_on_grab=False,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
@@ -71,42 +71,43 @@ class MovableChildren(Grabbable):
             mouse_button=mouse_button,
             **kwargs,
         )
-        self.disable_child_oob = disable_child_oob
-        self.disable_child_ptf = disable_child_ptf
-
+        self.allow_child_oob: bool = allow_child_oob
+        """Whether child gadgets can be dragged out of parent's bounding box."""
+        self.ptf_child_on_grab: bool = ptf_child_on_grab
+        """Whether child gadgets are pulled-to-front when clicked."""
         self._grabbed_child = None
 
-    def grab(self, mouse_event):
+    def grab(self, mouse_event) -> None:
         """Grab the gadget."""
         for child in reversed(self.children):
             if child.collides_point(mouse_event.pos):
                 self._is_grabbed = True
                 self._grabbed_child = child
 
-                if not self.disable_child_ptf:
+                if self.ptf_child_on_grab:
                     child.pull_to_front()
 
                 break
         else:
             super().grab(mouse_event)
 
-    def ungrab(self, mouse_event):
+    def ungrab(self, mouse_event) -> None:
         """Ungrab the gadget."""
         self._grabbed_child = None
         super().ungrab(mouse_event)
 
-    def grab_update(self, mouse_event):
+    def grab_update(self, mouse_event) -> None:
         """Update gadget with incoming mouse events while grabbed."""
         if grabbed_child := self._grabbed_child:
             h, w = self.size
             ch, cw = grabbed_child.size
             ct, cl = grabbed_child.pos
 
-            if self.disable_child_oob:
-                grabbed_child.top = clamp(ct + mouse_event.dy, 0, h - ch)
-                grabbed_child.left = clamp(cl + mouse_event.dx, 0, w - cw)
-            else:
+            if self.allow_child_oob:
                 grabbed_child.top = ct + mouse_event.dy
                 grabbed_child.left = cl + mouse_event.dx
+            else:
+                grabbed_child.top = clamp(ct + mouse_event.dy, 0, h - ch)
+                grabbed_child.left = clamp(cl + mouse_event.dx, 0, w - cw)
         else:
             super().grab_update(mouse_event)

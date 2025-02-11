@@ -312,7 +312,7 @@ class LinePlot(Gadget):
         self._tick_corner = Text(size=(3, TICK_WIDTH + 1), default_cell=default_cell)
         self._x_label_gadget = Text(default_cell=default_cell)
         self._y_label_gadget = Text(default_cell=default_cell)
-        self._legend = _Legend(disable_oob=True, is_enabled=False)
+        self._legend = _Legend(allow_oob=False, is_enabled=False)
         self._container = Pane(
             size_hint={"height_hint": 1.0, "width_hint": 1.0}, bg_color=plot_bg_color
         )
