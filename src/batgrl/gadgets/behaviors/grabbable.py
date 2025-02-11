@@ -53,7 +53,7 @@ class Grabbable:
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(**kwargs)
 
         self.is_grabbable = is_grabbable
@@ -61,7 +61,7 @@ class Grabbable:
         self.mouse_button = mouse_button
         self._is_grabbed = False
 
-    def on_mouse(self, mouse_event):
+    def on_mouse(self, mouse_event) -> None:
         """Determine if mouse event grabs or ungrabs gadget."""
         if self.is_grabbable:
             if self.is_grabbed:
@@ -87,7 +87,7 @@ class Grabbable:
         """Whether gadget is grabbed."""
         return self._is_grabbed
 
-    def grab(self, mouse_event: MouseEvent):
+    def grab(self, mouse_event: MouseEvent) -> None:
         """
         Grab gadget.
 
@@ -101,7 +101,7 @@ class Grabbable:
         if self.ptf_on_grab:
             self.pull_to_front()
 
-    def ungrab(self, mouse_event: MouseEvent):
+    def ungrab(self, mouse_event: MouseEvent) -> None:
         """
         Ungrab gadget.
 
@@ -112,7 +112,7 @@ class Grabbable:
         """
         self._is_grabbed = False
 
-    def grab_update(self, mouse_event: MouseEvent):
+    def grab_update(self, mouse_event: MouseEvent) -> None:
         """
         Update grabbed gadget with incoming mouse event.
 
