@@ -1772,6 +1772,21 @@ cpdef void terminal_render(
                         )
     # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
     if emit_sixel:
+        gy = min_y_sixel * cell_h
+        gx = min_x_sixel * cell_w
+        gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
+        # If sixel graphics rect reaches last line of terminal, its height must be
+        # clipped to nearest multiple of 6 to prevent scrolling.
+        if max_y_sixel + 1 == h:
+            y = gh % 6
+            if y:
+                gh -= y
+                # If sixel graphics height is clipped force repaint of sixel cells on
+                # last line by changing to mixed cells.
+                for x in range(min_x_sixel, max_x_sixel + 1):
+                    if kind[max_y_sixel, x]:
+                        kind[max_y_sixel, x] = MIXED
+
         for y in range(h):
             for x in range(w):
                 if kind[y, x] == MIXED:
@@ -1780,21 +1795,16 @@ cpdef void terminal_render(
                     ):
                         raise MemoryError
 
-        gy = min_y_sixel * cell_h
-        gx = min_x_sixel * cell_w
-        gh = (max_y_sixel + 1 - min_y_sixel) * cell_h
-        # If sixel graphics rect reaches last line of terminal, its height must be
-        # truncated to nearest multiple of 6 to prevent scrolling.
-        if max_y_sixel + 1 == h:
-            gh -= gh % 6
-        gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
-
-        if fbuf_printf(f, "\x1b[%d;%dH", min_y_sixel + 1 + oy, min_x_sixel + 1 + ox):
-            raise MemoryError
-        if sixel(
-            f, &octree.qs, graphics, sgraphics, aspect_h, aspect_w, gy, gx, gh, gw
-        ):
-            raise MemoryError
+        if gh > 0:
+            gw = (max_x_sixel + 1 - min_x_sixel) * cell_w
+            if fbuf_printf(
+                f, "\x1b[%d;%dH", min_y_sixel + 1 + oy, min_x_sixel + 1 + ox
+            ):
+                raise MemoryError
+            if sixel(
+                f, &octree.qs, graphics, sgraphics, aspect_h, aspect_w, gy, gx, gh, gw
+            ):
+                raise MemoryError
 
     cursor_y = -1
     cursor_x = -1
