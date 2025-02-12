@@ -1,8 +1,10 @@
-"""
-A rigid body physics simulation in the terminal.
-
-Requires `pymunk`
-"""
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "pymunk",
+# ]
+# ///
+"""A rigid body physics simulation in the terminal."""
 
 import asyncio
 from math import ceil, degrees
@@ -68,7 +70,7 @@ class SpaceRenderer(Graphics):
         while True:
             self.space.step(self.dt)
             self._draw_space()
-            await asyncio.sleep(0)
+            await asyncio.sleep(1 / 60)
 
     def _to_texture_coords(self, point: Vec2d) -> tuple[int, int]:
         x, y = point
@@ -210,7 +212,6 @@ class PhysicsApp(App):
             dt=0.03,
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
         )
-        space_renderer.run_simulation()
 
         background = Image(
             path=PATH_TO_BACKGROUND, size_hint={"height_hint": 1.0, "width_hint": 1.0}
