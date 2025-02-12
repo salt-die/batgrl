@@ -2,6 +2,8 @@ from libc.math cimport round, sqrt
 from libc.stdlib cimport free, malloc, realloc
 from libc.string cimport memmove
 
+cimport cython
+
 ctypedef unsigned char uint8
 ctypedef unsigned int uint
 
@@ -20,7 +22,7 @@ cdef struct Octant:
 #  1
 #
 # Where the numbers represent the order cells are visited within an octant. Similarly,
-# an an octant with y=-1,x=1,flipped=1 looks like:
+# an octant with y=-1,x=1,flipped=1 looks like:
 #
 #   6
 #  35
@@ -217,6 +219,8 @@ cdef inline bint point_is_visible(
         return center_visible & start_visible & end_visible
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cpdef void cast_shadows(
     uint8[:, :, ::1] texture,
     double[:, :, ::1] light_intensity,
