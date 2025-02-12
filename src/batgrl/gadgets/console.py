@@ -177,6 +177,12 @@ class _ConsoleTextbox(Textbox):
         self._undo_stack.append(undos)
         self._redo_stack.clear()
 
+    def update_theme(self):
+        super().update_theme()
+        self._cursor.fg_color = None
+        self._cursor.bg_color = None
+        self._cursor.reverse = True
+
     def on_key(self, key_event: KeyEvent) -> bool | None:
         if (
             key_event.key == "tab"
