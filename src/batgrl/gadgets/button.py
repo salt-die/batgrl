@@ -103,6 +103,8 @@ class Button(Themable, ButtonBehavior, Gadget):
 
     Methods
     -------
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     on_release()
@@ -229,23 +231,23 @@ class Button(Themable, ButtonBehavior, Gadget):
 
     def update_normal(self):
         """Paint the normal state."""
-        self._pane.bg_color = self.color_theme.button_normal.bg
-        self._label.canvas["fg_color"] = self.color_theme.button_normal.fg
+        self._pane.bg_color = self.get_color("button_normal_bg")
+        self._label.canvas["fg_color"] = self.get_color("button_normal_fg")
 
     def update_hover(self):
         """Paint the hover state."""
-        self._pane.bg_color = self.color_theme.button_hover.bg
-        self._label.canvas["fg_color"] = self.color_theme.button_hover.fg
+        self._pane.bg_color = self.get_color("button_hover_bg")
+        self._label.canvas["fg_color"] = self.get_color("button_hover_fg")
 
     def update_down(self):
         """Paint the down state."""
-        self._pane.bg_color = self.color_theme.button_press.bg
-        self._label.canvas["fg_color"] = self.color_theme.button_press.fg
+        self._pane.bg_color = self.get_color("button_press_bg")
+        self._label.canvas["fg_color"] = self.get_color("button_press_fg")
 
     def update_disallowed(self):
         """Paint the disallowd state."""
-        self._pane.bg_color = self.color_theme.button_disallowed.bg
-        self._label.canvas["fg_color"] = self.color_theme.button_disallowed.fg
+        self._pane.bg_color = self.get_color("button_disallowed_bg")
+        self._label.canvas["fg_color"] = self.get_color("button_disallowed_fg")
 
     def on_release(self):
         """Triggered when button is released."""

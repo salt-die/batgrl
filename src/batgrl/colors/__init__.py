@@ -1,6 +1,6 @@
 """Color-related functions and data structures."""
 
-from .color_types import AColor, Color, ColorPair, ColorTheme
+from .color_types import AColor, AHexcode, Color, ColorTheme, Hexcode
 from .colors import (
     ABLACK,
     ABLUE,
@@ -56,9 +56,10 @@ __all__ = [
     "WHITE_ON_BLACK",
     "YELLOW",
     "AColor",
+    "AHexcode",
     "Color",
-    "ColorPair",
     "ColorTheme",
+    "Hexcode",
     "Neptune",
     "darken_only",
     "gradient",

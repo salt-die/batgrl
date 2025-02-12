@@ -181,7 +181,7 @@ class ExplodingLogoApp(App):
         def on_slide(p):
             field.alpha = p
 
-        bg_color = ToggleButton.color_theme.button_normal.bg
+        bg_color = trans_button.get_color("button_normal_bg")
         slider = Slider(
             min=0.0,
             max=1.0,

@@ -50,15 +50,19 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
 
     def _update(self):
         if self.toggle_state == "on":
-            color_pair = self.color_theme.titlebar_normal
+            fg = self.get_color("titlebar_normal_fg")
+            bg = self.get_color("titlebar_normal_bg")
             bold = True
         elif self.button_state == "hover":
-            color_pair = self.hover_color_pair
+            fg = self.hover_color_fg
+            bg = self.hover_color_bg
             bold = False
         else:
-            color_pair = self.color_theme.titlebar_inactive
+            fg = self.get_color("titlebar_inactive_fg")
+            bg = self.get_color("titlebar_inactive_bg")
             bold = False
-        self.canvas[["fg_color", "bg_color"]] = color_pair
+        self.canvas["fg_color"] = fg
+        self.canvas["bg_color"] = bg
         self.canvas["bold"] = bold
 
     update_hover = _update
@@ -67,12 +71,12 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
     update_off = _update
 
     def update_theme(self):
-        normal = self.color_theme.titlebar_normal
-        inactive = self.color_theme.titlebar_inactive
-        self.hover_color_pair = (
-            lerp_colors(normal.fg, inactive.fg, 0.5),
-            lerp_colors(normal.bg, inactive.bg, 0.5),
-        )
+        normal_fg = self.get_color("titlebar_normal_fg")
+        normal_bg = self.get_color("titlebar_normal_bg")
+        inactive_fg = self.get_color("titlebar_inactive_fg")
+        inactive_bg = self.get_color("titlebar_inactive_bg")
+        self.hover_color_fg = lerp_colors(normal_fg, inactive_fg, 0.5)
+        self.hover_color_bg = lerp_colors(normal_bg, inactive_bg, 0.5)
         self._update()
 
 
@@ -154,6 +158,8 @@ class Tabs(Themable, Gadget):
         Add a new tab.
     remove_tab(title)
         Remove a tab.
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     apply_hints()
@@ -244,7 +250,8 @@ class Tabs(Themable, Gadget):
             size_hint={"height_hint": 1.0, "width_hint": 1.0, "height_offset": -2},
         )
 
-        title_fg, title_bg = self.color_theme.titlebar_normal
+        title_fg = self.get_color("titlebar_normal_fg")
+        title_bg = self.get_color("titlebar_normal_bg")
         tab_style = {"bold": True, "fg_color": title_fg, "bg_color": title_bg}
         self._tab_underline = Text(
             size=(1, 1),
@@ -279,15 +286,21 @@ class Tabs(Themable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        title_inactive = self.color_theme.titlebar_inactive
-        self.tab_bar.bg_color = title_inactive.bg
-        self.tab_window.bg_color = title_inactive.bg
-        self.separator.default_cell[["fg_color", "bg_color"]] = title_inactive
-        self.separator.canvas[["fg_color", "bg_color"]] = title_inactive
+        title_inactive_fg = self.get_color("titlebar_inactive_fg")
+        title_inactive_bg = self.get_color("titlebar_inactive_bg")
+        self.tab_bar.bg_color = title_inactive_bg
+        self.tab_window.bg_color = title_inactive_bg
+        self.separator.default_cell["fg_color"] = title_inactive_fg
+        self.separator.default_cell["bg_color"] = title_inactive_bg
+        self.separator.canvas["fg_color"] = title_inactive_fg
+        self.separator.canvas["bg_color"] = title_inactive_bg
 
-        title_active = self.color_theme.titlebar_normal
-        self._tab_underline.default_cell[["fg_color", "bg_color"]] = title_active
-        self._tab_underline.canvas[["fg_color", "bg_color"]] = title_active
+        title_active_fg = self.get_color("titlebar_normal_fg")
+        title_active_bg = self.get_color("titlebar_normal_bg")
+        self._tab_underline.default_cell["fg_color"] = title_active_fg
+        self._tab_underline.default_cell["bg_color"] = title_active_bg
+        self._tab_underline.canvas["fg_color"] = title_active_fg
+        self._tab_underline.canvas["bg_color"] = title_active_bg
 
     def add_tab(self, title: str, content: Gadget):
         """

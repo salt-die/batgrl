@@ -176,6 +176,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Move cursor a word left.
     move_word_right()
         Move cursor a word right.
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     focus()
@@ -268,7 +270,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     ):
         self._placeholder_gadget = Text(alpha=0.0, is_transparent=is_transparent)
         self._placeholder_gadget.set_text(placeholder)
-        self._cursor = Cursor()
+        self._cursor = Cursor(reverse=False)
         self._box = _Box(size=size, is_transparent=is_transparent)
         super().__init__(
             is_grabbable=is_grabbable,
@@ -330,17 +332,19 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        primary = self.color_theme.textbox_primary
-        fg = primary.fg
-        bg = primary.bg
-        self._box.canvas["fg_color"] = self._box.default_fg_color = fg
-        self._box.canvas["bg_color"] = self._box.default_bg_color = bg
+        primary_fg = self.get_color("textbox_primary_fg")
+        primary_bg = self.get_color("textbox_primary_bg")
+        self._box.canvas["fg_color"] = self._box.default_fg_color = primary_fg
+        self._box.canvas["bg_color"] = self._box.default_bg_color = primary_bg
+        self._cursor.fg_color = primary_bg
+        self._cursor.bg_color = primary_fg
 
-        placeholder = self.color_theme.textbox_placeholder
-        self._placeholder_gadget.default_fg_color = placeholder.fg
-        self._placeholder_gadget.default_bg_color = placeholder.bg
-        self._placeholder_gadget.canvas["fg_color"] = placeholder.fg
-        self._placeholder_gadget.canvas["bg_color"] = placeholder.bg
+        placeholder_fg = self.get_color("textbox_placeholder_fg")
+        placeholder_bg = self.get_color("textbox_placeholder_bg")
+        self._placeholder_gadget.default_fg_color = placeholder_fg
+        self._placeholder_gadget.default_bg_color = placeholder_bg
+        self._placeholder_gadget.canvas["fg_color"] = placeholder_fg
+        self._placeholder_gadget.canvas["bg_color"] = placeholder_bg
 
         self._highlight_selection()
 
@@ -452,8 +456,10 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._highlight_selection()
 
     def _highlight_selection(self):
-        colors = self._box.canvas[["fg_color", "bg_color"]]
-        colors[:] = self._box.default_fg_color, self._box.default_bg_color
+        fg = self._box.canvas["fg_color"]
+        bg = self._box.canvas["bg_color"]
+        fg[:] = self._box.default_fg_color
+        bg[:] = self._box.default_bg_color
 
         if self._selection_start != self._selection_end:
             if self._selection_start > self._selection_end:
@@ -463,7 +469,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
                 start = self._selection_start
                 end = self._selection_end
 
-            colors[0, start:end] = self.color_theme.textbox_selection_highlight
+            fg[0, start:end] = self.get_color("textbox_selection_highlight_fg")
+            bg[0, start:end] = self.get_color("textbox_selection_highlight_bg")
 
     @property
     def is_selecting(self) -> bool:

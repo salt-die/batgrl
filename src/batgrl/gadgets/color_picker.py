@@ -214,6 +214,8 @@ class ColorPicker(Themable, Gadget):
 
     Methods
     -------
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     apply_hints()
@@ -346,7 +348,8 @@ class ColorPicker(Themable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        primary = self.color_theme.primary
-        self._container.bg_color = primary.bg
-        self.label.default_fg_color = self.label.canvas["fg_color"] = primary.fg
-        self.label.default_bg_color = self.label.canvas["bg_color"] = primary.bg
+        primary_fg = self.get_color("primary_fg")
+        primarg_bg = self.get_color("primary_bg")
+        self._container.bg_color = primarg_bg
+        self.label.default_fg_color = self.label.canvas["fg_color"] = primary_fg
+        self.label.default_bg_color = self.label.canvas["bg_color"] = primarg_bg

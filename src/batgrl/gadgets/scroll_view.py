@@ -38,15 +38,15 @@ class _ScrollbarBase(Grabbable, Text):
         sv: ScrollView = self.parent
 
         if self.is_grabbed:
-            indicator_color = sv.color_theme.scroll_view_indicator_press
+            indicator_color = sv.get_color("scroll_view_indicator_press")
         elif self.is_hovered:
-            indicator_color = sv.color_theme.scroll_view_indicator_hover
+            indicator_color = sv.get_color("scroll_view_indicator_hover")
         else:
-            indicator_color = sv.color_theme.scroll_view_indicator_normal
+            indicator_color = sv.get_color("scroll_view_indicator_normal")
 
         self.canvas["char"] = " "
         self.canvas["fg_color"] = indicator_color
-        self.canvas["bg_color"] = sv.color_theme.scroll_view_scrollbar
+        self.canvas["bg_color"] = sv.get_color("scroll_view_scrollbar")
         self.canvas["reverse"] = False
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
@@ -322,6 +322,8 @@ class ScrollView(Themable, Grabbable, Gadget):
         Scroll the view down `n` lines.
     scroll_to_rect(pos, size=(1, 1))
         Scroll the view so that a given rect is visible.
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     grab(mouse_event)
@@ -452,8 +454,8 @@ class ScrollView(Themable, Grabbable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        self._background.bg_color = self.color_theme.primary.bg
-        self._corner.bg_color = self.color_theme.scroll_view_scrollbar
+        self._background.bg_color = self.get_color("primary_bg")
+        self._corner.bg_color = self.get_color("scroll_view_scrollbar")
         self._update_port_and_scrollbar()
 
     @property

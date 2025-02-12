@@ -1,5 +1,7 @@
 """Commonly used colors."""
 
+from typing import Final
+
 from pygments.style import Style
 from pygments.token import (
     Comment,
@@ -41,89 +43,117 @@ __all__ = [
     "Neptune",
 ]
 
-WHITE = Color(255, 255, 255)
+WHITE: Final = Color(255, 255, 255)
 """White."""
 
-BLACK = Color(0, 0, 0)
+BLACK: Final = Color(0, 0, 0)
 """Black."""
 
-RED = Color(255, 0, 0)
+RED: Final = Color(255, 0, 0)
 """Red."""
 
-GREEN = Color(0, 255, 0)
+GREEN: Final = Color(0, 255, 0)
 """Green."""
 
-BLUE = Color(0, 0, 255)
+BLUE: Final = Color(0, 0, 255)
 """Blue."""
 
-YELLOW = Color(255, 255, 0)
+YELLOW: Final = Color(255, 255, 0)
 """Yellow."""
 
-CYAN = Color(0, 255, 255)
+CYAN: Final = Color(0, 255, 255)
 """Cyan."""
 
-MAGENTA = Color(255, 0, 255)
+MAGENTA: Final = Color(255, 0, 255)
 """Magenta."""
 
-AWHITE = AColor(255, 255, 255)
+AWHITE: Final = AColor(255, 255, 255)
 """Opaque white."""
 
-ABLACK = AColor(0, 0, 0)
+ABLACK: Final = AColor(0, 0, 0)
 """Opaque black."""
 
-ARED = AColor(255, 0, 0)
+ARED: Final = AColor(255, 0, 0)
 """Opaque red."""
 
-AGREEN = AColor(0, 255, 0)
+AGREEN: Final = AColor(0, 255, 0)
 """Opaque green."""
 
-ABLUE = AColor(0, 0, 255)
+ABLUE: Final = AColor(0, 0, 255)
 """Opaque blue."""
 
-AYELLOW = AColor(255, 255, 0)
+AYELLOW: Final = AColor(255, 255, 0)
 """Opaque yellow."""
 
-ACYAN = AColor(0, 255, 255)
+ACYAN: Final = AColor(0, 255, 255)
 """Opaque cyan."""
 
-AMAGENTA = AColor(255, 0, 255)
+AMAGENTA: Final = AColor(255, 0, 255)
 """Opaque magenta."""
 
-TRANSPARENT = AColor(0, 0, 0, 0)
+TRANSPARENT: Final = AColor(0, 0, 0, 0)
 """Transparent black."""
 
-DEFAULT_COLOR_THEME: ColorTheme = {
-    "primary": {"fg": "f6a7a9", "bg": "070c25"},
-    "text_pad_line_highlight": {"fg": "f6a7a9", "bg": "0c0e30"},
-    "text_pad_selection_highlight": {"fg": "f6a7a9", "bg": "0f1847"},
-    "textbox_primary": {"fg": "fff0f6", "bg": "070c25"},
-    "textbox_selection_highlight": {"fg": "fff0f6", "bg": "0f1847"},
-    "textbox_placeholder": {"fg": "2a3a92", "bg": "070c25"},
-    "button_normal": {"fg": "dde4ed", "bg": "2a3ca0"},
-    "button_hover": {"fg": "fff0f6", "bg": "3248c0"},
-    "button_press": {"fg": "fff0f6", "bg": "c4a219"},
-    "button_disallowed": {"fg": "272b40", "bg": "070c25"},
-    "menu_item_hover": {"fg": "f2babc", "bg": "111834"},
-    "menu_item_selected": {"fg": "ecf3ff", "bg": "1b244b"},
-    "menu_item_disallowed": {"fg": "272b40", "bg": "070c25"},
-    "titlebar_normal": {"fg": "ffe0df", "bg": "070c25"},
-    "titlebar_inactive": {"fg": "7d6b71", "bg": "070c25"},
-    "data_table_sort_indicator": {"fg": "ecf3ff", "bg": "070c25"},
-    "data_table_hover": {"fg": "f6a7a9", "bg": "111834"},
-    "data_table_stripe": {"fg": "f6a7a9", "bg": "0b1238"},
-    "data_table_stripe_hover": {"fg": "f6a7a9", "bg": "0f184a"},
-    "data_table_selected": {"fg": "ecf3ff", "bg": "111f5e"},
-    "data_table_selected_hover": {"fg": "ecf3ff", "bg": "1b244b"},
-    "progress_bar": {"fg": "ffe0df", "bg": "2a3ca0"},
-    "markdown_link": {"fg": "376cff", "bg": "070c25"},
-    "markdown_link_hover": {"fg": "4668ff", "bg": "070c25"},
-    "markdown_inline_code": {"fg": "806ae5", "bg": "080b1a"},
-    "markdown_quote": {"fg": "2054e2", "bg": "0c1b4b"},
-    "markdown_title": {"fg": "cfd1d4", "bg": "292a2d"},
-    "markdown_image": {"fg": "f6a7a9", "bg": "0c1540"},
-    "markdown_block_code_background": "080b1a",
-    "markdown_quote_block_code_background": "11265d",
-    "markdown_header_background": "030612",
+DEFAULT_COLOR_THEME: Final[ColorTheme] = {
+    "primary_fg": "f6a7a9",
+    "primary_bg": "070c25",
+    "text_pad_line_highlight_fg": "f6a7a9",
+    "text_pad_line_highlight_bg": "0c0e30",
+    "text_pad_selection_highlight_fg": "f6a7a9",
+    "text_pad_selection_highlight_bg": "0f1847",
+    "textbox_primary_fg": "fff0f6",
+    "textbox_primary_bg": "070c25",
+    "textbox_selection_highlight_fg": "fff0f6",
+    "textbox_selection_highlight_bg": "0f1847",
+    "textbox_placeholder_fg": "2a3a92",
+    "textbox_placeholder_bg": "070c25",
+    "button_normal_fg": "dde4ed",
+    "button_normal_bg": "2a3ca0",
+    "button_hover_fg": "fff0f6",
+    "button_hover_bg": "3248c0",
+    "button_press_fg": "fff0f6",
+    "button_press_bg": "c4a219",
+    "button_disallowed_fg": "272b40",
+    "button_disallowed_bg": "070c25",
+    "menu_item_hover_fg": "f2babc",
+    "menu_item_hover_bg": "111834",
+    "menu_item_selected_fg": "ecf3ff",
+    "menu_item_selected_bg": "1b244b",
+    "menu_item_disallowed_fg": "272b40",
+    "menu_item_disallowed_bg": "070c25",
+    "titlebar_normal_fg": "ffe0df",
+    "titlebar_normal_bg": "070c25",
+    "titlebar_inactive_fg": "7d6b71",
+    "titlebar_inactive_bg": "070c25",
+    "data_table_sort_indicator_fg": "ecf3ff",
+    "data_table_sort_indicator_bg": "070c25",
+    "data_table_hover_fg": "f6a7a9",
+    "data_table_hover_bg": "111834",
+    "data_table_stripe_fg": "f6a7a9",
+    "data_table_stripe_bg": "0b1238",
+    "data_table_stripe_hover_fg": "f6a7a9",
+    "data_table_stripe_hover_bg": "0f184a",
+    "data_table_selected_fg": "ecf3ff",
+    "data_table_selected_bg": "111f5e",
+    "data_table_selected_hover_fg": "ecf3ff",
+    "data_table_selected_hover_bg": "1b244b",
+    "progress_bar_fg": "ffe0df",
+    "progress_bar_bg": "2a3ca0",
+    "markdown_link_fg": "376cff",
+    "markdown_link_bg": "070c25",
+    "markdown_link_hover_fg": "4668ff",
+    "markdown_link_hover_bg": "070c25",
+    "markdown_inline_code_fg": "806ae5",
+    "markdown_inline_code_bg": "080b1a",
+    "markdown_quote_fg": "2054e2",
+    "markdown_quote_bg": "0c1b4b",
+    "markdown_title_fg": "cfd1d4",
+    "markdown_title_bg": "292a2d",
+    "markdown_image_fg": "f6a7a9",
+    "markdown_image_bg": "0c1540",
+    "markdown_block_code_bg": "080b1a",
+    "markdown_quote_block_code_bg": "11265d",
+    "markdown_header_bg": "030612",
     "scroll_view_scrollbar": "070c25",
     "scroll_view_indicator_normal": "0e1843",
     "scroll_view_indicator_hover": "111e4f",
@@ -133,10 +163,10 @@ DEFAULT_COLOR_THEME: ColorTheme = {
 }
 """Default color theme."""
 
-DEFAULT_PRIMARY_FG = Color.from_hex("f6a7a9")
+DEFAULT_PRIMARY_FG: Final = Color.from_hex(DEFAULT_COLOR_THEME["primary_fg"])
 """Default primary foreground color."""
 
-DEFAULT_PRIMARY_BG = Color.from_hex("070c25")
+DEFAULT_PRIMARY_BG: Final = Color.from_hex(DEFAULT_COLOR_THEME["primary_bg"])
 """Default primary background color."""
 
 

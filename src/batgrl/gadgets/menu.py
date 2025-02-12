@@ -58,14 +58,19 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
 
     def _repaint(self):
         if self.button_state == "disallowed":
-            color_pair = self.color_theme.menu_item_disallowed
+            fg = self.get_color("menu_item_disallowed_fg")
+            bg = self.get_color("menu_item_disallowed_bg")
         elif self.button_state == "normal":
-            color_pair = self.color_theme.primary
-        elif self.button_state == "hover" or self.button_state == "down":
-            color_pair = self.color_theme.menu_item_hover
-        self.bg_color = color_pair.bg
-        self.left_label.canvas[["fg_color", "bg_color"]] = color_pair
-        self.right_label.canvas[["fg_color", "bg_color"]] = color_pair
+            fg = self.get_color("primary_fg")
+            bg = self.get_color("primary_bg")
+        else:
+            fg = self.get_color("menu_item_hover_fg")
+            bg = self.get_color("menu_item_hover_bg")
+        self.bg_color = bg
+        self.left_label.canvas["fg_color"] = fg
+        self.left_label.canvas["bg_color"] = bg
+        self.right_label.canvas["fg_color"] = fg
+        self.right_label.canvas["bg_color"] = bg
 
     @property
     def alpha(self) -> float:
@@ -428,7 +433,8 @@ class Menu(GridLayout):
             self.close_submenus()
 
             for child in self.children:
-                child.button_state = "normal"
+                if child.button_state != "disallowed":
+                    child.button_state = "normal"
 
     def close_submenus(self):
         """Close all submenus."""
@@ -479,11 +485,11 @@ class Menu(GridLayout):
                 i = (i - 1) % len(self.children)
 
             for _ in self.children:
-                if self.children[i].item_disabled:
+                if self.children[i].button_state == "disallowed":
                     i = (i - 1) % len(self.children)
                 else:
                     self._current_selection = i
-                    self.children[i]._hover()
+                    self.children[i].button_state = "hover"
                     self.close_submenus()
                     return True
 
@@ -498,11 +504,11 @@ class Menu(GridLayout):
                 i = (i + 1) % len(self.children)
 
             for _ in self.children:
-                if self.children[i].item_disabled:
+                if self.children[i].button_state == "disallowed":
                     i = (i + 1) % len(self.children)
                 else:
                     self._current_selection = i
-                    self.children[i]._hover()
+                    self.children[i].button_state = "hover"
                     self.close_submenus()
                     return True
 
@@ -523,7 +529,7 @@ class Menu(GridLayout):
             ):
                 submenu.open_menu()
                 if submenu.children:
-                    submenu.children[0]._hover()
+                    submenu.children[0].button_state = "hover"
                     submenu.close_submenus()
                 return True
 
@@ -532,10 +538,7 @@ class Menu(GridLayout):
                 self._current_selection != -1
                 and (child := self.children[self._current_selection]).submenu is None
             ):
-                if (n := nargs(child.item_callback)) == 0:
-                    child.on_release()
-                elif n == 1:
-                    child._down()
+                child.on_release()
                 return True
 
         return super().on_key(key_event)
@@ -640,13 +643,20 @@ class _MenuButton(Themable, ToggleButtonBehavior, Text):
         """Menu that the button opens."""
 
     def _repaint(self):
-        if self.button_state != "normal" or self.toggle_state == "on":
-            color_pair = self.color_theme.menu_item_hover
+        if self.button_state == "disallowed":
+            fg = self.get_color("menu_item_disallowed_fg")
+            bg = self.get_color("menu_item_disallowed_fg")
+        elif self.button_state != "normal" or self.toggle_state == "on":
+            fg = self.get_color("menu_item_hover_fg")
+            bg = self.get_color("menu_item_hover_bg")
         else:
-            color_pair = self.color_theme.primary
+            fg = self.get_color("primary_fg")
+            bg = self.get_color("primary_bg")
 
-        self.default_fg_color, self.default_bg_color = color_pair
-        self.canvas[["fg_color", "bg_color"]] = color_pair
+        self.default_fg_color = fg
+        self.default_bg_color = bg
+        self.canvas["fg_color"] = fg
+        self.canvas["bg_color"] = bg
 
     def update_theme(self):
         self._repaint()
@@ -969,14 +979,19 @@ class MenuBar(GridLayout):
             return True
 
         if key_event.key == "left":
+            if self.children[i].button_state != "disallowed":
+                self.children[i].button_state = "normal"
             i -= 1
         elif key_event.key == "right":
+            if self.children[i].button_state != "disallowed":
+                self.children[i].button_state = "normal"
             i += 1
         else:
             return super().on_key(key_event)
 
         i %= len(self.children)
-        self.children[i].toggle_state = "on"
+        # FIXME: Why doesn't `self.children[i].toggle_state = "on"` work?
+        self.children[i].button_state = "hover"
         return True
 
     @classmethod

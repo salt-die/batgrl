@@ -157,13 +157,15 @@ class _ColumnLabel(_CellBase):
 
     def _update_indicator(self):
         if self._allow_sorting:
-            color_pair = self.data_table.color_theme.data_table_sort_indicator
+            fg = self.data_table.get_color("data_table_sort_indicator_fg")
+            bg = self.data_table.get_color("data_table_sort_indicator_bg")
             char = self._sort_state.value
         else:
-            color_pair = self.data_table.color_theme.primary
+            fg = self.data_table.get_color("primary_fg")
+            bg = self.data_table.get_color("primary_bg")
             char = " "
-        self.canvas["fg_color"][self.indicator_pos] = color_pair.fg
-        self.canvas["bg_color"][self.indicator_pos] = color_pair.bg
+        self.canvas["fg_color"][self.indicator_pos] = fg
+        self.canvas["bg_color"][self.indicator_pos] = bg
         self.canvas["char"][self.indicator_pos] = char
 
     @property
@@ -243,13 +245,16 @@ class _DataCell(_CellBase):
         super().on_size()
         self.canvas["char"] = " "
         if self.striped:
-            color_pair = self.data_table.color_theme.data_table_stripe
+            fg = self.data_table.get_color("data_table_stripe_fg")
+            bg = self.data_table.get_color("data_table_stripe_bg")
         elif self.selected:
-            color_pair = self.data_table.color_theme.data_table_selected
+            fg = self.data_table.get_color("data_table_selected_fg")
+            bg = self.data_table.get_color("data_table_selected_bg")
         else:
-            color_pair = self.data_table.color_theme.primary
-        self.canvas["fg_color"] = color_pair.fg
-        self.canvas["bg_color"] = color_pair.bg
+            fg = self.data_table.get_color("primary_fg")
+            bg = self.data_table.get_color("primary_bg")
+        self.canvas["fg_color"] = fg
+        self.canvas["bg_color"] = bg
 
         align = _ALIGN_FORMATTER[self.style.alignment]
         padding = self.style.padding
@@ -384,6 +389,8 @@ class DataTable(Themable, Gadget):
         Returns the row id of the row at index.
     column_id_from_index(index)
         Returns the column id of the column at index.
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     apply_hints()
@@ -571,16 +578,20 @@ class DataTable(Themable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        primary = self.color_theme.primary
-        sort = self.color_theme.data_table_sort_indicator
-        self._table.bg_color = primary.bg
+        primary_fg = self.get_color("primary_fg")
+        primary_bg = self.get_color("primary_bg")
+        sort_fg = self.get_color("data_table_sort_indicator_fg")
+        sort_bg = self.get_color("data_table_sort_indicator_bg")
+        self._table.bg_color = primary_bg
 
         label: _ColumnLabel
         for label in self._column_labels.children:
-            label.default_fg_color = primary.fg
-            label.default_bg_color = primary.bg
-            label.canvas[["fg_color", "bg_color"]] = primary
-            label.canvas[["fg_color", "bg_color"]][label.indicator_pos] = sort
+            label.default_fg_color = primary_fg
+            label.default_bg_color = primary_bg
+            label.canvas["fg_color"] = primary_fg
+            label.canvas["bg_color"] = primary_bg
+            label.canvas["fg_color"][label.indicator_pos] = sort_fg
+            label.canvas["bg_color"][label.indicator_pos] = sort_bg
 
         cell: _DataCell
         for row in self._rows.values():
@@ -600,21 +611,29 @@ class DataTable(Themable, Gadget):
 
     def _paint_cell_hover(self, cell: _DataCell):
         if cell.selected:
-            color_pair = self.color_theme.data_table_selected_hover
+            fg = self.get_color("data_table_selected_hover_fg")
+            bg = self.get_color("data_table_selected_hover_bg")
         elif cell.striped:
-            color_pair = self.color_theme.data_table_stripe_hover
+            fg = self.get_color("data_table_stripe_hover_fg")
+            bg = self.get_color("data_table_stripe_hover_bg")
         else:
-            color_pair = self.color_theme.data_table_hover
-        cell.canvas[["fg_color", "bg_color"]] = color_pair
+            fg = self.get_color("data_table_hover_fg")
+            bg = self.get_color("data_table_hover_bg")
+        cell.canvas["fg_color"] = fg
+        cell.canvas["bg_color"] = bg
 
     def _paint_cell_normal(self, cell: _DataCell):
         if cell.selected:
-            color_pair = self.color_theme.data_table_selected
+            fg = self.get_color("data_table_selected_fg")
+            bg = self.get_color("data_table_selected_bg")
         elif cell.striped:
-            color_pair = self.color_theme.data_table_stripe
+            fg = self.get_color("data_table_stripe_fg")
+            bg = self.get_color("data_table_stripe_bg")
         else:
-            color_pair = self.color_theme.primary
-        cell.canvas[["fg_color", "bg_color"]] = color_pair
+            fg = self.get_color("primary_fg")
+            bg = self.get_color("primary_bg")
+        cell.canvas["fg_color"] = fg
+        cell.canvas["bg_color"] = bg
 
     def _repaint_cells(self):
         for row in self._iter_rows():

@@ -152,7 +152,7 @@ class IsoTileApp(App):
             show_horizontal_bar=False,
             mouse_button="middle",
         )
-        sv.view = WorldGadget(blitter="half")
+        sv.view = WorldGadget(blitter="sixel")
         self.add_gadget(sv)
 
 

@@ -132,6 +132,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Move cursor a word left.
     move_word_right()
         Move cursor a word right.
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     focus()
@@ -261,12 +263,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        primary = self.color_theme.primary
-        fg = primary.fg
-        bg = primary.bg
+        primary_fg = self.get_color("primary_fg")
+        primary_bg = self.get_color("primary_bg")
 
-        self._pad.canvas["fg_color"] = self._pad.default_fg_color = fg
-        self._pad.canvas["bg_color"] = self._pad.default_bg_color = bg
+        self._pad.canvas["fg_color"] = self._pad.default_fg_color = primary_fg
+        self._pad.canvas["bg_color"] = self._pad.default_bg_color = primary_bg
         self._highlight_selection()
 
     def on_add(self):
@@ -362,8 +363,10 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self._highlight_selection()
 
     def _highlight_selection(self):
-        colors = self._pad.canvas[["fg_color", "bg_color"]]
-        colors[:] = self._pad.default_fg_color, self._pad.default_bg_color
+        fg = self._pad.canvas["fg_color"]
+        bg = self._pad.canvas["bg_color"]
+        fg[:] = self._pad.default_fg_color
+        bg[:] = self._pad.default_bg_color
 
         if self._selection_start != self._selection_end:
             if self._selection_start > self._selection_end:
@@ -373,17 +376,23 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 sy, sx = self._selection_start
                 ey, ex = self._selection_end
 
-            highlight = self.color_theme.text_pad_selection_highlight
+            highlight_fg = self.get_color("text_pad_selection_highlight_fg")
+            highlight_bg = self.get_color("text_pad_selection_highlight_bg")
             ll = self._line_lengths
             if sy == ey:
-                colors[sy, sx:ex] = highlight
+                fg[sy, sx:ex] = highlight_fg
+                bg[sy, sx:ex] = highlight_bg
             else:
-                colors[sy, sx : ll[sy]] = highlight
-                colors[ey, :ex] = highlight
+                fg[sy, sx : ll[sy]] = highlight_fg
+                bg[sy, sx : ll[sy]] = highlight_bg
+                fg[ey, :ex] = highlight_fg
+                bg[ey, :ex] = highlight_bg
                 for i in range(sy + 1, ey):
-                    colors[i, : ll[i]] = highlight
+                    fg[i, : ll[i]] = highlight_fg
+                    bg[i, : ll[i]] = highlight_bg
         else:  # If no selection or selection is empty, add line highlight.
-            colors[self.cursor.y, :] = self.color_theme.text_pad_line_highlight
+            fg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_fg")
+            bg[self.cursor.y, :] = self.get_color("text_pad_line_highlight_bg")
 
     @property
     def is_selecting(self) -> bool:

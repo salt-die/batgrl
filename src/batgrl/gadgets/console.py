@@ -344,6 +344,8 @@ class Console(Themable, Focusable, Gadget):
 
     Methods
     -------
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     focus()
@@ -555,15 +557,16 @@ class Console(Themable, Focusable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        primary = self.color_theme.primary
-        self._prompt.default_fg_color = self._prompt.canvas["fg_color"] = primary.fg
-        self._prompt.default_bg_color = self._prompt.canvas["bg_color"] = primary.bg
-        self._output.default_fg_color = self._output.canvas["fg_color"] = primary.fg
-        self._output.default_bg_color = self._output.canvas["bg_color"] = primary.bg
-        self._input._box.canvas["fg_color"] = primary.fg
-        self._input._box.default_fg_color = primary.fg
-        self._input._box.canvas["bg_color"] = primary.bg
-        self._input._box.default_bg_color = primary.bg
+        primary_fg = self.get_color("primary_fg")
+        primary_bg = self.get_color("primary_bg")
+        self._prompt.default_fg_color = self._prompt.canvas["fg_color"] = primary_fg
+        self._prompt.default_bg_color = self._prompt.canvas["bg_color"] = primary_bg
+        self._output.default_fg_color = self._output.canvas["fg_color"] = primary_fg
+        self._output.default_bg_color = self._output.canvas["bg_color"] = primary_bg
+        self._input._box.canvas["fg_color"] = primary_fg
+        self._input._box.default_fg_color = primary_fg
+        self._input._box.canvas["bg_color"] = primary_bg
+        self._input._box.default_bg_color = primary_bg
 
     def on_add(self):
         """Add running app and root gadget to console's locals."""

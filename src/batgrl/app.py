@@ -228,12 +228,11 @@ class App(ABC):
     @property
     def color_theme(self) -> ColorTheme:
         """Color theme for themable gadgets."""
-        return self._color_theme
+        Themable.color_theme
 
     @color_theme.setter
     def color_theme(self, color_theme: ColorTheme):
-        self._color_theme = color_theme
-        Themable.set_theme(color_theme)
+        Themable.color_theme = color_theme
 
         if self.root is not None:
             for gadget in self.root.walk():

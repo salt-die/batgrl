@@ -9,10 +9,10 @@ from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.text_pad import TextPad
 from batgrl.gadgets.textbox import Textbox
 
-SECONDARY_FG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected"]["fg"])
-SECONDARY_BG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected"]["bg"])
-ACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal"]["fg"])
-INACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal"]["bg"])
+SECONDARY_FG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected_fg"])
+SECONDARY_BG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected_bg"])
+ACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal_fg"])
+INACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal_bg"])
 
 JABBERWOCKY = """
             Jabberwocky

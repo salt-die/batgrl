@@ -137,6 +137,8 @@ class Window(Themable, Focusable, Grabbable, Gadget):
 
     Methods
     -------
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     focus()
@@ -389,14 +391,16 @@ class Window(Themable, Focusable, Grabbable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        self._background.bg_color = self.color_theme.primary.bg
+        self._background.bg_color = self.get_color("primary_bg")
 
         if self.is_focused:
-            fg, bg = self.color_theme.titlebar_normal
-            border = self.color_theme.window_border_normal
+            fg = self.get_color("titlebar_normal_fg")
+            bg = self.get_color("titlebar_normal_bg")
+            border = self.get_color("window_border_normal")
         else:
-            fg, bg = self.color_theme.titlebar_inactive
-            border = self.color_theme.window_border_inactive
+            fg = self.get_color("titlebar_inactive_fg")
+            bg = self.get_color("titlebar_inactive_bg")
+            border = self.get_color("window_border_inactive")
 
         self._titlebar.fg_color = fg
         self._titlebar.bg_color = bg

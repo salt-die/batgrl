@@ -98,6 +98,8 @@ class ProgressBar(Themable, Gadget):
 
     Methods
     -------
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     apply_hints()
@@ -226,7 +228,8 @@ class ProgressBar(Themable, Gadget):
         self._bar.clear()
         canvas = self._bar.canvas
         canvas["char"][:, x : x + len(smooth_bar)] = smooth_bar
-        canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
+        canvas["fg_color"] = self.get_color("progress_bar_fg")
+        canvas["bg_color"] = self.get_color("progress_bar_bg")
         if offset:
             canvas["reverse"][:, x] = True
 
@@ -239,7 +242,8 @@ class ProgressBar(Themable, Gadget):
         self._bar.clear()
         canvas = self._bar.canvas
         canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
-        canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
+        canvas["fg_color"] = self.get_color("progress_bar_fg")
+        canvas["bg_color"] = self.get_color("progress_bar_bg")
         if offset:
             canvas["reverse"][::-1][y] = True
 
@@ -282,14 +286,18 @@ class ProgressBar(Themable, Gadget):
 
     def update_theme(self):
         """Paint the gadget with current theme."""
-        self._bar.canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
-        self.default_fg_color = self.color_theme.progress_bar.fg
-        self.default_bg_color = self.color_theme.progress_bar.bg
+        fg = self.get_color("progress_bar_fg")
+        bg = self.get_color("progress_bar_bg")
+        self._bar.canvas["fg_color"] = fg
+        self._bar.canvas["bg_color"] = bg
+        self.default_fg_color = fg
+        self.default_bg_color = bg
 
     def _paint_progress_bar(self):
         self._bar.clear()
         canvas = self._bar.canvas
-        canvas[["fg_color", "bg_color"]] = self.color_theme.progress_bar
+        canvas["fg_color"] = self.get_color("progress_bar_fg")
+        canvas["bg_color"] = self.get_color("progress_bar_bg")
         if self.is_horizontal:
             smooth_bar = smooth_horizontal_bar(self.width, self.progress)
             canvas["char"][:, : len(smooth_bar)] = smooth_bar

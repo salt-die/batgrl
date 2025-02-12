@@ -126,6 +126,8 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Select this node.
     unselect()
         Unselect this node.
+    get_color()
+        Get a color by name from the current color theme.
     update_theme()
         Paint the gadget with current theme.
     update_normal()
@@ -233,12 +235,16 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
 
     def _repaint(self):
         if self.is_selected:
-            color_pair = self.color_theme.menu_item_selected
+            fg = self.get_color("menu_item_selected_fg")
+            bg = self.get_color("menu_item_selected_bg")
         elif self.button_state == "normal":
-            color_pair = self.color_theme.primary
+            fg = self.get_color("primary_fg")
+            bg = self.get_color("primary_bg")
         else:
-            color_pair = self.color_theme.menu_item_hover
-        self.canvas[["fg_color", "bg_color"]] = color_pair
+            fg = self.get_color("menu_item_hover_fg")
+            bg = self.get_color("menu_item_hover_bg")
+        self.canvas["fg_color"] = fg
+        self.canvas["bg_color"] = bg
 
     def on_size(self):
         """Repaint tree on resize."""
