@@ -23,9 +23,9 @@ from batgrl.geometry import BezierCurve, Easing, move_along_path
 LOGO = Path(__file__).parent / ".." / "assets" / "python_discord_logo.png"
 BG_SIZE = (30, 80)
 GRADIENTS = [
-    gradient(ARED, AGREEN, 100),
-    gradient(AGREEN, ABLUE, 100),
-    gradient(ABLUE, AYELLOW, 100),
+    gradient(ARED, AGREEN, n=100),
+    gradient(AGREEN, ABLUE, n=100),
+    gradient(ABLUE, AYELLOW, n=100),
 ]
 
 

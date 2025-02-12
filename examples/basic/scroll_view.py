@@ -8,8 +8,8 @@ from batgrl.gadgets.text import Size, Text
 N = 20  # Number of coordinate pairs on each line.
 BIG_GADGET_SIZE = Size(50, 8 * N + N - 1)
 
-LEFT_GRADIENT = gradient(RED, GREEN, BIG_GADGET_SIZE.rows)
-RIGHT_GRADIENT = gradient(GREEN, BLUE, BIG_GADGET_SIZE.rows)
+LEFT_GRADIENT = gradient(RED, GREEN, n=BIG_GADGET_SIZE.rows)
+RIGHT_GRADIENT = gradient(GREEN, BLUE, n=BIG_GADGET_SIZE.rows)
 
 
 class ScrollViewApp(App):
@@ -21,7 +21,7 @@ class ScrollViewApp(App):
                 " ".join(f"({y:<2}, {x:<2})" for x in range(N)), pos=(y, 0)
             )
             big_gadget.canvas["bg_color"][y] = gradient(
-                LEFT_GRADIENT[y], RIGHT_GRADIENT[y], BIG_GADGET_SIZE.columns
+                LEFT_GRADIENT[y], RIGHT_GRADIENT[y], n=BIG_GADGET_SIZE.columns
             )
 
         scroll_view = ScrollView(size=(20, 50), pos_hint={"y_hint": 0.5, "x_hint": 0.5})

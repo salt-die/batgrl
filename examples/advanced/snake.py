@@ -22,7 +22,7 @@ SNAKE_START = HEIGHT // 2, WIDTH // 2
 SNAKE_START_2 = HEIGHT // 2 + 1, WIDTH // 2
 TICK_DURATION = 0.12
 RAINBOW_GRADIENT = rainbow_gradient(40, alpha=255)
-APPLE_GRADIENT = cycle(gradient(ARED, AWHITE, 5) + gradient(AWHITE, ARED, 20))
+APPLE_GRADIENT = cycle(gradient(ARED, AWHITE, n=5) + gradient(AWHITE, ARED, n=20))
 
 
 def inbounds(pos):

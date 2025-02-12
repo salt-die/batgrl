@@ -23,7 +23,7 @@ UNSTABLE_COLORS = [
     Color.from_hex("049dbf"),
 ]
 STAR_COLOR = Color.from_hex("4a4a4d")
-STAR_GRADIENT = gradient(STAR_COLOR, WHITE, 6)
+STAR_GRADIENT = gradient(STAR_COLOR, WHITE, n=6)
 TOP_COLOR = Color.from_hex("8a008a")
 MIDDLE_COLOR = Color.from_hex("00d1ff")
 RNG = np.random.default_rng()

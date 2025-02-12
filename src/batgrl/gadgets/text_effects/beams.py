@@ -15,8 +15,8 @@ HORIZONTAL_BEAM = "▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▂▃▃▃▃�
 VERTICAL_BEAM = "▏\n▏\n▏\n▏\n▎\n▎\n▎\n▎\n▍\n▍\n▍\n▍\n▌\n▌\n▌\n▌"
 BEAM_BLUE = Color.from_hex("00d1ff")
 BEAM_PURP = Color.from_hex("8a008a")
-HORIZONTAL_GRAD = gradient(BEAM_PURP, BEAM_BLUE, 16) + gradient(BEAM_BLUE, WHITE, 16)
-VERTICAL_GRAD = gradient(BEAM_PURP, BEAM_BLUE, 8) + gradient(BEAM_BLUE, WHITE, 8)
+HORIZONTAL_GRAD = gradient(BEAM_PURP, BEAM_BLUE, WHITE, n=32)
+VERTICAL_GRAD = gradient(BEAM_PURP, BEAM_BLUE, WHITE, n=16)
 
 
 async def beams_effect(text: Text):

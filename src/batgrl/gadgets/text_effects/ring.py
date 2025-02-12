@@ -15,7 +15,7 @@ from ._particle import Particle
 
 RNG = np.random.default_rng()
 RING_COLORS = [Color.from_hex("8a008a"), Color.from_hex("00d1ff")]
-DISPERSE_COLORS = gradient(BLUE, WHITE, 10)
+DISPERSE_COLORS = gradient(BLUE, WHITE, n=10)
 
 
 async def ring_effect(text: Text):

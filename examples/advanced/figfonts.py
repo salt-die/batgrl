@@ -74,7 +74,7 @@ class Bleed(Text):
 class TextButton(ButtonBehavior, Text):
     def __init__(self, **kwargs):
         self._color_task = None
-        self._grad = gradient(WHITE, RED, 20)
+        self._grad = gradient(WHITE, RED, n=20)
         self._dark_red = lerp_colors(RED, BLACK, 0.35)
         self._i = 0
         super().__init__(**kwargs)

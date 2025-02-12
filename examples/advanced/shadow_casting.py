@@ -25,9 +25,9 @@ from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.toggle_button import ToggleButton
 
 PANEL_WIDTH = 23
-WHITE_TO_RED = gradient(WHITE, RED, PANEL_WIDTH)
-WHITE_TO_BLUE = gradient(WHITE, BLUE, PANEL_WIDTH)
-BLACK_TO_WHITE = gradient(BLACK, WHITE, PANEL_WIDTH)
+WHITE_TO_RED = gradient(WHITE, RED, n=PANEL_WIDTH)
+WHITE_TO_BLUE = gradient(WHITE, BLUE, n=PANEL_WIDTH)
+BLACK_TO_WHITE = gradient(BLACK, WHITE, n=PANEL_WIDTH)
 
 
 class Selector(Grabbable, Text):

@@ -6,7 +6,7 @@ from batgrl.gadgets.text import Text
 
 LIGHT_PURPLE = Color.from_hex("8d46dd")
 DARK_PURPLE = Color.from_hex("190c54")
-GRADIENT = gradient(DARK_PURPLE, LIGHT_PURPLE, 9)
+GRADIENT = gradient(DARK_PURPLE, LIGHT_PURPLE, n=9)
 LINE_GLOW_DURATION = 0.09
 
 ONE = """

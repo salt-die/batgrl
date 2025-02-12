@@ -58,7 +58,7 @@ class Checker(Graphics):
 
     async def _flash(self):
         flash_gradient = cycle(
-            gradient(self._color, AWHITE, 20) + gradient(AWHITE, self._color, 10)
+            gradient(self._color, AWHITE, n=20) + gradient(AWHITE, self._color, n=10)
         )
         for self.texture[:] in flash_gradient:
             await asyncio.sleep(0.05)

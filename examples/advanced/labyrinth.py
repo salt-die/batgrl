@@ -16,7 +16,7 @@ from batgrl.gadgets.graphics import Graphics, scale_geometry
 
 GREEN = AColor.from_hex("0bbf23")
 BLUE = AColor.from_hex("0b38bf")
-PLAYER_GRADIENT = cycle(gradient(BLUE, AWHITE, 50) + gradient(AWHITE, BLUE, 50))
+PLAYER_GRADIENT = cycle(gradient(BLUE, AWHITE, n=50) + gradient(AWHITE, BLUE, n=50))
 
 
 def _path_yx(a, b):
@@ -91,7 +91,7 @@ class Labyrinth(Graphics):
         self.nodes = list(self.maze.nodes)
 
         self._texture_gradient = np.array(
-            [gradient(color, BLUE, w) for color in gradient(GREEN, BLUE, h)],
+            [gradient(color, BLUE, n=w) for color in gradient(GREEN, BLUE, n=h)],
             dtype=np.uint8,
         )
 

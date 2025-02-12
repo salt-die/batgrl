@@ -1,7 +1,8 @@
 """A color picker gadget."""
 
 from collections.abc import Callable
-from itertools import pairwise
+
+import numpy as np
 
 from ..colors import (
     ABLACK,
@@ -28,7 +29,7 @@ from .text import Text, new_cell
 
 __all__ = ["ColorPicker", "Point", "Size"]
 
-GRAD = tuple(pairwise([ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED]))
+GRAD = (ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED)
 
 
 class _ShadeSelector(Grabbable, Graphics):
@@ -57,12 +58,13 @@ class _ShadeSelector(Grabbable, Graphics):
         h, w = scale_geometry(self._blitter, self._size)
         if w == 0:
             return
-        left_side = gradient(AWHITE, ABLACK, h)
-        right_side = gradient(hue, ABLACK, h)
 
-        for row, left, right in zip(self.texture, left_side, right_side):
-            row[:] = gradient(left, right, w)
-
+        self.texture = np.linspace(
+            np.linspace(AWHITE, hue, w),
+            np.linspace(ABLACK, ABLACK, w),
+            h,
+            dtype=np.uint8,
+        )
         self.update_swatch_label()
 
     def update_swatch_label(self):
@@ -91,31 +93,18 @@ class _ShadeSelector(Grabbable, Graphics):
 
 class _HueSelector(Grabbable, Graphics):
     def __init__(self, shade_selector, **kwargs):
-        super().__init__(**kwargs)
-        self.shade_selector = shade_selector
-
         self._hue_hint = 0.0
         self._hue_indicator = Text(
-            size=(1, 1), default_cell=new_cell(fg_color=WHITE, bg_color=RED)
+            size=(1, 1), default_cell=new_cell(char="▼", fg_color=WHITE, bg_color=RED)
         )
-        self._hue_indicator.add_str("▼")
-
+        self.shade_selector = shade_selector
+        super().__init__(**kwargs)
         self.add_gadget(self._hue_indicator)
 
     def on_size(self):
         super().on_size()
-        _, w = self._size
-        d, r = divmod(w, 6)
-        if d == 1:
-            return
-
-        rainbow = []
-        for i, (a, b) in enumerate(GRAD):
-            rainbow.extend(gradient(a, b, d + (i < r)))
-
-        self.texture[:] = rainbow
-
-        self._hue_indicator.x = round(self._hue_hint * w)
+        self.texture[:] = gradient(*GRAD, n=self.width)
+        self._hue_indicator.x = round(self._hue_hint * self.width)
         self.update_hue()
 
     def update_hue(self):
