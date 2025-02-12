@@ -1,5 +1,8 @@
 """A scrollable view gadget."""
 
+import asyncio
+from typing import Final
+
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
 from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.grabbable import Grabbable
@@ -9,6 +12,11 @@ from .pane import Pane
 from .text import Text
 
 __all__ = ["ScrollView", "Point", "Size"]
+
+_DAMPING: Final = 0.75
+"""Velocity damping for inertial scrolling."""
+_VELOCITY_CUTOFF: Final = 0.001
+"""Minimum velocity before stopping inertial scrolling."""
 
 
 class _ScrollbarBase(Grabbable, Text):
@@ -202,6 +210,8 @@ class ScrollView(Themable, Grabbable, Gadget):
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool, default: True
         Allow scrolling with arrow keys.
+    inertial_scrolling_enabled : bool, default: True
+        Whether inertial scrolling is enabled.
     is_grabbable : bool, default: True
         Whether grabbable behavior is enabled.
     ptf_on_grab : bool, default: False
@@ -245,6 +255,8 @@ class ScrollView(Themable, Grabbable, Gadget):
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool
         Allow scrolling with arrow keys.
+    inertial_scrolling_enabled : bool
+        Whether inertial scrolling is enabled.
     vertical_proportion : float
         Vertical scroll position as a proportion of total height.
     horizontal_proportion : float
@@ -392,6 +404,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         dynamic_bars: bool = False,
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
+        inertial_scrolling_enabled: bool = True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
@@ -420,6 +433,12 @@ class ScrollView(Themable, Grabbable, Gadget):
         self._vertical_proportion = 0.0
         self._horizontal_proportion = 0.0
         self._view = None
+        self._vertical_velocity: float = 0.0
+        """Vertical velocity for inertial scrolling."""
+        self._horizontal_velocity: float = 0.0
+        """Horizontal velocity for inertial scrolling."""
+        self._inertial_scroll_task: asyncio.Task | None = None
+        """Task that updates inertial scroll."""
 
         super().__init__(
             is_grabbable=is_grabbable,
@@ -433,10 +452,12 @@ class ScrollView(Themable, Grabbable, Gadget):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self.allow_vertical_scroll = allow_vertical_scroll
+        self.allow_vertical_scroll: bool = allow_vertical_scroll
         """Allow vertical scrolling."""
-        self.allow_horizontal_scroll = allow_horizontal_scroll
+        self.allow_horizontal_scroll: bool = allow_horizontal_scroll
         """Allow horizontal scrolling."""
+        self.inertial_scrolling_enabled: bool = inertial_scrolling_enabled
+        """Whether inertial scrolling is enabled."""
         self.scrollwheel_enabled = scrollwheel_enabled
         """Allow vertical scrolling with scrollwheel."""
         self.arrow_keys_enabled = arrow_keys_enabled
@@ -613,6 +634,40 @@ class ScrollView(Themable, Grabbable, Gadget):
             update_proportion()
             self._view_bind_uid = view.bind("size", update_proportion)
 
+    def _inertial_scroll(self, y: float = 0.0, x: float = 0.0):
+        if not self.inertial_scrolling_enabled:
+            return
+
+        if self._inertial_scroll_task is not None:
+            self._inertial_scroll_task.cancel()
+        self._inertial_scroll_task = asyncio.create_task(self._damp_velocity())
+
+    async def _damp_velocity(self):
+        while True:
+            self._vertical_velocity *= _DAMPING
+            if abs(self._vertical_velocity) <= _VELOCITY_CUTOFF:
+                self._vertical_velocity = 0
+            else:
+                self.vertical_proportion += self._vertical_velocity
+
+            self._horizontal_velocity *= _DAMPING
+            if abs(self._horizontal_velocity) <= _VELOCITY_CUTOFF:
+                self._horizontal_velocity = 0
+            else:
+                self.horizontal_proportion += self._horizontal_velocity
+
+            if self._vertical_velocity == 0 and self._horizontal_velocity == 0:
+                return
+
+            await asyncio.sleep(0.1)
+
+    def on_remove(self) -> None:
+        """Cancel inertial scroll on remove."""
+        if self._inertial_scroll_task is not None:
+            self._inertial_scroll_task.cancel()
+            self._inertial_scroll_task = None
+        super().on_remove()
+
     def remove_gadget(self, gadget: Gadget):
         """Unbind from the view on its removal."""
         if gadget is self._view:
@@ -669,10 +724,28 @@ class ScrollView(Themable, Grabbable, Gadget):
 
         return True
 
-    def grab_update(self, mouse_event: MouseEvent):
+    def grab_update(self, mouse_event: MouseEvent) -> None:
         """Scroll on grab update."""
         self.scroll_up(mouse_event.dy)
         self.scroll_left(mouse_event.dx)
+        if self.height:
+            vv = -2 * mouse_event.dy / self.height
+        else:
+            vv = 0
+        if abs(vv) > abs(self._vertical_velocity):
+            self._vertical_velocity = vv
+
+        if self.width:
+            hv = -2 * mouse_event.dx / self.width
+        else:
+            hv = 0
+        if abs(hv) > abs(self._horizontal_velocity):
+            self._horizontal_velocity = hv
+
+    def ungrab(self, mouse_event: MouseEvent) -> None:
+        """Start inertial scroll."""
+        super().ungrab(mouse_event)
+        self._inertial_scroll()
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Scroll on mouse wheel."""
