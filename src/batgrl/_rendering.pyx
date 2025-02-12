@@ -1106,13 +1106,7 @@ cdef void trans_full_graphics_field_render(
         a = alpha * <double>src_rgba[3] / 255
         if kind[py, px] != SIXEL:
             dst = &cells[py, px]
-            dst.char_ = u" "
-            dst.bold = False
-            dst.italic = False
-            dst.underline = False
-            dst.strikethrough = False
-            dst.overline = False
-            dst.reverse = False
+            composite(&dst.fg_color[0], src_rgba, a)
             composite(&dst.bg_color[0], src_rgba, a)
         if kind[py, px] != GLYPH:
             oy = py * h
