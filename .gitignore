@@ -1,4 +1,5 @@
 *.c
+!**/vt500_parser.c
 *.so
 *.pyc
 *.pyd
