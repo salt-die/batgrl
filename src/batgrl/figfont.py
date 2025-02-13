@@ -29,7 +29,10 @@ from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
-from uwcwidth import wcswidth, wcwidth
+from ugrapheme import grapheme_iter
+from uwcwidth import wcswidth
+
+from .text_tools import egc_chr, egc_ord
 
 __all__ = ["FullLayout", "FIGFont"]
 
@@ -105,7 +108,7 @@ class FIGFont:
         Controls how characters are fitted in rendered text.
     reverse_universal_smush : bool, default: False
         Whether universal smushing will display earliest sub-character.
-    font : dict[str, NDArray[np.dtype("<U1")]], default: {}
+    font : dict[str, NDArray[np.uint32]], default: {}
         A dictionary of characters to their ascii art representations.
     comments : str, default: ""
         Additional comments about this font.
@@ -120,7 +123,7 @@ class FIGFont:
         Controls how characters are fitted in rendered text.
     reverse_universal_smush : bool
         Whether universal smushing will display earliest sub-character.
-    font : dict[str, NDArray[np.dtype("<U1")]]
+    font : dict[str, NDArray[np.uint32]]
         A dictionary of characters to their ascii art representations.
     comments : str
         Additional comments about this font.
@@ -143,7 +146,7 @@ class FIGFont:
     """Controls how characters are fitted in rendered text."""
     reverse_universal_smush: bool = False
     """Whether universal smushing will display earliest sub-character."""
-    font: dict[str, NDArray[np.dtype("<U1")]] = field(repr=False, default_factory=dict)
+    font: dict[str, NDArray[np.uint32]] = field(repr=False, default_factory=dict)
     """A dictionary of characters to their ascii art representations."""
     comments: str = field(repr=False, default="")
     """Additional comments about this font."""
@@ -201,25 +204,24 @@ class FIGFont:
         it = iter(lines)
         height = figinfo["height"]
 
-        def consume_char() -> NDArray[np.dtype("<u1")] | None:
+        def consume_char() -> NDArray[np.uint32] | None:
             char_lines = [ENDMARKS_RE.sub("", line) for line in islice(it, height)]
             if len(char_lines) < height:
                 return None
 
             width = max(wcswidth(line) for line in char_lines)
 
-            char = np.full((height, width), " ")
+            char = np.full((height, width), egc_ord(" "), np.uint32)
             for i, line in enumerate(char_lines):
                 j = 0
-                for subchar in line:
-                    cwidth = wcwidth(subchar)
+                for subchar in grapheme_iter(line):
+                    cwidth = wcswidth(subchar)
                     if cwidth == 0:
                         continue
 
-                    char[i, j] = subchar
-
-                    if cwidth == 2:
-                        char[i, j + 1] = ""
+                    char[i, j] = egc_ord(subchar)
+                    if cwidth > 1:
+                        char[i, j + 1 : j + cwidth] = 0
 
                     j += cwidth
 
@@ -257,23 +259,24 @@ class FIGFont:
         """Height of characters in this font."""
         return next(v for v in self.font.values() if v is not None).shape[0]
 
-    def _trim_char(
-        self, fig_char: NDArray[np.dtype("<U1")]
-    ) -> NDArray[np.dtype("<U1")]:
+    def _trim_char(self, fig_char: NDArray[np.uint32]) -> NDArray[np.uint32]:
         """Remove leading and trailing whitespace."""
-        while fig_char.shape[1] and (fig_char[:, 0] == " ").all():
+        while fig_char.shape[1] and (fig_char[:, 0] == egc_ord(" ")).all():
             fig_char = fig_char[:, 1:]
 
-        while fig_char.shape[1] and (fig_char[:, -1] == " ").all():
+        while fig_char.shape[1] and (fig_char[:, -1] == egc_ord(" ")).all():
             fig_char = fig_char[:, :-1]
 
         return fig_char
 
-    def _smush_subchar(self, a: str, b: str) -> str | None:
+    def _smush_subchar(self, a: int, b: int) -> str | None:
         """
         Attempt to smush two sub-characters given the current layout.
         If smushing fails, return None, else return the smushed sub-character.
         """
+        a: str = egc_chr(a)
+        b: str = egc_chr(b)
+
         if a.isspace():
             return b
 
@@ -336,9 +339,7 @@ class FIGFont:
             if ab == "><":
                 return "X"
 
-    def _smush(
-        self, a: NDArray[np.dtype("<U1")], b: NDArray[np.dtype("<U1")]
-    ) -> list[str] | None:
+    def _smush(self, a: NDArray[np.uint32], b: NDArray[np.uint32]) -> list[int] | None:
         """
         Attempt to smush two columns of sub-characters.
 
@@ -348,14 +349,14 @@ class FIGFont:
         c = []
         for sub_a, sub_b in zip(a, b):
             if sub_c := self._smush_subchar(sub_a, sub_b):
-                c.append(sub_c)
+                c.append(egc_ord(sub_c))
             else:
                 return None
         return c
 
     def _add_char(
-        self, buffer: NDArray[np.dtype("<U1")], prev_char_width: int, char: str
-    ) -> tuple[NDArray[np.dtype("<U1")], int]:
+        self, buffer: NDArray[np.uint32], prev_char_width: int, char: str
+    ) -> tuple[NDArray[np.uint32], int]:
         """Add a character to the line buffer."""
         fig_char = self.font.get(char, self.font.get("\x00"))
         if fig_char is None:
@@ -381,18 +382,18 @@ class FIGFont:
 
         return np.concatenate((a, b), axis=1), current_char_width
 
-    def _render_line(self, line: str) -> NDArray[np.dtype("<U1")]:
+    def _render_line(self, line: str) -> NDArray[np.uint32]:
         """Render a single line of text."""
-        buffer, prev_char_width = np.zeros((self.height, 0), dtype=str), 0
+        buffer, prev_char_width = np.zeros((self.height, 0), np.uint32), 0
         for char in line:
             buffer, prev_char_width = self._add_char(buffer, prev_char_width, char)
 
         buffer[buffer == self.hardblank] = " "
         return buffer
 
-    def render_array(self, text: str) -> NDArray[np.dtype("<U1")]:
+    def render_array(self, text: str) -> NDArray[np.uint32]:
         """
-        Render text as ascii art into a 2-D "<U1" numpy array.
+        Render text as ascii art into a 2-D uint32 numpy array.
 
         Parameters
         ----------
@@ -401,7 +402,7 @@ class FIGFont:
 
         Returns
         -------
-        NDArray[np.dtype("<U1")]
+        NDArray[np.uint32]
             The rendered array.
         """
         lines = list(map(self._render_line, text.splitlines()))
@@ -411,7 +412,7 @@ class FIGFont:
                 lines[i] = np.pad(
                     line,
                     ((0, 0), (0, max_width - line.shape[1])),
-                    constant_values=" ",
+                    constant_values=egc_ord(" "),
                 )
 
         # TODO: Add vertical smushing.
@@ -432,4 +433,6 @@ class FIGFont:
         str
             The rendered string.
         """
-        return "\n".join("".join(line) for line in self.render_array(text))
+        return "\n".join(
+            "".join(map(egc_chr, line) for line in self.render_array(text))
+        )
