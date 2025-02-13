@@ -1,4 +1,4 @@
-"""Build cython extensions and generated files."""
+"""Build cython extensions."""
 
 import numpy as np
 from Cython.Build import cythonize
@@ -13,7 +13,6 @@ setup(
             "src/batgrl/gadgets/_raycasting.pyx",
             "src/batgrl/gadgets/_shadow_casting.pyx",
             "src/batgrl/geometry/regions.pyx",
-            "src/batgrl/terminal/vt100_cterminal.pyx",
         ]
     ),
     include_dirs=[np.get_include()],
