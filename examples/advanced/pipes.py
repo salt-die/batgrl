@@ -4,6 +4,7 @@ from time import perf_counter
 
 from batgrl.app import run_gadget_as_app
 from batgrl.gadgets.text import Text
+from batgrl.text_tools import egc_ord
 
 CURVY = {
     0: "╷",
@@ -89,12 +90,12 @@ class Pipes(Text):
         pipe_chars = choice([HEAVY, CURVY])
 
         while perf_counter() < end:
-            self.canvas[y, x]["char"] = pipe_chars[last_dir]
+            self.canvas[y, x]["char"] = egc_ord(pipe_chars[last_dir])
             self.canvas["fg_color"][y, x] = color
             await asyncio.sleep(sleep)
 
             current_dir = (last_dir + randrange(-1, 2)) % 4
-            self.canvas[y, x]["char"] = pipe_chars[last_dir, current_dir]
+            self.canvas[y, x]["char"] = egc_ord(pipe_chars[last_dir, current_dir])
             self.canvas["fg_color"][y, x] = color
 
             match current_dir:

@@ -4,6 +4,7 @@ import time
 from batgrl.app import App
 from batgrl.gadgets.digital_display import BRIGHT_GREEN, DigitalDisplay
 from batgrl.gadgets.text import Text, new_cell
+from batgrl.text_tools import egc_ord
 
 
 class DigitalClock(Text):
@@ -25,7 +26,8 @@ class DigitalClock(Text):
         for i in range(6):
             self.add_gadget(DigitalDisplay(pos=(0, i * 8 + i // 2 * 2)))
 
-        self.canvas["char"][[2, -3], 16] = self.canvas["char"][[2, -3], 34] = "●"
+        self.canvas["char"][[2, -3], 16] = egc_ord("●")
+        self.canvas["char"][[2, -3], 34] = egc_ord("●")
 
     def on_add(self):
         super().on_add()

@@ -3,6 +3,7 @@ from random import choice, randrange, sample
 
 import numpy as np
 from batgrl.gadgets.text import Text
+from batgrl.text_tools import egc_ord
 
 from .colors import BRIGHT_GREEN, DARK_GREEN
 
@@ -81,10 +82,10 @@ class MemoryGadget(Text):
         self.memory = "".join(memory)
 
         for i, char in enumerate(self.memory):
-            self.canvas["char"][memory_to_pos(i)] = char
+            self.canvas["char"][memory_to_pos(i)] = egc_ord(char)
 
         self.output.password = choice(words)
-        self.output.canvas["char"] = " "
+        self.output.canvas["char"] = egc_ord(" ")
         self.output.add_str(">█".ljust(13), pos=(-1, 0))
 
     def on_mouse(self, mouse_event):
