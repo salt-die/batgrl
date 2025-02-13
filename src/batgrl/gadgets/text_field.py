@@ -12,7 +12,6 @@ from numpy.typing import NDArray
 
 from .._rendering import text_field_render
 from ..geometry import clamp
-from ..text_tools import _Cell
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, new_cell
 
 __all__ = ["TextParticleField", "Point", "Size"]
@@ -257,7 +256,7 @@ class TextParticleField(Gadget):
             self.absolute_pos,
             self._is_transparent,
             self.particle_coords,
-            self.particle_cells.view(_Cell),
+            self.particle_cells,
             self._alpha,
             self._region,
         )

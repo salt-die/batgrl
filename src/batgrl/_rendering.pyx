@@ -1,9 +1,7 @@
-# distutils: language = c
-# distutils: sources = src/batgrl/cwidth.c
-
 from libc.math cimport round
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
+from uwcwidth cimport wcwidth
 
 cimport cython
 
@@ -19,13 +17,11 @@ from ._fbuf cimport (
 from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
 from .geometry.regions cimport CRegion, Region, bounding_rect, contains
+from .text_tools import _EGC_BASE, _EGC_POOL
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
-
-cdef extern from "cwidth.h":
-    int cwidth(Py_UCS4)
 
 
 cdef struct RegionIterator:
@@ -1626,7 +1622,7 @@ cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
 
     for y in range(h):
         for x in range(w):
-            widths[y, x] = cwidth(cells[y, x].char_)
+            widths[y, x] = wcwidth(cells[y, x].char_)
 
     for y in range(h):
         for x in range(w):
@@ -1660,6 +1656,8 @@ cdef inline ssize_t write_glyph(
         Cell *cell = &canvas[y, x]
         Cell *last = last_sgr[0]
         bint first = 1
+        size_t i
+        str egc
 
     if abs_y == cursor_y[0]:
         if abs_x != cursor_x[0]:
@@ -1695,7 +1693,13 @@ cdef inline ssize_t write_glyph(
         write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
-    fbuf_putucs4(f, cell.char_)
+    if cell.char_ < _EGC_BASE:
+        fbuf_putucs4(f, cell.char_)
+    else:
+        egc = _EGC_POOL[cell.char_ - _EGC_BASE]
+        for i in range(len(egc)):
+            fbuf_putucs4(f, egc[i])
+
     cursor_x[0] += widths[y, x]
     last_sgr[0] = cell
     return 0

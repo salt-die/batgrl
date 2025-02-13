@@ -2,7 +2,8 @@
 
 from numbers import Real
 
-from ..char_width import str_width
+from uwcwidth import wcswidth
+
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
 from ..text_tools import add_text, smooth_vertical_bar
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
@@ -304,7 +305,7 @@ class BarChart(Gadget):
         h, w = self.size
         has_y_label = self._y_label_gadget.is_enabled = self.y_label is not None
         if has_y_label:
-            self._y_label_gadget.size = str_width(self.y_label), 1
+            self._y_label_gadget.size = wcswidth(self.y_label), 1
             self._y_label_gadget.top = h // 2 - self._y_label_gadget.height // 2
             add_text(
                 self._y_label_gadget.canvas[:, 0],
@@ -319,7 +320,7 @@ class BarChart(Gadget):
         self._scroll_view.size = h, sv_width
 
         nbars = len(self.data)
-        min_bar_width = max(map(str_width, self.data))
+        min_bar_width = max(map(wcswidth, self.data))
         bars_width = max(
             BAR_SPACING + (min_bar_width + BAR_SPACING) * nbars,
             sv_width,

@@ -7,13 +7,12 @@ from numpy.typing import NDArray
 from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
 from pygments.style import Style
+from uwcwidth import wcswidth
 
 from .._rendering import text_render
-from ..char_width import char_width, str_width
 from ..colors import Color, Neptune
 from ..text_tools import (
     Cell,
-    _Cell,
     _parse_batgrl_md,
     _text_to_cells,
     _write_lines_to_canvas,
@@ -39,8 +38,6 @@ __all__ = [
     "Point",
     "Size",
     "add_text",
-    "char_width",
-    "str_width",
 ]
 
 Border = Literal[
@@ -390,7 +387,7 @@ class Text(Gadget):
                 if len(line) == 0:
                     continue
 
-                end = x + str_width(line)
+                end = x + wcswidth(line)
                 if token_style["color"]:
                     self.canvas[y, x:end]["fg_color"] = Color.from_hex(
                         token_style["color"]
@@ -518,7 +515,7 @@ class Text(Gadget):
             kind,
             self.absolute_pos,
             self._is_transparent,
-            self.canvas.view(_Cell),
+            self.canvas,
             self.alpha,
             self._region,
         )

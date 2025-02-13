@@ -2,7 +2,8 @@
 
 from dataclasses import astuple
 
-from ..char_width import str_width
+from uwcwidth import wcswidth
+
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import is_word_char
 from .behaviors.focusable import Focusable
@@ -493,7 +494,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         lines = text.split("\n")  # DO NOT USE `splitlines`.
         if len(lines) == 1:
             line = lines[0]
-            width_line = str_width(line)
+            width_line = wcswidth(line)
 
             ll[y] += width_line
             if ll[y] >= pad.width:
@@ -505,13 +506,13 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         else:
             first, *lines, last = lines
             newlines = len(lines) + 1
-            width_last = str_width(last)
+            width_last = wcswidth(last)
             last_y = y + newlines
 
-            ll[y] = x + str_width(first)
+            ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
-                ll.insert(i, str_width(line))
-            ll.insert(last_y, width_last + str_width("".join(line_remaining["char"])))
+                ll.insert(i, wcswidth(line))
+            ll.insert(last_y, width_last + wcswidth("".join(line_remaining["char"])))
 
             height = max(len(ll), self._scroll_view.port_height)
             width = max(max(ll) + 1, self._scroll_view.port_width)
@@ -547,7 +548,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             text_before_cursor = "".join(self._pad.canvas["char"][y, :x])
             nchars_before_cursor = len(text_before_cursor)
             if n <= nchars_before_cursor:
-                x = str_width(text_before_cursor[:-n])
+                x = wcswidth(text_before_cursor[:-n])
                 break
 
             if y == 0:
@@ -571,7 +572,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             )
             nchars_after_cursor = len(text_after_cursor)
             if n <= nchars_after_cursor:
-                x += str_width(text_after_cursor[:n])
+                x += wcswidth(text_after_cursor[:n])
                 break
 
             if y == self.end_text_point.y:

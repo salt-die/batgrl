@@ -6,8 +6,8 @@ from collections.abc import Callable
 from dataclasses import astuple
 
 from numpy.typing import NDArray
+from uwcwidth import wcswidth
 
-from ..char_width import str_width
 from ..geometry import rect_slice
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
 from ..text_tools import is_word_char
@@ -534,14 +534,14 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             f"{''.join(box.canvas['char'][0, x : self._line_length])}"
         )[: self.max_chars]
 
-        box_width = self._line_length = str_width(box_text)
+        box_width = self._line_length = wcswidth(box_text)
         if box_width >= box.width:
             box.width = box_width + 1
 
         box.add_str(box_text)
         box.canvas[0, box_width:] = box.default_cell
 
-        self.cursor = min(box_width, x + str_width(text))
+        self.cursor = min(box_width, x + wcswidth(text))
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
 
     def move_cursor_left(self, n: int = 1):
@@ -549,7 +549,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         text_before_cursor = "".join(self._box.canvas["char"][0, : self.cursor])
         nchars_before_cursor = len(text_before_cursor)
         if n <= nchars_before_cursor:
-            self.cursor = str_width(text_before_cursor[:-n])
+            self.cursor = wcswidth(text_before_cursor[:-n])
         else:
             self.cursor = 0
 
@@ -560,7 +560,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         )
         nchars_after_cursor = len(text_after_cursor)
         if n <= nchars_after_cursor:
-            self.cursor += str_width(text_after_cursor[:n])
+            self.cursor += wcswidth(text_after_cursor[:n])
         else:
             self.cursor = self._line_length
 

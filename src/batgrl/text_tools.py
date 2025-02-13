@@ -1,68 +1,91 @@
 """Tools for text."""
 
+import sys
 from functools import cache
+from typing import Final
 
 import numpy as np
 from numpy.typing import NDArray
+from ugrapheme import grapheme_iter
+from uwcwidth import wcwidth
 
 from ._batgrl_markdown import find_md_tokens
-from .char_width import char_width, str_width
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 
 __all__ = [
     "Cell",
     "add_text",
-    "char_width",
     "coerce_cell",
     "is_word_char",
     "new_cell",
     "smooth_horizontal_bar",
     "smooth_vertical_bar",
-    "str_width",
 ]
 
-VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
-HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
+VERTICAL_BLOCKS: Final = " ▁▂▃▄▅▆▇█"
+HORIZONTAL_BLOCKS: Final = " ▏▎▍▌▋▊▉█"
+_EGC_BASE: Final = 0x180000  # Well over `sys.maxunicode`.
+_MAX_EGCS: Final = 10_000
+_EGC_POOL: Final[list[str]] = []
+_EGC_TABLE: Final[dict[str, int]] = {}
 
 
-def is_word_char(char: str) -> bool:
+def egc_ord(egc: str) -> int:
     """
-    Whether `char` is a word character.
+    Return the ordinal of the egc if only a single unicode codepoint else return
+    ``_EGC_BASE`` + index into egc pool.
 
-    A character is a word character if it is alphanumeric or an underscore.
+    See Also
+    --------
+    :func:`batgrl.text_tools.egc_chr`
 
     Parameters
     ----------
-    char : str
-        The char to test.
+    egc : str
+        An extended grapheme cluster.
 
     Returns
     -------
-    bool
-        Whether the char is a word character.
+    int
+        Ordinal of egc.
     """
-    return char.isalnum() or char == "_"
+    if len(egc) == 1:
+        return ord(egc)
+    if egc not in _EGC_TABLE:
+        _EGC_TABLE[egc] = len(_EGC_POOL)
+        _EGC_POOL.append(egc)
+        if len(_EGC_POOL) > _MAX_EGCS:
+            # Probably don't want unbounded growth.
+            # FIXME: Poll app for unused EGCS??
+            raise RuntimeError("Max extended grapheme clusters.")
+    return _EGC_BASE + _EGC_TABLE[egc]
 
 
-Cell = np.dtype(
-    [
-        ("char", "U1"),
-        ("bold", "?"),
-        ("italic", "?"),
-        ("underline", "?"),
-        ("strikethrough", "?"),
-        ("overline", "?"),
-        ("reverse", "?"),
-        ("fg_color", "u1", (3,)),
-        ("bg_color", "u1", (3,)),
-    ]
-)
-"""A structured array type that represents a single cell in a terminal."""
+def egc_chr(egc_ord: int) -> str:
+    """
+    Return an egc from its ord.
 
-# Current bug with cython raises an error when passing type "w" (PY_UCS4, the "char"
-# field). When calling cython functions, re-view "char" field as uint32.
-_Cell = np.dtype(
+    See Also
+    --------
+    :func:`batgrl.text_tools.egc_ord`
+
+    Parameters
+    ----------
+    egc_ord : int
+        The ordinal for a character or an index into the egc pool.
+
+    Returns
+    -------
+    str
+        The extended grapheme cluster.
+    """
+    if egc_ord <= sys.maxunicode:
+        return chr(egc_ord)
+    return _EGC_POOL[egc_ord - _EGC_BASE]
+
+
+type Cell = np.dtype(
     [
         ("char", "uint32"),
         ("bold", "?"),
@@ -75,6 +98,7 @@ _Cell = np.dtype(
         ("bg_color", "u1", (3,)),
     ]
 )
+"""A structured array type that represents a single cell in a terminal."""
 
 
 @cache
@@ -169,13 +193,13 @@ def coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Ce
     NDArray[Cell] | None
         The coerced Cell or None if character can't be coerced.
     """
-    if isinstance(char, str) and len(char) > 0 and char_width(char[0]) == 1:
+    if isinstance(char, str) and len(char) > 0 and wcwidth(char[0]) == 1:
         return new_cell(char=char[0])
     if (
         isinstance(char, np.ndarray)
         and char.dtype == Cell
         and char.shape == ()
-        and char_width(char["char"].item()) == 1
+        and wcwidth(egc_chr(char["char"].item())) == 1
     ):
         return char
     return default
@@ -231,7 +255,7 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
                 max_width = line_width
             line_width = 0
         else:
-            width = char_width(char)
+            width = wcwidth(ord(char))
             line_width += width
             if width > 0:
                 line.append(cell)
@@ -259,14 +283,17 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
         Minimum canvas size to fit text and a list of lists of Cells.
     """
     lines = [
-        [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in line]
+        [
+            new_cell(char=egc_ord(grapheme))[cell_sans("fg_color", "bg_color")]
+            for grapheme in grapheme_iter(line)
+        ]
         for line in text.split("\n")
     ]
     max_width = 0
     for line in lines:
         line_width = 0
         for char in line:
-            width = char_width(char["char"].item())
+            width = wcwidth(char["char"].item())
             line_width += width
         if line_width > max_width:
             max_width = line_width
@@ -287,8 +314,11 @@ def _write_lines_to_canvas(lines, canvas, fg_color, bg_color):
             if i >= columns:
                 break
 
-            width = char_width(cell["char"].item())
+            width = wcwidth(egc_chr(cell["char"].item()))
             if width == 0:
+                continue
+
+            if i + width > columns:
                 continue
 
             canvas_line[i] = cell
@@ -297,14 +327,15 @@ def _write_lines_to_canvas(lines, canvas, fg_color, bg_color):
             if bg_color is not None:
                 bg[i] = bg_color
 
-            if width == 2 and i + 1 < columns:
+            if width > 1:
+                # FIXME: STORE EGC
                 empty_cell = cell.copy()
                 empty_cell["char"] = ""
-                canvas_line[i + 1] = empty_cell
+                canvas_line[i + 1 : i + width] = empty_cell
                 if fg_color is not None:
-                    fg[i + 1] = fg_color
+                    fg[i + 1 : i + width] = fg_color
                 if bg_color is not None:
-                    bg[i + 1] = bg_color
+                    bg[i + 1 : i + width] = bg_color
 
             i += width
 
@@ -392,6 +423,25 @@ def _smooth_bar(
     offset_block = blocks[index_offset]
     partial_block = blocks[index_partial]
     return (offset_block, *(blocks[-1],) * fill, partial_block)
+
+
+def is_word_char(char: str) -> bool:
+    """
+    Whether `char` is a word character.
+
+    A character is a word character if it is alphanumeric or an underscore.
+
+    Parameters
+    ----------
+    char : str
+        The char to test.
+
+    Returns
+    -------
+    bool
+        Whether the char is a word character.
+    """
+    return char.isalnum() or char == "_"
 
 
 def smooth_vertical_bar(

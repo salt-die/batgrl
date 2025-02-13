@@ -3,7 +3,7 @@
 import numpy as np
 from numpy.typing import NDArray
 
-from ..text_tools import _Cell, _text_to_cells, _write_lines_to_canvas
+from ..text_tools import _text_to_cells, _write_lines_to_canvas
 from ._raycasting import text_cast_rays
 from .text import Cell, Point, PosHint, Size, SizeHint, Text
 
@@ -281,7 +281,7 @@ class TextRaycaster(Text):
                 _write_lines_to_canvas(
                     lines, canvas, self.default_fg_color, self.default_bg_color
                 )
-                self.sprite_textures.append(canvas.view(_Cell))
+                self.sprite_textures.append(canvas)
 
         self.ascii_map = ascii_map
         """Dark to bright ascii characters for shading."""
@@ -301,7 +301,7 @@ class TextRaycaster(Text):
         """Update canvas by casting all rays."""
         self.clear()
         text_cast_rays(
-            self.canvas.view(_Cell),
+            self.canvas,
             self.caster_map,
             self.camera_coord,
             self.camera_angle,
