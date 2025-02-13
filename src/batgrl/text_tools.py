@@ -33,8 +33,8 @@ _EGC_TABLE: Final[dict[str, int]] = {}
 
 def egc_ord(egc: str) -> int:
     """
-    Return the ordinal of the egc if only a single unicode codepoint else return
-    ``_EGC_BASE`` + index into egc pool.
+    Return the ordinal of the extended grapheme cluster (egc) if it's only a single
+    unicode codepoint else return ``_EGC_BASE`` + index into egc pool.
 
     See Also
     --------
@@ -64,7 +64,7 @@ def egc_ord(egc: str) -> int:
 
 def egc_chr(egc_ord: int) -> str:
     """
-    Return an egc from its ord.
+    Return an extended grapheme cluster (egc) from its ord.
 
     See Also
     --------
