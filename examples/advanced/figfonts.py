@@ -8,7 +8,6 @@ from batgrl.colors import BLACK, RED, WHITE, gradient, lerp_colors
 from batgrl.figfont import FIGFont
 from batgrl.gadgets.behaviors.button_behavior import ButtonBehavior
 from batgrl.gadgets.text import Text
-from batgrl.text_tools import egc_ord
 
 ASSETS = Path(__file__).parent.parent / "assets"
 BIG_FONT = FIGFont.from_path(ASSETS / "delta_corps_priest_1.flf")
@@ -22,7 +21,7 @@ class Bleed(Text):
         self.banner = banner
         self.button = button
         self.add_gadgets(banner, button)
-        self._start_locs = np.argwhere(self.banner.canvas["char"] != egc_ord(" "))
+        self._start_locs = np.argwhere(self.banner.canvas["char"] != " ")
         self._drops = []
 
     def on_add(self):
@@ -61,10 +60,10 @@ class Bleed(Text):
 
         chars = drop.canvas["char"]
         while (char := amounts > TRANSITIONS[:, None])[2].any():
-            chars[:] = egc_ord(" ")
-            chars[char[2]] = egc_ord("░")
-            chars[char[1]] = egc_ord("▒")
-            chars[char[0]] = egc_ord("▓")
+            chars[:] = " "
+            chars[char[2]] = "░"
+            chars[char[1]] = "▒"
+            chars[char[0]] = "▓"
             amounts = np.convolve(amounts, weights, mode="same")
 
             await asyncio.sleep(0)

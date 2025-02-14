@@ -1693,7 +1693,7 @@ cdef inline ssize_t write_glyph(
         write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
-    if cell.char_ < _EGC_BASE:
+    if <unsigned int>cell.char_ < _EGC_BASE:
         fbuf_putucs4(f, cell.char_)
     else:
         egc = _EGC_POOL[cell.char_ - _EGC_BASE]

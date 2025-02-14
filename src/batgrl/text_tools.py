@@ -50,8 +50,12 @@ def egc_ord(egc: str) -> int:
     int
         Ordinal of egc.
     """
+    if len(egc) == 0:
+        return 0
+
     if len(egc) == 1:
         return ord(egc)
+
     if egc not in _EGC_TABLE:
         _EGC_TABLE[egc] = len(_EGC_POOL)
         _EGC_POOL.append(egc)
@@ -80,12 +84,15 @@ def egc_chr(egc_ord: int) -> str:
     str
         The extended grapheme cluster.
     """
-    if egc_ord <= sys.maxunicode:
+    if egc_ord == 0:
+        return ""
+
+    if egc_ord < sys.maxunicode:
         return chr(egc_ord)
     return _EGC_POOL[egc_ord - _EGC_BASE]
 
 
-type Cell = np.dtype(
+Cell = np.dtype(
     [
         ("char", "uint32"),
         ("bold", "?"),
@@ -99,6 +106,20 @@ type Cell = np.dtype(
     ]
 )
 """A structured array type that represents a single cell in a terminal."""
+
+_Cell = np.dtype(
+    [
+        ("char", "<1U"),
+        ("bold", "?"),
+        ("italic", "?"),
+        ("underline", "?"),
+        ("strikethrough", "?"),
+        ("overline", "?"),
+        ("reverse", "?"),
+        ("fg_color", "u1", (3,)),
+        ("bg_color", "u1", (3,)),
+    ]
+)
 
 
 @cache
@@ -120,7 +141,7 @@ def cell_sans(*names: str) -> list[str]:
 
 
 def new_cell(
-    char: str = " ",
+    char: str | int = " ",
     bold: bool = False,
     italic: bool = False,
     underline: bool = False,
@@ -163,7 +184,7 @@ def new_cell(
     """
     return np.array(
         (
-            char,
+            char if isinstance(char, int) else egc_ord(char),
             bold,
             italic,
             underline,
@@ -229,7 +250,10 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     """
     NO_CHAR = new_cell(char="")
     matches, escapes = find_md_tokens(text)
-    cells = [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
+    cells = [
+        new_cell(char=char)[cell_sans("fg_color", "bg_color")]
+        for char in grapheme_iter(text)
+    ]
     for before, start, end, after, style in matches:
         cells[start - before : start] = [NO_CHAR] * before
         cells[end : end + after] = [NO_CHAR] * after
@@ -245,17 +269,17 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
 
     for cell in cells:
         char = cell["char"].item()
-        if char == "":
+        if char == 0:
             continue
 
-        if char == "\n":
+        if char == ord("\n"):
             lines.append(line)
             line = []
             if line_width > max_width:
                 max_width = line_width
             line_width = 0
         else:
-            width = wcwidth(ord(char))
+            width = wcwidth(egc_chr(char))
             line_width += width
             if width > 0:
                 line.append(cell)
@@ -293,7 +317,7 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     for line in lines:
         line_width = 0
         for char in line:
-            width = wcwidth(char["char"].item())
+            width = wcwidth(egc_chr(char["char"].item()))
             line_width += width
         if line_width > max_width:
             max_width = line_width
@@ -330,7 +354,7 @@ def _write_lines_to_canvas(lines, canvas, fg_color, bg_color):
             if width > 1:
                 # FIXME: STORE EGC
                 empty_cell = cell.copy()
-                empty_cell["char"] = ""
+                empty_cell["char"] = 0
                 canvas_line[i + 1 : i + width] = empty_cell
                 if fg_color is not None:
                     fg[i + 1 : i + width] = fg_color

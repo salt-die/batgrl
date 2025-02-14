@@ -5,9 +5,8 @@ import numpy as np
 from batgrl.app import App
 from batgrl.colors import Color
 from batgrl.gadgets.text import Text
-from batgrl.text_tools import egc_ord
 
-BLOCKS = np.array([egc_ord(c) for c in " .,:;<+*LtCa4U80dQM@▁▂▃▄▅▆▇█▉▊▋▌▍▏░▒▓█▙▚▖"])
+BLOCKS = np.array(list(" .,:;<+*LtCa4U80dQM@▁▂▃▄▅▆▇█▉▊▋▌▍▏░▒▓█▙▚▖"))
 KERNEL = np.array([[0.05, 0.2, 0.05], [0.2, -1, 0.2], [0.05, 0.2, 0.05]])
 PALETTE = np.array(
     [

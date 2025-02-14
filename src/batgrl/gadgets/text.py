@@ -13,6 +13,7 @@ from .._rendering import text_render
 from ..colors import Color, Neptune
 from ..text_tools import (
     Cell,
+    _Cell,
     _parse_batgrl_md,
     _text_to_cells,
     _write_lines_to_canvas,
@@ -257,7 +258,7 @@ class Text(Gadget):
         )
         size = self.size
         self.default_cell = default_cell
-        self.canvas = np.full(size, self.default_cell)
+        self._canvas = np.full(size, self.default_cell)
         self.alpha = alpha
 
     @property
@@ -297,9 +298,14 @@ class Text(Gadget):
     def alpha(self, alpha: float):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
+    @property
+    def canvas(self) -> NDArray:
+        """Canvas, but ``"char"`` field re-viewed as PY_UCS4."""
+        return self._canvas.view(_Cell)
+
     def on_size(self):
         """Resize canvas preserving as much content as possible."""
-        old_canvas = self.canvas
+        old_canvas = self._canvas
         old_h, old_w = old_canvas.shape
 
         h, w = self._size
@@ -307,8 +313,8 @@ class Text(Gadget):
         copy_h = min(old_h, h)
         copy_w = min(old_w, w)
 
-        self.canvas = np.full((h, w), self.default_cell)
-        self.canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
+        self._canvas = np.full((h, w), self.default_cell)
+        self._canvas[:copy_h, :copy_w] = old_canvas[:copy_h, :copy_w]
 
     def add_border(
         self,
@@ -345,16 +351,16 @@ class Text(Gadget):
             np.s_[-1, -1],
         ]
         view = cell_sans("fg_color", "bg_color")
-        cells = self.canvas[view]
+        cells = self._canvas[view]
         for s, border in zip(slices, _BORDERS[style]):
             cells[s] = new_cell(char=border, bold=bold)[view]
 
         if fg_color is not None:
-            self.canvas["fg_color"][[0, -1]] = fg_color
-            self.canvas["fg_color"][:, [0, -1]] = fg_color
+            self._canvas["fg_color"][[0, -1]] = fg_color
+            self._canvas["fg_color"][:, [0, -1]] = fg_color
         if bg_color is not None:
-            self.canvas["bg_color"][[0, -1]] = bg_color
-            self.canvas["bg_color"][:, [0, -1]] = bg_color
+            self._canvas["bg_color"][[0, -1]] = bg_color
+            self._canvas["bg_color"][:, [0, -1]] = bg_color
 
     def add_syntax_highlighting(
         self, lexer: Lexer | None = None, style: Style = Neptune
@@ -373,8 +379,8 @@ class Text(Gadget):
         if lexer is None:
             lexer = guess_lexer(text)
 
-        self.canvas["fg_color"] = 0
-        self.canvas["bg_color"] = Color.from_hex(style.background_color)
+        self._canvas["fg_color"] = 0
+        self._canvas["bg_color"] = Color.from_hex(style.background_color)
         y = x = 0
         for ttype, value in lexer.get_tokens(text):
             lines = value.split("\n")
@@ -389,16 +395,16 @@ class Text(Gadget):
 
                 end = x + wcswidth(line)
                 if token_style["color"]:
-                    self.canvas[y, x:end]["fg_color"] = Color.from_hex(
+                    self._canvas[y, x:end]["fg_color"] = Color.from_hex(
                         token_style["color"]
                     )
                 if token_style["bgcolor"]:
-                    self.canvas[y, x:end]["bg_color"] = Color.from_hex(
+                    self._canvas[y, x:end]["bg_color"] = Color.from_hex(
                         token_style["bgcolor"]
                     )
-                self.canvas[y, x:end]["bold"] = token_style["bold"]
-                self.canvas[y, x:end]["italic"] = token_style["italic"]
-                self.canvas[y, x:end]["underline"] = token_style["underline"]
+                self._canvas[y, x:end]["bold"] = token_style["bold"]
+                self._canvas[y, x:end]["italic"] = token_style["italic"]
+                self._canvas[y, x:end]["underline"] = token_style["underline"]
                 x = end
 
     def add_str(
@@ -443,7 +449,7 @@ class Text(Gadget):
         """
         y, x = pos
         add_text(
-            self.canvas[y, x:],
+            self._canvas[y, x:],
             str,
             fg_color=fg_color,
             bg_color=bg_color,
@@ -490,7 +496,7 @@ class Text(Gadget):
 
     def clear(self):
         """Fill canvas with default cell."""
-        self.canvas[:] = self.default_cell
+        self._canvas[:] = self.default_cell
 
     def shift(self, n: int = 1):
         """
@@ -499,11 +505,11 @@ class Text(Gadget):
         Rows at the bottom (or top) will be filled with the default cell.
         """
         if n > 0:
-            self.canvas[:-n] = self.canvas[n:]
-            self.canvas[-n:] = self.default_cell
+            self._canvas[:-n] = self._canvas[n:]
+            self._canvas[-n:] = self.default_cell
         elif n < 0:
-            self.canvas[-n:] = self.canvas[:n]
-            self.canvas[:-n] = self.default_cell
+            self._canvas[-n:] = self._canvas[:n]
+            self._canvas[:-n] = self.default_cell
 
     def _render(
         self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
@@ -515,7 +521,7 @@ class Text(Gadget):
             kind,
             self.absolute_pos,
             self._is_transparent,
-            self.canvas,
+            self._canvas,
             self.alpha,
             self._region,
         )
