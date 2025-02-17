@@ -492,7 +492,7 @@ class Text(Gadget):
         """
         self.size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
         self.clear()
-        _write_lines_to_canvas(lines, self.canvas, fg_color, bg_color)
+        _write_lines_to_canvas(lines, self._canvas, fg_color, bg_color)
 
     def clear(self):
         """Fill canvas with default cell."""

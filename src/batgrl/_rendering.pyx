@@ -1,7 +1,7 @@
 from libc.math cimport round
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
-from uwcwidth cimport wcwidth
+from uwcwidth cimport wcswidth, wcwidth
 
 cimport cython
 
@@ -1615,14 +1615,18 @@ cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
-    cdef size_t h = cells.shape[0], w = cells.shape[1], y, x
-
     # Try to prevent wide chars from clipping. If there is clipping,
     # replace wide chars with whitespace.
+    cdef size_t h = cells.shape[0], w = cells.shape[1], y, x
 
     for y in range(h):
         for x in range(w):
-            widths[y, x] = wcwidth(cells[y, x].char_)
+            if <unsigned int>cells[y, x].char_ < _EGC_BASE:
+                widths[y, x] = wcwidth(cells[y, x].char_)
+            else:
+                widths[y, x] = wcswidth(
+                    _EGC_POOL[<unsigned int>cells[y, x].char_ - _EGC_BASE]
+                )
 
     for y in range(h):
         for x in range(w):
@@ -1696,7 +1700,7 @@ cdef inline ssize_t write_glyph(
     if <unsigned int>cell.char_ < _EGC_BASE:
         fbuf_putucs4(f, cell.char_)
     else:
-        egc = _EGC_POOL[cell.char_ - _EGC_BASE]
+        egc = _EGC_POOL[<unsigned int>cell.char_ - _EGC_BASE]
         for i in range(len(egc)):
             fbuf_putucs4(f, egc[i])
 

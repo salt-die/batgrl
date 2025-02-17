@@ -7,7 +7,7 @@ from typing import Final
 import numpy as np
 from numpy.typing import NDArray
 from ugrapheme import grapheme_iter
-from uwcwidth import wcwidth
+from uwcwidth import wcswidth
 
 from ._batgrl_markdown import find_md_tokens
 from .colors import BLACK, WHITE, Color
@@ -214,13 +214,13 @@ def coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Ce
     NDArray[Cell] | None
         The coerced Cell or None if character can't be coerced.
     """
-    if isinstance(char, str) and len(char) > 0 and wcwidth(char[0]) == 1:
+    if isinstance(char, str) and len(char) > 0 and wcswidth(char[0]) == 1:
         return new_cell(char=char[0])
     if (
         isinstance(char, np.ndarray)
         and char.dtype == Cell
         and char.shape == ()
-        and wcwidth(egc_chr(char["char"].item())) == 1
+        and wcswidth(egc_chr(char["char"].item())) == 1
     ):
         return char
     return default
@@ -279,7 +279,7 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
                 max_width = line_width
             line_width = 0
         else:
-            width = wcwidth(egc_chr(char))
+            width = wcswidth(egc_chr(char))
             line_width += width
             if width > 0:
                 line.append(cell)
@@ -317,7 +317,11 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     for line in lines:
         line_width = 0
         for char in line:
-            width = wcwidth(egc_chr(char["char"].item()))
+            width = (
+                0
+                if egc_chr(char["char"].item()) == ""
+                else wcswidth(egc_chr(char["char"].item()))
+            )
             line_width += width
         if line_width > max_width:
             max_width = line_width
@@ -338,7 +342,11 @@ def _write_lines_to_canvas(lines, canvas, fg_color, bg_color):
             if i >= columns:
                 break
 
-            width = wcwidth(egc_chr(cell["char"].item()))
+            width = (
+                0
+                if egc_chr(cell["char"].item()) == ""
+                else wcswidth(egc_chr(cell["char"].item()))
+            )
             if width == 0:
                 continue
 
