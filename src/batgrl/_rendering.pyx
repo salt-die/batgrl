@@ -274,7 +274,7 @@ cdef void trans_pane_render(
 ):
     if alpha == 0:
         return
-    
+
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
