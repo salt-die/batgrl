@@ -102,6 +102,17 @@ cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     return 1
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef inline bint one_color(uint8[:, :, ::1] rgb, int y, int x, size_t h, size_t w):
+    cdef size_t i, j
+    for i in range(h):
+        for j in range(w):
+            if not rgba_eq(&rgb[y, x, 0], &rgb[y + i, x + j, 0]):
+                return 0
+    return 1
+
+
 cdef inline bint cell_eq(Cell *a, Cell *b):
     return (
         (a.char_ == b.char_)
@@ -630,10 +641,12 @@ cdef void opaque_sixel_graphics_render(
         kind[it.y, it.x] = SIXEL
         for gy in range(h):
             for gx in range(w):
-                graphics[oy + gy, ox + gx, 0] = self_texture[src_y + gy, src_x + gx, 0]
-                graphics[oy + gy, ox + gx, 1] = self_texture[src_y + gy, src_x + gx, 1]
-                graphics[oy + gy, ox + gx, 2] = self_texture[src_y + gy, src_x + gx, 2]
-                graphics[oy + gy, ox + gx, 3] = 1
+                src = &self_texture[src_y + gy, src_x + gx, 0]
+                dst = &graphics[oy + gy, ox + gx, 0]
+                dst[0] = src[0]
+                dst[1] = src[1]
+                dst[2] = src[2]
+                dst[3] = 1
         next_(&it)
 
 
@@ -674,6 +687,23 @@ cdef void trans_sixel_graphics_render(
                             alpha * <double>rgba[3] / 255,
                         )
                         graphics[oy + gy, ox + gx, 3] = 1
+        elif one_color(self_texture, src_y, src_x, h, w):
+            # If all rgba colors are equal we can treat the texture as a pane
+            # so that glyphs underneath aren't destroyed.
+            # TODO: Probably this optimization could be applied if the texture was
+            # *mostly* one color, or all the colors were very close to each other.
+            rgba = &self_texture[src_y, src_x, 0]
+            composite(&cells[it.y, it.x].fg_color[0], rgba, alpha)
+            composite(&cells[it.y, it.x].bg_color[0], rgba, alpha)
+            if kind[it.y, it.x] == MIXED:
+                for gy in range(h):
+                    for gx in range(w):
+                        if graphics[oy + gy, ox + gx, 3]:
+                            composite(
+                                &graphics[oy + gy, ox + gx, 0],
+                                rgba,
+                                alpha * <double>rgba[3]/ 255,
+                            )
         elif kind[it.y, it.x] == GLYPH:
             # ! Special case half-blocks
             # ! For other blitters, probably don't special case.
