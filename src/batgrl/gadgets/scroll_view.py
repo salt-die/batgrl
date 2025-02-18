@@ -3,6 +3,7 @@
 import asyncio
 from typing import Final
 
+from ..geometry import round_down
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
 from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.grabbable import Grabbable
@@ -13,7 +14,9 @@ from .text import Text
 
 __all__ = ["ScrollView", "Point", "Size"]
 
-_DAMPING: Final = 0.75
+_INERTIAL_SCROLL_STRENGTH: Final = 2.4
+"""Strength of inertial scroll."""
+_DAMPING: Final = 0.95
 """Velocity damping for inertial scrolling."""
 _VELOCITY_CUTOFF: Final = 0.001
 """Minimum velocity before stopping inertial scrolling."""
@@ -60,7 +63,7 @@ class _ScrollbarBase(Grabbable, Text):
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
         # Round offset to the nearest 1/8th.
-        offset = round(offset * 8) / 8
+        offset = round_down(offset * 8) / 8
         if offset == 1:
             offset -= 1
             start += 1
@@ -80,7 +83,7 @@ class _VerticalScrollbar(_ScrollbarBase):
 
     def _set_indicator_length(self):
         self.indicator_length = clamp(
-            2, round(self.indicator_proportion * self.length), self.length
+            2, round_down(self.indicator_proportion * self.length), self.length
         )
 
     def _paint_indicator(self) -> None:
@@ -112,12 +115,16 @@ class _VerticalScrollbar(_ScrollbarBase):
     def grab(self, mouse_event):
         super().grab(mouse_event)
 
+        sv: ScrollView = self.parent
+
+        if sv._inertial_scroll_task is not None:
+            sv._inertial_scroll_task.cancel()
+
         if self.is_hovered:
             self._paint_indicator()
         else:
             self.is_hovered = True
 
-            sv: ScrollView = self.parent
             if self.fill_length == 0:
                 sv.vertical_proportion = 0
             else:
@@ -138,7 +145,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
 
     def _set_indicator_length(self):
         self.indicator_length = clamp(
-            4, round(self.indicator_proportion * self.length), self.length
+            4, round_down(self.indicator_proportion * self.length), self.length
         )
 
     def _paint_indicator(self) -> None:
@@ -166,12 +173,17 @@ class _HorizontalScrollbar(_ScrollbarBase):
 
     def grab(self, mouse_event):
         super().grab(mouse_event)
+
+        sv: ScrollView = self.parent
+
+        if sv._inertial_scroll_task is not None:
+            sv._inertial_scroll_task.cancel()
+
         if self.is_hovered:
             self._paint_indicator()
         else:
             self.is_hovered = True
 
-            sv: ScrollView = self.parent
             if self.fill_length == 0:
                 sv.horizontal_proportion = 0
             else:
@@ -588,10 +600,10 @@ class ScrollView(Themable, Grabbable, Gadget):
             self._horizontal_bar.indicator_progress = 0
             self._horizontal_bar._paint_indicator()
         else:
-            self._view.top = -round(
+            self._view.top = -round_down(
                 self.vertical_proportion * self.total_vertical_distance
             )
-            self._view.left = -round(
+            self._view.left = -round_down(
                 self.horizontal_proportion * self.total_horizontal_distance
             )
 
@@ -634,7 +646,7 @@ class ScrollView(Themable, Grabbable, Gadget):
             update_proportion()
             self._view_bind_uid = view.bind("size", update_proportion)
 
-    def _inertial_scroll(self, y: float = 0.0, x: float = 0.0):
+    def _inertial_scroll(self):
         if not self.inertial_scrolling_enabled:
             return
 
@@ -659,7 +671,12 @@ class ScrollView(Themable, Grabbable, Gadget):
             if self._vertical_velocity == 0 and self._horizontal_velocity == 0:
                 return
 
-            await asyncio.sleep(0.1)
+            try:
+                await asyncio.sleep(0.1)
+            except asyncio.CancelledError as e:
+                self._vertical_velocity = 0
+                self._horizontal_velocity = 0
+                raise asyncio.CancelledError from e
 
     def on_remove(self) -> None:
         """Cancel inertial scroll on remove."""
@@ -724,22 +741,34 @@ class ScrollView(Themable, Grabbable, Gadget):
 
         return True
 
+    def grab(self, mouse_event: MouseEvent) -> None:
+        """Cancel inertial scroll."""
+        super().grab(mouse_event)
+        if self._inertial_scroll_task is not None:
+            self._inertial_scroll_task.cancel()
+
     def grab_update(self, mouse_event: MouseEvent) -> None:
         """Scroll on grab update."""
+        if self.view is None:
+            return
+
         self.scroll_up(mouse_event.dy)
         self.scroll_left(mouse_event.dx)
-        if self.height:
-            vv = -2 * mouse_event.dy / self.height
+        if self.view.height:
+            vv = -_INERTIAL_SCROLL_STRENGTH * mouse_event.dy / self.view.height
         else:
             vv = 0
-        if abs(vv) > abs(self._vertical_velocity):
+        if abs(vv) > abs(self._vertical_velocity) or vv * self._vertical_velocity < 0:
             self._vertical_velocity = vv
 
-        if self.width:
-            hv = -2 * mouse_event.dx / self.width
+        if self.view.width:
+            hv = -_INERTIAL_SCROLL_STRENGTH * mouse_event.dx / self.view.width
         else:
             hv = 0
-        if abs(hv) > abs(self._horizontal_velocity):
+        if (
+            abs(hv) > abs(self._horizontal_velocity)
+            or hv * self._horizontal_velocity < 0
+        ):
             self._horizontal_velocity = hv
 
     def ungrab(self, mouse_event: MouseEvent) -> None:
@@ -752,10 +781,14 @@ class ScrollView(Themable, Grabbable, Gadget):
         if self.scrollwheel_enabled and self.collides_point(mouse_event.pos):
             if mouse_event.event_type == "scroll_up":
                 self.scroll_up()
-                return True
             elif mouse_event.event_type == "scroll_down":
                 self.scroll_down()
-                return True
+            else:
+                return super().on_mouse(mouse_event)
+
+            if self._inertial_scroll_task is not None:
+                self._inertial_scroll_task.cancel()
+            return True
 
         return super().on_mouse(mouse_event)
 
@@ -808,6 +841,9 @@ class ScrollView(Themable, Grabbable, Gadget):
             or self._vertical_bar.is_grabbed
         ):
             return
+
+        if self._inertial_scroll_task is not None:
+            self._inertial_scroll_task.cancel()
 
         h, w = size
         ay, ax = self.view.pos + pos
