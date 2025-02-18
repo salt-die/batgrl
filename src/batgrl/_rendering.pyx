@@ -352,9 +352,6 @@ cdef void trans_text_render(
     double alpha,
     CRegion *cregion,
 ):
-    if alpha == 0:
-        return
-
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
