@@ -272,6 +272,9 @@ cdef void trans_pane_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+    
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
@@ -349,6 +352,9 @@ cdef void trans_text_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
@@ -467,6 +473,9 @@ cdef void trans_full_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
@@ -541,6 +550,9 @@ cdef void trans_half_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         int src_y, src_x
@@ -662,6 +674,9 @@ cdef void trans_sixel_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         int src_y, src_x
@@ -669,6 +684,7 @@ cdef void trans_sixel_graphics_render(
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         uint8 *rgba
+        double a
 
     init_iter(&it, cregion)
     while not it.done:
@@ -693,17 +709,15 @@ cdef void trans_sixel_graphics_render(
             # TODO: Probably this optimization could be applied if the texture was
             # *mostly* one color, or all the colors were very close to each other.
             rgba = &self_texture[src_y, src_x, 0]
-            composite(&cells[it.y, it.x].fg_color[0], rgba, alpha)
-            composite(&cells[it.y, it.x].bg_color[0], rgba, alpha)
-            if kind[it.y, it.x] == MIXED:
-                for gy in range(h):
-                    for gx in range(w):
-                        if graphics[oy + gy, ox + gx, 3]:
-                            composite(
-                                &graphics[oy + gy, ox + gx, 0],
-                                rgba,
-                                alpha * <double>rgba[3]/ 255,
-                            )
+            if rgba[3]:
+                a = alpha * <double>rgba[3]/ 255
+                composite(&cells[it.y, it.x].fg_color[0], rgba, a)
+                composite(&cells[it.y, it.x].bg_color[0], rgba, a)
+                if kind[it.y, it.x] == MIXED:
+                    for gy in range(h):
+                        for gx in range(w):
+                            if graphics[oy + gy, ox + gx, 3]:
+                                composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
         elif kind[it.y, it.x] == GLYPH:
             # ! Special case half-blocks
             # ! For other blitters, probably don't special case.
@@ -752,11 +766,8 @@ cdef void trans_sixel_graphics_render(
                     else:
                         rgba = &self_texture[src_y + gy, src_x + gx, 0]
                         if rgba[3]:
-                            composite(
-                                &graphics[oy + gy, ox + gx, 0],
-                                rgba,
-                                alpha * <double>rgba[3] / 255,
-                            )
+                            a = alpha * <double>rgba[3]/ 255
+                            composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
                             graphics[oy + gy, ox + gx, 3] = 1
         next_(&it)
 
@@ -817,6 +828,9 @@ cdef void trans_braille_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         int src_y, src_x
@@ -1117,6 +1131,9 @@ cdef void trans_full_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         int py, px
@@ -1203,6 +1220,9 @@ cdef void trans_half_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
@@ -1330,6 +1350,9 @@ cdef void trans_sixel_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
@@ -1461,6 +1484,9 @@ cdef void trans_braille_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
