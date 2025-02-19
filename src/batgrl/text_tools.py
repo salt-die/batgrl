@@ -107,20 +107,6 @@ Cell = np.dtype(
 )
 """A structured array type that represents a single cell in a terminal."""
 
-_Cell = np.dtype(
-    [
-        ("char", "<1U"),
-        ("bold", "?"),
-        ("italic", "?"),
-        ("underline", "?"),
-        ("strikethrough", "?"),
-        ("overline", "?"),
-        ("reverse", "?"),
-        ("fg_color", "u1", (3,)),
-        ("bg_color", "u1", (3,)),
-    ]
-)
-
 
 @cache
 def cell_sans(*names: str) -> list[str]:

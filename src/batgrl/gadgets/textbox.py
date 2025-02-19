@@ -513,8 +513,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._line_length = start + len_end
 
         box = self._box
-        box._canvas[0, start : self._line_length] = box._canvas[0, end : end + len_end]
-        box._canvas[0, self._line_length :] = box.default_cell
+        box.canvas[0, start : self._line_length] = box.canvas[0, end : end + len_end]
+        box.canvas[0, self._line_length :] = box.default_cell
 
         self.unselect()
         self.cursor = start
@@ -539,7 +539,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             box.width = box_width + 1
 
         box.add_str(box_text)
-        box._canvas[0, box_width:] = box.default_cell
+        box.canvas[0, box_width:] = box.default_cell
 
         self.cursor = min(box_width, x + wcswidth(text))
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
