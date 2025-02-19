@@ -35,17 +35,6 @@ static inline ssize_t fbuf_init(fbuf *f){
 }
 
 
-static inline ssize_t fbuf_init_small(fbuf *f){
-    f->size = 0x1000ul;
-    f->len = 0;
-    f->buf = (char*)malloc(f->size);
-    if(f->buf == NULL){
-        return -1;
-    }
-    return 0;
-}
-
-
 static inline void fbuf_free(fbuf *f){
     f->size = 0;
     f->len = 0;

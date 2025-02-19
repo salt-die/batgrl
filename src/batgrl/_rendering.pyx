@@ -6,7 +6,7 @@ from uwcwidth cimport wcswidth, wcwidth
 cimport cython
 
 from ._fbuf cimport (
-    FBufWrapper,
+    FBuf,
     fbuf,
     fbuf_flush,
     fbuf_grow,
@@ -1713,7 +1713,7 @@ cdef inline ssize_t write_glyph(
 @cython.wraparound(False)
 cpdef void terminal_render(
     bint resized,
-    FBufWrapper fwrap,
+    FBuf fwrap,
     OctTree octree,
     tuple[int, int] app_pos,
     Cell[:, ::1] cells,
