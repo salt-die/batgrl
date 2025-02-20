@@ -1,7 +1,7 @@
 from ._fbuf cimport fbuf_flush, fbuf_free, fbuf_init, fbuf_putn
 
 
-cdef class FBufWrapper:
+cdef class BytesBuffer:
     def __init__(self) -> None:
         if fbuf_init(&self.f):
             raise MemoryError

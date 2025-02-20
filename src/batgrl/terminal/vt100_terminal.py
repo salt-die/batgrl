@@ -9,7 +9,7 @@ from enum import Enum, auto
 from io import StringIO
 from typing import Final, Literal
 
-from .._fbuf import FBufWrapper
+from .._fbuf import BytesBuffer
 from ..colors import Color
 from ..geometry import Point, Size
 from .ansi_escapes import ANSI_ESCAPES
@@ -149,7 +149,7 @@ class Vt100Terminal(ABC):
         """Paste buffer."""
         self._event_buffer: list[Event] = []
         """Events generated during input parsing."""
-        self._out_buffer: FBufWrapper = FBufWrapper()
+        self._out_buffer: BytesBuffer = BytesBuffer()
         """
         Output buffer.
 

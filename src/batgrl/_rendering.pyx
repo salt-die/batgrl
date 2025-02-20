@@ -8,7 +8,7 @@ from libc.string cimport memset
 cimport cython
 
 from ._fbuf cimport (
-    FBufWrapper,
+    BytesBuffer,
     fbuf,
     fbuf_flush,
     fbuf_grow,
@@ -1758,7 +1758,7 @@ cdef inline ssize_t write_glyph(
 @cython.wraparound(False)
 cpdef void terminal_render(
     bint resized,
-    FBufWrapper fwrap,
+    BytesBuffer bytes_buf,
     OctTree octree,
     tuple[int, int] app_pos,
     Cell[:, ::1] cells,
@@ -1774,7 +1774,7 @@ cpdef void terminal_render(
     normalize_canvas(cells, widths)
 
     cdef:
-        fbuf *f = &fwrap.f
+        fbuf *f = &bytes_buf.f
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_geom_height(cells, graphics)
         size_t cell_w = graphics_geom_width(cells, graphics)

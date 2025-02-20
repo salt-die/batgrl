@@ -19,5 +19,5 @@ cdef extern from "_fbuf.h":
     ssize_t fbuf_flush(fbuf *f)
 
 
-cdef class FBufWrapper:
+cdef class BytesBuffer:
     cdef fbuf f

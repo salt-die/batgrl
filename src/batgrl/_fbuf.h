@@ -124,6 +124,7 @@ static inline ssize_t fbuf_putucs4(fbuf *f, uint32_t wc){
 }
 
 
+// FIXME: Add a file descriptor argument if we ever want to flush to non-tty.
 #ifdef _WIN32
 static inline ssize_t fbuf_flush(fbuf *f){
     DWORD wrote = 0, write_len;
