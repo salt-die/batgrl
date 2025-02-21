@@ -6,7 +6,6 @@ import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from enum import Enum, auto
-from io import StringIO
 from typing import Final, Literal
 
 from .._fbuf import BytesBuffer
@@ -28,19 +27,22 @@ from .events import (
     UnknownEscapeSequence,
 )
 
-CPR_RE: Final = re.compile(r"\x1b\[(\d+);(\d+)R")
+CPR_RE: Final = re.compile(rb"\x1b\[(\d+);(\d+)R")
 COLOR_RE: Final = re.compile(
-    r"\x1b\]1([10]);rgb:([0-9a-f]{4})/([0-9a-f]{4})/([0-9a-f]{4})\x1b\\"
+    rb"\x1b\]1([10]);rgb:"
+    rb"([0-9a-f]{2})[0-9a-f]{2}/"
+    rb"([0-9a-f]{2})[0-9a-f]{2}/"
+    rb"([0-9a-f]{2})[0-9a-f]{2}\x1b\\"
 )
 # \x1b[?61;4;6;7;14;21;22;23;24;28;32;42c
-DEVICE_ATTRIBUTES_RE: Final = re.compile(r"\x1b\[\?[0-9;]+c")
-PIXEL_GEOMETRY_RE: Final = re.compile(r"\x1b\[([6|4]);(\d+);(\d+)t")
-MOUSE_SGR_RE: Final = re.compile(r"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
-PARAMS_RE: Final = re.compile(r"[0-9;]")
-BRACKETED_PASTE_START: Final = "\x1b[200~"
-BRACKETED_PASTE_END: Final = "\x1b[201~"
-FOCUS_IN: Final = "\x1b[I"
-FOCUS_OUT: Final = "\x1b[O"
+DEVICE_ATTRIBUTES_RE: Final = re.compile(rb"\x1b\[\?[0-9;]+c")
+PIXEL_GEOMETRY_RE: Final = re.compile(rb"\x1b\[([6|4]);(\d+);(\d+)t")
+MOUSE_SGR_RE: Final = re.compile(rb"\x1b\[<(\d+);(\d+);(\d+)(m|M)")
+PARAMS_RE: Final = re.compile(rb"[0-9;]")
+BRACKETED_PASTE_START: Final = b"\x1b[200~"
+BRACKETED_PASTE_END: Final = b"\x1b[201~"
+FOCUS_IN: Final = b"\x1b[I"
+FOCUS_OUT: Final = b"\x1b[O"
 ESCAPE_TIMEOUT: Final = 0.05
 """Time in seconds before escape buffer is reset."""
 DSR_REQUEST_TIMEOUT: Final = 0.1
@@ -143,12 +145,12 @@ class Vt100Terminal(ABC):
     def __init__(self):
         self.in_alternate_screen: bool = False
         """Whether the alternate screen buffer is enabled."""
-        self._escape_buffer: StringIO | None = None
-        """Escape sequence buffer."""
-        self._paste_buffer: StringIO | None = None
-        """Paste buffer."""
         self._event_buffer: list[Event] = []
         """Events generated during input parsing."""
+        self._escape_buffer: BytesBuffer = BytesBuffer(small=True)
+        """Escape sequence buffer."""
+        self._paste_buffer: BytesBuffer = BytesBuffer()  # FIXME: Start small?
+        """Paste buffer."""
         self._out_buffer: BytesBuffer = BytesBuffer()
         """
         Output buffer.
@@ -206,14 +208,14 @@ class Vt100Terminal(ABC):
         cols, rows = os.get_terminal_size()
         return Size(rows, cols)
 
-    def _feed(self, data: str) -> None:
+    def _feed(self, data: bytes) -> None:
         """Generate events from terminal input data."""
         if self._timeout_escape is not None:
             self._timeout_escape.cancel()
             self._timeout_escape = None
 
         for char in data:
-            self._feed1(char)
+            self._feed1(char.to_bytes())
 
         if self._state is ParserState.GROUND:
             return
@@ -225,15 +227,15 @@ class Vt100Terminal(ABC):
         else:
             self._timeout_escape = loop.call_later(ESCAPE_TIMEOUT, self._reset_escape)
 
-    def _feed1(self, char: str) -> None:
+    def _feed1(self, char: bytes) -> None:
         """Feed a single character from terminal input into the parser."""
         if self._state is ParserState.OSC:
             self._escape_buffer.write(char)
-            if char == "\\" and self._escape_buffer.getvalue().endswith("\x1b\\"):
+            if char == b"\\" and self._escape_buffer.endswith(b"\x1b\\"):
                 self._execute()
-        elif self._state is not ParserState.PASTE and char == "\x1b":
+        elif self._state is not ParserState.PASTE and char == b"\x1b":
             # Start a new escape (possibly canceling previous escape).
-            self._escape_buffer = StringIO()
+            self._escape_buffer.clear()
             self._escape_buffer.write(char)
             self._state = ParserState.ESCAPE
         elif self._state is ParserState.EXECUTE_NEXT:
@@ -241,34 +243,33 @@ class Vt100Terminal(ABC):
             self._execute()
         elif self._state is ParserState.PASTE:
             self._paste_buffer.write(char)
-            if char == "~":
-                paste = self._paste_buffer.getvalue()
-                if paste.endswith(BRACKETED_PASTE_END):
-                    self._event_buffer.append(PasteEvent(paste[:-6]))
-                    self._paste_buffer = None
+            if char == b"~":
+                if self._paste_buffer.endswith(BRACKETED_PASTE_END):
+                    paste = self._paste_buffer.getvalue()[:-6]
+                    self._event_buffer.append(PasteEvent(paste.decode()))
+                    self._paste_buffer.clear()
                     self._state = ParserState.GROUND
         elif self._state is ParserState.GROUND:
-            if ord(char) < 0x20 or char == "\x7f" or char == "\x9b":
-                self._escape_buffer = StringIO()
+            if char < b" " or char == b"\x7f" or char == b"\x9b":
                 self._escape_buffer.write(char)
                 self._execute()
             else:
-                self._event_buffer.append(KeyEvent(char))
+                self._event_buffer.append(KeyEvent(char.decode()))
         elif self._state is ParserState.ESCAPE:
             self._escape_buffer.write(char)
-            if char == "[":
+            if char == b"[":
                 self._state = ParserState.CSI
-            elif char == "O":
+            elif char == b"O":
                 self._state = ParserState.EXECUTE_NEXT
-            elif char == "]":
+            elif char == b"]":
                 self._state = ParserState.OSC
             else:
                 self._execute()
         elif self._state is ParserState.CSI:
             self._escape_buffer.write(char)
-            if char == "[":
+            if char == b"[":
                 self._state = ParserState.EXECUTE_NEXT
-            elif char == "<" or char == "?":
+            elif char == b"<" or char == b"?":
                 self._state = ParserState.PARAMS
             elif PARAMS_RE.fullmatch(char) is None:
                 self._execute()
@@ -283,13 +284,12 @@ class Vt100Terminal(ABC):
         """Produce an event from the escape buffer."""
         self._state = ParserState.GROUND
         escape = self._escape_buffer.getvalue()
-        self._escape_buffer = None
+        self._escape_buffer.clear()
 
         if self._dsr_pending and self._execute_dsr_request(escape):
             return
         if escape == BRACKETED_PASTE_START:
             self._state = ParserState.PASTE
-            self._paste_buffer = StringIO(newline=None)
         elif escape == FOCUS_IN:
             self._event_buffer.append(FocusEvent("in"))
         elif escape == FOCUS_OUT:
@@ -325,12 +325,12 @@ class Vt100Terminal(ABC):
             )
         elif escape in ANSI_ESCAPES:
             self._event_buffer.append(KeyEvent(*ANSI_ESCAPES[escape]))
-        elif len(escape) == 2 and 32 <= ord(escape[1]) <= 126:
+        elif len(escape) == 2 and b" " <= escape[1] <= b"~":
             self._event_buffer.append(KeyEvent(escape[1], alt=True))
         else:
             self._event_buffer.append(UnknownEscapeSequence(escape))
 
-    def _execute_dsr_request(self, escape: str) -> bool:
+    def _execute_dsr_request(self, escape: bytes) -> bool:
         """Return whether a device status report was issued."""
         event: Event
         if cpr_match := CPR_RE.fullmatch(escape):
@@ -339,16 +339,16 @@ class Vt100Terminal(ABC):
         elif color_match := COLOR_RE.fullmatch(escape):
             kind, r, g, b = color_match.groups()
             event = ColorReportEvent(
-                kind="fg" if kind == "0" else "bg",
-                color=Color.from_hex(f"{r[:2]}{g[:2]}{b[:2]}"),
+                kind="fg" if kind == b"0" else "bg",
+                color=Color.from_hex(f"{r.decode()}{g.decode()}{b.decode()}"),
             )
         elif device_attributes_match := DEVICE_ATTRIBUTES_RE.fullmatch(escape):
-            device_attributes = device_attributes_match.group()[3:-1].split(";")
+            device_attributes = device_attributes_match.group()[3:-1].split(b";")
             event = DeviceAttributesReportEvent(frozenset(map(int, device_attributes)))
         elif pixel_geometry_match := PIXEL_GEOMETRY_RE.fullmatch(escape):
             kind, height, width = pixel_geometry_match.groups()
             event = PixelGeometryReportEvent(
-                kind="cell" if kind == "6" else "terminal",
+                kind="cell" if kind == b"6" else "terminal",
                 geometry=Size(int(height), int(width)),
             )
         else:
@@ -362,18 +362,17 @@ class Vt100Terminal(ABC):
         """Execute escape buffer after a timeout period."""
         if self._state is ParserState.PASTE:
             paste = self._paste_buffer.getvalue()
-            self._paste_buffer = None
+            self._paste_buffer.clear()
             self._state = ParserState.GROUND
 
             # Timed out during a paste. Check if there's a partial escape to remove
             # (maybe BRACKETED_PASTE_END was cutoff).
-            partial_escape_index = paste.find("\x1b")
+            partial_escape_index = paste.find(b"\x1b")
             if partial_escape_index != -1:
                 ending = paste[partial_escape_index:]
                 if BRACKETED_PASTE_END[: len(ending)] == ending:
                     paste = paste[:partial_escape_index]
-            self._event_buffer.append(PasteEvent(paste))
-            self._paste_buffer = None
+            self._event_buffer.append(PasteEvent(paste.decode()))
         else:
             self._execute()
 

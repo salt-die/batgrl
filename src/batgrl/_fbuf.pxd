@@ -10,6 +10,7 @@ cdef extern from "_fbuf.h":
 
     ssize_t write(ssize_t, const void*, size_t)
     ssize_t fbuf_init(fbuf *f)
+    ssize_t fbuf_small_init(fbuf *f)
     void fbuf_free(fbuf *f)
     ssize_t fbuf_grow(fbuf *f, size_t n)
     ssize_t fbuf_putn(fbuf *f, const char *s, size_t len)

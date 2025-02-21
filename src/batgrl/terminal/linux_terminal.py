@@ -98,8 +98,7 @@ class LinuxTerminal(Vt100Terminal):
             else:
                 reads.append(read)
 
-        data = b"".join(reads).decode(errors="surrogateescape")
-        self._feed(data)
+        self._feed(b"".join(reads))
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""

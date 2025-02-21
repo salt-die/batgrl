@@ -7,12 +7,14 @@ from ctypes import Structure, Union, byref, windll
 from ctypes.wintypes import BOOL, CHAR, DWORD, HANDLE, LONG, LPVOID, SHORT, WCHAR
 from typing import Final
 
+from .._fbuf import BytesBuffer
 from ..geometry import Size
+from ._utf16_to_utf8 import decode_utf16
 from .events import Event, ResizeEvent
 from .vt100_terminal import Vt100Terminal
 
-CTRL_SPACE_RE: Final = re.compile(r"\x00+")
-CTRL_ALT_SPACE_RE: Final = re.compile(r"\x00*\x1b\x00+")
+CTRL_SPACE_RE: Final = re.compile(rb"\x00+")
+CTRL_ALT_SPACE_RE: Final = re.compile(rb"\x00*\x1b\x00+")
 STDIN = windll.kernel32.GetStdHandle(DWORD(-10))
 STDOUT = windll.kernel32.GetStdHandle(DWORD(-11))
 KEY_EVENT: Final = 1
@@ -238,7 +240,9 @@ class WindowsTerminal(Vt100Terminal):
         self._original_output_cp = windll.kernel32.GetConsoleOutputCP()
         """Original console output code page."""
 
-    def _feed(self, data: str) -> None:
+        self._chars = BytesBuffer()  # FIXME: small?
+
+    def _feed(self, data: bytes) -> None:
         # Some versions of Windows Terminal generate spurious null characters for a few
         # input events. For instance, ctrl+" " generates 3 null characters instead of 1
         # and paste events generate a null character before each "shifted" character.
@@ -249,11 +253,11 @@ class WindowsTerminal(Vt100Terminal):
         # ! this to be true. Failing on other cases is acceptable here to keep this
         # ! logic simple.
         if CTRL_SPACE_RE.fullmatch(data):
-            super()._feed("\x00")
+            super()._feed(b"\x00")
         elif CTRL_ALT_SPACE_RE.fullmatch(data):
-            super()._feed("\x1b\x00")
+            super()._feed(b"\x1b\x00")
         else:
-            super()._feed(data.replace("\x00", ""))
+            super()._feed(data.replace(b"\x00", b""))
 
     def process_stdin(self) -> None:
         """Read from stdin and feed data into input parser to generate events."""
@@ -264,7 +268,6 @@ class WindowsTerminal(Vt100Terminal):
         windll.kernel32.ReadConsoleInputW(
             STDIN, input_records, nevents.value, byref(DWORD())
         )
-        chars = []
         for input_record in input_records:
             if input_record.EventType == KEY_EVENT:
                 key_event = input_record.Event.KeyEvent
@@ -272,19 +275,16 @@ class WindowsTerminal(Vt100Terminal):
                     continue
                 if key_event.ControlKeyState and not key_event.VirtualKeyCode:
                     continue
-                chars.append(key_event.uChar.UnicodeChar)
+                decode_utf16(self._chars, key_event.uChar.UnicodeChar)
             elif input_record.EventType == WINDOW_BUFFER_SIZE_EVENT:
-                self._purge(chars)
+                self._purge()  # FIXME: Don't purge, just emit resize before/after byte read.
                 size = input_record.Event.WindowBufferSizeEvent.Size
                 self._event_buffer.append(ResizeEvent(Size(size.Y, size.X)))
-        self._purge(chars)
+        self._purge()
 
-    def _purge(self, chars: list[str]):
-        data = (
-            "".join(chars).encode("utf-16", "surrogatepass").decode("utf-16")
-        )  # Merge surrogate pairs.
-        chars.clear()
-        self._feed(data)
+    def _purge(self):
+        self._feed(self._chars.getvalue())
+        self._chars.clear()
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""

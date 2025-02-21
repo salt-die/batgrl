@@ -705,6 +705,7 @@ cdef void trans_sixel_graphics_render(
             # so that glyphs underneath aren't destroyed.
             # TODO: Probably this optimization could be applied if the texture was
             # *mostly* one color, or all the colors were very close to each other.
+            # FIXME: Looks shit over whitespace...Maybe it's just shit.
             rgba = &self_texture[src_y, src_x, 0]
             if rgba[3]:
                 a = alpha * <double>rgba[3]/ 255

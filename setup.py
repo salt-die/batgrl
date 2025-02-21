@@ -88,6 +88,7 @@ setup(
             "src/batgrl/gadgets/_raycasting.pyx",
             "src/batgrl/gadgets/_shadow_casting.pyx",
             "src/batgrl/geometry/regions.pyx",
+            "src/batgrl/terminal/_utf16_to_utf8.pyx",
         ]
     ),
     include_dirs=[np.get_include()],

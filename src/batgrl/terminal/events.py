@@ -63,16 +63,16 @@ class UnknownEscapeSequence(Event):
 
     Parameters
     ----------
-    escape : str
+    escape : bytes
         The unknown ansi escape sequence.
 
     Attributes
     ----------
-    escape : str
+    escape : bytes
         The unknown ansi escape sequence.
     """
 
-    escape: str
+    escape: bytes
     """The unknown ansi escape sequence."""
 
 
