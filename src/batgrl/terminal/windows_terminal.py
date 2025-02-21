@@ -3,7 +3,7 @@
 import asyncio
 import re
 from collections.abc import Callable
-from ctypes import Structure, Union, byref, windll
+from ctypes import GetLastError, Structure, Union, WinError, byref, windll
 from ctypes.wintypes import BOOL, CHAR, DWORD, HANDLE, LONG, LPVOID, SHORT, WCHAR
 from typing import Final
 
@@ -262,12 +262,17 @@ class WindowsTerminal(Vt100Terminal):
     def process_stdin(self) -> None:
         """Read from stdin and feed data into input parser to generate events."""
         nevents = DWORD()
-        windll.kernel32.GetNumberOfConsoleInputEvents(STDIN, byref(nevents))
+        if not windll.kernel32.GetNumberOfConsoleInputEvents(STDIN, byref(nevents)):
+            raise WinError(GetLastError())
+
         InputRecordArray = INPUT_RECORD * nevents.value
         input_records = InputRecordArray()
-        windll.kernel32.ReadConsoleInputW(
+        if not windll.kernel32.ReadConsoleInputW(
             STDIN, input_records, nevents.value, byref(DWORD())
-        )
+        ):
+            raise WinError(GetLastError())
+
+        resize_event = None
         for input_record in input_records:
             if input_record.EventType == KEY_EVENT:
                 key_event = input_record.Event.KeyEvent
@@ -277,14 +282,14 @@ class WindowsTerminal(Vt100Terminal):
                     continue
                 decode_utf16(self._chars, key_event.uChar.UnicodeChar)
             elif input_record.EventType == WINDOW_BUFFER_SIZE_EVENT:
-                self._purge()  # FIXME: Don't purge, just emit resize before/after byte read.
-                size = input_record.Event.WindowBufferSizeEvent.Size
-                self._event_buffer.append(ResizeEvent(Size(size.Y, size.X)))
-        self._purge()
+                resize_event = input_record.Event
 
-    def _purge(self):
         self._feed(self._chars.getvalue())
         self._chars.clear()
+
+        if resize_event is not None:
+            size = resize_event.WindowBufferSizeEvent.Size
+            self._event_buffer.append(ResizeEvent(Size(size.Y, size.X)))
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
