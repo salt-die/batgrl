@@ -62,6 +62,7 @@ class ShadowCasterApp(App):
             light_coords=[(0, 0), (0, 0)],
             light_colors=[WHITE, WHITE],
             radius=40,
+            is_transparent=False,
         )
 
         label_kwargs = dict(

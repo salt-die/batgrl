@@ -50,7 +50,7 @@ class PokeParticleField(GraphicParticleField):
         super().on_size()
         old_origin = self._origin
         h, w = self._size
-        th, tw = LOGO_SIZE  # scale_geometry(self._blitter, LOGO_SIZE)
+        th, tw = LOGO_SIZE
         self._origin = Point((h - th) // 2, (w - tw) // 2)
         dif = old_origin - self._origin
         self.particle_properties["original_positions"] -= dif
@@ -117,6 +117,7 @@ class PokeParticleField(GraphicParticleField):
             await asyncio.sleep(0)
 
     async def reset(self):
+        sleep = 0 if self._blitter == "sixel" else 0.03
         if self._update_task is not None:
             self._update_task.cancel()
         self.particle_properties["velocities"][:] = 0
@@ -125,7 +126,7 @@ class PokeParticleField(GraphicParticleField):
         end = self.particle_properties["original_positions"]
         for percent in PERCENTS:
             pos[:] = (1 - percent) * start + percent * end
-            await asyncio.sleep(0.03)
+            await asyncio.sleep(sleep)
         pos[:] = end
 
 
@@ -137,7 +138,7 @@ class ExplodingLogoApp(App):
         field = PokeParticleField(
             size_hint={"height_hint": 1.0, "width_hint": 1.0},
             alpha=0.7,
-            blitter="sixel",
+            blitter="braille",
             is_transparent=False,
         )
 
