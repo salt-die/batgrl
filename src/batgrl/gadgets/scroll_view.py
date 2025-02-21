@@ -222,7 +222,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         Allow vertical scrolling with scrollwheel.
     arrow_keys_enabled : bool, default: True
         Allow scrolling with arrow keys.
-    inertial_scrolling_enabled : bool, default: True
+    inertial_scrolling_enabled : bool, default: False
         Whether inertial scrolling is enabled.
     is_grabbable : bool, default: True
         Whether grabbable behavior is enabled.
@@ -416,7 +416,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         dynamic_bars: bool = False,
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
-        inertial_scrolling_enabled: bool = True,
+        inertial_scrolling_enabled: bool = False,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
