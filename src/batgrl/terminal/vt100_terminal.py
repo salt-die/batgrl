@@ -311,7 +311,7 @@ class Vt100Terminal(ABC):
                 button = "no_button"
             elif info & 32:
                 event_type = "mouse_move"
-            elif state == "m":
+            elif state == b"m":
                 event_type = "mouse_up"
             else:
                 event_type = "mouse_move" if button == "no_button" else "mouse_down"
