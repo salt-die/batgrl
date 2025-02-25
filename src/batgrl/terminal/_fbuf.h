@@ -188,7 +188,6 @@ codepoint _HIGH_SURROGATE = 0;
 static inline ssize_t decode_utf16(fbuf *f, unsigned short utf16){
     if((utf16 & GENERIC_SURROGATE_MASK) != GENERIC_SURROGATE_VALUE){
         _HIGH_SURROGATE = 0;
-        if(utf16 == 13) utf16 = 10; // We're on windows... replace \r with \n
         if(fbuf_putucs4(f, (codepoint)utf16)) return -1;
     }else if((utf16 & SURROGATE_MASK) == HIGH_SURROGATE_VALUE){
         _HIGH_SURROGATE = (codepoint)utf16;
@@ -257,18 +256,18 @@ static inline ssize_t fbuf_flush_fd(fbuf *f, int fd){
 static inline ssize_t fbuf_read_fd(fbuf *f, int fd, int *size_event){
     struct pollfd pfd = {
         .fd = fd,
-        .events = POLLIN;
-    }
+        .events = POLLIN,
+    };
     size_t MAX_READ = 1024;
 
     while(1){
-        int retval = poll(&fd, 1, 0);
+        int retval = poll(&pfd, 1, 0);
         if(retval == 0) return 0;
         if(retval < 0) return -1;
         if(fbuf_grow(f, MAX_READ)) return 1;
-        ssize_t read = read(fd, f.buf + f.len, MAX_READ);
-        if(read < 0) return -1;
-        f.len += read;
+        ssize_t amt = read(fd, f->buf + f->len, MAX_READ);
+        if(amt < 0) return -1;
+        f->len += amt;
     }
 }
 #endif

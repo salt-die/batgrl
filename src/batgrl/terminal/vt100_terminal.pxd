@@ -11,6 +11,7 @@ cdef class Vt100Terminal:
         fbuf read_buf, in_buf, out_buf
         ParserState state
         int last_y, last_x
+        bint skip_newline
 
     cdef void add_event(Vt100Terminal, Event)
     cdef void feed1(Vt100Terminal, uint8)

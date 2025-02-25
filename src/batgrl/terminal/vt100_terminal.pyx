@@ -97,6 +97,7 @@ cdef class Vt100Terminal:
         self.state = GROUND
         self.last_y = 0
         self.last_x = 0
+        self.skip_newline = 0
 
     def __dealloc__(self):
         fbuf_free(&self.read_buf)
@@ -119,6 +120,17 @@ cdef class Vt100Terminal:
         self._event_buffer.append(event)
 
     cdef void feed1(self, uint8 char_):
+        # Gross \r handling...
+        # Replace \r with \n, but skip \n if \r\n.
+        if self.skip_newline:
+            self.skip_newline = 0
+            if char_ == 0xa:
+                return
+
+        if char_ == 0xd:
+            char_ = 0xa
+            self.skip_newline = 1
+
         if fbuf_put_char(&self.in_buf, char_):
             raise MemoryError
         cdef bytes data
