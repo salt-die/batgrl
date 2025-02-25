@@ -700,12 +700,18 @@ cdef void trans_sixel_graphics_render(
                             alpha * <double>rgba[3] / 255,
                         )
                         graphics[oy + gy, ox + gx, 3] = 1
-        elif one_color(self_texture, src_y, src_x, h, w):
+        elif (
+            cells[it.y, it.x].char_ != u" "
+            and cells[it.y, it.x].char_ != u"▀"
+            and one_color(self_texture, src_y, src_x, h, w)
+        ):
             # If all rgba colors are equal we can treat the texture as a pane
-            # so that glyphs underneath aren't destroyed.
-            # TODO: Probably this optimization could be applied if the texture was
+            # so that glyphs underneath are shown.
+            # TODO: Probably this feature could be applied if the texture was
             # *mostly* one color, or all the colors were very close to each other.
-            # FIXME: Looks shit over whitespace...Maybe it's just shit.
+            # FIXME: Because the color fidelity of glyphs is higher than sixel,
+            # this can create color artifacts in the displayed image. Not sure if
+            # anything can be done about it?
             rgba = &self_texture[src_y, src_x, 0]
             if rgba[3]:
                 a = alpha * <double>rgba[3]/ 255
