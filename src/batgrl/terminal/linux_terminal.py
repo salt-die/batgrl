@@ -2,16 +2,12 @@
 
 import asyncio
 import signal
-import sys
 import termios
 import tty
 from collections.abc import Callable
-from typing import Final
 
 from .events import Event, ResizeEvent
 from .vt100_terminal import Vt100Terminal
-
-STDIN: Final = sys.stdin.fileno()
 
 
 class LinuxTerminal(Vt100Terminal):
@@ -93,8 +89,8 @@ class LinuxTerminal(Vt100Terminal):
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
-        self._original_mode = termios.tcgetattr(STDIN)
-        attrs_raw = termios.tcgetattr(STDIN)
+        self._original_mode = termios.tcgetattr(self.stdin)
+        attrs_raw = termios.tcgetattr(self.stdin)
         attrs_raw[tty.LFLAG] &= ~(
             termios.ECHO | termios.ICANON | termios.IEXTEN | termios.ISIG
         )
@@ -102,11 +98,11 @@ class LinuxTerminal(Vt100Terminal):
             termios.IXON | termios.IXOFF | termios.ICRNL | termios.INLCR | termios.IGNCR
         )
         attrs_raw[tty.CC][termios.VMIN] = 1
-        termios.tcsetattr(STDIN, termios.TCSANOW, attrs_raw)
+        termios.tcsetattr(self.stdin, termios.TCSANOW, attrs_raw)
 
     def restore_console(self) -> None:
         """Restore console to its original mode."""
-        termios.tcsetattr(STDIN, termios.TCSANOW, self._original_mode)
+        termios.tcsetattr(self.stdin, termios.TCSANOW, self._original_mode)
         del self._original_mode
 
     def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
@@ -127,7 +123,7 @@ class LinuxTerminal(Vt100Terminal):
                 self._event_handler(self.events())
 
         loop = asyncio.get_running_loop()
-        loop.add_reader(STDIN, process)
+        loop.add_reader(self.stdin, process)
 
         def on_resize(*_):
             self._event_buffer.append(ResizeEvent(self.get_size()))
@@ -139,5 +135,5 @@ class LinuxTerminal(Vt100Terminal):
         """Stop generating events from stdin."""
         self._event_handler = None
         loop = asyncio.get_running_loop()
-        loop.remove_reader(STDIN)
+        loop.remove_reader(self.stdin)
         signal.signal(signal.SIGWINCH, signal.SIG_DFL)
