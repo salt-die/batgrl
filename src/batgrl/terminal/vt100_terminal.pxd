@@ -20,5 +20,5 @@ cdef class Vt100Terminal:
     cdef void execute_csi_params(Vt100Terminal)
     cdef void execute_mouse(Vt100Terminal, uint*, char)
     cdef void execute_osc(Vt100Terminal)
-    cdef void _dsr_request(Vt100Terminal, bytes)
+    cdef void dsr_request(Vt100Terminal, bytes)
     cpdef void process_stdin(Vt100Terminal)

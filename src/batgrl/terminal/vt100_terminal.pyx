@@ -346,7 +346,7 @@ cdef class Vt100Terminal:
         if self._event_handler is not None:
             self._event_handler(self.events())
 
-    cdef void _dsr_request(self, escape: bytes):
+    cdef void dsr_request(self, escape: bytes):
         if escape in self._dsr_timeouts:
             # Already waiting for terminal response.
             return
@@ -496,22 +496,22 @@ cdef class Vt100Terminal:
         return bool(self._dsr_timeouts)
 
     def request_cursor_position_report(self) -> None:
-        self._dsr_request(b"\x1b[6n")
+        self.dsr_request(b"\x1b[6n")
 
     def request_foreground_color(self) -> None:
-        self._dsr_request(b"\x1b]10;?\x1b\\")
+        self.dsr_request(b"\x1b]10;?\x1b\\")
 
     def request_background_color(self) -> None:
-        self._dsr_request(b"\x1b]11;?\x1b\\")
+        self.dsr_request(b"\x1b]11;?\x1b\\")
 
     def request_device_attributes(self) -> None:
-        self._dsr_request(b"\x1b[c")
+        self.dsr_request(b"\x1b[c")
 
     def request_pixel_geometry(self) -> None:
-        self._dsr_request(b"\x1b[16t")
+        self.dsr_request(b"\x1b[16t")
 
     def request_terminal_geometry(self) -> None:
-        self._dsr_request(b"\x1b[14t")
+        self.dsr_request(b"\x1b[14t")
 
     def move_cursor(self, pos: Point) -> None:
         y, x = pos
