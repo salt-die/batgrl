@@ -205,8 +205,8 @@ class App(ABC):
             return
 
         height = min(self.inline_height, self._terminal.get_size().height)
-        self._terminal._out_buffer.write(b"\x0a" * height)  # Feed lines (may scroll).
-        self._terminal._out_buffer.write(b"\x1b[%dF" % height)  # Move cursor back up.
+        self._terminal.write(b"\x0a" * height)  # Feed lines (may scroll).
+        self._terminal.write(b"\x1b[%dF" % height)  # Move cursor back up.
         self._terminal.request_cursor_position_report()
 
     @property
@@ -448,6 +448,8 @@ class App(ABC):
                         self.fg_color = event.color
                     else:
                         self.bg_color = event.color
+                else:
+                    print(event, file=sys.stderr)
 
         async def auto_render():
             """Render screen every ``render_interval`` seconds."""
@@ -460,8 +462,8 @@ class App(ABC):
                 resized = root._resized
                 root._render()
                 terminal_render(
+                    terminal,
                     resized,
-                    terminal._out_buffer,
                     self._octree,
                     self._app_pos,
                     root.cells,

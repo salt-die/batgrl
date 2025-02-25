@@ -1,8 +1,6 @@
 """A linux VT100 terminal."""
 
 import asyncio
-import os
-import select
 import signal
 import sys
 import termios
@@ -22,6 +20,10 @@ class LinuxTerminal(Vt100Terminal):
 
     Attributes
     ----------
+    stdin: int
+        The stdin file descriptor.
+    stdout: int
+        The stdout file descriptor.
     in_alternate_screen : bool
         Whether the alternate screen buffer is enabled.
 
@@ -41,8 +43,10 @@ class LinuxTerminal(Vt100Terminal):
         Return a list of input events and reset the event buffer.
     get_size()
         Get terminal size.
+    write(escape)
+        Write an escape to the out buffer.
     flush()
-        Write buffer to output stream and flush.
+        Write out buffer to output stream and flush.
     set_title(title)
         Set terminal title.
     enter_alternate_screen()
@@ -86,19 +90,6 @@ class LinuxTerminal(Vt100Terminal):
     erase_in_display(n)
         Clear part of the screen.
     """
-
-    def process_stdin(self) -> None:
-        """Read from stdin and feed data into input parser to generate events."""
-        reads = []
-        while select.select([STDIN], [], [], 0)[0]:
-            try:
-                read = os.read(STDIN, 1024)
-            except OSError:
-                break
-            else:
-                reads.append(read)
-
-        self._feed(b"".join(reads))
 
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""

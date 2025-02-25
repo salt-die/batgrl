@@ -1,141 +1,17 @@
 """A windows VT100 terminal."""
 
 import asyncio
-import re
+import msvcrt
 from collections.abc import Callable
-from ctypes import GetLastError, Structure, Union, WinError, byref, windll
-from ctypes.wintypes import BOOL, CHAR, DWORD, HANDLE, LONG, LPVOID, SHORT, WCHAR
-from typing import Final
+from ctypes import Structure, byref, windll
+from ctypes.wintypes import BOOL, DWORD, HANDLE, LPVOID
 
-from .._fbuf import BytesBuffer
-from ..geometry import Size
-from ._utf16_to_utf8 import decode_utf16
-from .events import Event, ResizeEvent
+from .events import Event
 from .vt100_terminal import Vt100Terminal
 
-CTRL_SPACE_RE: Final = re.compile(rb"\x00+")
-CTRL_ALT_SPACE_RE: Final = re.compile(rb"\x00*\x1b\x00+")
-STDIN = windll.kernel32.GetStdHandle(DWORD(-10))
-STDOUT = windll.kernel32.GetStdHandle(DWORD(-11))
-KEY_EVENT: Final = 1
-WINDOW_BUFFER_SIZE_EVENT: Final = 4
 # See: https://msdn.microsoft.com/pl-pl/library/windows/desktop/ms686033(v=vs.85).aspx
 ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
 ENABLE_VIRTUAL_TERMINAL_INPUT = 0x0200
-
-
-class UNICODE_OR_ASCII(Union):
-    """Windows character."""
-
-    _fields_ = [("AsciiChar", CHAR), ("UnicodeChar", WCHAR)]
-
-
-class KEY_EVENT_RECORD(Structure):
-    """
-    Windows key event record.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms684166(v=vs.85).aspx
-    """
-
-    _fields_ = [
-        ("KeyDown", LONG),
-        ("RepeatCount", SHORT),
-        ("VirtualKeyCode", SHORT),
-        ("VirtualScanCode", SHORT),
-        ("uChar", UNICODE_OR_ASCII),
-        ("ControlKeyState", LONG),
-    ]
-
-
-class COORD(Structure):
-    """
-    Windows coord struct.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119(v=vs.85).aspx
-    """
-
-    _fields_ = [("X", SHORT), ("Y", SHORT)]
-
-
-class MOUSE_EVENT_RECORD(Structure):
-    """
-    Windows mouse event record.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms684239(v=vs.85).aspx
-    """
-
-    _fields_ = [
-        ("MousePosition", COORD),
-        ("ButtonState", LONG),
-        ("ControlKeyState", LONG),
-        ("EventFlags", LONG),
-    ]
-
-
-class WINDOW_BUFFER_SIZE_RECORD(Structure):
-    """
-    Windows buffer size record.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms687093(v=vs.85).aspx
-    """
-
-    _fields_ = [("Size", COORD)]
-
-
-class MENU_EVENT_RECORD(Structure):
-    """
-    Windows menu event record.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms684213(v=vs.85).aspx
-    """
-
-    _fields_ = [("CommandId", LONG)]
-
-
-class FOCUS_EVENT_RECORD(Structure):
-    """
-    Windows focus event record.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms683149(v=vs.85).aspx
-    """
-
-    _fields_ = [("SetFocus", LONG)]
-
-
-class EVENT_RECORD(Union):
-    """Windows event record."""
-
-    _fields_ = [
-        ("KeyEvent", KEY_EVENT_RECORD),
-        ("MouseEvent", MOUSE_EVENT_RECORD),
-        ("WindowBufferSizeEvent", WINDOW_BUFFER_SIZE_RECORD),
-        ("MenuEvent", MENU_EVENT_RECORD),
-        ("FocusEvent", FOCUS_EVENT_RECORD),
-    ]
-
-
-class INPUT_RECORD(Structure):
-    """
-    Windows input record.
-
-    References
-    ----------
-    http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499(v=vs.85).aspx
-    """
-
-    _fields_ = [("EventType", SHORT), ("Event", EVENT_RECORD)]
 
 
 class SECURITY_ATTRIBUTES(Structure):
@@ -160,6 +36,10 @@ class WindowsTerminal(Vt100Terminal):
 
     Attributes
     ----------
+    stdin: int
+        The stdin file descriptor.
+    stdout: int
+        The stdout file descriptor.
     in_alternate_screen : bool
         Whether the alternate screen buffer is enabled.
 
@@ -179,8 +59,10 @@ class WindowsTerminal(Vt100Terminal):
         Return a list of input events and reset the event buffer.
     get_size()
         Get terminal size.
+    write(escape)
+        Write an escape to the out buffer.
     flush()
-        Write buffer to output stream and flush.
+        Write out buffer to output stream and flush.
     set_title(title)
         Set terminal title.
     enter_alternate_screen()
@@ -225,77 +107,35 @@ class WindowsTerminal(Vt100Terminal):
         Clear part of the screen.
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, stdin: int = 0, stdout: int = 1) -> None:
+        super().__init__(stdin, stdout)
         self._original_input_mode = DWORD()
         """Original console input mode."""
-        windll.kernel32.GetConsoleMode(STDIN, byref(self._original_input_mode))
+        self._stdin_handle = msvcrt.get_osfhandle(stdin)
+        self._stdout_handle = msvcrt.get_osfhandle(stdout)
+
+        windll.kernel32.GetConsoleMode(
+            self._stdin_handle, byref(self._original_input_mode)
+        )
 
         self._original_output_mode = DWORD()
         """Original console output mode."""
-        windll.kernel32.GetConsoleMode(STDOUT, byref(self._original_output_mode))
+        windll.kernel32.GetConsoleMode(
+            self._stdout_handle, byref(self._original_output_mode)
+        )
 
         self._original_input_cp = windll.kernel32.GetConsoleCP()
         """Original console input code page."""
         self._original_output_cp = windll.kernel32.GetConsoleOutputCP()
         """Original console output code page."""
 
-        self._chars = BytesBuffer()  # FIXME: small?
-
-    def _feed(self, data: bytes) -> None:
-        # Some versions of Windows Terminal generate spurious null characters for a few
-        # input events. For instance, ctrl+" " generates 3 null characters instead of 1
-        # and paste events generate a null character before each "shifted" character.
-        # For most inputs, null characters can just be ignored.
-
-        # ! The first two conditions assume the sequences for these events appear fully
-        # ! and alone in stdin. Most of the time, key events occur slowly enough for
-        # ! this to be true. Failing on other cases is acceptable here to keep this
-        # ! logic simple.
-        if CTRL_SPACE_RE.fullmatch(data):
-            super()._feed(b"\x00")
-        elif CTRL_ALT_SPACE_RE.fullmatch(data):
-            super()._feed(b"\x1b\x00")
-        else:
-            super()._feed(data.replace(b"\x00", b""))
-
-    def process_stdin(self) -> None:
-        """Read from stdin and feed data into input parser to generate events."""
-        nevents = DWORD()
-        if not windll.kernel32.GetNumberOfConsoleInputEvents(STDIN, byref(nevents)):
-            raise WinError(GetLastError())
-
-        InputRecordArray = INPUT_RECORD * nevents.value
-        input_records = InputRecordArray()
-        if not windll.kernel32.ReadConsoleInputW(
-            STDIN, input_records, nevents.value, byref(DWORD())
-        ):
-            raise WinError(GetLastError())
-
-        resize_event = None
-        for input_record in input_records:
-            if input_record.EventType == KEY_EVENT:
-                key_event = input_record.Event.KeyEvent
-                if not key_event.KeyDown:
-                    continue
-                if key_event.ControlKeyState and not key_event.VirtualKeyCode:
-                    continue
-                decode_utf16(self._chars, key_event.uChar.UnicodeChar)
-            elif input_record.EventType == WINDOW_BUFFER_SIZE_EVENT:
-                resize_event = input_record.Event
-
-        self._feed(self._chars.getvalue())
-        self._chars.clear()
-
-        if resize_event is not None:
-            size = resize_event.WindowBufferSizeEvent.Size
-            self._event_buffer.append(ResizeEvent(Size(size.Y, size.X)))
-
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
-        windll.kernel32.SetConsoleMode(STDIN, ENABLE_VIRTUAL_TERMINAL_INPUT)
         windll.kernel32.SetConsoleMode(
-            STDOUT,
+            self._stdin_handle, ENABLE_VIRTUAL_TERMINAL_INPUT
+        )
+        windll.kernel32.SetConsoleMode(
+            self._stdout_handle,
             self._original_output_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING,
         )
         windll.kernel32.SetConsoleCP(65001)
@@ -303,8 +143,8 @@ class WindowsTerminal(Vt100Terminal):
 
     def restore_console(self) -> None:
         """Restore console to its original mode."""
-        windll.kernel32.SetConsoleMode(STDIN, self._original_input_mode)
-        windll.kernel32.SetConsoleMode(STDOUT, self._original_output_mode)
+        windll.kernel32.SetConsoleMode(self._stdin_handle, self._original_input_mode)
+        windll.kernel32.SetConsoleMode(self._stdout_handle, self._original_output_mode)
         windll.kernel32.SetConsoleCP(self._original_input_cp)
         windll.kernel32.SetConsoleOutputCP(self._original_output_cp)
 
@@ -326,7 +166,7 @@ class WindowsTerminal(Vt100Terminal):
         )
         loop = asyncio.get_running_loop()
         wait_for = windll.kernel32.WaitForMultipleObjects
-        EVENTS = (HANDLE * 2)(remove_event, STDIN)
+        EVENTS = (HANDLE * 2)(remove_event, self._stdin_handle)
 
         def ready():
             try:
@@ -348,16 +188,3 @@ class WindowsTerminal(Vt100Terminal):
         """Stop generating events from stdin."""
         self._event_handler = None
         windll.kernel32.SetEvent(self._remove_event)
-
-
-def is_vt100_enabled() -> bool:
-    """Return whether VT100 escape sequences are supported."""
-    original_mode = DWORD()
-    windll.kernel32.GetConsoleMode(STDOUT, byref(original_mode))
-
-    try:
-        return bool(
-            windll.kernel32.SetConsoleMode(STDOUT, ENABLE_VIRTUAL_TERMINAL_PROCESSING)
-        )
-    finally:
-        windll.kernel32.SetConsoleMode(STDOUT, original_mode)

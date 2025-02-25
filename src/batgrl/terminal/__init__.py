@@ -73,14 +73,8 @@ def get_platform_terminal() -> Vt100Terminal:
     RuntimeError
         If terminal isn't interactive or terminal doesn't support VT100 sequences.
     """
-    if not sys.stdin.isatty():
-        raise RuntimeError("Terminal is non-interactive.")
-
     if sys.platform == "win32":
-        from .windows_terminal import WindowsTerminal, is_vt100_enabled
-
-        if not is_vt100_enabled():
-            raise RuntimeError("Terminal doesn't support VT100 sequences.")
+        from .windows_terminal import WindowsTerminal
 
         return WindowsTerminal()
     else:

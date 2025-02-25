@@ -7,18 +7,18 @@ from libc.string cimport memset
 
 cimport cython
 
-from ._fbuf cimport (
-    BytesBuffer,
+from ._rendering cimport Cell
+from ._sixel cimport OctTree, sixel
+from .geometry.regions cimport CRegion, Region, bounding_rect, contains
+from .terminal._fbuf cimport (
     fbuf,
-    fbuf_flush,
+    fbuf_flush_fd,
     fbuf_grow,
     fbuf_printf,
     fbuf_putn,
     fbuf_putucs4,
 )
-from ._rendering cimport Cell
-from ._sixel cimport OctTree, sixel
-from .geometry.regions cimport CRegion, Region, bounding_rect, contains
+from .terminal.vt100_terminal cimport Vt100Terminal
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
@@ -1758,8 +1758,8 @@ cdef inline ssize_t write_glyph(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cpdef void terminal_render(
+    Vt100Terminal terminal,
     bint resized,
-    BytesBuffer bytes_buf,
     OctTree octree,
     tuple[int, int] app_pos,
     Cell[:, ::1] cells,
@@ -1775,7 +1775,7 @@ cpdef void terminal_render(
     normalize_canvas(cells, widths)
 
     cdef:
-        fbuf *f = &bytes_buf.f
+        fbuf *f = &terminal.out_buf
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_geom_height(cells, graphics)
         size_t cell_w = graphics_geom_width(cells, graphics)
@@ -1880,4 +1880,4 @@ cpdef void terminal_render(
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
         raise MemoryError
 
-    fbuf_flush(f)
+    fbuf_flush_fd(f, terminal.stdout)

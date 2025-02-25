@@ -81,14 +81,14 @@ class build_py_with_cwidth(build_py):
 setup(
     ext_modules=cythonize(
         [
-            "src/batgrl/_fbuf.pyx",
             "src/batgrl/_rendering.pyx",
             "src/batgrl/_sixel.pyx",
             "src/batgrl/char_width.pyx",
             "src/batgrl/gadgets/_raycasting.pyx",
             "src/batgrl/gadgets/_shadow_casting.pyx",
             "src/batgrl/geometry/regions.pyx",
-            "src/batgrl/terminal/_utf16_to_utf8.pyx",
+            "src/batgrl/terminal/_fbuf.pyx",
+            "src/batgrl/terminal/vt100_terminal.pyx",
         ]
     ),
     include_dirs=[np.get_include()],

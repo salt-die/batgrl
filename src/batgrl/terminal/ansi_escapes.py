@@ -2,7 +2,7 @@
 
 from .events import Key
 
-ANSI_ESCAPES: dict[str, tuple[Key, bool, bool, bool]] = {
+ANSI_ESCAPES: dict[bytes, tuple[Key, bool, bool, bool]] = {
     # ansi: (key, alt, ctrl, shift)
     b"\x00": (" ", False, True, False),
     b"\x01": ("a", False, True, False),
