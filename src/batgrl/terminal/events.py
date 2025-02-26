@@ -379,3 +379,37 @@ class FocusEvent(Event):
 
     focus: Literal["in", "out"]
     """The type of focus; either ``"in"`` or ``"out"``."""
+
+
+@dataclass
+class DECReplyModeEvent(Event):
+    """
+    A DEC reply event.
+
+    Parameters
+    ----------
+    mode : int
+        The DEC mode.
+    value : Literal[0, 1, 2, 3, 4]
+        The value of the mode.
+
+    Attributes
+    ----------
+    mode : int
+        The DEC mode.
+    value : Literal[0, 1, 2, 3, 4]
+        The value of the mode.
+    """
+
+    mode: int
+    """The DEC mode."""
+    value: Literal[0, 1, 2, 3, 4]
+    """
+    The value of the mode.
+
+    0 indicates mode is not recognized.
+    1 indicates mode is on.
+    2 indicates mode is off.
+    3 indicates mode is permanently on.
+    4 indicates mode is permanently off.
+    """

@@ -3,7 +3,15 @@ from .events import Event
 
 ctypedef unsigned char uint8
 ctypedef unsigned int uint
-ctypedef enum ParserState: CSI, CSI_PARAMS, ESCAPE, EXECUTE_NEXT, GROUND, OSC, PASTE
+ctypedef enum ParserState: 
+    CSI,
+    CSI_PARAMS,
+    DECRPM,
+    ESCAPE,
+    EXECUTE_NEXT,
+    GROUND,
+    OSC,
+    PASTE,
 
 
 cdef class Vt100Terminal:
@@ -12,6 +20,10 @@ cdef class Vt100Terminal:
         ParserState state
         int last_y, last_x
         bint skip_newline
+        bint sum_supported
+        bint sgr_pixels_supported
+        bint pixel_geometry_reported
+        bint pixel_mouse_mode
 
     cdef void add_event(Vt100Terminal, Event)
     cdef void feed1(Vt100Terminal, uint8)
@@ -20,5 +32,6 @@ cdef class Vt100Terminal:
     cdef void execute_csi_params(Vt100Terminal)
     cdef void execute_mouse(Vt100Terminal, uint*, char)
     cdef void execute_osc(Vt100Terminal)
+    cdef void execute_dec_rpm(Vt100Terminal)
     cdef void dsr_request(Vt100Terminal, bytes)
     cpdef void process_stdin(Vt100Terminal)

@@ -22,6 +22,7 @@ from .ansi_escapes import ANSI_ESCAPES
 from .events import (
     ColorReportEvent,
     CursorPositionReportEvent,
+    DECReplyModeEvent,
     DeviceAttributesReportEvent,
     Event,
     FocusEvent,
@@ -48,9 +49,10 @@ COLOR_RE: re.Pattern[bytes] = re.compile(
     rb"([0-9a-f]{2})[0-9a-f]{2}/"
     rb"([0-9a-f]{2})[0-9a-f]{2}\x1b\\"
 )
+DEC_MODES: frozenset[bytes] = frozenset([1016, 2026])
 
 
-cdef int csi_params(fbuf *f, char *initial, char* final, uint *params):
+cdef int csi_params(const fbuf *f, char *initial, char* final, uint *params):
     final[0] = f.buf[f.len - 1]
     if f.len == 3:
         return 0
@@ -62,12 +64,19 @@ cdef int csi_params(fbuf *f, char *initial, char* final, uint *params):
             return 0
         param_start += 1
 
+    cdef uint param_end
+    if f.buf[f.len - 2] == 0x24:
+        # DECRPM
+        param_end = f.len - 2
+    else:
+        param_end = f.len - 1
+
     cdef:
         size_t i
         int nparams = 0
         uint param = 0
 
-    for i in range(param_start, f.len - 1):
+    for i in range(param_start, param_end):
         if f.buf[i] == 0x3b:
             params[nparams] = param
             nparams += 1
@@ -99,6 +108,10 @@ cdef class Vt100Terminal:
         self.last_y = 0
         self.last_x = 0
         self.skip_newline = 0
+        self.sum_supported = 0
+        self.sgr_pixels_supported = 0
+        self.pixel_geometry_reported = 0
+        self.pixel_mouse_mode = 0
 
     def __dealloc__(self):
         fbuf_free(&self.read_buf)
@@ -139,7 +152,6 @@ cdef class Vt100Terminal:
                 if char_ == 0xa:
                     self.in_buf.len -= 1
                     return
-                
             if fbuf_endswith(&self.in_buf, PASTE_END, 6):
                 data = self.in_buf.buf[:self.in_buf.len - 6]
                 self.add_event(PasteEvent(data.decode()))
@@ -156,6 +168,8 @@ cdef class Vt100Terminal:
                 self.execute_ansi_escapes()
         elif self.state == EXECUTE_NEXT:
             self.execute_ansi_escapes()
+        elif self.state == DECRPM:
+            self.execute_dec_rpm()
         elif self.state == ESCAPE:
             if char_ == 0x5b:
                 self.state = CSI
@@ -176,7 +190,9 @@ cdef class Vt100Terminal:
             else:
                 self.execute_csi()
         elif self.state is CSI_PARAMS:
-            if char_ < 0x30 or char_ > 0x39 and char_ != 0x3b:
+            if char_ == 0x24:
+                self.state = DECRPM
+            elif char_ < 0x30 or char_ > 0x39 and char_ != 0x3b:
                 self.execute_csi_params()
 
     cdef void execute_ansi_escapes(self):
@@ -237,6 +253,7 @@ cdef class Vt100Terminal:
                 and nparams == 3
                 and (params[0] == 4 or params[0] == 6)
             ):
+                self.pixel_geometry_reported = 1
                 self.add_event(
                     PixelGeometryReportEvent(
                         "terminal" if params[0] == 4 else "cell",
@@ -322,6 +339,27 @@ cdef class Vt100Terminal:
                 timeout.cancel()
         else:
             self.add_event(UnknownEscapeSequence(escape))
+
+    cdef void execute_dec_rpm(self):
+        cdef:
+            char initial = 0x0, final = 0x0
+            uint[MAX_PARAMS] params
+            int nparams = csi_params(&self.in_buf, &initial, &final, &params[0])
+            uint mode = params[0], value = params[1]
+            cdef bytes escape
+
+        if nparams < 0 or not self._dsr_timeouts or mode not in DEC_MODES:
+            escape = self.in_buff.buf[:self.in_buf.len]
+            self.add_event(UnknownEscapeSequence(escape))
+        else:
+            timeout = self._dsr_timeouts.pop(b"\x1b[%d$p" % mode, None)
+            if timeout is not None:
+                timeout.cancel()
+            if mode == 1016:
+                self.sgr_pixels_supported = value
+            elif mode == 2026:
+                self.sum_supported = value
+            self.add_event(DECReplyModeEvent(mode, value))
 
     def _timeout_escape(self) -> None:
         if self.state != PASTE:
@@ -479,6 +517,19 @@ cdef class Vt100Terminal:
             b"\x1b[?1006l"  # SET_SGR_EXT_MODE_MOUSE
         )
 
+    def can_sgr_pixels(self) -> bool:
+        return self.pixel_geometry_reported and self.sgr_pixels_supported
+
+    def enable_sgr_pixels(self) -> None:
+        self.pixel_mouse_mode = 1
+        # FIXME: Set pixel_mouse_mode on DECRPM?
+        self.write(b"\xb1[?1016h")
+
+    def disable_sgr_pixels(self) -> None:
+        self.pixel_mouse_mode = 0
+        # FIXME: Set pixel_mouse_mode on DECRPM?
+        self.write(b"\xb1[?1016l")
+
     def reset_attributes(self) -> None:
         self.write(b"\x1b[0m")
 
@@ -520,6 +571,14 @@ cdef class Vt100Terminal:
 
     def request_terminal_geometry(self) -> None:
         self.dsr_request(b"\x1b[14t")
+
+    def request_sgr_pixels_supported(self) -> None:
+        # DECRQM 1016
+        self.dsr_request(b"\x1b[1016$p")
+
+    def request_synchronized_update_mode_supported(self) -> None:
+        # DECRQM 2026
+        self.dsr_request(b"\x1b[2026$p")
 
     def move_cursor(self, pos: Point) -> None:
         y, x = pos

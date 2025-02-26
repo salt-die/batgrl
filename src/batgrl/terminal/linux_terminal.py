@@ -55,6 +55,12 @@ class LinuxTerminal(Vt100Terminal):
         Enable mouse support in terminal.
     disable_mouse_support()
         Disable mouse support in terminal.
+    can_sgr_pixels()
+        Return whether SGR_PIXELS mouse mode can be enabled.
+    enable_sgr_pixels()
+        Enable SGR_PIXELS mouse mode.
+    disable_sgr_pixels()
+        Disable SGR_PIXELS mouse mode.
     reset_attributes()
         Reset character attributes.
     enable_bracketed_paste()
@@ -81,6 +87,10 @@ class LinuxTerminal(Vt100Terminal):
         Report pixel geometry per cell.
     request_terminal_geometry()
         Report pixel geometry of terminal.
+    request_sgr_pixels_supported()
+        Report whether SGR_PIXELS mouse mode is supported.
+    request_synchronized_update_mode_supported()
+        Report whether synchronized update mode is supported.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)

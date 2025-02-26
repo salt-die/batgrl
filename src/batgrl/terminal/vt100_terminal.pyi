@@ -51,6 +51,12 @@ class Vt100Terminal:
         Enable mouse support in terminal.
     disable_mouse_support()
         Disable mouse support in terminal.
+    can_sgr_pixels()
+        Return whether SGR_PIXELS mouse mode can be enabled.
+    enable_sgr_pixels()
+        Enable SGR_PIXELS mouse mode.
+    disable_sgr_pixels()
+        Disable SGR_PIXELS mouse mode.
     reset_attributes()
         Reset character attributes.
     enable_bracketed_paste()
@@ -77,6 +83,10 @@ class Vt100Terminal:
         Report pixel geometry per cell.
     request_terminal_geometry()
         Report pixel geometry of terminal.
+    request_sgr_pixels_supported()
+        Report whether SGR_PIXELS mouse mode is supported.
+    request_synchronized_update_mode_supported()
+        Report whether synchronized update mode is supported.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)
@@ -152,6 +162,23 @@ class Vt100Terminal:
     def disable_mouse_support(self) -> None:
         """Disable mouse support in terminal."""
 
+    def can_sgr_pixels(self) -> bool:
+        """
+        Return whether SGR_PIXELS mouse mode can be enabled.
+
+        This requires both SGR_PIXELS support and a pixel geometry report.
+        """
+
+    def enable_sgr_pixels(self) -> None:
+        """
+        Enable SGR_PIXELS mouse mode.
+
+        This should not be called unless `can_sgr_pixels()` returns True.
+        """
+
+    def disable_sgr_pixels(self) -> None:
+        """Disable SGR_PIXELS mouse mode."""
+
     def reset_attributes(self) -> None:
         """Reset character attributes."""
 
@@ -190,6 +217,17 @@ class Vt100Terminal:
 
     def request_terminal_geometry(self) -> None:
         """Report pixel geometry of terminal."""
+
+    def request_sgr_pixels_supported(self) -> None:
+        """
+        Report whether SGR_PIXELS mouse mode is supported.
+
+        Even if SGR_PIXELS is supported, the terminal must report pixel geometry before
+        SGR_PIXELS is enabled.
+        """
+
+    def request_synchronized_update_mode_supported(self) -> None:
+        """Report whether synchronized update mode is supported."""
 
     def expect_dsr(self) -> bool:
         """Return whether a device status report is expected."""
