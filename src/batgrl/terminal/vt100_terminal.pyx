@@ -57,14 +57,17 @@ cdef int csi_params(fbuf *f, char *initial, char* final, uint *params):
     if f.len == 3:
         return 0
 
-    cdef:
-        size_t i
-        uint param = 0, param_start = 2
-        int nparams = 0
-
+    cdef uint param_start = 2
     if not (0x30 <= f.buf[2] <= 0x39 or f.buf[2] == 0x3b):
         initial[0] = f.buf[2]
+        if f.len == 4:
+            return 0
         param_start += 1
+
+    cdef:
+        size_t i
+        int nparams = 0
+        uint param = 0
 
     for i in range(param_start, f.len - 1):
         if f.buf[i] == 0x3b:
