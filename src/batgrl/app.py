@@ -448,8 +448,6 @@ class App(ABC):
                         self.fg_color = event.color
                     else:
                         self.bg_color = event.color
-                else:
-                    print(event, file=sys.stderr)
 
         async def auto_render():
             """Render screen every ``render_interval`` seconds."""
