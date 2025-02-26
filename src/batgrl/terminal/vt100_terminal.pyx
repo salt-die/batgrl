@@ -34,13 +34,11 @@ from .events import (
 )
 
 DEF MAX_PARAMS = 32
-
-cdef:
-    char *PASTE_START = b"\x1b[200~"
-    char *PASTE_END = b"\x1b[201~"
-    char *STRING_TERMINATOR = b"\x1b\\"
-    char *FOCUS_IN = b"\x1b[I"
-    char *FOCUS_OUT = b"\x1b[O"
+DEF PASTE_START = b"\x1b[200~"
+DEF PASTE_END = b"\x1b[201~"
+DEF STRING_TERMINATOR = b"\x1b\\"
+DEF FOCUS_IN = b"\x1b[I"
+DEF FOCUS_OUT = b"\x1b[O"
 
 ESCAPE_TIMEOUT: float = 0.05
 DSR_REQUEST_TIMEOUT: float = 0.1
@@ -123,17 +121,6 @@ cdef class Vt100Terminal:
         self._event_buffer.append(event)
 
     cdef void feed1(self, uint8 char_):
-        # Gross \r handling...
-        # Replace \r with \n, but skip \n if \r\n.
-        if self.skip_newline:
-            self.skip_newline = 0
-            if char_ == 0xa:
-                return
-
-        if char_ == 0xd:
-            char_ = 0xa
-            self.skip_newline = 1
-
         if fbuf_put_char(&self.in_buf, char_):
             raise MemoryError
         cdef bytes data
@@ -142,6 +129,17 @@ cdef class Vt100Terminal:
             if fbuf_endswith(&self.in_buf, STRING_TERMINATOR, 2):
                 self.execute_osc()
         elif self.state == PASTE:
+            # Gross \r handling...
+            # Replace \r with \n, but skip \n if \r\n.
+            if char_ == 0xd:
+                self.in_buf.buf[self.in_buf.len - 1] = 0xa
+                self.skip_newline = 1
+            elif self.skip_newline:
+                self.skip_newline = 0
+                if char_ == 0xa:
+                    self.in_buf.len -= 1
+                    return
+                
             if fbuf_endswith(&self.in_buf, PASTE_END, 6):
                 data = self.in_buf.buf[:self.in_buf.len - 6]
                 self.add_event(PasteEvent(data.decode()))
@@ -199,6 +197,7 @@ cdef class Vt100Terminal:
     cdef void execute_csi_params(self):
         if fbuf_equals(&self.in_buf, PASTE_START, 6):
             self.state = PASTE
+            self.skip_newline = 0
             self.in_buf.len = 0
             return
 
