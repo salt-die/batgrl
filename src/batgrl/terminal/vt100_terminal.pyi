@@ -52,11 +52,11 @@ class Vt100Terminal:
     disable_mouse_support()
         Disable mouse support in terminal.
     can_sgr_pixels()
-        Return whether SGR_PIXELS mouse mode can be enabled.
+        Return whether SGR-PIXELS mouse mode can be enabled.
     enable_sgr_pixels()
-        Enable SGR_PIXELS mouse mode.
+        Enable SGR-PIXELS mouse mode.
     disable_sgr_pixels()
-        Disable SGR_PIXELS mouse mode.
+        Disable SGR-PIXELS mouse mode.
     reset_attributes()
         Reset character attributes.
     enable_bracketed_paste()
@@ -84,7 +84,7 @@ class Vt100Terminal:
     request_terminal_geometry()
         Report pixel geometry of terminal.
     request_sgr_pixels_supported()
-        Report whether SGR_PIXELS mouse mode is supported.
+        Report whether SGR-PIXELS mouse mode is supported.
     request_synchronized_update_mode_supported()
         Report whether synchronized update mode is supported.
     expect_dsr()
@@ -164,20 +164,20 @@ class Vt100Terminal:
 
     def can_sgr_pixels(self) -> bool:
         """
-        Return whether SGR_PIXELS mouse mode can be enabled.
+        Return whether SGR-PIXELS mouse mode can be enabled.
 
-        This requires both SGR_PIXELS support and a pixel geometry report.
+        This requires both SGR-PIXELS support and a pixel geometry report.
         """
 
     def enable_sgr_pixels(self) -> None:
         """
-        Enable SGR_PIXELS mouse mode.
+        Enable SGR-PIXELS mouse mode.
 
         This should not be called unless `can_sgr_pixels()` returns True.
         """
 
     def disable_sgr_pixels(self) -> None:
-        """Disable SGR_PIXELS mouse mode."""
+        """Disable SGR-PIXELS mouse mode."""
 
     def reset_attributes(self) -> None:
         """Reset character attributes."""
@@ -220,10 +220,10 @@ class Vt100Terminal:
 
     def request_sgr_pixels_supported(self) -> None:
         """
-        Report whether SGR_PIXELS mouse mode is supported.
+        Report whether SGR-PIXELS mouse mode is supported.
 
-        Even if SGR_PIXELS is supported, the terminal must report pixel geometry before
-        SGR_PIXELS is enabled.
+        Even if SGR-PIXELS is supported, the terminal must report pixel geometry before
+        SGR-PIXELS is enabled.
         """
 
     def request_synchronized_update_mode_supported(self) -> None:
