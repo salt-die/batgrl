@@ -31,7 +31,7 @@ class Vt100Terminal:
         Start generating events from stdin.
     unattach()
         Stop generating events from stdin.
-    feed(input_, reset_before, reset_after)
+    feed(input_, reset_before)
         Write bytes to stdin parser and return generated events.
     events()
         Return a list of input events and reset the event buffer.
@@ -107,9 +107,7 @@ class Vt100Terminal:
     def unattach(self) -> None:
         """Stop generating events from stdin."""
 
-    def feed(
-        self, input_: bytes, reset_before: bool = True, reset_after: bool = True
-    ) -> list[Event]:
+    def feed(self, input_: bytes, reset_before: bool = True) -> list[Event]:
         """
         Write bytes to stdin parser and return generated events.
 
@@ -120,8 +118,6 @@ class Vt100Terminal:
         reset_before : bool, default: True
             Whether to reset the parser state, clear input-buffer, and clear events
             before feeding ``input_``.
-        reset_after : bool, default: True
-            Whether to reset the parser state after feeding ``input_``.
 
         Returns
         -------

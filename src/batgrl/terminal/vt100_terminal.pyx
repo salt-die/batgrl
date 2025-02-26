@@ -324,6 +324,9 @@ cdef class Vt100Terminal:
     def _timeout_escape(self) -> None:
         if self.state != PASTE:
             self.execute_ansi_escapes()
+
+            if self._event_handler is not None:
+                self._event_handler(self.events())
             return
 
         # Timed out during a paste. Check if PASTE_END was cutoff and remove it.
@@ -414,9 +417,7 @@ cdef class Vt100Terminal:
     def unattach(self) -> None:
         pass
 
-    def feed(
-        self, input_: bytes, reset_before: bool = True, reset_after: bool = True
-    ) -> list[Event]:
+    def feed(self, input_: bytes, reset_before: bool = True) -> list[Event]:
         if reset_before:
             if self._escape_timeout is not None:
                 self._escape_timeout.cancel()
@@ -429,8 +430,8 @@ cdef class Vt100Terminal:
         for char_ in input_:
             self.feed1(char_)
 
-        if reset_after:
-            self.state = GROUND
+        if self.state != GROUND:
+            self.execute_ansi_escapes()
 
         return self.events()
 

@@ -55,7 +55,7 @@ class WindowsTerminal(Vt100Terminal):
         Start generating events from stdin.
     unattach()
         Stop generating events from stdin.
-    feed(input_, reset_before, reset_after)
+    feed(input_, reset_before)
         Write bytes to stdin parser and return generated events.
     events()
         Return a list of input events and reset the event buffer.
