@@ -349,7 +349,7 @@ cdef class Vt100Terminal:
             cdef bytes escape
 
         if nparams < 0 or not self._dsr_timeouts or mode not in DEC_MODES:
-            escape = self.in_buff.buf[:self.in_buf.len]
+            escape = self.in_buf.buf[:self.in_buf.len]
             self.add_event(UnknownEscapeSequence(escape))
         else:
             timeout = self._dsr_timeouts.pop(b"\x1b[%d$p" % mode, None)
