@@ -176,7 +176,10 @@ class WindowsTerminal(Vt100Terminal):
                 if self._event_handler is not None:
                     self._event_handler(self.events())
             finally:
-                loop.run_in_executor(None, wait)
+                if not loop.is_closed():  # Some event may close the loop.
+                    loop.run_in_executor(None, wait)
+                else:
+                    windll.kernel32.CloseHandle(remove_event)
 
         def wait():
             if wait_for(2, EVENTS, BOOL(False), DWORD(-1)) == 0:
