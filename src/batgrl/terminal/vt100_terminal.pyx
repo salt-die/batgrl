@@ -169,7 +169,7 @@ cdef class Vt100Terminal:
         elif self.state == EXECUTE_NEXT:
             self.execute_ansi_escapes()
         elif self.state == DECRPM:
-            self.execute_dec_rpm()
+            self.execute_decrpm()
         elif self.state == ESCAPE:
             if char_ == 0x5b:
                 self.state = CSI
@@ -340,7 +340,7 @@ cdef class Vt100Terminal:
         else:
             self.add_event(UnknownEscapeSequence(escape))
 
-    cdef void execute_dec_rpm(self):
+    cdef void execute_decrpm(self):
         cdef:
             char initial = 0x0, final = 0x0
             uint[MAX_PARAMS] params
@@ -356,7 +356,10 @@ cdef class Vt100Terminal:
             if timeout is not None:
                 timeout.cancel()
             if mode == 1016:
-                self.sgr_pixels_supported = value
+                if initial == 0x0:
+                    self.sgr_pixels_supported = value
+                elif initial == 0x3f:  # Request to turn on pixel mode.
+                    self.pixel_mouse_mode = value
             elif mode == 2026:
                 self.sum_supported = value
             self.add_event(DECReplyModeEvent(mode, value))
@@ -521,14 +524,10 @@ cdef class Vt100Terminal:
         return self.pixel_geometry_reported and self.sgr_pixels_supported
 
     def enable_sgr_pixels(self) -> None:
-        self.pixel_mouse_mode = 1
-        # FIXME: Set pixel_mouse_mode on DECRPM?
-        self.write(b"\xb1[?1016h")
+        self.dsr_request(b"\xb1[?1016h")
 
     def disable_sgr_pixels(self) -> None:
-        self.pixel_mouse_mode = 0
-        # FIXME: Set pixel_mouse_mode on DECRPM?
-        self.write(b"\xb1[?1016l")
+        self.dsr_request(b"\xb1[?1016l")
 
     def reset_attributes(self) -> None:
         self.write(b"\x1b[0m")
