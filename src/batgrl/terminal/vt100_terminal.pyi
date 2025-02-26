@@ -31,14 +31,16 @@ class Vt100Terminal:
         Start generating events from stdin.
     unattach()
         Stop generating events from stdin.
+    feed(input_, reset_before, reset_after)
+        Write bytes to stdin parser and return generated events.
     events()
         Return a list of input events and reset the event buffer.
     get_size()
         Get terminal size.
-    write(escape)
-        Write an escape to the out buffer.
+    write(out)
+        Write bytes directly to the out-buffer.
     flush()
-        Write out buffer to output stream and flush.
+        Write out-buffer to output stream and flush.
     set_title(title)
         Set terminal title.
     enter_alternate_screen()
@@ -105,14 +107,39 @@ class Vt100Terminal:
     def unattach(self) -> None:
         """Stop generating events from stdin."""
 
+    def feed(
+        self, input_: bytes, reset_before: bool = True, reset_after: bool = True
+    ) -> list[Event]:
+        """
+        Write bytes to stdin parser and return generated events.
+
+        Parameters
+        ----------
+        input_ : bytes
+            The bytes to feed to the VT100 parser.
+        reset_before : bool, default: True
+            Whether to reset the parser state, clear input-buffer, and clear events
+            before feeding ``input_``.
+        reset_after : bool, default: True
+            Whether to reset the parser state after feeding ``input_``.
+
+        Returns
+        -------
+        list[Event]
+            Events generated from ``input_``.
+        """
+
     def events(self) -> list[Event]:
         """Return a list of input events and reset the event buffer."""
 
     def get_size(self) -> Size:
         """Get terminal size."""
 
+    def write(self, out: bytes) -> None:
+        """Write bytes directly to the out-buffer."""
+
     def flush(self) -> None:
-        """Write out buffer to output stream and flush."""
+        """Write out-buffer to output stream and flush."""
 
     def set_title(self, title: str) -> None:
         """Set terminal title."""

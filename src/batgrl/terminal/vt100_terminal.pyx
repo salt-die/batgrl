@@ -402,20 +402,20 @@ cdef class Vt100Terminal:
         else:
             self._escape_timeout = loop.call_later(ESCAPE_TIMEOUT, self._timeout_escape)
 
-    def events(self) -> list[Event]:
-        events = self._event_buffer
-        self._event_buffer = []
-        return events
+    def raw_mode(self) -> None:
+        pass
 
-    def get_size(self) -> Size:
-        cols, rows = os.get_terminal_size()
-        return Size(rows, cols)
+    def restore_console(self) -> None:
+        pass
 
-    def test_stdin_parser(
-        self,
-        input_: bytes,
-        reset_before: bool = True,
-        reset_after: bool = True,
+    def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
+        pass
+
+    def unattach(self) -> None:
+        pass
+
+    def feed(
+        self, input_: bytes, reset_before: bool = True, reset_after: bool = True
     ) -> list[Event]:
         if reset_before:
             if self._escape_timeout is not None:
@@ -430,13 +430,18 @@ cdef class Vt100Terminal:
             self.feed1(char_)
 
         if reset_after:
-            if self._escape_timeout is not None:
-                self._escape_timeout.cancel()
-                self._escape_timeout = None
-
             self.state = GROUND
 
         return self.events()
+
+    def events(self) -> list[Event]:
+        events = self._event_buffer
+        self._event_buffer = []
+        return events
+
+    def get_size(self) -> Size:
+        cols, rows = os.get_terminal_size()
+        return Size(rows, cols)
 
     def write(self, escape: bytes) -> None:
         if fbuf_putn(&self.out_buf, escape, len(escape)):

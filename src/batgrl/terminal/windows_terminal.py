@@ -55,14 +55,16 @@ class WindowsTerminal(Vt100Terminal):
         Start generating events from stdin.
     unattach()
         Stop generating events from stdin.
+    feed(input_, reset_before, reset_after)
+        Write bytes to stdin parser and return generated events.
     events()
         Return a list of input events and reset the event buffer.
     get_size()
         Get terminal size.
-    write(escape)
-        Write an escape to the out buffer.
+    write(out)
+        Write bytes directly to the out-buffer.
     flush()
-        Write out buffer to output stream and flush.
+        Write out-buffer to output stream and flush.
     set_title(title)
         Set terminal title.
     enter_alternate_screen()
