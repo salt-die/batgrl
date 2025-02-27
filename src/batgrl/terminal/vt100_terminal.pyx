@@ -570,7 +570,7 @@ cdef class Vt100Terminal:
 
     def request_sgr_pixels_supported(self) -> None:
         # DECRQM 1016
-        self.dsr_request(b"\xb1[?1016$p")
+        self.dsr_request(b"\x1b[?1016$p")
 
     def request_synchronized_update_mode_supported(self) -> None:
         # DECRQM 2026
