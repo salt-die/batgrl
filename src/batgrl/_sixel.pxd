@@ -1,4 +1,4 @@
-from ._fbuf cimport fbuf
+from .terminal._fbuf cimport fbuf
 
 cdef:
     struct qnode:

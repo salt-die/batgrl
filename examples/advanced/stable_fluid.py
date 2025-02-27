@@ -1,5 +1,11 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "scipy",
+# ]
+# ///
 """
-Stable fluid simulation. Requires `scipy`.
+Stable fluid simulation.
 
 Click to add fluid.
 "r" to reset.

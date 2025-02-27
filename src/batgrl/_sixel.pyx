@@ -36,8 +36,8 @@ from libc.math cimport round
 
 cimport cython
 
-from ._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts
 from ._sixel cimport onode, qnode, qstate
+from .terminal._fbuf cimport fbuf, fbuf_printf, fbuf_putn, fbuf_puts
 
 ctypedef unsigned char uint8
 ctypedef unsigned int uint

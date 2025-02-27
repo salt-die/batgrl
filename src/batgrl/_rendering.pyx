@@ -5,19 +5,18 @@ from uwcwidth cimport wcswidth, wcwidth
 
 cimport cython
 
-from ._fbuf cimport (
-    FBuf,
+from ._rendering cimport Cell
+from ._sixel cimport OctTree, sixel
+from .geometry.regions cimport CRegion, Region, bounding_rect, contains
+from .terminal._fbuf cimport (
     fbuf,
-    fbuf_flush,
+    fbuf_flush_fd,
     fbuf_grow,
     fbuf_printf,
     fbuf_putn,
     fbuf_putucs4,
 )
-from ._rendering cimport Cell
-from ._sixel cimport OctTree, sixel
-from .geometry.regions cimport CRegion, Region, bounding_rect, contains
-from .text_tools import _EGC_BASE, _EGC_POOL
+from .terminal.vt100_terminal cimport Vt100Terminal
 
 ctypedef unsigned char uint8
 cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
@@ -94,6 +93,17 @@ cdef inline bint all_eq(uint8[:, :, ::1] a, uint8[:, :, ::1] b):
     for y in range(h):
         for x in range(w):
             if not rgba_eq(&a[y, x, 0], &b[y, x, 0]):
+                return 0
+    return 1
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef inline bint one_color(uint8[:, :, ::1] rgb, int y, int x, size_t h, size_t w):
+    cdef size_t i, j
+    for i in range(h):
+        for j in range(w):
+            if not rgba_eq(&rgb[y, x, 0], &rgb[y + i, x + j, 0]):
                 return 0
     return 1
 
@@ -257,6 +267,9 @@ cdef void trans_pane_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
@@ -452,6 +465,9 @@ cdef void trans_full_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         size_t h = graphics_geom_height(cells, graphics)
@@ -526,6 +542,9 @@ cdef void trans_half_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         int src_y, src_x
@@ -626,10 +645,12 @@ cdef void opaque_sixel_graphics_render(
         kind[it.y, it.x] = SIXEL
         for gy in range(h):
             for gx in range(w):
-                graphics[oy + gy, ox + gx, 0] = self_texture[src_y + gy, src_x + gx, 0]
-                graphics[oy + gy, ox + gx, 1] = self_texture[src_y + gy, src_x + gx, 1]
-                graphics[oy + gy, ox + gx, 2] = self_texture[src_y + gy, src_x + gx, 2]
-                graphics[oy + gy, ox + gx, 3] = 1
+                src = &self_texture[src_y + gy, src_x + gx, 0]
+                dst = &graphics[oy + gy, ox + gx, 0]
+                dst[0] = src[0]
+                dst[1] = src[1]
+                dst[2] = src[2]
+                dst[3] = 1
         next_(&it)
 
 
@@ -645,6 +666,9 @@ cdef void trans_sixel_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         int src_y, src_x
@@ -652,6 +676,7 @@ cdef void trans_sixel_graphics_render(
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         uint8 *rgba
+        double a
 
     init_iter(&it, cregion)
     while not it.done:
@@ -670,6 +695,28 @@ cdef void trans_sixel_graphics_render(
                             alpha * <double>rgba[3] / 255,
                         )
                         graphics[oy + gy, ox + gx, 3] = 1
+        elif (
+            cells[it.y, it.x].char_ != u" "
+            and cells[it.y, it.x].char_ != u"▀"
+            and one_color(self_texture, src_y, src_x, h, w)
+        ):
+            # If all rgba colors are equal we can treat the texture as a pane
+            # so that glyphs underneath are shown.
+            # TODO: Probably this feature could be applied if the texture was
+            # *mostly* one color, or all the colors were very close to each other.
+            # FIXME: Because the color fidelity of glyphs is higher than sixel,
+            # this can create color artifacts in the displayed image. Not sure if
+            # anything can be done about it?
+            rgba = &self_texture[src_y, src_x, 0]
+            if rgba[3]:
+                a = alpha * <double>rgba[3]/ 255
+                composite(&cells[it.y, it.x].fg_color[0], rgba, a)
+                composite(&cells[it.y, it.x].bg_color[0], rgba, a)
+                if kind[it.y, it.x] == MIXED:
+                    for gy in range(h):
+                        for gx in range(w):
+                            if graphics[oy + gy, ox + gx, 3]:
+                                composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
         elif kind[it.y, it.x] == GLYPH:
             # ! Special case half-blocks
             # ! For other blitters, probably don't special case.
@@ -718,11 +765,8 @@ cdef void trans_sixel_graphics_render(
                     else:
                         rgba = &self_texture[src_y + gy, src_x + gx, 0]
                         if rgba[3]:
-                            composite(
-                                &graphics[oy + gy, ox + gx, 0],
-                                rgba,
-                                alpha * <double>rgba[3] / 255,
-                            )
+                            a = alpha * <double>rgba[3]/ 255
+                            composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
                             graphics[oy + gy, ox + gx, 3] = 1
         next_(&it)
 
@@ -783,6 +827,9 @@ cdef void trans_braille_graphics_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         RegionIterator it
         int src_y, src_x
@@ -1083,6 +1130,9 @@ cdef void trans_full_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         int py, px
@@ -1169,6 +1219,9 @@ cdef void trans_half_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
@@ -1296,6 +1349,9 @@ cdef void trans_sixel_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
@@ -1427,6 +1483,9 @@ cdef void trans_braille_graphics_field_render(
     double alpha,
     CRegion *cregion,
 ):
+    if alpha == 0:
+        return
+
     cdef:
         size_t nparticles = particles.shape[0], i
         double py, px
@@ -1712,8 +1771,8 @@ cdef inline ssize_t write_glyph(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cpdef void terminal_render(
+    Vt100Terminal terminal,
     bint resized,
-    FBuf fwrap,
     OctTree octree,
     tuple[int, int] app_pos,
     Cell[:, ::1] cells,
@@ -1729,7 +1788,7 @@ cpdef void terminal_render(
     normalize_canvas(cells, widths)
 
     cdef:
-        fbuf *f = &fwrap.f
+        fbuf *f = &terminal.out_buf
         size_t h = cells.shape[0], w = cells.shape[1], y, x
         size_t cell_h = graphics_geom_height(cells, graphics)
         size_t cell_w = graphics_geom_width(cells, graphics)
@@ -1834,4 +1893,4 @@ cpdef void terminal_render(
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
         raise MemoryError
 
-    fbuf_flush(f)
+    fbuf_flush_fd(f, terminal.stdout)

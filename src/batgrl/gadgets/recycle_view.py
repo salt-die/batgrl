@@ -36,6 +36,30 @@ class RecycleView[T, G: Gadget](ScrollView):
     ----------
     recycle_view_data: list[T] | None, default: None
         The recycle-view's data.
+    allow_vertical_scroll : bool, default: True
+        Allow vertical scrolling.
+    allow_horizontal_scroll : bool, default: True
+        Allow horizontal scrolling.
+    show_vertical_bar : bool, default: True
+        Whether the vertical scrollbar is shown.
+    show_horizontal_bar : bool, default: True
+        Whether the horizontal scrollbar is shown.
+    dynamic_bars : bool, default: False
+        Whether bars are shown/hidden depending on the view size.
+    scrollwheel_enabled : bool, default: True
+        Allow vertical scrolling with scrollwheel.
+    arrow_keys_enabled : bool, default: True
+        Allow scrolling with arrow keys.
+    inertial_scrolling_enabled : bool, default: True
+        Whether inertial scrolling is enabled.
+    is_grabbable : bool, default: True
+        Whether grabbable behavior is enabled.
+    ptf_on_grab : bool, default: False
+        Whether the gadget will be pulled to front when grabbed.
+    mouse_button : MouseButton, default: "left"
+        Mouse button used for grabbing.
+    alpha : float, default: 1.0
+        Transparency of gadget.
     size : Size, default: Size(10, 10)
         Size of gadget.
     pos : Point, default: Point(0, 0)
@@ -57,6 +81,42 @@ class RecycleView[T, G: Gadget](ScrollView):
     ----------
     recycle_view_data: list[T]
         The recycle-view's data.
+    view : Gadget | None
+        The scrolled gadget.
+    allow_vertical_scroll : bool
+        Allow vertical scrolling.
+    allow_horizontal_scroll : bool
+        Allow horizontal scrolling.
+    show_vertical_bar : bool
+        Whether the vertical scrollbar is shown.
+    show_horizontal_bar : bool
+        Whether the horizontal scrollbar is shown.
+    dynamic_bars : bool, default: False
+        Whether bars are shown/hidden depending on the view size.
+    scrollwheel_enabled : bool
+        Allow vertical scrolling with scrollwheel.
+    arrow_keys_enabled : bool
+        Allow scrolling with arrow keys.
+    inertial_scrolling_enabled : bool
+        Whether inertial scrolling is enabled.
+    vertical_proportion : float
+        Vertical scroll position as a proportion of total height.
+    horizontal_proportion : float
+        Horizontal scroll position as a proportion of total width.
+    port_height : int
+        Height of view port.
+    port_width : int
+        Width of view port.
+    is_grabbable : bool
+        Whether grabbable behavior is enabled.
+    ptf_on_grab : bool
+        Whether the gadget will be pulled to front when grabbed.
+    mouse_button : MouseButton
+        Mouse button used for grabbing.
+    is_grabbed : bool
+        Whether gadget is grabbed.
+    alpha : float
+        Transparency of gadget.
     size : Size
         Size of gadget.
     height : int
@@ -177,6 +237,7 @@ class RecycleView[T, G: Gadget](ScrollView):
         dynamic_bars: bool = False,
         scrollwheel_enabled: bool = True,
         arrow_keys_enabled: bool = True,
+        inertial_scrolling_enabled: bool = True,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
@@ -197,6 +258,7 @@ class RecycleView[T, G: Gadget](ScrollView):
             dynamic_bars=dynamic_bars,
             scrollwheel_enabled=scrollwheel_enabled,
             arrow_keys_enabled=arrow_keys_enabled,
+            inertial_scrolling_enabled=inertial_scrolling_enabled,
             is_grabbable=is_grabbable,
             ptf_on_grab=ptf_on_grab,
             mouse_button=mouse_button,

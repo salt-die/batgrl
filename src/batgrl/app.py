@@ -18,7 +18,12 @@ from .gadgets.behaviors.themable import Themable
 from .gadgets.gadget import Gadget
 from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics
 from .geometry import Point, Size
-from .terminal import Vt100Terminal, app_mode, get_platform_terminal, get_sixel_info
+from .terminal import (
+    Vt100Terminal,
+    app_mode,
+    determine_terminal_capabilities,
+    get_platform_terminal,
+)
 from .terminal.events import (
     ColorReportEvent,
     CursorPositionReportEvent,
@@ -39,6 +44,18 @@ _TAB: Final = KeyEvent("tab")
 """Keybind for focusing next focusable."""
 _SHIFT_TAB: Final = KeyEvent("tab", shift=True)
 """Keybind for focusing previous focusable."""
+
+
+def _pixels_to_cells(mouse_pos, terminal_size):
+    y, x = mouse_pos
+    h, w = terminal_size
+    return Point(y // h, x // w)
+
+
+def _size_to_pixels(terminal_size):
+    h, w = terminal_size
+    ph, pw = _BLITTER_GEOMETRY["sixel"]
+    return Size(h * ph, w * pw)
 
 
 class App(ABC):
@@ -205,8 +222,8 @@ class App(ABC):
             return
 
         height = min(self.inline_height, self._terminal.get_size().height)
-        self._terminal._out_buffer.write(b"\x0a" * height)  # Feed lines (may scroll).
-        self._terminal._out_buffer.write(b"\x1b[%dF" % height)  # Move cursor back up.
+        self._terminal.write(b"\x0a" * height)  # Feed lines (may scroll).
+        self._terminal.write(b"\x1b[%dF" % height)  # Move cursor back up.
         self._terminal.request_cursor_position_report()
 
     @property
@@ -415,7 +432,11 @@ class App(ABC):
                             Focusable.focus_previous()
                 elif isinstance(event, MouseEvent):
                     determine_nclicks(event)
+                    if event.pos is None:
+                        event.pos = _pixels_to_cells(event.pixels, last_size)
                     event.pos -= self._app_pos
+                    if event.pixels_pos is not None:
+                        event.pixels_pos -= _size_to_pixels(last_size)
                     root.dispatch_mouse(event)
                 elif isinstance(event, PasteEvent):
                     root.dispatch_paste(event)
@@ -460,8 +481,8 @@ class App(ABC):
                 resized = root._resized
                 root._render()
                 terminal_render(
+                    terminal,
                     resized,
-                    terminal._out_buffer,
                     self._octree,
                     self._app_pos,
                     root.cells,
@@ -479,7 +500,7 @@ class App(ABC):
             (
                 Graphics._sixel_support,
                 _BLITTER_GEOMETRY["sixel"],
-            ) = await get_sixel_info(terminal)
+            ) = await determine_terminal_capabilities(terminal)
             root.on_size()  # Make cell and graphics arrays.
 
             if self.title is not None:
