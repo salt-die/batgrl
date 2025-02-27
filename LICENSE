@@ -18,10 +18,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-src/batgrl/_sixel.pyx and src/batgrl/_fbuf.h are both derived from notcurses`
-src/lib/sixel.c and src/lib/fbuf.h, respectively. notcurses is copyright
-2019-2025 Nick Black et al and is licensed under the Apache License, Version
-2.0.
+src/batgrl/_sixel.pyx and src/batgrl/terminal/_fbuf.h are both derived from
+notcurses` src/lib/sixel.c and src/lib/fbuf.h, respectively. notcurses is
+copyright 2019-2025 Nick Black et al and is licensed under the Apache License,
+Version 2.0.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

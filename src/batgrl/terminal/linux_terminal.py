@@ -1,19 +1,13 @@
 """A linux VT100 terminal."""
 
 import asyncio
-import os
-import select
 import signal
-import sys
 import termios
 import tty
 from collections.abc import Callable
-from typing import Final
 
 from .events import Event, ResizeEvent
 from .vt100_terminal import Vt100Terminal
-
-STDIN: Final = sys.stdin.fileno()
 
 
 class LinuxTerminal(Vt100Terminal):
@@ -22,6 +16,10 @@ class LinuxTerminal(Vt100Terminal):
 
     Attributes
     ----------
+    stdin: int
+        The stdin file descriptor.
+    stdout: int
+        The stdout file descriptor.
     in_alternate_screen : bool
         Whether the alternate screen buffer is enabled.
 
@@ -37,12 +35,16 @@ class LinuxTerminal(Vt100Terminal):
         Start generating events from stdin.
     unattach()
         Stop generating events from stdin.
+    feed(input_, reset_before)
+        Write bytes to stdin parser and return generated events.
     events()
         Return a list of input events and reset the event buffer.
     get_size()
         Get terminal size.
+    write(out)
+        Write bytes directly to the out-buffer.
     flush()
-        Write buffer to output stream and flush.
+        Write out-buffer to output stream and flush.
     set_title(title)
         Set terminal title.
     enter_alternate_screen()
@@ -53,6 +55,8 @@ class LinuxTerminal(Vt100Terminal):
         Enable mouse support in terminal.
     disable_mouse_support()
         Disable mouse support in terminal.
+    enable_sgr_pixels()
+        Enable SGR-PIXELS mouse mode.
     reset_attributes()
         Reset character attributes.
     enable_bracketed_paste()
@@ -79,6 +83,10 @@ class LinuxTerminal(Vt100Terminal):
         Report pixel geometry per cell.
     request_terminal_geometry()
         Report pixel geometry of terminal.
+    request_sgr_pixels_supported()
+        Report whether SGR-PIXELS mouse mode is supported.
+    request_synchronized_update_mode_supported()
+        Report whether synchronized update mode is supported.
     expect_dsr()
         Return whether a device status report is expected.
     move_cursor(pos)
@@ -87,24 +95,10 @@ class LinuxTerminal(Vt100Terminal):
         Clear part of the screen.
     """
 
-    def process_stdin(self) -> None:
-        """Read from stdin and feed data into input parser to generate events."""
-        reads = []
-        while select.select([STDIN], [], [], 0)[0]:
-            try:
-                read = os.read(STDIN, 1024)
-            except OSError:
-                break
-            else:
-                reads.append(read)
-
-        data = b"".join(reads).decode(errors="surrogateescape")
-        self._feed(data)
-
     def raw_mode(self) -> None:
         """Set terminal to raw mode."""
-        self._original_mode = termios.tcgetattr(STDIN)
-        attrs_raw = termios.tcgetattr(STDIN)
+        self._original_mode = termios.tcgetattr(self.stdin)
+        attrs_raw = termios.tcgetattr(self.stdin)
         attrs_raw[tty.LFLAG] &= ~(
             termios.ECHO | termios.ICANON | termios.IEXTEN | termios.ISIG
         )
@@ -112,11 +106,11 @@ class LinuxTerminal(Vt100Terminal):
             termios.IXON | termios.IXOFF | termios.ICRNL | termios.INLCR | termios.IGNCR
         )
         attrs_raw[tty.CC][termios.VMIN] = 1
-        termios.tcsetattr(STDIN, termios.TCSANOW, attrs_raw)
+        termios.tcsetattr(self.stdin, termios.TCSANOW, attrs_raw)
 
     def restore_console(self) -> None:
         """Restore console to its original mode."""
-        termios.tcsetattr(STDIN, termios.TCSANOW, self._original_mode)
+        termios.tcsetattr(self.stdin, termios.TCSANOW, self._original_mode)
         del self._original_mode
 
     def attach(self, event_handler: Callable[[list[Event]], None]) -> None:
@@ -137,7 +131,7 @@ class LinuxTerminal(Vt100Terminal):
                 self._event_handler(self.events())
 
         loop = asyncio.get_running_loop()
-        loop.add_reader(STDIN, process)
+        loop.add_reader(self.stdin, process)
 
         def on_resize(*_):
             self._event_buffer.append(ResizeEvent(self.get_size()))
@@ -149,5 +143,5 @@ class LinuxTerminal(Vt100Terminal):
         """Stop generating events from stdin."""
         self._event_handler = None
         loop = asyncio.get_running_loop()
-        loop.remove_reader(STDIN)
+        loop.remove_reader(self.stdin)
         signal.signal(signal.SIGWINCH, signal.SIG_DFL)
