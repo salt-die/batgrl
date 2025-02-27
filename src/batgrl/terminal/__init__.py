@@ -119,8 +119,6 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
             if isinstance(event, DeviceAttributesReportEvent):
                 sixel_support = _SIXEL_SUPPORT in event.device_attributes
             elif isinstance(event, PixelGeometryReportEvent):
-                report_timeout.cancel()
-                terminal_info_reported.set()
                 if event.kind == "cell":
                     pixel_geometry = event.geometry
                 else:
