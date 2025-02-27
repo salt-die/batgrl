@@ -229,7 +229,9 @@ cdef class Vt100Terminal:
 
         if self._dsr_timeouts:
             if initial == 0x0 and final == b"R" and nparams == 2:
-                self.add_event(CursorPositionReportEvent(params[0] - 1, params[1] - 1))
+                self.add_event(
+                    CursorPositionReportEvent(Point(params[0] - 1, params[1] - 1))
+                )
                 timeout = self._dsr_timeouts.pop(b"\x1b[6n", None)
                 if timeout is not None:
                     timeout.cancel()
