@@ -276,6 +276,8 @@ class MouseEvent(Event):
         The change in x-coordinate of the mouse position.
     nclicks : int, default: 0
         The number of consecutive ``"mouse_down"`` events with same button.
+    pixels_pos : Point | None
+        The mouse position in pixels.
 
     Attributes
     ----------
@@ -297,6 +299,8 @@ class MouseEvent(Event):
         The change in x-coordinate of the mouse position.
     nclicks : int
         The number of consecutive ``"mouse_down"`` events with same button.
+    pixels_pos : Point | None
+        The mouse position in pixels.
     meta : bool
         Alias for ``alt``.
     control : bool
@@ -321,6 +325,8 @@ class MouseEvent(Event):
     """The change in x-coordinate of the mouse position."""
     nclicks: int = 0
     """The number of consecutive ``"mouse_down"`` events with same button."""
+    pixels_pos: Point | None = None
+    """The mouse position in pixels."""
 
     @property
     def meta(self) -> bool:

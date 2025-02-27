@@ -51,12 +51,8 @@ class Vt100Terminal:
         Enable mouse support in terminal.
     disable_mouse_support()
         Disable mouse support in terminal.
-    can_sgr_pixels()
-        Return whether SGR-PIXELS mouse mode can be enabled.
     enable_sgr_pixels()
         Enable SGR-PIXELS mouse mode.
-    disable_sgr_pixels()
-        Disable SGR-PIXELS mouse mode.
     reset_attributes()
         Reset character attributes.
     enable_bracketed_paste()
@@ -162,22 +158,8 @@ class Vt100Terminal:
     def disable_mouse_support(self) -> None:
         """Disable mouse support in terminal."""
 
-    def can_sgr_pixels(self) -> bool:
-        """
-        Return whether SGR-PIXELS mouse mode can be enabled.
-
-        This requires both SGR-PIXELS support and a pixel geometry report.
-        """
-
     def enable_sgr_pixels(self) -> None:
-        """
-        Enable SGR-PIXELS mouse mode.
-
-        This should not be called unless `can_sgr_pixels()` returns True.
-        """
-
-    def disable_sgr_pixels(self) -> None:
-        """Disable SGR-PIXELS mouse mode."""
+        """Enable SGR-PIXELS mouse mode."""
 
     def reset_attributes(self) -> None:
         """Reset character attributes."""
@@ -219,12 +201,7 @@ class Vt100Terminal:
         """Report pixel geometry of terminal."""
 
     def request_sgr_pixels_supported(self) -> None:
-        """
-        Report whether SGR-PIXELS mouse mode is supported.
-
-        Even if SGR-PIXELS is supported, the terminal must report pixel geometry before
-        SGR-PIXELS is enabled.
-        """
+        """Report whether SGR-PIXELS mode is supported."""
 
     def request_synchronized_update_mode_supported(self) -> None:
         """Report whether synchronized update mode is supported."""

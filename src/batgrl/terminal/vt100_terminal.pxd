@@ -21,9 +21,7 @@ cdef class Vt100Terminal:
         int last_y, last_x
         bint skip_newline
         bint sum_supported
-        bint sgr_pixels_supported
-        bint pixel_geometry_reported
-        bint pixel_mouse_mode
+        bint sgr_pixels_mode
 
     cdef void add_event(Vt100Terminal, Event)
     cdef void feed1(Vt100Terminal, uint8)

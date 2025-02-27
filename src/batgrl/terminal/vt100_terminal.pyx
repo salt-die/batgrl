@@ -104,14 +104,13 @@ cdef class Vt100Terminal:
             fbuf_free(&self.read_buf)
             fbuf_free(&self.in_buf)
             raise MemoryError
+
         self.state = GROUND
         self.last_y = 0
         self.last_x = 0
         self.skip_newline = 0
         self.sum_supported = 0
-        self.sgr_pixels_supported = 0
-        self.pixel_geometry_reported = 0
-        self.pixel_mouse_mode = 0
+        self.sgr_pixels_mode = 0
 
     def __dealloc__(self):
         fbuf_free(&self.read_buf)
@@ -253,7 +252,6 @@ cdef class Vt100Terminal:
                 and nparams == 3
                 and (params[0] == 4 or params[0] == 6)
             ):
-                self.pixel_geometry_reported = 1
                 self.add_event(
                     PixelGeometryReportEvent(
                         "terminal" if params[0] == 4 else "cell",
@@ -307,9 +305,16 @@ cdef class Vt100Terminal:
         else:
             event_type = "mouse_down"
 
+        if self.sgr_pixels_mode:
+            pos = None
+            pixels = Point(y, x)
+        else:
+            pos = Point(y, x)
+            pixels = None
+
         self.add_event(
             MouseEvent(
-                Point(y, x),
+                pos,
                 button,
                 event_type,
                 bool(info & 8),
@@ -317,6 +322,7 @@ cdef class Vt100Terminal:
                 bool(info & 4),
                 dy,
                 dx,
+                pixels,
             )
         )
 
@@ -355,13 +361,9 @@ cdef class Vt100Terminal:
             timeout = self._dsr_timeouts.pop(b"\x1b[%d$p" % mode, None)
             if timeout is not None:
                 timeout.cancel()
-            if mode == 1016:
-                if initial == 0x0:
-                    self.sgr_pixels_supported = value
-                elif initial == 0x3f:  # Request to turn on pixel mode.
-                    self.pixel_mouse_mode = value
-            elif mode == 2026:
+            if mode == 2026:
                 self.sum_supported = value
+
             self.add_event(DECReplyModeEvent(mode, value))
 
     def _timeout_escape(self) -> None:
@@ -519,15 +521,13 @@ cdef class Vt100Terminal:
             b"\x1b[?1003l"  # SET_ANY_EVENT_MOUSE
             b"\x1b[?1006l"  # SET_SGR_EXT_MODE_MOUSE
         )
-
-    def can_sgr_pixels(self) -> bool:
-        return self.pixel_geometry_reported and self.sgr_pixels_supported
+        if self.sgr_pixels_mode:
+            self.sgr_pixels_mode = 0
+            self.write(b"\xb1[?1016l")  # SET_SGR_PIXELS_MODE_MOUSE
 
     def enable_sgr_pixels(self) -> None:
-        self.dsr_request(b"\xb1[?1016h")
-
-    def disable_sgr_pixels(self) -> None:
-        self.dsr_request(b"\xb1[?1016l")
+        self.sgr_pixels_mode = 1
+        self.write(b"\xb1[?1016h")
 
     def reset_attributes(self) -> None:
         self.write(b"\x1b[0m")
@@ -550,9 +550,6 @@ cdef class Vt100Terminal:
     def disable_reporting_focus(self) -> None:
         self.write(b"\x1b[?1004l")
 
-    def expect_dsr(self) -> bool:
-        return bool(self._dsr_timeouts)
-
     def request_cursor_position_report(self) -> None:
         self.dsr_request(b"\x1b[6n")
 
@@ -572,12 +569,14 @@ cdef class Vt100Terminal:
         self.dsr_request(b"\x1b[14t")
 
     def request_sgr_pixels_supported(self) -> None:
-        # DECRQM 1016
-        self.dsr_request(b"\x1b[1016$p")
+        self.dsr_request(b"\xb1[?1016$p")
 
     def request_synchronized_update_mode_supported(self) -> None:
         # DECRQM 2026
         self.dsr_request(b"\x1b[2026$p")
+
+    def expect_dsr(self) -> bool:
+        return bool(self._dsr_timeouts)
 
     def move_cursor(self, pos: Point) -> None:
         y, x = pos
