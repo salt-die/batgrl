@@ -92,7 +92,7 @@ async def determine_terminal_capabilities(terminal: Vt100Terminal) -> tuple[bool
     """
     Determine various terminal capabilities.
 
-    First try to determine terminal's pixel geometry. If pixel geometry is determined,
+    Try to determine terminal's pixel geometry. If pixel geometry is determined,
     determine if terminal has sixel support and attempt to turn on SGR-PIXELS mouse
     mode. Additionaly, query for synchronized update mode support.
 
