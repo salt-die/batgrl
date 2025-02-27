@@ -569,11 +569,12 @@ cdef class Vt100Terminal:
         self.dsr_request(b"\x1b[14t")
 
     def request_sgr_pixels_supported(self) -> None:
+        # DECRQM 1016
         self.dsr_request(b"\xb1[?1016$p")
 
     def request_synchronized_update_mode_supported(self) -> None:
         # DECRQM 2026
-        self.dsr_request(b"\x1b[2026$p")
+        self.dsr_request(b"\x1b[?2026$p")
 
     def expect_dsr(self) -> bool:
         return bool(self._dsr_timeouts)
