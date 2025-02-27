@@ -717,11 +717,6 @@ cdef void trans_sixel_graphics_render(
                 a = alpha * <double>rgba[3]/ 255
                 composite(&cells[it.y, it.x].fg_color[0], rgba, a)
                 composite(&cells[it.y, it.x].bg_color[0], rgba, a)
-                if kind[it.y, it.x] == MIXED:
-                    for gy in range(h):
-                        for gx in range(w):
-                            if graphics[oy + gy, ox + gx, 3]:
-                                composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
         elif kind[it.y, it.x] == GLYPH:
             # ! Special case half-blocks
             # ! For other blitters, probably don't special case.
