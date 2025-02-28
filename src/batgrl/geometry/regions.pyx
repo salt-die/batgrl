@@ -308,6 +308,9 @@ cdef class Region:
     @classmethod
     def from_rect(cls, pos: Point, size: Size) -> Region:
         out = Region()
+        if size[0] == 0 or size[1] == 0:
+            return out
+
         if add_band(&out.cregion) == -1:
             raise MemoryError
 
