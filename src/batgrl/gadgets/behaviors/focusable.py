@@ -84,7 +84,7 @@ class Focusable:
 
     def focus(self):
         """Focus gadget."""
-        if not self.is_enabled:
+        if self.parent is None or not self.is_enabled or not self.is_visible:
             return
 
         ancestors = WeakSet(
@@ -101,12 +101,18 @@ class Focusable:
         for needs_focus in ancestors - focused:
             needs_focus.on_focus()
 
+        # Try to move self to top of focusables queue.
         focus_gadgets = Focusable.__focusables
-        while (gadget := focus_gadgets[0]()) is not self:
+        i = 0
+        while i < len(focus_gadgets):
+            gadget = focus_gadgets[0]()
             if gadget is None:
                 focus_gadgets.popleft()
+            elif gadget is self:
+                break
             else:
                 focus_gadgets.rotate(-1)
+                i += 1
 
     def blur(self):
         """Un-focus gadget."""
@@ -116,7 +122,7 @@ class Focusable:
                     ancestor.focus()
                     return
 
-            Focusable.__focused.remove(self)
+            Focusable.__focused.discard(self)
             self.on_blur()
 
     def on_focus(self):
