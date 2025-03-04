@@ -254,7 +254,8 @@ def _normalize_size_hint(size_hint: SizeHint) -> SizeHint:
 
 def bindable(setter):
     """Decorate property setters to make them bindable."""
-    instances: WeakKeyDictionary[Gadget, Callable[[], None]] = WeakKeyDictionary()
+    instances: WeakKeyDictionary[Gadget, dict[int, Callable[[], None]]]
+    instances = WeakKeyDictionary()
 
     @wraps(setter)
     def wrapper(self, *args, **kwargs):
