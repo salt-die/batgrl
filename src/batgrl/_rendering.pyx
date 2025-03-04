@@ -943,10 +943,7 @@ cdef void trans_sixel_graphics_render(
                         if rgba[3]:
                             a = alpha * <double>rgba[3]/ 255
                             composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
-                    else:
-                        if self_texture[src_y + gy, src_x + gx, 3]:
-                            kind[it.y, it.x] = MIXED
-                            continue
+                    elif self_texture[src_y + gy, src_x + gx, 3]:
                         if where_fg(gy / h, gx / w):
                             rgba = &cell.fg_color[0]
                         else:
@@ -958,6 +955,8 @@ cdef void trans_sixel_graphics_render(
                             alpha,
                         )
                         graphics[oy + gy, ox + gx, 3] = 1
+                    else:
+                        kind[it.y, it.x] = MIXED
         else:
             cell = &cells[it.y, it.x]
             if (
