@@ -390,7 +390,6 @@ cdef class Vt100Terminal:
                     self.in_buf.len -= i
                 break
         cdef bytes data = self.in_buf.buf[:self.in_buf.len]
-        self.in_buf.len = 0
         self.add_event(PasteEvent(data.decode()))
 
         if self._event_handler is not None:
