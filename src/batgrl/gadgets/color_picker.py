@@ -306,6 +306,7 @@ class ColorPicker(Themable, Gadget):
             self.color_swatch, self.hues, self.shades, self.label
         )
         self.add_gadget(self._container)
+        self.on_size()
 
     @property
     def alpha(self) -> float:
