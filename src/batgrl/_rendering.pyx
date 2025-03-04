@@ -1,7 +1,7 @@
 # distutils: language = c
 # distutils: sources = src/batgrl/cwidth.c
 
-from libc.math cimport round
+from libc.math cimport round, pow
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
@@ -21,7 +21,8 @@ from .terminal._fbuf cimport (
 from .terminal.vt100_terminal cimport Vt100Terminal
 
 ctypedef unsigned char uint8
-cdef uint8 GLYPH = 0, SIXEL = 1, MIXED = 2
+
+ctypedef enum CellKind: GLYPH, SIXEL, MIXED, SEE_THROUGH_SIXEL
 cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
 
 cdef extern from "cwidth.h":
@@ -115,15 +116,31 @@ cdef inline bint one_color(uint8[:, :, ::1] rgb, int y, int x, size_t h, size_t 
 
 cdef inline bint cell_eq(Cell *a, Cell *b):
     return (
-        (a.char_ == b.char_)
-        & (a.bold == b.bold)
-        & (a.italic == b.italic)
-        & (a.underline == b.underline)
-        & (a.strikethrough == b.strikethrough)
-        & (a.overline == b.overline)
-        & (a.reverse == b.reverse)
-        & (rgb_eq(&a.fg_color[0], &b.fg_color[0]))
-        & (rgb_eq(&a.bg_color[0], &b.bg_color[0]))
+        a.char_ == b.char_
+        and a.bold == b.bold
+        and a.italic == b.italic
+        and a.underline == b.underline
+        and a.strikethrough == b.strikethrough
+        and a.overline == b.overline
+        and a.reverse == b.reverse
+        and rgb_eq(&a.fg_color[0], &b.fg_color[0])
+        and rgb_eq(&a.bg_color[0], &b.bg_color[0])
+    )
+
+
+cdef inline bint see_through_check(
+    Cell *a, Cell *b, uint8[:, :, ::1] g, uint8[:, :, ::1] pg
+):
+    return (
+        a.char_ == b.char_
+        and a.bold == b.bold
+        and a.italic == b.italic
+        and a.underline == b.underline
+        and a.strikethrough == b.strikethrough
+        and a.overline == b.overline
+        and a.reverse == b.reverse
+        and rgb_eq(&a.fg_color[0], &b.fg_color[0])
+        and all_eq(g, pg)
     )
 
 
@@ -148,8 +165,8 @@ cdef inline void composite(uint8 *dst, uint8 *src, double alpha):
     dst[2] = <uint8>((<double>src[2] - b) * alpha + b)
 
 
-cdef inline bint composite_sixels_on_glyph(
-    uint8 *bg, uint8 *rgba, uint8 *graphics, double alpha
+cdef inline bint composite_sixels_on_cell(
+    uint8 *bg, uint8 *graphics, uint8 *rgba, double alpha
 ):
     if rgba[3]:
         graphics[0] = bg[0]
@@ -235,6 +252,10 @@ cdef inline double average_quant(
         fg[2] = <uint8>quant_fg[2]
         return average_alpha / nfg
     return average_alpha
+
+
+cdef inline uint8 _100_to_uint8(uint8 c):
+    return <uint8>(<double>c / 100.0 * 255.0)
 
 
 @cython.boundscheck(False)
@@ -389,7 +410,7 @@ cdef void trans_text_render(
             dst.overline = src.overline
             dst.reverse = src.reverse
             dst.fg_color = src.fg_color
-            if kind[it.y, it.x] == SIXEL:
+            if kind[it.y, it.x] & SIXEL:
                 oy = it.y * h
                 ox = it.x * w
                 average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
@@ -659,6 +680,214 @@ cdef void opaque_sixel_graphics_render(
         next_(&it)
 
 
+DEF VARIANCE_THRESHOLD = 100
+
+cdef bint is_low_variance_region(
+    uint8[:, :, ::1] texture, int src_y, int src_x, size_t h, size_t w, uint8 *rgba
+):
+    cdef double[4] mean_rgba
+    cdef double[4] variance
+    cdef int y, x
+    cdef size_t area = h * w
+
+    for y in range(src_y, src_y + h):
+        for x in range(src_x, src_x + w):
+            mean_rgba[0] += <double>texture[y, x, 0]
+            mean_rgba[1] += <double>texture[y, x, 1]
+            mean_rgba[2] += <double>texture[y, x, 2]
+            mean_rgba[3] += <double>texture[y, x, 3]
+
+    mean_rgba[0] /= area
+    mean_rgba[1] /= area
+    mean_rgba[2] /= area
+    mean_rgba[3] /= area
+    rgba[0] = <uint8>mean_rgba[0]
+    rgba[1] = <uint8>mean_rgba[1]
+    rgba[2] = <uint8>mean_rgba[2]
+    rgba[3] = <uint8>mean_rgba[3]
+
+    for y in range(src_y, src_y + h):
+        for x in range(src_x, src_x + w):
+            variance[0] += pow(mean_rgba[0] - texture[y, x, 0], 2.0)
+            variance[1] += pow(mean_rgba[1] - texture[y, x, 1], 2.0)
+            variance[2] += pow(mean_rgba[2] - texture[y, x, 2], 2.0)
+            variance[3] += pow(mean_rgba[3] - texture[y, x, 3], 2.0)
+
+    variance[0] /= area
+    variance[1] /= area
+    variance[2] /= area
+    variance[3] /= area
+
+    return (
+        variance[0] < VARIANCE_THRESHOLD
+        and variance[1] < VARIANCE_THRESHOLD
+        and variance[2] < VARIANCE_THRESHOLD
+        and variance[3] < VARIANCE_THRESHOLD
+    )
+
+
+# The following functions are used to composite block glyphs onto sixel textures.
+# Where they return 0, the background color is used to composite, else the foreground
+# color.
+# TODO: Add sextants/octants
+
+cdef bint is_block_char(Py_UCS4 glyph):
+    return glyph == 0x20 or 0x2580 <= glyph <= 0x259f
+
+ctypedef bint (*where_glyph)(double v, double u)
+
+cdef bint default_glyph(double v, double u):
+    return 0
+
+cdef bint upper_half(double v, double u):
+    return v < .5
+
+cdef bint lower_one_eighth(double v, double u):
+    return v >= .875
+
+cdef bint lower_one_quarter(double v, double u):
+    return v >= .75
+
+cdef bint lower_three_eighths(double v, double u):
+    return v >= .625
+
+cdef bint lower_half(double v, double u):
+    return v >= .5
+
+cdef bint lower_five_eighths(double v, double u):
+    return v >= .375
+
+cdef bint lower_three_quarters(double v, double u):
+    return v >= .25
+
+cdef bint lower_seven_eighths(double v, double u):
+    return v >= .125
+
+cdef bint full(double v, double u):
+    return 1
+
+cdef bint left_seven_eigths(double v, double u):
+    return u < .875
+
+cdef bint left_three_quarters(double v, double u):
+    return u < .75
+
+cdef bint left_five_eights(double v, double u):
+    return u < .625
+
+cdef bint left_half(double v, double u):
+    return u < .5
+
+cdef bint left_three_eighths(double v, double u):
+    return u < .375
+
+cdef bint left_one_quarter(double v, double u):
+    return u < .25
+
+cdef bint left_one_eighth(double v, double u):
+    return u < .125
+
+cdef bint right_half(double v, double u):
+    return u >= .5
+
+cdef bint light_shade(double v, double u):
+    cdef int y = <int>(20.0 * v)
+    cdef int x = <int>(10.0 * u)
+    if y % 2 == 0:
+        return x % 4 == 0
+    return x % 4 == 2
+
+cdef bint medium_shade(double v, double u):
+    cdef int y = <int>(20.0 * v)
+    cdef int x = <int>(10.0 * u)
+    if y % 2 == 0:
+        return x % 2 == 0
+    return x % 2 == 1
+
+cdef bint dark_shade(double v, double u):
+    cdef int y = <int>(20.0 * v)
+    cdef int x = <int>(10.0 * u)
+    if y % 2 == 0:
+        return x % 4 != 0
+    return x % 4 != 2
+
+cdef bint upper_one_eighth(double v, double u):
+    return v < .125
+
+cdef bint right_one_eighth(double v, double u):
+    return u >= .875
+
+cdef bint quadrant_lower_left(double v, double u):
+    return v >= .5 and u < .5
+
+cdef bint quadrant_lower_right(double v, double u):
+    return v >= .5 and u >= .5
+
+cdef bint quadrant_upper_left(double v, double u):
+    return v < .5 and u < .5
+
+cdef bint quadrant_upper_left_and_lower_left_and_lower_right(double v, double u):
+    return v >= .5 or u < .5
+
+cdef bint quadrant_upper_left_and_lower_right(double v, double u):
+    return v < .5 and u < .5 or v >= .5 and u >= .5
+
+cdef bint quadrant_upper_left_and_upper_right_and_lower_left(double v, double u):
+    return v < .5 or u < .5
+
+cdef bint quadrant_upper_left_and_upper_right_and_lower_right(double v, double u):
+    return v < .5 or u >= .5
+
+cdef bint quadrant_upper_right(double v, double u):
+    return v < .5 and u >= .5
+
+cdef bint quadrant_upper_right_and_lower_left(double v, double u):
+    return v < .5 and u >= .5 or v >= .5 and u < .5
+
+cdef bint quadrant_upper_right_and_lower_left_and_lower_right(double v, double u):
+    return v >= .5 or u >= .5
+
+cdef where_glyph[32] where_glyphs = [
+    upper_half,
+    lower_one_eighth,
+    lower_one_quarter,
+    lower_three_eighths,
+    lower_half,
+    lower_five_eighths,
+    lower_three_quarters,
+    lower_seven_eighths,
+    full,
+    left_seven_eigths,
+    left_three_quarters,
+    left_five_eights,
+    left_half,
+    left_three_eighths,
+    left_one_quarter,
+    left_one_eighth,
+    right_half,
+    light_shade,
+    medium_shade,
+    dark_shade,
+    upper_one_eighth,
+    right_one_eighth,
+    quadrant_lower_left,
+    quadrant_lower_right,
+    quadrant_upper_left,
+    quadrant_upper_left_and_lower_left_and_lower_right,
+    quadrant_upper_left_and_lower_right,
+    quadrant_upper_left_and_upper_right_and_lower_left,
+    quadrant_upper_left_and_upper_right_and_lower_right,
+    quadrant_upper_right,
+    quadrant_upper_right_and_lower_left,
+    quadrant_upper_right_and_lower_left_and_lower_right,
+]
+
+cdef inline where_glyph get_where_fg(Py_UCS4 char_):
+    if 0x2580 <= char_ <= 0x259f:
+        return where_glyphs[<unsigned int>char_ - 0x2580]
+    return default_glyph
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void trans_sixel_graphics_render(
@@ -681,7 +910,10 @@ cdef void trans_sixel_graphics_render(
         size_t w = graphics_geom_width(cells, graphics)
         size_t oy, ox, gy, gx
         uint8 *rgba
+        uint8[4] mean
         double a
+        where_glyph where_fg
+        Cell *cell
 
     init_iter(&it, cregion)
     while not it.done:
@@ -700,74 +932,73 @@ cdef void trans_sixel_graphics_render(
                             alpha * <double>rgba[3] / 255,
                         )
                         graphics[oy + gy, ox + gx, 3] = 1
-        elif (
-            cells[it.y, it.x].char_ != u" "
-            and cells[it.y, it.x].char_ != u"▀"
-            and one_color(self_texture, src_y, src_x, h, w)
-        ):
-            # If all rgba colors are equal we can treat the texture as a pane
-            # so that glyphs underneath are shown.
-            # TODO: Probably this feature could be applied if the texture was
-            # *mostly* one color, or all the colors were very close to each other.
-            # FIXME: Because the color fidelity of glyphs is higher than sixel,
-            # this can create color artifacts in the displayed image. Not sure if
-            # anything can be done about it?
-            rgba = &self_texture[src_y, src_x, 0]
-            if rgba[3]:
-                a = alpha * <double>rgba[3]/ 255
-                composite(&cells[it.y, it.x].fg_color[0], rgba, a)
-                composite(&cells[it.y, it.x].bg_color[0], rgba, a)
-        elif kind[it.y, it.x] == GLYPH:
-            # ! Special case half-blocks
-            # ! For other blitters, probably don't special case.
-            kind[it.y, it.x] = SIXEL
-            if cells[it.y, it.x].char_ == u"▀":
-                for gy in range(h // 2):
-                    for gx in range(w):
-                        if composite_sixels_on_glyph(
-                            &cells[it.y, it.x].fg_color[0],
-                            &self_texture[src_y + gy, src_x + gx, 0],
-                            &graphics[oy + gy, ox + gx, 0],
-                            alpha,
-                        ):
-                            kind[it.y, it.x] = MIXED
-                for gy in range(h // 2, h):
-                    for gx in range(w):
-                        if composite_sixels_on_glyph(
-                            &cells[it.y, it.x].bg_color[0],
-                            &self_texture[src_y + gy, src_x + gx, 0],
-                            &graphics[oy + gy, ox + gx, 0],
-                            alpha,
-                        ):
-                            kind[it.y, it.x] = MIXED
-            else:
-                for gy in range(h):
-                    for gx in range(w):
-                        if composite_sixels_on_glyph(
-                            &cells[it.y, it.x].bg_color[0],
-                            &self_texture[src_y + gy, src_x + gx, 0],
-                            &graphics[oy + gy, ox + gx, 0],
-                            alpha,
-                        ):
-                            kind[it.y, it.x] = MIXED
         elif kind[it.y, it.x] == MIXED:
             kind[it.y, it.x] = SIXEL
+            cell = &cells[it.y, it.x]
+            where_fg = get_where_fg(cell.char_)
             for gy in range(h):
                 for gx in range(w):
-                    if not graphics[oy + gy, ox + gx, 3]:
-                        kind[it.y, it.x] = MIXED
-                        composite_sixels_on_glyph(
-                            &cells[it.y, it.x].bg_color[0],
-                            &self_texture[src_y + gy, src_x + gx, 0],
-                            &graphics[oy + gy, ox + gx, 0],
-                            alpha,
-                        )
-                    else:
+                    if graphics[oy + gy, ox + gx, 3]:
                         rgba = &self_texture[src_y + gy, src_x + gx, 0]
                         if rgba[3]:
                             a = alpha * <double>rgba[3]/ 255
                             composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
+                    else:
+                        if self_texture[src_y + gy, src_x + gx, 3]:
+                            kind[it.y, it.x] = MIXED
+                            continue
+                        if where_fg(gy / h, gx / w):
+                            rgba = &cell.fg_color[0]
+                        else:
+                            rgba = &cell.bg_color[0]
+                        composite_sixels_on_cell(
+                            rgba,
+                            &graphics[oy + gy, ox + gx, 0],
+                            &self_texture[src_y + gy, src_x + gx, 0],
+                            alpha,
+                        )
+                        graphics[oy + gy, ox + gx, 3] = 1
+        else:
+            cell = &cells[it.y, it.x]
+            if (
+                not is_block_char(cell.char_)
+                and is_low_variance_region(self_texture, src_y, src_x, h, w, &mean[0])
+            ):
+                if mean[3]:
+                    kind[it.y, it.x] = SEE_THROUGH_SIXEL
+                    a = alpha * <double>mean[3]/ 255
+                    composite(&cell.fg_color[0], &mean[0], a)
+                    # Compositing onto graphics, to be copied back to cell after
+                    # quantization, see additional notes in rendering. Need to invert
+                    # alpha:
+                    composite(&mean[0], &cell.bg_color[0], 1 - a)
+                    for gy in range(h):
+                        for gx in range(w):
+                            graphics[oy + gy, ox + gx, 0] = mean[0]
+                            graphics[oy + gy, ox + gx, 1] = mean[1]
+                            graphics[oy + gy, ox + gx, 2] = mean[2]
                             graphics[oy + gy, ox + gx, 3] = 1
+                else:
+                    kind[it.y, it.x] = GLYPH
+                    for gy in range(h):
+                        for gx in range(w):
+                            graphics[oy + gy, ox + gx, 3] = 0
+            else:
+                kind[it.y, it.x] = SIXEL
+                where_fg = get_where_fg(cell.char_)
+                for gy in range(h):
+                    for gx in range(w):
+                        if where_fg(gy / h, gx / w):
+                            rgba = &cell.fg_color[0]
+                        else:
+                            rgba = &cell.bg_color[0]
+                        if composite_sixels_on_cell(
+                            rgba,
+                            &graphics[oy + gy, ox + gx, 0],
+                            &self_texture[src_y + gy, src_x + gx, 0],
+                            alpha,
+                        ):
+                            kind[it.y, it.x] = MIXED
         next_(&it)
 
 
@@ -865,7 +1096,7 @@ cdef void trans_braille_graphics_render(
         cell.strikethrough = False
         cell.overline = False
         cell.reverse = False
-        if kind[it.y, it.x] == SIXEL:
+        if kind[it.y, it.x] & SIXEL:
             oy = it.y * h
             ox = it.x * w
             average_graphics(&cell.bg_color[0], graphics[oy:oy + h, ox:ox + w])
@@ -1046,7 +1277,7 @@ cdef void trans_text_field_render(
             dst.overline = src.overline
             dst.reverse = src.reverse
             dst.fg_color = src.fg_color
-            if kind[py, px] == SIXEL:
+            if kind[py, px] & SIXEL:
                 oy = py * h
                 ox = px * w
                 average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
@@ -1520,19 +1751,17 @@ cdef void trans_braille_graphics_field_render(
         # ! Assumed if char_ is braille, that background has already been composited.
         if pixel.char_ < 10240 or pixel.char_ > 10495:
             pixel.char_ = 10240
-            if kind[ipy, ipx] == SIXEL:
+            if kind[ipy, ipx] & SIXEL:
                 oy = ipy * h
                 ox = ipx * w
                 average_graphics(
                     &cells[ipy, ipx].bg_color[0], graphics[oy:oy + h, ox:ox + w]
                 )
-                kind[ipy, ipx] = GLYPH
             elif kind[ipy, ipx] == MIXED:
                 oy = ipy * h
                 ox = ipx * w
                 p = average_graphics(&rgb[0], graphics[oy:oy + h, ox: ox + w])
                 lerp_rgb(&rgb[0], &cells[ipy, ipx].bg_color[0], p)
-                kind[ipy, ipx] = GLYPH
             cells[ipy, ipx].fg_color = cells[ipy, ipx].bg_color
         kind[ipy, ipx] = GLYPH
         pgy = <int>((py - ipy) * 4)
@@ -1786,6 +2015,7 @@ cpdef void terminal_render(
         ssize_t cursor_y = -1, cursor_x = -1
         Cell *last_sgr = NULL
         bint emit_sixel = 0
+        uint8 *quant_color
         unsigned int aspect_h = aspect_ratio[0], aspect_w = aspect_ratio[1]
 
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
@@ -1812,6 +2042,15 @@ cpdef void terminal_render(
                         and not cell_eq(&cells[y, x], &prev_cells[y, x])
                     ):
                         emit_sixel = 1
+                    elif kind[y, x] == SEE_THROUGH_SIXEL:
+                        gh = y * cell_h
+                        gw = x * cell_w
+                        emit_sixel = see_through_check(
+                            &cells[y, x],
+                            &prev_cells[y, x],
+                            graphics[gh:gh + cell_h, gw:gw + cell_w],
+                            prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                        )
                     else:
                         gh = y * cell_h
                         gw = x * cell_w
@@ -1869,6 +2108,27 @@ cpdef void terminal_render(
                 )
                 or not cell_eq(&cells[y, x], &prev_cells[y, x])
             ):
+                if write_glyph(
+                    f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
+                ):
+                    raise MemoryError
+            elif kind[y, x] == SEE_THROUGH_SIXEL and emit_sixel:
+                # Note to future code archaeologists:
+                # The reason for SEE_THROUGH_SIXEL is to color match the background of
+                # a cell that is seen "under" graphics with the quantized color of the
+                # graphics. That is, if the graphics color was composited directly onto
+                # the cell background in `trans_sixel_graphics_render`, then once the
+                # graphics has passed through quantization, there would be a slight
+                # discrepancy with the cell background color and the graphics color.
+                # So instead of above, the cell background color is composited onto the
+                # graphics and then, after quantization, the graphics color is copied
+                # back onto cell background.
+                gy = y * cell_h
+                gx = x * cell_w
+                quant_color = octree.qs.table + 3 * sgraphics[gy, gx, 0]
+                cells[y, x].bg_color[0] = _100_to_uint8(quant_color[0])
+                cells[y, x].bg_color[1] = _100_to_uint8(quant_color[1])
+                cells[y, x].bg_color[2] = _100_to_uint8(quant_color[2])
                 if write_glyph(
                     f, oy, ox, y, x, &cursor_y, &cursor_x, cells, widths, &last_sgr
                 ):
