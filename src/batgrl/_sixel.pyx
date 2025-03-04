@@ -468,6 +468,8 @@ cdef inline int build_sixel_band(
             cidx = find_color(qs, &stexture[oy + y, ox + x, 0])
             if cidx < 0:
                 return -1
+            # Store color index for later use by SEE_THROUGH_SIXEL cells in rendering.
+            stexture[oy + y, ox + x, 0] = cidx
 
             for i in range(nactive_colors):
                 if active_colors[i].color == cidx:
