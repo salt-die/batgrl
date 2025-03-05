@@ -128,6 +128,8 @@ cdef inline bint cell_eq(Cell *a, Cell *b):
     )
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 cdef inline bint see_through_check(
     Cell *a, Cell *b, uint8[:, :, ::1] g, uint8[:, :, ::1] pg
 ):
