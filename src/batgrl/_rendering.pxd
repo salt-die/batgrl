@@ -6,5 +6,5 @@ cdef packed struct Cell:
     unsigned char strikethrough
     unsigned char overline
     unsigned char reverse
-    unsigned char [3] fg_color
-    unsigned char [3] bg_color
+    unsigned char[3] fg_color
+    unsigned char[3] bg_color
