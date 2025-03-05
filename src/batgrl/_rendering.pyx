@@ -968,8 +968,8 @@ cdef void trans_sixel_graphics_render(
                     a = alpha * <double>mean[3]/ 255
                     composite(&cell.fg_color[0], &mean[0], a)
                     # Compositing onto graphics, to be copied back to cell after
-                    # quantization, see additional notes in rendering. Need to invert
-                    # alpha:
+                    # quantization, see additional notes in `terminal_render`. Need to
+                    # invert alpha:
                     composite(&mean[0], &cell.bg_color[0], 1 - a)
                     for gy in range(h):
                         for gx in range(w):
