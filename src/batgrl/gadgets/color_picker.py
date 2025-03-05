@@ -29,7 +29,7 @@ from .text import Text, new_cell
 
 __all__ = ["ColorPicker", "Point", "Size"]
 
-GRAD = (ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED)
+GRADIENT = ARED, AYELLOW, AGREEN, ACYAN, ABLUE, AMAGENTA, ARED
 
 
 class _ShadeSelector(Grabbable, Graphics):
@@ -103,7 +103,7 @@ class _HueSelector(Grabbable, Graphics):
 
     def on_size(self):
         super().on_size()
-        self.texture[:] = gradient(*GRAD, n=self.width)
+        self.texture[:] = gradient(*GRADIENT, n=self.width)
         self._hue_indicator.x = round(self._hue_hint * self.width)
         self.update_hue()
 
@@ -277,6 +277,7 @@ class ColorPicker(Themable, Gadget):
             color_swatch=self.color_swatch,
             label=self.label,
             is_transparent=False,
+            blitter="full",
         )
         self.hues = _HueSelector(
             pos=(1, 1), shade_selector=self.shades, is_transparent=False
