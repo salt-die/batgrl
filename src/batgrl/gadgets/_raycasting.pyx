@@ -244,12 +244,12 @@ def cast_rays(
         if line_height == 0:
             continue
 
-        initial_y = h // 2 - line_height // 2
+        initial_y = (h - line_height) // 2
         if initial_y < 0:
             draw_start_y = 0
         else:
             draw_start_y = initial_y
-        draw_end_y = h // 2 + line_height // 2
+        draw_end_y = (h + line_height + 1) // 2
         if draw_end_y > h:
             draw_end_y = h
 
@@ -267,10 +267,13 @@ def cast_rays(
         tex_pos = (draw_start_y - initial_y) * step
         for y in range(draw_start_y, draw_end_y):
             tex_y = <int>tex_pos
-            if tex_y < 0 or tex_y > tex_h:
-                continue
-
             tex_pos += step
+
+            if tex_y < 0:
+                tex_y = 0
+            elif tex_y >= tex_h:
+                tex_y = tex_h - 1
+
             if side:
                 # Darken wall.
                 texture[y, x, 0] = (wall_texture[tex_y, tex_x, 0] >> 1) & 127
@@ -482,12 +485,12 @@ def text_cast_rays(
         if line_height == 0:
             continue
 
-        initial_y = h // 2 - line_height // 2
+        initial_y = (h - line_height) // 2
         if initial_y < 0:
             draw_start_y = 0
         else:
             draw_start_y = initial_y
-        draw_end_y = h // 2 + line_height // 2
+        draw_end_y = (h + line_height + 1) // 2
         if draw_end_y > h:
             draw_end_y = h
 
@@ -505,10 +508,13 @@ def text_cast_rays(
         tex_pos = (draw_start_y - initial_y) * step
         for y in range(draw_start_y, draw_end_y):
             tex_y = <int>tex_pos
-            if tex_y < 0 or tex_y > tex_h:
-                continue
-
             tex_pos += step
+
+            if tex_y < 0:
+                tex_y = 0
+            elif tex_y >= tex_h:
+                tex_y = tex_h - 1
+
             # ! How much to shade a side wall? `2.0 * side` for now...
             wall_value = shade_wall(
                 wall_texture[tex_y, tex_x], perp_wall_dist + 2.0 * side
