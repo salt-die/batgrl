@@ -290,14 +290,14 @@ cdef class Vt100Terminal:
         elif info_button == 2:
             button = "right"
         else:
-            button = "no button"
+            button = "no_button"
 
         if info & 64:
             if info & 1:
                 event_type = "scroll_down"
             else:
                 event_type = "scroll_up"
-            button = "no button"
+            button = "no_button"
         elif info & 32:
             event_type = "mouse_move"
         elif state == b"m":
