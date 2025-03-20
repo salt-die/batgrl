@@ -45,7 +45,7 @@ def _create_cwidth():
 
     This function builds the table used in ``cwidth.c`` needed to determine displayed
     width of a character in the terminal. The widths are taken directly from `wcwidth`,
-    but the ``cwidth`` function is a couple of magnitude times faster than
+    but the ``cwidth`` function is a couple of orders of magnitude times faster than
     ``wcwidth.wcwidth``.
     """
     groups = []

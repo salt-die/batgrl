@@ -2,7 +2,7 @@
 A graphic particle field.
 
 A particle field specializes in rendering many single "pixel" children from an array of
-particle positions and and an particle colors.
+particle positions and an array particle colors.
 """
 
 from typing import Any
