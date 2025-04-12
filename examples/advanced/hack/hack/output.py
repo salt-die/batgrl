@@ -50,7 +50,7 @@ class Output(Text):
 
         if password == self.password:
             self.canvas[:-5] = self.canvas[5:]
-            self.canvas[-7:]["char"] = " "
+            self.chars[-7:] = " "
             add_text(
                 self.canvas[-7:],
                 CORRECT_GUESS.format(password),
@@ -58,7 +58,7 @@ class Output(Text):
             self.modal.show(is_win=True)
         else:
             self.canvas[:-3] = self.canvas[3:]
-            self.canvas[-5:]["char"] = " "
+            self.chars[-5:] = " "
             likeness = sum(a == b for a, b in zip(password, self.password))
             add_text(
                 self.canvas[-5:],

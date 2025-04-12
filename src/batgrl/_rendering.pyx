@@ -1,11 +1,9 @@
-# distutils: language = c
-# distutils: sources = src/batgrl/cwidth.c
-
 from libc.math cimport round, pow
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
 cimport cython
+from uwcwidth cimport wcwidth_uint32, wcswidth
 
 from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
@@ -19,14 +17,23 @@ from .terminal._fbuf cimport (
     fbuf_putucs4,
 )
 from .terminal.vt100_terminal cimport Vt100Terminal
+from .text_tools import EGC_POOL
 
 ctypedef unsigned char uint8
-
 ctypedef enum CellKind: GLYPH, SIXEL, MIXED, SEE_THROUGH_SIXEL
-cdef unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
-
-cdef extern from "cwidth.h":
-    int cwidth(Py_UCS4)
+cdef:
+    unsigned int[8] BRAILLE_ENUM = [1, 8, 2, 16, 4, 32, 64, 128]
+    uint8 BOLD = 0b000001
+    uint8 ITALIC = 0b000010
+    uint8 UNDERLINE = 0b000100
+    uint8 STRIKETHROUGH = 0b001000
+    uint8 OVERLINE = 0b010000
+    uint8 REVERSE = 0b100000
+    unsigned long EGC_BASE = 0x180000
+    unsigned long SPACE_ORD = 0x20
+    unsigned long BRAILLE_ORD = 0x2800
+    unsigned long HALF_BLOCK_ORD = 0x2580
+    unsigned long END_OF_GEOMETRY_BLOCK_ORD = HALF_BLOCK_ORD + 0x20
 
 
 cdef struct RegionIterator:
@@ -116,13 +123,8 @@ cdef inline bint one_color(uint8[:, :, ::1] rgb, int y, int x, size_t h, size_t 
 
 cdef inline bint cell_eq(Cell *a, Cell *b):
     return (
-        a.char_ == b.char_
-        and a.bold == b.bold
-        and a.italic == b.italic
-        and a.underline == b.underline
-        and a.strikethrough == b.strikethrough
-        and a.overline == b.overline
-        and a.reverse == b.reverse
+        a.ord == b.ord
+        and a.style == b.style
         and rgb_eq(&a.fg_color[0], &b.fg_color[0])
         and rgb_eq(&a.bg_color[0], &b.bg_color[0])
     )
@@ -130,18 +132,15 @@ cdef inline bint cell_eq(Cell *a, Cell *b):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef inline bint see_through_check(
+cdef inline bint see_through_eq(
     Cell *a, Cell *b, uint8[:, :, ::1] g, uint8[:, :, ::1] pg
 ):
     return (
-        a.char_ == b.char_
-        and a.bold == b.bold
-        and a.italic == b.italic
-        and a.underline == b.underline
-        and a.strikethrough == b.strikethrough
-        and a.overline == b.overline
-        and a.reverse == b.reverse
+        a.ord == b.ord
+        and a.style == b.style
         and rgb_eq(&a.fg_color[0], &b.fg_color[0])
+        # Note that bg_color is not checked because color information for see-through
+        # cells is stored in graphics.
         and all_eq(g, pg)
     )
 
@@ -272,13 +271,8 @@ cdef void opaque_pane_render(
     init_iter(&it, cregion)
     while not it.done:
         cell = &cells[it.y, it.x]
-        cell.char_ = u" "
-        cell.bold = False
-        cell.italic = False
-        cell.underline = False
-        cell.strikethrough = False
-        cell.overline = False
-        cell.reverse = False
+        cell.ord = 32
+        cell.style = 0
         cell.bg_color[0] = bg_color[0]
         cell.bg_color[1] = bg_color[1]
         cell.bg_color[2] = bg_color[2]
@@ -390,7 +384,7 @@ cdef void trans_text_render(
         src = &self_canvas[it.y - abs_y, it.x - abs_x]
         dst = &cells[it.y, it.x]
         # FIXME: Consider all whitespace?
-        if src.char_ == u" " or src.char_ == u"⠀":
+        if src.ord == SPACE_ORD or src.ord == BRAILLE_ORD:
             if kind[it.y, it.x] != SIXEL:
                 composite(&dst.fg_color[0], &src.bg_color[0], alpha)
                 composite(&dst.bg_color[0], &src.bg_color[0], alpha)
@@ -404,13 +398,8 @@ cdef void trans_text_render(
                                 &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
                             )
         else:
-            dst.char_ = src.char_
-            dst.bold = src.bold
-            dst.italic = src.italic
-            dst.underline = src.underline
-            dst.strikethrough = src.strikethrough
-            dst.overline = src.overline
-            dst.reverse = src.reverse
+            dst.ord = src.ord
+            dst.style = src.style
             dst.fg_color = src.fg_color
             if kind[it.y, it.x] & SIXEL:
                 oy = it.y * h
@@ -467,13 +456,8 @@ cdef void opaque_full_graphics_render(
     init_iter(&it, cregion)
     while not it.done:
         cell = &cells[it.y, it.x]
-        cell.char_ = u" "
-        cell.bold = False
-        cell.italic = False
-        cell.underline = False
-        cell.strikethrough = False
-        cell.overline = False
-        cell.reverse = False
+        cell.ord = 32
+        cell.style = 0
         bg_color = &self_texture[it.y - abs_y, it.x - abs_x, 0]
         cell.bg_color[0] = bg_color[0]
         cell.bg_color[1] = bg_color[1]
@@ -540,13 +524,8 @@ cdef void opaque_half_graphics_render(
     init_iter(&it, cregion)
     while not it.done:
         dst = &cells[it.y, it.x]
-        dst.char_ = u"▀"
-        dst.bold = False
-        dst.italic = False
-        dst.underline = False
-        dst.strikethrough = False
-        dst.overline = False
-        dst.reverse = False
+        dst.ord = HALF_BLOCK_ORD
+        dst.style = 0
         src_y = 2 * (it.y - abs_y)
         src_x = it.x - abs_x
         dst.fg_color[0] = self_texture[src_y, src_x, 0]
@@ -605,15 +584,10 @@ cdef void trans_half_graphics_render(
                         if graphics[oy + gy, ox + gx, 3]:
                             composite(&graphics[oy + gy, ox + gx, 0], rgba_top, a_top)
         elif kind[it.y, it.x] == GLYPH:
-            dst.bold = False
-            dst.italic = False
-            dst.underline = False
-            dst.strikethrough = False
-            dst.overline = False
-            dst.reverse = False
-            if dst.char_ != u"▀":
+            dst.style = 0
+            if dst.ord != HALF_BLOCK_ORD:
                 dst.fg_color = dst.bg_color
-                dst.char_ = u"▀"
+                dst.ord = HALF_BLOCK_ORD
             composite(&dst.fg_color[0], rgba_top, a_top)
             composite(&dst.bg_color[0], rgba_bot, a_bot)
         else:
@@ -621,7 +595,7 @@ cdef void trans_half_graphics_render(
             ox = it.x * w
             if kind[it.y, it.x] == MIXED:
                 kind[it.y, it.x] = SIXEL
-                if dst.char_ != u"▀":
+                if dst.ord != HALF_BLOCK_ORD:
                     dst.fg_color = dst.bg_color
                 composite(&dst.fg_color[0], rgba_top, a_top)
                 composite(&dst.bg_color[0], rgba_bot, a_bot)
@@ -733,8 +707,8 @@ cdef bint is_low_variance_region(
 # color.
 # TODO: Add sextants/octants
 
-cdef bint is_block_char(Py_UCS4 glyph):
-    return glyph == 0x20 or 0x2580 <= glyph <= 0x259f
+cdef bint is_block_char(unsigned short ord_):
+    return ord_ == SPACE_ORD or HALF_BLOCK_ORD <= ord_ < END_OF_GEOMETRY_BLOCK_ORD
 
 ctypedef bint (*where_glyph)(double v, double u)
 
@@ -884,9 +858,9 @@ cdef where_glyph[32] where_glyphs = [
     quadrant_upper_right_and_lower_left_and_lower_right,
 ]
 
-cdef inline where_glyph get_where_fg(Py_UCS4 char_):
-    if 0x2580 <= char_ <= 0x259f:
-        return where_glyphs[<unsigned int>char_ - 0x2580]
+cdef inline where_glyph get_where_fg(unsigned long ord_):
+    if HALF_BLOCK_ORD <= ord_ < END_OF_GEOMETRY_BLOCK_ORD:
+        return where_glyphs[<unsigned int>ord_ - HALF_BLOCK_ORD]
     return default_glyph
 
 
@@ -937,7 +911,7 @@ cdef void trans_sixel_graphics_render(
         elif kind[it.y, it.x] == MIXED:
             kind[it.y, it.x] = SIXEL
             cell = &cells[it.y, it.x]
-            where_fg = get_where_fg(cell.char_)
+            where_fg = get_where_fg(cell.ord)
             for gy in range(h):
                 for gx in range(w):
                     if graphics[oy + gy, ox + gx, 3]:
@@ -962,7 +936,7 @@ cdef void trans_sixel_graphics_render(
         else:
             cell = &cells[it.y, it.x]
             if (
-                not is_block_char(cell.char_)
+                not is_block_char(cell.ord)
                 and is_low_variance_region(self_texture, src_y, src_x, h, w, &mean[0])
             ):
                 if mean[3]:
@@ -986,7 +960,7 @@ cdef void trans_sixel_graphics_render(
                             graphics[oy + gy, ox + gx, 3] = 0
             else:
                 kind[it.y, it.x] = SIXEL
-                where_fg = get_where_fg(cell.char_)
+                where_fg = get_where_fg(cell.ord)
                 for gy in range(h):
                     for gx in range(w):
                         if where_fg(gy / h, gx / w):
@@ -1020,7 +994,7 @@ cdef void opaque_braille_graphics_render(
         Cell *cell
         uint8 i
         double average_alpha
-        unsigned long char_
+        unsigned long ord_
 
     init_iter(&it, cregion)
     while not it.done:
@@ -1031,17 +1005,12 @@ cdef void opaque_braille_graphics_render(
         )
         if average_alpha:
             cell = &cells[it.y, it.x]
-            char_ = 10240
+            ord_ = 10240
             for i in range(8):
                 if pixels[i]:
-                    char_ += BRAILLE_ENUM[i]
-            cell.char_ = char_
-            cell.bold = False
-            cell.italic = False
-            cell.underline = False
-            cell.strikethrough = False
-            cell.overline = False
-            cell.reverse = False
+                    ord_ += BRAILLE_ENUM[i]
+            cell.ord = ord_
+            cell.style = 0
             cell.fg_color = cell.bg_color
             composite(&cell.fg_color[0], &fg[0], average_alpha)
         next_(&it)
@@ -1073,7 +1042,7 @@ cdef void trans_braille_graphics_render(
         size_t oy, ox
         uint8[3] rgb, fg
         double p, average_alpha
-        unsigned long char_
+        unsigned long ord_
 
     init_iter(&it, cregion)
     while not it.done:
@@ -1086,17 +1055,12 @@ cdef void trans_braille_graphics_render(
             next_(&it)
             continue
         cell = &cells[it.y, it.x]
-        char_ = 10240
+        ord_ = 10240
         for i in range(8):
             if pixels[i]:
-                char_ += BRAILLE_ENUM[i]
-        cell.char_ = char_
-        cell.bold = False
-        cell.italic = False
-        cell.underline = False
-        cell.strikethrough = False
-        cell.overline = False
-        cell.reverse = False
+                ord_ += BRAILLE_ENUM[i]
+        cell.ord = ord_
+        cell.style = 0
         if kind[it.y, it.x] & SIXEL:
             oy = it.y * h
             ox = it.x * w
@@ -1180,24 +1144,44 @@ def cursor_render(
         CRegion *cregion = &region.cregion
         RegionIterator it
         Cell *dst
+        unsigned char off = 255, on = 0
+
+    if bold is not None:
+        if bold:
+            on |= BOLD
+        else:
+            off ^= BOLD
+    if italic is not None:
+        if italic:
+            on |= ITALIC
+        else:
+            off ^= ITALIC
+    if underline is not None:
+        if underline:
+            on |= UNDERLINE
+        else:
+            off ^= UNDERLINE
+    if strikethrough is not None:
+        if strikethrough:
+            on |= STRIKETHROUGH
+        else:
+            off ^= STRIKETHROUGH
+    if overline is not None:
+        if overline:
+            on |= OVERLINE
+        else:
+            off ^= OVERLINE
+    if reverse is not None:
+        if reverse:
+            on |= REVERSE
+        else:
+            off ^= REVERSE
 
     init_iter(&it, cregion)
     while not it.done:
         dst = &cells[it.y, it.x]
-        if bold is not None:
-            dst.bold = bold
-        if italic is not None:
-            dst.italic = italic
-        if underline is not None:
-            dst.underline = underline
-        if strikethrough is not None:
-            dst.strikethrough = strikethrough
-        if overline is not None:
-            dst.overline = overline
-        if reverse is not None:
-            dst.reverse = reverse
-        if fg_color is not None:
-            dst.fg_color = fg_color
+        dst.style |= on
+        dst.style &= off
         if bg_color is not None:
             dst.bg_color = bg_color
         next_(&it)
@@ -1256,7 +1240,7 @@ cdef void trans_text_field_render(
         src = &particles[i]
         dst = &cells[py, px]
         # FIXME: Consider all whitespace?
-        if src.char_ == u" " or src.char_ == u"⠀":
+        if src.ord == SPACE_ORD or src.ord == BRAILLE_ORD:
             if kind[py, px] != SIXEL:
                 composite(&dst.fg_color[0], &src.bg_color[0], alpha)
                 composite(&dst.bg_color[0], &src.bg_color[0], alpha)
@@ -1270,13 +1254,8 @@ cdef void trans_text_field_render(
                                 &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
                             )
         else:
-            dst.char_ = src.char_
-            dst.bold = src.bold
-            dst.italic = src.italic
-            dst.underline = src.underline
-            dst.strikethrough = src.strikethrough
-            dst.overline = src.overline
-            dst.reverse = src.reverse
+            dst.ord = src.ord
+            dst.style = src.style
             dst.fg_color = src.fg_color
             if kind[py, px] & SIXEL:
                 oy = py * h
@@ -1337,13 +1316,8 @@ cdef void opaque_full_graphics_field_render(
         if not contains(cregion, py, px):
             continue
         dst = &cells[py, px]
-        dst.char_ = u" "
-        dst.bold = False
-        dst.italic = False
-        dst.underline = False
-        dst.strikethrough = False
-        dst.overline = False
-        dst.reverse = False
+        dst.ord = SPACE_ORD
+        dst.style = 0
         dst.bg_color[0] = particles[i, 0]
         dst.bg_color[1] = particles[i, 1]
         dst.bg_color[2] = particles[i, 2]
@@ -1420,19 +1394,14 @@ cdef void opaque_half_graphics_field_render(
         if not contains(cregion, ipy, ipx):
             continue
         dst = &cells[ipy, ipx]
-        dst.bold = False
-        dst.italic = False
-        dst.underline = False
-        dst.strikethrough = False
-        dst.overline = False
-        dst.reverse = False
+        dst.style = 0
         if py - ipy < .5:
             dst_rgb = &dst.fg_color[0]
         else:
             dst_rgb = &dst.bg_color[0]
-        if dst.char_ != u"▀":
+        if dst.ord != HALF_BLOCK_ORD:
             dst.fg_color = dst.bg_color
-            dst.char_ = u"▀"
+            dst.ord = HALF_BLOCK_ORD
         dst_rgb[0] = particles[i, 0]
         dst_rgb[1] = particles[i, 1]
         dst_rgb[2] = particles[i, 2]
@@ -1477,15 +1446,10 @@ cdef void trans_half_graphics_field_render(
         a = alpha * <double>src_rgba[3] / 255
         dst = &cells[ipy, ipx]
         if kind[ipy, ipx] == GLYPH:
-            dst.bold = False
-            dst.italic = False
-            dst.underline = False
-            dst.strikethrough = False
-            dst.overline = False
-            dst.reverse = False
-            if dst.char_ != u"▀":
+            dst.style = 0
+            if dst.ord != HALF_BLOCK_ORD:
                 dst.fg_color = dst.bg_color
-                dst.char_ = u"▀"
+                dst.ord = HALF_BLOCK_ORD
             if py - ipy < .5:
                 composite(&dst.fg_color[0], src_rgba, a)
             else:
@@ -1501,7 +1465,7 @@ cdef void trans_half_graphics_field_render(
                 dst_rgb = &dst.bg_color[0]
             if kind[ipy, ipx] == MIXED:
                 kind[ipy, ipx] = SIXEL
-                if dst.char_ != u"▀":
+                if dst.ord != HALF_BLOCK_ORD:
                     dst.fg_color = dst.bg_color
                 composite(dst_rgb, src_rgba, a)
             oy = ipy * h
@@ -1613,7 +1577,7 @@ cdef void trans_sixel_graphics_field_render(
             kind[ipy, ipx] == GLYPH
             or kind[ipy, ipx] == MIXED and not graphics[pgy, pgx, 3]
         ):
-            if cells[ipy, ipx].char_ == u"▀" and py - ipy < .5:
+            if cells[ipy, ipx].ord == HALF_BLOCK_ORD and py - ipy < .5:
                 graphics[pgy, pgx, 0] = cells[ipy, ipx].fg_color[0]
                 graphics[pgy, pgx, 1] = cells[ipy, ipx].fg_color[1]
                 graphics[pgy, pgx, 2] = cells[ipy, ipx].fg_color[2]
@@ -1632,7 +1596,7 @@ cdef void trans_sixel_graphics_field_render(
 
 
 cdef struct BraillePixel:
-    unsigned long char_
+    unsigned long ord
     double[4] total_fg
     unsigned int ncolors
 
@@ -1671,12 +1635,12 @@ cdef void opaque_braille_graphics_field_render(
         if not contains(cregion, ipy, ipx):
             continue
         pixel = &pixels[(ipy - y) * w + ipx - x]
-        # ! Why isn't pixel.char_ == 0 sufficient?
-        if pixel.char_ < 10240 or pixel.char_ > 10495:
-            pixel.char_ = 10240
+        # ! Why isn't pixel.ord == 0 sufficient?
+        if pixel.ord < 10240 or pixel.ord > 10495:
+            pixel.ord = 10240
         pgy = <int>((py - ipy) * 4)
         pgx = <int>((px - ipx) * 2)
-        pixel.char_ |= BRAILLE_ENUM[pgy * 2 + pgx]
+        pixel.ord |= BRAILLE_ENUM[pgy * 2 + pgx]
         pixel.total_fg[0] += particles[i, 0]
         pixel.total_fg[1] += particles[i, 1]
         pixel.total_fg[2] += particles[i, 2]
@@ -1684,17 +1648,12 @@ cdef void opaque_braille_graphics_field_render(
 
     for i in range(h * w):
         pixel = &pixels[i]
-        # ! Why does pixel.char_ need to be checked?
-        if not pixel.ncolors or pixel.char_ < 10240 or pixel.char_ > 10495:
+        # ! Why does pixel.ord need to be checked?
+        if not pixel.ncolors or pixel.ord < 10240 or pixel.ord > 10495:
             continue
         dst = &cells[(i // w) + y, (i % w) + x]
-        dst.char_ = pixel.char_
-        dst.bold = False
-        dst.italic = False
-        dst.underline = False
-        dst.strikethrough = False
-        dst.overline = False
-        dst.reverse = False
+        dst.ord = pixel.ord
+        dst.style = 0
         dst.fg_color[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
         dst.fg_color[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
         dst.fg_color[2] = <uint8>(pixel.total_fg[2] / pixel.ncolors)
@@ -1748,10 +1707,10 @@ cdef void trans_braille_graphics_field_render(
         if not contains(cregion, ipy, ipx):
             continue
         pixel = &pixels[(ipy - y) * rw + ipx - x]
-        # ! Why isn't pixel.char_ == 0 sufficient?
-        # ! Assumed if char_ is braille, that background has already been composited.
-        if pixel.char_ < 10240 or pixel.char_ > 10495:
-            pixel.char_ = 10240
+        # ! Why isn't pixel.ord == 0 sufficient?
+        # ! Assumed if ord is braille, that background has already been composited.
+        if pixel.ord < 10240 or pixel.ord > 10495:
+            pixel.ord = 10240
             if kind[ipy, ipx] & SIXEL:
                 oy = ipy * h
                 ox = ipx * w
@@ -1767,7 +1726,7 @@ cdef void trans_braille_graphics_field_render(
         kind[ipy, ipx] = GLYPH
         pgy = <int>((py - ipy) * 4)
         pgx = <int>((px - ipx) * 2)
-        pixel.char_ |= BRAILLE_ENUM[pgy * 2 + pgx]
+        pixel.ord |= BRAILLE_ENUM[pgy * 2 + pgx]
         pixel.total_fg[0] += particles[i, 0]
         pixel.total_fg[1] += particles[i, 1]
         pixel.total_fg[2] += particles[i, 2]
@@ -1776,17 +1735,12 @@ cdef void trans_braille_graphics_field_render(
 
     for i in range(rh * rw):
         pixel = &pixels[i]
-        # ! Why does pixel.char_ need to be checked?
-        if not pixel.ncolors or pixel.char_ < 10240 or pixel.char_ > 10495:
+        # ! Why does pixel.ord need to be checked?
+        if not pixel.ncolors or pixel.ord < 10240 or pixel.ord > 10495:
             continue
         dst = &cells[(i // rw) + y, (i % rw) + x]
-        dst.char_ = pixel.char_
-        dst.bold = False
-        dst.italic = False
-        dst.underline = False
-        dst.strikethrough = False
-        dst.overline = False
-        dst.reverse = False
+        dst.ord = pixel.ord
+        dst.style = 0
 
         rgb[0] = <uint8>(pixel.total_fg[0] / pixel.ncolors)
         rgb[1] = <uint8>(pixel.total_fg[1] / pixel.ncolors)
@@ -1885,6 +1839,55 @@ cpdef void graphics_field_render(
             )
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
+    cdef:
+        size_t h = cells.shape[0], w = cells.shape[1], y, x, sub_x, last_width
+        ssize_t last_wide_x = -1
+
+    # Try to prevent wide chars from clipping. If there is clipping,
+    # replace wide chars with whitespace.
+
+    for y in range(h):
+        for x in range(w):
+            if cells[y, x].ord & EGC_BASE:
+                widths[y, x] = wcswidth(EGC_POOL[cells[y, x].ord - EGC_BASE])
+            else:
+                widths[y, x] = wcwidth_uint32(cells[y, x].ord)
+            if widths[y, x] < 0:
+                widths[y, x] = 0
+
+    for y in range(h):
+        for x in range(w):
+            if last_wide_x == -1:
+                if widths[y, x] == 0:
+                    cells[y, x].ord = SPACE_ORD
+                    widths[y, x] = 1
+                elif widths[y, x] > 1:
+                    last_width = widths[y, x]
+                    if x + last_width > w:
+                        # Wide char clipped by screen
+                        widths[y, x] = 1
+                        cells[y, x].ord = SPACE_ORD
+                    else:
+                        last_wide_x = x
+            else:
+                if widths[y, x] != 0:
+                    # Wide char clipped by another char
+                    for sub_x in range(last_wide_x, x):
+                        widths[y, sub_x] = 1
+                        cells[y, sub_x].ord = SPACE_ORD
+                    if widths[y, x] > 1:
+                        # Two wide chars clip, both become whitespace
+                        widths[y, x] = 1
+                        cells[y, x].ord = SPACE_ORD
+                    last_wide_x = -1
+                elif x == last_wide_x + last_width - 1:
+                    # End of wide char
+                    last_wide_x = -1
+
+
 cdef inline void write_sgr(fbuf *f, uint8 param, bint *first):
     if first[0]:
         fbuf_printf(f, "\x1b[%d", param)
@@ -1899,28 +1902,6 @@ cdef inline void write_rgb(fbuf *f, uint8 fg, uint8 *rgb, bint *first):
         first[0] = 0
     else:
         fbuf_printf(f, ";%d;2;%d;%d;%d", fg, rgb[0], rgb[1], rgb[2])
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
-    cdef size_t h = cells.shape[0], w = cells.shape[1], y, x
-
-    # Try to prevent wide chars from clipping. If there is clipping,
-    # replace wide chars with whitespace.
-
-    for y in range(h):
-        for x in range(w):
-            widths[y, x] = cwidth(cells[y, x].char_)
-
-    for y in range(h):
-        for x in range(w):
-            if (
-                widths[y, x] == 0 and (x == 0 or widths[y, x - 1] != 2)
-                or widths[y, x] == 2 and (x == w - 1 or widths[y, x + 1] != 0)
-            ):
-                cells[y, x].char_ = u" "
-                widths[y, x] = 1
 
 
 @cython.boundscheck(False)
@@ -1962,25 +1943,36 @@ cdef inline ssize_t write_glyph(
     if fbuf_grow(f, 128):
         return -1
     # Build up Select Graphic Rendition (SGR) parameters
-    if last is NULL or cell.bold != last.bold:
-        write_sgr(f, 1 if cell.bold else 22, &first)
-    if last is NULL or cell.italic != last.italic:
-        write_sgr(f, 3 if cell.italic else 23, &first)
-    if last is NULL or cell.underline != last.underline:
-        write_sgr(f, 4 if cell.underline else 24, &first)
-    if last is NULL or cell.strikethrough != last.strikethrough:
-        write_sgr(f, 9 if cell.strikethrough else 29, &first)
-    if last is NULL or cell.overline != last.overline:
-        write_sgr(f, 53 if cell.overline else 55, &first)
-    if last is NULL or cell.reverse != last.reverse:
-        write_sgr(f, 7 if cell.reverse else 27, &first)
-    if last is NULL or not rgb_eq(&cell.fg_color[0], &last.fg_color[0]):
+    if last is NULL:
+        write_sgr(f, 1 if cell.style & BOLD else 22, &first)
+        write_sgr(f, 3 if cell.style & ITALIC else 23, &first)
+        write_sgr(f, 4 if cell.style & UNDERLINE else 24, &first)
+        write_sgr(f, 9 if cell.style & STRIKETHROUGH else 29, &first)
+        write_sgr(f, 53 if cell.style & OVERLINE else 55, &first)
+        write_sgr(f, 7 if cell.style & REVERSE else 27, &first)
         write_rgb(f, 38, &cell.fg_color[0], &first)
-    if last is NULL or not rgb_eq(&cell.bg_color[0], &last.bg_color[0]):
         write_rgb(f, 48, &cell.bg_color[0], &first)
+    else:
+        if cell.style != last.style:
+            if cell.style & BOLD != last.style & BOLD:
+                write_sgr(f, 1 if cell.style & BOLD else 22, &first)
+            if cell.style & ITALIC != last.style & ITALIC:
+                write_sgr(f, 3 if cell.style & ITALIC else 23, &first)
+            if cell.style & UNDERLINE != last.style & UNDERLINE:
+                write_sgr(f, 4 if cell.style & UNDERLINE else 24, &first)
+            if cell.style & STRIKETHROUGH != last.style & STRIKETHROUGH:
+                write_sgr(f, 9 if cell.style & STRIKETHROUGH else 29, &first)
+            if cell.style & OVERLINE != last.style & OVERLINE:
+                write_sgr(f, 53 if cell.style & OVERLINE else 55, &first)
+            if cell.style & REVERSE != last.style & REVERSE:
+                write_sgr(f, 7 if cell.style & REVERSE else 27, &first)
+        if not rgb_eq(&cell.fg_color[0], &last.fg_color[0]):
+            write_rgb(f, 38, &cell.fg_color[0], &first)
+        if not rgb_eq(&cell.bg_color[0], &last.bg_color[0]):
+            write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
-    fbuf_putucs4(f, cell.char_)
+    fbuf_putucs4(f, cell.ord)
     cursor_x[0] += widths[y, x]
     last_sgr[0] = cell
     return 0
@@ -2038,27 +2030,33 @@ cpdef void terminal_render(
                         emit_sixel = 1
                     elif kind[y, x] != prev_kind[y, x]:
                         emit_sixel = 1
-                    elif (
-                        kind[y, x] == MIXED
-                        and not cell_eq(&cells[y, x], &prev_cells[y, x])
-                    ):
-                        emit_sixel = 1
-                    elif kind[y, x] == SEE_THROUGH_SIXEL:
-                        gh = y * cell_h
-                        gw = x * cell_w
-                        emit_sixel = see_through_check(
-                            &cells[y, x],
-                            &prev_cells[y, x],
-                            graphics[gh:gh + cell_h, gw:gw + cell_w],
-                            prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
-                        )
                     else:
                         gh = y * cell_h
                         gw = x * cell_w
-                        emit_sixel = not all_eq(
-                            graphics[gh:gh + cell_h, gw:gw + cell_w],
-                            prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
-                        )
+                        if kind[y, x] == SIXEL:
+                            # Check if graphics changed.
+                            emit_sixel = not all_eq(
+                                graphics[gh:gh + cell_h, gw:gw + cell_w],
+                                prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                            )
+                        elif kind[y, x] == MIXED:
+                            # Check if cell or graphics changed.
+                            emit_sixel = not (
+                                cell_eq(&cells[y, x], &prev_cells[y, x])
+                                and all_eq(
+                                    graphics[gh:gh + cell_h, gw:gw + cell_w],
+                                    prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                                )
+                            )
+                        elif kind[y, x] == SEE_THROUGH_SIXEL:
+                            # Check if cell (but not bg_color) or graphics changed.
+                            emit_sixel = not see_through_eq(
+                                &cells[y, x],
+                                &prev_cells[y, x],
+                                graphics[gh:gh + cell_h, gw:gw + cell_w],
+                                prev_graphics[gh:gh + cell_h, gw:gw + cell_w],
+                            )
+
     # Note ALL mixed and ALL sixel cells are re-emitted if any has changed.
     if emit_sixel:
         gy = min_y_sixel * cell_h

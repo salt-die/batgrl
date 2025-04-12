@@ -1,29 +1,119 @@
 """Tools for text."""
 
-from functools import cache
+from enum import IntFlag
+from typing import Final
 
 import numpy as np
 from numpy.typing import NDArray
+from ugrapheme import grapheme_iter
+from uwcwidth import wcswidth, wcwidth
 
 from ._batgrl_markdown import find_md_tokens
-from .char_width import char_width, str_width
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
 
 __all__ = [
     "Cell",
+    "Style",
     "add_text",
-    "char_width",
-    "coerce_cell",
     "is_word_char",
     "new_cell",
     "smooth_horizontal_bar",
     "smooth_vertical_bar",
-    "str_width",
 ]
 
-VERTICAL_BLOCKS = " ▁▂▃▄▅▆▇█"
-HORIZONTAL_BLOCKS = " ▏▎▍▌▋▊▉█"
+EGC_BASE: Final = 0x180000
+"""A bit flag to mark egcs in canvas arrays. Must be greater than `sys.maxunicode`."""
+EGC_POOL: list[str] = []
+"""
+Storage for extended grapheme clusters.
+
+If `ord_` is an ord in a canvas array and `ord_ & EGC_BASE == 1`, then `ord_ - EGC_BASE`
+is an index into `EGC_POOL`. In this way, we can use the uint32 "ord" field in canvas
+arrays to store both codepoints and egcs.
+"""
+EGCS: dict[str, int] = {}
+"""Extended grapheme clusters currently stored in EGC_POOL and their index."""
+VERTICAL_BLOCKS: Final = " ▁▂▃▄▅▆▇█"
+HORIZONTAL_BLOCKS: Final = " ▏▎▍▌▋▊▉█"
+
+
+class Style(IntFlag):
+    """The graphic rendition parameters of a terminal cell."""
+
+    # ! Don't use auto() as these must match the definitions in _rendering.pyx.
+    DEFAULT = 0
+    BOLD = 0b1
+    ITALIC = 0b10
+    UNDERLINE = 0b100
+    STRIKETHROUGH = 0b1000
+    OVERLINE = 0b10000
+    REVERSE = 0b100000
+
+
+Cell = np.dtype(
+    [
+        ("ord", "uint32"),
+        ("style", "u1"),
+        ("fg_color", "u1", (3,)),
+        ("bg_color", "u1", (3,)),
+    ]
+)
+"""A structured array type that represents a single cell in a terminal."""
+
+
+def egc_ord(text: str) -> int:
+    """
+    Return either a unicode codepoint or an index into the egc pool for the first
+    extended grapheme cluster in ``text``.
+
+    Parameters
+    ----------
+    text : str
+        An extended grapheme cluster.
+
+    Returns
+    -------
+    int
+        A unicode codepoint or an index into ``EGC_POOL``.
+
+    See Also
+    --------
+    egc_chr
+    """
+    if len(text) == 0:
+        return 0
+
+    egc = next(grapheme_iter(text))
+    if len(egc) == 1:
+        return ord(egc)
+
+    if egc not in EGCS:
+        # FIXME: Unbounded growth
+        EGCS[egc] = len(EGC_POOL)
+        EGC_POOL.append(egc)
+    return EGCS[egc] | EGC_BASE
+
+
+def egc_chr(ord: int) -> str:
+    """
+    Return the extended grapheme cluster represented by ``ord``.
+
+    Parameters
+    ----------
+    ord : int
+        The ord of the extended grapheme cluster.
+
+    Returns
+    -------
+    str
+        The extended grapheme cluster represented by ``ord``.
+
+    See Also
+    --------
+    egc_ord
+    """
+    return EGC_POOL[ord - EGC_BASE] if ord & EGC_BASE else chr(ord)
 
 
 def is_word_char(char: str) -> bool:
@@ -45,64 +135,9 @@ def is_word_char(char: str) -> bool:
     return char.isalnum() or char == "_"
 
 
-Cell = np.dtype(
-    [
-        ("char", "U1"),
-        ("bold", "?"),
-        ("italic", "?"),
-        ("underline", "?"),
-        ("strikethrough", "?"),
-        ("overline", "?"),
-        ("reverse", "?"),
-        ("fg_color", "u1", (3,)),
-        ("bg_color", "u1", (3,)),
-    ]
-)
-"""A structured array type that represents a single cell in a terminal."""
-
-# Current bug with cython raises an error when passing type "w" (PY_UCS4, the "char"
-# field). When calling cython functions, re-view "char" field as uint32.
-_Cell = np.dtype(
-    [
-        ("char", "uint32"),
-        ("bold", "?"),
-        ("italic", "?"),
-        ("underline", "?"),
-        ("strikethrough", "?"),
-        ("overline", "?"),
-        ("reverse", "?"),
-        ("fg_color", "u1", (3,)),
-        ("bg_color", "u1", (3,)),
-    ]
-)
-
-
-@cache
-def cell_sans(*names: str) -> list[str]:
-    r"""
-    Return all fields of ``Cell`` not in names.
-
-    Parameters
-    ----------
-    \*names : str
-        Excluded fields of ``Cell``.
-
-    Returns
-    -------
-    list[str]
-        All fields of ``Cell`` not in names.
-    """
-    return [name for name in Cell.names if name not in names]
-
-
 def new_cell(
-    char: str = " ",
-    bold: bool = False,
-    italic: bool = False,
-    underline: bool = False,
-    strikethrough: bool = False,
-    overline: bool = False,
-    reverse: bool = False,
+    ord: int = 0x20,
+    style: Style = Style.DEFAULT,
     fg_color: Color = WHITE,
     bg_color: Color = BLACK,
 ) -> NDArray[Cell]:
@@ -113,20 +148,10 @@ def new_cell(
 
     Parameters
     ----------
-    char : str, default: " "
-        The cell's character.
-    bold : bool, default: False
-        Whether cell is bold.
-    italic : bool, default: False
-        Whether cell is italic.
-    underline : bool, default: False
-        Whether cell is underlined.
-    strikethrough : bool, default: False
-        Whether cell is strikethrough.
-    overline : bool, default: False
-        Whether cell is overlined.
-    reverse : bool, default: False
-        Whether cell is reversed.
+    ord : int, default: 0x20
+        The cell's character's ord.
+    style : Style, Style.DEFAULT
+        The style (bold, italic, etc.) of the cell.
     fg_color : Color, default: WHITE
         Foreground color of cell.
     bg_color : Color, default: BLACK
@@ -137,48 +162,7 @@ def new_cell(
     NDArray[Cell]
         A ``Cell`` scalar.
     """
-    return np.array(
-        (
-            char,
-            bold,
-            italic,
-            underline,
-            strikethrough,
-            overline,
-            reverse,
-            fg_color,
-            bg_color,
-        ),
-        dtype=Cell,
-    )
-
-
-def coerce_cell(char: NDArray[Cell] | str, default: NDArray[Cell]) -> NDArray[Cell]:
-    """
-    Try to coerce a string or ``Cell`` scalar into a half-width ``Cell`` scalar.
-
-    Parameters
-    ----------
-    char : NDArray[Cell] | str
-        The character to coerce.
-    default : NDArray[Cell] | None, default: None
-        The fallback character (or None) if character can't be coerced.
-
-    Returns
-    -------
-    NDArray[Cell] | None
-        The coerced Cell or None if character can't be coerced.
-    """
-    if isinstance(char, str) and len(char) > 0 and char_width(char[0]) == 1:
-        return new_cell(char=char[0])
-    if (
-        isinstance(char, np.ndarray)
-        and char.dtype == Cell
-        and char.shape == ()
-        and char_width(char["char"].item()) == 1
-    ):
-        return char
-    return default
+    return np.array((ord, style, fg_color, bg_color), dtype=Cell)
 
 
 def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
@@ -203,9 +187,11 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     tuple[Size, list[list[Cell]]]
         Minimum canvas size to fit text and a list of lines of styled characters.
     """
-    NO_CHAR = new_cell(char="")
+    NO_CHAR = new_cell(ord=0)
     matches, escapes = find_md_tokens(text)
-    cells = [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in text]
+    cells = [
+        new_cell(ord=egc_ord(egc))[["ord", "style"]] for egc in grapheme_iter(text)
+    ]
     for before, start, end, after, style in matches:
         cells[start - before : start] = [NO_CHAR] * before
         cells[end : end + after] = [NO_CHAR] * after
@@ -220,18 +206,18 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     line_width = max_width = 0
 
     for cell in cells:
-        char = cell["char"].item()
-        if char == "":
+        ord_ = cell["ord"].item()
+        if ord_ == 0:
             continue
 
-        if char == "\n":
+        if ord_ == 0xA:
             lines.append(line)
             line = []
             if line_width > max_width:
                 max_width = line_width
             line_width = 0
         else:
-            width = char_width(char)
+            width = wcswidth(egc_chr(ord_))
             line_width += width
             if width > 0:
                 line.append(cell)
@@ -259,54 +245,67 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
         Minimum canvas size to fit text and a list of lists of Cells.
     """
     lines = [
-        [new_cell(char=char)[cell_sans("fg_color", "bg_color")] for char in line]
+        [new_cell(ord=egc_ord(egc))[["ord", "style"]] for egc in grapheme_iter(line)]
         for line in text.split("\n")
     ]
     max_width = 0
     for line in lines:
         line_width = 0
-        for char in line:
-            width = char_width(char["char"].item())
-            line_width += width
+        for cell in line:
+            # FIXME: if wcswidth returns -1
+            line_width += wcswidth(egc_chr(cell["ord"].item()))
         if line_width > max_width:
             max_width = line_width
     return Size(len(lines), max_width), lines
 
 
-def _write_lines_to_canvas(lines, canvas, fg_color, bg_color):
+def _write_lines_to_canvas(lines, canvas, fg_color, bg_color) -> None:
     """Write a list of lists of Cells to a canvas array."""
     _, columns = canvas.shape
     for cells, canvas_line, fg, bg in zip(
         lines,
-        canvas[cell_sans("fg_color", "bg_color")],
+        canvas[["ord", "style"]],
         canvas["fg_color"],
         canvas["bg_color"],
     ):
         i = 0
         for cell in cells:
+            char_width = wcwidth(egc_chr(cell["ord"].item()))
+            if char_width == 0:
+                continue
+
+            if i + char_width > columns:
+                canvas_line[i:]["ord"] = 0x2
+                canvas_line[i:]["style"] = 0
+                canvas_line[i:]["fg_color"] = fg_color
+                canvas_line[i:]["bg_color"] = bg_color
+                break
+
+            canvas_line[i] = cell
+            canvas_line[i + 1 : i + char_width]["ord"] = 0
+
+            if fg_color is not None:
+                fg[i : i + char_width] = fg_color
+            if bg_color is not None:
+                bg[i : i + char_width] = bg_color
+
+            i += char_width
             if i >= columns:
                 break
 
-            width = char_width(cell["char"].item())
-            if width == 0:
-                continue
 
-            canvas_line[i] = cell
-            if fg_color is not None:
-                fg[i] = fg_color
-            if bg_color is not None:
-                bg[i] = bg_color
+def put_egc(canvas: NDArray[Cell], text: str) -> None:
+    """
+    Set each ord in canvas to represent the first extended grapheme cluster in ``text``.
 
-            if width == 2 and i + 1 < columns:
-                empty_cell = cell.copy()
-                empty_cell["char"] = ""
-                canvas_line[i + 1] = empty_cell
-                if fg_color is not None:
-                    fg[i + 1] = fg_color
-                if bg_color is not None:
-                    bg[i + 1] = bg_color
-
-            i += width
+    Parameters
+    ----------
+    canvas : NDArray[Cell]
+        A ``Cell`` array or view.
+    text : str
+        An extended grapheme cluster.
+    """
+    canvas[:] = egc_ord(text)
 
 
 def add_text(
@@ -317,7 +316,7 @@ def add_text(
     bg_color: Color | None = None,
     markdown: bool = False,
     truncate_text: bool = False,
-):
+) -> None:
     """
     Add multiple lines of text to a view of a canvas.
 
@@ -334,7 +333,7 @@ def add_text(
     Parameters
     ----------
     canvas : NDArray[Cell]
-        A 1- or 2-dimensional view of a `Text` canvas.
+        A 1- or 2-dimensional view of a ``Cell`` array.
     text : str
         Text to add to canvas.
     fg_color : Color | None, default: None
@@ -356,12 +355,52 @@ def add_text(
     _write_lines_to_canvas(lines, canvas, fg_color, bg_color)
 
 
+def canvas_as_text(canvas: NDArray[Cell], line_widths: list[int] | None = None) -> str:
+    """
+    Return a ``Cell`` array as a single multi-line string.
+
+    Parameters
+    ----------
+    canvas : NDArray[Cell]
+        The ``Cell`` array to convert.
+    line_widths : list[int] | None
+        Optionally truncate line ``n`` to have column width ``line_widths[n]``. If
+        line_widths[``n``] is greater than the column width of line ``n`` it is ignored.
+
+    Returns
+    -------
+    str
+        The canvas as a multi-line string.
+    """
+    if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
+        canvas = canvas[None]
+    rows, columns = canvas.shape
+    if line_widths is None:
+        line_widths = [columns] * rows
+    elif len(line_widths) < rows:
+        line_widths = line_widths + [columns] * (rows - len(line_widths))
+
+    text = []
+    for row, line_width in zip(canvas, line_widths, strict=True):
+        current_line_width = 0
+        line = []
+        for cell in row:
+            char = egc_chr(cell["ord"])
+            char_width = wcswidth(char)
+            if char_width + current_line_width > line_width:
+                break
+            current_line_width += char_width
+            line.append(char)
+        text.append("".join(line))
+    return "\n".join(text)
+
+
 def _smooth_bar(
     blocks: str,
     max_length: int,
     proportion: float,
     offset: float,
-):
+) -> None:
     """Create a smooth bar with given blocks."""
     if offset >= 1 or offset < 0:
         raise ValueError(

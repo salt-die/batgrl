@@ -29,8 +29,7 @@ from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
-
-from .char_width import char_width, str_width
+from uwcwidth import wcswidth, wcwidth
 
 __all__ = ["FullLayout", "FIGFont"]
 
@@ -207,13 +206,13 @@ class FIGFont:
             if len(char_lines) < height:
                 return None
 
-            width = max(str_width(line) for line in char_lines)
+            width = max(wcswidth(line) for line in char_lines)
 
             char = np.full((height, width), " ")
             for i, line in enumerate(char_lines):
                 j = 0
                 for subchar in line:
-                    cwidth = char_width(subchar)
+                    cwidth = wcwidth(subchar)
                     if cwidth == 0:
                         continue
 

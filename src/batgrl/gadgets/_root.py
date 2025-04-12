@@ -9,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
-from ..text_tools import Cell, _Cell, new_cell
+from ..text_tools import Cell, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
 from .graphics import Graphics, scale_geometry
 
@@ -45,7 +45,7 @@ class _Root(Gadget):
         # Following attributes set in `on_size()`:
         self._resized: bool
         """Whether terminal has resized since last render."""
-        self.cells: NDArray[_Cell]
+        self.cells: NDArray[Cell]
         """Current rendering of gadget tree."""
         self.graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Current graphics rendering."""
@@ -55,7 +55,7 @@ class _Root(Gadget):
         """Whether a cell should use canvas, graphics or both."""
         self._widths: NDArray[np.int32]
         """Column widths of characters in canvas."""
-        self._last_cells: NDArray[_Cell]
+        self._last_cells: NDArray[Cell]
         """Previous rendering of gadget tree."""
         self._last_graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Previous graphics rendering."""
@@ -65,7 +65,7 @@ class _Root(Gadget):
     def on_size(self):
         """Remake buffers and set ``_resized`` flag on resize."""
         self._resized = True
-        self.cells = np.full(self._size, self._cell.view(_Cell))
+        self.cells = np.full(self._size, self._cell)
         self._last_cells = self.cells.copy()
         self._widths = np.zeros(self._size, dtype=np.int32)
         self.kind = np.zeros(self._size, np.uint8)
@@ -145,7 +145,7 @@ class _Root(Gadget):
             self.graphics, self._last_graphics = self._last_graphics, self.graphics
             self.kind, self._last_kind = self._last_kind, self.kind
 
-            self.cells[:] = self._cell.view(_Cell)
+            self.cells[:] = self._cell
             self.graphics[:] = (*self.bg_color, 0)
             self.kind[:] = 0
 

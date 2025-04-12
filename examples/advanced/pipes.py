@@ -89,12 +89,12 @@ class Pipes(Text):
         pipe_chars = choice([HEAVY, CURVY])
 
         while perf_counter() < end:
-            self.canvas[y, x]["char"] = pipe_chars[last_dir]
+            self.chars[y, x] = pipe_chars[last_dir]
             self.canvas["fg_color"][y, x] = color
             await asyncio.sleep(sleep)
 
             current_dir = (last_dir + randrange(-1, 2)) % 4
-            self.canvas[y, x]["char"] = pipe_chars[last_dir, current_dir]
+            self.chars[y, x] = pipe_chars[last_dir, current_dir]
             self.canvas["fg_color"][y, x] = color
 
             match current_dir:

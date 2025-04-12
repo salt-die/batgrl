@@ -160,12 +160,12 @@ class _ConsoleTextbox(Textbox):
 
     def _del_text(self, start: int, end: int):
         result = super()._del_text(start, end)
-        self.width = self._box.width = self._line_length + 1
+        self.width = self._box.width = self._line_width + 1
         return result
 
     def _add_text(self, x: int, text: str):
         result = super()._add_text(x, text)
-        self.width = self._box.width = self._line_length + 1
+        self.width = self._box.width = self._line_width + 1
         return result
 
     def _tab(self):

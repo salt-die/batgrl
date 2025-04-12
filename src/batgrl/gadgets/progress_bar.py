@@ -3,7 +3,7 @@
 import asyncio
 from itertools import chain, cycle
 
-from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
+from ..text_tools import Style, smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.themable import Themable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 from .text import Text
@@ -231,7 +231,7 @@ class ProgressBar(Themable, Gadget):
         canvas["fg_color"] = self.get_color("progress_bar_fg")
         canvas["bg_color"] = self.get_color("progress_bar_bg")
         if offset:
-            canvas["reverse"][:, x] = True
+            canvas["style"][:, x] = Style.REVERSE
 
     def _paint_small_vertical_bar(self, progress):
         bar_height = max(1, (self.height - 1) // 2)
@@ -245,7 +245,7 @@ class ProgressBar(Themable, Gadget):
         canvas["fg_color"] = self.get_color("progress_bar_fg")
         canvas["bg_color"] = self.get_color("progress_bar_bg")
         if offset:
-            canvas["reverse"][::-1][y] = True
+            canvas["style"][::-1][y] = Style.REVERSE
 
     async def _loading_animation(self):
         if (

@@ -13,28 +13,28 @@ class Grid(Text):
 
         super().__init__(pos=(1, 0), size=(vs * h + 1, hs * w + 1), **kwargs)
 
-        canvas = self.canvas
+        chars = self.chars
 
         h, v, tl, tm, tr, bl, bm, br, ml, mm, mr = LIGHT_BOX if is_light else HEAVY_BOX
 
-        canvas["char"][::vs] = h
-        canvas["char"][:, ::hs] = v
-        canvas["char"][vs:-vs:vs, hs:-hs:hs] = mm
+        chars[::vs] = h
+        chars[:, ::hs] = v
+        chars[vs:-vs:vs, hs:-hs:hs] = mm
 
         # Top
-        canvas["char"][0, hs:-hs:hs] = tm
+        chars[0, hs:-hs:hs] = tm
         # Bottom
-        canvas["char"][-1, hs:-hs:hs] = bm
+        chars[-1, hs:-hs:hs] = bm
         # Left
-        canvas["char"][vs:-vs:vs, 0] = ml
+        chars[vs:-vs:vs, 0] = ml
         # Right
-        canvas["char"][vs:-vs:vs, -1] = mr
+        chars[vs:-vs:vs, -1] = mr
 
         # Corners
-        canvas["char"][0, 0] = tl
-        canvas["char"][0, -1] = tr
-        canvas["char"][-1, 0] = bl
-        canvas["char"][-1, -1] = br
+        chars[0, 0] = tl
+        chars[0, -1] = tr
+        chars[-1, 0] = bl
+        chars[-1, -1] = br
 
     @property
     def cell_center_indices(self):

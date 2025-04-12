@@ -8,8 +8,8 @@ from numbers import Real
 
 import cv2
 import numpy as np
+from uwcwidth import wcswidth
 
-from ..char_width import str_width
 from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
 from .behaviors.movable import Movable
@@ -42,16 +42,16 @@ class _Legend(Movable, Text):
         self.is_enabled = self.labels and len(self.labels) == len(colors)
         if self.is_enabled:
             height = len(self.labels) + 2
-            width = max(map(str_width, self.labels)) + 6
+            width = max(map(wcswidth, self.labels)) + 6
 
             self.size = height, width
             self.canvas["fg_color"] = plot.plot_fg_color
             self.canvas["bg_color"] = plot.plot_bg_color
-            self.canvas["char"][:] = " "
+            self.chars[:] = " "
 
             self.add_border()
 
-            self.canvas["char"][1:-1, 2] = "█"
+            self.chars[1:-1, 2] = "█"
             self.canvas["fg_color"][1:-1, 2] = colors
 
             for i, name in enumerate(self.labels, start=1):
@@ -460,7 +460,7 @@ class LinePlot(Gadget):
         self._y_label = y_label
 
         if y_label is not None:
-            self._y_label_gadget.size = str_width(y_label), 1
+            self._y_label_gadget.size = wcswidth(y_label), 1
             add_text(self._y_label_gadget.canvas[:, 0], y_label)
 
         self._build_plot()

@@ -2,7 +2,8 @@
 
 from dataclasses import astuple
 
-from ..char_width import str_width
+from uwcwidth import wcswidth
+
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import is_word_char
 from .behaviors.focusable import Focusable
@@ -236,7 +237,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         )
         self._last_x = None
         self._selection_start = self._selection_end = None
-        self._line_lengths = [0]
+        self._line_widths = [0]
         self._undo_stack = []
         self._redo_stack = []
         self._undo_buffer = []
@@ -275,8 +276,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         super().on_add()
 
         def resize_pad():
-            height = max(len(self._line_lengths), self._scroll_view.port_height)
-            width = max(max(self._line_lengths) + 1, self._scroll_view.port_width)
+            height = max(len(self._line_widths), self._scroll_view.port_height)
+            width = max(max(self._line_widths) + 1, self._scroll_view.port_width)
             self._pad.size = height, width
             self._highlight_selection()
 
@@ -335,7 +336,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """The text pad's text."""
         return "\n".join(
             "".join(row[:line_length])
-            for row, line_length in zip(self._pad.canvas["char"], self._line_lengths)
+            for row, line_length in zip(self._pad.canvas["char"], self._line_widths)
         )
 
     @text.setter
@@ -378,7 +379,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
             highlight_fg = self.get_color("text_pad_selection_highlight_fg")
             highlight_bg = self.get_color("text_pad_selection_highlight_bg")
-            ll = self._line_lengths
+            ll = self._line_widths
             if sy == ey:
                 fg[sy, sx:ex] = highlight_fg
                 bg[sy, sx:ex] = highlight_bg
@@ -407,7 +408,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     @property
     def end_text_point(self) -> Point:
         """Point after last character in text."""
-        ll = self._line_lengths
+        ll = self._line_widths
         return Point(len(ll) - 1, ll[-1])
 
     @property
@@ -430,7 +431,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             return self._del_text(self._selection_start, self._selection_end)
 
     def _del_text(self, start: Point, end: Point):
-        ll = self._line_lengths
+        ll = self._line_widths
 
         pad = self._pad
 
@@ -483,7 +484,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def _add_text(self, pos: Point, text: str):
         y, x = pos
         pad = self._pad
-        ll = self._line_lengths
+        ll = self._line_widths
         line_remaining = pad.canvas[y, x : ll[y]].copy()
 
         selection_start = self._selection_start
@@ -493,7 +494,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         lines = text.split("\n")  # DO NOT USE `splitlines`.
         if len(lines) == 1:
             line = lines[0]
-            width_line = str_width(line)
+            width_line = wcswidth(line)
 
             ll[y] += width_line
             if ll[y] >= pad.width:
@@ -505,13 +506,13 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         else:
             first, *lines, last = lines
             newlines = len(lines) + 1
-            width_last = str_width(last)
+            width_last = wcswidth(last)
             last_y = y + newlines
 
-            ll[y] = x + str_width(first)
+            ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
-                ll.insert(i, str_width(line))
-            ll.insert(last_y, width_last + str_width("".join(line_remaining["char"])))
+                ll.insert(i, wcswidth(line))
+            ll.insert(last_y, width_last + wcswidth("".join(line_remaining["char"])))
 
             height = max(len(ll), self._scroll_view.port_height)
             width = max(max(ll) + 1, self._scroll_view.port_width)
@@ -547,7 +548,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             text_before_cursor = "".join(self._pad.canvas["char"][y, :x])
             nchars_before_cursor = len(text_before_cursor)
             if n <= nchars_before_cursor:
-                x = str_width(text_before_cursor[:-n])
+                x = wcswidth(text_before_cursor[:-n])
                 break
 
             if y == 0:
@@ -555,7 +556,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 break
 
             y -= 1
-            x = self._line_lengths[y]
+            x = self._line_widths[y]
             n -= nchars_before_cursor + 1
 
         self.cursor = y, x
@@ -567,15 +568,15 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         while n > 0:
             text_after_cursor = "".join(
-                self._pad.canvas["char"][y, x : self._line_lengths[y]]
+                self._pad.canvas["char"][y, x : self._line_widths[y]]
             )
             nchars_after_cursor = len(text_after_cursor)
             if n <= nchars_after_cursor:
-                x += str_width(text_after_cursor[:n])
+                x += wcswidth(text_after_cursor[:n])
                 break
 
             if y == self.end_text_point.y:
-                x = self._line_lengths[y]
+                x = self._line_widths[y]
                 break
 
             y += 1
@@ -593,7 +594,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         if y > 0:
             y = max(0, y - n)
-            x = min(self._last_x, self._line_lengths[y])
+            x = min(self._last_x, self._line_widths[y])
         else:
             x = 0
 
@@ -609,7 +610,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         if y < ey:
             y = min(ey, y + n)
-            x = min(self._last_x, self._line_lengths[y])
+            x = min(self._last_x, self._line_widths[y])
         else:
             x = ex
 
@@ -800,7 +801,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self.unselect()
         self._last_x = None
         y = self.cursor.y
-        self.cursor = y, self._line_lengths[y]
+        self.cursor = y, self._line_widths[y]
 
     def _shift_left(self):
         self.select()
@@ -843,7 +844,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self.select()
         self._last_x = None
         y = self.cursor.y
-        self.cursor = y, self._line_lengths[y]
+        self.cursor = y, self._line_widths[y]
 
     def _escape(self):
         if self.has_nonempty_selection:
@@ -934,10 +935,10 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             super().grab(mouse_event)
 
             y, x = self._pad.to_local(mouse_event.pos)
-            if y >= len(self._line_lengths):
+            if y >= len(self._line_widths):
                 return
 
-            x = min(x, self._line_lengths[y])
+            x = min(x, self._line_widths[y])
             if not mouse_event.shift:
                 self.unselect()
 
@@ -948,8 +949,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         """Update selection on grab update."""
         if self._pad.collides_point(mouse_event.pos):
             y, x = self._pad.to_local(mouse_event.pos)
-            if y < len(self._line_lengths):
-                x = min(x, self._line_lengths[y])
+            if y < len(self._line_widths):
+                x = min(x, self._line_widths[y])
                 self.cursor = y, x
         else:
             cy, cx = self.cursor
@@ -965,7 +966,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 if cx > 0:
                     self.move_cursor_left()
             elif x >= w:
-                if cx < self._line_lengths[cy]:
+                if cx < self._line_widths[cy]:
                     self.move_cursor_right()
 
     def ungrab(self, mouse_event):

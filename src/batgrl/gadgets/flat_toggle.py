@@ -6,7 +6,7 @@ from collections.abc import Callable, Hashable
 from numpy.typing import NDArray
 
 from ..colors import GREEN, Color
-from ..text_tools import Cell, smooth_horizontal_bar
+from ..text_tools import Cell, Style, smooth_horizontal_bar
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .text import Point, PosHint, Size, SizeHint, Text
 
@@ -288,8 +288,8 @@ class FlatToggle(ToggleButtonBehavior, Text):
         x, p = divmod((self.width - 1.25) * self._animation_progress + 0.125, 1)
         x = int(x)
         bar = smooth_horizontal_bar(1, 1, p)
-        self.canvas["char"][:, x : x + 2] = bar
-        self.canvas["reverse"][:, x] = True
+        self.chars[:, x : x + 2] = bar
+        self.canvas["style"][:, x] = Style.REVERSE
 
     def on_toggle(self):
         """Animate toggle."""

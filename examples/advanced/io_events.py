@@ -239,7 +239,7 @@ class KeyboardGadget(RainbowBehavior, Text):
         else:
             showkey.pos = pos
             showkey.size = size
-            showkey.canvas["char"][:] = " "
+            showkey.chars[:] = " "
             showkey.add_border("heavy", bold=True)
             showkey.is_visible = True
         self._show_mods(
@@ -282,13 +282,13 @@ class MouseGadget(RainbowBehavior, Text):
 
         if mouse_event.event_type == "scroll_up":
             self._wheel.is_visible = True
-            self._wheel.canvas["char"][1, 1] = "↑"
+            self._wheel.chars[1, 1] = "↑"
         elif mouse_event.event_type == "scroll_down":
             self._wheel.is_visible = True
-            self._wheel.canvas["char"][1, 1] = "↓"
+            self._wheel.chars[1, 1] = "↓"
         elif mouse_event.button == "middle":
             self._wheel.is_visible = True
-            self._wheel.canvas["char"][1, 1] = " "
+            self._wheel.chars[1, 1] = " "
         elif mouse_event.button == "left":
             self._left_button.is_visible = True
         elif mouse_event.button == "right":

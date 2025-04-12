@@ -9,6 +9,7 @@ from itertools import count, islice
 from typing import Any, Literal, Protocol, TypeVar
 
 from ..terminal.events import MouseEvent
+from ..text_tools import egc_ord
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
@@ -153,7 +154,7 @@ class _ColumnLabel(_CellBase):
     def sort_state(self, sort_state: _SortState):
         self._sort_state = _SortState(sort_state)
         if self.allow_sorting:
-            self.canvas["char"][self.indicator_pos] = self._sort_state.value
+            self.canvas["ord"][self.indicator_pos] = egc_ord(self._sort_state.value)
 
     def _update_indicator(self):
         if self._allow_sorting:
@@ -166,7 +167,7 @@ class _ColumnLabel(_CellBase):
             char = " "
         self.canvas["fg_color"][self.indicator_pos] = fg
         self.canvas["bg_color"][self.indicator_pos] = bg
-        self.canvas["char"][self.indicator_pos] = char
+        self.canvas["ord"][self.indicator_pos] = egc_ord(char)
 
     @property
     def allow_sorting(self) -> bool:
@@ -243,7 +244,7 @@ class _DataCell(_CellBase):
 
     def on_size(self):
         super().on_size()
-        self.canvas["char"] = " "
+        self.chars[:] = " "
         if self.striped:
             fg = self.data_table.get_color("data_table_stripe_fg")
             bg = self.data_table.get_color("data_table_stripe_bg")
