@@ -6,11 +6,12 @@ from collections.abc import Callable
 from dataclasses import astuple
 
 from numpy.typing import NDArray
+from ugrapheme import grapheme_len, graphemes
 from uwcwidth import wcswidth
 
 from ..geometry import rect_slice
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
-from ..text_tools import is_word_char
+from ..text_tools import canvas_as_text, egc_chr, is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
@@ -29,7 +30,8 @@ class _Box(Text):
             hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_width))
             hider_region = self._region & hider_rect
             for pos, size in hider_region.rects():
-                canvas["char"][rect_slice(pos, size)] = textbox.hide_char
+                # FIXME: Allow for egcs for textbox.hide_char
+                canvas["ord"][rect_slice(pos, size)] = ord(textbox.hide_char)
 
 
 class Textbox(Themable, Focusable, Grabbable, Gadget):
@@ -417,7 +419,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     @property
     def text(self) -> str:
         """The textbox's text."""
-        return "".join(self._box.canvas["char"][0, : self._line_width])
+        return canvas_as_text(self._box.canvas[0, : self._line_width])
 
     @text.setter
     def text(self, text: str):
@@ -504,7 +506,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             # ! If we ended up here, something went wrong.
             end = self._line_width
 
-        contents = "".join(self._box.canvas["char"][0, start:end])
+        contents = canvas_as_text(self._box.canvas[0, start:end])
         selection_start = self._selection_start
         selection_end = self._selection_end
         cursor = self.cursor
@@ -526,41 +528,39 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         selection_end = self._selection_end
         cursor = self.cursor
 
-        text = text.replace("\n", " ")
-        box = self._box
-        box_text = (
-            f"{''.join(box.canvas['char'][0, :x])}"
-            f"{text}"
-            f"{''.join(box.canvas['char'][0, x : self._line_width])}"
+        box_text = graphemes(
+            canvas_as_text(self._box.canvas[0, :x])
+            + text.replace("\n", " ")
+            + canvas_as_text(self._box.canvas[0, x : self._line_width])
         )[: self.max_chars]
 
         box_width = self._line_width = wcswidth(box_text)
-        if box_width >= box.width:
-            box.width = box_width + 1
+        if box_width >= self._box.width:
+            self._box.width = box_width + 1
 
-        box.add_str(box_text)
-        box.canvas[0, box_width:] = box.default_cell
+        self._box.add_str(box_text)
+        self._box.canvas[0, box_width:] = self._box.default_cell
 
         self.cursor = min(box_width, x + wcswidth(text))
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
 
     def move_cursor_left(self, n: int = 1):
         """Move cursor left `n` characters."""
-        text_before_cursor = "".join(self._box.canvas["char"][0, : self.cursor])
-        nchars_before_cursor = len(text_before_cursor)
-        if n <= nchars_before_cursor:
-            self.cursor = wcswidth(text_before_cursor[:-n])
+        text_before_cursor = canvas_as_text(self._box.canvas[0, : self.cursor])
+        egcs = graphemes(text_before_cursor)
+        if n <= len(egcs):
+            self.cursor = wcswidth(egcs[:-n])
         else:
             self.cursor = 0
 
     def move_cursor_right(self, n: int = 1):
         """Move cursor right `n` characters."""
-        text_after_cursor = "".join(
-            self._box.canvas["char"][0, self.cursor : self._line_width]
+        text_after_cursor = canvas_as_text(
+            self._box.canvas[0, self.cursor : self._line_width]
         )
-        nchars_after_cursor = len(text_after_cursor)
-        if n <= nchars_after_cursor:
-            self.cursor += wcswidth(text_after_cursor[:n])
+        egcs = graphemes(text_after_cursor)
+        if n <= len(egcs):
+            self.cursor += wcswidth(egcs[:n])
         else:
             self.cursor = self._line_width
 
@@ -575,7 +575,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
             last_x = self.cursor
 
-            current_char = self._box.canvas[0, self.cursor]["char"]
+            current_char = egc_chr(self._box.canvas[0, self.cursor]["ord"])
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
@@ -597,7 +597,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
             last_x = self.cursor
 
-            current_char = self._box.canvas[0, self.cursor]["char"]
+            current_char = egc_chr(self._box.canvas[0, self.cursor]["ord"])
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
@@ -681,7 +681,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             self.move_cursor_left()
             if last_x == self.cursor:
                 break
-            if not is_word_char(self._box.canvas[0, self.cursor]["char"]):
+            if not is_word_char(egc_chr(self._box.canvas[0, self.cursor]["ord"])):
                 self.move_cursor_right()
                 break
             last_x = self.cursor
@@ -689,7 +689,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self.select()
         last_x = self.cursor
         while True:
-            if not is_word_char(self._box.canvas[0, self.cursor]["char"]):
+            if not is_word_char(egc_chr(self._box.canvas[0, self.cursor]["ord"])):
                 break
             self.move_cursor_right()
             if last_x == self.cursor:
@@ -743,7 +743,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
         if (
             self.max_chars is None
-            or (self._box.canvas["char"][0, : self._line_width] != "").sum()
+            or grapheme_len(canvas_as_text(self._box.canvas[0, : self._line_width]))
             < self.max_chars
         ):
             if self._undo_buffer_type != "add":

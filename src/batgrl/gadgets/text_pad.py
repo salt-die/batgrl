@@ -2,10 +2,11 @@
 
 from dataclasses import astuple
 
+from ugrapheme import grapheme_iter, graphemes
 from uwcwidth import wcswidth
 
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
-from ..text_tools import is_word_char
+from ..text_tools import canvas_as_text, egc_chr, is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
@@ -334,10 +335,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     @property
     def text(self) -> str:
         """The text pad's text."""
-        return "\n".join(
-            "".join(row[:line_length])
-            for row, line_length in zip(self._pad.canvas["char"], self._line_widths)
-        )
+        return canvas_as_text(self._pad.canvas, self._line_widths)
 
     @text.setter
     def text(self, text: str):
@@ -432,7 +430,6 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _del_text(self, start: Point, end: Point):
         ll = self._line_widths
-
         pad = self._pad
 
         if start > end:
@@ -447,14 +444,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         if ex > ll[ey]:
             ex = ll[ey]
 
-        contents = "\n".join(
-            "".join(
-                pad.canvas["char"][
-                    y, sx if y == sy else None : ex if y == ey else ll[y]
-                ]
-            )
-            for y in range(sy, ey + 1)
-        )
+        lines = [
+            canvas_as_text(pad.canvas[sy, sx : ll[sy]]),
+            canvas_as_text(pad.canvas[ey, : ll[ey]]),
+        ]
+        if ey - sy > 1:
+            lines.insert(1, canvas_as_text(pad.canvas[sy + 1 : ey], ll[sy + 1 : ey]))
+        contents = "\n".join(lines)
+
         selection_start = self._selection_start
         selection_end = self._selection_end
         cursor = self.cursor
@@ -512,7 +509,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             ll[y] = x + wcswidth(first)
             for i, line in enumerate(lines, start=y + 1):
                 ll.insert(i, wcswidth(line))
-            ll.insert(last_y, width_last + wcswidth("".join(line_remaining["char"])))
+            ll.insert(last_y, width_last + wcswidth(canvas_as_text(line_remaining)))
 
             height = max(len(ll), self._scroll_view.port_height)
             width = max(max(ll) + 1, self._scroll_view.port_width)
@@ -545,10 +542,10 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         y, x = self._cursor.pos
 
         while n > 0:
-            text_before_cursor = "".join(self._pad.canvas["char"][y, :x])
-            nchars_before_cursor = len(text_before_cursor)
-            if n <= nchars_before_cursor:
-                x = wcswidth(text_before_cursor[:-n])
+            text_before_cursor = canvas_as_text(self._pad.canvas[y, :x])
+            egcs = graphemes(text_before_cursor)
+            if n <= len(egcs):
+                x = wcswidth(egcs[:-n])
                 break
 
             if y == 0:
@@ -557,7 +554,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
             y -= 1
             x = self._line_widths[y]
-            n -= nchars_before_cursor + 1
+            n -= len(egcs) + 1
 
         self.cursor = y, x
 
@@ -567,11 +564,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         y, x = self._cursor.pos
 
         while n > 0:
-            text_after_cursor = "".join(
-                self._pad.canvas["char"][y, x : self._line_widths[y]]
+            text_after_cursor = canvas_as_text(
+                self._pad.canvas[y, x : self._line_widths[y]]
             )
-            nchars_after_cursor = len(text_after_cursor)
-            if n <= nchars_after_cursor:
+            egcs = graphemes(text_after_cursor)
+            if n <= len(egcs):
                 x += wcswidth(text_after_cursor[:n])
                 break
 
@@ -580,10 +577,19 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 break
 
             y += 1
-            n -= nchars_after_cursor + 1
+            n -= len(egcs) + 1
             x = 0
 
         self.cursor = y, x
+
+    def _fix_x(self, y, x):
+        line = canvas_as_text(self._pad.canvas[y, : self._line_widths[y]])
+        current_x = 0
+        for egc in grapheme_iter(line):
+            if current_x + wcswidth(egc) > x:
+                return current_x
+            current_x += wcswidth(egc)
+        return self._line_widths[y]
 
     def move_cursor_up(self, n: int = 1):
         """Move cursor up `n` rows."""
@@ -594,7 +600,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         if y > 0:
             y = max(0, y - n)
-            x = min(self._last_x, self._line_widths[y])
+            x = self._fix_x(y, min(self._last_x, self._line_widths[y]))
         else:
             x = 0
 
@@ -610,7 +616,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
         if y < ey:
             y = min(ey, y + n)
-            x = min(self._last_x, self._line_widths[y])
+            x = self._fix_x(y, min(self._last_x, self._line_widths[y]))
         else:
             x = ex
 
@@ -628,7 +634,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
             last_x = self.cursor.x
 
-            current_char = self._pad.canvas[self.cursor]["char"]
+            current_char = egc_chr(self._pad.canvas[self.cursor]["ord"])
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
@@ -651,7 +657,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
             last_x = self.cursor.x
 
-            current_char = self._pad.canvas[self.cursor]["char"]
+            current_char = egc_chr(self._pad.canvas[self.cursor]["ord"])
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
@@ -749,7 +755,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             self.move_cursor_left()
             if last_x == self.cursor.x:
                 break
-            if not is_word_char(self._pad.canvas[self.cursor]["char"]):
+            if not is_word_char(egc_chr(self._pad.canvas[self.cursor]["ord"])):
                 self.move_cursor_right()
                 break
             last_x = self.cursor.x
@@ -757,7 +763,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self.select()
         last_x = self.cursor.x
         while True:
-            if not is_word_char(self._pad.canvas[self.cursor]["char"]):
+            if not is_word_char(egc_chr(self._pad.canvas[self.cursor]["ord"])):
                 break
             self.move_cursor_right()
             if last_x == self.cursor.x:

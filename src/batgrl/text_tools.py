@@ -387,6 +387,8 @@ def canvas_as_text(canvas: NDArray[Cell], line_widths: list[int] | None = None) 
         for cell in row:
             char = egc_chr(cell["ord"])
             char_width = wcswidth(char)
+            if char_width <= 0:
+                continue
             if char_width + current_line_width > line_width:
                 break
             current_line_width += char_width
