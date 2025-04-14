@@ -411,9 +411,12 @@ class Text(Gadget):
                     self.canvas[y, x:end]["bg_color"] = Color.from_hex(
                         token_style["bgcolor"]
                     )
-                self.canvas[y, x:end]["bold"] = token_style["bold"]
-                self.canvas[y, x:end]["italic"] = token_style["italic"]
-                self.canvas[y, x:end]["underline"] = token_style["underline"]
+                if token_style["bold"]:
+                    self.canvas[y, x:end]["style"] |= Style.BOLD
+                if token_style["italic"]:
+                    self.canvas[y, x:end]["style"] |= Style.ITALIC
+                if token_style["underline"]:
+                    self.canvas[y, x:end]["style"] |= Style.UNDERLINE
                 x = end
 
     def add_str(

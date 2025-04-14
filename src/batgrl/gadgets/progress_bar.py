@@ -226,12 +226,11 @@ class ProgressBar(Themable, Gadget):
         smooth_bar = smooth_horizontal_bar(bar_width, 1, offset)
 
         self._bar.clear()
-        canvas = self._bar.canvas
-        canvas["char"][:, x : x + len(smooth_bar)] = smooth_bar
-        canvas["fg_color"] = self.get_color("progress_bar_fg")
-        canvas["bg_color"] = self.get_color("progress_bar_bg")
+        self._bar.chars[:, x : x + len(smooth_bar)] = smooth_bar
+        self._bar.canvas["fg_color"] = self.get_color("progress_bar_fg")
+        self._bar.canvas["bg_color"] = self.get_color("progress_bar_bg")
         if offset:
-            canvas["style"][:, x] = Style.REVERSE
+            self._bar.canvas["style"][:, x] = Style.REVERSE
 
     def _paint_small_vertical_bar(self, progress):
         bar_height = max(1, (self.height - 1) // 2)
@@ -240,12 +239,11 @@ class ProgressBar(Themable, Gadget):
         smooth_bar = smooth_vertical_bar(bar_height, 1, offset)
 
         self._bar.clear()
-        canvas = self._bar.canvas
-        canvas["char"][::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
-        canvas["fg_color"] = self.get_color("progress_bar_fg")
-        canvas["bg_color"] = self.get_color("progress_bar_bg")
+        self._bar.chars[::-1][y : y + len(smooth_bar)].T[:] = smooth_bar
+        self._bar.canvas["fg_color"] = self.get_color("progress_bar_fg")
+        self._bar.canvas["bg_color"] = self.get_color("progress_bar_bg")
         if offset:
-            canvas["style"][::-1][y] = Style.REVERSE
+            self._bar.canvas["style"][::-1][y] = Style.REVERSE
 
     async def _loading_animation(self):
         if (
@@ -256,7 +254,7 @@ class ProgressBar(Themable, Gadget):
         ):
             return
 
-        self._bar.canvas["char"] = " "
+        self._bar.chars[:] = " "
 
         if self._is_horizontal:
             steps = 8 * self.width
@@ -295,12 +293,11 @@ class ProgressBar(Themable, Gadget):
 
     def _paint_progress_bar(self):
         self._bar.clear()
-        canvas = self._bar.canvas
-        canvas["fg_color"] = self.get_color("progress_bar_fg")
-        canvas["bg_color"] = self.get_color("progress_bar_bg")
+        self._bar.canvas["fg_color"] = self.get_color("progress_bar_fg")
+        self._bar.canvas["bg_color"] = self.get_color("progress_bar_bg")
         if self.is_horizontal:
             smooth_bar = smooth_horizontal_bar(self.width, self.progress)
-            canvas["char"][:, : len(smooth_bar)] = smooth_bar
+            self._bar.chars[:, : len(smooth_bar)] = smooth_bar
         else:
             smooth_bar = smooth_vertical_bar(self.height, self.progress)
-            canvas["char"][::-1][: len(smooth_bar)].T[:] = smooth_bar
+            self._bar.chars[::-1][: len(smooth_bar)].T[:] = smooth_bar

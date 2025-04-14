@@ -69,6 +69,8 @@ class _LinePlotProperty:
         return getattr(instance, self.name)
 
     def __set__(self, instance, value):
+        if value == "sixel" and not Graphics._sixel_support:
+            value = "half"
         setattr(instance, self.name, value)
         instance._build_plot()
 
@@ -352,7 +354,7 @@ class LinePlot(Gadget):
 
         self._traces.bind("pos", set_x_left)
         self._traces.bind("pos", set_y_top)
-        self._tick_corner.canvas["char"][0, -1] = "└"
+        self._tick_corner.chars[0, -1] = "└"
 
         self._scroll_view.view = self._traces
         self._x_ticks_container.add_gadget(self._x_ticks)
@@ -539,15 +541,15 @@ class LinePlot(Gadget):
         self._y_ticks.size = self._traces.height, TICK_WIDTH
         self._y_ticks.canvas["fg_color"] = self.plot_fg_color
         self._y_ticks.canvas["bg_color"] = self.plot_bg_color
-        self._y_ticks.canvas["char"][:, :-1] = " "
-        self._y_ticks.canvas["char"][1:, -1] = "│"
+        self._y_ticks.chars[:, :-1] = " "
+        self._y_ticks.chars[1:, -1] = "│"
 
         self._x_ticks.size = 2, self._traces.width
         self._x_ticks.canvas["fg_color"] = self.plot_fg_color
         self._x_ticks.canvas["bg_color"] = self.plot_bg_color
-        self._x_ticks.canvas["char"][0, : plot_right - 1] = "─"
-        self._x_ticks.canvas["char"][0, plot_right:] = " "
-        self._x_ticks.canvas["char"][1:] = " "
+        self._x_ticks.chars[0, : plot_right - 1] = "─"
+        self._x_ticks.chars[0, plot_right:] = " "
+        self._x_ticks.chars[1:] = " "
 
         self._tick_corner.pos = h - 2 - has_x_label, sv_left - TICK_WIDTH - 1
 
@@ -558,17 +560,17 @@ class LinePlot(Gadget):
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
                 pos=(row, 0),
             )
-        self._y_ticks.canvas["char"][0, -1] = "┐"
+        self._y_ticks.chars[0, -1] = "┐"
 
         last_x = offset_w - 1
         for column in range(0, offset_w, TICK_WIDTH):
             x_label = lerp(min_x, max_x, column / last_x)
-            self._x_ticks.canvas["char"][0, column + TICK_HALF] = "┬"
+            self._x_ticks.chars[0, column + TICK_HALF] = "┬"
             self._x_ticks.add_str(
                 f"{x_label:^{TICK_WIDTH}.{PRECISION}g}"[:TICK_WIDTH],
                 pos=(1, column),
             )
-        self._x_ticks.canvas["char"][0, plot_right - 1] = "┐"
+        self._x_ticks.chars[0, plot_right - 1] = "┐"
 
     def on_size(self):
         """Rebuild plot on resize."""

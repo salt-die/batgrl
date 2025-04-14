@@ -41,8 +41,7 @@ class TextEffectsApp(App):
                 fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
             ),
         )
-        text.canvas[10:20, 3:77]["char"] = LOGO
-
+        text.chars[10:20, 3:77] = LOGO
         self.add_gadget(text)
 
         # Note: Do not modify text's size during effects.

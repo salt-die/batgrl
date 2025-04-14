@@ -21,7 +21,7 @@ class Bleed(Text):
         self.banner = banner
         self.button = button
         self.add_gadgets(banner, button)
-        self._start_locs = np.argwhere(self.banner.canvas["char"] != " ")
+        self._start_locs = np.argwhere(self.banner.chars != " ")
         self._drops = []
 
     def on_add(self):
@@ -58,7 +58,7 @@ class Bleed(Text):
             self.children.insert(0, drop)
         self.button.pull_to_front()
 
-        chars = drop.canvas["char"]
+        chars = drop.chars
         while (char := amounts > TRANSITIONS[:, None])[2].any():
             chars[:] = " "
             chars[char[2]] = "░"
@@ -130,11 +130,11 @@ class DripApp(App):
             pos_hint={"x_hint": 0.5},
             is_transparent=True,
         )
-        button.canvas["char"] = button_canvas
+        button.chars[:] = button_canvas
 
         h, w = banner_canvas.shape
         banner = Text(size=(h, w), is_transparent=True)
-        banner.canvas["char"] = banner_canvas
+        banner.chars[:] = banner_canvas
 
         bleed = Bleed(
             banner, button, size=(h + 9, w), pos_hint={"y_hint": 0.5, "x_hint": 0.5}

@@ -6,14 +6,15 @@ from collections.abc import Callable, Iterable, Iterator
 from inspect import signature
 from typing import Self
 
-from batgrl.terminal.events import KeyEvent
+from uwcwidth import wcswidth
 
 from ..geometry import clamp
+from ..terminal.events import KeyEvent
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .grid_layout import GridLayout
 from .pane import Pane, Point, PosHint, Size, SizeHint
-from .text import Text, str_width
+from .text import Text
 
 __all__ = ["Menu", "MenuBar", "MenuDict", "Point", "Size"]
 
@@ -40,9 +41,9 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         **kwargs,
     ):
         self.parent: Menu | None
-        self.left_label = Text(size=(1, str_width(left_label)), alpha=0.0)
+        self.left_label = Text(size=(1, wcswidth(left_label)), alpha=0.0)
         self.right_label = Text(
-            size=(1, str_width(right_label)),
+            size=(1, wcswidth(right_label)),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
             alpha=0.0,
         )
@@ -129,12 +130,12 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
     def update_off(self):
         """Paint the off state."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
-            self.left_label.canvas["char"][0, 1] = CHECK_OFF
+            self.left_label.chars[0, 1] = CHECK_OFF
 
     def update_on(self):
         """Paint the on state."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
-            self.left_label.canvas["char"][0, 1] = CHECK_ON
+            self.left_label.chars[0, 1] = CHECK_ON
 
     def on_mouse(self, mouse_event):
         """Save last mouse position."""
@@ -577,8 +578,8 @@ class Menu(GridLayout):
         height = len(menu)
         width = max(
             (
-                str_width(right_label)
-                + str_width(left_label)
+                wcswidth(right_label)
+                + wcswidth(left_label)
                 + 7
                 + isinstance(callable_or_dict, dict) * 2
             )
@@ -636,7 +637,7 @@ class Menu(GridLayout):
 class _MenuButton(Themable, ToggleButtonBehavior, Text):
     def __init__(self, label, menu, group):
         super().__init__(
-            size=(1, str_width(label) + 2), group=group, allow_no_selection=True
+            size=(1, wcswidth(label) + 2), group=group, allow_no_selection=True
         )
         self.add_str(f" {label} ")
         self._menu: Menu = menu
@@ -1034,7 +1035,7 @@ class MenuBar(GridLayout):
             alpha=alpha,
             grid_rows=1,
             grid_columns=len(menus),
-            size=(1, sum(str_width(menu_name) + 2 for menu_name, _ in menus)),
+            size=(1, sum(wcswidth(menu_name) + 2 for menu_name, _ in menus)),
             pos=pos,
         )
 

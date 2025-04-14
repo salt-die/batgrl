@@ -386,12 +386,12 @@ class Sparkline(Gadget):
             )
 
         self._sparkline.clear()
-        chars = self._sparkline.canvas["char"][::-1]
-        fg_color = self._sparkline.canvas["fg_color"]
         for i, bin_proportion in enumerate(bin_proportions):
             smooth_bar = smooth_vertical_bar(self.height, bin_proportion)
-            chars[: len(smooth_bar), i] = smooth_bar
-            fg_color[:, i] = lerp_colors(self.min_color, self.max_color, bin_proportion)
+            self._sparkline.chars[::-1][: len(smooth_bar), i] = smooth_bar
+            self._sparkline.canvas["fg_color"][:, i] = lerp_colors(
+                self.min_color, self.max_color, bin_proportion
+            )
 
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         """Show tooltip and highlight column on mouse collision."""

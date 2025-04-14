@@ -12,12 +12,13 @@ from mistletoe import Document, block_token, span_token
 from mistletoe.base_renderer import BaseRenderer
 from numpy.typing import NDArray
 from pygments.lexers import get_lexer_by_name
-from pygments.style import Style
+from pygments.style import Style as PygmentsStyle
 from pygments.util import ClassNotFound
 
 from ..colors import Neptune, lerp_colors
 from ..emojis import EMOJIS
 from ..geometry import Point, Size
+from ..text_tools import Style
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .gadget import Gadget, PosHint, SizeHint
@@ -194,7 +195,7 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
 
         for child in self.walk():
             if isinstance(child, Text):
-                underline = child.canvas["underline"].copy()
+                style = child.canvas["style"].copy()
                 colors = child.canvas[["fg_color", "bg_color"]]
                 primary_fg = Themable.get_color("primary_fg")
                 primary_bg = Themable.get_color("primary_bg")
@@ -203,7 +204,7 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
                     Themable.get_color("markdown_link_fg"),
                     Themable.get_color("markdown_link_bg"),
                 )
-                self.texts.append((child, underline, mask))
+                self.texts.append((child, style, mask))
             # ! This condition can add to the gadget tree while walking it, careful.
             elif isinstance(child, (_MarkdownImage, _MarkdownGif)):
                 if not hasattr(child, "outline"):
@@ -220,10 +221,10 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
     def update_normal(self):
         link_fg = Themable.get_color("markdown_link_fg")
         link_bg = Themable.get_color("markdown_link_bg")
-        for text, underline, mask in self.texts:
+        for text, style, mask in self.texts:
             text.canvas["fg_color"][mask] = link_fg
             text.canvas["bg_color"][mask] = link_bg
-            text.canvas["underline"] = underline
+            text.canvas["style"] = style
         for graphic in self.graphics:
             graphic.outline.is_enabled = False
 
@@ -233,7 +234,7 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
         for text, _, mask in self.texts:
             text.canvas["fg_color"][mask] = hover_fg
             text.canvas["bg_color"][mask] = hover_bg
-            text.canvas["underline"] = True
+            text.canvas["style"] |= Style.UNDERLINE
         for graphic in self.graphics:
             graphic.outline.is_enabled = True
 
@@ -301,7 +302,7 @@ class _Quote(Pane):
         quote_fg = Themable.get_color("markdown_quote_fg")
         quote_bg = Themable.get_color("markdown_quote_bg")
         margin = Text(
-            default_cell=new_cell(char="▎", fg_color=quote_fg, bg_color=quote_bg),
+            default_cell=new_cell(ord=ord("▎"), fg_color=quote_fg, bg_color=quote_bg),
             size=(content.height, 1),
         )
         self.depth = depth
@@ -447,28 +448,28 @@ class _BatgrlRenderer(BaseRenderer):
     def render_strong(self, token: span_token.Strong) -> Text:
         text = self.render_inner(token)
         if text.height > 1:
-            text.canvas[:-1]["bold"] = True
-            text.canvas[-1, : text.line_end]["bold"] = True
+            text.canvas[:-1]["style"] |= Style.BOLD
+            text.canvas[-1, : text.line_end]["style"] |= Style.BOLD
         else:
-            text.canvas["bold"] = True
+            text.canvas["style"] |= Style.BOLD
         return text
 
     def render_emphasis(self, token: span_token.Emphasis) -> Text:
         text = self.render_inner(token)
         if text.height > 1:
-            text.canvas[:-1]["italic"] = True
-            text.canvas[-1, : text.line_end]["italic"] = True
+            text.canvas[:-1]["style"] |= Style.ITALIC
+            text.canvas[-1, : text.line_end]["style"] |= Style.ITALIC
         else:
-            text.canvas["italic"] = True
+            text.canvas["style"] |= Style.ITALIC
         return text
 
     def render_strikethrough(self, token: span_token.Strikethrough) -> Text:
         text = self.render_inner(token)
         if text.height > 1:
-            text.canvas[:-1]["strikethrough"] = True
-            text.canvas[-1, : text.line_end]["strikethrough"] = True
+            text.canvas[:-1]["style"] = Style.STRIKETHROUGH
+            text.canvas[-1, : text.line_end]["style"] = Style.STRIKETHROUGH
         else:
-            text.canvas["strikethrough"] = True
+            text.canvas["style"] = Style.STRIKETHROUGH
         return text
 
     def render_inline_code(self, token: span_token.InlineCode) -> Text:
@@ -529,7 +530,7 @@ class _BatgrlRenderer(BaseRenderer):
     def render_heading(self, token: block_token.Heading) -> Text:
         text = self.render_inner(token)
         if token.level % 2 == 1:
-            text.canvas["bold"] = True
+            text.canvas["style"] |= Style.BOLD
         if token.level < 5:
             primary_fg = Themable.get_color("primary_fg")
             primary_bg = Themable.get_color("primary_bg")
@@ -544,16 +545,16 @@ class _BatgrlRenderer(BaseRenderer):
             header.canvas["bg_color"][[0, -1]] = primary_bg
             return header
         text.height += 1
-        text.canvas["char"][-1] = "▔"
+        text.chars[-1] = "▔"
         return text
 
     def render_setext_heading(self, token: block_token.SetextHeading) -> Text:
         text = self.render_inner(token)
         if token.level == 1:
-            text.canvas["bold"] = True
+            text.canvas["style"] |= Style.BOLD
         text.height += 1
         text.width = max(text.width, self.render_width)
-        text.canvas["char"][-1, :] = "━" if token.level == 1 else "─"
+        text.chars[-1, :] = "━" if token.level == 1 else "─"
         return text
 
     def render_quote(self, token: block_token.Quote) -> _Quote:
@@ -698,17 +699,17 @@ class _BatgrlRenderer(BaseRenderer):
                 x += w + INNER_PAD
             y += h
             if i == 0:
-                table.canvas["bold"][:y] = True
-                table.canvas["char"][y] = "━"
+                table.canvas["style"][:y] |= Style.BOLD
+                table.chars[y] = "━"
             elif i < len(rows) - 1:
-                table.canvas["char"][y] = "─"
+                table.chars[y] = "─"
             y += 1
 
         return table
 
     def render_thematic_break(self, token: block_token.ThematicBreak) -> Text:
         cell = _default_cell()
-        cell["char"] = "─"
+        cell["ord"] = ord("─")
         return Text(size=(1, self.render_width), default_cell=cell)
 
     def render_line_break(self, token: span_token.LineBreak) -> Literal[" ", "\n"]:
@@ -869,7 +870,7 @@ class Markdown(Themable, Gadget):
         self,
         *,
         markdown: str,
-        syntax_highlighting_style: Style = Neptune,
+        syntax_highlighting_style: PygmentsStyle = Neptune,
         blitter: Blitter = "half",
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
@@ -906,7 +907,7 @@ class Markdown(Themable, Gadget):
         self._link_hint.is_enabled = False
         self.add_gadgets(self._scroll_view, self._link_hint)
         self.markdown: str = markdown
-        self.syntax_highlighting_style: Style = syntax_highlighting_style
+        self.syntax_highlighting_style: PygmentsStyle = syntax_highlighting_style
         """The syntax highlighting style for code blocks."""
         self.blitter = blitter
         """Determines how images are rendered."""
@@ -922,12 +923,12 @@ class Markdown(Themable, Gadget):
         self._build_markdown()
 
     @property
-    def syntax_highlighting_style(self) -> Style:
+    def syntax_highlighting_style(self) -> PygmentsStyle:
         """The syntax highlighting style for code blocks."""
         return self._style
 
     @syntax_highlighting_style.setter
-    def syntax_highlighting_style(self, syntax_highlighting_style: Style):
+    def syntax_highlighting_style(self, syntax_highlighting_style: PygmentsStyle):
         self._style = syntax_highlighting_style
         self._build_markdown()
 

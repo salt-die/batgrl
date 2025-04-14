@@ -95,7 +95,8 @@ class _HueSelector(Grabbable, Graphics):
     def __init__(self, shade_selector, **kwargs):
         self._hue_hint = 0.0
         self._hue_indicator = Text(
-            size=(1, 1), default_cell=new_cell(char="▼", fg_color=WHITE, bg_color=RED)
+            size=(1, 1),
+            default_cell=new_cell(ord=ord("▼"), fg_color=WHITE, bg_color=RED),
         )
         self.shade_selector = shade_selector
         super().__init__(**kwargs)

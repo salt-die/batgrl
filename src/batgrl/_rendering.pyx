@@ -1182,6 +1182,8 @@ def cursor_render(
         dst = &cells[it.y, it.x]
         dst.style |= on
         dst.style &= off
+        if fg_color is not None:
+            dst.fg_color = fg_color
         if bg_color is not None:
             dst.bg_color = bg_color
         next_(&it)
@@ -1198,15 +1200,26 @@ cdef void opaque_text_field_render(
     CRegion *cregion
 ):
     cdef:
-        size_t nparticles = particles.shape[0], i
+        size_t nparticles = particles.shape[0], i, j, cwidth
         int py, px
 
     for i in range(nparticles):
         py = <int>coords[i][0] + abs_y
         px = <int>coords[i][1] + abs_x
         if contains(cregion, py, px):
-            cells[py, px] = particles[i]
-
+            if particles[i].ord & EGC_BASE:
+                cwidth = wcswidth(EGC_POOL[particles[i].ord - EGC_BASE])
+            else:
+                cwidth = wcwidth_uint32(particles[i].ord)
+            if cwidth == 1:
+                cells[py, px] = particles[i]
+            elif cwidth > 1:
+                if contains(cregion, py, px + cwidth - 1):
+                    cells[py, px] = particles[i]
+                    for j in range(1, cwidth):
+                        cells[py, px + j].ord = 0
+                        cells[py, px + j].bg_color = particles[i].bg_color
+                
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -1222,11 +1235,11 @@ cdef void trans_text_field_render(
     CRegion *cregion,
 ):
     cdef:
-        size_t nparticles = particles.shape[0], i
+        size_t nparticles = particles.shape[0], i, j
         int py, px
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
-        size_t oy, ox, gy, gx
+        size_t oy, ox, gy, gx, cwidth
         uint8[3] rgb
         double p
         Cell *dst
@@ -1254,20 +1267,39 @@ cdef void trans_text_field_render(
                                 &graphics[oy + gy, ox + gx, 0], &src.bg_color[0], alpha
                             )
         else:
+            if particles[i].ord & EGC_BASE:
+                cwidth = wcswidth(EGC_POOL[particles[i].ord - EGC_BASE])
+            else:
+                cwidth = wcwidth_uint32(particles[i].ord)
+            if cwidth > 1:
+                if contains(cregion, py, px + cwidth - 1):
+                    for j in range(1, cwidth):
+                        cells[py, px + j].ord = 0
+                else:
+                    continue
+            elif cwidth < 1:
+                continue
             dst.ord = src.ord
             dst.style = src.style
             dst.fg_color = src.fg_color
             if kind[py, px] & SIXEL:
                 oy = py * h
                 ox = px * w
-                average_graphics(&dst.bg_color[0], graphics[oy:oy + h, ox:ox + w])
+                average_graphics(
+                    &dst.bg_color[0], graphics[oy:oy + h, ox:ox + w * cwidth]
+                )
             elif kind[py, px] == MIXED:
                 oy = py * h
                 ox = px * w
-                p = average_graphics(&rgb[0], graphics[oy: oy + h, ox:ox + w])
+                p = average_graphics(
+                    &rgb[0], graphics[oy: oy + h, ox:ox + w * cwidth]
+                )
                 lerp_rgb(&rgb[0], &dst.bg_color[0], p)
             kind[py, px] = GLYPH
             composite(dst.bg_color, src.bg_color, alpha)
+            if cwidth > 1:
+                for j in range(1, cwidth):
+                    cells[py, px + j].bg_color = dst.bg_color
 
 
 @cython.boundscheck(False)
@@ -1839,6 +1871,7 @@ cpdef void graphics_field_render(
             )
 
 
+# TODO: Add an option to disable normalize_canvas and remove normalization in text_field_*.
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):
@@ -1972,7 +2005,11 @@ cdef inline ssize_t write_glyph(
             write_rgb(f, 48, &cell.bg_color[0], &first)
     if not first:
         fbuf_putn(f, "m", 1)
-    fbuf_putucs4(f, cell.ord)
+    if cell.ord & EGC_BASE:
+        for codepoint in EGC_POOL[cell.ord - EGC_BASE]:
+            fbuf_putucs4(f, ord(codepoint))
+    else:
+        fbuf_putucs4(f, cell.ord)
     cursor_x[0] += widths[y, x]
     last_sgr[0] = cell
     return 0

@@ -6,7 +6,7 @@ from typing import Final
 import numpy as np
 from numpy.typing import NDArray
 from ugrapheme import grapheme_iter
-from uwcwidth import wcswidth, wcwidth
+from uwcwidth import wcswidth
 
 from ._batgrl_markdown import find_md_tokens
 from .colors import BLACK, WHITE, Color
@@ -196,7 +196,7 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
         cells[start - before : start] = [NO_CHAR] * before
         cells[end : end + after] = [NO_CHAR] * after
         for i in range(start, end):
-            cells[i][style] = True
+            cells[i]["style"] |= getattr(Style, style.upper())
 
     for i in escapes:
         cells[i] = NO_CHAR
@@ -218,8 +218,8 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
             line_width = 0
         else:
             width = wcswidth(egc_chr(ord_))
-            line_width += width
             if width > 0:
+                line_width += width
                 line.append(cell)
 
     lines.append(line)
@@ -270,7 +270,7 @@ def _write_lines_to_canvas(lines, canvas, fg_color, bg_color) -> None:
     ):
         i = 0
         for cell in cells:
-            char_width = wcwidth(egc_chr(cell["ord"].item()))
+            char_width = wcswidth(egc_chr(cell["ord"].item()))
             if char_width == 0:
                 continue
 

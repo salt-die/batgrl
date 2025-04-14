@@ -237,7 +237,7 @@ class TextParticleField(Gadget):
         cells : NDArray[Cell]
             A Cell numpy array (such as a :class:`Text` gadget's canvas).
         """
-        positions = np.argwhere(np.isin(cells["char"], (" ", "⠀"), invert=True))
+        positions = np.argwhere(np.isin(cells["ord"], (32, 0x2800), invert=True))
         pys, pxs = positions.T
         self.particle_coords = np.ascontiguousarray(positions.astype(np.float64))
         self.particle_cells = np.ascontiguousarray(cells[pys, pxs])
