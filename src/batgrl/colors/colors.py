@@ -161,13 +161,13 @@ NEPTUNE_THEME: Final[ColorTheme] = {
     "window_border_normal": "122162",
     "window_border_inactive": "282c3e",
 }
-"""Default color theme."""
+"""Neptune color theme."""
 
 NEPTUNE_PRIMARY_FG: Final = Color.from_hex(NEPTUNE_THEME["primary_fg"])
-"""Default primary foreground color."""
+"""The primary foreground color for the Neptune color theme."""
 
 NEPTUNE_PRIMARY_BG: Final = Color.from_hex(NEPTUNE_THEME["primary_bg"])
-"""Default primary background color."""
+"""The primary background color for the Neptune color theme."""
 
 
 class Neptune(Style):
