@@ -1,6 +1,7 @@
 import numpy as np
 from batgrl.gadgets.gadget import Gadget
 from batgrl.geometry import rect_slice
+from batgrl.text_tools import Style
 
 
 class Darken(Gadget):
@@ -32,7 +33,7 @@ class BOLDCRT(Gadget):
             y, x = divmod(self._i, w)
 
             dst = slice(py, py + h), slice(px, px + w)
-            cells[dst]["bold"] = True
+            cells[dst]["style"] |= Style.BOLD
 
             self.pct[y, x] = 1
             cells["fg_color"][dst] = (cells["fg_color"][dst] * self.pct).astype(
