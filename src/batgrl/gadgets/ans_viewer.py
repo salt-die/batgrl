@@ -111,7 +111,7 @@ class _AnsReader:
                     self._new_line()
 
                 self.lines[self.cursor_y][self.cursor_x] = new_cell(
-                    char, fg_color=fg_color, bg_color=bg_color
+                    ord(char), fg_color=fg_color, bg_color=bg_color
                 )
 
                 self.cursor_x += 1

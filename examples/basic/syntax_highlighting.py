@@ -101,7 +101,7 @@ class SyntaxApp(App):
 
         sep = Text(
             default_cell=new_cell(
-                char="━", fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
+                ord=ord("━"), fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             ),
             pos=(1, 0),
             size=(1, 1),

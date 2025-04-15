@@ -444,13 +444,14 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         if ex > ll[ey]:
             ex = ll[ey]
 
-        lines = [
-            canvas_as_text(pad.canvas[sy, sx : ll[sy]]),
-            canvas_as_text(pad.canvas[ey, : ll[ey]]),
-        ]
-        if ey - sy > 1:
-            lines.insert(1, canvas_as_text(pad.canvas[sy + 1 : ey], ll[sy + 1 : ey]))
-        contents = "\n".join(lines)
+        if sy == ey:
+            contents = canvas_as_text(pad.canvas[sy, sx:ex])
+        else:
+            lines = [canvas_as_text(pad.canvas[sy, sx : ll[sy]])]
+            if ey - sy > 1:
+                lines.append(canvas_as_text(pad.canvas[sy + 1 : ey], ll[sy + 1 : ey]))
+            lines.append(canvas_as_text(pad.canvas[ey, : ll[ey]]))
+            contents = "\n".join(lines)
 
         selection_start = self._selection_start
         selection_end = self._selection_end

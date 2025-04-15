@@ -286,9 +286,9 @@ def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
             canvas_line[i : i + char_width]["style"] = cell["style"]
 
             if fg_color is not None:
-                canvas_line[i : i + char_width] = fg_color
+                canvas_line[i : i + char_width]["fg_color"] = fg_color
             if bg_color is not None:
-                canvas_line[i : i + char_width] = bg_color
+                canvas_line[i : i + char_width]["bg_color"] = bg_color
 
             i += char_width
             if i >= columns:

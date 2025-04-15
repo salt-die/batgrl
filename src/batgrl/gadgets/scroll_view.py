@@ -58,7 +58,7 @@ class _ScrollbarBase(Grabbable, Text):
         self.chars[:] = " "
         self.canvas["fg_color"] = indicator_color
         self.canvas["bg_color"] = sv.get_color("scroll_view_scrollbar")
-        self.canvas["style"] &= ~Style.REVERSE
+        self.canvas["style"] = 0
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
@@ -155,9 +155,8 @@ class _HorizontalScrollbar(_ScrollbarBase):
         start, offset = self._start, self._offset
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
         self.chars[:, start : start + len(smooth_bar)] = smooth_bar
-        self.canvas["style"][:, start] = (
-            Style.REVERSE if bool(offset) else ~Style.REVERSE
-        )
+        if offset:
+            self.canvas["style"][:, start] = Style.REVERSE
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered

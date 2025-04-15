@@ -519,7 +519,7 @@ def text_cast_rays(
             wall_value = shade_wall(
                 wall_texture[tex_y, tex_x], perp_wall_dist + 2.0 * side
             )
-            canvas[y, x].char_ = ascii_map[wall_value]
+            canvas[y, x].ord = ascii_map[wall_value]
 
     cdef:
         size_t nsprites, i
@@ -603,7 +603,7 @@ def text_cast_rays(
                 tex_y = <int>((y - initial_y) * scale_h)
                 if tex_y < 0 or tex_y >= tex_h:
                     continue
-                if sprite_texture[tex_y, tex_x].char_ == u"0":
+                if sprite_texture[tex_y, tex_x].ord == 48:
                     continue
                 canvas[y, x] = sprite_texture[tex_y, tex_x]
 

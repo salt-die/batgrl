@@ -2,13 +2,15 @@
 
 from typing import Literal
 
+from uwcwidth import wcswidth
+
 from ..terminal.events import MouseEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
 from .pane import Pane
-from .text import Text, str_width
+from .text import Text
 
 __all__ = ["Window", "Point", "Size"]
 
@@ -302,7 +304,7 @@ class Window(Themable, Focusable, Grabbable, Gadget):
 
     @resize_min_width.setter
     def resize_min_width(self, min_width: int | None):
-        w = 6 + str_width(self._title)
+        w = 6 + wcswidth(self._title)
         if min_width is None:
             self._resize_min_width = w
         else:
@@ -348,7 +350,7 @@ class Window(Themable, Focusable, Grabbable, Gadget):
     @title.setter
     def title(self, title: str):
         self._title = title
-        self._titlebar._label.width = str_width(title)
+        self._titlebar._label.width = wcswidth(title)
         self._titlebar._label.add_str(title)
         self.resize_min_width = self.resize_min_width
 

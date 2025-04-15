@@ -72,7 +72,7 @@ class ShadowCasterApp(App):
         )
         button_kwargs = dict(size=(1, PANEL_WIDTH), group=1)
         slider_kwargs = dict(
-            default_cell=new_cell(char="━", bg_color=NEPTUNE_PRIMARY_BG),
+            default_cell=new_cell(ord=ord("━"), bg_color=NEPTUNE_PRIMARY_BG),
             size=(1, PANEL_WIDTH),
         )
 
