@@ -244,50 +244,51 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     tuple[Size, list[list[Cell]]]
         Minimum canvas size to fit text and a list of lists of Cells.
     """
-    lines = [
-        [new_cell(ord=egc_ord(egc))[["ord", "style"]] for egc in grapheme_iter(line)]
-        for line in text.split("\n")
-    ]
+    egcs = [list(grapheme_iter(line)) for line in text.split("\n")]
+    cells = []
     max_width = 0
-    for line in lines:
+    for egc_line in egcs:
         line_width = 0
-        for cell in line:
-            # FIXME: if wcswidth returns -1
-            line_width += wcswidth(egc_chr(cell["ord"].item()))
+        cell_line = []
+        for egc in egc_line:
+            egc_width = wcswidth(egc)
+            if egc_width <= 0:
+                continue
+            cell_line.append(new_cell(ord=egc_ord(egc)))
+            line_width += egc_width
+        cells.append(cell_line)
         if line_width > max_width:
             max_width = line_width
-    return Size(len(lines), max_width), lines
+    return Size(len(cells), max_width), cells
 
 
-def _write_lines_to_canvas(lines, canvas, fg_color, bg_color) -> None:
+def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
     """Write a list of lists of Cells to a canvas array."""
     _, columns = canvas.shape
-    for cells, canvas_line, fg, bg in zip(
-        lines,
-        canvas[["ord", "style"]],
-        canvas["fg_color"],
-        canvas["bg_color"],
-    ):
+    for cell_line, canvas_line in zip(cells, canvas):
         i = 0
-        for cell in cells:
+        for cell in cell_line:
             char_width = wcswidth(egc_chr(cell["ord"].item()))
-            if char_width == 0:
+            if char_width < 1:
                 continue
 
             if i + char_width > columns:
                 canvas_line[i:]["ord"] = 0x2
                 canvas_line[i:]["style"] = 0
-                canvas_line[i:]["fg_color"] = fg_color
-                canvas_line[i:]["bg_color"] = bg_color
+                if fg_color is not None:
+                    canvas_line[i:]["fg_color"] = fg_color
+                if bg_color is not None:
+                    canvas_line[i:]["bg_color"] = bg_color
                 break
 
-            canvas_line[i] = cell
+            canvas_line[i]["ord"] = cell["ord"]
             canvas_line[i + 1 : i + char_width]["ord"] = 0
+            canvas_line[i : i + char_width]["style"] = cell["style"]
 
             if fg_color is not None:
-                fg[i : i + char_width] = fg_color
+                canvas_line[i : i + char_width] = fg_color
             if bg_color is not None:
-                bg[i : i + char_width] = bg_color
+                canvas_line[i : i + char_width] = bg_color
 
             i += char_width
             if i >= columns:
@@ -346,13 +347,13 @@ def add_text(
         For text that doesn't fit on canvas, truncate text if true else raise an
         `IndexError`.
     """
-    size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
+    size, cells = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
     if canvas.ndim == 1:  # Pre-pend an axis if canvas is one-dimensional.
         canvas = canvas[None]
     rows, columns = canvas.shape
     if not truncate_text and (size.height > rows or size.width > columns):
         raise IndexError("Text does not fit in canvas.")
-    _write_lines_to_canvas(lines, canvas, fg_color, bg_color)
+    _write_cells_to_canvas(cells, canvas, fg_color, bg_color)
 
 
 def canvas_as_text(canvas: NDArray[Cell], line_widths: list[int] | None = None) -> str:
