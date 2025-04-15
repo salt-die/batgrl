@@ -11,7 +11,7 @@ from typing import Any, Final
 
 from ._rendering import terminal_render
 from ._sixel import OctTree
-from .colors import DEFAULT_COLOR_THEME, Color, ColorTheme
+from .colors import NEPTUNE_THEME, Color, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
@@ -76,7 +76,7 @@ class App(ABC):
         Whether to render app inline or in the alternate screen.
     inline_height :int, default: 10
         Height of app if rendered inline.
-    color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
+    color_theme : ColorTheme, default: NEPTUNE_THEME
         Color theme for :class:`batgrl.gadgets.behaviors.themable.Themable` gadgets.
     double_click_timeout : float, default: 0.5
         Max duration of a double-click.
@@ -140,7 +140,7 @@ class App(ABC):
         title: str | None = None,
         inline: bool = False,
         inline_height: int = 10,
-        color_theme: ColorTheme = DEFAULT_COLOR_THEME,
+        color_theme: ColorTheme = NEPTUNE_THEME,
         double_click_timeout: float = 0.5,
         render_interval: float = 0.0,
         redirect_stderr: Path | None = None,
@@ -560,7 +560,7 @@ def run_gadget_as_app(
     title: str | None = None,
     inline: bool = False,
     inline_height: int = 10,
-    color_theme: ColorTheme = DEFAULT_COLOR_THEME,
+    color_theme: ColorTheme = NEPTUNE_THEME,
     double_click_timeout: float = 0.5,
     render_interval: float = 0.0,
     redirect_stderr: Path | None = None,
@@ -585,7 +585,7 @@ def run_gadget_as_app(
         Whether to render app inline or in the alternate screen.
     inline_height :int, default: 10
         Height of app if rendered inline.
-    color_theme : ColorTheme, default: DEFAULT_COLOR_THEME
+    color_theme : ColorTheme, default: NEPTUNE_THEME
         Color theme for :class:`batgrl.gadgets.behaviors.themable.Themable` gadgets.
     double_click_timeout : float, default: 0.5
         Max duration of a double-click.

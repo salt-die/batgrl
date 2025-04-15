@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Neptune
+from batgrl.colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Neptune
 from batgrl.gadgets.menu import MenuBar
 from batgrl.gadgets.scroll_view import ScrollView
 from batgrl.gadgets.text import Text, new_cell
@@ -101,7 +101,7 @@ class SyntaxApp(App):
 
         sep = Text(
             default_cell=new_cell(
-                char="━", fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                char="━", fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             ),
             pos=(1, 0),
             size=(1, 1),
@@ -127,4 +127,4 @@ class SyntaxApp(App):
 
 
 if __name__ == "__main__":
-    SyntaxApp(title="Syntax Highlighting Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    SyntaxApp(title="Syntax Highlighting Example", bg_color=NEPTUNE_PRIMARY_BG).run()

@@ -3,7 +3,7 @@
 import numpy as np
 from numpy.typing import NDArray
 
-from ..text_tools import _text_to_cells, _write_lines_to_canvas
+from ..text_tools import _text_to_cells, _write_cells_to_canvas
 from ._raycasting import text_cast_rays
 from .text import Cell, Point, PosHint, Size, SizeHint, Text
 
@@ -278,7 +278,7 @@ class TextRaycaster(Text):
             for texture in sprite_textures:
                 spr_size, lines = _text_to_cells(texture)
                 canvas = np.empty(spr_size, Cell)
-                _write_lines_to_canvas(
+                _write_cells_to_canvas(
                     lines, canvas, self.default_fg_color, self.default_bg_color
                 )
                 self.sprite_textures.append(canvas)

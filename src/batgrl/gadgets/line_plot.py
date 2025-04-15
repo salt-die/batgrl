@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 from uwcwidth import wcswidth
 
-from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
+from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
 from .behaviors.movable import Movable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
@@ -101,9 +101,9 @@ class LinePlot(Gadget):
         The color of each line plot. If `None`, a rainbow gradient is used.
     legend_labels : list[str] | None, default: None
         Labels for legend. If `None`, legend is hidden.
-    plot_fg_color : Color, default: DEFAULT_PRIMARY_FG,
+    plot_fg_color : Color, default: NEPTUNE_PRIMARY_FG,
         Foreground color of the plot.
-    plot_bg_color : Color, default: DEFAULT_PRIMARY_BG,
+    plot_bg_color : Color, default: NEPTUNE_PRIMARY_BG,
         Background color of the plot.
     x_label : str | None, default: None
         Optional label for x-axis.
@@ -286,8 +286,8 @@ class LinePlot(Gadget):
         max_y: Real | None = None,
         line_colors: list[Color] | None = None,
         legend_labels: list[str] | None = None,
-        plot_fg_color: Color = DEFAULT_PRIMARY_FG,
-        plot_bg_color: Color = DEFAULT_PRIMARY_BG,
+        plot_fg_color: Color = NEPTUNE_PRIMARY_FG,
+        plot_bg_color: Color = NEPTUNE_PRIMARY_BG,
         x_label: str | None = None,
         y_label: str | None = None,
         alpha: float = 1.0,

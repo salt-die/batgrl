@@ -16,7 +16,7 @@ from ..text_tools import (
     Style,
     _parse_batgrl_md,
     _text_to_cells,
-    _write_lines_to_canvas,
+    _write_cells_to_canvas,
     add_text,
     canvas_as_text,
     egc_ord,
@@ -504,7 +504,7 @@ class Text(Gadget):
         """
         self.size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
         self.clear()
-        _write_lines_to_canvas(lines, self.canvas, fg_color, bg_color)
+        _write_cells_to_canvas(lines, self.canvas, fg_color, bg_color)
 
     def clear(self):
         """Fill canvas with default cell."""

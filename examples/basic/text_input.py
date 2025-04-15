@@ -1,18 +1,18 @@
 from batgrl.app import App
 from batgrl.colors import (
-    DEFAULT_COLOR_THEME,
-    DEFAULT_PRIMARY_BG,
-    DEFAULT_PRIMARY_FG,
+    NEPTUNE_PRIMARY_BG,
+    NEPTUNE_PRIMARY_FG,
+    NEPTUNE_THEME,
     Color,
 )
 from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.text_pad import TextPad
 from batgrl.gadgets.textbox import Textbox
 
-SECONDARY_FG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected_fg"])
-SECONDARY_BG = Color.from_hex(DEFAULT_COLOR_THEME["data_table_selected_bg"])
-ACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal_fg"])
-INACTIVE_COLOR = Color.from_hex(DEFAULT_COLOR_THEME["titlebar_normal_bg"])
+SECONDARY_FG = Color.from_hex(NEPTUNE_THEME["data_table_selected_fg"])
+SECONDARY_BG = Color.from_hex(NEPTUNE_THEME["data_table_selected_bg"])
+ACTIVE_COLOR = Color.from_hex(NEPTUNE_THEME["titlebar_normal_fg"])
+INACTIVE_COLOR = Color.from_hex(NEPTUNE_THEME["titlebar_normal_bg"])
 
 JABBERWOCKY = """
             Jabberwocky
@@ -80,11 +80,11 @@ class TextPadApp(App):
             placeholder="Search...",
             max_chars=50,
         )
-        default_cell = new_cell(fg_color=DEFAULT_PRIMARY_FG, bg_color=SECONDARY_BG)
+        default_cell = new_cell(fg_color=NEPTUNE_PRIMARY_FG, bg_color=SECONDARY_BG)
         textbox_border = Text(pos=(2, 2), size=(3, 35), default_cell=default_cell)
         textbox_border.add_gadget(textbox)
-        textbox_border.add_str("🔍 ", bg_color=DEFAULT_PRIMARY_BG, pos=(1, 1))
-        textbox_border.canvas["bg_color"][1, 1] = DEFAULT_PRIMARY_BG
+        textbox_border.add_str("🔍 ", bg_color=NEPTUNE_PRIMARY_BG, pos=(1, 1))
+        textbox_border.canvas["bg_color"][1, 1] = NEPTUNE_PRIMARY_BG
 
         text_pad = BorderedOnFocusTextPad(pos=(1, 1), size=(13, 33))
         text_pad.text = JABBERWOCKY
@@ -103,4 +103,4 @@ class TextPadApp(App):
 
 
 if __name__ == "__main__":
-    TextPadApp(title="Text Input Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    TextPadApp(title="Text Input Example", bg_color=NEPTUNE_PRIMARY_BG).run()

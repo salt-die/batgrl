@@ -11,8 +11,8 @@ from batgrl.colors import (
     AWHITE,
     BLACK,
     BLUE,
-    DEFAULT_PRIMARY_BG,
-    DEFAULT_PRIMARY_FG,
+    NEPTUNE_PRIMARY_BG,
+    NEPTUNE_PRIMARY_FG,
     RED,
     WHITE,
     gradient,
@@ -67,12 +67,12 @@ class ShadowCasterApp(App):
 
         label_kwargs = dict(
             default_cell=new_cell(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             )
         )
         button_kwargs = dict(size=(1, PANEL_WIDTH), group=1)
         slider_kwargs = dict(
-            default_cell=new_cell(char="━", bg_color=DEFAULT_PRIMARY_BG),
+            default_cell=new_cell(char="━", bg_color=NEPTUNE_PRIMARY_BG),
             size=(1, PANEL_WIDTH),
         )
 
@@ -222,7 +222,7 @@ class ShadowCasterApp(App):
 if __name__ == "__main__":
     ShadowCasterApp(
         title="Shadow Casting",
-        bg_color=DEFAULT_PRIMARY_BG,
+        bg_color=NEPTUNE_PRIMARY_BG,
         inline=True,
         inline_height=17,
     ).run()

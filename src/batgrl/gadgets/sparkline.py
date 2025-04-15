@@ -6,7 +6,7 @@ from numbers import Real
 import numpy as np
 from numpy.typing import NDArray
 
-from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, lerp_colors
+from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, lerp_colors
 from ..terminal.events import MouseEvent
 from ..text_tools import smooth_vertical_bar
 from .cursor import Cursor
@@ -46,13 +46,13 @@ class Sparkline(Gadget):
         Color of the maximum value of the sparkline.
     highlight_color : Color, default: DEFAULT_HIGHLIGHT_COLOR
         Color of highlighted value of the sparkline.
-    bg_color : Color, default: DEFAULT_PRIMARY_BG
+    bg_color : Color, default: NEPTUNE_PRIMARY_BG
         Background color of gadget.
     show_tooltip : bool, default: True
         Whether to show tooltip.
-    tooltip_fg_color : Color, default: DEFAULT_PRIMARY_FG
+    tooltip_fg_color : Color, default: NEPTUNE_PRIMARY_FG
         Foreground color of tooltip.
-    tooltip_bg_color : Color, default: DEFAULT_PRIMARY_BG
+    tooltip_bg_color : Color, default: NEPTUNE_PRIMARY_BG
         Background color of tooltip.
     size : Size, default: Size(10, 10)
         Size of gadget.
@@ -196,10 +196,10 @@ class Sparkline(Gadget):
         min_color: Color = DEFAULT_MIN_COLOR,
         max_color: Color = DEFAULT_MAX_COLOR,
         highlight_color: Color = DEFAULT_HIGHLIGHT_COLOR,
-        bg_color: Color = DEFAULT_PRIMARY_BG,
+        bg_color: Color = NEPTUNE_PRIMARY_BG,
         show_tooltip: bool = True,
-        tooltip_fg_color: Color = DEFAULT_PRIMARY_FG,
-        tooltip_bg_color: Color = DEFAULT_PRIMARY_BG,
+        tooltip_fg_color: Color = NEPTUNE_PRIMARY_FG,
+        tooltip_bg_color: Color = NEPTUNE_PRIMARY_BG,
         size: Size = Size(10, 10),
         pos: Point = Point(0, 0),
         size_hint: SizeHint | None = None,

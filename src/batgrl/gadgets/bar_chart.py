@@ -4,7 +4,7 @@ from numbers import Real
 
 from uwcwidth import wcswidth
 
-from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
+from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
 from ..text_tools import Style, add_text, smooth_vertical_bar
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
 from .pane import Pane
@@ -49,9 +49,9 @@ class BarChart(Gadget):
         Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
     bar_colors : list[Color] | None, default: None
         Color of each bar. If `None`, a rainbow gradient is used.
-    chart_fg_color: Color, default: DEFAULT_PRIMARY_FG
+    chart_fg_color: Color, default: NEPTUNE_PRIMARY_FG
         Foreground color of chart.
-    chart_bg_color: Color, default: DEFAULT_PRIMARY_BG
+    chart_bg_color: Color, default: NEPTUNE_PRIMARY_BG
         Background color of chart.
     alpha: float, default: 1.0
         Transparency of gadget.
@@ -227,8 +227,8 @@ class BarChart(Gadget):
         min_y: Real | None = 0,
         max_y: Real | None = None,
         bar_colors: list[Color] | None = None,
-        chart_fg_color: Color = DEFAULT_PRIMARY_FG,
-        chart_bg_color: Color = DEFAULT_PRIMARY_BG,
+        chart_fg_color: Color = NEPTUNE_PRIMARY_FG,
+        chart_bg_color: Color = NEPTUNE_PRIMARY_BG,
         alpha: float = 1.0,
         y_label: str | None = None,
         show_grid_lines: bool = True,

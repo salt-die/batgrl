@@ -2,7 +2,7 @@ from itertools import cycle
 from pathlib import Path
 
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
+from batgrl.colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG
 from batgrl.gadgets.image import Image
 from batgrl.gadgets.text import Text, new_cell
 from batgrl.geometry import Easing
@@ -34,7 +34,7 @@ class EasingsApp(App):
             size=(1, 30),
             pos_hint={"x_hint": 0.5, "anchor": "top"},
             default_cell=new_cell(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             ),
         )
 
@@ -55,4 +55,4 @@ class EasingsApp(App):
 
 
 if __name__ == "__main__":
-    EasingsApp(title="Easings Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    EasingsApp(title="Easings Example", bg_color=NEPTUNE_PRIMARY_BG).run()

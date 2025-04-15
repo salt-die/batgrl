@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 
-from ...colors import DEFAULT_COLOR_THEME, Color, ColorTheme, Hexcode
+from ...colors import NEPTUNE_THEME, Color, ColorTheme, Hexcode
 
 __all__ = ["Themable"]
 
@@ -36,9 +36,9 @@ class Themable(ABC):
         """Get a color by name from the current color theme."""
         hexcode: Hexcode
         if color_name not in cls.color_theme:
-            if color_name not in DEFAULT_COLOR_THEME:
+            if color_name not in NEPTUNE_THEME:
                 raise KeyError(f"There is no color {color_name!r}.")
-            hexcode = DEFAULT_COLOR_THEME[color_name]
+            hexcode = NEPTUNE_THEME[color_name]
         else:
             hexcode = cls.color_theme[color_name]
         return Color.from_hex(hexcode)
