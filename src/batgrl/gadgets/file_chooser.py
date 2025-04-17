@@ -4,7 +4,8 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 
-from ..char_width import str_width
+from uwcwidth import wcswidth
+
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .scroll_view import ScrollView
 from .tree_view import TreeView, TreeViewNode
@@ -145,7 +146,7 @@ class _FileView(TreeView):
             parent_dir.parent_node = self.root_node
             parent_dir.alpha = alpha
             parent_dir.is_transparent = is_transparent
-            max_width = max(max_width, str_width(parent_dir.label))
+            max_width = max(max_width, wcswidth(parent_dir.label))
             self.add_gadget(parent_dir)
             start = 1
         else:
@@ -155,7 +156,7 @@ class _FileView(TreeView):
             node.alpha = alpha
             node.is_transparent = is_transparent
             node.y = y
-            max_width = max(max_width, str_width(node.label))
+            max_width = max(max_width, wcswidth(node.label))
             self.add_gadget(node)
         self.size = y + 1, max_width
 

@@ -1,5 +1,5 @@
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
+from batgrl.colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG
 from batgrl.gadgets.bar_chart import BarChart
 from batgrl.gadgets.text import Text, new_cell
 
@@ -31,7 +31,7 @@ class BarChartApp(App):
         )
         label = Text(
             default_cell=new_cell(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             ),
             pos_hint={"x_hint": 0.5},
         )
@@ -43,4 +43,4 @@ class BarChartApp(App):
 
 
 if __name__ == "__main__":
-    BarChartApp(title="Bar Chart Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    BarChartApp(title="Bar Chart Example", bg_color=NEPTUNE_PRIMARY_BG).run()

@@ -5,7 +5,7 @@ from typing import Final
 
 from ..geometry import round_down
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
-from ..text_tools import smooth_horizontal_bar, smooth_vertical_bar
+from ..text_tools import Style, smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
@@ -55,10 +55,10 @@ class _ScrollbarBase(Grabbable, Text):
         else:
             indicator_color = sv.get_color("scroll_view_indicator_normal")
 
-        self.canvas["char"] = " "
+        self.chars[:] = " "
         self.canvas["fg_color"] = indicator_color
         self.canvas["bg_color"] = sv.get_color("scroll_view_scrollbar")
-        self.canvas["reverse"] = False
+        self.canvas["style"] = 0
 
         start, offset = divmod(self.indicator_progress * self.fill_length, 1)
         start = int(start)
@@ -95,8 +95,8 @@ class _VerticalScrollbar(_ScrollbarBase):
             self.indicator_length, 1, offset, reversed=True
         )
         stop = start + len(smooth_bar)
-        self.canvas["char"][start:stop].T[:] = smooth_bar
-        self.canvas["reverse"][start + bool(offset) : stop] = True
+        self.chars[start:stop].T[:] = smooth_bar
+        self.canvas["style"][start + bool(offset) : stop] = Style.REVERSE
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered
@@ -154,8 +154,9 @@ class _HorizontalScrollbar(_ScrollbarBase):
             return
         start, offset = self._start, self._offset
         smooth_bar = smooth_horizontal_bar(self.indicator_length, 1, offset)
-        self.canvas["char"][:, start : start + len(smooth_bar)] = smooth_bar
-        self.canvas["reverse"][:, start] = bool(offset)
+        self.chars[:, start : start + len(smooth_bar)] = smooth_bar
+        if offset:
+            self.canvas["style"][:, start] = Style.REVERSE
 
     def on_mouse(self, mouse_event):
         old_hovered = self.is_hovered

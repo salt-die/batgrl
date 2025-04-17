@@ -31,11 +31,11 @@ __all__ = [
     "BLACK",
     "BLUE",
     "CYAN",
-    "DEFAULT_COLOR_THEME",
-    "DEFAULT_PRIMARY_BG",
-    "DEFAULT_PRIMARY_FG",
+    "NEPTUNE_PRIMARY_BG",
+    "NEPTUNE_PRIMARY_FG",
     "GREEN",
     "MAGENTA",
+    "NEPTUNE_THEME",
     "RED",
     "TRANSPARENT",
     "WHITE",
@@ -94,7 +94,7 @@ AMAGENTA: Final = AColor(255, 0, 255)
 TRANSPARENT: Final = AColor(0, 0, 0, 0)
 """Transparent black."""
 
-DEFAULT_COLOR_THEME: Final[ColorTheme] = {
+NEPTUNE_THEME: Final[ColorTheme] = {
     "primary_fg": "f6a7a9",
     "primary_bg": "070c25",
     "text_pad_line_highlight_fg": "f6a7a9",
@@ -161,13 +161,13 @@ DEFAULT_COLOR_THEME: Final[ColorTheme] = {
     "window_border_normal": "122162",
     "window_border_inactive": "282c3e",
 }
-"""Default color theme."""
+"""Neptune color theme."""
 
-DEFAULT_PRIMARY_FG: Final = Color.from_hex(DEFAULT_COLOR_THEME["primary_fg"])
-"""Default primary foreground color."""
+NEPTUNE_PRIMARY_FG: Final = Color.from_hex(NEPTUNE_THEME["primary_fg"])
+"""The primary foreground color for the Neptune color theme."""
 
-DEFAULT_PRIMARY_BG: Final = Color.from_hex(DEFAULT_COLOR_THEME["primary_bg"])
-"""Default primary background color."""
+NEPTUNE_PRIMARY_BG: Final = Color.from_hex(NEPTUNE_THEME["primary_bg"])
+"""The primary background color for the Neptune color theme."""
 
 
 class Neptune(Style):

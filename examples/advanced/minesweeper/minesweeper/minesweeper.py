@@ -121,14 +121,10 @@ class MineSweeper(Gadget):
 
         if not win:
             self.reset_button.add_str(KNOCKED_OUT)
-            count.canvas["char"][
-                (count.canvas["char"] == BOMB) & (minefield.canvas["char"] != FLAG)
-            ] = EXPLODED
+            count.chars[(count.chars == BOMB) & (minefield.chars != FLAG)] = EXPLODED
 
-            bad_flags = (count.canvas["char"] != BOMB) & (
-                minefield.canvas["char"] == FLAG
-            )
-            count.canvas["char"][bad_flags] = BAD_FLAG
+            bad_flags = (count.chars != BOMB) & (minefield.chars == FLAG)
+            count.chars[bad_flags] = BAD_FLAG
             count.canvas["fg_color"][bad_flags] = FLAG_COLOR
         else:
             self.reset_button.add_str(COOL)

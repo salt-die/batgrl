@@ -49,10 +49,10 @@ async def black_hole_effect(text: Text):
 
     positions = RNG.random((field.nparticles, 2)) * text.size
     for particle, position in zip(all_particles, positions):
-        particle.final_char = particle.cell["char"]
+        particle.final_ord = particle.cell["ord"]
         particle.final_fg_color = Color(*particle.cell["fg_color"].tolist())
         particle.final_pos = particle.pos
-        particle.cell["char"] = choice(STARS)
+        particle.cell["ord"] = ord(choice(STARS))
         particle.cell["fg_color"] = choice(STAR_GRADIENT)
         particle.pos = position
 
@@ -108,7 +108,7 @@ async def black_hole_effect(text: Text):
 
 async def _forming(particles: list[Particle], positions: NDArray[np.float32]):
     for particle in particles:
-        particle.cell["char"] = "✸"
+        particle.cell["ord"] = ord("✸")
         particle.cell["fg_color"] = WHITE
 
     paths = [
@@ -217,7 +217,7 @@ async def _point_char(black_hole: TextParticleField, center: Point):
     black_hole.particle_cells = black_hole.particle_cells[:1]
     for _ in range(3):
         for char in UNSTABLE:
-            black_hole.particle_cells[0]["char"] = char
+            black_hole.particle_cells[0]["ord"] = ord(char)
             black_hole.particle_cells[0]["fg_color"] = choice(UNSTABLE_COLORS)
             await asyncio.sleep(0.05)
 
@@ -227,7 +227,7 @@ async def _exploding(particles: list[Particle], center: Point):
     final_paths = []
     for particle in particles:
         particle.pos = center
-        particle.cell["char"] = particle.final_char
+        particle.cell["ord"] = particle.final_ord
         particle.cell["fg_color"] = choice(UNSTABLE_COLORS)
         near_point = choice(points_on_circle(6, 5))
         near_point[1] *= 2

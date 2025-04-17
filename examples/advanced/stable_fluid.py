@@ -16,7 +16,7 @@ from itertools import cycle
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import ABLACK, DEFAULT_PRIMARY_BG, rainbow_gradient
+from batgrl.colors import ABLACK, NEPTUNE_PRIMARY_BG, rainbow_gradient
 from batgrl.gadgets.graphics import Graphics, scale_geometry
 from batgrl.terminal.events import MouseEvent
 from scipy.ndimage import convolve, map_coordinates
@@ -170,4 +170,4 @@ class StableFluidApp(App):
 
 
 if __name__ == "__main__":
-    StableFluidApp(title="Stable Fluid Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    StableFluidApp(title="Stable Fluid Example", bg_color=NEPTUNE_PRIMARY_BG).run()

@@ -6,20 +6,20 @@ import numpy as np
 from numpy.typing import NDArray
 from pygments.lexer import Lexer
 from pygments.lexers import guess_lexer
-from pygments.style import Style
+from pygments.style import Style as PygmentsStyle
+from uwcwidth import wcswidth
 
 from .._rendering import text_render
-from ..char_width import char_width, str_width
 from ..colors import Color, Neptune
 from ..text_tools import (
     Cell,
-    _Cell,
+    Style,
     _parse_batgrl_md,
     _text_to_cells,
-    _write_lines_to_canvas,
+    _write_cells_to_canvas,
     add_text,
-    cell_sans,
-    coerce_cell,
+    canvas_as_text,
+    egc_ord,
     new_cell,
 )
 from .gadget import (
@@ -39,8 +39,6 @@ __all__ = [
     "Point",
     "Size",
     "add_text",
-    "char_width",
-    "str_width",
 ]
 
 Border = Literal[
@@ -264,13 +262,27 @@ class Text(Gadget):
         self.alpha = alpha
 
     @property
+    def chars(self) -> NDArray[np.dtype("<U1")]:
+        """
+        Return a view of the ords field of the canvas as 1-character unicode strings.
+
+        Warning
+        -------
+        This view may raise a ``RuntimeError`` if extended grapheme clusters are stored
+        in the canvas as the egc flag is greater than sys.maxunicode.
+        """
+        return self.canvas["ord"].view("<U1")
+
+    @property
     def default_cell(self) -> NDArray[Cell]:
         """Default character for text canvas."""
         return self._default_cell
 
     @default_cell.setter
     def default_cell(self, cell: NDArray[Cell] | str):
-        self._default_cell = coerce_cell(cell, new_cell())
+        if isinstance(cell, str):
+            cell = new_cell(ord=egc_ord(cell))
+        self._default_cell = cell
 
     @property
     def default_fg_color(self) -> Color:
@@ -347,10 +359,10 @@ class Text(Gadget):
             np.s_[-1, 0],
             np.s_[-1, -1],
         ]
-        view = cell_sans("fg_color", "bg_color")
-        cells = self.canvas[view]
         for s, border in zip(slices, _BORDERS[style]):
-            cells[s] = new_cell(char=border, bold=bold)[view]
+            self.chars[s] = border
+            if bold:
+                self.canvas["style"][s] = Style.BOLD
 
         if fg_color is not None:
             self.canvas["fg_color"][[0, -1]] = fg_color
@@ -360,7 +372,7 @@ class Text(Gadget):
             self.canvas["bg_color"][:, [0, -1]] = bg_color
 
     def add_syntax_highlighting(
-        self, lexer: Lexer | None = None, style: Style = Neptune
+        self, lexer: Lexer | None = None, style: PygmentsStyle = Neptune
     ):
         """
         Add syntax highlighting to current text in canvas.
@@ -372,7 +384,7 @@ class Text(Gadget):
         style : pygments.style.Style, default: Neptune
             A pygments style to use for syntax highlighting.
         """
-        text = "\n".join("".join(line).rstrip() for line in self.canvas["char"])
+        text = canvas_as_text(self.canvas)
         if lexer is None:
             lexer = guess_lexer(text)
 
@@ -390,7 +402,7 @@ class Text(Gadget):
                 if len(line) == 0:
                     continue
 
-                end = x + str_width(line)
+                end = x + wcswidth(line)
                 if token_style["color"]:
                     self.canvas[y, x:end]["fg_color"] = Color.from_hex(
                         token_style["color"]
@@ -399,9 +411,12 @@ class Text(Gadget):
                     self.canvas[y, x:end]["bg_color"] = Color.from_hex(
                         token_style["bgcolor"]
                     )
-                self.canvas[y, x:end]["bold"] = token_style["bold"]
-                self.canvas[y, x:end]["italic"] = token_style["italic"]
-                self.canvas[y, x:end]["underline"] = token_style["underline"]
+                if token_style["bold"]:
+                    self.canvas[y, x:end]["style"] |= Style.BOLD
+                if token_style["italic"]:
+                    self.canvas[y, x:end]["style"] |= Style.ITALIC
+                if token_style["underline"]:
+                    self.canvas[y, x:end]["style"] |= Style.UNDERLINE
                 x = end
 
     def add_str(
@@ -489,7 +504,7 @@ class Text(Gadget):
         """
         self.size, lines = _parse_batgrl_md(text) if markdown else _text_to_cells(text)
         self.clear()
-        _write_lines_to_canvas(lines, self.canvas, fg_color, bg_color)
+        _write_cells_to_canvas(lines, self.canvas, fg_color, bg_color)
 
     def clear(self):
         """Fill canvas with default cell."""
@@ -518,7 +533,7 @@ class Text(Gadget):
             kind,
             self.absolute_pos,
             self._is_transparent,
-            self.canvas.view(_Cell),
+            self.canvas,
             self.alpha,
             self._region,
         )

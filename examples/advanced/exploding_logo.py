@@ -144,7 +144,7 @@ class PokeParticleField(TextParticleField):
 class ExplodingLogoApp(App):
     async def on_start(self):
         cell_arr = np.zeros_like(LOGO, dtype=Cell)
-        cell_arr["char"] = LOGO
+        cell_arr["ord"].view("<U1")[:] = LOGO
         cell_arr["fg_color"] = YELLOW
 
         field = PokeParticleField(

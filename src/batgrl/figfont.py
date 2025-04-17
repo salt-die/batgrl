@@ -29,8 +29,10 @@ from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
+from ugrapheme import grapheme_iter
+from uwcwidth import wcswidth
 
-from .char_width import char_width, str_width
+from .text_tools import egc_ord
 
 __all__ = ["FullLayout", "FIGFont"]
 
@@ -207,20 +209,21 @@ class FIGFont:
             if len(char_lines) < height:
                 return None
 
-            width = max(str_width(line) for line in char_lines)
+            width = max(wcswidth(line) for line in char_lines)
+            if width < 0:
+                return None
 
             char = np.full((height, width), " ")
             for i, line in enumerate(char_lines):
                 j = 0
-                for subchar in line:
-                    cwidth = char_width(subchar)
+                for grapheme in grapheme_iter(line):
+                    cwidth = wcswidth(grapheme)
                     if cwidth == 0:
                         continue
 
-                    char[i, j] = subchar
-
-                    if cwidth == 2:
-                        char[i, j + 1] = ""
+                    char.view(np.uint32)[i, j] = egc_ord(grapheme)
+                    if cwidth > 1:
+                        char[i, j + 1 : j + cwidth] = ""
 
                     j += cwidth
 

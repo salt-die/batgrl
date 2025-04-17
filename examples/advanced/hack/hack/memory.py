@@ -81,10 +81,10 @@ class MemoryGadget(Text):
         self.memory = "".join(memory)
 
         for i, char in enumerate(self.memory):
-            self.canvas["char"][memory_to_pos(i)] = char
+            self.chars[memory_to_pos(i)] = char
 
         self.output.password = choice(words)
-        self.output.canvas["char"] = " "
+        self.output.chars[:] = " "
         self.output.add_str(">█".ljust(13), pos=(-1, 0))
 
     def on_mouse(self, mouse_event):

@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import BLACK, DEFAULT_PRIMARY_BG, WHITE, Color
+from batgrl.colors import BLACK, NEPTUNE_PRIMARY_BG, WHITE, Color
 from batgrl.gadgets.behaviors.grabbable import Grabbable
 from batgrl.gadgets.gadget import Gadget, clamp
 from batgrl.gadgets.text import Text
@@ -124,7 +124,7 @@ class PaletteApp(App):
 
 if __name__ == "__main__":
     PaletteApp(
-        bg_color=DEFAULT_PRIMARY_BG,
+        bg_color=NEPTUNE_PRIMARY_BG,
         title="Color Palette Creator",
         inline=True,
         inline_height=H + 2,

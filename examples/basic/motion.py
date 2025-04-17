@@ -11,8 +11,8 @@ from batgrl.colors import (
     AGREEN,
     ARED,
     AYELLOW,
-    DEFAULT_PRIMARY_BG,
-    DEFAULT_PRIMARY_FG,
+    NEPTUNE_PRIMARY_BG,
+    NEPTUNE_PRIMARY_FG,
     gradient,
 )
 from batgrl.gadgets.graphics import Graphics
@@ -31,11 +31,11 @@ GRADIENTS = [
 
 class PathApp(App):
     async def on_start(self):
-        bg = Graphics(size=BG_SIZE, default_color=(*DEFAULT_PRIMARY_BG, 255))
+        bg = Graphics(size=BG_SIZE, default_color=(*NEPTUNE_PRIMARY_BG, 255))
         image = Image(path=LOGO, size=(15, 30), alpha=0.85)
         label = Text(
             default_cell=new_cell(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             ),
             is_transparent=True,
         )
@@ -64,4 +64,4 @@ class PathApp(App):
 
 
 if __name__ == "__main__":
-    PathApp(title="Motion Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    PathApp(title="Motion Example", bg_color=NEPTUNE_PRIMARY_BG).run()

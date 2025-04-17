@@ -10,13 +10,15 @@ from code import InteractiveInterpreter
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 
+from wcwidth import wcswidth
+
 from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, str_width
+from .text import Text
 from .textbox import Textbox
 
 __all__ = ["Console", "Point", "Size"]
@@ -160,12 +162,12 @@ class _ConsoleTextbox(Textbox):
 
     def _del_text(self, start: int, end: int):
         result = super()._del_text(start, end)
-        self.width = self._box.width = self._line_length + 1
+        self.width = self._box.width = self._line_width + 1
         return result
 
     def _add_text(self, x: int, text: str):
         result = super()._add_text(x, text)
-        self.width = self._box.width = self._line_length + 1
+        self.width = self._box.width = self._line_width + 1
         return result
 
     def _tab(self):
@@ -474,7 +476,7 @@ class Console(Themable, Focusable, Gadget):
         If this value is a float then it is halfway between two integer indices and an
         up or down key press will move it to one of them.
         """
-        self._min_line_length = str_width(PROMPT_1) + 1
+        self._min_line_length = wcswidth(PROMPT_1) + 1
         self.exec_in_thread = exec_in_thread
         self.alpha = alpha
 
@@ -509,7 +511,7 @@ class Console(Themable, Focusable, Gadget):
                 return
 
         lines = text.split("\n")
-        max_line_length = max(str_width(line) for line in lines)
+        max_line_length = max(wcswidth(line) for line in lines)
 
         if self._min_line_length < max_line_length:
             self._min_line_length = max_line_length

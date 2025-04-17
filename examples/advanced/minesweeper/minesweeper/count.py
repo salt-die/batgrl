@@ -52,9 +52,9 @@ class Count(Grid):
 
         self.canvas["fg_color"] = BORDER
         self.canvas["bg_color"] = COUNT_SQUARE
-        self.canvas["char"][v_center, h_center] = stringify(count)
-        self.canvas["char"][v_center, h_center][minefield == 1] = BOMB
+        self.chars[v_center, h_center] = stringify(count)
+        self.chars[v_center, h_center][minefield == 1] = BOMB
         self.canvas["fg_color"][v_center, h_center] = np.dstack(colorify(count))
 
-        ys, xs = (self.canvas["char"] == BOMB).nonzero()
-        self.canvas["char"][ys, xs + 1] = ""
+        ys, xs = (self.chars == BOMB).nonzero()
+        self.chars[ys, xs + 1] = ""

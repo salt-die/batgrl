@@ -1,7 +1,7 @@
 from math import ceil
 
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
+from batgrl.colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG
 from batgrl.gadgets.gadget import Gadget
 from batgrl.gadgets.grid_layout import GridLayout
 from batgrl.gadgets.scroll_view import ScrollView
@@ -27,7 +27,7 @@ class SpinnersApp(App):
             is_transparent=True,
         )
         default_cell = new_cell(
-            fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+            fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
         )
 
         for name, frames in SPINNERS.items():

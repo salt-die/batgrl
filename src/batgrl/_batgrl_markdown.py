@@ -30,7 +30,7 @@ PUNCTUATION = set(punctuation) | {
     chr(i) for i in range(sys.maxunicode + 1) if category(chr(i)).startswith("P")
 }
 
-Style = Literal["italic", "bold", "strikethrough", "underline", "overline"]
+MarkdownStyle = Literal["italic", "bold", "strikethrough", "underline", "overline"]
 
 
 class Delimiter:
@@ -132,7 +132,7 @@ def is_closer(start: int, end: int, text: str) -> bool:
 
 def process_emphasis(
     delimiters: list[Delimiter],
-) -> list[tuple[int, int, int, int, Style]]:
+) -> list[tuple[int, int, int, int, MarkdownStyle]]:
     curr_pos = 0
     bottoms = dict.fromkeys("*_^~", -1)
     delimiter_to_style = {
@@ -191,7 +191,7 @@ def process_emphasis(
 
 def find_md_tokens(
     text: str,
-) -> tuple[list[tuple[int, int, int, int, Style]], list[int]]:
+) -> tuple[list[tuple[int, int, int, int, MarkdownStyle]], list[int]]:
     delimiters = []
     escapes = []
     escaped = False

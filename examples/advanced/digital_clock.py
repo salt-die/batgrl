@@ -25,7 +25,7 @@ class DigitalClock(Text):
         for i in range(6):
             self.add_gadget(DigitalDisplay(pos=(0, i * 8 + i // 2 * 2)))
 
-        self.canvas["char"][[2, -3], 16] = self.canvas["char"][[2, -3], 34] = "●"
+        self.chars[[2, -3], 16] = self.chars[[2, -3], 34] = "●"
 
     def on_add(self):
         super().on_add()

@@ -10,7 +10,7 @@ from pathlib import Path
 
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG
+from batgrl.colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG
 from batgrl.figfont import FIGFont
 from batgrl.gadgets.text import Text, new_cell
 from batgrl.gadgets.text_effects import (
@@ -38,11 +38,10 @@ class TextEffectsApp(App):
         text = Text(
             size=(30, 80),
             default_cell=new_cell(
-                fg_color=DEFAULT_PRIMARY_FG, bg_color=DEFAULT_PRIMARY_BG
+                fg_color=NEPTUNE_PRIMARY_FG, bg_color=NEPTUNE_PRIMARY_BG
             ),
         )
-        text.canvas[10:20, 3:77]["char"] = LOGO
-
+        text.chars[10:20, 3:77] = LOGO
         self.add_gadget(text)
 
         # Note: Do not modify text's size during effects.
@@ -56,4 +55,4 @@ class TextEffectsApp(App):
 
 
 if __name__ == "__main__":
-    TextEffectsApp(title="Text Effects", bg_color=DEFAULT_PRIMARY_BG).run()
+    TextEffectsApp(title="Text Effects", bg_color=NEPTUNE_PRIMARY_BG).run()

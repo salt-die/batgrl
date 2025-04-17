@@ -1,6 +1,6 @@
 import numpy as np
 from batgrl.app import App
-from batgrl.colors import DEFAULT_PRIMARY_BG
+from batgrl.colors import NEPTUNE_PRIMARY_BG
 from batgrl.gadgets.button import Button
 from batgrl.gadgets.sparkline import Sparkline
 
@@ -31,4 +31,4 @@ class SparklineApp(App):
 
 
 if __name__ == "__main__":
-    SparklineApp(title="Sparkline Example", bg_color=DEFAULT_PRIMARY_BG).run()
+    SparklineApp(title="Sparkline Example", bg_color=NEPTUNE_PRIMARY_BG).run()

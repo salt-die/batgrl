@@ -6,11 +6,12 @@ from collections.abc import Callable
 from dataclasses import astuple
 
 from numpy.typing import NDArray
+from ugrapheme import grapheme_len, graphemes
+from uwcwidth import wcswidth
 
-from ..char_width import str_width
 from ..geometry import rect_slice
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
-from ..text_tools import is_word_char
+from ..text_tools import canvas_as_text, egc_chr, is_word_char
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
@@ -26,10 +27,11 @@ class _Box(Text):
         super()._render(canvas, graphics, kind)
         textbox: Textbox = self.parent
         if textbox.hide_input:
-            hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_length))
+            hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_width))
             hider_region = self._region & hider_rect
             for pos, size in hider_region.rects():
-                canvas["char"][rect_slice(pos, size)] = textbox.hide_char
+                # FIXME: Allow for egcs for textbox.hide_char
+                canvas["ord"][rect_slice(pos, size)] = ord(textbox.hide_char)
 
 
 class Textbox(Themable, Focusable, Grabbable, Gadget):
@@ -286,7 +288,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         )
 
         self._selection_start = self._selection_end = None
-        self._line_length = 0
+        self._line_width = 0
         self._undo_stack = []
         self._redo_stack = []
         self._undo_buffer = []
@@ -350,15 +352,15 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def on_size(self):
         """Resize and reposition children on resize."""
-        self._box.width = max(self.width, self._line_length + 1)
-        if self._box.x + self._line_length < self.width:
-            self._box.x = min(0, self.width - self._line_length)
+        self._box.width = max(self.width, self._line_width + 1)
+        if self._box.x + self._line_width < self.width:
+            self._box.x = min(0, self.width - self._line_width)
         self.cursor = self.cursor
 
     def on_focus(self):
         """Show cursor and select all text on focus."""
         self._cursor.is_enabled = True
-        if self._line_length > 0:
+        if self._line_width > 0:
             self._ctrl_a()
 
     def on_blur(self):
@@ -376,7 +378,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def placeholder(self, placeholder: str):
         self._placeholder = placeholder
         self._placeholder_gadget.set_text(placeholder)
-        self._placeholder_gadget.is_enabled = self._line_length == 0 and bool(
+        self._placeholder_gadget.is_enabled = self._line_width == 0 and bool(
             placeholder
         )
 
@@ -417,18 +419,18 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     @property
     def text(self) -> str:
         """The textbox's text."""
-        return "".join(self._box.canvas["char"][0, : self._line_length])
+        return canvas_as_text(self._box.canvas[0, : self._line_width])
 
     @text.setter
     def text(self, text: str):
         text = text.replace("\n", " ")[: self.max_chars]
         self.unselect()
-        self._del_text(0, self._line_length)
+        self._del_text(0, self._line_width)
         self._add_text(0, text)
         self._redo_stack.clear()
         self._undo_stack.clear()
         self._undo_buffer.clear()
-        self.cursor = self._line_length
+        self.cursor = self._line_width
 
     @property
     def cursor(self) -> int:
@@ -439,7 +441,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def cursor(self, cursor: int):
         """After setting cursor position, move textbox so that cursor is visible."""
         self._cursor.x = cursor
-        self._placeholder_gadget.is_enabled = self._line_length == 0 and bool(
+        self._placeholder_gadget.is_enabled = self._line_width == 0 and bool(
             self._placeholder
         )
 
@@ -500,21 +502,21 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         if start > end:
             start, end = end, start
 
-        if end > self._line_length:
+        if end > self._line_width:
             # ! If we ended up here, something went wrong.
-            end = self._line_length
+            end = self._line_width
 
-        contents = "".join(self._box.canvas["char"][0, start:end])
+        contents = canvas_as_text(self._box.canvas[0, start:end])
         selection_start = self._selection_start
         selection_end = self._selection_end
         cursor = self.cursor
 
-        len_end = self._line_length - end
-        self._line_length = start + len_end
+        len_end = self._line_width - end
+        self._line_width = start + len_end
 
         box = self._box
-        box.canvas[0, start : self._line_length] = box.canvas[0, end : end + len_end]
-        box.canvas[0, self._line_length :] = box.default_cell
+        box.canvas[0, start : self._line_width] = box.canvas[0, end : end + len_end]
+        box.canvas[0, self._line_width :] = box.default_cell
 
         self.unselect()
         self.cursor = start
@@ -526,43 +528,41 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         selection_end = self._selection_end
         cursor = self.cursor
 
-        text = text.replace("\n", " ")
-        box = self._box
-        box_text = (
-            f"{''.join(box.canvas['char'][0, :x])}"
-            f"{text}"
-            f"{''.join(box.canvas['char'][0, x : self._line_length])}"
+        box_text = graphemes(
+            canvas_as_text(self._box.canvas[0, :x])
+            + text.replace("\n", " ")
+            + canvas_as_text(self._box.canvas[0, x : self._line_width])
         )[: self.max_chars]
 
-        box_width = self._line_length = str_width(box_text)
-        if box_width >= box.width:
-            box.width = box_width + 1
+        box_width = self._line_width = wcswidth(box_text)
+        if box_width >= self._box.width:
+            self._box.width = box_width + 1
 
-        box.add_str(box_text)
-        box.canvas[0, box_width:] = box.default_cell
+        self._box.add_str(box_text)
+        self._box.canvas[0, box_width:] = self._box.default_cell
 
-        self.cursor = min(box_width, x + str_width(text))
+        self.cursor = min(box_width, x + wcswidth(text))
         return self._del_text, [x, self.cursor], selection_start, selection_end, cursor
 
     def move_cursor_left(self, n: int = 1):
         """Move cursor left `n` characters."""
-        text_before_cursor = "".join(self._box.canvas["char"][0, : self.cursor])
-        nchars_before_cursor = len(text_before_cursor)
-        if n <= nchars_before_cursor:
-            self.cursor = str_width(text_before_cursor[:-n])
+        text_before_cursor = canvas_as_text(self._box.canvas[0, : self.cursor])
+        egcs = graphemes(text_before_cursor)
+        if n <= len(egcs):
+            self.cursor = wcswidth(egcs[:-n])
         else:
             self.cursor = 0
 
     def move_cursor_right(self, n: int = 1):
         """Move cursor right `n` characters."""
-        text_after_cursor = "".join(
-            self._box.canvas["char"][0, self.cursor : self._line_length]
+        text_after_cursor = canvas_as_text(
+            self._box.canvas[0, self.cursor : self._line_width]
         )
-        nchars_after_cursor = len(text_after_cursor)
-        if n <= nchars_after_cursor:
-            self.cursor += str_width(text_after_cursor[:n])
+        egcs = graphemes(text_after_cursor)
+        if n <= len(egcs):
+            self.cursor += wcswidth(egcs[:n])
         else:
-            self.cursor = self._line_length
+            self.cursor = self._line_width
 
     def move_word_left(self):
         """Move cursor a word left."""
@@ -575,7 +575,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
             last_x = self.cursor
 
-            current_char = self._box.canvas[0, self.cursor]["char"]
+            current_char = egc_chr(self._box.canvas[0, self.cursor]["ord"])
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
@@ -597,7 +597,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
             last_x = self.cursor
 
-            current_char = self._box.canvas[0, self.cursor]["char"]
+            current_char = egc_chr(self._box.canvas[0, self.cursor]["ord"])
             if not first_char_found:
                 if not current_char.isspace():
                     first_char_found = True
@@ -670,8 +670,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def _ctrl_a(self):
         """Select all."""
         self._selection_start = 0
-        self._selection_end = self._line_length
-        self.cursor = self._line_length
+        self._selection_end = self._line_width
+        self.cursor = self._line_width
 
     def _ctrl_d(self):
         """Select word."""
@@ -681,7 +681,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             self.move_cursor_left()
             if last_x == self.cursor:
                 break
-            if not is_word_char(self._box.canvas[0, self.cursor]["char"]):
+            if not is_word_char(egc_chr(self._box.canvas[0, self.cursor]["ord"])):
                 self.move_cursor_right()
                 break
             last_x = self.cursor
@@ -689,7 +689,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self.select()
         last_x = self.cursor
         while True:
-            if not is_word_char(self._box.canvas[0, self.cursor]["char"]):
+            if not is_word_char(egc_chr(self._box.canvas[0, self.cursor]["ord"])):
                 break
             self.move_cursor_right()
             if last_x == self.cursor:
@@ -702,7 +702,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def _end(self):
         self.unselect()
-        self.cursor = self._line_length
+        self.cursor = self._line_width
 
     def _shift_left(self):
         self.select()
@@ -726,7 +726,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def _shift_end(self):
         self.select()
-        self.cursor = self._line_length
+        self.cursor = self._line_width
 
     def _escape(self):
         if self.has_nonempty_selection:
@@ -743,7 +743,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
         if (
             self.max_chars is None
-            or (self._box.canvas["char"][0, : self._line_length] != "").sum()
+            or grapheme_len(canvas_as_text(self._box.canvas[0, : self._line_width]))
             < self.max_chars
         ):
             if self._undo_buffer_type != "add":
@@ -819,14 +819,14 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             if not mouse_event.shift:
                 self.unselect()
 
-            self.cursor = min(x, self._line_length)
+            self.cursor = min(x, self._line_width)
             self.select()  # Need at least an empty selection for `grab_update`.
 
     def grab_update(self, mouse_event: MouseEvent):
         """Update selection on grab update."""
         if self._box.collides_point(mouse_event.pos):
             _, x = self._box.to_local(mouse_event.pos)
-            self.cursor = min(x, self._line_length)
+            self.cursor = min(x, self._line_width)
         else:
             _, x = self.to_local(mouse_event.pos)
 

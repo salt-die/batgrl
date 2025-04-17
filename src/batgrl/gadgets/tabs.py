@@ -3,6 +3,7 @@
 import asyncio
 
 from ..colors import lerp_colors
+from ..text_tools import Style
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, new_cell
@@ -63,7 +64,7 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
             bold = False
         self.canvas["fg_color"] = fg
         self.canvas["bg_color"] = bg
-        self.canvas["bold"] = bold
+        self.canvas["style"] = Style.BOLD if bold else 0
 
     update_hover = _update
     update_normal = _update
@@ -240,7 +241,7 @@ class Tabs(Themable, Gadget):
         self.separator = Text(size_hint={"width_hint": 1.0}, size=(1, w), pos=(1, 0))
 
         def _update_sep():
-            self.separator.canvas["char"] = "━"
+            self.separator.chars[:] = "━"
 
         self.bind("size", _update_sep)
 
@@ -252,21 +253,21 @@ class Tabs(Themable, Gadget):
 
         title_fg = self.get_color("titlebar_normal_fg")
         title_bg = self.get_color("titlebar_normal_bg")
-        tab_style = {"bold": True, "fg_color": title_fg, "bg_color": title_bg}
+        tab_style = {"style": Style.BOLD, "fg_color": title_fg, "bg_color": title_bg}
         self._tab_underline = Text(
             size=(1, 1),
             pos=(1, 0),
             is_enabled=False,
-            default_cell=new_cell(char="━", **tab_style),
+            default_cell=new_cell(ord=ord("━"), **tab_style),
         )
         tab_underline_left = Text(
             size=(1, 1),
-            default_cell=new_cell(char="╺", **tab_style),
+            default_cell=new_cell(ord=ord("╺"), **tab_style),
         )
         tab_underline_right = Text(
             size=(1, 1),
             pos_hint={"x_hint": 1.0, "anchor": "right"},
-            default_cell=new_cell(char="╸", **tab_style),
+            default_cell=new_cell(ord=ord("╸"), **tab_style),
         )
         self._tab_underline.add_gadgets(tab_underline_left, tab_underline_right)
 

@@ -5,8 +5,9 @@ from collections.abc import Iterable, Sequence
 
 import numpy as np
 from numpy.typing import NDArray
+from uwcwidth import wcswidth
 
-from ..text_tools import Cell, add_text, str_width
+from ..text_tools import Cell, add_text
 from .text import Point, PosHint, Size, SizeHint, Text
 
 __all__ = ["TextAnimation", "Point", "Size"]
@@ -267,7 +268,7 @@ class TextAnimation(Text):
             lines = frame.split("\n")
             if len(lines) > h:
                 h = len(lines)
-            frame_width = max(str_width(line) for line in lines)
+            frame_width = max(wcswidth(line) for line in lines)
             if frame_width > w:
                 w = frame_width
         return Size(h, w)

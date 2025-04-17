@@ -8,9 +8,9 @@ from numbers import Real
 
 import cv2
 import numpy as np
+from uwcwidth import wcswidth
 
-from ..char_width import str_width
-from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
+from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
 from .behaviors.movable import Movable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
@@ -42,16 +42,16 @@ class _Legend(Movable, Text):
         self.is_enabled = self.labels and len(self.labels) == len(colors)
         if self.is_enabled:
             height = len(self.labels) + 2
-            width = max(map(str_width, self.labels)) + 6
+            width = max(map(wcswidth, self.labels)) + 6
 
             self.size = height, width
             self.canvas["fg_color"] = plot.plot_fg_color
             self.canvas["bg_color"] = plot.plot_bg_color
-            self.canvas["char"][:] = " "
+            self.chars[:] = " "
 
             self.add_border()
 
-            self.canvas["char"][1:-1, 2] = "█"
+            self.chars[1:-1, 2] = "█"
             self.canvas["fg_color"][1:-1, 2] = colors
 
             for i, name in enumerate(self.labels, start=1):
@@ -69,6 +69,8 @@ class _LinePlotProperty:
         return getattr(instance, self.name)
 
     def __set__(self, instance, value):
+        if value == "sixel" and not Graphics._sixel_support:
+            value = "half"
         setattr(instance, self.name, value)
         instance._build_plot()
 
@@ -99,9 +101,9 @@ class LinePlot(Gadget):
         The color of each line plot. If `None`, a rainbow gradient is used.
     legend_labels : list[str] | None, default: None
         Labels for legend. If `None`, legend is hidden.
-    plot_fg_color : Color, default: DEFAULT_PRIMARY_FG,
+    plot_fg_color : Color, default: NEPTUNE_PRIMARY_FG,
         Foreground color of the plot.
-    plot_bg_color : Color, default: DEFAULT_PRIMARY_BG,
+    plot_bg_color : Color, default: NEPTUNE_PRIMARY_BG,
         Background color of the plot.
     x_label : str | None, default: None
         Optional label for x-axis.
@@ -284,8 +286,8 @@ class LinePlot(Gadget):
         max_y: Real | None = None,
         line_colors: list[Color] | None = None,
         legend_labels: list[str] | None = None,
-        plot_fg_color: Color = DEFAULT_PRIMARY_FG,
-        plot_bg_color: Color = DEFAULT_PRIMARY_BG,
+        plot_fg_color: Color = NEPTUNE_PRIMARY_FG,
+        plot_bg_color: Color = NEPTUNE_PRIMARY_BG,
         x_label: str | None = None,
         y_label: str | None = None,
         alpha: float = 1.0,
@@ -352,7 +354,7 @@ class LinePlot(Gadget):
 
         self._traces.bind("pos", set_x_left)
         self._traces.bind("pos", set_y_top)
-        self._tick_corner.canvas["char"][0, -1] = "└"
+        self._tick_corner.chars[0, -1] = "└"
 
         self._scroll_view.view = self._traces
         self._x_ticks_container.add_gadget(self._x_ticks)
@@ -460,7 +462,7 @@ class LinePlot(Gadget):
         self._y_label = y_label
 
         if y_label is not None:
-            self._y_label_gadget.size = str_width(y_label), 1
+            self._y_label_gadget.size = wcswidth(y_label), 1
             add_text(self._y_label_gadget.canvas[:, 0], y_label)
 
         self._build_plot()
@@ -539,15 +541,15 @@ class LinePlot(Gadget):
         self._y_ticks.size = self._traces.height, TICK_WIDTH
         self._y_ticks.canvas["fg_color"] = self.plot_fg_color
         self._y_ticks.canvas["bg_color"] = self.plot_bg_color
-        self._y_ticks.canvas["char"][:, :-1] = " "
-        self._y_ticks.canvas["char"][1:, -1] = "│"
+        self._y_ticks.chars[:, :-1] = " "
+        self._y_ticks.chars[1:, -1] = "│"
 
         self._x_ticks.size = 2, self._traces.width
         self._x_ticks.canvas["fg_color"] = self.plot_fg_color
         self._x_ticks.canvas["bg_color"] = self.plot_bg_color
-        self._x_ticks.canvas["char"][0, : plot_right - 1] = "─"
-        self._x_ticks.canvas["char"][0, plot_right:] = " "
-        self._x_ticks.canvas["char"][1:] = " "
+        self._x_ticks.chars[0, : plot_right - 1] = "─"
+        self._x_ticks.chars[0, plot_right:] = " "
+        self._x_ticks.chars[1:] = " "
 
         self._tick_corner.pos = h - 2 - has_x_label, sv_left - TICK_WIDTH - 1
 
@@ -558,17 +560,17 @@ class LinePlot(Gadget):
                 f"{y_label:>{TICK_WIDTH - 2}.{PRECISION}g} ┤"[:TICK_WIDTH],
                 pos=(row, 0),
             )
-        self._y_ticks.canvas["char"][0, -1] = "┐"
+        self._y_ticks.chars[0, -1] = "┐"
 
         last_x = offset_w - 1
         for column in range(0, offset_w, TICK_WIDTH):
             x_label = lerp(min_x, max_x, column / last_x)
-            self._x_ticks.canvas["char"][0, column + TICK_HALF] = "┬"
+            self._x_ticks.chars[0, column + TICK_HALF] = "┬"
             self._x_ticks.add_str(
                 f"{x_label:^{TICK_WIDTH}.{PRECISION}g}"[:TICK_WIDTH],
                 pos=(1, column),
             )
-        self._x_ticks.canvas["char"][0, plot_right - 1] = "┐"
+        self._x_ticks.chars[0, plot_right - 1] = "┐"
 
     def on_size(self):
         """Rebuild plot on resize."""

@@ -2,9 +2,10 @@
 
 from numbers import Real
 
-from ..char_width import str_width
-from ..colors import DEFAULT_PRIMARY_BG, DEFAULT_PRIMARY_FG, Color, rainbow_gradient
-from ..text_tools import add_text, smooth_vertical_bar
+from uwcwidth import wcswidth
+
+from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
+from ..text_tools import Style, add_text, smooth_vertical_bar
 from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
 from .pane import Pane
 from .scroll_view import ScrollView
@@ -48,9 +49,9 @@ class BarChart(Gadget):
         Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
     bar_colors : list[Color] | None, default: None
         Color of each bar. If `None`, a rainbow gradient is used.
-    chart_fg_color: Color, default: DEFAULT_PRIMARY_FG
+    chart_fg_color: Color, default: NEPTUNE_PRIMARY_FG
         Foreground color of chart.
-    chart_bg_color: Color, default: DEFAULT_PRIMARY_BG
+    chart_bg_color: Color, default: NEPTUNE_PRIMARY_BG
         Background color of chart.
     alpha: float, default: 1.0
         Transparency of gadget.
@@ -226,8 +227,8 @@ class BarChart(Gadget):
         min_y: Real | None = 0,
         max_y: Real | None = None,
         bar_colors: list[Color] | None = None,
-        chart_fg_color: Color = DEFAULT_PRIMARY_FG,
-        chart_bg_color: Color = DEFAULT_PRIMARY_BG,
+        chart_fg_color: Color = NEPTUNE_PRIMARY_FG,
+        chart_bg_color: Color = NEPTUNE_PRIMARY_BG,
         alpha: float = 1.0,
         y_label: str | None = None,
         show_grid_lines: bool = True,
@@ -304,7 +305,7 @@ class BarChart(Gadget):
         h, w = self.size
         has_y_label = self._y_label_gadget.is_enabled = self.y_label is not None
         if has_y_label:
-            self._y_label_gadget.size = str_width(self.y_label), 1
+            self._y_label_gadget.size = wcswidth(self.y_label), 1
             self._y_label_gadget.top = h // 2 - self._y_label_gadget.height // 2
             add_text(
                 self._y_label_gadget.canvas[:, 0],
@@ -319,7 +320,7 @@ class BarChart(Gadget):
         self._scroll_view.size = h, sv_width
 
         nbars = len(self.data)
-        min_bar_width = max(map(str_width, self.data))
+        min_bar_width = max(map(wcswidth, self.data))
         bars_width = max(
             BAR_SPACING + (min_bar_width + BAR_SPACING) * nbars,
             sv_width,
@@ -333,7 +334,7 @@ class BarChart(Gadget):
         min_y = min(self.data.values()) if self.min_y is None else self.min_y
         max_y = max(self.data.values()) if self.max_y is None else self.max_y
 
-        chars = self._bars.canvas["char"][::-1]
+        chars = self._bars.chars[::-1]
         fg_colors = self._bars.canvas["fg_color"][::-1]
 
         # Regenerate Ticks
@@ -341,9 +342,9 @@ class BarChart(Gadget):
         self._y_ticks.size = h, TICK_WIDTH
         self._y_ticks.canvas["fg_color"] = self.chart_fg_color
         self._y_ticks.canvas["bg_color"] = self.chart_bg_color
-        self._y_ticks.canvas["char"][0, -1] = "┐"
-        self._y_ticks.canvas["char"][1:-2, -1] = "│"
-        self._y_ticks.canvas["char"][-2, -1] = "└"
+        self._y_ticks.chars[0, -1] = "┐"
+        self._y_ticks.chars[1:-2, -1] = "│"
+        self._y_ticks.chars[-2, -1] = "└"
 
         last_y = h - 3
         for row in range(last_y, -1, -VERTICAL_SPACING):
@@ -366,7 +367,7 @@ class BarChart(Gadget):
             smooth_bar = smooth_vertical_bar(h - 3, (value - min_y) / y_delta, 0.5)
             chars.T[x1:x2, 2 : 2 + len(smooth_bar)] = smooth_bar
             fg_colors[2 : 2 + len(smooth_bar), x1:x2] = bar_colors[i]
-            self._bars.canvas["reverse"][::-1].T[x1:x2, 2] = True
+            self._bars.canvas["style"][::-1].T[x1:x2, 2] = Style.REVERSE
         chars[1, :-1] = "─"
         chars[1, -1] = "┐"
 

@@ -8,14 +8,17 @@ from enum import Enum
 from itertools import count, islice
 from typing import Any, Literal, Protocol, TypeVar
 
+from uwcwidth import wcswidth
+
 from ..terminal.events import MouseEvent
+from ..text_tools import egc_ord
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
 from .gadget import Gadget, Point, PosHint, Size, SizeHint
 from .grid_layout import GridLayout
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Text, add_text, str_width
+from .text import Text, add_text
 
 __all__ = ["DataTable", "ColumnStyle", "Point", "Size"]
 
@@ -92,7 +95,7 @@ class _SortState(str, Enum):
 
 _SORT_INDICATOR_SPACING = 1
 """Spaces between column label text and sort indicator."""
-_SORT_INDICATOR_WIDTH = str_width(_SortState.NOT_SORTED.value)
+_SORT_INDICATOR_WIDTH = wcswidth(_SortState.NOT_SORTED.value)
 """Character width of sort indicator. (Indicator values should be same width.)"""
 _ALIGN_FORMATTER = {"center": "^", "left": "<", "right": ">"}
 """Convert an alignment to f-string format specification."""
@@ -129,7 +132,7 @@ class _ColumnLabel(_CellBase):
         """Minimum allowed height of cells."""
         self.cell_min_width = max(
             (
-                max(str_width(line) for line in lines)
+                max(wcswidth(line) for line in lines)
                 + _SORT_INDICATOR_SPACING  # label width
                 + _SORT_INDICATOR_WIDTH
                 + 2 * self.style.padding
@@ -153,7 +156,7 @@ class _ColumnLabel(_CellBase):
     def sort_state(self, sort_state: _SortState):
         self._sort_state = _SortState(sort_state)
         if self.allow_sorting:
-            self.canvas["char"][self.indicator_pos] = self._sort_state.value
+            self.canvas["ord"][self.indicator_pos] = egc_ord(self._sort_state.value)
 
     def _update_indicator(self):
         if self._allow_sorting:
@@ -166,7 +169,7 @@ class _ColumnLabel(_CellBase):
             char = " "
         self.canvas["fg_color"][self.indicator_pos] = fg
         self.canvas["bg_color"][self.indicator_pos] = bg
-        self.canvas["char"][self.indicator_pos] = char
+        self.canvas["ord"][self.indicator_pos] = egc_ord(char)
 
     @property
     def allow_sorting(self) -> bool:
@@ -228,7 +231,7 @@ class _DataCell(_CellBase):
         """Minimum allowed height of cell."""
         self.cell_min_width = max(
             (
-                max(str_width(line) for line in lines)
+                max(wcswidth(line) for line in lines)
                 + 2 * self.style.padding  # width of rendered data
             ),
             self.style.min_width,
@@ -243,7 +246,7 @@ class _DataCell(_CellBase):
 
     def on_size(self):
         super().on_size()
-        self.canvas["char"] = " "
+        self.chars[:] = " "
         if self.striped:
             fg = self.data_table.get_color("data_table_stripe_fg")
             bg = self.data_table.get_color("data_table_stripe_bg")

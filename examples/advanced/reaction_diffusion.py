@@ -62,7 +62,7 @@ class ReactionDiffusion(Text):
         to_palette = self.A * len(PALETTE)
         to_char = (to_palette % 1) * len(BLOCKS)
         self.canvas["fg_color"] = PALETTE[to_palette.astype(int)]
-        self.canvas["char"] = BLOCKS[to_char.astype(int)]
+        self.chars[:] = BLOCKS[to_char.astype(int)]
 
 
 class ReactionDiffusionApp(App):
