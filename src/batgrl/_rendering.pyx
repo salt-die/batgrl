@@ -642,8 +642,8 @@ cdef void opaque_sixel_graphics_render(
     while not it.done:
         oy = it.y * h
         ox = it.x * w
-        src_y = h * (it.y - abs_y)
-        src_x = w * (it.x - abs_x)
+        src_y = <int>h * (it.y - abs_y)
+        src_x = <int>w * (it.x - abs_x)
         kind[it.y, it.x] = SIXEL
         for gy in range(h):
             for gx in range(w):
@@ -707,7 +707,7 @@ cdef bint is_low_variance_region(
 # color.
 # TODO: Add sextants/octants
 
-cdef bint is_block_char(unsigned short ord_):
+cdef bint is_block_char(unsigned long ord_):
     return ord_ == SPACE_ORD or HALF_BLOCK_ORD <= ord_ < END_OF_GEOMETRY_BLOCK_ORD
 
 ctypedef bint (*where_glyph)(double v, double u)
@@ -882,9 +882,9 @@ cdef void trans_sixel_graphics_render(
     cdef:
         RegionIterator it
         int src_y, src_x
-        size_t h = graphics_geom_height(cells, graphics)
-        size_t w = graphics_geom_width(cells, graphics)
-        size_t oy, ox, gy, gx
+        int h = <int>graphics_geom_height(cells, graphics)
+        int w = <int>graphics_geom_width(cells, graphics)
+        int oy, ox, gy, gx
         uint8 *rgba
         uint8[4] mean
         double a
@@ -1214,12 +1214,12 @@ cdef void opaque_text_field_render(
             if cwidth == 1:
                 cells[py, px] = particles[i]
             elif cwidth > 1:
-                if contains(cregion, py, px + cwidth - 1):
+                if contains(cregion, py, px + <int>cwidth - 1):
                     cells[py, px] = particles[i]
                     for j in range(1, cwidth):
                         cells[py, px + j].ord = 0
                         cells[py, px + j].bg_color = particles[i].bg_color
-                
+
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -1272,7 +1272,7 @@ cdef void trans_text_field_render(
             else:
                 cwidth = wcwidth_uint32(particles[i].ord)
             if cwidth > 1:
-                if contains(cregion, py, px + cwidth - 1):
+                if contains(cregion, py, px + <int>cwidth - 1):
                     for j in range(1, cwidth):
                         cells[py, px + j].ord = 0
                 else:
@@ -1531,6 +1531,7 @@ cdef void opaque_sixel_graphics_field_render(
         int ipy, ipx
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
+        size_t gh = graphics.shape[0], gw = graphics.shape[1]
         size_t oy, ox, gy, gx, pgy, pgx
         RegionIterator it
 
@@ -1544,15 +1545,17 @@ cdef void opaque_sixel_graphics_field_render(
         oy = ipy * h
         ox = ipx * w
         pgy = oy + <int>round((py - ipy) * h)
-        if pgy >= graphics.shape[0]:
+        if pgy < 0 or pgy >= gh:
             continue
         pgx = ox + <int>round((px - ipx) * w)
-        if pgx >= graphics.shape[1]:
+        if pgx < 0 or pgx >= gw:
             continue
         graphics[pgy, pgx] = particles[i]
         kind[ipy, ipx] = SIXEL
 
     # For all sixel cells in region, mark graphics as opaque:
+    # ! Should all cells in region be marked sixel? Consider a large region with a
+    # ! single sixel pixel. Does entire region really need to be sixel-ized?
     init_iter(&it, cregion)
     while not it.done:
         if kind[it.y, it.x] == SIXEL:
@@ -1586,6 +1589,7 @@ cdef void trans_sixel_graphics_field_render(
         int ipy, ipx
         size_t h = graphics_geom_height(cells, graphics)
         size_t w = graphics_geom_width(cells, graphics)
+        size_t gh = graphics.shape[0], gw = graphics.shape[1]
         size_t oy, ox, gy, gx, pgy, pgx
 
     for i in range(nparticles):
@@ -1600,10 +1604,10 @@ cdef void trans_sixel_graphics_field_render(
         oy = ipy * h
         ox = ipx * w
         pgy = oy + <int>round((py - ipy) * h)
-        if pgy >= graphics.shape[0]:
+        if pgy < 0 or pgy >= gh:
             continue
         pgx = ox + <int>round((px - ipx) * w)
-        if pgx >= graphics.shape[1]:
+        if pgx < 0 or pgx >= gw:
             continue
         if (
             kind[ipy, ipx] == GLYPH
@@ -1871,7 +1875,8 @@ cpdef void graphics_field_render(
             )
 
 
-# TODO: Add an option to disable normalize_canvas and remove normalization in text_field_*.
+# TODO: Add an option to disable normalize_canvas and remove normalization in
+# text_field_*.
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef inline void normalize_canvas(Cell[:, ::1] cells, int[:, ::1] widths):

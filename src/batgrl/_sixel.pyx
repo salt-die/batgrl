@@ -76,7 +76,7 @@ cdef inline uint8 uint8_to_100(uint8 c):
 
 
 cdef inline uint qnode_keys(uint8 *srgb, uint8 *skey):
-    skey[0] = (
+    skey[0] = <uint8>(
         (((srgb[0] % 10) // 5) << 2)
         + (((srgb[1] % 10) // 5) << 1)
         + ((srgb[2] % 10) // 5)
@@ -205,14 +205,14 @@ cdef qnode *get_active_set(qstate *qs):
                     break
                 if o.q[s]:
                     memcpy(&active[target_idx], o.q[s], sizeof(qnode))
-                    active[target_idx].qlink = o.q[s] - qs.qnodes
+                    active[target_idx].qlink = <uint>(o.q[s] - qs.qnodes)
                     target_idx += 1
     qsort(active, qs.ncolors, sizeof(qnode), &qnode_cmp)
     return active
 
 
 cdef inline int find_next_lowest_chosen(
-    const qstate *qs, int z, int i, const qnode **hq
+    const qstate *qs, uint z, int i, const qnode **hq
 ):
     cdef:
         const qnode *h
@@ -242,7 +242,7 @@ cdef inline int find_next_lowest_chosen(
 cdef inline void choose(
     qstate *qs,
     qnode *q,
-    int z,
+    uint z,
     int i,
     int *hi,
     int *lo,
@@ -251,7 +251,7 @@ cdef inline void choose(
 ):
     cdef int cur
     if not is_chosen(q):
-        if z * 8 > hi[0]:
+        if <int>(z * 8) > hi[0]:
             hi[0] = find_next_lowest_chosen(qs, z, i, hq)
         cur = z * 8 + (i if i >= 0 else 4)
         if lo[0] == -1:
@@ -273,7 +273,7 @@ cdef inline int merge_color_table(qstate *qs):
     if qactive is NULL:
         return -1
 
-    cdef int cidx = 0, z
+    cdef uint cidx = 0, z
     for z in range(qs.ncolors - 1, -1, -1):
         if cidx == MAX_COLORS:
             break

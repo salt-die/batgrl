@@ -7,7 +7,6 @@ from .._rendering cimport Cell
 
 ctypedef unsigned char uint8
 
-
 cdef struct Sprite:
     double y
     double x
@@ -86,7 +85,7 @@ cdef inline void draw_floor_ceiling(
         ray_dir_y1 = dir_y + plane_y
         ray_dir_x0 = dir_x - plane_x
         ray_dir_x1 = dir_x + plane_x
-        p = y - h // 2
+        p = <int>(y - h // 2)
         pos_z = 0.5 * h
         if p:
             row_distance = pos_z / p
@@ -134,7 +133,7 @@ def cast_rays(
     double[:, ::1] sprite_coords,
     list[uint8[:, :, ::1]] sprite_textures,
 ) -> None:
-    cdef size_t h = texture.shape[0], w = texture.shape[1]
+    cdef int h = <int>texture.shape[0], w = <int>texture.shape[1]
     if not h or not w:
         return
 
@@ -168,8 +167,7 @@ def cast_rays(
         int step_y, step_x
         int line_height
         int initial_y, draw_start_y, draw_end_y
-        size_t tex_h, tex_w
-        int tex_y, tex_x
+        int tex_h, tex_w, tex_y, tex_x
         double wall_x, step, tex_pos
         bint side, skip
         double perp_wall_dist
@@ -225,8 +223,8 @@ def cast_rays(
 
             if map[map_y, map_x] > 0:
                 wall_texture = wall_textures[map[map_y, map_x] - 1]
-                tex_h = wall_texture.shape[0]
-                tex_w = wall_texture.shape[1]
+                tex_h = <int>wall_texture.shape[0]
+                tex_w = <int>wall_texture.shape[1]
                 if tex_h == 0 or tex_w == 0:
                     skip = 1  # Empty texture?
                 break
@@ -348,8 +346,8 @@ def cast_rays(
             draw_end_x = w
 
         sprite_texture = sprite_textures[sprites[i].texture_idx]
-        tex_h = sprite_texture.shape[0]
-        tex_w = sprite_texture.shape[1]
+        tex_h = <int>sprite_texture.shape[0]
+        tex_w = <int>sprite_texture.shape[1]
 
         scale_h = tex_h / sprite_h
         scale_w = tex_w / sprite_w
@@ -393,7 +391,7 @@ def text_cast_rays(
     list[Cell[:, ::1]] sprite_textures,
     unsigned int[::1] ascii_map,
 ) -> None:
-    cdef size_t h = canvas.shape[0], w = canvas.shape[1]
+    cdef int h = <int>canvas.shape[0], w = <int>canvas.shape[1]
     if not h or not w:
         return
 
@@ -408,8 +406,7 @@ def text_cast_rays(
         int step_y, step_x
         int line_height
         int initial_y, draw_start_y, draw_end_y
-        size_t tex_h, tex_w
-        int tex_y, tex_x
+        int tex_h, tex_w, tex_y, tex_x
         double wall_x, step, tex_pos
         bint side, skip
         double perp_wall_dist
@@ -466,8 +463,8 @@ def text_cast_rays(
 
             if map[map_y, map_x] > 0:
                 wall_texture = wall_textures[map[map_y, map_x] - 1]
-                tex_h = wall_texture.shape[0]
-                tex_w = wall_texture.shape[1]
+                tex_h = <int>wall_texture.shape[0]
+                tex_w = <int>wall_texture.shape[1]
                 if tex_h == 0 or tex_w == 0:
                     skip = 1  # Empty texture?
                 break
@@ -584,8 +581,8 @@ def text_cast_rays(
             draw_end_x = w
 
         sprite_texture = sprite_textures[sprites[i].texture_idx]
-        tex_h = sprite_texture.shape[0]
-        tex_w = sprite_texture.shape[1]
+        tex_h = <int>sprite_texture.shape[0]
+        tex_w = <int>sprite_texture.shape[1]
 
         scale_h = tex_h / sprite_h
         scale_w = tex_w / sprite_w

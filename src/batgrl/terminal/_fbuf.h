@@ -142,9 +142,8 @@ static inline unsigned int fbuf_equals(fbuf *f, const char *string, size_t len){
 
 
 static inline unsigned int fbuf_endswith(fbuf *f, const char *suffix, size_t len){
-    int offset = f->len - len;
-    if(offset < 0) return 0;
-
+    if(len > f->len) return 0;
+    size_t offset = f->len - len;
     for(size_t i = 0; i < len; i++ ){
         if(f->buf[offset + i] != suffix[i]) return 0;
     }
@@ -161,7 +160,7 @@ static inline ssize_t fbuf_flush_fd(fbuf *f, int fd){
         if(f->len - written > MAXDWORD){
             write_len = MAXDWORD;
         }else{
-            write_len = f->len - written;
+            write_len = (DWORD)(f->len - written);
         }
         if (!WriteConsoleA(handle, f->buf + written, write_len, &wrote, NULL)){
             return -1;

@@ -57,14 +57,14 @@ cdef int csi_params(const fbuf *f, char *initial, char* final, uint *params):
     if f.len == 3:
         return 0
 
-    cdef uint param_start = 2
+    cdef size_t param_start = 2
     if not (0x30 <= f.buf[2] <= 0x39 or f.buf[2] == 0x3b):
         initial[0] = f.buf[2]
         if f.len == 4:
             return 0
         param_start += 1
 
-    cdef uint param_end
+    cdef size_t param_end
     if f.buf[f.len - 2] == 0x24:
         # DECRPM
         param_end = f.len - 2
@@ -308,7 +308,7 @@ cdef class Vt100Terminal:
             event_type = "mouse_down"
 
         if self.sgr_pixels_mode:
-            pos = None
+            pos = None  # Will be set later in App using pixel geometry.
             pixels = Point(y, x)
         else:
             pos = Point(y, x)
@@ -379,7 +379,7 @@ cdef class Vt100Terminal:
         # Timed out during a paste. Check if PASTE_END was cutoff and remove it.
         cdef uint start
         if self.in_buf.len < 6:
-            start = self.in_buf.len
+            start = <uint>self.in_buf.len
         else:
             start = 6
 

@@ -264,7 +264,8 @@ cpdef void cast_shadows(
         raise MemoryError
 
     cdef:
-        size_t i, j, k, m
+        size_t i, j
+        int k, m
         size_t nlights = len(light_coords)
         int origin_y, origin_x, y, x, offset_y, offset_x
         int camera_y = camera_pos[0], camera_x = camera_pos[1]
