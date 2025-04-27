@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#   "networkx",
+# ]
+# ///
 """
 You're stuck in the Labyrinth, a maze that re-arranges itself as you try to escape.
 

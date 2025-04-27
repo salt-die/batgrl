@@ -7,8 +7,7 @@
 """
 Stable fluid simulation.
 
-Click to add fluid.
-"r" to reset.
+Click to add fluid and press "r" to reset. Requires 'scipy'.
 """
 
 import asyncio
