@@ -4,6 +4,18 @@ import re
 from collections.abc import Callable
 from typing import Literal
 
+from .vt100_terminal cimport (
+    CSI,
+    CSI_PARAMS,
+    DECRPM,
+    ESCAPE,
+    EXECUTE_NEXT,
+    GROUND,
+    OSC,
+    PASTE,
+    uint,
+    uint8,
+)
 from ..colors import Color
 from ..geometry import Size, Point
 from ._fbuf cimport(
