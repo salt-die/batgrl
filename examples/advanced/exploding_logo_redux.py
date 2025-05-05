@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 from batgrl.app import App
-from batgrl.gadgets.graphic_field import Blitter, GraphicParticleField
+from batgrl.gadgets.graphic_field import GraphicParticleField
 from batgrl.gadgets.graphics import scale_geometry
 from batgrl.gadgets.image import Image, Point, Size
 from batgrl.gadgets.slider import Slider
@@ -168,7 +168,7 @@ class ExplodingLogoApp(App):
                 size=(1, 15),
                 group=0,
             )
-            for i, blitter in enumerate(Blitter.__args__)
+            for i, blitter in enumerate(["full", "half", "braille", "sixel"])
         ]
         buttons[0].callback("on")
 

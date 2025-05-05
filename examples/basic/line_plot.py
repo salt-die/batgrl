@@ -1,7 +1,7 @@
 import numpy as np
 from batgrl.app import App
 from batgrl.gadgets.gadget import Gadget
-from batgrl.gadgets.line_plot import LinePlot
+from batgrl.gadgets.line_plot import Blitter, LinePlot
 from batgrl.gadgets.toggle_button import ToggleButton
 
 XS = np.arange(20)
@@ -24,43 +24,29 @@ class PlotApp(App):
             blitter="braille",
         )
 
-        def set_braille_mode(toggle_state):
-            if toggle_state == "on":
-                plot.blitter = "braille"
+        def set_mode(mode):
+            def inner(toggle_state):
+                if toggle_state == "on":
+                    plot.blitter = mode
 
-        def set_half_mode(toggle_state):
-            if toggle_state == "on":
-                plot.blitter = "half"
+            return inner
 
-        def set_sixel_mode(toggle_state):
-            if toggle_state == "on":
-                plot.blitter = "sixel"
-
-        braille_button = ToggleButton(
-            size=(1, BUTTON_WIDTH),
-            label="Braille Blitter",
-            callback=set_braille_mode,
-            group=0,
-        )
-        half_button = ToggleButton(
-            size=(1, BUTTON_WIDTH),
-            pos=(1, 0),
-            label="Half Blitter",
-            callback=set_half_mode,
-            group=0,
-        )
-        sixel_button = ToggleButton(
-            size=(1, BUTTON_WIDTH),
-            pos=(2, 0),
-            label="Sixel Blitter",
-            callback=set_sixel_mode,
-            group=0,
-        )
+        buttons = [
+            ToggleButton(
+                size=(1, BUTTON_WIDTH),
+                pos=(i, 0),
+                label=f"{blitter.capitalize()} Blitter",
+                callback=set_mode(blitter),
+                group=0,
+            )
+            for i, blitter in enumerate(Blitter.__args__)
+        ]
 
         container = Gadget(
-            size=(3, BUTTON_WIDTH), pos_hint={"x_hint": 1.0, "anchor": "top-right"}
+            size=(len(buttons), BUTTON_WIDTH),
+            pos_hint={"x_hint": 1.0, "anchor": "top-right"},
         )
-        container.add_gadgets(braille_button, half_button, sixel_button)
+        container.add_gadgets(buttons)
         self.add_gadgets(plot, container)
 
 

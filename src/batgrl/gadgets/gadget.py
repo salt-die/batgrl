@@ -39,36 +39,6 @@ __all__ = [
 ]
 
 _UID: Final = count(1)
-_ANCHOR_TO_POS: Final = {
-    "top-left": (0.0, 0.0),
-    "top": (0.0, 0.5),
-    "top-right": (0.0, 1.0),
-    "left": (0.5, 0.0),
-    "center": (0.5, 0.5),
-    "right": (0.5, 1.0),
-    "bottom-left": (1.0, 0.0),
-    "bottom": (1.0, 0.5),
-    "bottom-right": (1.0, 1.0),
-}
-_DEFAULT_POS_HINT: Final = {
-    "anchor": "center",
-    "y_hint": None,
-    "x_hint": None,
-    "x_offset": 0,
-    "y_offset": 0,
-}
-"""The default pos hint."""
-_DEFAULT_SIZE_HINT: Final = {
-    "height_hint": None,
-    "width_hint": None,
-    "height_offset": 0,
-    "width_offset": 0,
-    "max_height": None,
-    "min_height": None,
-    "max_width": None,
-    "min_width": None,
-}
-"""The default size hint."""
 
 Anchor = Literal[
     "top-left",
@@ -232,6 +202,39 @@ class SizeHint(TypedDict, total=False):
     """Minimum allowed width."""
 
 
+_ANCHOR_TO_COORD: Final[dict[Anchor, tuple[float, float]]] = {
+    "top-left": (0.0, 0.0),
+    "top": (0.0, 0.5),
+    "top-right": (0.0, 1.0),
+    "left": (0.5, 0.0),
+    "center": (0.5, 0.5),
+    "right": (0.5, 1.0),
+    "bottom-left": (1.0, 0.0),
+    "bottom": (1.0, 0.5),
+    "bottom-right": (1.0, 1.0),
+}
+"""Anchor to coordinate."""
+_DEFAULT_POS_HINT: Final[PosHint] = {
+    "anchor": "center",
+    "y_hint": None,
+    "x_hint": None,
+    "x_offset": 0,
+    "y_offset": 0,
+}
+"""The default pos hint."""
+_DEFAULT_SIZE_HINT: Final[SizeHint] = {
+    "height_hint": None,
+    "width_hint": None,
+    "height_offset": 0,
+    "width_offset": 0,
+    "max_height": None,
+    "min_height": None,
+    "max_width": None,
+    "min_width": None,
+}
+"""The default size hint."""
+
+
 def _normalize_pos_hint(pos_hint: PosHint) -> PosHint:
     normal_hint = _DEFAULT_POS_HINT | pos_hint
     if normal_hint["y_hint"] is not None:
@@ -239,7 +242,7 @@ def _normalize_pos_hint(pos_hint: PosHint) -> PosHint:
     if normal_hint["x_hint"] is not None:
         normal_hint["x_hint"] = float(normal_hint["x_hint"])
     if isinstance(normal_hint["anchor"], str):
-        normal_hint["anchor"] = _ANCHOR_TO_POS[normal_hint["anchor"]]
+        normal_hint["anchor"] = _ANCHOR_TO_COORD[normal_hint["anchor"]]
     return normal_hint
 
 
