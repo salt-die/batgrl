@@ -57,8 +57,12 @@ Border = Literal[
     "heavy_dashed_2",
     "heavy_dashed_3",
     "near",
+    "octant",
+    "octant_rounded",
     "mcgugan_tall",
     "mcgugan_wide",
+    "sextant",
+    "sextant_rounded",
 ]
 """Border styles for :meth:`batgrl.text_gadget.Text.add_border`."""
 
@@ -78,8 +82,12 @@ _BORDERS = {
     "heavy_dashed_2": "┏┓┇┇┅┅┗┛",
     "heavy_dashed_3": "┏┓┋┋┉┉┗┛",
     "near": "  ▕▏▁▔  ",
+    "octant": "𜵊𜶘▌▐🮂▂𜷀𜷕",
+    "octant_rounded": "𜵉𜶗▌▐🮂▂𜶅𜵛",
     "mcgugan_tall": "▕▏▕▏▔▁▕▏",
     "mcgugan_wide": "▁▁▏▕▁▔▔▔",
+    "sextant": "🬕🬨▌▐🬂🬭🬲🬷",
+    "sextant_rounded": "🬔🬧▌▐🬂🬭🬣🬘",
 }
 """Border characters for :meth:`batgrl.text_gadget.Text.add_border`."""
 

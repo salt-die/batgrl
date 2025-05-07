@@ -8,7 +8,7 @@ border_colors = rainbow_gradient(len(Border.__args__))
 
 class BordersApp(App):
     async def on_start(self):
-        grid_layout = GridLayout(grid_columns=6, grid_rows=3)
+        grid_layout = GridLayout(grid_columns=6, grid_rows=4)
         for border, color in zip(Border.__args__, border_colors):
             gadget = Text(size=(3, 17))
             gadget.add_border(border, fg_color=color)
