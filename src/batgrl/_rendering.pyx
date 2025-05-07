@@ -2487,6 +2487,10 @@ cpdef void terminal_render(
     if fbuf_putn(f, "\x1b7", 2):  # Save cursor
         raise MemoryError
 
+    if terminal.sum_supported:
+        if fbuf_putn(f, "\x1b[2026h", 7):
+            raise MemoryError
+
     for y in range(h):
         for x in range(w):
             if kind[y, x]:
@@ -2606,9 +2610,17 @@ cpdef void terminal_render(
                 ):
                     raise MemoryError
 
-    if f.len == 2:
-        f.len = 0  # Only 'Save Cursor' in buffer. Don't flush.
+    if (
+        terminal.sum_supported and f.len == 9
+        or not terminal.sum_supported and f.len == 2
+    ):
+        # Only 'Save Cursor' and 'SUM' in buffer. Don't flush.
+        f.len = 0
         return
+
+    if terminal.sum_supported:
+        if fbuf_putn(f, "\x1b[2026l", 7):
+            raise MemoryError
 
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
         raise MemoryError
