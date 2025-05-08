@@ -16,7 +16,7 @@ from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
 from .gadgets.gadget import Gadget
-from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics
+from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics, scale_geometry
 from .geometry import Point, Size
 from .terminal import (
     Vt100Terminal,
@@ -50,12 +50,6 @@ def _pixels_to_cells(mouse_pos, terminal_size):
     y, x = mouse_pos
     h, w = terminal_size
     return Point(y // h, x // w)
-
-
-def _size_to_pixels(terminal_size):
-    h, w = terminal_size
-    ph, pw = _BLITTER_GEOMETRY["sixel"]
-    return Size(h * ph, w * pw)
 
 
 class App(ABC):
@@ -433,10 +427,10 @@ class App(ABC):
                 elif isinstance(event, MouseEvent):
                     determine_nclicks(event)
                     if event.pos is None:
-                        event.pos = _pixels_to_cells(event.pixels, last_size)
+                        event.pos = _pixels_to_cells(event.pixels_pos, last_size)
                     event.pos -= self._app_pos
                     if event.pixels_pos is not None:
-                        event.pixels_pos -= _size_to_pixels(last_size)
+                        event.pixels_pos -= scale_geometry("sixel", self._app_pos)
                     root.dispatch_mouse(event)
                 elif isinstance(event, PasteEvent):
                     root.dispatch_paste(event)
