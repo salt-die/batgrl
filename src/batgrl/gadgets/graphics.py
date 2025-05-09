@@ -9,6 +9,7 @@ from numpy.typing import NDArray
 
 from .._rendering import graphics_render
 from ..colors import TRANSPARENT, AColor
+from ..logging import get_logger
 from ..texture_tools import Interpolation, resize_texture
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 
@@ -26,6 +27,8 @@ _BLITTER_GEOMETRY: Final[dict[Blitter, Size]] = {
     "sextant": Size(3, 2),
     "sixel": Size(20, 10),
 }
+
+logger = get_logger(__name__)
 
 
 def scale_geometry[T: (Point, Size)](blitter: Blitter, point_or_size: T) -> T:
@@ -271,6 +274,10 @@ class Graphics(Gadget):
             raise TypeError(f"{blitter} is not a valid blitter type.")
         if blitter == "sixel" and not self._sixel_support:
             self._blitter = "half"
+            logger.info(
+                'Attempted to set blitter to "sixel" without sixel terminal support. '
+                'Setting blitter to "half" instead.'
+            )
         else:
             self._blitter = blitter
         self.on_size()

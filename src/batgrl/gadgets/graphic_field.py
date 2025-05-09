@@ -11,10 +11,13 @@ import numpy as np
 from numpy.typing import NDArray
 
 from .._rendering import graphics_field_render
+from ..logging import get_logger
 from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
 from .graphics import Blitter, Graphics, scale_geometry
 
 __all__ = ["GraphicParticleField", "Point", "Size"]
+
+logger = get_logger(__name__)
 
 
 class GraphicParticleField(Gadget):
@@ -257,6 +260,9 @@ class GraphicParticleField(Gadget):
             }  # FIXME: Add rendering for block characters.
         ):
             self._blitter = "half"
+            logger.info(
+                f'{blitter!r} blitter not yet supported. Blitter set to "half".'
+            )
         else:
             self._blitter = blitter
 
