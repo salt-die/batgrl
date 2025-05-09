@@ -3,6 +3,7 @@
 *.pyc
 *.pyd
 *.egg-info
+*.log
 .vscode/
 build/
 dist/

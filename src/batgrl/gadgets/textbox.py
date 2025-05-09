@@ -10,6 +10,7 @@ from ugrapheme import grapheme_len, graphemes
 from uwcwidth import wcswidth
 
 from ..geometry import rect_slice
+from ..logging import get_logger
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent, PasteEvent
 from ..text_tools import canvas_as_text, egc_chr, is_word_char
 from .behaviors.focusable import Focusable
@@ -20,6 +21,8 @@ from .gadget import Cell, Gadget, Point, PosHint, Region, Size, SizeHint
 from .text import Text
 
 __all__ = ["Textbox", "Point", "Size"]
+
+logger = get_logger(__name__)
 
 
 class _Box(Text):
@@ -503,7 +506,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             start, end = end, start
 
         if end > self._line_width:
-            # ! If we ended up here, something went wrong.
+            logger.debug("End of delete greater than line length.")
             end = self._line_width
 
         contents = canvas_as_text(self._box.canvas[0, start:end])

@@ -3,13 +3,13 @@
 import asyncio
 import atexit
 import time
-import warnings
 from pathlib import Path
 from platform import uname
 
 import cv2
 
 from ..colors import ABLACK, AColor
+from ..logging import get_logger
 from ..texture_tools import resize_texture
 from .graphics import (
     Blitter,
@@ -25,6 +25,8 @@ from .graphics import (
 __all__ = ["Video", "Interpolation", "Point", "Size"]
 
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
+
+logger = get_logger(__name__)
 
 
 class Video(Graphics):
@@ -253,8 +255,8 @@ class Video(Graphics):
         if _IS_WSL and self.is_device:
             # Because WSL doesn't support most USB devices (yet?), and trying to open
             # one with cv2 will pollute the terminal with cv2 errors, we don't attempt
-            # to open a device in this case and instead issue a warning.
-            warnings.warn("device not available on WSL")
+            # to open a device in this case.
+            logger.info("Device not available on WSL.")
             self._resource = None
             return
 

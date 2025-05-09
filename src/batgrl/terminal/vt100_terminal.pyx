@@ -4,6 +4,7 @@ import re
 from collections.abc import Callable
 from typing import Literal
 
+from ..logging import get_logger
 from .vt100_terminal cimport (
     CSI,
     CSI_PARAMS,
@@ -62,6 +63,8 @@ COLOR_RE: re.Pattern[bytes] = re.compile(
     rb"([0-9a-f]{2})[0-9a-f]{2}\x1b\\"
 )
 DEC_MODES: frozenset[bytes] = frozenset([1016, 2026])
+
+logger = get_logger(__name__)
 
 
 cdef int csi_params(const fbuf *f, char *initial, char* final, uint *params):
@@ -143,6 +146,10 @@ cdef class Vt100Terminal:
         self.in_buf.len = 0
         self.state = GROUND
         self._event_buffer.append(event)
+        if isinstance(event, UnknownEscapeSequence):
+            logger.debug(event)
+        else:
+            logger.events(event)
 
     cdef void feed1(self, uint8 char_):
         if fbuf_put_char(&self.in_buf, char_):
@@ -372,7 +379,7 @@ cdef class Vt100Terminal:
             escape = self.in_buf.buf[:self.in_buf.len]
             self.add_event(UnknownEscapeSequence(escape))
         else:
-            timeout = self._dsr_timeouts.pop(b"\x1b[%d$p" % mode, None)
+            timeout = self._dsr_timeouts.pop(b"\x1b[?%d$p" % mode, None)
             if timeout is not None:
                 timeout.cancel()
             if mode == 2026:
@@ -382,6 +389,10 @@ cdef class Vt100Terminal:
 
     def _timeout_escape(self) -> None:
         if self.state != PASTE:
+            logger.events(
+                "Timed out parsing ANSI escape. Expected if `escape` was pressed."
+            )
+
             self.execute_ansi_escapes()
 
             if self._event_handler is not None:
@@ -389,6 +400,8 @@ cdef class Vt100Terminal:
             return
 
         # Timed out during a paste. Check if PASTE_END was cutoff and remove it.
+        logger.debug("Timed out during a paste.")
+
         cdef uint start
         if self.in_buf.len < 6:
             start = <uint>self.in_buf.len
@@ -428,6 +441,7 @@ cdef class Vt100Terminal:
         def _on_timeout():
             if escape in self._dsr_timeouts:
                 del self._dsr_timeouts[escape]
+            logger.info(f"Device Status Report (DSR) Timeout: {escape!r}")
         return _on_timeout
 
     cpdef void process_stdin(self):

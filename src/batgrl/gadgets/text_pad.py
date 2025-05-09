@@ -5,6 +5,7 @@ from dataclasses import astuple
 from ugrapheme import grapheme_iter, graphemes
 from uwcwidth import wcswidth
 
+from ..logging import get_logger
 from ..terminal.events import KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import canvas_as_text, egc_chr, is_word_char
 from .behaviors.focusable import Focusable
@@ -16,6 +17,8 @@ from .scroll_view import ScrollView
 from .text import Text
 
 __all__ = ["TextPad", "Point", "Size"]
+
+logger = get_logger(__name__)
 
 
 class TextPad(Themable, Grabbable, Focusable, Gadget):
@@ -438,10 +441,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         sy, sx = start
         ey, ex = end
 
-        # ! If one of the following conditions is true, something went wrong.
         if ey >= len(ll):
+            logger.debug("End y-coordinate is greater than number of lines.")
             ey = len(ll) - 1
         if ex > ll[ey]:
+            logger.debug("End x-coordinate is greater than line length.")
             ex = ll[ey]
 
         if sy == ey:
