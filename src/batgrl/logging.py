@@ -18,6 +18,8 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Final
 
+__all__ = ["LogLevel", "get_logger"]
+
 LOG_FILE = Path() / "batgrl.log"  # TODO: Customize path.
 ANSI_LEVEL: Final = 3
 """
@@ -108,6 +110,5 @@ log_handler = logging.FileHandler(LOG_FILE, mode="w", encoding="utf-8")
 log_handler.setFormatter(log_format)
 
 logger = logging.getLogger("batgrl")
-"""batgrl root logger."""
 logger.addHandler(log_handler)
 logger.setLevel(LogLevel.INFO)
