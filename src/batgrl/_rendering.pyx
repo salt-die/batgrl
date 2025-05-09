@@ -8,7 +8,7 @@ from uwcwidth cimport wcwidth_uint32, wcswidth
 from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
 from .geometry.regions cimport CRegion, Region, bounding_rect, contains
-from .logging import get_logger, LogLevel
+from .logging import LogLevel, get_logger
 from .terminal._fbuf cimport (
     fbuf,
     fbuf_flush_fd,
