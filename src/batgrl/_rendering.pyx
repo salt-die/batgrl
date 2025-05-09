@@ -8,6 +8,7 @@ from uwcwidth cimport wcwidth_uint32, wcswidth
 from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
 from .geometry.regions cimport CRegion, Region, bounding_rect, contains
+from .logging import get_logger, LogLevel
 from .terminal._fbuf cimport (
     fbuf,
     fbuf_flush_fd,
@@ -18,6 +19,8 @@ from .terminal._fbuf cimport (
 )
 from .terminal.vt100_terminal cimport Vt100Terminal
 from .text_tools import EGC_POOL
+
+logger = get_logger(__name__)
 
 ctypedef unsigned char uint8
 ctypedef unsigned long uint32
@@ -974,7 +977,7 @@ cdef void trans_sixel_graphics_render(
         int src_y, src_x
         int h = <int>graphics_geom_height(cells, graphics)
         int w = <int>graphics_geom_width(cells, graphics)
-        int oy, ox, gy, gx
+        int oy, ox, gy, gx, y, x
         uint8 *rgba
         uint8[4] mean
         double a
@@ -983,50 +986,66 @@ cdef void trans_sixel_graphics_render(
 
     init_iter(&it, cregion)
     while not it.done:
+        cell = &cells[it.y, it.x]
         oy = it.y * h
         ox = it.x * w
         src_y = oy - abs_y * h
         src_x = ox - abs_x * w
-        if kind[it.y, it.x] == SIXEL:
-            for gy in range(h):
-                for gx in range(w):
-                    rgba = &self_texture[src_y + gy, src_x + gx, 0]
-                    if rgba[3]:
-                        composite(
-                            &graphics[oy + gy, ox + gx, 0],
-                            rgba,
-                            alpha * <double>rgba[3] / 255,
-                        )
-                        graphics[oy + gy, ox + gx, 3] = 1
+        if kind[it.y, it.x] & SIXEL:  # SIXEL or SEE_THROUGH_SIXEL:
+            if (
+                kind[it.y, it.x] == SEE_THROUGH_SIXEL
+                and is_low_variance_region(self_texture, src_y, src_x, h, w, &mean[0])
+            ):
+                a = alpha * <double>mean[3] / 255
+                composite(&cell.fg_color[0], &mean[0], a)
+                composite(&mean[0], &graphics[oy, ox, 0], 1 - a)
+                for y in range(h):
+                    for x in range(w):
+                        gy = oy + y
+                        gx = ox + x
+                        graphics[gy, gx, 0] = mean[0]
+                        graphics[gy, gx, 1] = mean[1]
+                        graphics[gy, gx, 2] = mean[2]
+                        graphics[gy, gx, 3] = 1
+            else:
+                kind[it.y, it.x] = SIXEL
+                for y in range(h):
+                    for x in range(w):
+                        gy = oy + y
+                        gx = ox + x
+                        rgba = &self_texture[src_y + y, src_x + x, 0]
+                        if rgba[3]:
+                            a = alpha * <double>rgba[3] / 255
+                            composite(&graphics[gy, gx, 0], rgba, a)
+                            graphics[gy, gx, 3] = 1
         elif kind[it.y, it.x] == MIXED:
             kind[it.y, it.x] = SIXEL
-            cell = &cells[it.y, it.x]
             where_fg = get_where_fg(cell.ord)
-            for gy in range(h):
-                for gx in range(w):
-                    if graphics[oy + gy, ox + gx, 3]:
-                        rgba = &self_texture[src_y + gy, src_x + gx, 0]
+            for y in range(h):
+                for x in range(w):
+                    gy = oy + y
+                    gx = ox + x
+                    if graphics[gy, gx, 3]:
+                        rgba = &self_texture[src_y + y, src_x + x, 0]
                         if rgba[3]:
                             a = alpha * <double>rgba[3]/ 255
-                            composite(&graphics[oy + gy, ox + gx, 0], rgba, a)
-                    elif self_texture[src_y + gy, src_x + gx, 3]:
+                            composite(&graphics[gy, gx, 0], rgba, a)
+                    elif self_texture[src_y + y, src_x + x, 3]:
                         if where_fg.where_fg(
-                            gy / h, gx / w, where_fg.region, where_fg.block_height
+                            y / h, x / w, where_fg.region, where_fg.block_height
                         ):
                             rgba = &cell.fg_color[0]
                         else:
                             rgba = &cell.bg_color[0]
                         composite_sixels_on_cell(
                             rgba,
-                            &graphics[oy + gy, ox + gx, 0],
-                            &self_texture[src_y + gy, src_x + gx, 0],
+                            &graphics[gy, gx, 0],
+                            &self_texture[src_y + y, src_x + x, 0],
                             alpha,
                         )
-                        graphics[oy + gy, ox + gx, 3] = 1
                     else:
                         kind[it.y, it.x] = MIXED
-        else:
-            cell = &cells[it.y, it.x]
+        else:  # GLYPH
             if (
                 not is_block_char(cell.ord)
                 and is_low_variance_region(self_texture, src_y, src_x, h, w, &mean[0])
@@ -1039,32 +1058,34 @@ cdef void trans_sixel_graphics_render(
                     # quantization, see additional notes in `terminal_render`. Need to
                     # invert alpha:
                     composite(&mean[0], &cell.bg_color[0], 1 - a)
-                    for gy in range(h):
-                        for gx in range(w):
-                            graphics[oy + gy, ox + gx, 0] = mean[0]
-                            graphics[oy + gy, ox + gx, 1] = mean[1]
-                            graphics[oy + gy, ox + gx, 2] = mean[2]
-                            graphics[oy + gy, ox + gx, 3] = 1
+                    for y in range(h):
+                        for x in range(w):
+                            gy = oy + y
+                            gx = ox + x
+                            graphics[gy, gx, 0] = mean[0]
+                            graphics[gy, gx, 1] = mean[1]
+                            graphics[gy, gx, 2] = mean[2]
+                            graphics[gy, gx, 3] = 1
                 else:
                     kind[it.y, it.x] = GLYPH
-                    for gy in range(h):
-                        for gx in range(w):
-                            graphics[oy + gy, ox + gx, 3] = 0
+                    for y in range(h):
+                        for x in range(w):
+                            graphics[oy + y, ox + x, 3] = 0
             else:
                 kind[it.y, it.x] = SIXEL
                 where_fg = get_where_fg(cell.ord)
-                for gy in range(h):
-                    for gx in range(w):
+                for y in range(h):
+                    for x in range(w):
                         if where_fg.where_fg(
-                            gy / h, gx / w, where_fg.region, where_fg.block_height
+                            y / h, x / w, where_fg.region, where_fg.block_height
                         ):
                             rgba = &cell.fg_color[0]
                         else:
                             rgba = &cell.bg_color[0]
                         if composite_sixels_on_cell(
                             rgba,
-                            &graphics[oy + gy, ox + gx, 0],
-                            &self_texture[src_y + gy, src_x + gx, 0],
+                            &graphics[oy + y, ox + x, 0],
+                            &self_texture[src_y + y, src_x + x, 0],
                             alpha,
                         ):
                             kind[it.y, it.x] = MIXED
@@ -2615,6 +2636,7 @@ cpdef void terminal_render(
         or not terminal.sum_supported and f.len == 2
     ):
         # Only 'Save Cursor' and 'SUM' in buffer. Don't flush.
+        logger.ansi("Frame rendered: 0 bytes")
         f.len = 0
         return
 
@@ -2625,4 +2647,10 @@ cpdef void terminal_render(
     if fbuf_putn(f, "\x1b8", 2):  # Restore cursor
         raise MemoryError
 
+    if logger.isEnabledFor(LogLevel.ANSI):
+        # This conditional gates the creation of a large bytes objects since ANSI
+        # output is often several thousand bytes.
+        logger.log(LogLevel.ANSI, f"Frame rendered: {f.len} bytes")
+        logger.log(LogLevel.ANSI, "ANSI DUMP")
+        logger.log(LogLevel.ANSI, f.buf[:f.len])
     fbuf_flush_fd(f, terminal.stdout)
