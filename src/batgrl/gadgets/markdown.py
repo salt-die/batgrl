@@ -40,7 +40,6 @@ _MIN_RENDER_WIDTH = 12
 # TODO: Html blocks and spans
 # TODO: Wrap Tables
 # TODO: Use list prefix for render_width calculation.
-# ? TODO: Download images / preview links
 
 
 def _image_size(texture_h: int, texture_w: int, max_width: int) -> Size:
