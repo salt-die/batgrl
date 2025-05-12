@@ -77,4 +77,4 @@ class ReactionDiffusionApp(App):
 
 
 if __name__ == "__main__":
-    ReactionDiffusionApp(title="Cookin'").run()
+    ReactionDiffusionApp(title="Reaction Diffusion Example").run()
