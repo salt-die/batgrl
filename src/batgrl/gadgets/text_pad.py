@@ -574,7 +574,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             )
             egcs = graphemes(text_after_cursor)
             if n <= len(egcs):
-                x += wcswidth(text_after_cursor[:n])
+                x += wcswidth(egcs[:n])
                 break
 
             if y == self.end_text_point.y:
