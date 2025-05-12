@@ -101,6 +101,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         groups = ToggleButtonBehavior._toggle_groups
         grouped_on = groups.get(self.group)
 
+        self._toggle_state = toggle_state
         if toggle_state == "on":
             if grouped_on is not None:
                 grouped_on._toggle_state = "off"
@@ -117,7 +118,6 @@ class ToggleButtonBehavior(ButtonBehavior):
                     return
             self.update_off()
 
-        self._toggle_state = toggle_state
         self.on_toggle()
 
     def on_toggle(self):
