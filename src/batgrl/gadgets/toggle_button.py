@@ -221,6 +221,7 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
         self._label = Text(
             pos_hint={"y_hint": 0.5, "anchor": "left"}, is_transparent=True
         )
+        self._label_text = label
         super().__init__(
             group=group,
             allow_no_selection=allow_no_selection,
@@ -234,7 +235,6 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
             is_enabled=is_enabled,
         )
         self.add_gadgets(self._pane, self._label)
-        self.label = label
         self.callback = callback
         self.alpha = alpha
 
@@ -275,6 +275,22 @@ class ToggleButton(Themable, ToggleButtonBehavior, Gadget):
     def update_theme(self):
         """Paint the gadget with current theme."""
         getattr(self, f"update_{self.button_state}")()
+
+    def update_on(self):
+        """Paint the on state."""
+        if self.group is None:
+            prefix = CHECK_ON
+        else:
+            prefix = TOGGLE_ON
+        self._label.set_text(prefix + self._label_text)
+
+    def update_off(self):
+        """Paint the off state."""
+        if self.group is None:
+            prefix = CHECK_OFF
+        else:
+            prefix = TOGGLE_OFF
+        self._label.set_text(prefix + self._label_text)
 
     def update_normal(self):
         """Paint the normal state."""
