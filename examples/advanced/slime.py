@@ -39,7 +39,7 @@ class Toggle(ToggleButtonBehavior, Text):
             self._tween_task.cancel()
 
         def set_normal():
-            # Otherwise the button will stay in hover stay while moving with label.
+            # Otherwise the button will stay in hover state while moving with label.
             self.button_state = "normal"
 
         if self.toggle_state == "off":
