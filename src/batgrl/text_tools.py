@@ -11,6 +11,7 @@ from uwcwidth import wcswidth
 from ._batgrl_markdown import find_md_tokens
 from .colors import BLACK, WHITE, Color
 from .geometry import Size
+from .logging import get_logger
 
 __all__ = [
     "Cell",
@@ -36,6 +37,8 @@ EGCS: dict[str, int] = {}
 """Extended grapheme clusters currently stored in EGC_POOL and their index."""
 VERTICAL_BLOCKS: Final = " ▁▂▃▄▅▆▇█"
 HORIZONTAL_BLOCKS: Final = " ▏▎▍▌▋▊▉█"
+
+logger = get_logger(__name__)
 
 
 class Style(IntFlag):
@@ -90,6 +93,7 @@ def egc_ord(text: str) -> int:
 
     if egc not in EGCS:
         # FIXME: Unbounded growth
+        logger.debug(f"EGC Added: {egc} {[ord(i) for i in egc]}")
         EGCS[egc] = len(EGC_POOL)
         EGC_POOL.append(egc)
     return EGCS[egc] | EGC_BASE
