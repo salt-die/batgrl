@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "batgrl"
 description = "badass terminal graphics library"
-readme = "README.md"
+readme = "README-PYPI.md"
 requires-python = ">=3.12"
 license = {text = "MIT"}
 authors = [{name = "salt-die", email = "salt-die@protonmail.com"}]
