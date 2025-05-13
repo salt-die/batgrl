@@ -63,7 +63,6 @@ class ShadowCasterApp(App):
             light_colors=[WHITE, WHITE],
             radius=40,
             is_transparent=False,
-            blitter="sixel",
         )
 
         label_kwargs = dict(
@@ -222,7 +221,7 @@ class ShadowCasterApp(App):
 
 if __name__ == "__main__":
     ShadowCasterApp(
-        title="batgrl",
+        title="Shadow Casting",
         bg_color=NEPTUNE_PRIMARY_BG,
         inline=True,
         inline_height=17,
