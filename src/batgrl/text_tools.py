@@ -56,7 +56,7 @@ class Style(IntFlag):
 
 Cell = np.dtype(
     [
-        ("ord", "uint32"),
+        ("ord", "ulong"),
         ("style", "u1"),
         ("fg_color", "u1", (3,)),
         ("bg_color", "u1", (3,)),
@@ -407,7 +407,7 @@ def _smooth_bar(
     max_length: int,
     proportion: float,
     offset: float,
-) -> None:
+) -> tuple[str, ...]:
     """Create a smooth bar with given blocks."""
     if offset >= 1 or offset < 0:
         raise ValueError(
