@@ -96,7 +96,7 @@ def get_logger(name: str | None = None) -> CustomLogger:
     return typing.cast(CustomLogger, logging.getLogger(name))
 
 
-ANSI_LEVEL: Final = ANSI_LEVEL  # type: ignore
+logging.ANSI_LEVEL: Final = ANSI_LEVEL  # type: ignore
 logging.EVENTS: Final = EVENTS_LEVEL  # type: ignore
 logging.addLevelName(ANSI_LEVEL, "ANSI")
 logging.addLevelName(EVENTS_LEVEL, "EVENTS")
