@@ -60,9 +60,7 @@ class Focusable(Behavior):
             if gadget is None:
                 focusables.popleft()
             elif (
-                not gadget.is_visible
-                or not gadget.is_enabled
-                or gadget in cls.__focused
+                not gadget.is_visible or not gadget.is_enabled or gadget in cls._focused
             ):
                 focusables.rotate(step)
             else:
@@ -82,7 +80,7 @@ class Focusable(Behavior):
     @property
     def is_focused(self) -> bool:
         """Whether gadget has focus."""
-        return self in Focusable.__focused
+        return self in Focusable._focused
 
     def focus(self):
         """Focus gadget."""
@@ -94,8 +92,8 @@ class Focusable(Behavior):
         )
         ancestors.add(self)
 
-        focused = Focusable.__focused
-        Focusable.__focused = ancestors
+        focused = Focusable._focused
+        Focusable._focused = ancestors
 
         for blurred in focused - ancestors:
             blurred.on_blur()
@@ -124,7 +122,7 @@ class Focusable(Behavior):
                     ancestor.focus()
                     return
 
-            Focusable.__focused.discard(self)
+            Focusable._focused.discard(self)
             self.on_blur()
 
     def on_focus(self):
