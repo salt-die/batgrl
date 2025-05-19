@@ -272,7 +272,7 @@ class Text(Gadget):
         self.alpha = alpha
 
     @property
-    def chars(self) -> NDArray[np.dtype("<U1")]:
+    def chars(self) -> NDArray[np.str_]:
         """
         Return a view of the ords field of the canvas as 1-character unicode strings.
 
