@@ -1,7 +1,7 @@
 """Tools for text."""
 
 from enum import IntFlag
-from typing import Final
+from typing import Final, TypeAlias
 
 import numpy as np
 from numpy.typing import NDArray
@@ -54,14 +54,14 @@ class Style(IntFlag):
     REVERSE = 0b100000
 
 
-Cell = np.dtype(
+Cell: TypeAlias = np.dtype(
     [
         ("ord", "ulong"),
         ("style", "u1"),
         ("fg_color", "u1", (3,)),
         ("bg_color", "u1", (3,)),
     ]
-)
+)  # type: ignore
 """A structured array type that represents a single cell in a terminal."""
 
 
