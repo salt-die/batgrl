@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass, replace
 from enum import Enum
 from itertools import count, islice
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 from uwcwidth import wcswidth
 
@@ -14,13 +14,22 @@ from ..terminal.events import MouseEvent
 from ..text_tools import egc_ord
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import (
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    _GadgetList,
+)
 from .grid_layout import GridLayout
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, add_text
 
-__all__ = ["DataTable", "ColumnStyle", "Point", "Size"]
+__all__ = ["ColumnStyle", "DataTable", "Point", "Size"]
 
 
 class SupportsLessThan(Protocol):
@@ -29,7 +38,12 @@ class SupportsLessThan(Protocol):
     def __lt__(self, other: Any, /) -> bool: ...
 
 
-T = TypeVar("T", bound=SupportsLessThan)
+class _ColumnLabels(GridLayout):
+    children: _GadgetList[_ColumnLabel]
+
+
+class _DataCells(GridLayout):
+    children: _GadgetList[_DataCell]
 
 
 @dataclass
@@ -66,7 +80,7 @@ class ColumnStyle:
         Whether sorting is allowed for column.
     """
 
-    render: Callable[[T], str] | None = None
+    render: Callable[[SupportsLessThan], str] = str
     """
     A callable that renders column data into a string. Uses the built-in `str` by
     default.
@@ -79,10 +93,6 @@ class ColumnStyle:
     """Minimum width of column."""
     allow_sorting: bool = True
     """Whether sorting is allowed for column."""
-
-    def __post_init__(self):
-        if self.render is None:
-            self.render = str
 
 
 class _SortState(str, Enum):
@@ -200,26 +210,26 @@ class _ColumnLabel(_CellBase):
 
     def on_release(self):
         if not self.allow_sorting:
-            return True
+            return
 
         if self.sort_state is _SortState.ASCENDING:
             self.sort_state = _SortState.DESCENDING
         else:
             self.sort_state = _SortState.ASCENDING
 
-        column_label: _ColumnLabel
         for column_label in self.data_table._column_labels.children:
             if column_label is not self:
                 column_label.sort_state = _SortState.NOT_SORTED
 
         self.data_table._sort(self.column_id, self.sort_state)
-        return True
 
 
 class _DataCell(_CellBase):
     """A data cell in a data table."""
 
-    def __init__(self, data: T, row_id: int, striped: bool = False, **kwargs):
+    def __init__(
+        self, data: SupportsLessThan, row_id: int, striped: bool = False, **kwargs
+    ):
         super().__init__(**kwargs)
 
         self.data = data
@@ -273,14 +283,13 @@ class _DataCell(_CellBase):
 
     def on_release(self):
         self.data_table._on_release()
-        return True
 
 
 class _FauxPane(Pane):
-    def _render(self, canvas, graphics, kind):
-        data_table: DataTable = self.parent.parent
+    def _render(self, cells, graphics, kind):
+        data_table: DataTable = self.parent.parent  # type: ignore
         self._region -= data_table._table._region
-        super()._render(canvas, graphics, kind)
+        super()._render(cells, graphics, kind)
 
 
 class DataTable(Themable, Gadget):
@@ -302,9 +311,9 @@ class DataTable(Themable, Gadget):
         Whether columns can be sorted.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -359,9 +368,9 @@ class DataTable(Themable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -375,7 +384,7 @@ class DataTable(Themable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -414,7 +423,7 @@ class DataTable(Themable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -451,21 +460,21 @@ class DataTable(Themable, Gadget):
     def __init__(
         self,
         *,
-        data: dict[str, Sequence[T]] | None = None,
+        data: dict[str, Sequence[SupportsLessThan]] | None = None,
         default_style: ColumnStyle | None = None,
         select_items: Literal["cell", "row", "column"] = "row",
         zebra_stripes: bool = True,
         allow_sorting: bool = True,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self._column_labels = GridLayout(
+        self._column_labels = _ColumnLabels(
             grid_rows=1, grid_columns=0, orientation="lr-tb", is_transparent=True
         )
         """Grid layout containing column label cells."""
@@ -500,7 +509,7 @@ class DataTable(Themable, Gadget):
         """Column ids. Index of id corresponds to index of column in table."""
         self._column_styles: dict[int, ColumnStyle] = {}
         """Column id to column style."""
-        self._rows: dict[int, GridLayout] = {}
+        self._rows: dict[int, _DataCells] = {}
         """Row id to grid layout for row."""
         self._hover_column_id = -1
         """Column id that mouse is hovering or -1 if no columns are hovered."""
@@ -508,7 +517,7 @@ class DataTable(Themable, Gadget):
         """Row id that mouse is hovering or -1 if no columns are hovered."""
         self.default_style = default_style or ColumnStyle()
         """Default style for new columns."""
-        self._select_items = select_items
+        self._select_items: Literal["cell", "row", "column"] = select_items
         """Determines which items are selected when data table is clicked."""
         self._zebra_stripes = zebra_stripes
         """Whether alternate rows are colored differently."""
@@ -585,9 +594,7 @@ class DataTable(Themable, Gadget):
         primary_bg = self.get_color("primary_bg")
         sort_fg = self.get_color("data_table_sort_indicator_fg")
         sort_bg = self.get_color("data_table_sort_indicator_bg")
-        self._table.bg_color = primary_bg
 
-        label: _ColumnLabel
         for label in self._column_labels.children:
             label.default_fg_color = primary_fg
             label.default_bg_color = primary_bg
@@ -596,7 +603,6 @@ class DataTable(Themable, Gadget):
             label.canvas["fg_color"][label.indicator_pos] = sort_fg
             label.canvas["bg_color"][label.indicator_pos] = sort_bg
 
-        cell: _DataCell
         for row in self._rows.values():
             for cell in row.children:
                 self._paint_cell_normal(cell)
@@ -651,8 +657,6 @@ class DataTable(Themable, Gadget):
         self._update_hover(column_id, row_id)
 
     def _update_hover(self, column_id: int = -1, row_id: int = -1):
-        cell: _DataCell
-
         if self.select_items == "row":
             if self._hover_row_id != row_id:
                 if self._hover_row_id != -1:
@@ -688,7 +692,6 @@ class DataTable(Themable, Gadget):
         self._hover_column_id = column_id
 
     def _on_release(self):
-        cell: _DataCell
         if self.select_items == "row":
             for cell in self._rows[self._hover_row_id].children:
                 cell.selected = not cell.selected
@@ -712,7 +715,8 @@ class DataTable(Themable, Gadget):
             key=lambda row: row.children[column_index].data,
             reverse=sort_state is _SortState.DESCENDING,
         )
-        self._table.children = [self._table.children[0], *sorted_rows]
+        self._table.children._gadgets = [self._table.children[0], *sorted_rows]
+        self._table._invalidate_regions()
         self._table._reposition_children()
 
     def _fix_sizes(self):
@@ -736,14 +740,14 @@ class DataTable(Themable, Gadget):
         self._hover_column_id = self._hover_row_id = -1
         self._repaint_cells()
 
-    def _iter_rows(self) -> Iterator[GridLayout]:
+    def _iter_rows(self) -> Iterator[_DataCells]:
         """Iterate over rows of table. The first row of column labels are skipped."""
         return islice(self._table.children, 1, None)
 
     def add_column(
         self,
         label: str,
-        data: Sequence[T] | None = None,
+        data: Sequence[SupportsLessThan] | None = None,
         style: ColumnStyle | None = None,
     ) -> int:
         """
@@ -757,7 +761,7 @@ class DataTable(Themable, Gadget):
         ----------
         label : str
             The column label.
-        data : Sequence[T] | None, default: None
+        data : Sequence[SupportsLessThan] | None, default: None
             Column data.
         style : ColumnStyle | None, default: None
             Column style. Uses :attr:`default_style` by default.
@@ -795,7 +799,7 @@ class DataTable(Themable, Gadget):
             self._table.grid_rows += len(data)
             for item in data:
                 row_id = next(self._IDS)
-                row = GridLayout(
+                row = _DataCells(
                     grid_rows=1,
                     grid_columns=1,
                     orientation="lr-bt",
@@ -854,7 +858,7 @@ class DataTable(Themable, Gadget):
             )
 
         row_id = next(self._IDS)
-        row_layout = GridLayout(
+        row_layout = _DataCells(
             grid_rows=1,
             grid_columns=len(data),
             orientation="lr-bt",

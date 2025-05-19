@@ -4,17 +4,18 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from math import ceil
-from numbers import Real
+from typing import cast
 
 import cv2
 import numpy as np
+from numpy.typing import NDArray
 from uwcwidth import wcswidth
 
 from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
 from ..terminal.events import MouseEvent
 from .behaviors.movable import Movable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
-from .graphics import Blitter, Graphics, scale_geometry
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike, lerp
+from .graphics import AColor, Blitter, Graphics, scale_geometry
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, add_text, new_cell
@@ -32,14 +33,23 @@ VERTICAL_HALF = VERTICAL_SPACING // 2
 
 
 class _Legend(Movable, Text):
+    labels: list[str] | None
+
     def _build_legend(self):
-        plot: LinePlot = self.parent.parent
+        if self.labels is None or len(self.labels) == 0:
+            self.is_enabled = False
+            return
+
+        plot = cast(LinePlot, cast(Pane, self.parent).parent)
         colors = (
             rainbow_gradient(len(self.labels))
             if plot.line_colors is None
             else plot.line_colors
         )
-        self.is_enabled = self.labels and len(self.labels) == len(colors)
+        if len(self.labels) != len(colors):
+            self.is_enabled = False
+            return
+
         if self.is_enabled:
             height = len(self.labels) + 2
             width = max(map(wcswidth, self.labels)) + 6
@@ -58,13 +68,13 @@ class _Legend(Movable, Text):
                 self.add_str(name, pos=(i, 4))
 
 
-class _LinePlotProperty:
-    def __set_name__(self, owner, name):
+class _LinePlotProperty[T]:
+    def __set_name__(self, _, name):
         self.name = f"_{name}"
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance, _) -> T:
         if instance is None:
-            return self
+            return self  # type: ignore
 
         return getattr(instance, self.name)
 
@@ -83,19 +93,19 @@ class LinePlot(Gadget):
 
     Parameters
     ----------
-    xs : Sequence[Sequence[Real]]
+    xs : Sequence[NDArray[float]]
         x-coordinates of each plot.
-    ys : Sequence[Sequence[Real]]
+    ys : Sequence[NDArray[float]]
         y-coordinates of each plot.
     blitter : Blitter, default: "braille"
         Determines how the line plot is rendered.
-    min_x : Real | None, default: None
+    min_x : float | None, default: None
         Minimum x-value of plot. If `None`, min_x will be minimum of all xs.
-    max_x : Real | None, default: None
+    max_x : float | None, default: None
         Maximum x-value of plot. If `None`, max_x will be maximum of all xs.
-    min_y : Real | None, default: None
+    min_y : float | None, default: None
         Minimum y-value of plot. If `None`, min_y will be minimum of all ys.
-    max_y : Real | None, default: None
+    max_y : float | None, default: None
         Maximum y-value of plot. If `None`, max_y will be maximum of all ys.
     line_colors : list[Color] | None, default: None
         The color of each line plot. If `None`, a rainbow gradient is used.
@@ -111,9 +121,9 @@ class LinePlot(Gadget):
         Optional label for y-axis.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -130,19 +140,19 @@ class LinePlot(Gadget):
 
     Attributes
     ----------
-    xs : Sequence[Sequence[Real]]
+    xs : Sequence[NDArray[float]]
         x-coordinates of each plot.
-    ys : Sequence[Sequence[Real]]
+    ys : Sequence[NDArray[float]]
         y-coordinates of each plot.
     blitter : Blitter
         Determines how the line plot is rendered.
-    min_x : Real | None
+    min_x : float | None
         Minimum x-value of plot. If `None`, min_x will be minimum of all xs.
-    max_x : Real | None
+    max_x : float | None
         Maximum x-value of plot. If `None`, max_x will be maximum of all xs.
-    min_y : Real | None
+    min_y : float | None
         Minimum y-value of plot. If `None`, min_y will be minimum of all ys.
-    max_y : Real | None
+    max_y : float | None
         Maximum y-value of plot. If `None`, max_y will be maximum of all ys.
     line_colors : list[Color] | None
         The color of each line plot. If `None`, a rainbow gradient is used.
@@ -186,9 +196,9 @@ class LinePlot(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -202,7 +212,7 @@ class LinePlot(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -225,7 +235,7 @@ class LinePlot(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -257,33 +267,33 @@ class LinePlot(Gadget):
         Handle a focus event.
     """
 
-    xs: Sequence[Sequence[Real]] = _LinePlotProperty()
+    xs: _LinePlotProperty[Sequence[NDArray[float]]] = _LinePlotProperty()
     """x-coordinates of each plot."""
-    ys: Sequence[Sequence[Real]] = _LinePlotProperty()
+    ys: _LinePlotProperty[Sequence[NDArray[float]]] = _LinePlotProperty()
     """x-coordinates of each plot."""
-    blitter: Blitter = _LinePlotProperty()
+    blitter: _LinePlotProperty[Blitter] = _LinePlotProperty()
     """Determines which characters are used to draw the plot."""
-    min_x: Real | None = _LinePlotProperty()
+    min_x: _LinePlotProperty[float | None] = _LinePlotProperty()
     """Minimum x-value of plot."""
-    max_x: Real | None = _LinePlotProperty()
+    max_x: _LinePlotProperty[float | None] = _LinePlotProperty()
     """Maximum x-value of plot."""
-    min_y: Real | None = _LinePlotProperty()
+    min_y: _LinePlotProperty[float | None] = _LinePlotProperty()
     """Minimum y-value of plot."""
-    max_y: Real | None = _LinePlotProperty()
+    max_y: _LinePlotProperty[float | None] = _LinePlotProperty()
     """Maximum y-value of plot."""
-    line_colors: list[Color] | None = _LinePlotProperty()
+    line_colors: _LinePlotProperty[list[Color] | None] = _LinePlotProperty()
     """The color of each line plot."""
 
     def __init__(
         self,
         *,
-        xs: Sequence[Sequence[Real]],
-        ys: Sequence[Sequence[Real]],
+        xs: Sequence[NDArray[float]],
+        ys: Sequence[NDArray[float]],
         blitter: Blitter = "braille",
-        min_x: Real | None = None,
-        max_x: Real | None = None,
-        min_y: Real | None = None,
-        max_y: Real | None = None,
+        min_x: float | None = None,
+        max_x: float | None = None,
+        min_y: float | None = None,
+        max_y: float | None = None,
         line_colors: list[Color] | None = None,
         legend_labels: list[str] | None = None,
         plot_fg_color: Color = NEPTUNE_PRIMARY_FG,
@@ -291,8 +301,8 @@ class LinePlot(Gadget):
         x_label: str | None = None,
         y_label: str | None = None,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -300,7 +310,9 @@ class LinePlot(Gadget):
         is_enabled: bool = True,
     ):
         default_cell = new_cell(fg_color=plot_fg_color, bg_color=plot_bg_color)
-        self._traces = Graphics(default_color=(*plot_bg_color, 0), is_transparent=True)
+        self._traces = Graphics(
+            default_color=AColor(*plot_bg_color, 0), is_transparent=True
+        )
         self._scroll_view = ScrollView(
             show_vertical_bar=False,
             show_horizontal_bar=False,
@@ -330,7 +342,7 @@ class LinePlot(Gadget):
 
         self._xs = xs
         self._ys = ys
-        self._blitter = blitter
+        self._blitter: Blitter = blitter
         self._min_x = min_x
         self._max_x = max_x
         self._min_y = min_y
@@ -403,8 +415,6 @@ class LinePlot(Gadget):
             if isinstance(child, Text):
                 child.canvas["fg_color"] = plot_fg_color
                 child.default_fg_color = plot_fg_color
-            elif isinstance(child, Pane):
-                child.fg_color = plot_fg_color
 
         self._legend._build_legend()
 
@@ -424,7 +434,7 @@ class LinePlot(Gadget):
             elif isinstance(child, Pane):
                 child.bg_color = plot_bg_color
             elif isinstance(child, Graphics):
-                child.default_color = (*plot_bg_color, 0)
+                child.default_color = AColor(*plot_bg_color, 0)
 
         self._legend._build_legend()
 
@@ -510,7 +520,7 @@ class LinePlot(Gadget):
             return
 
         self._traces.clear()
-        if self._traces.blitter != self.blitter:
+        if self._traces.blitter != self.blitter:  # type: ignore
             self._traces.blitter = self.blitter
 
         min_x = min(xs.min() for xs in self.xs) if self.min_x is None else self.min_x
@@ -532,7 +542,7 @@ class LinePlot(Gadget):
             scaled_ys = plot_h * (ys - min_y) / y_delta
             scaled_xs = plot_w * (xs - min_x) / x_delta
             coords = np.dstack((scaled_xs, plot_h - scaled_ys)).astype(int)
-            cv2.polylines(plot, coords, isClosed=False, color=(*color, 255))
+            cv2.polylines(plot, coords, isClosed=False, color=(*color, 255))  # type: ignore
         _, left = scale_geometry(self._blitter, Size(1, TICK_HALF))
         _, right = scale_geometry(self._blitter, Size(1, plot_right))
         self._traces.texture[:, left:right] = plot

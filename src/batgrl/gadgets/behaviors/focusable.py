@@ -3,15 +3,17 @@
 from collections import deque
 from weakref import ReferenceType, WeakSet, ref
 
+from . import Behavior
+
 __all__ = ["Focusable"]
 
 
 class AnyFocusedProperty:
-    def __get__(self, instance, owner):
-        return bool(Focusable._Focusable__focused)
+    def __get__(self, instance, owner) -> bool:
+        return bool(Focusable._focused)
 
 
-class Focusable:
+class Focusable(Behavior):
     """
     Focus behavior for a gadget.
 
@@ -44,9 +46,9 @@ class Focusable:
 
     __focusables: deque[ReferenceType] = deque()
     """Focusables that are part of the gadget tree."""
-    __focused: WeakSet = WeakSet()
+    _focused: WeakSet = WeakSet()
     """Focused focusables."""
-    any_focused: bool = AnyFocusedProperty()
+    any_focused: AnyFocusedProperty = AnyFocusedProperty()
     """Whether any gadget has focus."""
 
     @classmethod

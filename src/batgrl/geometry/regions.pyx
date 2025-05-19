@@ -372,6 +372,9 @@ cdef class Region:
         return self.cregion.len > 0
 
     def __eq__(self, other: Region) -> bool:
+        if not isinstance(other, Region):
+            return False
+        
         cdef:
             size_t i, j
             Band *r

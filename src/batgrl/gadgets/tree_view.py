@@ -3,17 +3,29 @@ A base for creating tree-like views. Tree views are composed of nodes that
 can be selected and toggled open or closed.
 """
 
+from __future__ import annotations
+
 from collections.abc import Iterator
-from typing import Self
+from typing import Self, cast
 
 from numpy.typing import NDArray
 
 from .behaviors.button_behavior import ButtonBehavior, ButtonState
 from .behaviors.themable import Themable
-from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint
+from .gadget import (
+    Cell,
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    _GadgetList,
+)
 from .text import Text
 
-__all__ = ["TreeView", "TreeViewNode", "ButtonState", "Point", "Size"]
+__all__ = ["ButtonState", "Point", "Size", "TreeView", "TreeViewNode"]
 
 
 class TreeViewNode(Themable, ButtonBehavior, Text):
@@ -30,9 +42,9 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -93,9 +105,9 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -109,7 +121,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -168,7 +180,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -206,8 +218,8 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         always_release: bool = False,
         default_cell: NDArray[Cell] | str = " ",
         alpha: float = 0.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -219,6 +231,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self.is_selected: bool = False
         self.parent_node: Self | None = None
         self.child_nodes: list[Self] = []
+        self.tree_view: TreeView | None = None
         self.level: int = -1
         super().__init__(
             always_release=always_release,
@@ -325,21 +338,22 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         if not self.is_leaf:
             self.is_open = not self.is_open
             self._toggle_update()
-            self.root_node.tree_view.update_tree_layout()
+            cast(TreeView, self.root_node.tree_view).update_tree_layout()
 
     def select(self):
         """Select node."""
-        if self.root_node.tree_view.selected_node is not None:
-            self.root_node.tree_view.selected_node.unselect()
+        tree_view = cast(TreeView, self.root_node.tree_view)
+        if tree_view.selected_node is not None:
+            tree_view.selected_node.unselect()
 
         self.is_selected = True
-        self.root_node.tree_view.selected_node = self
+        tree_view.selected_node = self
         self._repaint()
 
     def unselect(self):
         """Unselect node."""
         self.is_selected = False
-        self.root_node.tree_view.selected_node = None
+        cast(TreeView, self.root_node.tree_view).selected_node = None
         self._repaint()
 
     def on_release(self):
@@ -348,7 +362,7 @@ class TreeViewNode(Themable, ButtonBehavior, Text):
         self.toggle()
 
 
-class TreeView(Gadget):
+class TreeView[T: TreeViewNode](Gadget):
     r"""
     Base for creating tree-like views.
 
@@ -356,9 +370,9 @@ class TreeView(Gadget):
     ----------
     root_node : TreeViewNode
         Root node of tree view.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -405,9 +419,9 @@ class TreeView(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -421,7 +435,7 @@ class TreeView(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -446,7 +460,7 @@ class TreeView(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -480,16 +494,17 @@ class TreeView(Gadget):
 
     def __init__(
         self,
-        root_node: TreeViewNode,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        root_node: T,
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.selected_node = None
+        self.selected_node: T | None = None
+        self.children: _GadgetList[T]
         self.root_node = root_node
         root_node.tree_view = self
 

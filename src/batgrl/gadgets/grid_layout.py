@@ -1,9 +1,9 @@
 """A grid layout gadget."""
 
 from itertools import accumulate, product
-from typing import Literal
+from typing import Literal, assert_never
 
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 
 __all__ = ["GridLayout", "Orientation", "Point", "Size"]
 
@@ -18,13 +18,13 @@ Describes how the grid fills as children are added. As an example, the orientati
 """
 
 
-class _RepositionProperty:
-    def __set_name__(self, owner, name):
+class _RepositionProperty[T]:
+    def __set_name__(self, _, name):
         self.name = "_" + name
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance, _) -> T:
         if instance is None:
-            return self
+            return self  # type: ignore
 
         return getattr(instance, self.name)
 
@@ -57,9 +57,9 @@ class GridLayout(Gadget):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -124,9 +124,9 @@ class GridLayout(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -140,7 +140,7 @@ class GridLayout(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -166,7 +166,7 @@ class GridLayout(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -209,14 +209,14 @@ class GridLayout(Gadget):
     ``my_grid.size = my_grid.min_grid_size``.
     """
 
-    grid_rows: int = _RepositionProperty()
-    grid_columns: int = _RepositionProperty()
-    padding_left: int = _RepositionProperty()
-    padding_right: int = _RepositionProperty()
-    padding_top: int = _RepositionProperty()
-    padding_bottom: int = _RepositionProperty()
-    horizontal_spacing: int = _RepositionProperty()
-    vertical_spacing: int = _RepositionProperty()
+    grid_rows: _RepositionProperty[int] = _RepositionProperty()
+    grid_columns: _RepositionProperty[int] = _RepositionProperty()
+    padding_left: _RepositionProperty[int] = _RepositionProperty()
+    padding_right: _RepositionProperty[int] = _RepositionProperty()
+    padding_top: _RepositionProperty[int] = _RepositionProperty()
+    padding_bottom: _RepositionProperty[int] = _RepositionProperty()
+    horizontal_spacing: _RepositionProperty[int] = _RepositionProperty()
+    vertical_spacing: _RepositionProperty[int] = _RepositionProperty()
 
     def __init__(
         self,
@@ -230,8 +230,8 @@ class GridLayout(Gadget):
         padding_bottom: int = 0,
         horizontal_spacing: int = 0,
         vertical_spacing: int = 0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -240,7 +240,7 @@ class GridLayout(Gadget):
     ):
         self._grid_rows = grid_rows
         self._grid_columns = grid_columns
-        self._orientation = orientation
+        self._orientation: Orientation = orientation
         self._padding_left = padding_left
         self._padding_right = padding_right
         self._padding_top = padding_top
@@ -316,6 +316,7 @@ class GridLayout(Gadget):
             return (rows - row - 1) + col * rows
         if self.orientation == "bt-rl":
             return (rows - row - 1) + (cols - col - 1) * rows
+        assert_never(self.orientation)
 
     def _row_height(self, i: int) -> int:
         """Height of row `i`."""

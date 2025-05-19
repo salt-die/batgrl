@@ -12,7 +12,7 @@ from typing import Protocol
 import numpy as np
 from numpy.typing import NDArray
 
-from .basic import Point, clamp
+from .basic import Pointlike, clamp
 from .easings import EASINGS, Easing
 
 __all__ = ["BezierCurve", "Easing", "move_along_path"]
@@ -110,10 +110,26 @@ class BezierCurve:
         return self.evaluate(t)
 
 
-class HasPos(Protocol):
-    """An object with a position."""
+type Coord = Pointlike | tuple[float, float] | NDArray[float]
 
-    pos: Point
+
+class HasPosAttr(Protocol):
+    """An object with a ``pos`` attribute."""
+
+    pos: Coord
+
+
+class HasPosProp(Protocol):
+    """An object with a ``pos`` property."""
+
+    @property
+    def pos(self) -> Coord: ...
+
+    @pos.setter
+    def pos(self, pos: Coord): ...
+
+
+type HasPos = HasPosAttr | HasPosProp
 
 
 async def move_along_path(

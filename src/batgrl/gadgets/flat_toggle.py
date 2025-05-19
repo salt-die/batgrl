@@ -8,7 +8,7 @@ from numpy.typing import NDArray
 from ..colors import GREEN, Color
 from ..text_tools import Cell, Style, smooth_horizontal_bar
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
-from .text import Point, PosHint, Size, SizeHint, Text
+from .text import Point, Pointlike, PosHint, Size, SizeHint, Sizelike, Text
 
 __all__ = ["FlatToggle", "Point", "Size"]
 
@@ -37,9 +37,9 @@ class FlatToggle(ToggleButtonBehavior, Text):
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
-    size : Size, default: Size(1, 3)
+    size : Sizelike, default: Size(1, 3)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -106,9 +106,9 @@ class FlatToggle(ToggleButtonBehavior, Text):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -122,7 +122,7 @@ class FlatToggle(ToggleButtonBehavior, Text):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -173,7 +173,7 @@ class FlatToggle(ToggleButtonBehavior, Text):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -214,8 +214,8 @@ class FlatToggle(ToggleButtonBehavior, Text):
         always_release: bool = False,
         default_cell: NDArray[Cell] | str = " ",
         alpha: float = 0.0,
-        size: Size = Size(1, 3),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(1, 3),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -254,31 +254,31 @@ class FlatToggle(ToggleButtonBehavior, Text):
         self.canvas["fg_color"] = DARK_GREY
         self.canvas["bg_color"] = on_color if self.toggle_state == "on" else off_color
 
-    def update_off(self):
+    def update_off(self) -> None:
         """Paint the off state."""
         self._update_color()
 
-    def update_on(self):
+    def update_on(self) -> None:
         """Paint the on state."""
         self._update_color()
 
-    def update_normal(self):
+    def update_normal(self) -> None:
         """Paint the normal state."""
         self._update_color()
 
-    def update_down(self):
+    def update_down(self) -> None:
         """Paint the down state."""
         self._update_color()
 
-    def update_hover(self):
+    def update_hover(self) -> None:
         """Paint the hover state."""
         self._update_color()
 
-    def update_disallowed(self):
+    def update_disallowed(self) -> None:
         """Paint the disallowed state."""
         self._update_color()
 
-    def _draw_toggle(self, _=0.0):
+    def _draw_toggle(self, _=0.0) -> None:
         self.clear()
         self._update_color()
 
@@ -291,7 +291,7 @@ class FlatToggle(ToggleButtonBehavior, Text):
         self.chars[:, x : x + 2] = bar
         self.canvas["style"][:, x] = Style.REVERSE
 
-    def on_toggle(self):
+    def on_toggle(self) -> None:
         """Animate toggle."""
         if self._animation_task is not None:
             self._animation_task.cancel()
@@ -308,12 +308,12 @@ class FlatToggle(ToggleButtonBehavior, Text):
             )
         )
 
-    def on_size(self):
+    def on_size(self) -> None:
         """Redraw toggle on resize."""
         super().on_size()
         self._draw_toggle()
 
-    def on_remove(self):
+    def on_remove(self) -> None:
         """Stop animation on remove."""
         if self._animation_task is not None:
             self._animation_task.cancel()

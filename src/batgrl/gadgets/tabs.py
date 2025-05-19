@@ -1,16 +1,28 @@
 """A tabbed gadget."""
 
+from __future__ import annotations
+
 import asyncio
+from typing import cast
 
 from ..colors import lerp_colors
 from ..text_tools import Style
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, new_cell
+from .gadget import (
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    new_cell,
+)
 from .pane import Pane
 from .text import Text
 
-__all__ = ["Tabs", "Point", "Size"]
+__all__ = ["Point", "Size", "Tabs"]
 
 # TODO: Movable tabs?
 TAB_SPACING = 3
@@ -29,17 +41,17 @@ class _Tab(Themable, ToggleButtonBehavior, Text):
         if self.toggle_state == "on":
             self.content.is_enabled = True
 
-            tabbed: Tabs = self.parent.parent
+            tabs: Tabs = cast(Tabs, self.parent.parent)
 
-            tabbed._history.remove(self.title)
-            tabbed._history.append(self.title)
+            tabs._history.remove(self.title)
+            tabs._history.append(self.title)
 
-            tabbed._active_tab = self.title
+            tabs._active_tab = self.title
 
-            if tabbed._underline_task is not None:
-                tabbed._underline_task.cancel()
-            tabbed._underline_task = asyncio.create_task(
-                tabbed._tab_underline.tween(
+            if tabs._underline_task is not None:
+                tabs._underline_task.cancel()
+            tabs._underline_task = asyncio.create_task(
+                tabs._tab_underline.tween(
                     duration=0.5,
                     easing="out_bounce",
                     x=self.x - 1,
@@ -87,9 +99,9 @@ class Tabs(Themable, Gadget):
 
     Parameters
     ----------
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -134,9 +146,9 @@ class Tabs(Themable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -150,7 +162,7 @@ class Tabs(Themable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -181,7 +193,7 @@ class Tabs(Themable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -216,8 +228,8 @@ class Tabs(Themable, Gadget):
     def __init__(
         self,
         *,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -234,7 +246,7 @@ class Tabs(Themable, Gadget):
             is_enabled=is_enabled,
         )
 
-        self.tabs: dict[str, Gadget] = {}
+        self.tabs: dict[str, _Tab] = {}
 
         h, w = self.size
         self.tab_bar = Pane(size_hint={"width_hint": 1.0}, size=(1, w))
@@ -271,9 +283,11 @@ class Tabs(Themable, Gadget):
         )
         self._tab_underline.add_gadgets(tab_underline_left, tab_underline_right)
 
-        self._active_tab = None
-        self._history = []  # Used to select the last viewed tab when a tab is removed.
-        self._underline_task = None
+        self._active_tab: str | None = None
+        self._history: list[
+            str
+        ] = []  # Used to select the last viewed tab when a tab is removed.
+        self._underline_task: asyncio.Task | None = None
 
         self.add_gadgets(
             self.tab_bar, self.separator, self._tab_underline, self.tab_window
@@ -346,12 +360,12 @@ class Tabs(Themable, Gadget):
         self._history.remove(title)
         self._reposition_tabs()
 
-        if self._active_tab is title:
+        if self._active_tab == title:
             if self._history:
                 self._active_tab = self._history[-1]
                 self.tabs[self._active_tab].toggle_state = "on"
             else:
                 self._active_tab = None
                 self._tab_underline.is_enabled = False
-        else:
+        elif self._active_tab is not None:
             self._tab_underline.x = self.tabs[self._active_tab].x - 1

@@ -1,12 +1,10 @@
 """A bar chart gadget."""
 
-from numbers import Real
-
 from uwcwidth import wcswidth
 
 from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, rainbow_gradient
 from ..text_tools import Style, add_text, smooth_vertical_bar
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, lerp
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike, lerp
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text, new_cell
@@ -20,13 +18,13 @@ PRECISION = 4
 DEFAULT_GRID_COLOR = Color.from_hex("272b40")
 
 
-class _BarChartProperty:
-    def __set_name__(self, owner, name):
+class _BarChartProperty[T]:
+    def __set_name__(self, _, name):
         self.name = f"_{name}"
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance, _) -> T:
         if instance is None:
-            return self
+            return self  # type: ignore
 
         return getattr(instance, self.name)
 
@@ -61,9 +59,9 @@ class BarChart(Gadget):
         Whether to show grid lines.
     grid_line_color : Color, default: DEFAULT_GRID_COLOR
         Color of grid lines if shown.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -128,9 +126,9 @@ class BarChart(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -144,7 +142,7 @@ class BarChart(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -167,7 +165,7 @@ class BarChart(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -199,33 +197,33 @@ class BarChart(Gadget):
         Handle a focus event.
     """
 
-    data: dict[str, Real] = _BarChartProperty()
+    data: _BarChartProperty[dict[str, float]] = _BarChartProperty()
     """Data for bar chart."""
-    min_y: Real | None = _BarChartProperty()
+    min_y: _BarChartProperty[float | None] = _BarChartProperty()
     """Minimum y-value of chart. If `None`, min_y will be minimum of chart values."""
-    max_y: Real | None = _BarChartProperty()
+    max_y: _BarChartProperty[float | None] = _BarChartProperty()
     """Maximum y-value of chart. If `None`, max_y will be maximum of chart values."""
-    bar_colors: list[Color] | None = _BarChartProperty()
+    bar_colors: _BarChartProperty[list[Color] | None] = _BarChartProperty()
     """Color of each bar. If `None`, a rainbow gradient is used."""
-    chart_fg_color: Color = _BarChartProperty()
+    chart_fg_color: _BarChartProperty[Color] = _BarChartProperty()
     """Foreground color of bar chart."""
-    chart_bg_color: Color = _BarChartProperty()
+    chart_bg_color: _BarChartProperty[Color] = _BarChartProperty()
     """Background color of bar chart."""
-    alpha: float = _BarChartProperty()
+    alpha: _BarChartProperty[float] = _BarChartProperty()
     """Transparency of gadget."""
-    y_label: str = _BarChartProperty()
+    y_label: _BarChartProperty[str] = _BarChartProperty()
     """Optional label for y-axis."""
-    show_grid_lines: bool = _BarChartProperty()
+    show_grid_lines: _BarChartProperty[bool] = _BarChartProperty()
     """Whether to show grid lines."""
-    grid_line_color: Color = _BarChartProperty()
+    grid_line_color: _BarChartProperty[Color] = _BarChartProperty()
     """Color of grid lines if shown."""
 
     def __init__(
         self,
-        data: dict[str, Real],
+        data: dict[str, float],
         *,
-        min_y: Real | None = 0,
-        max_y: Real | None = None,
+        min_y: float | None = 0,
+        max_y: float | None = None,
         bar_colors: list[Color] | None = None,
         chart_fg_color: Color = NEPTUNE_PRIMARY_FG,
         chart_bg_color: Color = NEPTUNE_PRIMARY_BG,
@@ -233,8 +231,8 @@ class BarChart(Gadget):
         y_label: str | None = None,
         show_grid_lines: bool = True,
         grid_line_color: Color = DEFAULT_GRID_COLOR,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,

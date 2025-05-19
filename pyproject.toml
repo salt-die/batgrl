@@ -1,5 +1,11 @@
 [build-system]
-requires = ["Cython>=3.0.3", "numpy>=2.0.0", "setuptools>=69.0.0", "uwcwidth>=1.0.0"]
+requires = [
+    "Cython>=3.0.3",
+    "numpy>=2.0.0",
+    "packaging>=25.0",
+    "setuptools>=80.7.1",
+    "uwcwidth>=1.0.0",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,11 +13,10 @@ name = "batgrl"
 description = "badass terminal graphics library"
 readme = "README-PYPI.md"
 requires-python = ">=3.12"
-license = {text = "MIT"}
+license = "MIT AND Apache-2.0"
 authors = [{name = "salt-die", email = "salt-die@protonmail.com"}]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
@@ -53,3 +58,7 @@ max-doc-length=88
 
 [tool.cython-lint]
 max-line-length = 88
+
+[tool.pyright]
+ignore = ["**/examples/*"]
+pythonPlatform = "All"

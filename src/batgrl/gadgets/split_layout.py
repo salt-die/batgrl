@@ -1,15 +1,17 @@
 """Draggable horizontal and vertical split layouts."""
 
+from __future__ import annotations
+
 from time import perf_counter
 from typing import Literal
 
 from ..colors import WHITE, Color, lerp_colors
 from ..geometry.easings import in_quart, out_quart
 from .behaviors.grabbable import Grabbable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike, clamp
 from .pane import Pane
 
-__all__ = ["HSplitLayout", "VSplitLayout", "Point", "Size"]
+__all__ = ["HSplitLayout", "Point", "Size", "VSplitLayout"]
 
 GRAY = Color(127, 127, 127)
 
@@ -30,19 +32,21 @@ class _Handle(Grabbable, Pane):
         return lerp_colors(WHITE, GRAY, out_quart(2.0 * p - 1.0))
 
     @bg_color.setter
-    def bg_color(self, _):
+    def bg_color(self, _):  # type: ignore
         pass
 
 
 class _HSplitHandle(_Handle):
+    parent: HSplitLayout  # type: ignore
+
     def grab_update(self, mouse_event):
-        self.parent: HSplitLayout
         self.parent.split_row += mouse_event.dy
 
 
 class _VSplitHandle(_Handle):
+    parent: VSplitLayout  # type: ignore
+
     def grab_update(self, mouse_event):
-        self.parent: VSplitLayout
         self.parent.split_col += mouse_event.dx
 
 
@@ -69,9 +73,9 @@ class HSplitLayout(Gadget):
         Minimum height of top pane.
     bottom_min_height : int, default: 1
         Minimum height of bottom pane.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -131,9 +135,9 @@ class HSplitLayout(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -147,7 +151,7 @@ class HSplitLayout(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -170,7 +174,7 @@ class HSplitLayout(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -210,8 +214,8 @@ class HSplitLayout(Gadget):
         split_resizable: bool = True,
         top_min_height: int = 1,
         bottom_min_height: int = 1,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -349,9 +353,9 @@ class VSplitLayout(Gadget):
         Minimum width of left pane.
     right_min_width : int, default: 1
         Minimum width of right pane.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -411,9 +415,9 @@ class VSplitLayout(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -427,7 +431,7 @@ class VSplitLayout(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -450,7 +454,7 @@ class VSplitLayout(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -489,8 +493,8 @@ class VSplitLayout(Gadget):
         split_resizable: bool = True,
         left_min_width: int = 1,
         right_min_width: int = 1,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,

@@ -2,12 +2,13 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Self
 
+from ...geometry.motion import Coord, HasPosProp
 from ...text_tools import Cell
 from ..text_field import Point, TextParticleField
 
 
 @dataclass
-class Particle:
+class Particle(HasPosProp):
     """
     A wrapper around an index into a text particle field's particle arrays.
 
@@ -53,7 +54,7 @@ class Particle:
         return Point(*self.field.particle_coords[self.index].tolist())
 
     @pos.setter
-    def pos(self, pos: Point):
+    def pos(self, pos: Coord):
         self.field.particle_coords[self.index] = pos
 
     @classmethod

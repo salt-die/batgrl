@@ -14,13 +14,15 @@ from .graphics import (
     Graphics,
     Interpolation,
     Point,
+    Pointlike,
     PosHint,
     Size,
     SizeHint,
+    Sizelike,
     clamp,
 )
 
-__all__ = ["ShadowCaster", "Restrictiveness", "Point", "Size"]
+__all__ = ["Point", "Restrictiveness", "ShadowCaster", "Size"]
 
 AGRAY = AColor(50, 50, 50)
 QUADS = tuple(product((1, -1), (1, -1), (False, True)))
@@ -60,9 +62,9 @@ class ShadowCaster(Graphics):
     ----------
     caster_map : NDArray[np.uint8]
         A 2-d map. Non-zero values are walls.
-    camera_pos : Point
+    camera_pos : Pointlike
         Position of camera in map.
-    camera_size : Size
+    camera_size : Sizelike
         Size of camera. Determines how much of the map is visible.
     tile_colors : list[AColor] | None, default: None
         A value ``n`` in the map will be colored ``tile_colors[n]``. If ``None``,
@@ -92,9 +94,9 @@ class ShadowCaster(Graphics):
         Interpolation used when gadget is resized.
     blitter : Blitter, default: "half"
         Determines how graphics are rendered.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -113,9 +115,9 @@ class ShadowCaster(Graphics):
     ----------
     caster_map : NDArray[np.uint8]
         A 2-d map. Non-zero values are walls.
-    camera_pos : Point
+    camera_pos : Pointlike
         Position of camera in map.
-    camera_size : Size
+    camera_size : Sizelike
         Size of camera. Determines how much of the map is visible.
     tile_colors : list[AColor]
         A value ``n`` in the map will be colored ``tile_colors[n]``.
@@ -173,9 +175,9 @@ class ShadowCaster(Graphics):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -189,7 +191,7 @@ class ShadowCaster(Graphics):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -221,7 +223,7 @@ class ShadowCaster(Graphics):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -257,8 +259,8 @@ class ShadowCaster(Graphics):
         self,
         *,
         caster_map: NDArray[np.uint8],
-        camera_pos: Point,
-        camera_size: Size,
+        camera_pos: Pointlike,
+        camera_size: Sizelike,
         tile_colors: list[AColor] | None = None,
         light_coords: list[tuple[float, float]] | None = None,
         light_colors: list[Color] | None = None,
@@ -272,8 +274,8 @@ class ShadowCaster(Graphics):
         alpha: float = 1.0,
         blitter: Blitter = "half",
         interpolation: Interpolation = "linear",
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = True,

@@ -3,17 +3,17 @@
 import math
 
 from ..geometry import Point, Size
-from .gadget import Gadget, PosHint, SizeHint
+from .gadget import Gadget, Pointlike, PosHint, SizeHint, Sizelike
 
-__all__ = ["VStackLayout", "HStackLayout", "Point", "Size"]
+__all__ = ["HStackLayout", "Point", "Size", "VStackLayout"]
 
 
 class _StackLayoutBase(Gadget):
     def __init__(
         self,
         *,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -55,6 +55,9 @@ class _StackLayoutBase(Gadget):
                 )
         self._reposition_children()
 
+    def _reposition_children(self) -> None:
+        pass
+
     def on_size(self):
         """Resize children on resize."""
         self.proportions = self.proportions
@@ -84,9 +87,9 @@ class VStackLayout(_StackLayoutBase):
 
     Parameters
     ----------
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -133,9 +136,9 @@ class VStackLayout(_StackLayoutBase):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -149,7 +152,7 @@ class VStackLayout(_StackLayoutBase):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -172,7 +175,7 @@ class VStackLayout(_StackLayoutBase):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -208,7 +211,7 @@ class VStackLayout(_StackLayoutBase):
     Stack layouts remove size and pos hints from their children.
     """
 
-    def _reposition_children(self):
+    def _reposition_children(self) -> None:
         for proportion, child in zip(self._proportions, self.children):
             child.size = int(proportion * self.height), self.width
 
@@ -235,9 +238,9 @@ class HStackLayout(_StackLayoutBase):
 
     Parameters
     ----------
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -284,9 +287,9 @@ class HStackLayout(_StackLayoutBase):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -300,7 +303,7 @@ class HStackLayout(_StackLayoutBase):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -323,7 +326,7 @@ class HStackLayout(_StackLayoutBase):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -359,7 +362,7 @@ class HStackLayout(_StackLayoutBase):
     Stack layouts remove size and pos hints from their children.
     """
 
-    def _reposition_children(self):
+    def _reposition_children(self) -> None:
         for proportion, child in zip(self._proportions, self.children):
             child.size = self.height, int(proportion * self.width)
 

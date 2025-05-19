@@ -1,6 +1,7 @@
 """A text-pad gadget for multiline editable text."""
 
 from dataclasses import astuple
+from typing import cast
 
 from ugrapheme import grapheme_iter, graphemes
 from uwcwidth import wcswidth
@@ -12,11 +13,11 @@ from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .cursor import Cursor
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 from .scroll_view import ScrollView
 from .text import Text
 
-__all__ = ["TextPad", "Point", "Size"]
+__all__ = ["Point", "Size", "TextPad"]
 
 logger = get_logger(__name__)
 
@@ -31,9 +32,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     ----------
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -94,9 +95,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -110,7 +111,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -177,7 +178,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -213,8 +214,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self,
         *,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -240,7 +241,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
             is_enabled=is_enabled,
         )
         self._last_x = None
-        self._selection_start = self._selection_end = None
+        self._selection_start: Pointlike | None = None
+        self._selection_end: Pointlike | None = None
         self._line_widths = [0]
         self._undo_stack = []
         self._redo_stack = []
@@ -356,7 +358,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         return self._cursor.pos
 
     @cursor.setter
-    def cursor(self, cursor: Point):
+    def cursor(self, cursor: Pointlike):
         """After setting cursor position, move pad so that cursor is visible."""
         self._cursor.pos = cursor
         self._scroll_view.scroll_to_rect(cursor)
@@ -365,6 +367,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self._highlight_selection()
 
     def _highlight_selection(self):
+        self._selection_start = cast(Pointlike, self._selection_start)
+        self._selection_end = cast(Pointlike, self._selection_end)
+
         fg = self._pad.canvas["fg_color"]
         bg = self._pad.canvas["bg_color"]
         fg[:] = self._pad.default_fg_color
@@ -429,9 +434,11 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
     def delete_selection(self):
         """Delete current selection."""
         if self.has_nonempty_selection:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             return self._del_text(self._selection_start, self._selection_end)
 
-    def _del_text(self, start: Point, end: Point):
+    def _del_text(self, start: Pointlike, end: Pointlike):
         ll = self._line_widths
         pad = self._pad
 
@@ -483,7 +490,7 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
         self.cursor = start
         return self._add_text, [start, contents], selection_start, selection_end, cursor
 
-    def _add_text(self, pos: Point, text: str):
+    def _add_text(self, pos: Pointlike, text: str):
         y, x = pos
         pad = self._pad
         ll = self._line_widths
@@ -644,8 +651,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 if not current_char.isspace():
                     first_char_found = True
                     char_is_word_char = is_word_char(current_char)
-            elif current_char.isspace() or char_is_word_char != is_word_char(
-                current_char
+            elif (
+                current_char.isspace()
+                or char_is_word_char != is_word_char(current_char)  # type: ignore
             ):
                 self.move_cursor_right()
                 break
@@ -667,8 +675,9 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
                 if not current_char.isspace():
                     first_char_found = True
                     char_is_word_char = is_word_char(current_char)
-            elif current_char.isspace() or char_is_word_char != is_word_char(
-                current_char
+            elif (
+                current_char.isspace()
+                or char_is_word_char != is_word_char(current_char)  # type: ignore
             ):
                 break
 
@@ -722,6 +731,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _left(self):
         if self.has_nonempty_selection:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
@@ -731,6 +742,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _right(self):
         if self.has_nonempty_selection:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end
@@ -777,6 +790,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _up(self):
         if self.is_selecting:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
@@ -784,6 +799,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _down(self):
         if self.is_selecting:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end
@@ -791,6 +808,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _pgup(self):
         if self.is_selecting:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
@@ -798,6 +817,8 @@ class TextPad(Themable, Grabbable, Focusable, Gadget):
 
     def _pgdn(self):
         if self.is_selecting:
+            self._selection_start = cast(Pointlike, self._selection_start)
+            self._selection_end = cast(Pointlike, self._selection_end)
             select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end

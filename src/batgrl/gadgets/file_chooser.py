@@ -3,10 +3,19 @@
 import sys
 from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
 from uwcwidth import wcswidth
 
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import (
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+)
 from .scroll_view import ScrollView
 from .tree_view import TreeView, TreeViewNode
 
@@ -41,7 +50,7 @@ class _ParentDirectory(TreeViewNode):
     def on_mouse(self, mouse_event):
         if (
             mouse_event.nclicks == 2
-            and self.parent.selected_node is self
+            and cast(TreeView, self.parent).selected_node is self
             and self.collides_point(mouse_event.pos)
         ):
             for ancestor in self.ancestors():
@@ -82,25 +91,26 @@ class _FileViewNode(TreeViewNode):
                 )
 
                 for path in paths:
-                    self.add_node(_FileViewNode(path=path))
+                    self.add_node(type(self)(path=path))
             except PermissionError:
                 return
 
     def on_mouse(self, mouse_event):
+        parent = cast(_FileView, self.parent)
         if (
             mouse_event.nclicks == 2
             and self.is_leaf
-            and self.parent.select_callback is not None
-            and self.parent.selected_node is self
+            and parent.select_callback is not None
+            and parent.selected_node is self
             and self.collides_point(mouse_event.pos)
         ):
-            self.parent.select_callback(self.path)
+            parent.select_callback(self.path)
             return True
 
         return super().on_mouse(mouse_event)
 
 
-class _FileView(TreeView):
+class _FileView(TreeView[_FileViewNode]):
     def __init__(
         self,
         root_node: _FileViewNode,
@@ -137,13 +147,13 @@ class _FileView(TreeView):
         if self.filter is not None:
             it = (node for node in it if self.filter(node.path))
 
-        sv: ScrollView = self.parent
-        sv.size = sv.parent.size
+        sv = cast(ScrollView, self.parent)
+        sv.size = cast(FileChooser, sv.parent).size
         max_width = sv.port_width
 
         if self.show_parent_dir:
             parent_dir = _ParentDirectory()
-            parent_dir.parent_node = self.root_node
+            parent_dir.parent_node = self.root_node  # type: ignore
             parent_dir.alpha = alpha
             parent_dir.is_transparent = is_transparent
             max_width = max(max_width, wcswidth(parent_dir.label))
@@ -152,6 +162,7 @@ class _FileView(TreeView):
         else:
             start = 0
 
+        y = 0
         for y, node in enumerate(it, start=start):
             node.alpha = alpha
             node.is_transparent = is_transparent
@@ -160,7 +171,6 @@ class _FileView(TreeView):
             self.add_gadget(node)
         self.size = y + 1, max_width
 
-        node: TreeViewNode
         for node in self.children:
             node.size = 1, max_width
             node.add_str(node.label)
@@ -198,7 +208,7 @@ class _FileView(TreeView):
             elif self.selected_node.is_open:
                 self.selected_node.toggle()
             elif self.selected_node.parent_node is not self.root_node:
-                self.selected_node.parent_node.select()
+                cast(_FileViewNode, self.selected_node.parent_node).select()
         elif key_event.key == "right":
             if self.selected_node is None:
                 self.children[0].select()
@@ -215,7 +225,7 @@ class _FileView(TreeView):
             return super().on_key(key_event)
 
         if self.selected_node is not None:
-            self.parent.scroll_to_rect(self.selected_node.pos)
+            cast(ScrollView, self.parent).scroll_to_rect(self.selected_node.pos)
 
         return True
 
@@ -242,9 +252,9 @@ class FileChooser(Gadget):
         Determines whether a path is displayed.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -301,9 +311,9 @@ class FileChooser(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -317,7 +327,7 @@ class FileChooser(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -340,7 +350,7 @@ class FileChooser(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -382,8 +392,8 @@ class FileChooser(Gadget):
         select_callback: Callable[[Path], None] | None = None,
         filter: Callable[[Path], bool] | None = None,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,

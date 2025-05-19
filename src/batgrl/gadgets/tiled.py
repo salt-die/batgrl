@@ -3,9 +3,9 @@
 from math import ceil
 
 from ..geometry import Region
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 
-__all__ = ["Tiled", "Point", "Size"]
+__all__ = ["Point", "Size", "Tiled"]
 
 
 class Tiled(Gadget):
@@ -16,9 +16,9 @@ class Tiled(Gadget):
     ----------
     tile : Gadget
         The gadget to tile.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -65,9 +65,9 @@ class Tiled(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -81,7 +81,7 @@ class Tiled(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -104,7 +104,7 @@ class Tiled(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -140,8 +140,8 @@ class Tiled(Gadget):
         self,
         *,
         tile: Gadget,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = True,

@@ -5,6 +5,7 @@ import atexit
 import time
 from pathlib import Path
 from platform import uname
+from typing import cast
 
 import cv2
 
@@ -16,13 +17,15 @@ from .graphics import (
     Graphics,
     Interpolation,
     Point,
+    Pointlike,
     PosHint,
     Size,
     SizeHint,
+    Sizelike,
     scale_geometry,
 )
 
-__all__ = ["Video", "Interpolation", "Point", "Size"]
+__all__ = ["Interpolation", "Point", "Size", "Video"]
 
 _IS_WSL: bool = uname().system == "Linux" and uname().release.endswith("Microsoft")
 
@@ -48,9 +51,9 @@ class Video(Graphics):
         Interpolation used when gadget is resized.
     blitter : Blitter, default: "half"
         Determines how graphics are rendered.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -111,9 +114,9 @@ class Video(Graphics):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -127,7 +130,7 @@ class Video(Graphics):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -162,7 +165,7 @@ class Video(Graphics):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -203,8 +206,8 @@ class Video(Graphics):
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
         blitter: Blitter = "half",
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -225,7 +228,7 @@ class Video(Graphics):
             is_visible=is_visible,
             is_enabled=is_enabled,
         )
-        self._resource = None
+        self._resource: cv2.VideoCapture | None = None
         self._video_task = None
         self.source = source
         self.loop = loop
@@ -275,7 +278,8 @@ class Video(Graphics):
             self.clear()
 
     def _time_delta(self) -> float:
-        return time.perf_counter() - self._resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
+        resource = cast(cv2.VideoCapture, self._resource)
+        return time.perf_counter() - resource.get(cv2.CAP_PROP_POS_MSEC) / 1000
 
     def _display_current_frame(self):
         h, w = self.size
@@ -283,7 +287,7 @@ class Video(Graphics):
             return
 
         resize_texture(
-            self._current_frame,
+            self._current_frame,  # type: ignore
             scale_geometry(self._blitter, self._size),
             self._interpolation,
             out=self.texture,

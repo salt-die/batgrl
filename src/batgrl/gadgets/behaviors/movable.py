@@ -86,6 +86,10 @@ class Movable(Grabbable):
         if self.allow_horizontal_translation:
             self.left += mouse_event.dx
 
+        if self.parent is None:
+            # Should be unreachable.
+            return
+
         if not self.allow_oob:
             self.top = clamp(self.top, 0, self.parent.height - self.height)
             self.left = clamp(self.left, 0, self.parent.width - self.width)

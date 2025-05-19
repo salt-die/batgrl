@@ -12,9 +12,19 @@ from numpy.typing import NDArray
 
 from .._rendering import text_field_render
 from ..geometry import clamp
-from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, new_cell
+from .gadget import (
+    Cell,
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    new_cell,
+)
 
-__all__ = ["TextParticleField", "Point", "Size"]
+__all__ = ["Point", "Size", "TextParticleField"]
 
 
 class TextParticleField(Gadget):
@@ -34,9 +44,9 @@ class TextParticleField(Gadget):
         Additional particle properties.
     alpha : float, default: 0.0
         Transparency of particles.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -91,9 +101,9 @@ class TextParticleField(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -107,7 +117,7 @@ class TextParticleField(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -132,7 +142,7 @@ class TextParticleField(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -169,10 +179,10 @@ class TextParticleField(Gadget):
         *,
         particle_coords: NDArray[np.float64] | None = None,
         particle_cells: NDArray[Cell] | None = None,
-        particle_properties: dict[str, Any] = None,
+        particle_properties: dict[str, Any] | None = None,
         alpha: float = 0.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -226,7 +236,7 @@ class TextParticleField(Gadget):
     @property
     def nparticles(self) -> int:
         """Number of particles in particle field."""
-        return len(self.particle_coords)
+        return self.particle_coords.shape[0]
 
     def particles_from_cells(self, cells: NDArray[Cell]) -> None:
         """

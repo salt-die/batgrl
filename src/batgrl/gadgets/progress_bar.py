@@ -2,13 +2,24 @@
 
 import asyncio
 from itertools import chain, cycle
+from typing import cast
 
 from ..text_tools import Style, smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
+from .gadget import (
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    bindable,
+    clamp,
+)
 from .text import Text
 
-__all__ = ["ProgressBar", "Point", "Size"]
+__all__ = ["Point", "ProgressBar", "Size"]
 
 
 class ProgressBar(Themable, Gadget):
@@ -24,9 +35,9 @@ class ProgressBar(Themable, Gadget):
         Time between loading animation updates.
     is_horizontal : bool, default: True
         If true, the bar will progress to the right, else upwards.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -77,9 +88,9 @@ class ProgressBar(Themable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -93,7 +104,7 @@ class ProgressBar(Themable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -120,7 +131,7 @@ class ProgressBar(Themable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -157,8 +168,8 @@ class ProgressBar(Themable, Gadget):
         *,
         is_horizontal: bool = True,
         animation_delay: float = 1 / 60,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -178,10 +189,11 @@ class ProgressBar(Themable, Gadget):
         self.add_gadget(self._bar)
         self.animation_delay = animation_delay
         self._is_horizontal = is_horizontal
-        self._progress = None
+        self._progress: float | None = None
+        self._loading_task: asyncio.Task | None = None
 
     @property
-    def progress(self) -> float:
+    def progress(self) -> float | None:
         """
         Current progress as a value between `0.0` and `1.0` or `None`.
 
@@ -201,8 +213,9 @@ class ProgressBar(Themable, Gadget):
 
         self._bar.size = self.size
 
-        if getattr(self, "_loading_task", False):
+        if self._loading_task is not None:
             self._loading_task.cancel()
+            self._loading_task = None
 
         if self._progress is None:
             self._loading_task = asyncio.create_task(self._loading_animation())
@@ -275,8 +288,9 @@ class ProgressBar(Themable, Gadget):
     def on_remove(self):
         """Cancel loading animation on remove."""
         super().on_remove()
-        if task := getattr(self, "_loading_task", False):
-            task.cancel()
+        if self._loading_task is not None:
+            self._loading_task.cancel()
+            self._loading_task = None
 
     def on_size(self):
         """Repaint bar on resize."""
@@ -295,9 +309,11 @@ class ProgressBar(Themable, Gadget):
         self._bar.clear()
         self._bar.canvas["fg_color"] = self.get_color("progress_bar_fg")
         self._bar.canvas["bg_color"] = self.get_color("progress_bar_bg")
+
+        progress = cast(float, self.progress)
         if self.is_horizontal:
-            smooth_bar = smooth_horizontal_bar(self.width, self.progress)
+            smooth_bar = smooth_horizontal_bar(self.width, progress)
             self._bar.chars[:, : len(smooth_bar)] = smooth_bar
         else:
-            smooth_bar = smooth_vertical_bar(self.height, self.progress)
+            smooth_bar = smooth_vertical_bar(self.height, progress)
             self._bar.chars[::-1][: len(smooth_bar)].T[:] = smooth_bar

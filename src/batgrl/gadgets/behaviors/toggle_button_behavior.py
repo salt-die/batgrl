@@ -6,7 +6,7 @@ from weakref import WeakValueDictionary
 
 from .button_behavior import ButtonBehavior, ButtonState
 
-__all__ = ["ButtonState", "ToggleState", "ToggleButtonBehavior"]
+__all__ = ["ButtonState", "ToggleButtonBehavior", "ToggleState"]
 
 ToggleState = Literal["on", "off"]
 """Toggle button behavior states."""
@@ -72,7 +72,7 @@ class ToggleButtonBehavior(ButtonBehavior):
         always_release: bool = False,
         **kwargs,
     ):
-        self._toggle_state = "off"
+        self._toggle_state: ToggleState = "off"
         super().__init__(always_release=always_release, **kwargs)
         self.group = group
         self.allow_no_selection = allow_no_selection

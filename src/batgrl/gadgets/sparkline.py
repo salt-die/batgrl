@@ -1,7 +1,7 @@
 """A sparkline gadget."""
 
 from collections.abc import Sequence
-from numbers import Real
+from typing import cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -10,10 +10,10 @@ from ..colors import NEPTUNE_PRIMARY_BG, NEPTUNE_PRIMARY_FG, Color, lerp_colors
 from ..terminal.events import MouseEvent
 from ..text_tools import smooth_vertical_bar
 from .cursor import Cursor
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 from .text import Text, add_text
 
-__all__ = ["Sparkline", "Point", "Size"]
+__all__ = ["Point", "Size", "Sparkline"]
 
 DEFAULT_MIN_COLOR = Color.from_hex("1b244b")
 DEFAULT_MAX_COLOR = Color.from_hex("4d67ff")
@@ -28,6 +28,8 @@ def _get_float_text(value: float) -> str:
 
 
 class _Tooltip(Text):
+    selector: Cursor
+
     def on_mouse(self, mouse_event: MouseEvent) -> bool | None:
         self.is_enabled = self.selector.is_enabled = False
 
@@ -38,7 +40,7 @@ class Sparkline(Gadget):
 
     Parameters
     ----------
-    data : Sequence[Real] | None, default: None
+    data : Sequence[float] | None, default: None
         Data for the sparkline.
     min_color : Color, default: DEFAULT_MIN_COLOR
         Color of minimum value of the sparkline.
@@ -54,9 +56,9 @@ class Sparkline(Gadget):
         Foreground color of tooltip.
     tooltip_bg_color : Color, default: NEPTUNE_PRIMARY_BG
         Background color of tooltip.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -74,7 +76,7 @@ class Sparkline(Gadget):
     Attributes
     ----------
     data : NDArray[np.float64]
-        Data for the sparkline. This can be set with a `Sequence[Real]` or `None`, but
+        Data for the sparkline. This can be set with a `Sequence[float]` or `None`, but
         will be converted into a (possibly empty) numpy array.
     min_color : Color
         Color of minimum value of the sparkline.
@@ -118,9 +120,9 @@ class Sparkline(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -134,7 +136,7 @@ class Sparkline(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -157,7 +159,7 @@ class Sparkline(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -192,7 +194,7 @@ class Sparkline(Gadget):
     def __init__(
         self,
         *,
-        data: Sequence[Real] | None = None,
+        data: Sequence[float] | None = None,
         min_color: Color = DEFAULT_MIN_COLOR,
         max_color: Color = DEFAULT_MAX_COLOR,
         highlight_color: Color = DEFAULT_HIGHLIGHT_COLOR,
@@ -200,8 +202,8 @@ class Sparkline(Gadget):
         show_tooltip: bool = True,
         tooltip_fg_color: Color = NEPTUNE_PRIMARY_FG,
         tooltip_bg_color: Color = NEPTUNE_PRIMARY_BG,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -244,22 +246,22 @@ class Sparkline(Gadget):
         self.tooltip_bg_color = tooltip_bg_color
 
         # Following are set in `_build_sparkline`:
-        self._walls: NDArray[np.float64]
+        self._walls: NDArray[int]
         """
         Boundaries for each bin. The `i`th bin starts at ``self._walls[i]`` and stops at
         ``self._walls[i + 1]``.
         """
-        self._mins: NDArray[np.float64]
+        self._mins: NDArray[float]
         """Mininum of each bin."""
-        self._maxs: NDArray[np.float64]
+        self._maxs: NDArray[float]
         """Maximum of each bin."""
-        self._means: NDArray[np.float64]
+        self._means: NDArray[float]
         """Arithmetic mean of each bin."""
 
     @property
     def bg_color(self) -> Color:
         """Background color of gadget."""
-        return self._selector.bg_color
+        return cast(Color, self._selector.bg_color)
 
     @bg_color.setter
     def bg_color(self, bg_color: Color):
@@ -270,7 +272,7 @@ class Sparkline(Gadget):
     @property
     def highlight_color(self) -> Color:
         """Color of highlighted value of the sparkline."""
-        return self._selector.fg_color
+        return cast(Color, self._selector.fg_color)
 
     @highlight_color.setter
     def highlight_color(self, highlight_color: Color):
@@ -333,19 +335,19 @@ class Sparkline(Gadget):
         return self._data
 
     @data.setter
-    def data(self, data: Sequence[Real] | None):
+    def data(self, data: Sequence[float] | None):
         self._data = np.array([]) if data is None else np.array(data, float)
         self._build_sparkline()
 
     def on_add(self):
         """Add tooltip to root and build sparkline on add."""
         super().on_add()
-        self.root.add_gadget(self._tooltip)
+        cast(Gadget, self.root).add_gadget(self._tooltip)
         self._build_sparkline()
 
     def on_remove(self):
         """Remove tooltip from root on remove."""
-        self.root.remove_gadget(self._tooltip)
+        cast(Gadget, self.root).remove_gadget(self._tooltip)
 
     def on_size(self):
         """Rebuild sparkline on resize."""
@@ -353,7 +355,7 @@ class Sparkline(Gadget):
         self._build_sparkline()
 
     def _build_sparkline(self):
-        if not self.root:
+        if self.root is None:
             return
 
         self._selector.is_enabled = False
@@ -413,7 +415,7 @@ class Sparkline(Gadget):
 
             tth, ttw = self._tooltip.size
             my, mx = mouse_event.pos
-            rh, rw = self.root.size
+            rh, rw = cast(Gadget, self.root).size
 
             # Keep the tooltip inbounds:
             if my + tth + 1 < rh:

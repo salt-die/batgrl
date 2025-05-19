@@ -58,11 +58,11 @@ def _create_on_progress(
     cover: Text,
     beam: Text,
     kind: Literal["down", "left", "right", "up"],
-) -> Callable[[], None]:
+) -> Callable[[float], None]:
     if kind == "down":
         last_bottom = beam.bottom
 
-        def on_progress(*args):
+        def on_progress(_):
             nonlocal last_bottom
             if beam.bottom != last_bottom:
                 pass_count[last_bottom + 1 : beam.bottom + 1, beam.x] += 1
@@ -74,7 +74,7 @@ def _create_on_progress(
     elif kind == "left":
         last_left = beam.left
 
-        def on_progress(*args):
+        def on_progress(_):
             nonlocal last_left
             if beam.left != last_left:
                 left = max(beam.left, 0)
@@ -85,7 +85,7 @@ def _create_on_progress(
     elif kind == "right":
         last_right = beam.right
 
-        def on_progress(*args):
+        def on_progress(_):
             nonlocal last_right
             if beam.right != last_right:
                 pass_count[beam.y, last_right + 1 : beam.right + 1] += 1
@@ -97,7 +97,7 @@ def _create_on_progress(
     else:
         last_top = beam.top
 
-        def on_progress(*args):
+        def on_progress(_):
             nonlocal last_top
             if beam.top != last_top:
                 top = max(beam.top, 0)
@@ -168,7 +168,7 @@ def _create_beams(
 
 async def _fade_cover(pass_count: NDArray[np.int32], cover: Text, text: Text):
     cover_fg = cover.canvas["fg_color"]
-    text_fg = text.canvas["fg_color"].astype(float)
+    text_fg = text.canvas["fg_color"].astype(float)  # type: ignore
     while not np.array_equal(cover_fg, text_fg):
         passed_mask = pass_count >= 1
         faded = cover_fg * 0.99 + text_fg * 0.01

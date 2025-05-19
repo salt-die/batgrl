@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Final
+from typing import Final, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -14,7 +14,7 @@ from ..geometry import Point, Size
 from ..text_tools import Cell, new_cell
 from .gadget import Gadget, PosHint, SizeHint
 from .scroll_view import ScrollView
-from .text import Text
+from .text import Pointlike, Sizelike, Text
 
 _CSI_RE: Final = re.compile(r"\x1b\[[;\d]*\w")
 """Control sequence pattern."""
@@ -214,7 +214,7 @@ class _AnsReader:
         self.fg_color = 7
         self.bg_color = 0
 
-        self.lines: list[list[tuple[Cell, int]]] = []
+        self.lines: list[list[Cell]] = []
         self.current_line: list[tuple[Cell, int]] = []
         self.cursor_y: int = 0
         self.cursor_x: int = 0
@@ -253,9 +253,9 @@ class AnsViewer(Gadget):
         Column width of ansi art.
     guess_width : bool
         Whether to guess column width if ``ans_width`` results in an error.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -304,9 +304,9 @@ class AnsViewer(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent : Gadget | None
         Parent gadget.
@@ -320,7 +320,7 @@ class AnsViewer(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -343,7 +343,7 @@ class AnsViewer(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -381,8 +381,8 @@ class AnsViewer(Gadget):
         path: Path,
         ans_width: int = 80,
         guess_width: bool = True,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -429,7 +429,7 @@ class AnsViewer(Gadget):
         canvas = self._ans_reader.read()
         if canvas is None:
             return
-        ans = Text(size=canvas.shape)
+        ans = Text(size=cast(Sizelike, canvas.shape))
         ans.canvas = canvas
         self._scroll_view.view = ans
         self.on_size()

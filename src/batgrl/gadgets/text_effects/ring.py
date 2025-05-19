@@ -4,8 +4,10 @@ import asyncio
 from math import cos, dist, sin, tau
 from random import choice, random
 from time import perf_counter
+from typing import cast
 
 import numpy as np
+from numpy.typing import NDArray
 
 from ...colors import BLUE, WHITE, Color, gradient, lerp_colors
 from ...geometry import BezierCurve, Point, move_along_path
@@ -16,6 +18,12 @@ from ._particle import Particle
 RNG = np.random.default_rng()
 RING_COLORS = [Color.from_hex("8a008a"), Color.from_hex("00d1ff")]
 DISPERSE_COLORS = gradient(BLUE, WHITE, n=10)
+
+
+class _RingParticle(Particle):
+    final_pos: Point
+    ring_point: tuple[float, float]
+    ring_color: Color
 
 
 async def ring_effect(text: Text):
@@ -33,19 +41,17 @@ async def ring_effect(text: Text):
     """
     field = TextParticleField(size_hint={"height_hint": 1.0, "width_hint": 1.0})
     field.particles_from_cells(text.canvas)
-    # indices = np.arange(len(pos))
-    # RNG.shuffle(indices)
 
-    particles = list(Particle.iter_from_field(field))
+    particles = list(_RingParticle.iter_from_field(field))
     for particle in particles:
         particle.final_pos = Point(int(particle.pos.y), int(particle.pos.x))
     positions = RNG.random((field.nparticles, 2)) * text.size
-    field.particle_coords = positions
+    field.particle_coords = cast(NDArray[float], positions)
 
     min_dim = min(text.height, text.width / 2)
     max_radius = int(2**0.5 * (min_dim / 2))
 
-    radii = list(range(max_radius - 3, 3, -min_dim // 5))
+    radii = list(range(max_radius - 3, 3, -int(min_dim / 5)))
     center = Point(text.height // 2, text.width // 2)
 
     text.add_gadget(field)
@@ -87,7 +93,9 @@ def _closest_point_on_circle(
     return ty, 2 * tx
 
 
-def _rotate_around_center(p: Point, center: Point, theta: float) -> tuple[float, float]:
+def _rotate_around_center(
+    p: tuple[float, float], center: Point, theta: float
+) -> tuple[float, float]:
     py, px = p
     cy, cx = center
     oy, ox = py - cy, (px - cx) / 2
@@ -107,8 +115,8 @@ def _random_nearby_point(p: Point) -> tuple[float, float]:
 
 
 async def _move_to_rings(
-    particles: list[Particle], radii: list[int], center: Point
-) -> dict[int, list[Particle]]:
+    particles: list[_RingParticle], radii: list[int], center: Point
+) -> dict[int, list[_RingParticle]]:
     ring_colors = {
         radius: RING_COLORS[i % len(RING_COLORS)] for i, radius in enumerate(radii)
     }
@@ -150,7 +158,9 @@ async def _move_to_rings(
 
 
 async def _spin_rings(
-    radius_to_particles: dict[int, list[Particle]], center: Point, reverse: bool = False
+    radius_to_particles: dict[int, list[_RingParticle]],
+    center: Point,
+    reverse: bool = False,
 ):
     start = perf_counter()
     theta = tau / 100
@@ -166,13 +176,13 @@ async def _spin_rings(
                 y, x = _rotate_around_center(
                     particle.ring_point, center, direction * theta
                 )
-                particle.pos = y, x
+                particle.pos = int(y), int(x)
 
         theta += tau / 100
         await asyncio.sleep(0)
 
 
-async def _disperse(particles: list[Particle]):
+async def _disperse(particles: list[_RingParticle]):
     paths = []
     for particle in particles:
         controls = [particle.pos] + [
@@ -207,7 +217,7 @@ async def _disperse(particles: list[Particle]):
     await asyncio.gather(*motions)
 
 
-async def _settle(particles: list[Particle], text: Text):
+async def _settle(particles: list[_RingParticle], text: Text):
     paths = []
     for particle in particles:
         controls = [

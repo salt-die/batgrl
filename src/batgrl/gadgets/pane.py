@@ -5,7 +5,18 @@ from numpy.typing import NDArray
 
 from .._rendering import pane_render
 from ..colors import BLACK, Color
-from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
+from .gadget import (
+    Cell,
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    bindable,
+    clamp,
+)
 
 __all__ = ["Pane", "Point", "Size"]
 
@@ -20,9 +31,9 @@ class Pane(Gadget):
         Background color of gadget.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -71,9 +82,9 @@ class Pane(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -87,7 +98,7 @@ class Pane(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -110,7 +121,7 @@ class Pane(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -147,8 +158,8 @@ class Pane(Gadget):
         *,
         bg_color: Color = BLACK,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = True,

@@ -6,6 +6,8 @@ from typing import Literal
 from ..geometry import Point, Size
 from .events import Event
 
+DSR_REQUEST_TIMEOUT: float
+
 class Vt100Terminal:
     """
     Base for VT100 terminals.
@@ -90,6 +92,15 @@ class Vt100Terminal:
     erase_in_display(n)
         Clear part of the screen.
     """
+
+    stdin: int
+    stdout: int
+    in_alternate_screen: bool
+    _event_handler: Callable[[list[Event]], None] | None
+    _event_buffer: list[Event]
+
+    def __init__(self, stdin: int = 0, stdout: int = 1) -> None:
+        pass
 
     def process_stdin(self) -> None:
         """Read from stdin and feed data into input parser to generate events."""

@@ -2,12 +2,20 @@
 
 import asyncio
 from random import choice
+from typing import cast
 
 import numpy as np
 from numpy.typing import NDArray
 
 from ...colors import BLACK, WHITE, Color, gradient, lerp_colors
-from ...geometry import BezierCurve, Point, clamp, move_along_path, points_on_circle
+from ...geometry import (
+    BezierCurve,
+    Point,
+    Pointlike,
+    clamp,
+    move_along_path,
+    points_on_circle,
+)
 from ..text import Text
 from ..text_field import TextParticleField
 from ._particle import Particle
@@ -29,6 +37,12 @@ MIDDLE_COLOR = Color.from_hex("00d1ff")
 RNG = np.random.default_rng()
 
 
+class _BlackHoleParticle(Particle):
+    final_ord: int
+    final_fg_color: Color
+    final_pos: Pointlike
+
+
 async def black_hole_effect(text: Text):
     """
     Create a black hole effect.
@@ -45,7 +59,7 @@ async def black_hole_effect(text: Text):
     field = TextParticleField(size_hint={"height_hint": 1.0, "width_hint": 1.0})
     field.particles_from_cells(text.canvas)
 
-    all_particles = list(Particle.iter_from_field(field))
+    all_particles = list(_BlackHoleParticle.iter_from_field(field))
 
     positions = RNG.random((field.nparticles, 2)) * text.size
     for particle, position in zip(all_particles, positions):
@@ -54,7 +68,7 @@ async def black_hole_effect(text: Text):
         particle.final_pos = particle.pos
         particle.cell["ord"] = ord(choice(STARS))
         particle.cell["fg_color"] = choice(STAR_GRADIENT)
-        particle.pos = position
+        particle.pos = cast(NDArray[np.float64], position)
 
     black_hole = TextParticleField(
         size_hint={"height_hint": 1.0, "width_hint": 1.0}, is_transparent=True
@@ -106,7 +120,7 @@ async def black_hole_effect(text: Text):
     text.remove_gadget(field)
 
 
-async def _forming(particles: list[Particle], positions: NDArray[np.float32]):
+async def _forming(particles: list[Particle], positions: NDArray[float]):
     for particle in particles:
         particle.cell["ord"] = ord("✸")
         particle.cell["fg_color"] = WHITE
@@ -150,7 +164,9 @@ async def _rotating(
 
 
 async def _consuming(
-    particles: list[Particle], positions: NDArray[np.float32], center: Point
+    particles: list[_BlackHoleParticle],
+    positions: NDArray[float],
+    center: Point,
 ):
     particles.sort(key=lambda p: (p.pos.y - center.y) ** 2 + (p.pos.x - center.x) ** 2)
 
@@ -188,7 +204,7 @@ async def _consuming(
 
 async def _collapsing(
     particles: list[Particle],
-    positions: NDArray[np.float32],
+    positions: NDArray[float],
     center: Point,
     radius: int,
 ):
@@ -222,7 +238,7 @@ async def _point_char(black_hole: TextParticleField, center: Point):
             await asyncio.sleep(0.05)
 
 
-async def _exploding(particles: list[Particle], center: Point):
+async def _exploding(particles: list[_BlackHoleParticle], center: Point):
     nearby_paths = []
     final_paths = []
     for particle in particles:

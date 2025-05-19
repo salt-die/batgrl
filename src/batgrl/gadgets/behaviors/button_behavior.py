@@ -2,13 +2,15 @@
 
 from typing import Literal
 
-__all__ = ["ButtonState", "ButtonBehavior"]
+from . import Behavior
+
+__all__ = ["ButtonBehavior", "ButtonState"]
 
 ButtonState = Literal["normal", "hover", "down", "disallowed"]
 """Button behavior states."""
 
 
-class ButtonBehavior:
+class ButtonBehavior(Behavior):
     """
     Button behavior for a gadget.
 
@@ -51,7 +53,7 @@ class ButtonBehavior:
     def __init__(self, *, always_release: bool = False, **kwargs):
         super().__init__(**kwargs)
         self.always_release = always_release
-        self.button_state: ButtonState = "normal"
+        self._button_state: ButtonState = "normal"
 
     @property
     def button_state(self) -> ButtonState:
@@ -110,17 +112,17 @@ class ButtonBehavior:
         elif collides and self.button_state == "normal":
             self.button_state = "hover"
 
-    def on_release(self):
+    def on_release(self) -> None:
         """Triggered when button is released."""
 
-    def update_normal(self):
+    def update_normal(self) -> None:
         """Paint the normal state."""
 
-    def update_hover(self):
+    def update_hover(self) -> None:
         """Paint the hover state."""
 
-    def update_down(self):
+    def update_down(self) -> None:
         """Paint the down state."""
 
-    def update_disallowed(self):
+    def update_disallowed(self) -> None:
         """Paint the disallowed state."""

@@ -11,7 +11,18 @@ from .._rendering import graphics_render
 from ..colors import TRANSPARENT, AColor
 from ..logging import get_logger
 from ..texture_tools import Interpolation, resize_texture
-from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
+from .gadget import (
+    Cell,
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    bindable,
+    clamp,
+)
 
 __all__ = ["Blitter", "Graphics", "Interpolation", "Point", "Size", "scale_geometry"]
 
@@ -74,9 +85,9 @@ class Graphics(Gadget):
         Interpolation used when gadget is resized.
     blitter : Blitter, default: "half"
         Determines how graphics are rendered.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -131,9 +142,9 @@ class Graphics(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -147,7 +158,7 @@ class Graphics(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -174,7 +185,7 @@ class Graphics(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -218,8 +229,8 @@ class Graphics(Gadget):
         alpha: float = 1.0,
         interpolation: Interpolation = "linear",
         blitter: Blitter = "half",
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = True,
@@ -238,8 +249,10 @@ class Graphics(Gadget):
 
         self.default_color = default_color
         self.alpha = alpha
+        self._interpolation: Interpolation
         self.interpolation = interpolation
         self.texture = np.full((1, 1, 4), default_color, np.uint8)
+        self._blitter: Blitter
         self.blitter = blitter  # Property setter will correctly resize texture.
 
     @property

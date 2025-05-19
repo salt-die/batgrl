@@ -19,6 +19,8 @@ See Also
 - https://github.com/salt-die/fig-fonts
 """
 
+from __future__ import annotations
+
 import re
 import zipfile
 from dataclasses import dataclass, field, fields
@@ -34,7 +36,7 @@ from uwcwidth import wcswidth
 
 from .text_tools import egc_ord
 
-__all__ = ["FullLayout", "FIGFont"]
+__all__ = ["FIGFont", "FullLayout"]
 
 
 class FullLayout(IntFlag):
@@ -86,7 +88,7 @@ class FullLayout(IntFlag):
     # TODO: Add vertical smushing.
 
     @classmethod
-    def from_old_layout(cls, old_layout: int) -> Self:
+    def from_old_layout(cls, old_layout: int) -> FullLayout:
         """Return a full layout from an old layout."""
         return {-1: cls.FullWidth, 0: cls.Kerning}.get(
             old_layout, cls(old_layout | 128)
@@ -194,7 +196,7 @@ class FIGFont:
         figinfo["reverse_text"] = bool(figinfo["reverse_text"])
 
         if figinfo["layout"] is None:
-            figinfo["layout"] = FullLayout.from_old_layout(figinfo["old_layout"])
+            figinfo["layout"] = FullLayout.from_old_layout(int(figinfo["old_layout"]))
         else:
             figinfo["layout"] = FullLayout(figinfo["layout"])
 
@@ -202,7 +204,7 @@ class FIGFont:
         del lines[: figinfo["comment_lines"]]
 
         it = iter(lines)
-        height = figinfo["height"]
+        height = int(figinfo["height"])
 
         def consume_char() -> NDArray[np.dtype("<u1")] | None:
             char_lines = [ENDMARKS_RE.sub("", line) for line in islice(it, height)]

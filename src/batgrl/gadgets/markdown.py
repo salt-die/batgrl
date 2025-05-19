@@ -4,7 +4,7 @@ import asyncio
 import re
 import webbrowser
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 import cv2
 import numpy as np
@@ -19,9 +19,10 @@ from ..colors import Neptune, lerp_colors
 from ..emojis import EMOJIS
 from ..geometry import Point, Size
 from ..text_tools import Style
+from .behaviors import Behavior
 from .behaviors.button_behavior import ButtonBehavior
 from .behaviors.themable import Themable
-from .gadget import Gadget, PosHint, SizeHint
+from .gadget import Gadget, Pointlike, PosHint, SizeHint, Sizelike
 from .graphics import _BLITTER_GEOMETRY, Blitter, Graphics
 from .grid_layout import GridLayout
 from .image import Image
@@ -42,7 +43,7 @@ _MIN_RENDER_WIDTH = 12
 # TODO: Use list prefix for render_width calculation.
 
 
-def _image_size(texture_h: int, texture_w: int, max_width: int) -> Size:
+def _image_size(texture_h: float, texture_w: float, max_width: float) -> Size:
     """
     Use terminal pixel geometry to scale images.
 
@@ -61,7 +62,7 @@ def _image_size(texture_h: int, texture_w: int, max_width: int) -> Size:
 
 def _is_task_list_item(list_item: block_token.ListItem) -> re.Match | None:
     if list_item.leader != "-":
-        return False
+        return None
     # Match the first raw text item
     current_token = list_item
     while True:
@@ -90,8 +91,8 @@ class BlankLine(block_token.BlockToken):
     def start(cls, line):
         return cls.pattern.match(line)
 
-    @classmethod
-    def read(cls, lines):
+    @staticmethod
+    def read(lines):
         return [next(lines)]
 
 
@@ -138,7 +139,7 @@ class _BorderedContent(Text):
             self.content.bind("size", update)
 
 
-class _HasTitle:
+class _HasTitle(Behavior):
     """Title hint behavior for links and images."""
 
     def __init__(self, title: str, **kwargs):
@@ -168,7 +169,7 @@ class _HasTitle:
 
         self._hint_task.cancel()
         if self.collides_point(mouse_event.pos):
-            self.link_hint.content.set_text(self.title)
+            cast(Text, self.link_hint.content).set_text(self.title)
             self._hint_task = asyncio.create_task(self.show_hint_soon())
         else:
             self.link_hint.is_enabled = False
@@ -176,8 +177,9 @@ class _HasTitle:
 
     async def show_hint_soon(self):
         await asyncio.sleep(1)
-        y, x = self.link_hint.parent.to_local(self._myx)
-        if y + 1 < self.link_hint.parent.height:
+        parent = cast(Gadget, self.link_hint.parent)
+        y, x = parent.to_local(self._myx)
+        if y + 1 < parent.height:
             self.link_hint.pos = y + 1, x
         else:
             self.link_hint.pos = y - 1, x
@@ -239,6 +241,8 @@ class _Link(_HasTitle, ButtonBehavior, Gadget):
 
 
 class _MarkdownImage(_HasTitle, Image):
+    outline: Graphics
+
     def __init__(self, title: str, path: Path, width: int, blitter: Blitter):
         oh, ow, _ = self._otexture.shape
         size = _image_size(oh, ow, width)
@@ -246,11 +250,14 @@ class _MarkdownImage(_HasTitle, Image):
 
 
 class _MarkdownGif(_HasTitle, Video):
+    outline: Graphics
+
     def __init__(self, title: str, path: Path, width: int, blitter: Blitter):
         super().__init__(title=title, source=path, blitter=blitter)
-        oh = self._resource.get(cv2.CAP_PROP_FRAME_HEIGHT)
-        ow = self._resource.get(cv2.CAP_PROP_FRAME_WIDTH)
-        self.size = _image_size(oh, ow, width)
+        if self._resource is not None:
+            oh = self._resource.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            ow = self._resource.get(cv2.CAP_PROP_FRAME_WIDTH)
+            self.size = _image_size(oh, ow, width)
 
     def on_add(self):
         super().on_add()
@@ -313,12 +320,12 @@ class _Quote(Pane):
         self.color_content()
 
     def color_content(self):
-        self._is_colored = True
+        self._is_quote_colored = True
         for child in self.walk():
-            if hasattr(child, "_is_colored"):
+            if hasattr(child, "_is_quote_colored"):
                 continue
 
-            child._is_colored = True
+            child._is_quote_colored = True  # type: ignore
             if isinstance(child, _BlockCode):
                 child.canvas["bg_color"] = Themable.get_color(
                     "markdown_quote_block_code_bg"
@@ -329,16 +336,20 @@ class _Quote(Pane):
                 child.bg_color = self.bg_color
 
 
+class _MarkdownText(Text):
+    line_end: int
+
+
 class _BatgrlRenderer(BaseRenderer):
     list_depth: int = 0
     quote_depth: int = 0
     last_token: span_token.SpanToken | block_token.BlockToken | None = None
 
-    def __init__(self, width, syntax_highlighting_style, blitter):
+    def __init__(self, width, syntax_highlighting_style: type[PygmentsStyle], blitter):
         super().__init__(BlankLine, Spaces, EmojiCode)
         block_token.remove_token(block_token.Footnote)
         self.width = max(width, _MIN_MARKDOWN_WIDTH)
-        self.syntax_highlighting_style = syntax_highlighting_style
+        self.syntax_highlighting_style: type[PygmentsStyle] = syntax_highlighting_style
         self.blitter = blitter
         self.render_map["SetextHeading"] = self.render_setext_heading
         self.render_map["CodeFence"] = self.render_block_code
@@ -364,9 +375,11 @@ class _BatgrlRenderer(BaseRenderer):
     def render_spaces(self, token: Spaces) -> Literal[" "]:
         return " "
 
-    def render_raw_text(self, token: span_token.RawText) -> Text:
-        text = Text(default_cell=_default_cell())
-        text.set_text(token.content)
+    def render_raw_text(  # type: ignore
+        self, token: span_token.RawText | EmojiCode
+    ) -> _MarkdownText:
+        text = _MarkdownText(default_cell=_default_cell())
+        text.set_text(cast(str, token.content))
         width = self.render_width
         if text.width > width:
             new_lines, line_end = divmod(text.width, width)
@@ -381,16 +394,18 @@ class _BatgrlRenderer(BaseRenderer):
             text.width = width
         return text
 
-    def render_emoji_code(self, token: EmojiCode) -> Text:
+    def render_emoji_code(self, token: EmojiCode) -> _MarkdownText:
         return self.render_raw_text(token)
 
-    def render_inner(self, token: span_token.SpanToken) -> Text:
+    def render_inner(  # type: ignore
+        self, token: span_token.SpanToken | block_token.BlockToken
+    ) -> _MarkdownText:
         width = self.render_width
-        text = Text(size=(1, 1), default_cell=_default_cell())
+        text = _MarkdownText(size=(1, 1), default_cell=_default_cell())
         current_line_end = 0
         current_line_height = 1
         current_line_gadgets = []
-        for content in map(self.render, token.children):
+        for content in map(self.render, token.children):  # type: ignore
             if content == "\n" or content == " " and current_line_end + 1 == text.width:
                 text.height += 1
                 current_line_end = 0
@@ -444,7 +459,7 @@ class _BatgrlRenderer(BaseRenderer):
 
         return text
 
-    def render_strong(self, token: span_token.Strong) -> Text:
+    def render_strong(self, token: span_token.Strong) -> _MarkdownText:  # type: ignore
         text = self.render_inner(token)
         if text.height > 1:
             text.canvas[:-1]["style"] |= Style.BOLD
@@ -453,7 +468,9 @@ class _BatgrlRenderer(BaseRenderer):
             text.canvas["style"] |= Style.BOLD
         return text
 
-    def render_emphasis(self, token: span_token.Emphasis) -> Text:
+    def render_emphasis(  # type: ignore
+        self, token: span_token.Emphasis
+    ) -> _MarkdownText:
         text = self.render_inner(token)
         if text.height > 1:
             text.canvas[:-1]["style"] |= Style.ITALIC
@@ -462,7 +479,9 @@ class _BatgrlRenderer(BaseRenderer):
             text.canvas["style"] |= Style.ITALIC
         return text
 
-    def render_strikethrough(self, token: span_token.Strikethrough) -> Text:
+    def render_strikethrough(  # type: ignore
+        self, token: span_token.Strikethrough
+    ) -> _MarkdownText:
         text = self.render_inner(token)
         if text.height > 1:
             text.canvas[:-1]["style"] = Style.STRIKETHROUGH
@@ -471,7 +490,9 @@ class _BatgrlRenderer(BaseRenderer):
             text.canvas["style"] = Style.STRIKETHROUGH
         return text
 
-    def render_inline_code(self, token: span_token.InlineCode) -> Text:
+    def render_inline_code(  # type: ignore
+        self, token: span_token.InlineCode
+    ) -> _MarkdownText:
         text = self.render_raw_text(token.children[0])
         inline_fg = Themable.get_color("markdown_inline_code_fg")
         inline_bg = Themable.get_color("markdown_inline_code_bg")
@@ -485,7 +506,7 @@ class _BatgrlRenderer(BaseRenderer):
             text.canvas["bg_color"] = inline_bg
         return text
 
-    def render_image(
+    def render_image(  # type: ignore
         self, token: span_token.Image
     ) -> _MarkdownGif | _MarkdownImage | _TextImage:
         path = Path(token.src)
@@ -503,30 +524,34 @@ class _BatgrlRenderer(BaseRenderer):
                 width=self.render_width,
                 blitter=self.blitter,
             )
-        token.children.insert(0, span_token.RawText("🖼️  "))
+        token.children.insert(0, span_token.RawText("🖼️  "))  # type: ignore
         content = self.render_inner(token)
         content.canvas["fg_color"] = Themable.get_color("markdown_image_fg")
         content.canvas["bg_color"] = Themable.get_color("markdown_image_bg")
         return _TextImage(title=token.title, content=content)
 
-    def render_link(self, token: span_token.Link) -> _Link:
+    def render_link(self, token: span_token.Link) -> _Link:  # type: ignore
         line = _Link(
             target=token.target, title=token.title, content=self.render_inner(token)
         )
         return line
 
-    def render_auto_link(self, token: span_token.AutoLink) -> _Link:
+    def render_auto_link(self, token: span_token.AutoLink) -> _Link:  # type: ignore
         target = f"mailto:{token.target}" if token.mailto else token.target
         return _Link(
             target=target, title=token.target, content=self.render_inner(token)
         )
 
-    def render_escape_sequence(self, token: span_token.EscapeSequence) -> Text:
-        text = Text(default_cell=_default_cell())
+    def render_escape_sequence(  # type: ignore
+        self, token: span_token.EscapeSequence
+    ) -> _MarkdownText:
+        text = _MarkdownText(default_cell=_default_cell())
         text.set_text(f"\\{token.children[0].content}")
         return text
 
-    def render_heading(self, token: block_token.Heading) -> Text:
+    def render_heading(  # type: ignore
+        self, token: block_token.Heading
+    ) -> _MarkdownText | _BorderedContent:
         text = self.render_inner(token)
         if token.level % 2 == 1:
             text.canvas["style"] |= Style.BOLD
@@ -547,7 +572,7 @@ class _BatgrlRenderer(BaseRenderer):
         text.chars[-1] = "▔"
         return text
 
-    def render_setext_heading(self, token: block_token.SetextHeading) -> Text:
+    def render_setext_heading(self, token: block_token.SetextHeading) -> _MarkdownText:
         text = self.render_inner(token)
         if token.level == 1:
             text.canvas["style"] |= Style.BOLD
@@ -556,7 +581,7 @@ class _BatgrlRenderer(BaseRenderer):
         text.chars[-1, :] = "━" if token.level == 1 else "─"
         return text
 
-    def render_quote(self, token: block_token.Quote) -> _Quote:
+    def render_quote(self, token: block_token.Quote) -> _Quote:  # type: ignore
         self.quote_depth += 1
         items = list(map(self.render, token.children))
         self.quote_depth -= 1
@@ -572,10 +597,10 @@ class _BatgrlRenderer(BaseRenderer):
         quote.width = max(quote.width, self.render_width)
         return quote
 
-    def render_paragraph(self, token: block_token.Paragraph) -> Text:
+    def render_paragraph(self, token: block_token.Paragraph) -> Text:  # type: ignore
         return self.render_inner(token)
 
-    def render_block_code(
+    def render_block_code(  # type: ignore
         self, token: block_token.BlockCode | block_token.CodeFence
     ) -> _BlockCode:
         text = _BlockCode()
@@ -589,19 +614,19 @@ class _BatgrlRenderer(BaseRenderer):
         text.canvas["bg_color"] = Themable.get_color("markdown_block_code_bg")
         return text
 
-    def render_list(self, token: block_token.List) -> _List:
+    def render_list(self, token: block_token.List) -> _List:  # type: ignore
         prefix: str | int
         if token.start is None:
             nbullets = len(_BULLETS)
             prefix = _BULLETS[self.list_depth % nbullets]
         else:
-            prefix = token.start
+            prefix = cast(int, token.start)
 
         self.list_depth += 1
         checks = list(map(_is_task_list_item, token.children))
         if all(checks):
             items = [
-                self.render_task_list_item(child, match)
+                self.render_task_list_item(child, cast(re.Match, match))
                 for child, match in zip(token.children, checks)
             ]
         else:
@@ -617,11 +642,11 @@ class _BatgrlRenderer(BaseRenderer):
             if isinstance(current_token, span_token.RawText):
                 current_token.content = match[2]
                 list_item = self.render_list_item(token)
-                list_item.check = "🟩" if match[1] == " " else "❎"
+                list_item.check = "🟩" if match[1] == " " else "❎"  # type: ignore
                 return list_item
             current_token = current_token.children[0]
 
-    def render_list_item(self, token: block_token.ListItem) -> Gadget:
+    def render_list_item(self, token: block_token.ListItem) -> Gadget:  # type: ignore
         blocks = list(map(self.render, token.children))
 
         if len(blocks) == 1:
@@ -633,7 +658,7 @@ class _BatgrlRenderer(BaseRenderer):
         list_item.size = list_item.min_grid_size
         return list_item
 
-    def render_table(self, token: block_token.Table) -> Text:
+    def render_table(self, token: block_token.Table) -> _MarkdownText:  # type: ignore
         header = token.header.children if hasattr(token, "header") else []
         rows = [header, *(row.children for row in token.children)]
         rendered_rows = [[self.render_inner(cell) for cell in row] for row in rows]
@@ -674,7 +699,7 @@ class _BatgrlRenderer(BaseRenderer):
 
         OUTER_PAD = 1
         INNER_PAD = 2
-        table = Text(
+        table = _MarkdownText(
             size=(
                 sum(row_heights) + len(rows) - 1,
                 sum(column_widths)
@@ -683,7 +708,7 @@ class _BatgrlRenderer(BaseRenderer):
             ),
             default_cell=_default_cell(),
         )
-        y = 0
+        y = h = 0
         for i, row in enumerate(rendered_rows):
             x = OUTER_PAD
             for cell in row:
@@ -706,22 +731,26 @@ class _BatgrlRenderer(BaseRenderer):
 
         return table
 
-    def render_thematic_break(self, token: block_token.ThematicBreak) -> Text:
+    def render_thematic_break(  # type: ignore
+        self, token: block_token.ThematicBreak
+    ) -> _MarkdownText:
         cell = _default_cell()
         cell["ord"] = ord("─")
-        return Text(size=(1, self.render_width), default_cell=cell)
+        return _MarkdownText(size=(1, self.render_width), default_cell=cell)
 
     def render_line_break(self, token: span_token.LineBreak) -> Literal[" ", "\n"]:
         return " " if token.soft else "\n"
 
-    def render_document(self, token: block_token.Document) -> GridLayout:
+    def render_document(  # type: ignore
+        self, token: block_token.Document
+    ) -> GridLayout:
         # All blocks need to be rendered before skipped blank lines can be determined.
         rendered = [self.render(child) for child in token.children]
         blocks = [block for block in rendered if not hasattr(block, "skip_blank_line")]
         grid = GridLayout(grid_rows=len(blocks), is_transparent=True)
         grid.add_gadgets(blocks)
         grid.size = grid.min_grid_size
-        grid.footnotes = token.footnotes
+        grid.footnotes = token.footnotes  # type: ignore
         return grid
 
 
@@ -733,13 +762,13 @@ class Markdown(Themable, Gadget):
     ----------
     markdown : str
         The markdown string.
-    syntax_highlighting_style : pygments.style.Style, default: Neptune
+    syntax_highlighting_style : type[pygments.style.Style], default: Neptune
         The syntax highlighting style for code blocks.
     blitter : Blitter, default: "half"
         Determines how images are rendered.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -758,7 +787,7 @@ class Markdown(Themable, Gadget):
     ----------
     markdown : str
         The markdown string.
-    syntax_highlighting_style : pygments.style.Style
+    syntax_highlighting_style : type[pygments.style.Style]
         The syntax highlighting style for code blocks.
     blitter : Blitter, default: "half"
         Determines how images are rendered.
@@ -790,9 +819,9 @@ class Markdown(Themable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -806,7 +835,7 @@ class Markdown(Themable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -833,7 +862,7 @@ class Markdown(Themable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -869,10 +898,10 @@ class Markdown(Themable, Gadget):
         self,
         *,
         markdown: str,
-        syntax_highlighting_style: PygmentsStyle = Neptune,
+        syntax_highlighting_style: type[PygmentsStyle] = Neptune,
         blitter: Blitter = "half",
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -905,9 +934,10 @@ class Markdown(Themable, Gadget):
         )
         self._link_hint.is_enabled = False
         self.add_gadgets(self._scroll_view, self._link_hint)
-        self.markdown: str = markdown
-        self.syntax_highlighting_style: PygmentsStyle = syntax_highlighting_style
+        self.markdown = markdown
+        self.syntax_highlighting_style = syntax_highlighting_style
         """The syntax highlighting style for code blocks."""
+        self._blitter: Blitter
         self.blitter = blitter
         """Determines how images are rendered."""
 
@@ -922,12 +952,12 @@ class Markdown(Themable, Gadget):
         self._build_markdown()
 
     @property
-    def syntax_highlighting_style(self) -> PygmentsStyle:
+    def syntax_highlighting_style(self) -> type[PygmentsStyle]:
         """The syntax highlighting style for code blocks."""
         return self._style
 
     @syntax_highlighting_style.setter
-    def syntax_highlighting_style(self, syntax_highlighting_style: PygmentsStyle):
+    def syntax_highlighting_style(self, syntax_highlighting_style: type[PygmentsStyle]):
         self._style = syntax_highlighting_style
         self._build_markdown()
 
@@ -962,9 +992,10 @@ class Markdown(Themable, Gadget):
         title_bg = Themable.get_color("markdown_title_bg")
         title_cell = new_cell(fg_color=title_fg, bg_color=title_bg)
         self._link_hint.default_cell = title_cell
-        self._link_hint.content.default_cell = title_cell
-        self._link_hint.canvas[:] = title_cell
-        self._link_hint.content.canvas[:] = title_cell
+        self._link_hint.clear()
+        content = cast(Text, self._link_hint.content)
+        content.default_cell = title_cell
+        content.clear()
         self._build_markdown()
 
     def on_size(self):

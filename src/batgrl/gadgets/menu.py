@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
 from inspect import signature
-from typing import Self
+from typing import Self, cast
 
 from uwcwidth import wcswidth
 
@@ -12,8 +12,8 @@ from ..geometry import clamp
 from ..terminal.events import KeyEvent
 from .behaviors.themable import Themable
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
-from .grid_layout import GridLayout
-from .pane import Pane, Point, PosHint, Size, SizeHint
+from .grid_layout import GridLayout, Orientation
+from .pane import Pane, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 from .text import Text
 
 __all__ = ["Menu", "MenuBar", "MenuDict", "Point", "Size"]
@@ -31,6 +31,8 @@ def nargs(callable: Callable) -> int:
 
 
 class _MenuItem(Themable, ToggleButtonBehavior, Pane):
+    parent: Menu  # type: ignore
+
     def __init__(
         self,
         *,
@@ -40,7 +42,6 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         submenu: Menu | None = None,
         **kwargs,
     ):
-        self.parent: Menu | None
         self.left_label = Text(size=(1, wcswidth(left_label)), alpha=0.0)
         self.right_label = Text(
             size=(1, wcswidth(right_label)),
@@ -147,7 +148,7 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
         if self.submenu is not None:
             self.submenu.open_menu()
         elif nargs(self.item_callback) == 0:
-            self.item_callback()
+            self.item_callback()  # type: ignore
 
             if self.parent.close_on_release:
                 self.parent.close_parents()
@@ -157,7 +158,7 @@ class _MenuItem(Themable, ToggleButtonBehavior, Pane):
     def on_toggle(self):
         """Call item callback on toggle state change."""
         if self.item_callback is not None and nargs(self.item_callback) == 1:
-            self.item_callback(self.toggle_state)
+            self.item_callback(self.toggle_state)  # type: ignore
 
 
 class Menu(GridLayout):
@@ -198,9 +199,9 @@ class Menu(GridLayout):
         Horizontal spacing between children.
     vertical_spacing : int, default: 0
         Vertical spacing between children.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -271,9 +272,9 @@ class Menu(GridLayout):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -287,7 +288,7 @@ class Menu(GridLayout):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -319,7 +320,7 @@ class Menu(GridLayout):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -356,7 +357,7 @@ class Menu(GridLayout):
         close_on_release: bool = True,
         close_on_click: bool = True,
         alpha: float = 1.0,
-        orientation="tb-lr",
+        orientation: Orientation = "tb-lr",
         grid_rows: int = 1,
         grid_columns: int = 1,
         padding_left: int = 0,
@@ -365,8 +366,8 @@ class Menu(GridLayout):
         padding_bottom: int = 0,
         horizontal_spacing: int = 0,
         vertical_spacing: int = 0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -399,7 +400,7 @@ class Menu(GridLayout):
         self._parent_menu = None
         self._current_selection = -1
         self._submenus = []
-        self._menu_button = None
+        self._menu_button: _MenuButton | None = None
 
     @property
     def alpha(self) -> float:
@@ -548,7 +549,7 @@ class Menu(GridLayout):
     def from_dict_of_dicts(
         cls,
         menu: MenuDict,
-        pos: Point = Point(0, 0),
+        pos: Pointlike = Point(0, 0),
         close_on_release: bool = True,
         close_on_click: bool = True,
         alpha: float = 1.0,
@@ -561,7 +562,7 @@ class Menu(GridLayout):
         ----------
         menu : MenuDict
             The menu as a dict of dicts.
-        pos : Point, default: Point(0, 0)
+        pos : Pointlike, default: Point(0, 0)
             Position of menu.
         close_on_release : bool, default: True
             Whether to close the menu when an item is selected.
@@ -606,9 +607,9 @@ class Menu(GridLayout):
                     size=(1, width),
                 )
             elif isinstance(value, dict):
-                submenus = Menu.from_dict_of_dicts(
+                submenus = cls.from_dict_of_dicts(
                     value,
-                    pos=(y + i, x + width),
+                    pos=(y + i, x + cast(int, width)),
                     close_on_release=close_on_release,
                     close_on_click=close_on_click,
                     alpha=alpha,
@@ -622,7 +623,7 @@ class Menu(GridLayout):
                 menu_item = _MenuItem(
                     left_label=f"   {left_label}",
                     right_label=f"{right_label}{NESTED_SUFFIX} ",
-                    submenu=submenu,
+                    submenu=submenu,  # type: ignore
                     alpha=alpha,
                     size=(1, width),
                 )
@@ -723,9 +724,9 @@ class MenuBar(GridLayout):
         Foreground color of gadget.
     bg_color : Color | None, default: BLACK
         Background color of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -798,9 +799,9 @@ class MenuBar(GridLayout):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -814,7 +815,7 @@ class MenuBar(GridLayout):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -846,7 +847,7 @@ class MenuBar(GridLayout):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -883,7 +884,7 @@ class MenuBar(GridLayout):
         close_on_release: bool = True,
         close_on_click: bool = True,
         alpha: float = 1.0,
-        orientation="tb-lr",
+        orientation: Orientation = "tb-lr",
         grid_rows: int = 1,
         grid_columns: int = 1,
         padding_left: int = 0,
@@ -892,8 +893,8 @@ class MenuBar(GridLayout):
         padding_bottom: int = 0,
         horizontal_spacing: int = 0,
         vertical_spacing: int = 0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -1013,7 +1014,7 @@ class MenuBar(GridLayout):
         iter : Iterable[tuple[str, MenuDict]]
             An iterable of `tuple[str, MenuDict]` from which to create the menu bar and
             menus.
-        pos : Point, default: Point(0, 0)
+        pos : Pointlike, default: Point(0, 0)
             Position of menu.
         close_on_release : bool, default: True
             Whether to close the menu when an item is selected.
@@ -1051,6 +1052,7 @@ class MenuBar(GridLayout):
                 menu.is_enabled = False
                 yield menu
 
+            menu = cast(Menu, menu)  # type: ignore
             menu._menu_button = _MenuButton(
                 menu_name, menu, id(menubar)
             )  # Last menu yielded

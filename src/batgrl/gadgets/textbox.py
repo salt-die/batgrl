@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import astuple
+from typing import cast
 
-from numpy.typing import NDArray
 from ugrapheme import grapheme_len, graphemes
 from uwcwidth import wcswidth
 
@@ -17,24 +17,33 @@ from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
 from .cursor import Cursor
-from .gadget import Cell, Gadget, Point, PosHint, Region, Size, SizeHint
+from .gadget import (
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Region,
+    Size,
+    SizeHint,
+    Sizelike,
+)
 from .text import Text
 
-__all__ = ["Textbox", "Point", "Size"]
+__all__ = ["Point", "Size", "Textbox"]
 
 logger = get_logger(__name__)
 
 
 class _Box(Text):
-    def _render(self, canvas, graphics, kind):
-        super()._render(canvas, graphics, kind)
-        textbox: Textbox = self.parent
+    def _render(self, cells, graphics, kind):
+        super()._render(cells, graphics, kind)
+        textbox = cast(Textbox, self.parent)
         if textbox.hide_input:
             hider_rect = Region.from_rect(self.absolute_pos, (1, textbox._line_width))
             hider_region = self._region & hider_rect
             for pos, size in hider_region.rects():
                 # FIXME: Allow for egcs for textbox.hide_char
-                canvas["ord"][rect_slice(pos, size)] = ord(textbox.hide_char)
+                cells["ord"][rect_slice(pos, size)] = ord(textbox.hide_char)
 
 
 class Textbox(Themable, Focusable, Grabbable, Gadget):
@@ -63,9 +72,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Whether the gadget will be pulled to front when grabbed.
     mouse_button : MouseButton, default: "left"
         Mouse button used for grabbing.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -142,9 +151,9 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -158,7 +167,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -221,7 +230,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -259,14 +268,14 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         enter_callback: Callable[[Textbox], None] | None = None,
         placeholder: str = "",
         hide_input: bool = False,
-        hide_char: NDArray[Cell] | str = "*",
+        hide_char: str = "*",
         max_chars: int | None = None,
         is_grabbable: bool = True,
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -290,7 +299,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
             is_enabled=is_enabled,
         )
 
-        self._selection_start = self._selection_end = None
+        self._selection_start: int | None = None
+        self._selection_end: int | None = None
         self._line_width = 0
         self._undo_stack = []
         self._redo_stack = []
@@ -461,11 +471,12 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         self._highlight_selection()
 
     def _highlight_selection(self):
+        self._selection_start = cast(int, self._selection_start)
+        self._selection_end = cast(int, self._selection_end)
         fg = self._box.canvas["fg_color"]
         bg = self._box.canvas["bg_color"]
         fg[:] = self._box.default_fg_color
         bg[:] = self._box.default_bg_color
-
         if self._selection_start != self._selection_end:
             if self._selection_start > self._selection_end:
                 start = self._selection_end
@@ -499,6 +510,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
     def delete_selection(self):
         """Delete current selection."""
         if self.has_nonempty_selection:
+            self._selection_start = cast(int, self._selection_start)
+            self._selection_end = cast(int, self._selection_end)
             return self._del_text(self._selection_start, self._selection_end)
 
     def _del_text(self, start: int, end: int):
@@ -571,6 +584,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         """Move cursor a word left."""
         last_x = self.cursor
         first_char_found = False
+        char_is_word_char = False
         while True:
             self.move_cursor_left()
             if self.cursor == last_x:
@@ -593,6 +607,7 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
         """Move cursor a word right."""
         last_x = self.cursor
         first_char_found = False
+        char_is_word_char = False
         while True:
             self.move_cursor_right()
             if self.cursor == last_x:
@@ -646,6 +661,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def _left(self):
         if self.has_nonempty_selection:
+            self._selection_start = cast(int, self._selection_start)
+            self._selection_end = cast(int, self._selection_end)
             select_start = min(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_start
@@ -655,6 +672,8 @@ class Textbox(Themable, Focusable, Grabbable, Gadget):
 
     def _right(self):
         if self.has_nonempty_selection:
+            self._selection_start = cast(int, self._selection_start)
+            self._selection_end = cast(int, self._selection_end)
             select_end = max(self._selection_start, self._selection_end)
             self.unselect()
             self.cursor = select_end

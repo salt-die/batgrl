@@ -5,9 +5,9 @@ from numpy.typing import NDArray
 
 from ..text_tools import _text_to_cells, _write_cells_to_canvas
 from ._raycasting import text_cast_rays
-from .text import Cell, Point, PosHint, Size, SizeHint, Text
+from .text import Cell, Point, Pointlike, PosHint, Size, SizeHint, Sizelike, Text
 
-__all__ = ["TextRaycaster", "Point", "Size"]
+__all__ = ["Point", "Size", "TextRaycaster"]
 
 
 class TextRaycaster(Text):
@@ -54,9 +54,9 @@ class TextRaycaster(Text):
         Default cell of text canvas.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -129,9 +129,9 @@ class TextRaycaster(Text):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -145,7 +145,7 @@ class TextRaycaster(Text):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -182,7 +182,7 @@ class TextRaycaster(Text):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -228,8 +228,8 @@ class TextRaycaster(Text):
         ascii_map: str = " .,:;<+*LtCa4U80dQM@",
         default_cell: NDArray[Cell] | str = " ",
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = True,

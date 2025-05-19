@@ -87,23 +87,23 @@ class _Root(Gadget):
         self._bg_color = self._cell["bg_color"] = bg_color
 
     @property
-    def pos(self) -> Point:
+    def pos(self) -> Point:  # type: ignore
         return self._pos
 
     @property
-    def is_transparent(self) -> Literal[False]:
+    def is_transparent(self) -> Literal[False]:  # type: ignore
         return False
 
     @property
-    def is_visible(self) -> Literal[True]:
+    def is_visible(self) -> Literal[True]:  # type: ignore
         return True
 
     @property
-    def is_enabled(self) -> Literal[True]:
+    def is_enabled(self) -> Literal[True]:  # type: ignore
         return True
 
     @property
-    def parent(self) -> Literal[None]:
+    def parent(self) -> Literal[None]:  # type: ignore
         return None
 
     @property
@@ -121,7 +121,10 @@ class _Root(Gadget):
 
         for child in self.walk():
             child._region = (
-                child.parent._region & Region.from_rect(child.absolute_pos, child.size)
+                (
+                    child.parent._region  # type: ignore
+                    & Region.from_rect(child.absolute_pos, child.size)
+                )
                 if child._is_enabled and child._is_visible
                 else Region()
             )
@@ -135,7 +138,7 @@ class _Root(Gadget):
         self._regions_valid = True
         self._resized = False
 
-    def _render(self):
+    def _render(self):  # type: ignore
         """Render gadget tree into :attr:``canvas``."""
         with self._render_lock:
             if not self._regions_valid:

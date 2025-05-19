@@ -71,7 +71,7 @@ def lerp_colors[T: (Color, AColor, tuple[int, ...])](a: T, b: T, p: float) -> T:
     color = (round(lerp(c1, c2, p)) for c1, c2 in zip(a, b))
     if isinstance(a, (Color, AColor)):
         return type(a)(*color)
-    return tuple(color)
+    return tuple(color)  # type: ignore
 
 
 def gradient[T: (Color, AColor, tuple[int, ...])](
@@ -102,7 +102,8 @@ def gradient[T: (Color, AColor, tuple[int, ...])](
 
     ease = EASINGS[easing]
     d, r = divmod(n - ncolors, ncolors - 1)
-    gradient = []
+    gradient: list[T] = []
+    b = color_stops[0]
     for i, (a, b) in enumerate(pairwise(color_stops)):
         gradient.append(a)
         len_ = d + (i < r)
@@ -113,7 +114,7 @@ def gradient[T: (Color, AColor, tuple[int, ...])](
     return gradient
 
 
-def rainbow_gradient(n: int, *, alpha: int | None = None) -> list[Color | AColor]:
+def rainbow_gradient(n: int, *, alpha: int | None = None) -> list[Color] | list[AColor]:
     """
     Return a rainbow gradient of ``n`` colors.
 
@@ -131,12 +132,12 @@ def rainbow_gradient(n: int, *, alpha: int | None = None) -> list[Color | AColor
         A rainbow gradient of colors.
     """
     theta = tau / n
-    offsets = [0, tau / 3, 2 * tau / 3]
+    offsets: list[float] = [0, tau / 3, 2 * tau / 3]
 
-    def color(i):
-        return (int(sin(i * theta + offset) * 127 + 128) for offset in offsets)
+    def color(i: int):
+        return Color(*(int(sin(i * theta + offset) * 127 + 128) for offset in offsets))
 
     if alpha is None:
-        return [Color(*color(i)) for i in range(n)]
+        return [color(i) for i in range(n)]
 
     return [AColor(*color(i), alpha) for i in range(n)]

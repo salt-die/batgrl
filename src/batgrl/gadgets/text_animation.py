@@ -8,14 +8,9 @@ from numpy.typing import NDArray
 from uwcwidth import wcswidth
 
 from ..text_tools import Cell, add_text
-from .text import Point, PosHint, Size, SizeHint, Text
+from .text import Point, Pointlike, PosHint, Size, SizeHint, Sizelike, Text
 
-__all__ = ["TextAnimation", "Point", "Size"]
-
-
-class _Frame(Text):
-    def on_size(self):
-        pass
+__all__ = ["Point", "Size", "TextAnimation"]
 
 
 class TextAnimation(Text):
@@ -37,9 +32,9 @@ class TextAnimation(Text):
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -104,9 +99,9 @@ class TextAnimation(Text):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -120,7 +115,7 @@ class TextAnimation(Text):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -161,7 +156,7 @@ class TextAnimation(Text):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -202,20 +197,20 @@ class TextAnimation(Text):
         reverse: bool = False,
         default_cell: NDArray[Cell] | str = " ",
         alpha: float = 0.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
         is_visible: bool = True,
         is_enabled: bool = True,
     ):
-        self.frames: Iterable[str] = list(frames)
+        self.frames: list[str] = [] if frames is None else list(frames)
         """Frames of the animation."""
         self.frame_durations: Sequence[float]
         """Time each frame is displayed."""
 
-        nframes = len(frames)
+        nframes = len(self.frames)
         if isinstance(frame_durations, Sequence):
             if len(frame_durations) != nframes:
                 raise ValueError(

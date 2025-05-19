@@ -60,13 +60,13 @@ class CustomLogger(LoggerClass):
 
     def ansi(self, msg: str, *args, **kwargs) -> None:
         """Log the given message with the severity ``"ANSI"``."""
-        if self.isEnabledFor(logging.ANSI):
-            self.log(logging.ANSI, msg, *args, **kwargs)
+        if self.isEnabledFor(ANSI_LEVEL):
+            self.log(ANSI_LEVEL, msg, *args, **kwargs)
 
     def events(self, msg: str, *args, **kwargs) -> None:
         """Log the given message with the severity ``"EVENTS"``."""
-        if self.isEnabledFor(logging.EVENTS):
-            self.log(logging.EVENTS, msg, *args, **kwargs)
+        if self.isEnabledFor(EVENTS_LEVEL):
+            self.log(EVENTS_LEVEL, msg, *args, **kwargs)
 
     def is_enabled_for(self, log_level: LogLevel | str) -> bool:
         """Similar to ``Logger.isEnabledFor``, but also accepts level names."""
@@ -96,8 +96,8 @@ def get_logger(name: str | None = None) -> CustomLogger:
     return typing.cast(CustomLogger, logging.getLogger(name))
 
 
-logging.ANSI: Final = ANSI_LEVEL
-logging.EVENTS: Final = EVENTS_LEVEL
+ANSI_LEVEL: Final = ANSI_LEVEL  # type: ignore
+logging.EVENTS: Final = EVENTS_LEVEL  # type: ignore
 logging.addLevelName(ANSI_LEVEL, "ANSI")
 logging.addLevelName(EVENTS_LEVEL, "EVENTS")
 logging.setLoggerClass(CustomLogger)

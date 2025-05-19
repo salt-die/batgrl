@@ -1,18 +1,28 @@
 """A scrollable view gadget."""
 
 import asyncio
-from typing import Final
+from typing import Final, cast
 
 from ..geometry import round_down
 from ..terminal.events import KeyEvent, MouseButton, MouseEvent
 from ..text_tools import Style, smooth_horizontal_bar, smooth_vertical_bar
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
+from .gadget import (
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    bindable,
+    clamp,
+)
 from .pane import Pane
 from .text import Text
 
-__all__ = ["ScrollView", "Point", "Size"]
+__all__ = ["Point", "ScrollView", "Size"]
 
 _INERTIAL_SCROLL_STRENGTH: Final = 2.4
 """Strength of inertial scroll."""
@@ -23,11 +33,11 @@ _VELOCITY_CUTOFF: Final = 0.001
 
 
 class _ScrollbarBase(Grabbable, Text):
-    length: int
+    indicator_length: int
 
     def __init__(self):
         super().__init__(size=(1, 2))
-        self.indicator_proportion: float = 1.0
+        self.indicator_proportion = 1.0
         self.indicator_progress: float = 0.0
         self.is_hovered = False
 
@@ -40,13 +50,20 @@ class _ScrollbarBase(Grabbable, Text):
         self._indicator_proportion = indicator_porportion
         self._set_indicator_length()
 
+    def _set_indicator_length(self):
+        pass
+
     @property
     def fill_length(self) -> float:
         """The length the indicator can travel."""
         return self.length - self.indicator_length
 
+    @property
+    def length(self) -> int:
+        return 0
+
     def _paint_indicator(self) -> None:
-        sv: ScrollView = self.parent
+        sv = cast(ScrollView, self.parent)
 
         if self.is_grabbed:
             indicator_color = sv.get_color("scroll_view_indicator_press")
@@ -115,8 +132,7 @@ class _VerticalScrollbar(_ScrollbarBase):
     def grab(self, mouse_event):
         super().grab(mouse_event)
 
-        sv: ScrollView = self.parent
-
+        sv = cast(ScrollView, self.parent)
         if sv._inertial_scroll_task is not None:
             sv._inertial_scroll_task.cancel()
 
@@ -131,7 +147,7 @@ class _VerticalScrollbar(_ScrollbarBase):
                 sv.vertical_proportion = self.to_local(mouse_event.pos).y / self.length
 
     def grab_update(self, mouse_event):
-        sv: ScrollView = self.parent
+        sv = cast(ScrollView, self.parent)
         if self.fill_length == 0:
             sv.vertical_proportion = 0
         else:
@@ -175,8 +191,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
     def grab(self, mouse_event):
         super().grab(mouse_event)
 
-        sv: ScrollView = self.parent
-
+        sv = cast(ScrollView, self.parent)
         if sv._inertial_scroll_task is not None:
             sv._inertial_scroll_task.cancel()
 
@@ -193,7 +208,7 @@ class _HorizontalScrollbar(_ScrollbarBase):
                 )
 
     def grab_update(self, mouse_event):
-        sv: ScrollView = self.parent
+        sv = cast(ScrollView, self.parent)
         if self.fill_length == 0:
             sv.horizontal_proportion = 0
         else:
@@ -233,9 +248,9 @@ class ScrollView(Themable, Grabbable, Gadget):
         Mouse button used for grabbing.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -316,9 +331,9 @@ class ScrollView(Themable, Grabbable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -332,7 +347,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -375,7 +390,7 @@ class ScrollView(Themable, Grabbable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -422,8 +437,8 @@ class ScrollView(Themable, Grabbable, Gadget):
         ptf_on_grab: bool = False,
         mouse_button: MouseButton = "left",
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -636,7 +651,9 @@ class ScrollView(Themable, Grabbable, Gadget):
             self.children.insert(1, self.children.pop())  # Move view below scrollbars.
 
             def update_proportion():
-                y, x = self._view.pos
+                # _view is not None
+                y, x = self._view.pos  # type: ignore
+
                 h = self.total_vertical_distance
                 w = self.total_horizontal_distance
                 self._vertical_proportion = 0.0 if h == 0 else clamp(-y / h, 0.0, 1.0)
@@ -689,7 +706,7 @@ class ScrollView(Themable, Grabbable, Gadget):
     def remove_gadget(self, gadget: Gadget):
         """Unbind from the view on its removal."""
         if gadget is self._view:
-            self._view.unbind(self._view_bind_uid)
+            self._view.unbind(self._view_bind_uid)  # type: ignore
             del self._view_bind_uid
             self._view = None
 
@@ -800,7 +817,7 @@ class ScrollView(Themable, Grabbable, Gadget):
                 self.horizontal_proportion = 0
             else:
                 self.horizontal_proportion = clamp(
-                    (-self.view.left - n) / self.total_horizontal_distance, 0, 1
+                    (-self._view.left - n) / self.total_horizontal_distance, 0, 1
                 )
 
     def scroll_right(self, n=1):
@@ -814,14 +831,14 @@ class ScrollView(Themable, Grabbable, Gadget):
                 self.vertical_proportion = 0
             else:
                 self.vertical_proportion = clamp(
-                    (-self.view.top - n) / self.total_vertical_distance, 0, 1
+                    (-self._view.top - n) / self.total_vertical_distance, 0, 1
                 )
 
     def scroll_down(self, n=1):
         """Scroll the view down `n` lines."""
         self.scroll_up(-n)
 
-    def scroll_to_rect(self, pos: Point, size: Size = Size(1, 1)):
+    def scroll_to_rect(self, pos: Pointlike, size: Sizelike = Size(1, 1)):
         """
         Scroll the view so that a given rect is visible.
 
@@ -829,14 +846,14 @@ class ScrollView(Themable, Grabbable, Gadget):
 
         Parameters
         ----------
-        pos : Point
+        pos : Pointlike
             Position of rect.
 
-        size : Size, default: Size(1, 1)
+        size : Sizelike, default: Size(1, 1)
             Size of rect.
         """
         if (
-            self.view is None
+            self._view is None
             or self.is_grabbed
             or self._horizontal_bar.is_grabbed
             or self._vertical_bar.is_grabbed
@@ -847,7 +864,7 @@ class ScrollView(Themable, Grabbable, Gadget):
             self._inertial_scroll_task.cancel()
 
         h, w = size
-        ay, ax = self.view.pos + pos
+        ay, ax = self._view.pos + pos
         if ay < 0:
             self.scroll_up(-ay)
         elif h >= self.port_height:

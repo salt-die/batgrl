@@ -5,10 +5,20 @@ from collections.abc import Callable
 from ..colors import BLACK, WHITE, Color
 from ..terminal.events import MouseButton, MouseEvent
 from .behaviors.grabbable import Grabbable
-from .pane import Pane, Point, PosHint, Size, SizeHint, bindable, clamp
+from .pane import (
+    Pane,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    bindable,
+    clamp,
+)
 from .text import Text
 
-__all__ = ["Slider", "Point", "Size"]
+__all__ = ["Point", "Size", "Slider"]
 
 
 class Slider(Grabbable, Pane):
@@ -43,9 +53,9 @@ class Slider(Grabbable, Pane):
         Background color of gadget.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -120,9 +130,9 @@ class Slider(Grabbable, Pane):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -136,7 +146,7 @@ class Slider(Grabbable, Pane):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -165,7 +175,7 @@ class Slider(Grabbable, Pane):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -213,8 +223,8 @@ class Slider(Grabbable, Pane):
         mouse_button: MouseButton = "left",
         bg_color: Color = BLACK,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -290,7 +300,7 @@ class Slider(Grabbable, Pane):
         return self._handle.default_fg_color
 
     @handle_color.setter
-    def handle_color(self, handle_color: Color | str):
+    def handle_color(self, handle_color: Color):
         self._handle.default_fg_color = handle_color
         self._handle.canvas["fg_color"] = handle_color
 
@@ -300,7 +310,7 @@ class Slider(Grabbable, Pane):
         return self._slider.default_fg_color
 
     @slider_color.setter
-    def slider_color(self, slider_color: Color | str):
+    def slider_color(self, slider_color: Color):
         self._slider.default_fg_color = slider_color
         self._slider.canvas["fg_color"][:, self._handle.x :] = slider_color
 

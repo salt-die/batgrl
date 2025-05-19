@@ -25,19 +25,21 @@ from ..text_tools import (
 from .gadget import (
     Gadget,
     Point,
+    Pointlike,
     PosHint,
     Size,
     SizeHint,
+    Sizelike,
     bindable,
     clamp,
 )
 
 __all__ = [
-    "Text",
     "Border",
     "Cell",
     "Point",
     "Size",
+    "Text",
     "add_text",
 ]
 
@@ -102,9 +104,9 @@ class Text(Gadget):
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -159,9 +161,9 @@ class Text(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -175,7 +177,7 @@ class Text(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -210,7 +212,7 @@ class Text(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -247,8 +249,8 @@ class Text(Gadget):
         *,
         default_cell: NDArray[Cell] | str = " ",
         alpha: float = 0.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -380,7 +382,7 @@ class Text(Gadget):
             self.canvas["bg_color"][:, [0, -1]] = bg_color
 
     def add_syntax_highlighting(
-        self, lexer: Lexer | None = None, style: PygmentsStyle = Neptune
+        self, lexer: Lexer | None = None, style: type[PygmentsStyle] = Neptune
     ):
         """
         Add syntax highlighting to current text in canvas.
@@ -431,7 +433,7 @@ class Text(Gadget):
         self,
         str: str,
         *,
-        pos: Point = Point(0, 0),
+        pos: Pointlike = Point(0, 0),
         fg_color: Color | None = None,
         bg_color: Color | None = None,
         markdown: bool = False,
@@ -451,7 +453,7 @@ class Text(Gadget):
         ----------
         str : str
             A single line of text to add to canvas.
-        pos : Point, default: Point(0, 0)
+        pos : Pointlike, default: Point(0, 0)
             Position of first character of string. Negative coordinates position
             from the right or bottom of canvas (like negative indices).
         fg_color : Color | None, default: None

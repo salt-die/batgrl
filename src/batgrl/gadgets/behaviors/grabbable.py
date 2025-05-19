@@ -1,11 +1,12 @@
 """Grabbable behavior for a gadget."""
 
 from ...terminal.events import MouseButton, MouseEvent
+from . import Behavior
 
 __all__ = ["Grabbable"]
 
 
-class Grabbable:
+class Grabbable(Behavior):
     """
     Grabbable behavior for a gadget.
 
@@ -61,7 +62,7 @@ class Grabbable:
         self.mouse_button = mouse_button
         self._is_grabbed = False
 
-    def on_mouse(self, mouse_event) -> None:
+    def on_mouse(self, mouse_event) -> bool | None:
         """Determine if mouse event grabs or ungrabs gadget."""
         if self.is_grabbable:
             if self.is_grabbed:

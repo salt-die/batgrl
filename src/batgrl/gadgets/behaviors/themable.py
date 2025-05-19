@@ -3,11 +3,12 @@
 from abc import ABC, abstractmethod
 
 from ...colors import NEPTUNE_THEME, Color, ColorTheme, Hexcode
+from . import Behavior
 
 __all__ = ["Themable"]
 
 
-class Themable(ABC):
+class Themable(ABC, Behavior):
     """
     Themable behavior for a gadget.
 

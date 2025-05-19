@@ -12,7 +12,18 @@ from numpy.typing import NDArray
 
 from .._rendering import graphics_field_render
 from ..logging import get_logger
-from .gadget import Cell, Gadget, Point, PosHint, Size, SizeHint, bindable, clamp
+from .gadget import (
+    Cell,
+    Gadget,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    bindable,
+    clamp,
+)
 from .graphics import Blitter, Graphics, scale_geometry
 
 __all__ = ["GraphicParticleField", "Point", "Size"]
@@ -43,9 +54,9 @@ class GraphicParticleField(Gadget):
         Transparency of gadget.
     blitter : Blitter, default: "half"
         Determines how graphics are rendered.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -102,9 +113,9 @@ class GraphicParticleField(Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -118,7 +129,7 @@ class GraphicParticleField(Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -143,7 +154,7 @@ class GraphicParticleField(Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -183,8 +194,8 @@ class GraphicParticleField(Gadget):
         particle_properties: dict[str, Any] | None = None,
         alpha: float = 1.0,
         blitter: Blitter = "half",
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = True,
@@ -227,6 +238,7 @@ class GraphicParticleField(Gadget):
 
         self.alpha = alpha
         """Transparency of gadget."""
+        self._blitter: Blitter
         self.blitter = blitter
         """Determines how graphics are rendered."""
 
@@ -290,7 +302,7 @@ class GraphicParticleField(Gadget):
         pys, pxs = positions.T
         self.particle_colors = np.ascontiguousarray(texture[pys, pxs])
         self.particle_coords = np.ascontiguousarray(positions.astype(np.float64))
-        self.particle_coords /= scale_geometry(self._blitter, Size(1, 1))
+        self.particle_coords /= scale_geometry(self._blitter, Size(1, 1))  # type: ignore
 
     def _render(
         self,

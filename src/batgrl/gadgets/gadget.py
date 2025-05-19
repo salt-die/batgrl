@@ -3,42 +3,54 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Iterator, MutableSequence, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import wraps
 from itertools import count
-from numbers import Real
 from time import perf_counter
-from types import MappingProxyType
-from typing import TYPE_CHECKING, Final, Literal, TypedDict
+from typing import TYPE_CHECKING, Any, Final, Literal, TypedDict, cast
 from weakref import WeakKeyDictionary
 
 import numpy as np
 from numpy.typing import NDArray
+from typing_extensions import ReadOnly
 
-from ..geometry import EASINGS, Easing, Point, Region, Size, clamp, lerp, round_down
+from ..geometry import (
+    EASINGS,
+    Easing,
+    Point,
+    Pointlike,
+    Region,
+    Size,
+    Sizelike,
+    clamp,
+    lerp,
+    round_down,
+)
+from ..logging import get_logger
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
 from ..text_tools import Cell, new_cell
 
 if TYPE_CHECKING:
+    from ..app import App
     from ._root import _Root
 
 __all__ = [
     "Anchor",
     "Cell",
+    "Gadget",
     "Easing",
     "Point",
     "PosHint",
     "Region",
     "Size",
     "SizeHint",
-    "Gadget",
     "bindable",
     "new_cell",
-    "clamp",
-    "lerp",
 ]
 
 _UID: Final = count(1)
+
+logger = get_logger(__name__)
 
 Anchor = Literal[
     "top-left",
@@ -54,7 +66,7 @@ Anchor = Literal[
 """Point of gadget attached to a pos hint."""
 
 
-class _GadgetList(MutableSequence):
+class _GadgetList[T: Gadget]:
     """
     A sequence of sibling gadgets.
 
@@ -62,35 +74,46 @@ class _GadgetList(MutableSequence):
     """
 
     def __init__(self) -> None:
-        self._gadgets: list[Gadget] = []
+        self._gadgets: list[T] = []
 
     def __len__(self) -> int:
         return len(self._gadgets)
 
-    def __getitem__(self, index: int) -> Gadget:
+    def __getitem__(self, index: int) -> T:
         return self._gadgets[index]
-
-    def __setitem__(self, *_) -> None:
-        raise NotImplementedError("_GadgetList.__setitem__ not implemented.")
 
     def __delitem__(self, index: int) -> None:
         self._gadgets[index]._invalidate_regions()
         del self._gadgets[index]
 
-    def insert(self, index: int, gadget: Gadget) -> None:
+    def append(self, gadget: T) -> None:
+        gadget._invalidate_regions()
+        self._gadgets.append(gadget)
+
+    def remove(self, gadget: T) -> None:
+        gadget._invalidate_regions()
+        self._gadgets.remove(gadget)
+
+    def insert(self, index: int, gadget: T) -> None:
         gadget._invalidate_regions()
         self._gadgets.insert(index, gadget)
 
-    def __iter__(self) -> Iterator[Gadget]:
+    def index(self, value: T) -> int:
+        return self._gadgets.index(value)
+
+    def __iter__(self) -> Iterator[T]:
         return iter(self._gadgets)
 
-    def copy(self) -> list[Gadget]:
+    def copy(self) -> list[T]:
         """
         Return a copy of the internal list of gadgets.
 
         Note this doesn't return a ``_GadgetList``.
         """
         return self._gadgets.copy()
+
+    def pop(self) -> T:
+        return self._gadgets.pop()
 
 
 class PosHint(TypedDict, total=False):
@@ -140,15 +163,15 @@ class PosHint(TypedDict, total=False):
         Horizontal offset after pos hint is applied.
     """
 
-    anchor: Anchor | tuple[float, float]
+    anchor: ReadOnly[Anchor | tuple[float, float]]
     """Determines which point is attached to the pos hint."""
-    y_hint: float | None
+    y_hint: ReadOnly[float | None]
     """Vertical position as a proportion of parent's height."""
-    x_hint: float | None
+    x_hint: ReadOnly[float | None]
     """Horizontal position as a proportion of parent's width."""
-    y_offset: int
+    y_offset: ReadOnly[int]
     """Vertical offset after pos hint is applied."""
-    x_offset: int
+    x_offset: ReadOnly[int]
     """Horizontal offset after pos hint is applied."""
 
 
@@ -184,22 +207,45 @@ class SizeHint(TypedDict, total=False):
         Minimum allowed width.
     """
 
-    height_hint: float | None
+    height_hint: ReadOnly[float | None]
     """Height as a proportion of parent's height."""
-    width_hint: float | None
+    width_hint: ReadOnly[float | None]
     """Width as a proportion of parent's width."""
-    height_offset: int
+    height_offset: ReadOnly[int]
     """Height offset after height-hint is applied."""
-    width_offset: int
+    width_offset: ReadOnly[int]
     """Width offset after width-hint is applied."""
-    max_height: int | None
+    max_height: ReadOnly[int | None]
     """Maximum allowed height."""
-    min_height: int | None
+    min_height: ReadOnly[int | None]
     """Minimum allowed height."""
-    max_width: int | None
+    max_width: ReadOnly[int | None]
     """Maximum allowed width."""
-    min_width: int | None
+    min_width: ReadOnly[int | None]
     """Minimum allowed width."""
+
+
+class TotalPosHint(TypedDict):
+    """A position hint."""
+
+    anchor: ReadOnly[tuple[float, float]]
+    y_hint: ReadOnly[float | None]
+    x_hint: ReadOnly[float | None]
+    y_offset: ReadOnly[int]
+    x_offset: ReadOnly[int]
+
+
+class TotalSizeHint(TypedDict):
+    """A size hint."""
+
+    height_hint: ReadOnly[float | None]
+    width_hint: ReadOnly[float | None]
+    height_offset: ReadOnly[int]
+    width_offset: ReadOnly[int]
+    max_height: ReadOnly[int | None]
+    min_height: ReadOnly[int | None]
+    max_width: ReadOnly[int | None]
+    min_width: ReadOnly[int | None]
 
 
 _ANCHOR_TO_COORD: Final[dict[Anchor, tuple[float, float]]] = {
@@ -214,15 +260,15 @@ _ANCHOR_TO_COORD: Final[dict[Anchor, tuple[float, float]]] = {
     "bottom-right": (1.0, 1.0),
 }
 """Anchor to coordinate."""
-_DEFAULT_POS_HINT: Final[PosHint] = {
-    "anchor": "center",
+_DEFAULT_POS_HINT: Final[TotalPosHint] = {
+    "anchor": (0.5, 0.5),
     "y_hint": None,
     "x_hint": None,
     "x_offset": 0,
     "y_offset": 0,
 }
 """The default pos hint."""
-_DEFAULT_SIZE_HINT: Final[SizeHint] = {
+_DEFAULT_SIZE_HINT: Final[TotalSizeHint] = {
     "height_hint": None,
     "width_hint": None,
     "height_offset": 0,
@@ -235,23 +281,26 @@ _DEFAULT_SIZE_HINT: Final[SizeHint] = {
 """The default size hint."""
 
 
-def _normalize_pos_hint(pos_hint: PosHint) -> PosHint:
-    normal_hint = _DEFAULT_POS_HINT | pos_hint
+def _normalize_pos_hint(pos_hint: PosHint) -> TotalPosHint:
+    _normal_hint = _DEFAULT_POS_HINT | pos_hint
+    normal_hint = cast(TotalPosHint, _normal_hint)
     if normal_hint["y_hint"] is not None:
-        normal_hint["y_hint"] = float(normal_hint["y_hint"])
+        normal_hint["y_hint"] = float(normal_hint["y_hint"])  # type: ignore
     if normal_hint["x_hint"] is not None:
-        normal_hint["x_hint"] = float(normal_hint["x_hint"])
+        normal_hint["x_hint"] = float(normal_hint["x_hint"])  # type: ignore
     if isinstance(normal_hint["anchor"], str):
-        normal_hint["anchor"] = _ANCHOR_TO_COORD[normal_hint["anchor"]]
+        anchor = cast(Anchor, normal_hint["anchor"])
+        normal_hint["anchor"] = _ANCHOR_TO_COORD[anchor]  # type: ignore
     return normal_hint
 
 
-def _normalize_size_hint(size_hint: SizeHint) -> SizeHint:
-    normal_hint = _DEFAULT_SIZE_HINT | size_hint
+def _normalize_size_hint(size_hint: SizeHint) -> TotalSizeHint:
+    _normal_hint = _DEFAULT_SIZE_HINT | size_hint
+    normal_hint = cast(TotalSizeHint, _normal_hint)
     if normal_hint["height_hint"] is not None:
-        normal_hint["height_hint"] = float(normal_hint["height_hint"])
+        normal_hint["height_hint"] = float(normal_hint["height_hint"])  # type: ignore
     if normal_hint["width_hint"] is not None:
-        normal_hint["width_hint"] = float(normal_hint["width_hint"])
+        normal_hint["width_hint"] = float(normal_hint["width_hint"])  # type: ignore
     return normal_hint
 
 
@@ -261,13 +310,13 @@ def bindable(setter):
     instances = WeakKeyDictionary()
 
     @wraps(setter)
-    def wrapper(self, *args, **kwargs):
-        setter(self, *args, **kwargs)
-        if bindings := instances.get(self):
+    def wrapper(*args, **kwargs) -> None:
+        setter(*args, **kwargs)
+        if bindings := instances.get(args[0]):
             for callback in bindings.values():
                 callback()
 
-    wrapper.instances = instances
+    wrapper.instances = instances  # type: ignore
 
     return wrapper
 
@@ -278,9 +327,9 @@ class Gadget:
 
     Parameters
     ----------
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -325,9 +374,9 @@ class Gadget:
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent : Gadget | None
         Parent gadget.
@@ -341,7 +390,7 @@ class Gadget:
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -364,7 +413,7 @@ class Gadget:
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -402,8 +451,8 @@ class Gadget:
     def __init__(
         self,
         *,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,
@@ -420,9 +469,9 @@ class Gadget:
         """Size of gadget."""
         self._pos = Point(*pos)
         """Position relative to parent."""
-        self._size_hint: SizeHint = _normalize_size_hint(size_hint or {})
+        self._size_hint: TotalSizeHint = _normalize_size_hint(size_hint or {})
         """Gadget's size as a proportion of its parent's size."""
-        self._pos_hint: PosHint = _normalize_pos_hint(pos_hint or {})
+        self._pos_hint: TotalPosHint = _normalize_pos_hint(pos_hint or {})
         """Gadget's position as a proportion of its parent's size."""
         self._is_transparent = is_transparent
         """Whether gadget is transparent."""
@@ -447,7 +496,7 @@ class Gadget:
 
     @size.setter
     @bindable
-    def size(self, size: Size):
+    def size(self, size: Sizelike):
         if size == self._size:
             self._apply_pos_hints()
             return
@@ -497,7 +546,7 @@ class Gadget:
 
     @pos.setter
     @bindable
-    def pos(self, pos: Point):
+    def pos(self, pos: Pointlike):
         y, x = pos
         pos = Point(int(y), int(x))
 
@@ -569,9 +618,9 @@ class Gadget:
         return self.pos + self.parent.absolute_pos
 
     @property
-    def size_hint(self) -> SizeHint:
+    def size_hint(self) -> TotalSizeHint:
         """Gadget's size as a proportion of its parent's size."""
-        return MappingProxyType(self._size_hint)
+        return self._size_hint
 
     @size_hint.setter
     def size_hint(self, size_hint: SizeHint):
@@ -579,9 +628,9 @@ class Gadget:
         self.apply_hints()
 
     @property
-    def pos_hint(self) -> PosHint:
+    def pos_hint(self) -> TotalPosHint:
         """Gadget's position as a proportion of its parent's size."""
-        return MappingProxyType(self._pos_hint)
+        return self._pos_hint
 
     @pos_hint.setter
     def pos_hint(self, pos_hint: PosHint):
@@ -640,8 +689,10 @@ class Gadget:
         return self.parent and self.parent.root
 
     @property
-    def app(self):
+    def app(self) -> App | None:
         """The running app."""
+        if self.root is None:
+            return None
         return self.root.app
 
     def _render(
@@ -925,19 +976,24 @@ class Gadget:
         if self.root is not None:
             gadget.on_add()
 
-    def add_gadgets(self, *gadgets: Gadget) -> None:
+    def add_gadgets(
+        self, gadget_it: Gadget | Iterable[Gadget], *gadgets: Gadget
+    ) -> None:
         r"""
         Add multiple child gadgets.
 
         Parameters
         ----------
+        gadget_it : Gadget | Iterable[Gadget]
+            A gadget or iterable of gadgets to add as children.
         \*gadgets : Gadget
-            Gadgets to add as children. Can also accept a single iterable of gadgets.
+            Gadgets to add as children.
         """
-        if len(gadgets) == 1 and not isinstance(gadgets[0], Gadget):
-            # Assume item is an iterable of gadgets.
-            gadgets = gadgets[0]
-
+        if isinstance(gadget_it, Gadget):
+            self.add_gadget(gadget_it)
+        else:
+            for gadget in gadget_it:
+                self.add_gadget(gadget)
         for gadget in gadgets:
             self.add_gadget(gadget)
 
@@ -1009,12 +1065,12 @@ class Gadget:
             setter.instances[self].pop(uid, None)
 
     @staticmethod
-    def _tween_lerp(start, end, p) -> Real | Sequence[Real] | PosHint | SizeHint | None:
+    def _tween_lerp(start, end, p):
         """Lerp for none, sequences, and hints."""
         if start is None or end is None:
             return None
 
-        if isinstance(start, Real) and isinstance(end, Real):
+        if isinstance(start, (float, int)) and isinstance(end, (float, int)):
             value = lerp(start, end, p)
             if isinstance(start, int):
                 return round_down(value)
@@ -1026,11 +1082,13 @@ class Gadget:
                 for start_value, end_value in zip(start, end)
             ]
 
-        if isinstance(start, MappingProxyType):
+        if isinstance(start, dict):
             return {
                 key: Gadget._tween_lerp(start_value, end.get(key), p)
                 for key, start_value in start.items()
             }
+
+        logger.debug(f"_tween_lerp unexpected types: {start=}, {end=}, {p=}")
 
     async def tween(
         self,
@@ -1040,7 +1098,7 @@ class Gadget:
         on_start: Callable[[], None] | None = None,
         on_progress: Callable[[float], None] | None = None,
         on_complete: Callable[[], None] | None = None,
-        **properties: Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint,
+        **properties: Any,
     ) -> None:
         """
         Coroutine that sequentially updates gadget properties over a duration (in

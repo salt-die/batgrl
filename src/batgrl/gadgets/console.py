@@ -7,6 +7,7 @@ import builtins
 import sys
 import time
 from code import InteractiveInterpreter
+from collections.abc import Callable
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 
@@ -15,7 +16,7 @@ from wcwidth import wcswidth
 from ..terminal.events import KeyEvent, PasteEvent
 from .behaviors.focusable import Focusable
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike
 from .pane import Pane
 from .scroll_view import ScrollView
 from .text import Text
@@ -40,7 +41,7 @@ class _InteractiveConsole(InteractiveInterpreter):
         self.filename = "<batgrl console>"
         self.src_buffer = []
         self.console_gadget: Console = console_gadget
-        self.input_buffer = None
+        self.input_buffer: str | None = None
         """Result of replaced stdin.read or stdin.readline."""
         self.output_buffer = StringIO()
         """Replaces stdout while executing code."""
@@ -130,9 +131,11 @@ class _InteractiveConsole(InteractiveInterpreter):
 class _ConsoleTextbox(Textbox):
     """A custom textbox that grows and shrinks with its input."""
 
+    enter_callback: Callable[[Textbox], None]
+
     @property
     def console(self) -> Console:
-        return self.parent.parent.parent
+        return self.parent.parent.parent  # type: ignore
 
     @property
     def cursor(self) -> int:
@@ -227,7 +230,7 @@ def _enter_callback(textbox: Textbox):
     text = textbox.text.rstrip()
     textbox.text = ""
     textbox.width = 1
-    console: Console = textbox.parent.parent.parent
+    console: Console = textbox.parent.parent.parent  # type: ignore
     console._add_text_to_output(text, with_prompt=True)
 
     if (
@@ -256,10 +259,10 @@ class _Prompt(Text):
 
 
 class _AlmostPane(Pane):
-    def _render(self, canvas, graphics, kind):
-        console: Console = self.parent.parent
+    def _render(self, cells, graphics, kind):
+        console: Console = self.parent.parent  # type: ignore
         self._region -= console._input._region
-        super()._render(canvas, graphics, kind)
+        super()._render(cells, graphics, kind)
 
 
 class Console(Themable, Focusable, Gadget):
@@ -274,11 +277,11 @@ class Console(Themable, Focusable, Gadget):
     exec_in_thread : bool, default: False
         Whether code is executed in a separate thread. Code not executed in a separated
         thread can block the event loop.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
     alpha : float, default: 1.0
         Transparency of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -331,9 +334,9 @@ class Console(Themable, Focusable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -347,7 +350,7 @@ class Console(Themable, Focusable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -386,7 +389,7 @@ class Console(Themable, Focusable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -427,8 +430,8 @@ class Console(Themable, Focusable, Gadget):
         banner: str | None = None,
         exec_in_thread: bool = False,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_transparent: bool = False,

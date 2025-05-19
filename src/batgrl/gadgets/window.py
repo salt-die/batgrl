@@ -1,5 +1,7 @@
 """A movable, resizable window gadget."""
 
+from __future__ import annotations
+
 from typing import Literal
 
 from uwcwidth import wcswidth
@@ -8,14 +10,16 @@ from ..terminal.events import MouseEvent
 from .behaviors.focusable import Focusable
 from .behaviors.grabbable import Grabbable
 from .behaviors.themable import Themable
-from .gadget import Gadget, Point, PosHint, Size, SizeHint, clamp
+from .gadget import Gadget, Point, Pointlike, PosHint, Size, SizeHint, Sizelike, clamp
 from .pane import Pane
 from .text import Text
 
-__all__ = ["Window", "Point", "Size"]
+__all__ = ["Point", "Size", "Window"]
 
 
 class _TitleBar(Grabbable, Pane):
+    parent: Window  # type: ignore
+
     def __init__(self):
         super().__init__(
             pos=(1, 2),
@@ -53,9 +57,9 @@ class Window(Themable, Focusable, Grabbable, Gadget):
         Minimum width window can be resized.
     alpha : float, default: 1.0
         Transparency of gadget.
-    size : Size, default: Size(10, 10)
+    size : Sizelike, default: Size(10, 10)
         Size of gadget.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of upper-left corner in parent.
     size_hint : SizeHint | None, default: None
         Size as a proportion of parent's height and width.
@@ -118,9 +122,9 @@ class Window(Themable, Focusable, Grabbable, Gadget):
         Position of center of gadget.
     absolute_pos : Point
         Absolute position on screen.
-    size_hint : SizeHint
+    size_hint : TotalSizeHint
         Size as a proportion of parent's height and width.
-    pos_hint : PosHint
+    pos_hint : TotalPosHint
         Position as a proportion of parent's height and width.
     parent: Gadget | None
         Parent gadget.
@@ -134,7 +138,7 @@ class Window(Themable, Focusable, Grabbable, Gadget):
         Whether gadget is enabled.
     root : Gadget | None
         If gadget is in gadget tree, return the root gadget.
-    app : App
+    app : App | None
         The running app.
 
     Methods
@@ -173,7 +177,7 @@ class Window(Themable, Focusable, Grabbable, Gadget):
         Yield all ancestors of this gadget.
     add_gadget(gadget)
         Add a child gadget.
-    add_gadgets(\*gadgets)
+    add_gadgets(gadget_it, \*gadgets)
         Add multiple child gadgets.
     remove_gadget(gadget)
         Remove a child gadget.
@@ -222,8 +226,8 @@ class Window(Themable, Focusable, Grabbable, Gadget):
         resize_min_height: int | None = None,
         resize_min_width: int | None = None,
         alpha: float = 1.0,
-        size: Size = Size(10, 10),
-        pos: Point = Point(0, 0),
+        size: Sizelike = Size(10, 10),
+        pos: Pointlike = Point(0, 0),
         size_hint: SizeHint | None = None,
         pos_hint: PosHint | None = None,
         is_visible: bool = True,
@@ -404,7 +408,6 @@ class Window(Themable, Focusable, Grabbable, Gadget):
             bg = self.get_color("titlebar_inactive_bg")
             border = self.get_color("window_border_inactive")
 
-        self._titlebar.fg_color = fg
         self._titlebar.bg_color = bg
         self._titlebar._label.default_fg_color = fg
         self._titlebar._label.default_bg_color = bg

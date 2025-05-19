@@ -7,9 +7,9 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from .geometry import Point, Region, Size, rect_slice
+from .geometry import Point, Region, Sizelike, rect_slice
 
-__all__ = ["Interpolation", "read_texture", "resize_texture", "composite"]
+__all__ = ["Interpolation", "composite", "read_texture", "resize_texture"]
 
 Interpolation = Literal["nearest", "linear", "cubic", "area", "lanczos"]
 """Interpolation methods for resizing graphic gadgets."""
@@ -50,12 +50,12 @@ def read_texture(path: Path) -> NDArray[np.uint8]:
         default_alpha_channel = np.full((h, w, 1), 255, dtype=np.uint8)
         image = np.dstack((image, default_alpha_channel))
 
-    return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
+    return cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)  # type: ignore
 
 
 def resize_texture(
     texture: NDArray[np.uint8],
-    size: Size,
+    size: Sizelike,
     interpolation: Interpolation = "linear",
     out: NDArray[np.uint8] | None = None,
 ) -> NDArray[np.uint8]:
@@ -66,7 +66,7 @@ def resize_texture(
     ----------
     texture : NDArray[np.uint8]
         An RGBA texture to resize.
-    size : Size
+    size : Sizelike
         The new size of the texture.
     interpolation : Interpolation, default: "linear"
         Interpolation used when resizing texture.
@@ -84,7 +84,7 @@ def resize_texture(
         return np.zeros((h, w, 4), np.uint8)
     return cv2.resize(
         texture, (w, h), dst=out, interpolation=_INTERPOLATION_TO_CV_ENUM[interpolation]
-    )
+    )  # type: ignore
 
 
 def composite(
@@ -104,7 +104,7 @@ def composite(
         The texture to composite.
     dest : NDArray[np.uint8]
         The texture on which the source is painted.
-    pos : Point, default: Point(0, 0)
+    pos : Pointlike, default: Point(0, 0)
         Position of the source on the destination.
     mask_mode : bool, default: False
         Whether to ignore alpha values less than 255.

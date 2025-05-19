@@ -2,24 +2,25 @@
 
 from __future__ import annotations
 
-from numbers import Real
 from typing import NamedTuple, Self
 
 import numpy as np
 from numpy.typing import NDArray
 
 __all__ = [
+    "Point",
+    "Pointlike",
+    "Size",
+    "Sizelike",
     "clamp",
     "lerp",
     "points_on_circle",
-    "round_down",
     "rect_slice",
-    "Point",
-    "Size",
+    "round_down",
 ]
 
 
-def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
+def clamp[T: (float, int)](value: T, min: T | None, max: T | None) -> T:
     """
     If ``value`` is less than ``min``, returns ``min``; else if ``max`` is less than
     ``value``, returns ``max``; else returns ``value``. A one-sided clamp is possible
@@ -48,7 +49,7 @@ def clamp(value: Real, min: Real | None, max: Real | None) -> Real:
     return value
 
 
-def lerp(a: Real, b: Real, p: Real) -> Real:
+def lerp(a: float, b: float, p: float) -> float:
     """Linear interpolation of `a` to `b` with proportion `p`."""
     return (1.0 - p) * a + p * b
 
@@ -82,15 +83,15 @@ def points_on_circle(
     return radius * np.stack([np.sin(angles), np.cos(angles)]).T + center
 
 
-def rect_slice(pos: Point, size: Size) -> tuple[slice, slice]:
+def rect_slice(pos: Pointlike, size: Sizelike) -> tuple[slice, slice]:
     """
     Return slices for indexing a rect in a numpy array.
 
     Parameters
     ----------
-    pos : Point
+    pos : Pointlike
         Position of rect.
-    size : Size
+    size : Sizelike
         Size of rect.
 
     Returns
@@ -145,23 +146,23 @@ class Point(NamedTuple):
     x: int
     """x-coordinate of point."""
 
-    def __add__(self, other: Self) -> Self:
+    def __add__(self, other: Pointlike) -> Self:  # type: ignore
         y, x = self
         oy, ox = other
 
         return type(self)(y + oy, x + ox)
 
-    def __radd__(self, other: Self) -> Self:
+    def __radd__(self, other: Pointlike) -> Self:
         oy, ox = other
         y, x = self
         return type(self)(oy + y, ox + x)
 
-    def __sub__(self, other: Self) -> Self:
+    def __sub__(self, other: Pointlike) -> Self:
         y, x = self
         oy, ox = other
         return type(self)(y - oy, x - ox)
 
-    def __rsub__(self, other: Self) -> Self:
+    def __rsub__(self, other: Pointlike) -> Self:
         oy, ox = other
         y, x = self
         return type(self)(oy - y, ox - x)
@@ -214,7 +215,7 @@ class Size(NamedTuple):
         """Alias for width."""
         return self.width
 
-    def __contains__(self, point: Point) -> bool:
+    def __contains__(self, point: Pointlike) -> bool:  # type: ignore
         """Whether a point is within the rectangle."""
         y, x = point
         h, w = self
@@ -225,3 +226,7 @@ class Size(NamedTuple):
         """Center of area."""
         h, w = self
         return Point(h // 2, w // 2)
+
+
+type Pointlike = Point | tuple[int, int]
+type Sizelike = Size | tuple[int, int]

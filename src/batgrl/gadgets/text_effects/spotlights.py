@@ -8,13 +8,13 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ...colors import BLUE, GREEN, RED, Color
-from ...geometry import BezierCurve, Point, Size, move_along_path
+from ...geometry import BezierCurve, Pointlike, Size, move_along_path
 from ..text import Text
 
 
 @dataclass
 class _SpotLight:
-    pos: Point
+    pos: Pointlike
     color: Color
     radius: float = 8
     falloff: float = 0.3
@@ -99,7 +99,7 @@ async def _move_spotlights(
     out_fg: NDArray[np.uint8],
     out_bg: NDArray[np.uint8],
     spotlights: list[_SpotLight],
-    positions: list[Point],
+    positions: list[Pointlike],
 ):
     def draw(*args):
         _draw_spotlights(in_fg, in_bg, out_fg, out_bg, spotlights)

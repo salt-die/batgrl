@@ -49,7 +49,7 @@ bottom y-coordinate. And finally, Regions are a sorted list of non-intersecting 
 
 from collections.abc import Iterator
 
-from .basic import Point, Size
+from .basic import Point, Pointlike, Size, Sizelike
 
 __all__ = ["Region"]
 
@@ -83,7 +83,7 @@ class Region:
     def __bool__(self) -> bool:
         """Whether region is non-empty."""
 
-    def __eq__(self, other: Region) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Whether two regions are equal."""
 
     def __contains__(self, point: Point) -> bool:
@@ -100,7 +100,7 @@ class Region:
         """
 
     @classmethod
-    def from_rect(cls, pos: Point, size: Size) -> Region:
+    def from_rect(cls, pos: Pointlike, size: Sizelike) -> Region:
         """
         Return a region from a rect position and size.
 

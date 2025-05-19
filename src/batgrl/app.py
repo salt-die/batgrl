@@ -7,7 +7,7 @@ from contextlib import redirect_stderr
 from io import StringIO
 from pathlib import Path
 from time import perf_counter
-from typing import Any, Final
+from typing import Any, Final, cast
 
 from ._rendering import terminal_render
 from ._sixel import OctTree
@@ -15,7 +15,8 @@ from .colors import NEPTUNE_THEME, Color, ColorTheme
 from .gadgets._root import _Root
 from .gadgets.behaviors.focusable import Focusable
 from .gadgets.behaviors.themable import Themable
-from .gadgets.gadget import Gadget
+from .gadgets.gadget import Gadget, _GadgetList
+from .gadgets.graphic_field import GraphicParticleField
 from .gadgets.graphics import _BLITTER_GEOMETRY, Graphics, scale_geometry
 from .geometry import Point, Size
 from .terminal import (
@@ -201,6 +202,7 @@ class App(ABC):
         if self._terminal is None:
             return
 
+        root = cast(_Root, self.root)
         if inline:
             self._terminal.exit_alternate_screen()
             self._scroll_inline()
@@ -208,7 +210,7 @@ class App(ABC):
             self._terminal.erase_in_display()
             self._terminal.enter_alternate_screen()
             self._app_pos = Point(0, 0)
-            self.root.size = self._terminal.get_size()
+            root.size = self._terminal.get_size()
 
     def _scroll_inline(self) -> None:
         """Ensure inline mode has enought vertical space in terminal."""
@@ -233,13 +235,14 @@ class App(ABC):
     def inline_height(self, inline_height: int):
         self._inline_height = inline_height
         if self.inline and self.root is not None:
-            height, _ = self._terminal.get_size()
+            terminal = cast(Vt100Terminal, self._terminal)
+            height, _ = terminal.get_size()
             self.root.height = min(inline_height, height)
 
     @property
     def color_theme(self) -> ColorTheme:
         """Color theme for themable gadgets."""
-        Themable.color_theme
+        return Themable.color_theme
 
     @color_theme.setter
     def color_theme(self, color_theme: ColorTheme):
@@ -269,7 +272,8 @@ class App(ABC):
             return
 
         if fg_color is None:
-            self._terminal.request_foreground_color()
+            terminal = cast(Vt100Terminal, self._terminal)
+            terminal.request_foreground_color()
         else:
             self.root._cell["fg_color"] = fg_color
 
@@ -291,7 +295,8 @@ class App(ABC):
             return
 
         if bg_color is None:
-            self._terminal.request_background_color()
+            terminal = cast(Vt100Terminal, self._terminal)
+            terminal.request_background_color()
         else:
             self.root.bg_color = bg_color
 
@@ -330,7 +335,10 @@ class App(ABC):
         Graphics._sixel_aspect_ratio = Size(h, w)
         if self.root is not None:
             for gadget in self.root.walk_reverse():
-                if hasattr(gadget, "blitter") and gadget.blitter == "sixel":
+                if (
+                    isinstance(gadget, (Graphics, GraphicParticleField))
+                    and gadget.blitter == "sixel"
+                ):
                     gadget.on_size()
             self.root.on_size()
 
@@ -340,13 +348,14 @@ class App(ABC):
 
     def run(self) -> Any:
         """Run the app."""
+        tmp_stderr = StringIO()
         try:
-            with redirect_stderr(StringIO()) as defer_stderr:
+            with redirect_stderr(tmp_stderr):
                 asyncio.run(self._run_async())
         except asyncio.CancelledError:
             pass
         finally:
-            error_output = defer_stderr.getvalue()
+            error_output = tmp_stderr.getvalue()
             if self.redirect_stderr:
                 with open(self.redirect_stderr, "w") as error_file:
                     print(error_output, file=error_file, end="")
@@ -526,7 +535,8 @@ class App(ABC):
         gadget : Gadget
             A gadget to add as a child to the root gadget.
         """
-        self.root.add_gadget(gadget)
+        if self.root is not None:
+            self.root.add_gadget(gadget)
 
     def add_gadgets(self, *gadgets: Gadget) -> None:
         r"""
@@ -537,10 +547,11 @@ class App(ABC):
         \*gadgets : Gadget
             Gadgets to add as children to the root gadget.
         """
-        self.root.add_gadgets(*gadgets)
+        if self.root is not None:
+            self.root.add_gadgets(*gadgets)
 
     @property
-    def children(self) -> list[Gadget] | None:
+    def children(self) -> _GadgetList[Gadget] | None:
         """Alias for :attr:`root.children`."""
         if self.root is not None:
             return self.root.children
