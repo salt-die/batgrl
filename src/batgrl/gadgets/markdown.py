@@ -10,7 +10,6 @@ import cv2
 import numpy as np
 from mistletoe import Document, block_token, span_token
 from mistletoe.base_renderer import BaseRenderer
-from numpy.typing import NDArray
 from pygments.lexers import get_lexer_by_name
 from pygments.style import Style as PygmentsStyle
 from pygments.util import ClassNotFound
@@ -28,7 +27,7 @@ from .grid_layout import GridLayout
 from .image import Image
 from .pane import Pane
 from .scroll_view import ScrollView
-from .text import Border, Cell, Text, new_cell
+from .text import Border, Cells0D, Text, new_cell
 from .video import Video
 
 __all__ = ["Markdown", "Point", "Size"]
@@ -111,7 +110,7 @@ class EmojiCode(span_token.SpanToken):
 class _BorderedContent(Text):
     def __init__(
         self,
-        default_cell: NDArray[Cell],
+        default_cell: Cells0D,
         border: Border,
         padding: int = 0,
         content: Gadget | None = None,

@@ -12,7 +12,7 @@ from ..colors import TRANSPARENT, AColor
 from ..logging import get_logger
 from ..texture_tools import Interpolation, resize_texture
 from .gadget import (
-    Cell,
+    Cells2D,
     Gadget,
     Point,
     Pointlike,
@@ -319,7 +319,7 @@ class Graphics(Gadget):
         self.texture[:] = self.default_color
 
     def _render(
-        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
     ) -> None:
         """Render visible region of gadget."""
         graphics_render(

@@ -7,6 +7,7 @@ from uwcwidth cimport wcwidth_uint32, wcswidth
 
 from ._rendering cimport Cell
 from ._sixel cimport OctTree, sixel
+from .colors import Color
 from .geometry.regions cimport CRegion, Region, bounding_rect, contains
 from .logging import LogLevel, get_logger
 from .terminal._fbuf cimport (
@@ -1588,8 +1589,8 @@ def cursor_render(
     strikethrough: bool | None,
     overline: bool | None,
     reverse: bool | None,
-    fg_color: tuple[int, int, int] | None,
-    bg_color: tuple[int, int, int] | None,
+    fg_color: Color | None,
+    bg_color: Color | None,
     region: Region,
 ) -> None:
     cdef:

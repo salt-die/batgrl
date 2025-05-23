@@ -12,7 +12,8 @@ from uwcwidth import wcswidth
 from .._rendering import text_render
 from ..colors import Color, Neptune
 from ..text_tools import (
-    Cell,
+    Cells0D,
+    Cells2D,
     Style,
     _parse_batgrl_md,
     _text_to_cells,
@@ -36,7 +37,6 @@ from .gadget import (
 
 __all__ = [
     "Border",
-    "Cell",
     "Point",
     "Size",
     "Text",
@@ -100,7 +100,7 @@ class Text(Gadget):
 
     Parameters
     ----------
-    default_cell : NDArray[Cell] | str, default: " "
+    default_cell : Cells0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
@@ -123,9 +123,9 @@ class Text(Gadget):
 
     Attributes
     ----------
-    canvas : NDArray[Cell]
+    canvas : Cells2D
         The array of characters for the gadget.
-    default_cell : NDArray[Cell]
+    default_cell : Cells0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -247,7 +247,7 @@ class Text(Gadget):
     def __init__(
         self,
         *,
-        default_cell: NDArray[Cell] | str = " ",
+        default_cell: Cells0D | str = " ",
         alpha: float = 0.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -284,12 +284,12 @@ class Text(Gadget):
         return self.canvas["ord"].view("<U1")
 
     @property
-    def default_cell(self) -> NDArray[Cell]:
+    def default_cell(self) -> Cells0D:
         """Default character for text canvas."""
         return self._default_cell
 
     @default_cell.setter
-    def default_cell(self, cell: NDArray[Cell] | str):
+    def default_cell(self, cell: Cells0D | str):
         if isinstance(cell, str):
             cell = new_cell(ord=egc_ord(cell))
         self._default_cell = cell
@@ -534,7 +534,7 @@ class Text(Gadget):
             self.canvas[:-n] = self.default_cell
 
     def _render(
-        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
     ) -> None:
         """Render visible region of gadget."""
         text_render(

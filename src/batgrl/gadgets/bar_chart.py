@@ -39,11 +39,11 @@ class BarChart(Gadget):
 
     Parameters
     ----------
-    data : dict[str, Real]
+    data : dict[str, float]
         Bar chart data.
-    min_y : Real | None, default: 0
+    min_y : float | None, default: 0
         Minimum y-value of chart. If `None`, min_y will be minimum of all chart values.
-    max_y : Real | None, default: None
+    max_y : float | None, default: None
         Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
     bar_colors : list[Color] | None, default: None
         Color of each bar. If `None`, a rainbow gradient is used.
@@ -78,11 +78,11 @@ class BarChart(Gadget):
 
     Attributes
     ----------
-    data : data[str, Real]
+    data : data[str, float]
         Bar chart data.
-    min_y : Real | None
+    min_y : float | None
         Minimum y-value of chart. If `None`, min_y will be minimum of all chart values.
-    max_y : Real | None
+    max_y : float | None
         Maximum y-value of chart. If `None`, max_y will be maximum of all chart values.
     bar_colors : list[Color] | None
         Color of each bar. If `None`, a rainbow gradient is used.

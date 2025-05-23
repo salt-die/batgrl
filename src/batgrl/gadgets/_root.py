@@ -9,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..colors import BLACK, Color
-from ..text_tools import Cell, new_cell
+from ..text_tools import Cells0D, Cells2D, new_cell
 from .gadget import Gadget, Point, Region, Size, _GadgetList
 from .graphics import Graphics, scale_geometry
 
@@ -31,7 +31,7 @@ class _Root(Gadget):
         """Lock held during rendering to prevent errors related to invalid geometry."""
         self._app = app
         """The running app."""
-        self._cell: Cell = new_cell()
+        self._cell: Cells0D = new_cell()
         """Default cell of root canvas."""
         self._bg_color = BLACK
         """Background color of the app."""
@@ -45,7 +45,7 @@ class _Root(Gadget):
         # Following attributes set in `on_size()`:
         self._resized: bool
         """Whether terminal has resized since last render."""
-        self.cells: NDArray[Cell]
+        self.cells: Cells2D
         """Current rendering of gadget tree."""
         self.graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Current graphics rendering."""
@@ -55,7 +55,7 @@ class _Root(Gadget):
         """Whether a cell should use canvas, graphics or both."""
         self._widths: NDArray[np.int32]
         """Column widths of characters in canvas."""
-        self._last_cells: NDArray[Cell]
+        self._last_cells: Cells2D
         """Previous rendering of gadget tree."""
         self._last_graphics: NDArray[np.uint8] = np.empty((0, 0, 4), np.uint8)
         """Previous graphics rendering."""

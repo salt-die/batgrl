@@ -28,16 +28,16 @@ def clamp[T: (float, int)](value: T, min: T | None, max: T | None) -> T:
 
     Parameters
     ----------
-    value : Real
+    value : T
         Value to clamp.
-    min : Real | None
+    min : T | None
         Minimum of clamped value.
-    max : Real | None
+    max : T | None
         Maximum of clamped value.
 
     Returns
     -------
-    Real
+    T
         A value between `min` and `max`, inclusive.
     """
     if min is not None and value < min:

@@ -14,9 +14,10 @@ import numpy as np
 from batgrl.app import App
 from batgrl.colors import Color
 from batgrl.figfont import FIGFont
-from batgrl.gadgets.pane import Cell, Pane, Point, Size
+from batgrl.gadgets.pane import Pane, Point, Size
 from batgrl.gadgets.text_field import TextParticleField
 from batgrl.geometry.easings import in_exp
+from batgrl.text_tools import cell_dtype
 
 
 def make_logo():
@@ -143,7 +144,7 @@ class PokeParticleField(TextParticleField):
 
 class ExplodingLogoApp(App):
     async def on_start(self):
-        cell_arr = np.zeros_like(LOGO, dtype=Cell)
+        cell_arr = np.zeros_like(LOGO, dtype=cell_dtype)
         cell_arr["ord"].view("<U1")[:] = LOGO
         cell_arr["fg_color"] = YELLOW
 

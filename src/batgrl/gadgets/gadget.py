@@ -28,7 +28,7 @@ from ..geometry import (
 )
 from ..logging import get_logger
 from ..terminal.events import FocusEvent, KeyEvent, MouseEvent, PasteEvent
-from ..text_tools import Cell, new_cell
+from ..text_tools import Cells0D, Cells2D, cell_dtype, new_cell
 
 if TYPE_CHECKING:
     from ..app import App
@@ -36,7 +36,8 @@ if TYPE_CHECKING:
 
 __all__ = [
     "Anchor",
-    "Cell",
+    "Cells0D",
+    "Cells2D",
     "Gadget",
     "Easing",
     "Point",
@@ -45,6 +46,7 @@ __all__ = [
     "Size",
     "SizeHint",
     "bindable",
+    "cell_dtype",
     "new_cell",
 ]
 
@@ -696,7 +698,7 @@ class Gadget:
         return self.root.app
 
     def _render(
-        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+        self, cells: Cells2D, graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
     ) -> None:
         """Render visible region of gadget."""
 
@@ -1116,7 +1118,7 @@ class Gadget:
             Called as tween updates with current progress.
         on_complete : Callable[[], None] | None, default: None
             Called when tween completes.
-        **properties : Real | NDArray[np.number] | Sequence[Real] | PosHint | SizeHint
+        **properties : Any
             Gadget properties' target values. E.g., to smoothly tween a gadget's
             position to (5, 10) over 2.5 seconds, specify the `pos` property as a
             keyword-argument:

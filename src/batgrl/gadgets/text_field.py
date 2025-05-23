@@ -12,8 +12,8 @@ from numpy.typing import NDArray
 
 from .._rendering import text_field_render
 from ..geometry import clamp
+from ..text_tools import Cells1D, Cells2D, cell_dtype
 from .gadget import (
-    Cell,
     Gadget,
     Point,
     Pointlike,
@@ -38,8 +38,8 @@ class TextParticleField(Gadget):
     ----------
     particle_coords : NDArray[np.float64] | None, default: None
         An array of particle positions with shape `(N, 2)`.
-    particle_cells : NDArray[Cell] | None, default: None
-        An array of Cells of particles with shape `(N,)`.
+    particle_cells : Cells1D | None, default: None
+        An array of cells of particles with shape `(N,)`.
     particle_properties : dict[str, Any] | None, default: None
         Additional particle properties.
     alpha : float, default: 0.0
@@ -67,8 +67,8 @@ class TextParticleField(Gadget):
         Number of particles in particle field.
     particle_coords : NDArray[np.float64]
         An array of particle positions with shape `(N, 2)`.
-    particle_cells : NDArray[Cell]
-        An array of Cells of particles with shape `(N,)`.
+    particle_cells : Cells1D
+        An array of cells of particles with shape `(N,)`.
     particle_properties : dict[str, Any]
         Additional particle properties.
     alpha : float
@@ -123,7 +123,7 @@ class TextParticleField(Gadget):
     Methods
     -------
     particles_from_cells(cells)
-        Set particle positions and cells from non-whitespace characters of a Cell array.
+        Set particle positions and cells from non-whitespace characters of a cell array.
     apply_hints()
         Apply size and pos hints.
     to_local(point)
@@ -178,7 +178,7 @@ class TextParticleField(Gadget):
         self,
         *,
         particle_coords: NDArray[np.float64] | None = None,
-        particle_cells: NDArray[Cell] | None = None,
+        particle_cells: Cells1D | None = None,
         particle_properties: dict[str, Any] | None = None,
         alpha: float = 0.0,
         size: Sizelike = Size(10, 10),
@@ -207,12 +207,12 @@ class TextParticleField(Gadget):
                 particle_coords, dtype=np.float64
             )
 
-        self.particle_cells: NDArray[Cell]
-        """An array of Cells of particles with shape `(N,)`"""
+        self.particle_cells: Cells1D
+        """An array of cells of particles with shape `(N,)`"""
         if particle_cells is None:
             self.particle_cells = np.full(len(self.particle_coords), new_cell())
         else:
-            self.particle_cells = np.ascontiguousarray(particle_cells, dtype=Cell)
+            self.particle_cells = np.ascontiguousarray(particle_cells, dtype=cell_dtype)
 
         self.particle_properties: dict[str, Any]
         """Additional particle properties."""
@@ -238,14 +238,14 @@ class TextParticleField(Gadget):
         """Number of particles in particle field."""
         return self.particle_coords.shape[0]
 
-    def particles_from_cells(self, cells: NDArray[Cell]) -> None:
+    def particles_from_cells(self, cells: Cells2D) -> None:
         """
         Set particle positions and cells from non-whitespace characters of a Cell array.
 
         Parameters
         ----------
-        cells : NDArray[Cell]
-            A Cell numpy array (such as a :class:`Text` gadget's canvas).
+        cells : Cells2D
+            A cell array (such as a :class:`Text` gadget's canvas).
         """
         positions = np.argwhere(np.isin(cells["ord"], (32, 0x2800), invert=True))
         pys, pxs = positions.T
@@ -254,7 +254,7 @@ class TextParticleField(Gadget):
 
     def _render(
         self,
-        cells: NDArray[Cell],
+        cells: Cells2D,
         graphics: NDArray[np.uint8],
         kind: NDArray[np.uint8],
     ):

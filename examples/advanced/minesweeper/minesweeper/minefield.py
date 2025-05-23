@@ -3,7 +3,6 @@ from itertools import product
 import cv2
 import numpy as np
 from batgrl.geometry import rect_slice
-from batgrl.text_tools import Cell
 
 from .colors import BORDER, FLAG_COLOR, HIDDEN_SQUARE
 from .grid import Grid
@@ -220,4 +219,4 @@ class Minefield(Grid):
             dst = rect_slice(pos, size)
             src = rect_slice(pos - abs_pos, size)
             visible = self.hidden[src] != 0
-            cell.view(Cell)[dst][visible] = self.canvas[src][visible]
+            cell[dst][visible] = self.canvas[src][visible]

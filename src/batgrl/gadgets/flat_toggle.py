@@ -3,10 +3,8 @@
 import asyncio
 from collections.abc import Callable, Hashable
 
-from numpy.typing import NDArray
-
 from ..colors import GREEN, Color
-from ..text_tools import Cell, Style, smooth_horizontal_bar
+from ..text_tools import Cells0D, Style, smooth_horizontal_bar
 from .behaviors.toggle_button_behavior import ToggleButtonBehavior, ToggleState
 from .text import Point, Pointlike, PosHint, Size, SizeHint, Sizelike, Text
 
@@ -33,7 +31,7 @@ class FlatToggle(ToggleButtonBehavior, Text):
         every button can be in the off state.
     always_release : bool, default: False
         Whether a mouse up event outside the button will trigger it.
-    default_cell : NDArray[Cell] | str, default: " "
+    default_cell : Cells0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 0.0
         Transparency of gadget.
@@ -68,9 +66,9 @@ class FlatToggle(ToggleButtonBehavior, Text):
         Whether a mouse up event outside the button will trigger it.
     button_state : ButtonState
         Current button state.
-    canvas : NDArray[Cell]
+    canvas : Cells2D
         The array of characters for the gadget.
-    default_cell : NDArray[Cell]
+    default_cell : Cells0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -212,7 +210,7 @@ class FlatToggle(ToggleButtonBehavior, Text):
         group: None | Hashable = None,
         allow_no_selection: bool = False,
         always_release: bool = False,
-        default_cell: NDArray[Cell] | str = " ",
+        default_cell: Cells0D | str = " ",
         alpha: float = 0.0,
         size: Sizelike = Size(1, 3),
         pos: Pointlike = Point(0, 0),

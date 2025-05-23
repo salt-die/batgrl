@@ -13,7 +13,7 @@ from numpy.typing import NDArray
 from .._rendering import graphics_field_render
 from ..logging import get_logger
 from .gadget import (
-    Cell,
+    Cells2D,
     Gadget,
     Point,
     Pointlike,
@@ -306,7 +306,7 @@ class GraphicParticleField(Gadget):
 
     def _render(
         self,
-        cells: NDArray[Cell],
+        cells: Cells2D,
         graphics: NDArray[np.uint8],
         kind: NDArray[np.uint8],
     ):

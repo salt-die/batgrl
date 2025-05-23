@@ -1,10 +1,9 @@
 """Tools for text."""
 
 from enum import IntFlag
-from typing import Final, TypeAlias
+from typing import Final
 
 import numpy as np
-from numpy.typing import NDArray
 from ugrapheme import grapheme_iter
 from uwcwidth import wcswidth
 
@@ -14,9 +13,13 @@ from .geometry import Size
 from .logging import get_logger
 
 __all__ = [
-    "Cell",
+    "Cells",
+    "Cells0D",
+    "Cells1D",
+    "Cells2D",
     "Style",
     "add_text",
+    "cell_dtype",
     "is_word_char",
     "new_cell",
     "smooth_horizontal_bar",
@@ -29,9 +32,9 @@ EGC_POOL: list[str] = []
 """
 Storage for extended grapheme clusters.
 
-If `ord_` is an ord in a canvas array and `ord_ & EGC_BASE == 1`, then `ord_ - EGC_BASE`
-is an index into `EGC_POOL`. In this way, we can use the uint32 "ord" field in canvas
-arrays to store both codepoints and egcs.
+If `ord_` is an ord in a canvas array and `ord_ & EGC_BASE` is non-zero, then
+`ord_ - EGC_BASE` is an index into `EGC_POOL`. In this way, we can use the uint32 "ord"
+field in canvas arrays to store both codepoints and egcs.
 """
 EGCS: dict[str, int] = {}
 """Extended grapheme clusters currently stored in EGC_POOL and their index."""
@@ -54,15 +57,24 @@ class Style(IntFlag):
     REVERSE = 0b100000
 
 
-Cell: TypeAlias = np.dtype(
+cell_dtype = np.dtype(
     [
         ("ord", "ulong"),
         ("style", "u1"),
         ("fg_color", "u1", (3,)),
         ("bg_color", "u1", (3,)),
     ]
-)  # type: ignore
+)
 """A structured array type that represents a single cell in a terminal."""
+
+Cells = np.ndarray[tuple[int, ...], cell_dtype]
+"""An array of ``cell_type``."""
+Cells0D = np.ndarray[tuple[()], cell_dtype]
+"""A 0-dimensional array of ``cell_dtype``."""
+Cells1D = np.ndarray[tuple[int], cell_dtype]
+"""A 1-dimensional array of ``cell_dtype``."""
+Cells2D = np.ndarray[tuple[int, int], cell_dtype]
+"""A 2-dimensional array of ``cell_dtype``."""
 
 
 def egc_ord(text: str) -> int:
@@ -144,11 +156,12 @@ def new_cell(
     style: Style = Style.DEFAULT,
     fg_color: Color = WHITE,
     bg_color: Color = BLACK,
-) -> NDArray[Cell]:
+) -> Cells0D:
     """
-    Create a ``Cell`` scalar.
+    Create a 0-dimensional ``cell_dtype`` array.
 
-    A Cell is a structured array type that represents a single cell in a terminal.
+    A ``cell_dtype`` is a structured array type that represents a single cell in a
+    terminal.
 
     Parameters
     ----------
@@ -163,13 +176,13 @@ def new_cell(
 
     Returns
     -------
-    NDArray[Cell]
-        A ``Cell`` scalar.
+    Cells0D
+        A 0-dimensional ``cell_dtype`` array.
     """
-    return np.array((ord, style, fg_color, bg_color), dtype=Cell)
+    return np.array((ord, style, fg_color, bg_color), dtype=cell_dtype)
 
 
-def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
+def _parse_batgrl_md(text: str) -> tuple[Size, list[list[Cells0D]]]:
     """
     Parse batgrl markdown and return the minimum canvas size to fit text and
     a list of lines of styled characters.
@@ -188,7 +201,7 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
 
     Returns
     -------
-    tuple[Size, list[list[Cell]]]
+    tuple[Size, list[list[Cells0D]]]
         Minimum canvas size to fit text and a list of lines of styled characters.
     """
     NO_CHAR = new_cell(ord=0)
@@ -233,9 +246,9 @@ def _parse_batgrl_md(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
     return Size(len(lines), max_width), lines
 
 
-def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
+def _text_to_cells(text: str) -> tuple[Size, list[list[Cells0D]]]:
     """
-    Convert some text to a list of lists of Cells and the minimum canvas size to fit
+    Convert some text to a list of lists of cells and the minimum canvas size to fit
     them.
 
     Parameters
@@ -245,8 +258,8 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
 
     Returns
     -------
-    tuple[Size, list[list[Cell]]]
-        Minimum canvas size to fit text and a list of lists of Cells.
+    tuple[Size, list[list[Cells0D]]]
+        Minimum canvas size to fit text and a list of lists of cells.
     """
     egcs = [list(grapheme_iter(line)) for line in text.split("\n")]
     cells = []
@@ -267,7 +280,7 @@ def _text_to_cells(text: str) -> tuple[Size, list[list[NDArray[Cell]]]]:
 
 
 def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
-    """Write a list of lists of Cells to a canvas array."""
+    """Write a list of lists of cells to a canvas array."""
     _, columns = canvas.shape
     for cell_line, canvas_line in zip(cells, canvas):
         i = 0
@@ -299,13 +312,13 @@ def _write_cells_to_canvas(cells, canvas, fg_color, bg_color) -> None:
                 break
 
 
-def put_egc(canvas: NDArray[Cell], text: str) -> None:
+def put_egc(canvas: Cells, text: str) -> None:
     """
     Set each ord in canvas to represent the first extended grapheme cluster in ``text``.
 
     Parameters
     ----------
-    canvas : NDArray[Cell]
+    canvas : Cells2D
         A ``Cell`` array or view.
     text : str
         An extended grapheme cluster.
@@ -314,7 +327,7 @@ def put_egc(canvas: NDArray[Cell], text: str) -> None:
 
 
 def add_text(
-    canvas: NDArray[Cell],
+    canvas: Cells1D | Cells2D,
     text: str,
     *,
     fg_color: Color | None = None,
@@ -337,7 +350,7 @@ def add_text(
 
     Parameters
     ----------
-    canvas : NDArray[Cell]
+    canvas : Cells1D | Cells2D
         A 1- or 2-dimensional view of a ``Cell`` array.
     text : str
         Text to add to canvas.
@@ -360,13 +373,15 @@ def add_text(
     _write_cells_to_canvas(cells, canvas, fg_color, bg_color)
 
 
-def canvas_as_text(canvas: NDArray[Cell], line_widths: list[int] | None = None) -> str:
+def canvas_as_text(
+    canvas: Cells1D | Cells2D, line_widths: list[int] | None = None
+) -> str:
     """
     Return a ``Cell`` array as a single multi-line string.
 
     Parameters
     ----------
-    canvas : NDArray[Cell]
+    canvas : Cells1D | Cells2D
         The ``Cell`` array to convert.
     line_widths : list[int] | None
         Optionally truncate line ``n`` to have column width ``line_widths[n]``. If

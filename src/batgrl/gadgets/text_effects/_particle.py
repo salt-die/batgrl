@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Self
 
 from ...geometry.motion import Coord, HasPosProp
-from ...text_tools import Cell
+from ...text_tools import Cells0D
 from ..text_field import Point, TextParticleField
 
 
@@ -25,7 +25,7 @@ class Particle(HasPosProp):
         The field which the particle belongs.
     index : int
         The index of the particle in the field.
-    cell : Cell
+    cell : Cells0D
         The particle's cell.
     pos : Point
         The particle's position.
@@ -40,12 +40,12 @@ class Particle(HasPosProp):
     index: int
 
     @property
-    def cell(self) -> Cell:
+    def cell(self) -> Cells0D:
         """The particle's cell."""
         return self.field.particle_cells[self.index]
 
     @cell.setter
-    def cell(self, cell: Cell):
+    def cell(self, cell: Cells0D):
         self.field.particle_cells[self.index] = cell
 
     @property

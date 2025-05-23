@@ -3,9 +3,19 @@
 import numpy as np
 from numpy.typing import NDArray
 
-from ..text_tools import _text_to_cells, _write_cells_to_canvas
+from ..text_tools import _text_to_cells, _write_cells_to_canvas, cell_dtype
 from ._raycasting import text_cast_rays
-from .text import Cell, Point, Pointlike, PosHint, Size, SizeHint, Sizelike, Text
+from .text import (
+    Cells0D,
+    Cells2D,
+    Point,
+    Pointlike,
+    PosHint,
+    Size,
+    SizeHint,
+    Sizelike,
+    Text,
+)
 
 __all__ = ["Point", "Size", "TextRaycaster"]
 
@@ -50,7 +60,7 @@ class TextRaycaster(Text):
         Textures for sprites.
     ascii_map : str, default: " .,:;<+*LtCa4U80dQM@"
         Dark to bright ascii characters for shading.
-    default_cell : NDArray[Cell] | str, default: " "
+    default_cell : Cells0D | str, default: " "
         Default cell of text canvas.
     alpha : float, default: 1.0
         Transparency of gadget.
@@ -87,13 +97,13 @@ class TextRaycaster(Text):
         Positions of sprites.
     sprite_indexes : NDArray[np.uint8]
         Texture indexes of sprites.
-    sprite_textures : list[NDArray[Cell]]
+    sprite_textures : list[Cells2D]
         Textures for sprites.
     ascii_map : str
         Dark to bright ascii characters for shading.
-    canvas : NDArray[Cell]
+    canvas : Cells2D
         The array of characters for the gadget.
-    default_cell : NDArray[Cell]
+    default_cell : Cells0D
         Default cell of text canvas.
     default_fg_color : Color
         Foreground color of default cell.
@@ -226,7 +236,7 @@ class TextRaycaster(Text):
         sprite_indexes: NDArray[np.uint8] | None = None,
         sprite_textures: list[str] | None = None,
         ascii_map: str = " .,:;<+*LtCa4U80dQM@",
-        default_cell: NDArray[Cell] | str = " ",
+        default_cell: Cells0D | str = " ",
         alpha: float = 1.0,
         size: Sizelike = Size(10, 10),
         pos: Pointlike = Point(0, 0),
@@ -272,12 +282,12 @@ class TextRaycaster(Text):
         else:
             self.sprite_indexes = sprite_indexes
 
-        self.sprite_textures: list[NDArray[Cell]] = []
+        self.sprite_textures: list[Cells2D] = []
         """Textures for sprites."""
         if sprite_textures is not None:
             for texture in sprite_textures:
                 spr_size, lines = _text_to_cells(texture)
-                canvas = np.empty(spr_size, Cell)
+                canvas = np.empty(spr_size, cell_dtype)
                 _write_cells_to_canvas(
                     lines, canvas, self.default_fg_color, self.default_bg_color
                 )

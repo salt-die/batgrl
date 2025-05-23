@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 from .._rendering import pane_render
 from ..colors import BLACK, Color
 from .gadget import (
-    Cell,
+    Cells2D,
     Gadget,
     Point,
     Pointlike,
@@ -190,7 +190,10 @@ class Pane(Gadget):
         self._alpha = clamp(float(alpha), 0.0, 1.0)
 
     def _render(
-        self, cells: NDArray[Cell], graphics: NDArray[np.uint8], kind: NDArray[np.uint8]
+        self,
+        cells: Cells2D,
+        graphics: NDArray[np.uint8],
+        kind: NDArray[np.uint8],
     ) -> None:
         """Render visible region of gadget."""
         pane_render(
